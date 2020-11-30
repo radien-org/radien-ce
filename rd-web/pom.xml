@@ -59,6 +59,10 @@
 			<artifactId>rd-kernel</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-openid</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
