@@ -9,6 +9,16 @@
 		<listener-class>org.openappframe.webapp.listener.OAFInitListener</listener-class>
 	</listener>
 	 -->
+	 
+	<filter>
+		<filter-name>OAF Authfilter</filter-name>
+		<filter-class>io.radien.security.openid.filter.OIDCAuthorizationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>OAF Authfilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
@@ -129,14 +139,7 @@
 		<url-pattern>/public/*</url-pattern>
 		<url-pattern>/module/*</url-pattern>
 	</filter-mapping>
-	<filter>
-		<filter-name>OAF Authfilter</filter-name>
-		<filter-class>org.openappframe.security.webapp.filter.OIDCAuthorizationFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>OAF Authfilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+	
 	
 	<filter>
 		<filter-name>PolicyDocs RedirectFilter</filter-name>

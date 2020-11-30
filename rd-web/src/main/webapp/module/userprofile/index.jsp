@@ -6,7 +6,7 @@
     <title>welcome to radien - come in and find out</title>
 </head>
 <body>
-<h1>hallo welt</h1>
+<h1>Hello Radien</h1>
 <script>
     //function getContextPath() {
     //    return window.location.pathname.substring(0,
