@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{sessionManager.checkUrlPermission('cms')}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <h:form id="fm01">
+            <b:row>
+                <ui:include src="cmsToolbar.xhtml">
+                    <ui:param name="headerTitle" value="#{msg.header_cms}"/>
+                    <ui:param name="activeTab" value="1"/>
+                </ui:include>
+            </b:row>
+            <b:row styleClass="mar-left-medium mar-vertical-large">
+                <b:column>
+                    <h:outputText styleClass="subtitle text-primary" value="#{msg.cms}"/>
+                </b:column>
+            </b:row>
+            <b:row>
+                <b:column span="12">
+                    <p:dataTable
+                            var="rowItem"
+                            styleClass="table--2"
+                            value="#{contentManager.dataModel}"
+                            paginator="true" paginatorPosition="bottom"
+                            rows="10"
+                            paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                            currentPageReportTemplate="({currentPage} #{msg.of} {totalPages})"
+                            rowsPerPageTemplate="5,10,15"
+                            selectionMode="single"
+                            selection="#{contentManager.selectedObject}"
+                            id="resultTable"
+                            rowKey="#{rowItem.viewId}"
+                            lazy="true"
+                            sortBy="#{rowItem.contentType}">
+                        <f:facet name="header">
+                            <b:row>
+                                <b:column colXs="12" styleClass="py-2">
+                                    <h:panelGroup layout="block" styleClass="table--title py-3">
+                                        <h:outputText value="#{msg.cms}"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="table--header-actions py-2">
+                                        <i class="icon i-filter" onclick="openFilter()"></i>
+                                        <h:outputLabel></h:outputLabel>
+                                        <b:commandButton
+                                              action="#{navigation.navigate}"
+                                              actionListener="#{navigation.processCMSAction}"
+                                              styleClass="btn--table-header" value="#{msg.add}" update="fm01" ajax="true">
+                                              <f:param name="navigationNode" value="cms_add"/>
+                                              <f:attribute name="navigationNode" value="cms_add"/>
+                                              <f:param name="webAction" value="add"/>
+                                              <f:attribute name="webAction" value="add"/>
+                                        </b:commandButton>
+                                   </h:panelGroup>
+                               </b:column>
+                               <b:column colXs="12" styleClass="datatable--filter-col py-2">
+                                    <p:selectCheckboxMenu id="multiple" value="#{contentManager.tagsFilterSelected}"
+                                                          layout="grid" filterMatchMode="startsWith"
+                                                          styleClass="input--filter" multiple="true" emptyLabel="#{msg.tags}">
+
+                                        <f:selectItems value="#{contentManager.tagsFilterOptions}" var="selectedFilterTags" itemValue="#{selectedFilterTags}" itemLabel="#{selectedFilterTags.name}"/>
+                                        <f:ajax event="toggleSelect" listener="#{contentManager.onFilterSelected()}" render="resultTable"/>
+                                        <f:ajax event="change" listener="#{contentManager.onFilterSelected()}" render="resultTable"/>
+                                    </p:selectCheckboxMenu>
+                                </b:column>
+                            </b:row>
+                        </f:facet>
+                        <p:ajax event="rowSelect" listener="#{contentManager.onRowSelect}" />
+                        <p:column headerText="#{msg.contentType}" sortBy="#{rowItem.contentType}">
+                            <h:outputText value="#{rowItem.contentType}"/>
+                        </p:column>
+                        <p:column headerText="#{msg.title}">
+                            <h:outputText value="#{rowItem.name}"/>
+                        </p:column>
+                        <p:column headerText="#{msg.active}" sortBy="#{rowItem.active}">
+                            <i class="#{rowItem.active ? 'icon i-check-circle': 'icon i-cross-cricle'}" />
+                        </p:column>
+                        <p:column headerText="#{msg.published}" sortBy="#{rowItem.published}">
+                            <i class="#{rowItem.published ? 'icon i-check-circle': 'icon i-cross-cricle'}" />
+                        </p:column>
+                    </p:dataTable>
+                </b:column>
+            </b:row>
+        </h:form>
+    </ui:define>
+</ui:composition>

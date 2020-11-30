@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
+    <h:panelGroup layout="block" styleClass="toolbar-container">
+        <b:row>
+            <b:column colXs="12" colMd="10" offsetMd="2">
+                <b:navCommandLink styleClass="toolbar-command-link" update="fm01"
+                                  process="@this" value="#{msg.cms}" action="#{navigation.navigate}"
+                                  actionListener="#{navigation.navigationAction}">
+                    <f:param name="navigationNode" value="cms"/>
+                    <f:attribute name="navigationNode" value="cms"/>
+                </b:navCommandLink>
+                <b:navCommandLink styleClass="toolbar-command-link" update="fm01"
+                                  process="@this" value="#{msg.documents}" action="#{navigation.navigate}"
+                                  actionListener="#{navigation.navigationAction}">
+                    <f:param name="navigationNode" value="dms"/>
+                    <f:attribute name="navigationNode" value="dms"/>
+                </b:navCommandLink>
+            </b:column>
+        </b:row>
+    </h:panelGroup>
+</ui:composition>

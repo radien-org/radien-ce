@@ -1,0 +1,247 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.radien.persistence.jpa;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.radien.api.Model;
+
+/**
+ * Generic methods for JPA entities
+ *
+ * @author Marco Weiland
+ */
+public class EntityManagerUtil {
+	private static final Logger log = LoggerFactory.getLogger(EntityManagerUtil.class);
+	private static final String ERROR_SAVING_ENTITY = "Error saving entity: {}";
+	private static final String ENTITY_SAVED = "An entity of class {} was persisted in the DB";
+	private static final String ENTITY_LIST_SAVED = "A List of entities of class {} was persisted in the DB";
+	public static final String ENTITY_DELETED = "An entity of class {} was deleted from the DB";
+	public static final String ERROR_DELETING_ENTITY = "Error deleting entity: {}";
+
+	/**
+	 * Persists a {@link Model} implementation in the target database
+	 *
+	 * @param entity
+	 *                   the model to be persisted
+	 * @param em
+	 *                   the entityManager that gets injected bia the CDI
+	 */
+	public static void save(Model entity, EntityManager em) {
+		EntityTransaction transaction = em.getTransaction();
+		boolean hadPreviousTransaction = true;
+		try {
+			if (!transaction.isActive()) {
+				transaction.begin();
+				hadPreviousTransaction = false;
+			}
+			em.persist(entity);
+			if(!hadPreviousTransaction) {
+				transaction.commit();
+				log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
+			}
+		} catch (Exception e) {
+			transaction.rollback();
+			log.error(ERROR_SAVING_ENTITY, e.getMessage());
+			throw e;
+		}
+	}
+
+	/**
+	 * h Similar to {@link EntityManagerUtil#save(Model, EntityManager)} but
+	 * also updates the object in the database if it still exists
+	 *
+	 * @param entity
+	 *                   The entity to be persisted or updated
+	 * @param em
+	 *                   the entityManager injected by the CDI
+	 */
+	public static void saveOrUpdate(Model entity, EntityManager em) {
+		EntityTransaction transaction = em.getTransaction();
+		boolean hadPreviousTransaction = true;
+		try {
+			if (!transaction.isActive()) {
+				transaction.begin();
+				hadPreviousTransaction = false;
+			}
+			if (entity.getId() == null) {
+				em.persist(entity);
+			} else {
+				em.merge(entity);
+			}
+			if(!hadPreviousTransaction) {
+				transaction.commit();
+				log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
+			}
+		} catch (Exception e) {
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+			log.error(ERROR_SAVING_ENTITY, e.getMessage());
+			throw e;
+		}
+	}
+
+	public static void saveOrUpdate(List<? extends Model> entities, EntityManager em) {
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			boolean hadTransaction = true;
+			if(entities.isEmpty()){
+				return;
+			}
+			if(!transaction.isActive()) {
+				transaction.begin();
+				hadTransaction = false;
+			}
+			for(Model entity:entities) {
+				if (entity.getId() == null) {
+					em.persist(entity);
+				} else {
+					em.merge(entity);
+				}
+			}
+			if(!hadTransaction) {
+				transaction.commit();
+			}
+			if(entities.size()>1) {
+				log.info(ENTITY_LIST_SAVED, entities.get(0).getClass().getSimpleName());
+			}else if(entities.size() == 1){
+				log.info(ENTITY_SAVED, entities.get(0).getClass().getSimpleName());
+			}
+		} catch (Exception e) {
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+			log.error(ERROR_SAVING_ENTITY, e.getMessage());
+			throw e;
+		}
+	}
+
+	public static <T extends Model> T saveOrUpdateAndReturn(Model entity, EntityManager em) {
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			transaction.begin();
+			if (entity.getId() == null) {
+				em.persist(entity);
+			} else {
+				entity = em.merge(entity);
+			}
+			transaction.commit();
+			log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
+			return (T) entity;
+		} catch (Exception e) {
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+			log.error(ERROR_SAVING_ENTITY, e.getMessage());
+			throw e;
+		}
+	}
+
+	/**
+	 * Deletes a {@link Model} implementation in the target database
+	 *
+	 * @param entity
+	 *                   The entity to be deleted
+	 * @param em
+	 *                   the entityManager injected by the CDI
+	 */
+	public static void delete(Model entity, EntityManager em) {
+		if (entity != null && entity.getId() == null) {
+			return;
+		}
+		EntityTransaction transaction = em.getTransaction();
+		boolean hadTransaction = true;
+		try {
+			if(!transaction.isActive()) {
+				transaction.begin();
+				hadTransaction = false;
+			}
+			if (!em.contains(entity)) {
+				entity = em.merge(entity);
+			}
+			em.remove(entity);
+			if(!hadTransaction) {
+				transaction.commit();
+			}
+		} catch (Exception e) {
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+			log.error(ERROR_DELETING_ENTITY, e.getMessage());
+			throw e;
+		}
+		assert entity != null;
+		log.info(ENTITY_DELETED, entity.getClass().getSimpleName());
+	}
+
+	/**
+	 * Deletes a List of {@link Model} implementation in the target database
+	 *
+	 * @param entities
+	 *                   The entity to be deleted
+	 * @param em
+	 *                   the entityManager injected by the CDI
+	 */
+	public static void delete(List<? extends Model> entities, EntityManager em) {
+		if (entities == null || entities.isEmpty()) {
+			return;
+		}
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			boolean hadTransaction = true;
+			if(entities.isEmpty()){
+				return;
+			}
+			if(!transaction.isActive()) {
+				hadTransaction = false;
+				transaction.begin();
+			}
+			for(Model entity: entities) {
+				if(entity.getId() == null){
+					log.warn(entity.toString() + "id was null. Skipped");
+					continue;
+				}
+				if (isDetached(entity,em)) {
+					entity = attach(entity,em);
+				}
+				em.remove(entity);
+			}
+			if (!hadTransaction) {
+				transaction.commit();
+			}
+		} catch (Exception e) {
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+			log.error(ERROR_DELETING_ENTITY, e.getMessage());
+			throw e;
+		}
+	}
+	public static boolean isDetached(Model entity, EntityManager em) {
+		return !em.contains(entity);
+	}
+
+	public static Model attach(Model entity, EntityManager em) {
+		return em.merge(entity);
+	}
+}

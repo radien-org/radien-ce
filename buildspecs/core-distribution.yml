@@ -1,0 +1,34 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto8
+  pre_build:
+    commands:
+      - |
+        export CODEARTIFACT_AUTH_TOKEN=$( \
+          aws codeartifact get-authorization-token \
+            --domain radien \
+            --domain-owner 625513329897 \
+            --query authorizationToken \
+            --output text)
+      - export JAVA_OPTS="-Xms2G -Xmx2G"
+      - export MAVEN_OPTS="-Xms2G -Xmx2G"
+  build:
+    commands:
+      - mvn deploy -T 2C -e -P radien--radien-artifactory -B -s aws-build-settings.xml
+      - ls radien-cms/target/radien-cms*exec.jar
+    finally:
+      - rm -r /root/.m2/repository/org/openappframe/
+
+artifacts:
+  files:
+    ##- radien-cms/target/radien-cms-exec.jar
+    ##- radien-cms/Dockerfile
+    - rd-web/target/web.war
+    - rd-web/Dockerfile
+
+cache:
+  paths:
+    - '/root/.m2/**/*'

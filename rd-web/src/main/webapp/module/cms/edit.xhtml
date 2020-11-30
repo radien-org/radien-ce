@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{sessionManager.checkUrlPermission('cms')}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <b:row styleClass="mar-left-medium mar-vertical-large">
+            <b:column>
+            </b:column>
+        </b:row>
+        <h:form id="fm01" enctype="multipart/form-data">
+            <b:row styleClass="text-center">
+                <b:column colXs="12" colSm="6" offsetSm="3">
+                    <h:outputText value="#{msg.editCMS}"/>
+                    <hr/>
+                </b:column>
+            </b:row>
+            <b:row styleClass="py-5">
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:outputLabel for="viewId1" value="#{msg.view_id}"/>
+                    <br/>
+                    <h:outputText id="viewId1" value="#{contentManager.selectedObject.viewId}"/>
+                </b:column>
+
+                <p:selectBooleanCheckbox id="active" itemLabel="#{msg.active}"
+                                         value="#{contentManager.selectedObject.active}"
+                                         styleClass="p--checkbox"/>
+
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:panelGroup styleClass="bf--input">
+                        <b:selectOneMenu id="contentType" label="#{msg.contentType}" update=":fm01:appColumn"
+                                         value="#{contentManager.selectedObject.contentType}" select2="true">
+                            <f:selectItems value="#{contentManager.contentTypes}" var="contentType"/>
+                            <p:ajax event="change" update="appColumn" />
+                        </b:selectOneMenu>
+                    </h:panelGroup>
+                </b:column>
+                
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2" id="appColumn">
+                    <h:panelGroup styleClass="bf--input" rendered="#{contentManager.selectedObject.contentType == 'APP_INFO'}">
+                        <b:selectOneMenu id="app" label="#{msg.app_list}"
+                                         value="#{contentManager.selectedObject.app}" select2="true">
+                            <f:selectItems value="#{contentManager.apps}" var="app" itemLabel="#{app.name}" itemValue="#{app.name}"/>
+                        </b:selectOneMenu>
+                    </h:panelGroup>
+                </b:column>
+                 
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2" id="tagColumn">
+                    <h:panelGroup styleClass="pf--input">
+                        <b:inputText label="#{msg.tags}" value="#{contentManager.newTag}">
+                            <f:ajax event="input" delay="500" render=":fm01:tagCloud"
+                                    listener="#{contentManager.onInputTag}"/>
+                        </b:inputText>
+                        <p:commandButton value="#{msg.add}" action="#{contentManager.saveTag}" icon="fa fa-plus"
+                                         immediate="true" update=":fm01:tagColumn sys-messages" />
+                        <h:panelGroup id="tagCloud" layout="block">
+                            <p:tagCloud model="#{contentManager.tags}">
+                                <p:ajax event="select" update=":fm01:tagChips"
+                                        listener="#{contentManager.onSelectTag}"/>
+                            </p:tagCloud>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <h:panelGroup id="tagChips" layout="block">
+                        <p:chips value="#{contentManager.selectedObject.tags}"
+                                 rendered="#{not empty contentManager.selectedObject.tags}">
+                                 <p:ajax event="itemUnselect" update=":fm01:tagChips" 
+                                 	listener="#{contentManager.onUnselectChip}" />
+                        </p:chips>
+                    </h:panelGroup>
+                </b:column>
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:panelGroup styleClass="bf--input">
+                        <b:selectOneMenu id="language" label="#{msg.language}"
+                                         value="#{contentManager.selectedObject.language}" select2="true"
+                                         onchange="submit()"
+                                         valueChangeListener="#{contentManager.languageChanged}">
+                            <f:selectItems value="#{localeManager.supportedLanguages}" var="language"/>
+                        </b:selectOneMenu>
+                    </h:panelGroup>
+                </b:column>
+
+                <!-- Audience Module -->
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:outputLabel for="visibilityInfo" value="#{msg.visibility}"/>
+                    <p:commandButton id="visibilityInfo" value="#{msg.edit}"
+                                     styleClass="btn btn--primary"
+                                     update="@form sys-messages"
+                                     oncomplete="$('.audienceModalClass').modal('show')"/>
+                </b:column>
+
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:outputLabel for="image-upload" value="#{msg.image}"/>
+                    <br/>
+                    <p:fileUpload id="image-upload" value="#{contentImageManager.uploadFile}" mode="simple"
+                                  skinSimple="true" chooseIcon="icon i-upload">
+                                  <f:validator validatorId="org.openappframe.webapp.validator.UploadImageValidator" />
+                    </p:fileUpload>
+                    <br/>
+                    <p:graphicImage height="150" value="#{contentImageManager.content}"/>
+                </b:column>
+
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <b:inputText id="title" value="#{contentManager.selectedObject.name}" required="true" size="60"
+                                 label="#{msg.title}">
+                    	<f:validateLength minimum="3" maximum="60" />
+                    </b:inputText>
+                    <b:message for="title" />
+                </b:column>
+
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:selectOneRadio value="#{contentManager.selectedName}" layout="lineDirection">
+                        <f:selectItem itemValue="firstName" itemLabel="firstName"/>
+                        <f:selectItem itemValue="lastName" itemLabel="lastName"/>
+                        <f:selectItem itemValue="fullName" itemLabel="fullName"/>
+                    </h:selectOneRadio>
+                </b:column>
+
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <p:textEditor id="editor1" widgetVar="editorWidget1" required="true" 
+                    			  requiredMessage="#{msg['required.field.cms.content']}"
+                                  value="#{contentManager.selectedObject.htmlContent}" height="600" />
+                   	<b:message for="editor1" />
+                </b:column>
+            </b:row>
+            <b:row styleClass="py-5">
+                <b:column colXs="12" colSm="6" offsetSm="3">
+                    <b:row style="text-align: center">
+                        <b:column colXs="4">
+                            <b:commandButton
+                                    action="#{navigation.navigate}"
+                                    actionListener="#{navigation.processCMSAction}"
+                                    value="#{msg.close}"
+                                    ajax="true"
+                                    immediate="true"
+                                    styleClass="btn btn btn-default btn--secondary"
+                            >
+                                <f:param name="navigationNode" value="cms"/>
+                                <f:attribute name="navigationNode" value="cms"/>
+                                <f:param name="webAction" value="close"/>
+                                <f:attribute name="webAction" value="close"/>
+                            </b:commandButton>
+                        </b:column>
+                        <b:column colXs="4">
+                            <b:commandButton
+                                    action="#{navigation.navigate}"
+                                    actionListener="#{navigation.processCMSAction}"
+                                    value="#{msg.delete}"
+                                    ajax="true"
+                                    update="fm01"
+                                    immediate="true"
+                                    styleClass="btn btn btn-default btn--primary"
+                            >
+                                <f:param name="navigationNode" value="cms"/>
+                                <f:attribute name="navigationNode" value="cms"/>
+                                <f:param name="webAction" value="delete"/>
+                                <f:attribute name="webAction" value="delete"/>
+                            </b:commandButton>
+                        </b:column>
+                        <b:column colXs="4">
+                            <b:commandButton
+                                    action="#{navigation.navigate}"
+                                    actionListener="#{navigation.processCMSAction}"
+                                    value="#{msg.save}"
+                                    ajax="true"
+                                    update="fm01 sys-messages"
+                                    styleClass="btn btn btn-default btn--primary"
+                            >
+                                <f:param name="navigationNode" value="cms"/>
+                                <f:attribute name="navigationNode" value="cms"/>
+                                <f:param name="webAction" value="save"/>
+                                <f:attribute name="webAction" value="save"/>
+                            </b:commandButton>
+                        </b:column>
+                    </b:row>
+                </b:column>
+            </b:row>
+        </h:form>
+
+        <!-- Audience Modal dialog -->
+        <b:modal id="audienceModalDialog"
+                 title="#{msg.deactivateAccountConfirmationTitle}"
+                 styleClass="audienceModalClass" closable="true" close-on-escape="false"
+                 backdrop="false" headerClass="modal__title" contentClass="modal__content">
+            <b:form id="audienceModalDialogForm">
+                <h:outputText value="#{msg.visbility_select_organizations}" />
+                <b:row>
+                    <p:selectCheckboxMenu id="organizationsCheckboxMenu" value="#{audienceModule.organizationsList}"
+                                          layout="grid" filterMatchMode="startsWith"
+                                          styleClass="input--filter" multiple="true" emptyLabel="Organization Types">
+
+                        <f:selectItems value="#{roleManager.organizationTypeFilterOptions}" var="selectedFilterOrgTypes" itemValue="#{selectedFilterOrgTypes}" itemLabel="#{selectedFilterOrgTypes.name}"/>
+                        <f:ajax event="toggleSelect" listener="#{roleManager.onFilterSelected()}" render="roleTable"/>
+                        <f:ajax event="change" listener="#{roleManager.onFilterSelected()}" render="roleTable"/>
+                    </p:selectCheckboxMenu>
+                </b:row>
+                <b:row>
+                    <b:commandButton id="editVisibilityBtn" value="#{msg.save}"
+                                     styleClass="btn btn--secondary"
+                                     immediate="true"
+                                     dismiss="modal" onclick="$('.audienceModalClass').modal('hide');" rendered="false"/>
+                </b:row>
+            </b:form>
+        </b:modal>
+    </ui:define>
+</ui:composition>

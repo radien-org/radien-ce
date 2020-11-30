@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR">
+    <Properties>
+        <Property name="log-path">${sys:catalina.home}/logs</Property>
+        <Property name="log-project-name">oaf-web</Property>
+        <Property name="log-pattern">[%-5level] | %d{HH:mm:ss} | %l | %msg %n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${log-pattern}"/>
+        </Console>
+        <RollingFile name="fileLogger" fileName="${log-path}/${log-project-name}.log" filePattern="${log-path}/${log-project-name}-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${log-pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="auditFileLogger" fileName="${log-path}/${log-project-name}.audit.log"
+                     filePattern="${log-path}/${log-project-name}.audit-%d{yyyy-MM-dd}.log">
+            <MarkerFilter marker="AUDIT" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <pattern>${log-pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO" additivity="false">
+            <appender-ref ref="console"/>
+        </Root>
+        <Logger name="org.openappframe" level="INFO" additivity="false">
+            <appender-ref ref="fileLogger" level="INFO"/>
+            <appender-ref ref="auditFileLogger" level="INFO"/>
+        </Logger>
+        <Logger name="org.jgroups" level="DEBUG">
+            <AppenderRef ref="fileLogger"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+    </Loggers>
+</Configuration>

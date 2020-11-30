@@ -1,0 +1,360 @@
+<pretty-config
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://ocpsoft.org/schema/rewrite-config-prettyfaces"
+		xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces
+                      http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
+
+	<url-mapping id="index">
+		<pattern value="/public/index" />
+		<view-id value="/public/index.oaf" />
+	</url-mapping>
+
+	<url-mapping id="register">
+		<pattern value="/public/register" />
+		<view-id value="/public/register.oaf" />
+	</url-mapping>
+
+	<url-mapping id="resetPassword">
+		<pattern value="/public/resetPassword" />
+		<view-id value="/public/resetPassword.oaf" />
+	</url-mapping>
+
+	<url-mapping id="confirmation">
+		<pattern value="/public/confirmation" />
+		<view-id value="/public/confirmation.oaf" />
+	</url-mapping>
+
+	<url-mapping id="changeEmail">
+		<pattern value="/public/changeEmail" />
+		<view-id value="/public/changeEmail.oaf" />
+	</url-mapping>
+
+	<url-mapping id="resendConfirmation">
+		<pattern value="/public/resendConfirmation" />
+		<view-id value="/public/resendConfirmation.oaf" />
+	</url-mapping>
+
+	<url-mapping id="content_public">
+		<pattern
+				value="/public/content/display/#{contentViewManager.viewId}" />
+		<view-id value="/public/content.oaf" />
+	</url-mapping>
+	<url-mapping id="captcha">
+		<pattern value="/public/captcha" />
+		<view-id value="/captcha" />
+	</url-mapping>
+	<url-mapping id="index">
+		<pattern value="/public/#{index : contentViewManager.viewId}" />
+		<view-id value="/public/index.oaf" />
+	</url-mapping>
+
+	<url-mapping id="appmanager">
+		<pattern value="/module/home" />
+		<view-id value="/module/appmanager/appmanager.oaf" />
+	</url-mapping>
+	<url-mapping id="content">
+		<pattern
+				value="/module/content/display/#{contentViewManager.viewId}" />
+		<view-id value="/module/content.oaf" />
+	</url-mapping>
+
+	<!-- Users Management -->
+	<url-mapping id="users">
+		<pattern value="/module/users" />
+		<view-id value="/module/admin/users/users.oaf" />
+	</url-mapping>
+	<url-mapping id="users_edit">
+		<pattern value="/module/users/edit" />
+		<view-id value="/module/admin/users/edit.oaf" />
+	</url-mapping>
+	
+	<url-mapping id="users_request">
+		<pattern value="/module/users/requests" />
+		<view-id value="/module/admin/users/requests.oaf" />
+	</url-mapping>
+
+	<url-mapping id="loginTrigger">
+		<pattern value="/module/logintrigger" />
+		<view-id value="/module/logintrigger.oaf" />
+	</url-mapping>
+
+
+
+	<url-mapping id="userprofile">
+		<pattern value="/module/user/profile" />
+		<view-id value="/module/user/profile.oaf" />
+	</url-mapping>
+	<url-mapping id="accountAssociation">
+		<pattern value="/module/user/accountAssociation" />
+		<view-id value="/module/user/accountAssociation.oaf" />
+	</url-mapping>
+
+	<url-mapping id="changepassword">
+		<pattern value="/module/user/changePassword" />
+		<view-id value="/module/user/changePassword.oaf" />
+	</url-mapping>
+	<url-mapping id="changelanguage">
+		<pattern value="/module/user/changeLanguage" />
+		<view-id value="/module/user/changeLanguage.oaf" />
+	</url-mapping>
+
+	<!-- Context -->
+	<url-mapping id="requestContext">
+		<pattern value="/module/context/request" />
+		<view-id value="/module/context/request.oaf" />
+	</url-mapping>
+
+	<!-- User Organization Management -->
+	<url-mapping id="userOrganization">
+		<pattern value="/module/user/organization/userOrganization" />
+		<view-id
+				value="/module/user/organization/userOrganization.oaf" />
+	</url-mapping>
+
+	<!-- User Account Management -->
+
+
+	<url-mapping id="termsAndConditions">
+		<pattern value="/module/user/termsAndConditions" />
+		<view-id value="/module/user/termsAndConditions.oaf" />
+	</url-mapping>
+	<url-mapping id="globalPolicyDocument">
+		<pattern value="/module/user/globalConsent/#{contentManager.documentType}" />
+		<view-id value="/module/user/globalConsent.oaf" />
+	</url-mapping>
+	<url-mapping id="localPolicyDocument">
+		<pattern value="/module/user/localConsent/#{contentManager.documentType}" />
+		<view-id value="/module/user/localConsent.oaf" />
+	</url-mapping>
+
+	<url-mapping id="nocontext">
+		<pattern value="/module/user/nocontext" />
+		<view-id value="/module/user/UserNoContext.oaf" />
+	</url-mapping>
+
+	<!-- Modules Management -->
+	<url-mapping id="modules">
+		<pattern value="/module/modules" />
+		<view-id value="/module/admin/modules/modules.oaf" />
+	</url-mapping>
+	<url-mapping id="modules_edit">
+		<pattern value="/module/modules/edit" />
+		<view-id value="/module/admin/modules/edit.oaf" />
+	</url-mapping>
+
+	<!-- Applications Management -->
+	<url-mapping id="applications">
+		<pattern value="/module/applications" />
+		<view-id value="/module/admin/applications/applications.oaf" />
+	</url-mapping>
+	<url-mapping id="applications_edit">
+		<pattern value="/module/applications/edit" />
+		<view-id value="/module/admin/applications/edit.oaf" />
+	</url-mapping>
+	<url-mapping id="applications_management">
+		<pattern value="/module/applications/applicationsManagement" />
+		<view-id
+				value="/module/admin/applications/applicationsManagement.oaf" />
+	</url-mapping>
+	<url-mapping id="applications_access_management">
+		<pattern
+				value="/module/applications/applicationsAccessManagement" />
+		<view-id
+				value="/module/admin/applications/applicationsAccessManagement.oaf" />
+	</url-mapping>
+	
+	<!-- Organizations Management -->
+	<url-mapping id="organizations">
+		<pattern value="/module/organizations" />
+		<view-id value="/module/admin/organizations/organizations.oaf" />
+	</url-mapping>
+	
+	<url-mapping id="assignContextAdmin">
+		<pattern value="/module/organizations/assignContextAdmin" />
+		<view-id
+				value="/module/admin/organizations/assignContextAdmin.oaf" />
+	</url-mapping>
+	
+	<!-- what is that? -->
+	<url-mapping id="contextAccessManagement">
+		<pattern value="/module/organizations/contextAccessManagement" />
+		<view-id
+				value="/module/admin/organizations/contextAccessManagement.oaf" />
+	</url-mapping>
+	
+	<url-mapping id="organizations_edit">
+		<pattern value="/module/organizations/edit/#{id}" />
+		<view-id value="/module/admin/organizations/edit.oaf" />
+	</url-mapping>
+	<url-mapping id="organizations_add">
+		<pattern value="/module/organizations/add" />
+		<view-id value="/module/admin/organizations/add.oaf" />
+	</url-mapping>
+
+	<!-- Organization Types Management -->
+	<url-mapping id="organizationTypes">
+		<pattern value="/module/organizationTypes" />
+		<view-id
+				value="/module/admin/organizationTypes/organizationTypes.oaf" />
+	</url-mapping>
+
+	<url-mapping id="organizationTypes_edit">
+		<pattern value="/module/organizationTypes/edit" />
+		<view-id value="/module/admin/organizationTypes/edit.oaf" />
+	</url-mapping>
+
+	<url-mapping id="organizationTypes_add">
+		<pattern value="/module/organizationTypes/add" />
+		<view-id value="/module/admin/organizationTypes/add.oaf" />
+	</url-mapping>
+
+	<!-- User Support Module -->
+	<url-mapping id="userSupport">
+		<pattern value="/module/userSupport" />
+		<view-id value="/module/admin/userSupport/userSupport.oaf" />
+	</url-mapping>
+
+	<!-- Bookings Management -->
+	<url-mapping id="bookings">
+		<pattern value="/module/bookings" />
+		<view-id value="/module/bookings/bookings.oaf" />
+	</url-mapping>
+
+	<!-- Sales Management -->
+	<url-mapping id="sales">
+		<pattern value="/module/sales" />
+		<view-id value="/module/sales/sales.oaf" />
+	</url-mapping>
+
+	<!-- Customer Management -->
+	<url-mapping id="customers">
+		<pattern value="/module/customers" />
+		<view-id value="/module/customers/customers.oaf" />
+	</url-mapping>
+
+	<!-- Admin -->
+	<url-mapping id="applicationconfigs">
+		<pattern value="/module/applicationconfigs" />
+		<view-id value="/module/applicationconfigs/applicationconfigs.oaf" />
+	</url-mapping>
+
+	<!-- GRP Status -->
+	<url-mapping id="status">
+		<pattern value="status" />
+		<view-id value="/module/admin/status/index.oaf" />
+	</url-mapping>
+
+	<!-- Content Management -->
+	<url-mapping id="cms">
+		<pattern value="/module/cms" />
+		<view-id value="/module/cms/cms.oaf" />
+	</url-mapping>
+
+	<url-mapping id="cms_add">
+		<pattern value="/module/cms/add" />
+		<view-id value="/module/cms/add.oaf" />
+	</url-mapping>
+	<url-mapping id="cms_edit">
+		<pattern value="/module/cms/edit/#{id}" />
+		<view-id value="/module/cms/edit.oaf" />
+	</url-mapping>
+	<url-mapping id="dms">
+		<pattern value="/module/cms/documents" />
+		<view-id value="/module/cms/documents.oaf" />
+	</url-mapping>
+	<url-mapping id="ecmdisplay">
+		<pattern value="/module/ecm/display" />
+		<view-id value="/ecmdisplay" />
+	</url-mapping>
+	<url-mapping id="spmapping">
+		<pattern value="/saml/sp" />
+		<view-id value="/oafsp" />
+	</url-mapping>
+	<url-mapping id="idpmapping">
+		<pattern value="/saml/idp" />
+		<view-id value="/oafidp" />
+	</url-mapping>
+	<url-mapping id="acsmapping">
+		<pattern value="/saml/acs" />
+		<view-id value="/oafacs" />
+	</url-mapping>
+
+	<!-- Legal Documents -->
+	<url-mapping id="termsOfUse">
+		<pattern value="/module/admin/legalDocuments/tou" />
+		<view-id value="/module/admin/legalDocuments/tou.oaf" />
+	</url-mapping>
+	<url-mapping id="dataPrivacyPolicy">
+		<pattern value="/module/admin/legalDocuments/dpp" />
+		<view-id value="/module/admin/legalDocuments/dpp.oaf" />
+	</url-mapping>
+
+	<!-- Roles -->
+	<url-mapping id="roles">
+		<pattern value="/module/admin/roles" />
+		<view-id value="/module/admin/roles/roles.oaf" />
+	</url-mapping>
+	<url-mapping id="roles_add">
+		<pattern value="/module/admin/roles/add" />
+		<view-id value="/module/admin/roles/add.oaf" />
+	</url-mapping>
+	<url-mapping id="roles_edit">
+		<pattern value="/module/admin/roles/edit" />
+		<view-id value="/module/admin/roles/edit.oaf" />
+	</url-mapping>
+
+	<!-- Permissions -->
+	<url-mapping id="permissions">
+		<pattern value="/module/admin/permissions" />
+		<view-id value="/module/admin/permissions/permissions.oaf" />
+	</url-mapping>
+	<url-mapping id="permissions_add">
+		<pattern value="/module/admin/permissions/add" />
+		<view-id value="/module/admin/permissions/add.oaf" />
+	</url-mapping>
+	<url-mapping id="permissions_edit">
+		<pattern value="/module/admin/permissions/edit/#{id}" />
+		<view-id value="/module/admin/permissions/edit.oaf" />
+	</url-mapping>
+
+	<!-- Operations -->
+	<url-mapping id="operations">
+		<pattern value="/module/admin/operations" />
+		<view-id value="/module/admin/operations/operations.oaf" />
+	</url-mapping>
+	<url-mapping id="operations_add">
+		<pattern value="/module/admin/operations/add" />
+		<view-id value="/module/admin/operations/add.oaf" />
+	</url-mapping>
+	<url-mapping id="operations_edit">
+		<pattern value="/module/admin/operations/edit" />
+		<view-id value="/module/admin/operations/edit.oaf" />
+	</url-mapping>
+
+	<!-- Resources -->
+	<url-mapping id="resources">
+		<pattern value="/module/admin/resources" />
+		<view-id value="/module/admin/resources/resources.oaf" />
+	</url-mapping>
+	<url-mapping id="resources_add">
+		<pattern value="/module/admin/resources/add" />
+		<view-id value="/module/admin/resources/add.oaf" />
+	</url-mapping>
+	<url-mapping id="resources_edit">
+		<pattern value="/module/admin/resources/edit" />
+		<view-id value="/module/admin/resources/edit.oaf" />
+	</url-mapping>
+
+	<!-- INCUBATOR -->
+	<url-mapping id="inc_datatable">
+		<pattern value="/module/inc/datatable" />
+		<view-id value="/module/incubator/datatable.oaf" />
+	</url-mapping>
+	
+	<!-- Recertification Management -->
+	<url-mapping id="recertifications">
+		<pattern value="/module/admin/recertification" />
+		<view-id value="/module/admin/recertification/recertifications.oaf" />
+	</url-mapping>
+
+</pretty-config>

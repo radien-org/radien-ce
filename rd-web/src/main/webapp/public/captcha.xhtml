@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view>
+        <h:panelGroup rendered="#{registrationManager.captchaEnable}">
+            <h:outputLabel value="#{msg['required.captcha']}"/>
+            <h:inputText id="answer" value="#{captchaValidator.captchaAnswer}"/>
+            <h:graphicImage url="/public/captcha" styleClass="mar-top-medium text-center"/>
+            <h:outputLabel value="#{msg.captchaErrorMessage}" style="color: red" rendered="#{captchaValidator.showErrorMessage}"/>
+        </h:panelGroup>
+</f:view>
+</html>
