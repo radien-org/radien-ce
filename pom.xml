@@ -15,6 +15,8 @@
 		<module>rd-openid</module>
 		<module>rd-kernel</module>
 		<module>rd-web</module>
+		
+		<module>rd-microservice-template</module>
 
 	</modules>
 	<properties>
@@ -28,6 +30,7 @@
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
 		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
+		
 
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
@@ -215,6 +218,16 @@
 	</profiles>
 	<build>
 		<plugins>
+		
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${version.maven-compiler-plugin}</version>
+                <configuration>
+                    <source>${version.java.source}</source>
+                    <target>${version.java.target}</target>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
