@@ -43,19 +43,16 @@
 		</resources>
 	</build>
 	<dependencies>
-
-		<!-- Jakarta EE -->
 		<dependency>
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
 		</dependency>
 
-		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -65,24 +62,26 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-kernel</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.12.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>jwks-rsa</artifactId>
+		</dependency>
 
-
-
-
-		<!-- OIDC RP -->
-
+		<!-- ##################################################################################### -->
+		<!-- START OF WILL NOT BE PUT INTO ROOT POM, SPRING SECURITY WILL BE REPLACED BY OTHER LIB -->
+		<!-- ##################################################################################### -->
+		
 		<!-- Spring -->
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
 		<dependency>
@@ -90,7 +89,6 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>5.3.1</version>
 		</dependency>
-
 
 		<!-- Spring Security -->
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
@@ -120,15 +118,10 @@
 			<artifactId>spring-security-jwt</artifactId>
 			<version>1.1.1.RELEASE</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
-		<dependency>
-			<groupId>com.auth0</groupId>
-			<artifactId>jwks-rsa</artifactId>
-			<version>0.15.0</version>
-		</dependency>
-
-
-
+		
+		<!-- ################################################################################### -->
+		<!-- END OF WILL NOT BE PUT INTO ROOT POM, SPRING SECURITY WILL BE REPLACED BY OTHER LIB -->
+		<!-- ################################################################################### -->
+		
 	</dependencies>
 </project>

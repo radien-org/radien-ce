@@ -31,10 +31,20 @@
 
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
+		<version.jakarta.servlet-api>5.0.0</version.jakarta.servlet-api>
 
 		<!-- Logging -->
 		<version.slf4j-api>1.7.30</version.slf4j-api>
 
+		<!-- Commons -->
+		<version.commons-lang3>3.11</version.commons-lang3>
+		<version.httpclient>4.5.13</version.httpclient>
+
+		<!-- Jackson xml -->
+		<version.jackson-databind>2.12.0</version.jackson-databind>
+		
+		<!-- Security -->
+		<version.jwks-rsa>0.15.0</version.jwks-rsa>
 
 		<!-- Props -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -50,7 +60,6 @@
 	</properties>
 	<dependencyManagement>
 		<dependencies>
-
 			<!-- radien modules -->
 			<dependency>
 				<groupId>io.radien</groupId>
@@ -74,17 +83,19 @@
 			</dependency>
 
 			<!-- Jakarta EE -->
+			<!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api -->
 			<dependency>
 				<groupId>jakarta.platform</groupId>
 				<artifactId>jakarta.jakartaee-api</artifactId>
 				<version>${version.jakarta.jakartaee-api}</version>
 				<scope>provided</scope>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
 			<dependency>
 				<groupId>jakarta.servlet</groupId>
 				<artifactId>jakarta.servlet-api</artifactId>
-				<version>5.0.0</version>
+				<version>${version.jakarta.servlet-api}</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -93,13 +104,30 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.11</version>
+				<version>${version.commons-lang3}</version>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.5.13</version>
+				<version>${version.httpclient}</version>
+			</dependency>
+
+			<!-- jackson xml -->
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${version.jackson-databind}</version>
+			</dependency>
+
+			<!-- Security -->
+			<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
+			<dependency>
+				<groupId>com.auth0</groupId>
+				<artifactId>jwks-rsa</artifactId>
+				<version>${version.jwks-rsa}</version>
 			</dependency>
 
 			<!-- Logging -->
