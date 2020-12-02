@@ -1,1 +1,1 @@
-java -jar target/rd-microservice-template-service.jar
+java -jar target/rd-microservice-template-service.jar -Xms1G -Xmx2G
