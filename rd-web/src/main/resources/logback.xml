@@ -11,6 +11,16 @@
             <property name="LOGFILE_AUDIT_PATH" value="./target/logs/oaf-audit.log"/>
         </else>
     </if>
+    <if condition='isDefined("server.output.dir")'>
+        <then>
+            <property name="LOGFILE_APP_PATH" value="${server.output.dir}/logs/oaf-web.log"/>
+            <property name="LOGFILE_AUDIT_PATH" value="${server.output.dir}logs/oaf-audit.log"/>
+        </then>
+        <else>
+            <property name="LOGFILE_APP_PATH" value="./target/logs/oaf-web.log"/>
+            <property name="LOGFILE_AUDIT_PATH" value="./target/logs/oaf-audit.log"/>
+        </else>
+    </if>
 
     <property name="DEFAULT_PATTERN" value="[%thread] %highlight([%-5level]) | %d{HH:mm:ss} | %-60(%cyan(%class{36}.%M))  [%F:%L] - %msg%n"/>
 
