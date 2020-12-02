@@ -15,7 +15,7 @@
 		<module>rd-openid</module>
 		<module>rd-kernel</module>
 		<module>rd-web</module>
-		
+
 		<module>rd-microservice-template</module>
 
 	</modules>
@@ -30,14 +30,23 @@
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
 		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
-		
+		<version.liberty-maven-plugin>2.7</version.liberty-maven-plugin>
+
+		<!-- Microservices / Runtimes -->
+		<version.openliberty-runtime>20.0.0.12</version.openliberty-runtime>
 
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
 		<version.jakarta.servlet-api>5.0.0</version.jakarta.servlet-api>
 
+		<!-- Microprofile -->
+		<version.microprofile>3.3</version.microprofile>
+
 		<!-- Logging -->
 		<version.slf4j-api>1.7.30</version.slf4j-api>
+		<version.jcl-over-slf4j>1.7.30</version.jcl-over-slf4j>
+		<version.logback-classic>1.2.3</version.logback-classic>
+		<version.logback-core>1.2.3</version.logback-core>
 
 		<!-- Commons -->
 		<version.commons-lang3>3.11</version.commons-lang3>
@@ -45,7 +54,7 @@
 
 		<!-- Jackson xml -->
 		<version.jackson-databind>2.12.0</version.jackson-databind>
-		
+
 		<!-- Security -->
 		<version.jwks-rsa>0.15.0</version.jwks-rsa>
 
@@ -53,7 +62,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<timestamp>Build ${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyMMddHHmm</maven.build.timestamp.format>
-
 
 		<!-- Sonar -->
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -139,6 +147,21 @@
 				<artifactId>slf4j-api</artifactId>
 				<version>${version.slf4j-api}</version>
 			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${version.logback-classic}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${version.logback-core}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${version.jcl-over-slf4j}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<profiles>
@@ -218,16 +241,16 @@
 	</profiles>
 	<build>
 		<plugins>
-		
+
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${version.maven-compiler-plugin}</version>
-                <configuration>
-                    <source>${version.java.source}</source>
-                    <target>${version.java.target}</target>
-                </configuration>
-            </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+				<configuration>
+					<source>${version.java.source}</source>
+					<target>${version.java.target}</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
