@@ -38,8 +38,8 @@ public class RadienEndpoint {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getBook(@PathParam("id") String id) {
-		RadienModel model = manager.get(id);
+	public Response getModel(@PathParam("id") String id) {
+		RadienModel model = manager.getModel(id);
 		return Response.ok(model).build();
 	}
 

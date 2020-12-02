@@ -46,7 +46,7 @@ public class RadienManager {
         return id;
     }
 
-    public RadienModel get(String id) {
+    public RadienModel getModel(String id) {
         return inMemoryStore.get(id);
     }
 
