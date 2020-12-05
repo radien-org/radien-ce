@@ -15,9 +15,7 @@
 		<module>rd-openid</module>
 		<module>rd-kernel</module>
 		<module>rd-web</module>
-
 		<module>rd-microservice-template</module>
-
 	</modules>
 	<properties>
 
@@ -30,7 +28,7 @@
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
 		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
-		<version.liberty-maven-plugin>2.7</version.liberty-maven-plugin>
+
 
 		<!-- Microservices / Runtimes -->
 		<version.openliberty-runtime>20.0.0.12</version.openliberty-runtime>
@@ -99,6 +97,41 @@
 				<groupId>jakarta.platform</groupId>
 				<artifactId>jakarta.jakartaee-api</artifactId>
 				<version>${version.jakarta.jakartaee-api}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/jakarta.faces/jakarta.faces-api -->
+			<dependency>
+				<groupId>jakarta.faces</groupId>
+				<artifactId>jakarta.faces-api</artifactId>
+				<version>3.0.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.tomee/tomee-mojarra -->
+			<dependency>
+				<groupId>org.apache.tomee</groupId>
+				<artifactId>tomee-mojarra</artifactId>
+				<version>8.0.5</version>
+				<scope>runtime</scope>
+			</dependency>
+
+
+
+			<!-- JPA / Eclipselink -->
+			<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>eclipselink</artifactId>
+				<version>2.7.7</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- JMX -->
+			<!-- https://mvnrepository.com/artifact/org.apache.openejb/mbean-annotation-api -->
+			<dependency>
+				<groupId>org.apache.openejb</groupId>
+				<artifactId>mbean-annotation-api</artifactId>
+				<version>4.7.5</version>
 				<scope>provided</scope>
 			</dependency>
 

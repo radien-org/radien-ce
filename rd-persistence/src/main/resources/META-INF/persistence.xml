@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- for eclipse warning, see http://stackoverflow.com/questions/8398393/multiple-persistence-unit-tags-in-one-persistence-xml -->
 <persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns="http://java.sun.com/xml/ns/persistence"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
-    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
-             version="2.0">
+         xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+         version="2.1">
 
     <!-- BEGIN DEFAULT PERSISTENCE UNIT -->
     <persistence-unit name="persistenceUnit" transaction-type="JTA">

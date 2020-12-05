@@ -16,6 +16,9 @@
 		<app.name>${project.artifactId}</app.name>
 		<package.file>${project.build.directory}/${app.name}-service.jar</package.file>
 		<packaging.type>runnable</packaging.type>
+		
+		<version.liberty-maven-plugin>2.7</version.liberty-maven-plugin>
+		
 	</properties>
 	<build>
 		<plugins>

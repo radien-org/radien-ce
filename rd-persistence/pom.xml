@@ -54,6 +54,10 @@
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>mbean-annotation-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>

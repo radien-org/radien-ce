@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-
-    <interceptors>
-        <class>org.openappframe.kernel.system.interceptor.MethodRuntimeInterceptor</class>
-    </interceptors>
-
+	<interceptors>
+		<class>io.radien.kernel.interceptor.MethodRuntimeInterceptor</class>
+	</interceptors>
 </beans>
