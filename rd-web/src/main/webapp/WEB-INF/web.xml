@@ -4,11 +4,11 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	version="3.0">
 	
-	<!-- 
+	 
 	<listener>
-		<listener-class>org.openappframe.webapp.listener.OAFInitListener</listener-class>
+		<listener-class>io.radien.kernel.listener.OAFInitListener</listener-class>
 	</listener>
-	 -->
+	 
 	 
 	<filter>
 		<filter-name>OAF Authfilter</filter-name>
