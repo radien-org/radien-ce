@@ -50,7 +50,17 @@ public class Appframe extends AbstractModel implements IAppframe {
 
 	@Lob
 	private String log;
+	
+	public Appframe() {
+		
+	}
 
+	public Appframe(Long id, String version) {
+		this.id = id;
+		this.version = version;
+		createDate = new Date();
+	}
+	
 	public Long getId() {
 		return id;
 	}

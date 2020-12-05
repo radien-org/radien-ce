@@ -61,9 +61,26 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
+
+		<!-- logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- test -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
 </project>

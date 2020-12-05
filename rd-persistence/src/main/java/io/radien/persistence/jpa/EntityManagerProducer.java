@@ -39,46 +39,46 @@ public class EntityManagerProducer implements Serializable {
 	private static long initCount = 0;
 	protected final Logger log = LoggerFactory.getLogger(EntityManagerProducer.class);
 
-	@Inject
-	@Default
-	private EntityManagerFactory emf;
-
-	@Produces
-	@RequestScoped
-	@Default
-	public EntityManager create() {
-		boolean error = false;
-		try {
-			return emf.createEntityManager();
-		} catch (Exception e) {
-			error = true;
-		} finally {
-			if (!error) {
-				initCount++;
-				log.debug(String.format("%s |ACTION: -createEntityManager | INIT COUNT: " + getInitCount(), this));
-			} else {
-				log.error(String.format("%s | ACTION: -createEntityManager FAILED! ", this));
-			}
-		}
-		return null;
-	}
-
-	public void destroy(@Disposes EntityManager em) {
-		String detector = "";
-		try {
-			detector = (String) em.getEntityManagerFactory().getProperties().get("persistenceUnitName");
-			em.clear();
-			em.close();
-		} catch (Exception e) {
-			log.error("Error destroying Entity manager", e);
-		} finally {
-			log.debug(String.format("%s | ACTION: -closeEntityManager | INIT COUNT: " + getInitCount(),
-					"[" + detector + "]" + this));
-		}
-	}
-
-	private static long getInitCount() {
-		return initCount;
-	}
+//	@Inject
+//	@Default
+//	private EntityManagerFactory emf;
+//
+//	@Produces
+//	@RequestScoped
+//	@Default
+//	public EntityManager create() {
+//		boolean error = false;
+//		try {
+//			return emf.createEntityManager();
+//		} catch (Exception e) {
+//			error = true;
+//		} finally {
+//			if (!error) {
+//				initCount++;
+//				log.debug(String.format("%s |ACTION: -createEntityManager | INIT COUNT: " + getInitCount(), this));
+//			} else {
+//				log.error(String.format("%s | ACTION: -createEntityManager FAILED! ", this));
+//			}
+//		}
+//		return null;
+//	}
+//
+//	public void destroy(@Disposes EntityManager em) {
+//		String detector = "";
+//		try {
+//			detector = (String) em.getEntityManagerFactory().getProperties().get("persistenceUnitName");
+//			em.clear();
+//			em.close();
+//		} catch (Exception e) {
+//			log.error("Error destroying Entity manager", e);
+//		} finally {
+//			log.debug(String.format("%s | ACTION: -closeEntityManager | INIT COUNT: " + getInitCount(),
+//					"[" + detector + "]" + this));
+//		}
+//	}
+//
+//	private static long getInitCount() {
+//		return initCount;
+//	}
 
 }
