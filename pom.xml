@@ -36,6 +36,10 @@
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
 		<version.jakarta.servlet-api>5.0.0</version.jakarta.servlet-api>
 
+		<!-- JSF -->
+		<version.jakarta.faces-api>2.3.2</version.jakarta.faces-api>
+		<version.tomee-mojarra>8.0.5</version.tomee-mojarra>
+
 		<!-- Eclipselink -->
 		<version.eclipselink>2.7.7</version.eclipselink>
 
@@ -106,22 +110,36 @@
 				<scope>provided</scope>
 			</dependency>
 
+			<!-- JSF -->
 			<!-- https://mvnrepository.com/artifact/jakarta.faces/jakarta.faces-api -->
 			<dependency>
 				<groupId>jakarta.faces</groupId>
 				<artifactId>jakarta.faces-api</artifactId>
-				<version>3.0.0</version>
+				<version>${version.jakarta.faces-api}</version>
 				<scope>provided</scope>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/org.apache.tomee/tomee-mojarra -->
 			<dependency>
 				<groupId>org.apache.tomee</groupId>
 				<artifactId>tomee-mojarra</artifactId>
-				<version>8.0.5</version>
+				<version>${version.tomee-mojarra}</version>
 				<scope>runtime</scope>
 			</dependency>
 
-
+			<!-- https://mvnrepository.com/artifact/org.ocpsoft.rewrite/rewrite-servlet -->
+			<dependency>
+				<groupId>org.ocpsoft.rewrite</groupId>
+				<artifactId>rewrite-servlet</artifactId>
+				<version>3.4.4.Final</version>
+			</dependency>
+			
+			<!-- https://mvnrepository.com/artifact/org.ocpsoft.rewrite/rewrite-config-prettyfaces -->
+			<dependency>
+				<groupId>org.ocpsoft.rewrite</groupId>
+				<artifactId>rewrite-config-prettyfaces</artifactId>
+				<version>3.4.4.Final</version>
+			</dependency>
 
 			<!-- JPA / Eclipselink -->
 			<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
@@ -193,20 +211,21 @@
 				<artifactId>jcl-over-slf4j</artifactId>
 				<version>${version.jcl-over-slf4j}</version>
 			</dependency>
-			
+
 			<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${version.logback-classic}</version>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${version.logback-core}</version>
 			</dependency>
-			
+
 			<!-- Test -->
 			<!-- https://mvnrepository.com/artifact/org.apache.tomee/arquillian-openejb-embedded -->
 			<dependency>

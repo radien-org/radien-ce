@@ -8,7 +8,17 @@
 	<listener>
 		<listener-class>io.radien.kernel.listener.OAFInitListener</listener-class>
 	</listener>
-	 
+	
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.oaf</url-pattern>
+		<url-pattern>/javax.faces.resource/*</url-pattern>
+	</servlet-mapping>
 	 
 	<filter>
 		<filter-name>OAF Authfilter</filter-name>
@@ -61,16 +71,7 @@
 	</context-param>
 
 
-	<servlet>
-		<servlet-name>Faces Servlet</servlet-name>
-		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>*.oaf</url-pattern>
-		<url-pattern>/javax.faces.resource/*</url-pattern>
-	</servlet-mapping>
+	
 	
 	<servlet>
 		<servlet-name>ECM Display Servlet</servlet-name>

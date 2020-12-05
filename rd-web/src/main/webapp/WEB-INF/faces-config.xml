@@ -8,6 +8,7 @@
     <!-- Write your navigation rules here. You are encouraged to use CDI for
         creating @Named managed beans. -->
     <application>
+    <!-- 
         <view-handler>org.openappframe.webapp.handler.OafViewHandler</view-handler>
         <resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>
         <locale-config>
@@ -19,12 +20,15 @@
         </resource-bundle>
 
         <el-resolver>org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver</el-resolver>
-
+ -->
 
         <!-- THIS IS A FIX FOR VALIDATION RESET VALUES NOT HAPPENING ON PARITIAL
         PAGE REQUEST  TO APPLY IN GENERAL TO ALL AJAX ACTIONS-->
+        <!--  
         <action-listener>org.omnifaces.eventlistener.ResetInputAjaxActionListener</action-listener>
-
+-->
+   
+   <!-- 
         <system-event-listener>
             <system-event-listener-class>
                 org.openappframe.webapp.listener.FacesApplicationInitialisationListener
@@ -33,34 +37,26 @@
                 javax.faces.event.PostConstructApplicationEvent
             </system-event-class>
         </system-event-listener>
+         -->
     </application>
 
     <lifecycle>
+    <!-- 
         <phase-listener>
             org.openappframe.webapp.listener.UACompatibleHeaderPhaseListener
         </phase-listener>
-
+ -->
         <!-- THIS IS A FIX FOR VALIDATION RESET VALUES NOT HAPPENING ON PARITIAL
             PAGE REQUEST TO APPLY IN GENERAL TO ALL PHASES
         <phase-listener>org.omnifaces.eventlistener.ResetInputAjaxActionListener</phase-listener> -->
 
     </lifecycle>
+    <!-- 
     <factory>
         <exception-handler-factory>
             org.primefaces.application.exceptionhandler.PrimeExceptionHandlerFactory
         </exception-handler-factory>
     </factory>
-    <component>
-    	<component-type>net.bootfaces.component.InputText</component-type>
-    	<component-class>org.openappframe.webapp.component.CustomBootfacesInputText</component-class>
-	</component>
-	<component>
-    	<component-type>net.bootfaces.component.InputTextarea</component-type>
-    	<component-class>org.openappframe.webapp.component.CustomBootfacesInputTextarea</component-class>
-	</component>
-		<component>
-    	<component-type>org.primefaces.component.DataTable</component-type>
-    	<component-class>org.openappframe.webapp.component.CustomPrimefacesDataTable</component-class>
-	</component>
-
+     -->
+    
 </faces-config>

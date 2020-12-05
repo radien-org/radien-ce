@@ -6,14 +6,13 @@
     <title>welcome to radien - come in and find out</title>
 </head>
 <body>
-<h1>hallo welt</h1>
 <script>
-    //function getContextPath() {
-    //    return window.location.pathname.substring(0,
-    //        window.location.pathname.indexOf("/", 2));
-    //}
+    function getContextPath() {
+        return window.location.pathname.substring(0,
+            window.location.pathname.indexOf("/", 2));
+    }
 
-    //window.location.replace(getContextPath() + '/public/index');
+    window.location.replace(getContextPath() + '/public/index');
 </script>
 </body>
 </html>
