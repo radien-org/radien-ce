@@ -97,11 +97,6 @@ public enum OAFProperties implements SystemProperties{
     SYSTEM_CMS_REPO_HOME_DIR("system.jcr.home"),
     CMS_MS_URL("cms.ms.url"),
 
-    SYSTEM_DATABASE_MIGRATIONS_DUMP_ENABLED("system.database.migration.dump.enabled"),
-    SYSTEM_DATABASE_MIGRATIONS_DUMP_ON_START("system.database.migration.dump.on_start"),
-    SYSTEM_DATABASE_MIGRATIONS_DUMP_BEFORE_EACH_MIGRATION("system.database.migration.dump.before_each_migration"),
-    SYSTEM_DATABASE_MIGRATIONS_DUMP_DIR("system.database.migration.dump.dir"),
-
     SCHEDULER_MS_URL("scheduler.ms.url"),
     SCHEDULER_MS_URL_REGISTER("scheduler.ms.url.register"),
     SCHEDULER_MS_URL_DELETE("scheduler.ms.url.delete"),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-present openappframe.org & its legal owners. All rights reserved.
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.i18n;
+package io.radien.api.service.ecm.exception;
 
-import java.util.List;
-import java.util.Locale;
-
-import io.radien.api.Appframeable;
+import io.radien.exception.SystemException;
 
 /**
- * Interface defining the methods used in locale and timezone management
+ * Exception extending the base SystemException, to be thrown when error occurs
+ * int he CMS
  *
  * @author Marco Weiland
  */
-public interface LocaleManagerAccess extends Appframeable {
+public class ContentRepositoryNotAvailableException extends SystemException {
+	private static final long serialVersionUID = 1L;
 
-	String getActiveLanguage();
-
-	void setActiveLanguage(String activeLocale);
-
-	Locale getActiveLocale();
-
-	List<String> getSupportedLanguages();
-
-	String getClientTzOffset();
-
-	String getUserLanguage();
 }

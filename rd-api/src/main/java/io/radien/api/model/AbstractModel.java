@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api;
+package io.radien.api.model;
 
 import java.util.Date;
 
@@ -24,26 +24,11 @@ import java.util.Date;
  */
 public abstract class AbstractModel implements Model {
 	private static final long serialVersionUID = 1468276722471664639L;
-	private Long id;
 	private Date createDate;
 	private Date lastUpdate;
 	private Long createUser;
 	private Long lastUpdateUser;
 
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -75,6 +60,5 @@ public abstract class AbstractModel implements Model {
 	public void setLastUpdateUser(Long lastUpdateUser) {
 		this.lastUpdateUser = lastUpdateUser;
 	}
-
 
 }

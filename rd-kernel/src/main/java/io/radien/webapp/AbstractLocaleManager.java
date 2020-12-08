@@ -30,7 +30,7 @@ import javax.faces.context.FacesContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.radien.api.i18n.LocaleManagerAccess;
+import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.util.ZoneComparator;
 
 /**

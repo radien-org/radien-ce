@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.radien.api.OAFAccess;
-import io.radien.api.i18n.LocaleManagerAccess;
+import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.webapp.AbstractLocaleManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.UserContextManager;

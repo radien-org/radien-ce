@@ -25,7 +25,6 @@ import java.util.Set;
  * exception possible on oaf (Non Runtime Exception)
  *
  * @author Marco Weiland
- * @author jrodrigues
  * @author Rafael Fernandes
  */
 public class SystemException extends Exception {

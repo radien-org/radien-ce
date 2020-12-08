@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import io.radien.api.i18n.LocaleManagerAccess;
 import io.radien.api.model.identity.SystemUser;
+import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.AccountNotValidException;
 import io.radien.exception.SessionNotValidException;
 

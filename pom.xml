@@ -58,6 +58,9 @@
 
 		<!-- Jackson xml -->
 		<version.jackson-databind>2.12.0</version.jackson-databind>
+		
+		<!-- mail -->
+		<version.rmiio>2.1.2</version.rmiio>
 
 		<!-- Security -->
 		<version.jwks-rsa>0.15.0</version.jwks-rsa>
@@ -133,7 +136,7 @@
 				<artifactId>rewrite-servlet</artifactId>
 				<version>3.4.4.Final</version>
 			</dependency>
-			
+
 			<!-- https://mvnrepository.com/artifact/org.ocpsoft.rewrite/rewrite-config-prettyfaces -->
 			<dependency>
 				<groupId>org.ocpsoft.rewrite</groupId>
@@ -189,6 +192,15 @@
 				<artifactId>jackson-databind</artifactId>
 				<version>${version.jackson-databind}</version>
 			</dependency>
+
+			<!-- Mail -->
+			<!-- https://mvnrepository.com/artifact/com.healthmarketscience.rmiio/rmiio -->
+			<dependency>
+				<groupId>com.healthmarketscience.rmiio</groupId>
+				<artifactId>rmiio</artifactId>
+				<version>${version.rmiio}</version>
+			</dependency>
+			
 
 			<!-- Security -->
 			<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
