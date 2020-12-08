@@ -45,8 +45,8 @@
         physicalName="GRP.eclipseLinkCache"
         type="org.apache.activemq.command.ActiveMQTopic"
     />
-     
-     
+     -->
+     <!-- 
 	<Resource 
 		name="jdbc/AppFrameDS" 
 		auth="Container"
@@ -55,7 +55,7 @@
 		JdbcDriver = "com.mysql.jdbc.Driver" 
 		UserName="oaf" 
 		Password="8hP-oqf-Pot-Ncb"/>
-		-->
+		 -->
 <!-- 
 <Resource
 	name="jdbc/AppFrameDSCustom1"

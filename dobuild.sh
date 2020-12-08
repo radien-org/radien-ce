@@ -1,1 +1,1 @@
-mvn -T C32 clean install -DskipTests=true
+mvn -T C4 clean install -DskipTests=true
