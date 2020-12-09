@@ -1,1 +1,1 @@
-java -jar target/rd-ms-ecm-service.jar -Xms1G -Xmx1G
+mvn clean package tomee:run

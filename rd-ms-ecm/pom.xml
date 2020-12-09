@@ -13,82 +13,82 @@
 	<name>ECM Microservice - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<properties>
-		<app.name>${project.artifactId}</app.name>
-		<package.file>${project.build.directory}/${app.name}-service.jar</package.file>
-		<packaging.type>runnable</packaging.type>
-
-		<version.liberty-maven-plugin>2.7</version.liberty-maven-plugin>
-
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
 		<plugins>
 			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.21.0</version>
+			</plugin>
+			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
+				<version>3.1.0</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<packagingExcludes>pom.xml</packagingExcludes>
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>io.openliberty.tools</groupId>
-				<artifactId>liberty-maven-plugin</artifactId>
-				<version>3.3.2</version>
-			</plugin>
-			<plugin>
-				<groupId>net.wasdev.wlp.maven.plugins</groupId>
-				<artifactId>liberty-maven-plugin</artifactId>
-				<version>${version.liberty-maven-plugin}</version>
+				<groupId>org.apache.tomee.maven</groupId>
+				<artifactId>tomee-maven-plugin</artifactId>
+				<version>8.0.5</version>
 				<configuration>
-					<assemblyArtifact>
-						<groupId>io.openliberty</groupId>
-						<artifactId>openliberty-runtime</artifactId>
-						<version>${version.openliberty-runtime}</version>
-						<type>zip</type>
-					</assemblyArtifact>
-					<configFile>${basedir}/src/main/liberty/config/server.xml</configFile>
-					<packageFile>${package.file}</packageFile>
-					<include>${packaging.type}</include>
-					<looseApplication>false</looseApplication>
-					<installAppPackages>project</installAppPackages>
-					<bootstrapProperties>
-						<app.context.root>/</app.context.root>
-						<app.location>${project.artifactId}-${project.version}.war</app.location>
-						<default.http.port>9081</default.http.port>
-						<default.https.port>9444</default.https.port>
-					</bootstrapProperties>
+					<context>ROOT</context>
+					<tomeeClassifier>microprofile</tomeeClassifier>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.openjpa</groupId>
+				<artifactId>openjpa-maven-plugin</artifactId>
+				<version>3.1.2</version>
 				<executions>
 					<execution>
-						<id>install-server</id>
-						<phase>prepare-package</phase>
+						<id>enhancer</id>
+						<phase>process-classes</phase>
 						<goals>
-							<goal>install-server</goal>
-							<goal>create-server</goal>
-							<goal>install-feature</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>package-server-with-apps</id>
-						<phase>package</phase>
-						<goals>
-							<goal>install-apps</goal>
-							<goal>package-server</goal>
+							<goal>enhance</goal>
 						</goals>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.openjpa</groupId>
+						<artifactId>openjpa</artifactId>
+						<version>3.1.2</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<includes>**/entities/*.class</includes>
+					<excludes>**/entities/XML*.class</excludes>
+					<addDefaultConstructor>true</addDefaultConstructor>
+					<enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<!-- Microprofile -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>8.0-5</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
 		<dependency>
 			<groupId>org.eclipse.microprofile</groupId>
 			<artifactId>microprofile</artifactId>
-			<version>${version.microprofile}</version>
-			<scope>provided</scope>
+			<version>3.3</version>
 			<type>pom</type>
+			<scope>provided</scope>
 		</dependency>
+
+
+
 		<!-- logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
