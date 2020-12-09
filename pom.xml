@@ -15,9 +15,8 @@
 		<module>rd-openid</module>
 		<module>rd-kernel</module>
 		<module>rd-web</module>
-		<module>rd-microservice-template</module>
+		<module>rd-ms-template</module>
 		<module>rd-ms-ecm</module>
-		<module>rd-ms-tomee-microprofile</module>
 	</modules>
 	<properties>
 

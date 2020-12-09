@@ -10,7 +10,7 @@ import javax.ws.rs.core.Application;
  * @author mawe
  *
  */
-@ApplicationPath("/rd-microservice-template")
+@ApplicationPath("/template")
 public class RadienApplication extends Application {
 
 }
