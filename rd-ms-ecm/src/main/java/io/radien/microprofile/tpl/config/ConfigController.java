@@ -11,7 +11,7 @@ import javax.ws.rs.Path;
 
 @Path("/config")
 @RequestScoped
-public class ConfigTestController {
+public class ConfigController {
 
     @Inject
     @ConfigProperty(name = "injected.value")
