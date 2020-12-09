@@ -19,13 +19,15 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-    <persistence-unit name="ecm-pu" transaction-type="JTA">
-        <jta-data-source>ecmDb</jta-data-source>
+<persistence-unit name="persistenceUnit" transaction-type="JTA">
+        <jta-data-source>AppFrameDSHHSQL</jta-data-source>
  
+ 		<!-- 
         <class>io.radien.microprofile.tpl.entities.Book</class>
-
+		
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
         </properties>
+         -->
     </persistence-unit>
 </persistence>

@@ -14,12 +14,22 @@ java -jar target/rd-ms-ecm-service.jar
 
 ## curls
 
-#retrieve
-curl http://localhost:9081/rd-ms-ecm/content
+#GET data
 
-#tomee:
-curl http://localhost:8080/rd-ms-ecm/content
-curl http://localhost:8080/content
+#microprofile:
+http://localhost:8080/ecm/models
 
-#add a model
+#local:
+curl http://localhost:8080/rd-ms-ecm/ecm/content
+
+
+#POST 
+#microprofile
+curl -H "Content-Type: application/json" -X POST -d '{"viewId": "test-content", "content": "<h1>Enterprise Content</h1><p>this is the first HTML content</p>"}' http://localhost:8080/ecm/models
+
+#local
 curl -H "Content-Type: application/json" -X POST -d '{"viewId": "test-content", "content": "<h1>Enterprise Content</h1><p>this is the first HTML content</p>"}' http://localhost:9081/rd-ms-ecm/content
+
+#PUT data
+
+#DELETE data

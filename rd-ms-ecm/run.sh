@@ -1,1 +1,1 @@
-mvn clean package tomee:run
+java -jar target/rd-ms-ecm-exec.jar

@@ -2,20 +2,26 @@
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
+
+	<groupId>io.radien</groupId>
+	<version>1.0.0-SNAPSHOT</version>
 	<artifactId>rd-ms-ecm</artifactId>
 	<packaging>war</packaging>
 	<name>ECM Microservice - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.tomee-maven-plugin>8.0.5</version.tomee-maven-plugin>
 	</properties>
 	<build>
+		<finalName>rd-ms-ecm</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -36,40 +42,51 @@
 				<groupId>org.apache.tomee.maven</groupId>
 				<artifactId>tomee-maven-plugin</artifactId>
 				<version>8.0.5</version>
-				<configuration>
-					<context>ROOT</context>
-					<tomeeClassifier>microprofile</tomeeClassifier>
-				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.openjpa</groupId>
-				<artifactId>openjpa-maven-plugin</artifactId>
-				<version>3.1.2</version>
-				<executions>
-					<execution>
-						<id>enhancer</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>enhance</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.openjpa</groupId>
-						<artifactId>openjpa</artifactId>
-						<version>3.1.2</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<includes>**/entities/*.class</includes>
-					<excludes>**/entities/XML*.class</excludes>
-					<addDefaultConstructor>true</addDefaultConstructor>
-					<enforcePropertyRestrictions>true</enforcePropertyRestrictions>
-				</configuration>
-			</plugin>
+
+			<!-- <plugin> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-maven-plugin</artifactId> 
+				<version>3.1.2</version> <executions> <execution> <id>enhancer</id> <phase>process-classes</phase> 
+				<goals> <goal>enhance</goal> </goals> </execution> </executions> <dependencies> 
+				<dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId> 
+				<version>3.1.2</version> </dependency> </dependencies> <configuration> <includes>**/entities/*.class</includes> 
+				<excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor> 
+				<enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration> 
+				</plugin> -->
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>tomee</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomee.maven</groupId>
+						<artifactId>tomee-maven-plugin</artifactId>
+						<version>${version.tomee-maven-plugin}</version>
+						<executions>
+							<execution>
+								<id>executable-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<context>ROOT</context>
+							<tomeeClassifier>microprofile</tomeeClassifier>
+							<tomeeHttpPort>8080</tomeeHttpPort>
+							<tomeeShutdownPort>8005</tomeeShutdownPort>
+							<tomeeAjpPort>8009</tomeeAjpPort>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencies>
 		<!-- Microprofile -->
 		<dependency>
