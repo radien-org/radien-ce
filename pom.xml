@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.radien</groupId>
 	<artifactId>appframe</artifactId>
 	<packaging>pom</packaging>
-	<name>radien Parent Container</name>
+	<name>radien - an open appframe - ${project.version}</name>
 	<description>radien - an open app frame</description>
 	<version>1.0.0-SNAPSHOT</version>
 	<modules>
@@ -16,7 +14,9 @@
 		<module>rd-kernel</module>
 		<module>rd-web</module>
 		<module>rd-microservice-template</module>
-	</modules>
+		<module>rd-ms-ecm</module>
+	  <module>rd-ms-tomee-microprofile</module>
+  </modules>
 	<properties>
 
 		<!-- Java Versions -->
@@ -39,6 +39,9 @@
 		<!-- JSF -->
 		<version.jakarta.faces-api>2.3.2</version.jakarta.faces-api>
 		<version.tomee-mojarra>8.0.5</version.tomee-mojarra>
+		<!-- prettyfaces -->
+		<version.rewrite-config-prettyfaces>3.4.4.Final</version.rewrite-config-prettyfaces>
+		<version.rewrite-servlet>3.4.4.Final</version.rewrite-servlet>
 
 		<!-- Eclipselink -->
 		<version.eclipselink>2.7.7</version.eclipselink>
@@ -134,14 +137,14 @@
 			<dependency>
 				<groupId>org.ocpsoft.rewrite</groupId>
 				<artifactId>rewrite-servlet</artifactId>
-				<version>3.4.4.Final</version>
+				<version>${version.rewrite-servlet}</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/org.ocpsoft.rewrite/rewrite-config-prettyfaces -->
 			<dependency>
 				<groupId>org.ocpsoft.rewrite</groupId>
 				<artifactId>rewrite-config-prettyfaces</artifactId>
-				<version>3.4.4.Final</version>
+				<version>${version.rewrite-config-prettyfaces}</version>
 			</dependency>
 
 			<!-- JPA / Eclipselink -->

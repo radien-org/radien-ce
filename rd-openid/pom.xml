@@ -11,7 +11,7 @@
 	</parent>
 	<artifactId>rd-openid</artifactId>
 
-	<name>radien SSO SP - ${project.version}</name>
+	<name>SSO SP - ${project.version}</name>
 	<url>http://tbd</url>
 
 

@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>rd-kernel</artifactId>
 	<packaging>jar</packaging>
-	<name>radien Kernel - ${project.version}</name>
+	<name>Kernel - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
 		<finalName>${project.artifactId}</finalName>

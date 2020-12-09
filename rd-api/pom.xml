@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>rd-api</artifactId>
 	<packaging>jar</packaging>
-	<name>radien API - ${project.version}</name>
+	<name>API - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
 		<finalName>${project.artifactId}</finalName>

@@ -31,8 +31,6 @@ import io.radien.api.OAFAccess;
 import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.webapp.AbstractLocaleManager;
 import io.radien.webapp.JSFUtil;
-import io.radien.webapp.UserContextManager;
-import io.radien.webapp.UserSession;
 
 /**
  * Class responsible for managing the i8n on openappframe resource bundle
@@ -46,29 +44,13 @@ import io.radien.webapp.UserSession;
 						// programatically EL Evaluation of the bean
 @SessionScoped
 public class LocaleManager extends AbstractLocaleManager implements LocaleManagerAccess {
-
 	private static final long serialVersionUID = 1L;
 
 	@Inject
 	private OAFAccess oaf;
 
-	@Inject
-	private UserSession userSession;
-
-	@Inject
-	private UserContextManager userContextService;
-
-	/**
-	 * Method fired when the language dropdown in changed, it will set the
-	 * current FacesContext locale to the one that got selected
-	 *
-	 * @param e
-	 *              ValueChangeEvent fired from the view
-	 */
 	public void languageChanged(ValueChangeEvent e) {
-
 		String newLocaleValue = e.getNewValue().toString();
-
 		for (String language : super.getSupportedLanguages()) {
 			if (language.equals(newLocaleValue)) {
 				FacesContext.getCurrentInstance().getViewRoot().setLocale(oaf.findLocale(language));
@@ -86,28 +68,13 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 
 	}
 
-	/**
-	 * @return the current logged user language code, or else the active
-	 *         language present on the session
-	 */
-	public String getUserLanguage() {
-		if (userSession.getUser() != null && userSession.getUser().getLanguage() != null) {
-			return userSession.getUser().getLanguage();
-		} else {
-//			UserContext userContext = userContextService.getCachedUserContext();
-//			if (userContext != null) {
-//				return getLocaleByContextKey(userContext);
-//			}
-		}
-		return super.getActiveLanguage();
-	}
-
-//	private String getLocaleByContextKey(UserContext userContext) {
-//		return userContext.getCurrentContext().getContract().getKey();
-//	}
-
 	public OAFAccess getOAF() {
 		return oaf;
+	}
+
+	@Override
+	public String getUserLanguage() {
+		return super.getActiveLanguage();
 	}
 
 }
