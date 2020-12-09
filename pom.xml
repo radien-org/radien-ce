@@ -23,12 +23,18 @@
 		<!-- Java Versions -->
 		<version.java.source>1.8</version.java.source>
 		<version.java.target>1.8</version.java.target>
+		
+		<!-- Build -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Maven Plugins -->
 		<version.maven-eclipse-plugin>2.10</version.maven-eclipse-plugin>
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
 		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
+		<version.maven-surefire-plugin>2.21.0</version.maven-surefire-plugin>
+		
+		<version.tomee-maven-plugin>8.0.5</version.tomee-maven-plugin>
 
 		<!-- Microservices / Runtimes -->
 		<version.openliberty-runtime>20.0.0.12</version.openliberty-runtime>
@@ -36,6 +42,8 @@
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
 		<version.jakarta.servlet-api>5.0.0</version.jakarta.servlet-api>
+		
+		<version.tomee-javaee-api>8.0-5</version.tomee-javaee-api>
 
 		<!-- JSF -->
 		<version.jakarta.faces-api>2.3.2</version.jakarta.faces-api>
@@ -120,9 +128,10 @@
 			<dependency>
 				<groupId>org.apache.tomee</groupId>
 				<artifactId>javaee-api</artifactId>
-				<version>8.0-5</version>
+				<version></version>
 				<scope>provided</scope>
 			</dependency>
+			
 
 			<!-- JSF -->
 			<!-- https://mvnrepository.com/artifact/jakarta.faces/jakarta.faces-api -->
