@@ -81,6 +81,10 @@
 			<artifactId>bootsfaces</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.omnifaces</groupId>
+			<artifactId>omnifaces</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tomee</groupId>
 			<artifactId>tomee-mojarra</artifactId>
 		</dependency>

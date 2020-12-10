@@ -49,7 +49,8 @@
 		<version.jakarta.faces-api>2.3.2</version.jakarta.faces-api>
 		<version.tomee-mojarra>8.0.5</version.tomee-mojarra>
 		<version.bootsfaces>1.5.0</version.bootsfaces>
-		
+		<version.omnifaces>3.8.1</version.omnifaces>
+
 		<!-- prettyfaces -->
 		<version.rewrite-config-prettyfaces>3.4.4.Final</version.rewrite-config-prettyfaces>
 		<version.rewrite-servlet>3.4.4.Final</version.rewrite-servlet>
@@ -149,7 +150,14 @@
 				<artifactId>bootsfaces</artifactId>
 				<version>${version.bootsfaces}</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.omnifaces/omnifaces -->
+			<dependency>
+				<groupId>org.omnifaces</groupId>
+				<artifactId>omnifaces</artifactId>
+				<version>${version.omnifaces}</version>
+			</dependency>
 			
+
 
 			<!-- https://mvnrepository.com/artifact/org.apache.tomee/tomee-mojarra -->
 			<dependency>
