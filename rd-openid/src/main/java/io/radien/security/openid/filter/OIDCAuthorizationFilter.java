@@ -15,6 +15,7 @@
  */
 package io.radien.security.openid.filter;
 
+import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -30,6 +31,7 @@ import io.radien.api.OAFProperties;
 import io.radien.kernel.messages.SystemMessages;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
 import io.radien.webapp.RedirectUtil;
+import io.radien.webapp.UserSession;
 
 /**
  * OIDC filter that handles per request OIDC authentication
@@ -41,8 +43,8 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(OIDCAuthorizationFilter.class);
 
-//	@Inject
-//	private SessionManager sessionManager;
+	@Inject
+	private UserSession session;
 
 	@Override
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
@@ -57,7 +59,7 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 			if (!isAnonymous && sessionHandler.getUser(request) == null) {
 				String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//				sessionManager.externalLogin(userName, request, response, userDetails);
+				session.login(userDetails.getSub());
 				log.info("User has logged in via OIDC. {}", userName);
 			}
 			chain.doFilter(req, res);

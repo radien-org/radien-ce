@@ -38,11 +38,11 @@ import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.AccountNotValidException;
 import io.radien.exception.SessionNotValidException;
 
+
 /**
  * Class responsible for managing the current user session
  *
  * @author Marco Weiland
- * @author Rafael Fernandes
  */
 public @Model @SessionScoped class UserSession implements Serializable {
 
@@ -94,6 +94,12 @@ public @Model @SessionScoped class UserSession implements Serializable {
 //	protected SystemContext currentContext;
 	protected boolean userRequestsPanelOpen;
 	protected Set<Pair<String, Object[]>> bannerList = new HashSet<>();
+	
+	
+	public void login(String userId) {
+		log.info("user logged in: {}", userId);
+		
+	}
 
 	public SystemUser loginActionExternal(String logon, HttpServletRequest request,
 			HttpServletResponse response, UserDetails userDetails)
