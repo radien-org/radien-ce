@@ -29,11 +29,31 @@
                 });
             </script>
             <b:container>
-                <b:navBar brand="Project name" brandHref="#" fixed="top" inverse="true">
+                <b:navBar brand="Project name" brandHref="#" fixed="top">
                     <b:navbarLinks>
                         <b:navLink value="Home" href="#"></b:navLink>
                         <b:navLink value="About" href="#about"></b:navLink>
                         <b:navLink value="Contact" href="#contact"></b:navLink>
+                        <b:dropMenu value="Dropdown">
+                            <b:navLink value="Action" href="#"></b:navLink>
+                            <b:navLink value="Another action" href="#"></b:navLink>
+                            <b:navLink value="Something else here" href="#"></b:navLink>
+                            <b:navLink></b:navLink>
+                            <b:navLink header="Nav header"></b:navLink>
+                            <b:navLink value="Separated link" href="#"></b:navLink>
+                            <b:navLink value="One more separated link" href="#"></b:navLink>
+                        </b:dropMenu>
+                    </b:navbarLinks>
+
+
+                    <b:navbarLinks pull="right"><b:navLink value="    " href="#"></b:navLink></b:navbarLinks>
+                    <b:navbarLinks pull="right" styleClass="hidden-xs">
+                        <form class="navbar-form navbar-left hidden-md hidden-sm hidden-xs" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control"/>
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                        </form>
                     </b:navbarLinks>
                 </b:navBar>
             </b:container>
