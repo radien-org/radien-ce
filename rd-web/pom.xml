@@ -50,7 +50,7 @@
 		</plugins>
 	</build>
 	<dependencies>
-		
+
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-kernel</artifactId>
@@ -64,7 +64,7 @@
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
-		
+
 		<!-- logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -75,6 +75,10 @@
 		<dependency>
 			<groupId>jakarta.faces</groupId>
 			<artifactId>jakarta.faces-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.bootsfaces</groupId>
+			<artifactId>bootsfaces</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomee</groupId>

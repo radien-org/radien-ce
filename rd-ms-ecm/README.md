@@ -25,7 +25,7 @@ curl http://localhost:8080/rd-ms-ecm/ecm/models
 
 #POST 
 #microprofile
-curl -H "Content-Type: application/json" -X POST -d '{"viewId": "test-content", "content": "<h1>Enterprise Content</h1><p>this is the first HTML content</p>"}' http://localhost:8080/ecm/models
+curl -H "Content-Type: application/json" -X POST -d '{"id": "test-content", "message": "<h1>Enterprise Content</h1><p>this is the first HTML content</p>"}' http://localhost:8080/ecm/models
 
 #local
 curl -H "Content-Type: application/json" -X POST -d '{"viewId": "test-content", "content": "<h1>Enterprise Content</h1><p>this is the first HTML content</p>"}' curl http://localhost:8080/rd-ms-ecm/ecm/models

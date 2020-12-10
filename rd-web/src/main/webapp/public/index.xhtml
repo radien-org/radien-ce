@@ -6,27 +6,10 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
     <ui:define name="content">
-
         <b:container>
-            <b:row styleClass="py-5">
-                <br />
-                <b:column colXs="10" colSm="8" offsetXs="1" offsetSm="2" styleClass="card--basic">
-                    <b:row styleClass="py-5 text-center">
-                        <h:panelGroup layout="block" styleClass="card--basic-title">
-                            <h:outputText value="#{msg.welcome}"/>
-                            <hr />
-                        </h:panelGroup>
-                    </b:row>
-                    <b:row styleClass="py-5">
-                        <b:column colXs="12" class="text-center">
-                            <h:outputText value="hallo welt!" />
-                        </b:column>
-                        <b:column styleClass="py-5"></b:column>
-                    </b:row>
-                </b:column>
-            </b:row>
+        	<b:row>
+        		<h:outputText value="hallo welt!" />
+        	</b:row>
         </b:container>
-
-
     </ui:define>
 </ui:composition>
