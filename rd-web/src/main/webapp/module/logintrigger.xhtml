@@ -5,6 +5,6 @@
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
 
     <ui:define name="content">
-        <f:event type="preRenderView" listener="#{redirectUtil.redirectToIndex(true)}"/>
+        <f:event type="preRenderView" listener="#{redirectUtil.redirectToPublicIndex}"/>
     </ui:define>
 </ui:composition>
