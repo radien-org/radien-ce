@@ -46,6 +46,8 @@ public @Model @RequestScoped class OafThemeManager extends PluginBridgingManager
 	private static final long serialVersionUID = 1L;
 	@Inject
 	private OAFAccess oaf;
+	
+	private String currentTheme = "false";
 
 	@Override
 	public OAFAccess getOAF() {
@@ -72,5 +74,19 @@ public @Model @RequestScoped class OafThemeManager extends PluginBridgingManager
 		FacesContext context = FacesContext.getCurrentInstance();
 		return context.getApplication().evaluateExpressionGet(context,
 				"preloader-" + getPreloaderSvgName() + ".svg", String.class);
+	}
+
+	/**
+	 * @return the currentTheme
+	 */
+	public String getCurrentTheme() {
+		return currentTheme;
+	}
+
+	/**
+	 * @param currentTheme the currentTheme to set
+	 */
+	public void setCurrentTheme(String currentTheme) {
+		this.currentTheme = currentTheme;
 	}
 }
