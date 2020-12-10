@@ -4,48 +4,42 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
       lang="#{localeManager.activeLocale}">
-<f:view locale="#{localeManager.userLanguage}" contentType="text/html" encoding="UTF-8">
-    <h:head>
-        <title>#{msg.app_name} | #{msg.app_desc}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link rel="shortcut icon" type="image/x-icon" href="#{resource['gfx/favicon.ico']}" />
-        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/javax.faces.resource/bootstrap.css?ln=css" />
-        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/javax.faces.resource/appframe.css?ln=css" />
-        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/javax.faces.resource/#{themeManager.themeCssClass}_theme.css?ln=css" />
-        <h:outputScript library="js" name="appframe.js" target="body" />
-    </h:head>
-    <h:body id="app-root" styleClass="#{themeManager.themeCssClass}">
-        <script>
-            $(document).on('pfAjaxError', function(e, xhr, error) {
-                console.log("Error on ajax call: " + JSON.stringify(error));
-                if (xhr.status == 401) {
-                    window.location.href = "#{request.contextPath}/";
-                }
-            });
-        </script>
-        <b:container>
-        <b:navBar brand="Project name" brandHref="#" fixed="top" inverse="true">
-            <b:navbarLinks>
-                <b:navLink value="Home" href="#"></b:navLink>
-                <b:navLink value="About" href="#about"></b:navLink>
-                <b:navLink value="Contact" href="#contact"></b:navLink>
-            </b:navbarLinks>
-        </b:navBar>
-        </b:container>
-		<b:container fluid="true">
-		    <ui:insert name="content" />
-		</b:container>
-        <footer class="footer">
-            <h:outputText styleClass="app__version" value="#{msg.version}: #{webApp.version}"/>
-            <h:panelGroup layout="block" styleClass="footer__banner">
-                <img src="#{resource['gfx/logos/logo.png']}" />
-            </h:panelGroup>
-        </footer>
-    </h:body>
-</f:view>
+    <f:view locale="#{localeManager.userLanguage}" contentType="text/html" encoding="UTF-8">
+        <h:head>
+            <title>Radian</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <script
+                    src="https://code.jquery.com/jquery-2.2.4.min.js"
+                    crossorigin="anonymous"></script>
 
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" />
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" ></script>
+
+        </h:head>
+        <h:body id="app-root" >
+            <script>
+                $(document).on('pfAjaxError', function(e, xhr, error) {
+                    console.log("Error on ajax call: " + JSON.stringify(error));
+                    if (xhr.status == 401) {
+                        window.location.href = "#{request.contextPath}/";
+                    }
+                });
+            </script>
+            <b:container>
+                <b:navBar brand="Project name" brandHref="#" fixed="top" inverse="true">
+                    <b:navbarLinks>
+                        <b:navLink value="Home" href="#"></b:navLink>
+                        <b:navLink value="About" href="#about"></b:navLink>
+                        <b:navLink value="Contact" href="#contact"></b:navLink>
+                    </b:navbarLinks>
+                </b:navBar>
+            </b:container>
+            <b:container fluid="true">
+                <ui:insert name="content" />
+            </b:container>
+        </h:body>
+    </f:view>
 </html>
