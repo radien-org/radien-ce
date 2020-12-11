@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.ejb.Stateful;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -71,7 +71,7 @@ import io.radien.ms.ecm.legacy.RepositoryNodeService;
 /**
  * @author Marco Weiland <m.weiland@radien.io>
  */
-@Stateful
+@RequestScoped
 public class ContentRepository implements Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(ContentRepository.class);

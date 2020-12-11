@@ -2,12 +2,14 @@ package io.radien.ms.ecm.legacy;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -56,38 +58,6 @@ class RepositoryConfiguration {
     private String mongoDbUri;
 
     /**
-     * Invoked on bean creation, attempts to create the JCR repository
-     */
-    @PostConstruct
-    public void init() {
-        try {
-            initRepository();
-        } catch (IOException e) {
-            log.error("JCR repository configuration files not found!: {}", e.getMessage());
-            
-        } catch (RepositoryException e) {
-            log.error("Could not start JCR repository", e);
-            
-        }
-    }
-
-    /**
-     * Method invoke on bean initialization that creates the oak repository instance
-     *
-     * @throws IOException Exception thrown if error occurs while creating the system directories that will hold cms structure information/ content
-     * @throws RepositoryException If Repository instantiation throws and error
-     */
-    private void initRepository() throws IOException, RepositoryException {
-        File repoHomeDir = new File(repoHome);
-        FileUtils.forceMkdir(repoHomeDir);
-
-        List<String> configFileNames = determineConfigFileNamesToCopy();
-        //FIXME: fix this
-//        List<String> configFilePaths = copyConfigs(repoHomeDir, configFileNames);
-//        repository = createRepository(configFilePaths, repoHomeDir);
-    }
-
-    /**
      * Creates a repository instance based on the properties that exist initially in this project resources/jcr/*-config.json files
      *
      * @param repoConfigs the ArrayList of repository configurations
@@ -95,10 +65,21 @@ class RepositoryConfiguration {
      * @return the default JCR implementation of a {@link Repository} object
      * @throws RepositoryException Exception thrown if an ERROR occurs while trying to create the Repository object
      */
-    private Repository createRepository(List<String> repoConfigs, File repoHomeDir) throws RepositoryException {
+    @Produces
+    private Repository createRepository() throws RepositoryException {
+    	
+        try {
+        	File repoHomeDir = new File(repoHome);
+			FileUtils.forceMkdir(repoHomeDir);
+		
+
+        List<String> configFileNames = determineConfigFileNamesToCopy();
+        //FIXME: fix this
+//        List<String> configFilePaths = copyConfigs(repoHomeDir, configFileNames);
+        List<String> configFilePaths = new ArrayList<String>();
         Map<String,Object> config = Maps.newHashMap();
         config.put(OakOSGiRepositoryFactory.REPOSITORY_HOME, repoHomeDir.getAbsolutePath());
-        config.put(OakOSGiRepositoryFactory.REPOSITORY_CONFIG_FILE, commaSepFilePaths(repoConfigs));
+        config.put(OakOSGiRepositoryFactory.REPOSITORY_CONFIG_FILE, commaSepFilePaths(configFilePaths));
         config.put(OakOSGiRepositoryFactory.REPOSITORY_SHUTDOWN_ON_TIMEOUT, true);
         config.put(OakOSGiRepositoryFactory.REPOSITORY_ENV_SPRING_BOOT, true);
         config.put(OakOSGiRepositoryFactory.REPOSITORY_TIMEOUT_IN_SECS, 10);
@@ -114,6 +95,10 @@ class RepositoryConfiguration {
         configureActivator(config);
 
         return new OakOSGiRepositoryFactory().getRepository(config);
+        } catch (Exception e) {
+			log.error("error producing repo",e);
+			throw new RepositoryException(e.getMessage());
+		}
     }
 
     /**
