@@ -29,7 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -62,18 +63,14 @@ import io.radien.api.service.ecm.model.GenericEnterpriseContent;
  *
  * @author Marco Weiland <m.weiland@radien.io>
  */
-@Stateless
+@RequestScoped
 public class ContentFactory implements Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(ContentFactory.class);
     private static final long serialVersionUID = -5005556415803181075L;
 
+    @Inject
     private S3FileUtil s3FileUtil;
-
-    
-    public ContentFactory(S3FileUtil s3FileUtil) {
-        this.s3FileUtil = s3FileUtil;
-    }
 
     /**
      * Method used to convert a JSONObject into a {@link EnterpriseContent} object

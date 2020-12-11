@@ -17,7 +17,7 @@ package io.radien.ms.ecm.legacy;
 
 
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.Session;
@@ -31,7 +31,7 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 /**
  * @author Marco Weiland
  */
-@Stateless
+@RequestScoped
 public class JcrSessionHandler {
     private static final Logger log = LoggerFactory.getLogger(JcrSessionHandler.class);
 

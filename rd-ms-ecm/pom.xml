@@ -130,21 +130,46 @@
 			<artifactId>oak-jcr</artifactId>
 			<version>1.36</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-jcr-server</artifactId> 
-			<version>1.36</version> </dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> 
-			<artifactId>jackrabbit-jcr-servlet</artifactId> <version>1.36</version> </dependency> 
-			<dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>oak-pojosr</artifactId> 
-			<version>1.36</version> </dependency> -->
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>oak-run</artifactId>
+			<version>1.36</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>oak-pojosr</artifactId>
+			<version>1.36</version>
+		</dependency>
 
-		<!-- <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>oak-pojosr</artifactId> 
-			<version>${version.jackrabbit.oak}</version> </dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> 
-			<artifactId>jackrabbit-jcr-rmi</artifactId> <version>${jackrabbit.version}</version> 
-			</dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>oak-lucene</artifactId> 
-			<version>${version.jackrabbit.oak}</version> </dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> 
-			<artifactId>oak-store-composite</artifactId> <version>${version.jackrabbit.oak}</version> 
-			</dependency> -->
-
-
+<!-- 
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-jcr-server</artifactId>
+			<version>1.36</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-jcr-servlet</artifactId>
+			<version>1.36</version>
+		</dependency>
+		
+		
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-jcr-rmi</artifactId>
+			<version>${jackrabbit.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>oak-lucene</artifactId>
+			<version>${version.jackrabbit.oak}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>oak-store-composite</artifactId>
+			<version>${version.jackrabbit.oak}</version>
+		</dependency>
+ -->
 		<!-- Mongo DB -->
 		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
 		<dependency>

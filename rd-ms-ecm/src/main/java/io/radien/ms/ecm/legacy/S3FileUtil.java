@@ -25,6 +25,10 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,24 +46,35 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 /**
  * @author Marco Weiland
  */
+@RequestScoped
 public class S3FileUtil {
     private static final Logger log = LoggerFactory.getLogger(S3FileUtil.class);
 
-    private CmsPropertiesUtil propertiesUtil;
+    @Inject
+    @ConfigProperty(name = "system.cms.workdir")
+    private String s3WorkDir;
 
-
-    public S3FileUtil(CmsPropertiesUtil propertiesUtil) {
-        this.propertiesUtil = propertiesUtil;
-    }
+    @Inject
+    @ConfigProperty(name = "system.cms.s3.region")
+    private String s3Region;
+    
+    @Inject
+    @ConfigProperty(name = "system.cms.s3.bucket")
+    private String s3Bucket;
+    
+    @Inject
+    @ConfigProperty(name = "system.cms.files.local")
+    private String isFilesLocal;
+    
 
     public URLClassLoader getClassLoaderForBucketFiles() throws MalformedURLException {
-        File file = new File(propertiesUtil.get(CmsConstants.PropertyKeys.SYSTEM_CMS_S3_WORKDIR));
+        File file = new File(s3WorkDir);
         URL[] urls = {file.toURI().toURL()};
         return new URLClassLoader(urls);
     }
 
     public boolean isLoadLocalFiles() {
-        return Boolean.parseBoolean(propertiesUtil.get("system.cms.files.local"));
+        return Boolean.parseBoolean(isFilesLocal);
     }
 
     public void delete(Path x) throws IOException {
@@ -73,26 +88,25 @@ public class S3FileUtil {
     public void getS3FileWithName(String name) {
         log.info("Starting transfer of the file {}", name);
         //Authorization is done in the machine scope and SDK takes care of get it
-        String bucket = propertiesUtil.get(CmsConstants.PropertyKeys.SYSTEM_CMS_S3_BUCKET);
-        String region = propertiesUtil.get(CmsConstants.PropertyKeys.SYSTEM_CMS_S3_REGION);
+       
 
         try {
-            S3Client s3 = S3Client.builder().region(Region.of(region)).build();
-            Path x = Paths.get(propertiesUtil.get(CmsConstants.PropertyKeys.SYSTEM_CMS_S3_WORKDIR)
+            S3Client s3 = S3Client.builder().region(Region.of(s3Region)).build();
+            Path x = Paths.get(s3WorkDir
                     + File.separator + name);
             delete(x);
 
-            s3.getObject(GetObjectRequest.builder().bucket(bucket).key(name).build(),
+            s3.getObject(GetObjectRequest.builder().bucket(s3Bucket).key(name).build(),
                     ResponseTransformer.toFile(x));
             log.info("Transfer of file {} finished with success", name);
         } catch (NoSuchBucketException e) {
-            log.error("Bucket: {} {}", bucket , e.getMessage());
+            log.error("Bucket: {} {}", s3Bucket , e.getMessage());
             if (e.getCause() != null) {
                 log.error(e.getCause().getMessage());
             }
             throw new RuntimeException(e.getMessage());
         } catch (NoSuchKeyException e) {
-            String msg = String.format("Expected file %s, not found on bucket %s", name, bucket);
+            String msg = String.format("Expected file %s, not found on bucket %s", name, s3Bucket);
             log.error(msg);
             log.error(e.getMessage());
             if (e.getCause() != null) {
@@ -117,19 +131,18 @@ public class S3FileUtil {
     }
 
     public int getS3FilesStartingWith(String prefix) {
-        String bucket = propertiesUtil.get(CmsConstants.PropertyKeys.SYSTEM_CMS_S3_BUCKET);
-        String region = propertiesUtil.get(CmsConstants.PropertyKeys.SYSTEM_CMS_S3_REGION);
+        
 
         try {
             int count = 0;
 
             ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
-                    .bucket(bucket)
+                    .bucket(s3Bucket)
                     .maxKeys(5000)
                     .build();
 
             boolean done = false;
-            S3Client s3 = S3Client.builder().region(Region.of(region)).build();
+            S3Client s3 = S3Client.builder().region(Region.of(s3Region)).build();
             while(!done) {
                 ListObjectsV2Response listObjectsV2Response = s3.listObjectsV2(listObjectsV2Request);
                 for(S3Object content : listObjectsV2Response.contents()) {
@@ -147,7 +160,7 @@ public class S3FileUtil {
             }
             return count;
         } catch (NoSuchBucketException e) {
-            log.error("Bucket: " + bucket + e.getMessage());
+            log.error("Bucket: " + s3Bucket + e.getMessage());
             if (e.getCause() != null) {
                 log.error(e.getCause().getMessage());
             }

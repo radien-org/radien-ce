@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -32,6 +33,7 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,17 +55,36 @@ public class RepositoryNodeService {
     public static final String JCR_END_OBJ = "] = '";
     public static final String IS_TRUE = "] = 'true' ";
 
-    private final transient CmsPropertiesUtil properties;
-    private final ContentFactory contentFactory;
-    private final JcrSessionHandler sessionHandler;
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.root")
+    private String rootNode;
 
-
-
-    public RepositoryNodeService(CmsPropertiesUtil properties, ContentFactory contentFactory, JcrSessionHandler sessionHandler) {
-        this.properties = properties;
-        this.contentFactory = contentFactory;
-        this.sessionHandler = sessionHandler;
-    }
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.documents")
+    private String documentNode;
+    
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.html")
+    private String htmlNode;
+    
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.newsfeed")
+    private String newsfeedNode;
+    
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.images")
+    private String imageNode;
+    
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.notifications")
+    private String notificationsNode;
+    
+    
+    
+    @Inject
+    private ContentFactory contentFactory;
+    @Inject
+    private JcrSessionHandler sessionHandler;
 
     public void registerCNDNodeTypes(String cndFileName) throws ContentRepositoryNotAvailableException {
         Session session = sessionHandler.createSession();
@@ -115,12 +136,9 @@ public class RepositoryNodeService {
     }
 
     public Node addSupportedLocalesFolder(Node content, Node parent, String nameEscaped, List<String> supportedLanguages) throws RepositoryException {
-        if (nameEscaped.equals(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML)) ||
-                nameEscaped.equals(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION)) ||
-                nameEscaped.equals(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NEWS_FEED)) ||
-                nameEscaped.equals(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_APP_INFO)) ||
-                nameEscaped.equals(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_STATIC_CONTENT)) ||
-                nameEscaped.equals(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_IFRAME))) {
+        if (nameEscaped.equals(htmlNode) ||
+                nameEscaped.equals(notificationsNode) ||
+                nameEscaped.equals(newsfeedNode) ) {
 
             for (String lang : supportedLanguages) {
                 try {
@@ -136,9 +154,9 @@ public class RepositoryNodeService {
     }
 
     public Node getNode(Session session, String nodeType, boolean containsImage, String language) throws RepositoryException {
-        Node resultNode = session.getRootNode().getNode(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_ROOT));
+        Node resultNode = session.getRootNode().getNode(rootNode);
         if (resultNode != null) {
-            resultNode = resultNode.getNode(properties.get(nodeType));
+            resultNode = resultNode.getNode(nodeType);
         } else {
             throw new RepositoryException("Repository root node not available!");
         }

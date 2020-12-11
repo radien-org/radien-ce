@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -39,18 +41,19 @@ public class ContentDataProvider {
 	private static final String INIT_FILE = "jcr/content.json";
 	private static final String S3_FILE_PREFIX = "content";
 
-	private final ContentFactory contentFactory;
-	private final CmsPropertiesUtil properties;
-	private final S3FileUtil s3FileUtil;
+	@Inject
+	private ContentFactory contentFactory;
+	@Inject
+	private S3FileUtil s3FileUtil;
+
+    @Inject
+    @ConfigProperty(name = "system.supported.locales")
+    private String supportedLanguagesCSV;
+	
+			
 
 	private static List<EnterpriseContent> contents = new ArrayList<>();
 
-
-	public ContentDataProvider(ContentFactory contentFactory, CmsPropertiesUtil properties, S3FileUtil s3FileUtil) {
-		this.contentFactory = contentFactory;
-		this.properties = properties;
-		this.s3FileUtil = s3FileUtil;
-	}
 
 	@PostConstruct
 	private void init() {
@@ -127,7 +130,7 @@ public class ContentDataProvider {
 	}
 
 	public List<String> getSupportedLanguages() {
-		return Arrays.asList(properties.get("system.i18n.available_languages").split(","));
+		return Arrays.asList(supportedLanguagesCSV.split(","));
 	}
 
 }

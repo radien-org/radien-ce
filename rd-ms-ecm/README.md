@@ -21,6 +21,8 @@ http://localhost:8080/ecm/models
 
 #local:
 curl http://localhost:8080/rd-ms-ecm/ecm/models
+#byViewId
+curl http://localhost:8080/rd-ms-ecm/ecm/content/default-content
 
 
 #POST 

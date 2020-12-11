@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
+import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -49,6 +50,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +63,6 @@ import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.RestTreeNode;
 import io.radien.ms.ecm.legacy.CmsConstants;
-import io.radien.ms.ecm.legacy.CmsPropertiesUtil;
 import io.radien.ms.ecm.legacy.ContentDataProvider;
 import io.radien.ms.ecm.legacy.ContentFactory;
 import io.radien.ms.ecm.legacy.JcrSessionHandler;
@@ -85,21 +86,27 @@ public class ContentRepository implements Serializable {
 
     public static final String IS_TRUE = "] = 'true' ";
 
-    private final transient CmsPropertiesUtil properties;
-    private final ContentFactory contentFactory;
-    private final transient ContentDataProvider dataProvider;
-    private final transient JcrSessionHandler sessionHandler;
-    private final transient RepositoryNodeService nodeService;
+    @Inject
+    private ContentFactory contentFactory;
+    @Inject
+    private ContentDataProvider dataProvider;
+    @Inject
+    private JcrSessionHandler sessionHandler;
+    @Inject
+    private RepositoryNodeService nodeService;
+    
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.root")
+    private String rootNode;
+    
+    @Inject
+    @ConfigProperty(name = "system.jcr.node.documents")
+    private String docNode;
+    
+    
 
     
-    public ContentRepository(CmsPropertiesUtil properties, ContentFactory contentFactory, ContentDataProvider dataProvider,
-                             JcrSessionHandler sessionHandler, RepositoryNodeService nodeService) {
-        this.properties = properties;
-        this.contentFactory = contentFactory;
-        this.dataProvider = dataProvider;
-        this.sessionHandler = sessionHandler;
-        this.nodeService = nodeService;
-    }
+
 
     /**
      * saves the given {@link EnterpriseContent} in the jackrabbit repository
@@ -150,7 +157,6 @@ public class ContentRepository implements Serializable {
                          Pair<Boolean, String> moveCommandValues, String viewIdEscaped) {
         try {
             boolean isVersionable = false;
-            boolean isMarketDocument = false;
             
             isVersionable = true;
             
@@ -528,9 +534,8 @@ public class ContentRepository implements Serializable {
 
     public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
         Session session = sessionHandler.createSession();
-        String root = properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_ROOT);
         Node docsNode = nodeService.getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
-        JcrUtils.getOrCreateByPath(String.format("/%s/%s%s", root, docsNode.getName(), path), JcrConstants.NT_FOLDER, session);
+        JcrUtils.getOrCreateByPath(String.format("/%s/%s%s", rootNode, docsNode.getName(), path), JcrConstants.NT_FOLDER, session);
 
         session.save();
         session.logout();
@@ -540,9 +545,9 @@ public class ContentRepository implements Serializable {
     public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
         Session session = sessionHandler.createSession();
 
-        Node resultNode = session.getRootNode().getNode(properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_ROOT));
+        Node resultNode = session.getRootNode().getNode(rootNode);
         if (resultNode != null) {
-            resultNode = resultNode.getNode(String.format("%s%s", properties.get(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS), path));
+            resultNode = resultNode.getNode(String.format("%s%s", docNode, path));
         } else {
             throw new RepositoryException("Repository root node not available!");
         }
