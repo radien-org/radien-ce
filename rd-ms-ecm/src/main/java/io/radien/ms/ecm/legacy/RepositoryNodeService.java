@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -47,6 +48,7 @@ import io.radien.api.service.ecm.model.RestTreeNode;
 /**
  * @author Marco Weiland
  */
+@RequestScoped
 public class RepositoryNodeService {
     private static final Logger log = LoggerFactory.getLogger(RepositoryNodeService.class);
     private static final String FILE_SEPARATOR = "/";
