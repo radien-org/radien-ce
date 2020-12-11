@@ -9,45 +9,31 @@
 		<listener-class>io.radien.kernel.listener.OAFInitListener</listener-class>
 	</listener>
 
+	<context-param>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
 
 	<context-param>
 		<param-name>BootsFaces_USETHEME</param-name>
 		<param-value>#{themeManager.currentTheme}</param-value>
 	</context-param>
-	<context-param>
-		<param-name>BootsFaces_THEME</param-name>
-		<param-value>cerulean</param-value>
-	</context-param>
 	
-	<context-param>
-		<param-name>net.bootsfaces.get_fontawesome_from_cdn</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>net.bootsfaces.get_datatable_from_cdn</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>net.bootsfaces.get_jquery_from_cdn</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>net.bootsfaces.get_jqueryui_from_cdn</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>net.bootsfaces.get_bootstrap_from_cdn</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	<!-- <context-param> <param-name>BootsFaces_THEME</param-name> <param-value>default</param-value> 
+		</context-param> <context-param> <param-name>net.bootsfaces.get_fontawesome_from_cdn</param-name> 
+		<param-value>true</param-value> </context-param> <context-param> <param-name>net.bootsfaces.get_datatable_from_cdn</param-name> 
+		<param-value>true</param-value> </context-param> <context-param> <param-name>net.bootsfaces.get_jquery_from_cdn</param-name> 
+		<param-value>true</param-value> </context-param> <context-param> <param-name>net.bootsfaces.get_jqueryui_from_cdn</param-name> 
+		<param-value>true</param-value> </context-param> <context-param> <param-name>net.bootsfaces.get_bootstrap_from_cdn</param-name> 
+		<param-value>true</param-value> </context-param> -->
+
+
+
+
+
+
+
+
 
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
@@ -70,63 +56,61 @@
 	</filter-mapping>
 
 	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.oaf</welcome-file>
 	</welcome-file-list>
 
-	<!-- <resource-ref> <description>DB Connection</description> <res-ref-name>jdbc/AppFrameDS</res-ref-name> 
-		<res-type>javax.sql.DataSource</res-type> <res-auth>Container</res-auth> 
-		</resource-ref> <context-param> <param-name>javax.faces.STATE_SAVING_METHOD</param-name> 
-		<param-value>server</param-value> </context-param> <context-param> <param-name>com.sun.faces.numberOfViewsInSession</param-name> 
+
+
+	<resource-ref>
+		<description>DB Connection</description>
+		<res-ref-name>jdbc/AppFrameDS</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+
+	<!-- EVALUATE THESE VALUES -->
+	<!-- <context-param> <param-name>com.sun.faces.numberOfViewsInSession</param-name> 
 		<param-value>3</param-value> </context-param> <context-param> <param-name>com.sun.faces.numberOfLogicalViews</param-name> 
-		<param-value>10</param-value> </context-param> <context-param> <param-name>BootsFaces_USETHEME</param-name> 
-		<param-value>false</param-value> </context-param> <context-param> <param-name>net.bootsfaces.defaults.renderLabel</param-name> 
-		<param-value>true</param-value> </context-param> <context-param> <param-name>net.bootsfaces.blockUI</param-name> 
+		<param-value>10</param-value> </context-param> <context-param> <param-name>net.bootsfaces.blockUI</param-name> 
 		<param-value>true</param-value> </context-param> <context-param> <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name> 
-		<param-value>true</param-value> </context-param> <servlet> <servlet-name>ECM 
-		Display Servlet</servlet-name> <servlet-class>org.openappframe.webapp.servlet.ECMDisplayServlet</servlet-class> 
+		<param-value>true</param-value> </context-param> -->
+
+	<!-- EVALUATE THESE SERVLETS -->
+	<!-- <servlet> <servlet-name>ECM Display Servlet </servlet-name> <servlet-class>org.openappframe.webapp.servlet.ECMDisplayServlet</servlet-class> 
 		<load-on-startup>1</load-on-startup> </servlet> <servlet-mapping> <servlet-name>ECM 
-		Display Servlet</servlet-name> <url-pattern>/ecmdisplay</url-pattern> </servlet-mapping> 
+		Display Servlet </servlet-name> <url-pattern>/ecmdisplay</url-pattern> </servlet-mapping> 
 		<servlet> <servlet-name>CaptchaServlet</servlet-name> <servlet-class>cn.apiclub.captcha.servlet.SimpleCaptchaServlet</servlet-class> 
 		<init-param> <param-name>width</param-name> <param-value>250</param-value> 
 		</init-param> <init-param> <param-name>height</param-name> <param-value>75</param-value> 
 		</init-param> </servlet> <servlet-mapping> <servlet-name>CaptchaServlet</servlet-name> 
 		<url-pattern>/captcha</url-pattern> </servlet-mapping> -->
 
+	<!-- EVALUATE THESE FILTERS -->
 	<!-- <filter> <filter-name>HSTSFilter</filter-name> <filter-class>org.openappframe.webapp.filter.HSTSFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>HSTSFilter</filter-name> <url-pattern>/public/*</url-pattern> 
 		<url-pattern>/module/*</url-pattern> </filter-mapping> <filter> <filter-name>AjaxSessionFilter</filter-name> 
 		<filter-class>org.openappframe.webapp.filter.AjaxSessionFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>AjaxSessionFilter</filter-name> <url-pattern>/public/*</url-pattern> 
 		<url-pattern>/module/*</url-pattern> </filter-mapping> <filter> <filter-name>OAF 
-		Encodingfilter</filter-name> <filter-class>org.openappframe.webapp.filter.CharacterEncodingFilter</filter-class> 
+		Encodingfilter </filter-name> <filter-class>org.openappframe.webapp.filter.CharacterEncodingFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>OAF Encodingfilter</filter-name> 
 		<url-pattern>/public/*</url-pattern> <url-pattern>/module/*</url-pattern> 
 		</filter-mapping> <filter> <filter-name>XSS filter</filter-name> <filter-class>org.openappframe.webapp.filter.CrossSiteScriptingFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>XSS filter</filter-name> <url-pattern>/public/*</url-pattern> 
 		<url-pattern>/module/*</url-pattern> </filter-mapping> <filter> <filter-name>PolicyDocs 
-		RedirectFilter</filter-name> <filter-class>org.openappframe.webapp.filter.LegalDocsRedirectFilter</filter-class> 
+		RedirectFilter </filter-name> <filter-class>org.openappframe.webapp.filter.LegalDocsRedirectFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>PolicyDocs RedirectFilter</filter-name> 
 		<url-pattern>/*</url-pattern> </filter-mapping> <filter> <filter-name>Login 
-		RedirectContextFilter</filter-name> <filter-class>org.openappframe.webapp.filter.LoginRedirectContextFilter</filter-class> 
+		RedirectContextFilter </filter-name> <filter-class>org.openappframe.webapp.filter.LoginRedirectContextFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>Login RedirectContextFilter</filter-name> 
 		<url-pattern>/*</url-pattern> </filter-mapping> <filter> <filter-name>Application 
-		RedirectFilter</filter-name> <filter-class>org.openappframe.webapp.filter.ApplicationRedirectFilter</filter-class> 
+		RedirectFilter </filter-name> <filter-class>org.openappframe.webapp.filter.ApplicationRedirectFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>Application RedirectFilter</filter-name> 
 		<url-pattern>/Retail/*</url-pattern> <url-pattern>/RETAIL/*</url-pattern> 
 		</filter-mapping> <filter> <filter-name>Index RedirectFilter</filter-name> 
 		<filter-class>org.openappframe.webapp.filter.HomePageRedirectFilter</filter-class> 
 		</filter> <filter-mapping> <filter-name>Index RedirectFilter</filter-name> 
 		<url-pattern>/index</url-pattern> <url-pattern>/index.oaf</url-pattern> </filter-mapping> -->
-
-
-	<!-- <filter> <filter-name>OAF Authfilter</filter-name> <filter-class>AuthorizationFilter</filter-class> 
-		</filter> <filter-mapping> <filter-name>OAF Authfilter</filter-name> <url-pattern>/*</url-pattern> 
-		</filter-mapping> -->
-	<!-- <filter> <filter-name>OAF SAML2Filter</filter-name> <filter-class>fr.mby.saml2.sp.impl.web.Saml20ProcessingFilter</filter-class> 
-		</filter> <filter-mapping> <filter-name>OAF SAML2Filter</filter-name> <url-pattern>/*</url-pattern> 
-		</filter-mapping> -->
-
-
 
 	<!-- JAX-RS 1.1 configuration through Jersey -->
 	<!-- <servlet> <servlet-name>Jersey REST Service</servlet-name> <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class> 
