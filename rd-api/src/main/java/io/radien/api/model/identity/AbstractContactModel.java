@@ -21,7 +21,6 @@ import io.radien.api.AbstractModel;
  * Simple contact model
  *
  * @author Marco Weiland
- * @author jrodrigues
  */
 public abstract class AbstractContactModel extends AbstractModel implements SystemIdentityContact {
 	private static final long serialVersionUID = 1L;

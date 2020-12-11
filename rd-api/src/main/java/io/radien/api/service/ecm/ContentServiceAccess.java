@@ -18,12 +18,12 @@ package io.radien.api.service.ecm;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.internet.ContentType;
-import javax.swing.tree.TreeNode;
+import com.fasterxml.jackson.core.TreeNode;
 
 import io.radien.api.service.ServiceAccess;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.model.MailType;
 

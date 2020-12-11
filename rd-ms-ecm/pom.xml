@@ -29,7 +29,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${version.maven-surefire-plugin}</version>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>${version.maven-war-plugin}</version>
@@ -37,7 +37,7 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.tomee.maven</groupId>
 				<artifactId>tomee-maven-plugin</artifactId>
@@ -52,7 +52,7 @@
 				<excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor> 
 				<enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration> 
 				</plugin> -->
-				
+
 		</plugins>
 	</build>
 	<profiles>
@@ -89,6 +89,11 @@
 		</profile>
 	</profiles>
 	<dependencies>
+		<!-- radien modules -->
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-api</artifactId>
+		</dependency>
 		<!-- Microprofile -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
@@ -104,6 +109,84 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- JCR -->
+		<!-- https://mvnrepository.com/artifact/javax.jcr/jcr -->
+		<dependency>
+			<groupId>javax.jcr</groupId>
+			<artifactId>jcr</artifactId>
+			<version>2.0</version>
+		</dependency>
+
+		<!-- jackrabbig oak -->
+		<!-- https://mvnrepository.com/artifact/org.apache.jackrabbit/oak-core -->
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>oak-core</artifactId>
+			<version>1.36</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>oak-jcr</artifactId>
+			<version>1.36</version>
+		</dependency>
+		<!-- <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-jcr-server</artifactId> 
+			<version>1.36</version> </dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> 
+			<artifactId>jackrabbit-jcr-servlet</artifactId> <version>1.36</version> </dependency> 
+			<dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>oak-pojosr</artifactId> 
+			<version>1.36</version> </dependency> -->
+
+		<!-- <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>oak-pojosr</artifactId> 
+			<version>${version.jackrabbit.oak}</version> </dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> 
+			<artifactId>jackrabbit-jcr-rmi</artifactId> <version>${jackrabbit.version}</version> 
+			</dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>oak-lucene</artifactId> 
+			<version>${version.jackrabbit.oak}</version> </dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> 
+			<artifactId>oak-store-composite</artifactId> <version>${version.jackrabbit.oak}</version> 
+			</dependency> -->
+
+
+		<!-- Mongo DB -->
+		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>3.12.7</version>
+		</dependency>
+
+		<!-- Commons -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<!-- AWS -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.11.9</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- -->
+		<!-- EVAL -->
+		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.25</version>
+		</dependency>
+
+		<!-- -->
 
 		<!-- logging -->
 		<dependency>
