@@ -8,7 +8,12 @@
     <!-- Write your navigation rules here. You are encouraged to use CDI for
         creating @Named managed beans. -->
     <application>
+    
+   
+	
     <!-- 
+    	<resource-handler>org.omnifaces.resourcehandler.CombinedResourceHandler</resource-handler>
+   
         <view-handler>org.openappframe.webapp.handler.OafViewHandler</view-handler>
         <resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>
         <locale-config>
