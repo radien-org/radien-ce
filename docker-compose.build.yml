@@ -1,0 +1,68 @@
+version: '3.7'
+
+volumes:
+  db-data:
+    external: false
+    name: db-data
+  mongo-data:
+    external: false
+    name: mongo-data
+
+services:
+  # Local Mysql 5.7.12 DB same version as Aurora DB
+  mysql:
+    image: mysql:5.7.27
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./mysql_local_init.sql:/docker-entrypoint-initdb.d/mysql_local_init.sql
+    env_file: mysql_local.env
+    network_mode: bridge
+    ports:
+      - 3306:3306
+
+  # Local Mongo DB for CMS
+  mongo:
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-dump:/dump
+    network_mode: bridge
+    ports:
+      - 27017:27017
+
+  # Monolith related builds - Builds Open App Frame
+  openappframe-build:
+    image: openappframe-build
+    build:
+      context: ../openappframe
+      dockerfile: Dockerfile.build
+
+  # Build MS Entities Dependency
+  oaf-ms-entities-build:
+    image: oaf-ms-entities-build
+    build:
+      context: ../openappframe/oaf-ms-entities
+      dockerfile: Dockerfile.build
+    depends_on:
+      - openappframe-build
+
+  oaf-ms-cms-build:
+    image: oaf-ms-cms-build
+    build:
+      context: ../radien/rd-ms-ecm
+      dockerfile: Dockerfile.build
+    depends_on:
+      - openappframe-build
+
+  oaf-ms-cms:
+    build:
+      context: ../radien/rd-ms-ecm
+      dockerfile: Dockerfile.build.run
+    network_mode: bridge
+    ports:
+      - 8083:8083
+    depends_on:
+      - oaf-ms-cms-build
+      - mongo
+
+
