@@ -17,15 +17,15 @@ phases:
       - export MAVEN_OPTS="-Xms2G -Xmx2G"
   build:
     commands:
-      - mvn deploy -T 2C -e -P radien--radien-artifactory -B -s aws-build-settings.xml
-      - ls radien-cms/target/radien-cms*exec.jar
+      - mvn deploy -T 4C -e -P radien--radien-artifactory -B -s aws-build-settings.xml -DskipTests=true
+      - ls rd-ms-ecm/target/*exec.jar
     finally:
       - rm -r /root/.m2/repository/org/openappframe/
 
 artifacts:
   files:
-    ##- radien-cms/target/radien-cms-exec.jar
-    ##- radien-cms/Dockerfile
+    - rd-ms-ecm/target/rd-ms-ecm-exec.jar
+    - rd-ms-ecm/Dockerfile
     - rd-web/target/web.war
     - rd-web/Dockerfile
 
