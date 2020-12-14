@@ -1,12 +1,12 @@
 package io.radien.ms.ecm.legacy;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
@@ -16,6 +16,7 @@ import javax.jcr.RepositoryException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.felix.connect.launch.PojoServiceRegistry;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.oak.run.osgi.OakOSGiRepositoryFactory;
@@ -30,6 +31,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import io.radien.api.OAFProperties;
+import io.radien.api.kernel.messages.SystemMessages;
 
 @RequestScoped
 class RepositoryConfiguration {
@@ -42,7 +44,7 @@ class RepositoryConfiguration {
     private Repository repository;
 
     @Inject
-    @ConfigProperty(name = "system.jcr.home}")
+    @ConfigProperty(name = "system.jcr.home")
     private String repoHome;
 
     @Inject
@@ -74,9 +76,9 @@ class RepositoryConfiguration {
 		
 
         List<String> configFileNames = determineConfigFileNamesToCopy();
-        //FIXME: fix this
-//        List<String> configFilePaths = copyConfigs(repoHomeDir, configFileNames);
-        List<String> configFilePaths = new ArrayList<String>();
+
+        List<String> configFilePaths = copyConfigs(repoHomeDir, configFileNames);
+        
         Map<String,Object> config = Maps.newHashMap();
         config.put(OakOSGiRepositoryFactory.REPOSITORY_HOME, repoHomeDir.getAbsolutePath());
         config.put(OakOSGiRepositoryFactory.REPOSITORY_CONFIG_FILE, commaSepFilePaths(configFilePaths));
@@ -169,43 +171,46 @@ class RepositoryConfiguration {
     }
 
     //FIXME: fix commented code
-//    /**
-//     * Copies the configs from the 'resources/jcr' folder
-//     *
-//     * @param repoHomeDir the repository home directory
-//     * @param configFileNames the config file names to copy
-//     * @return The list of copied string
-//     * @throws IOException Exception thrown if an IO error occurs while operating on those files
-//     */
-//    private List<String> copyConfigs(File repoHomeDir, List<String> configFileNames)
-//            throws IOException {
-//        List<String> filePaths = Lists.newArrayList();
-//        for (String configName : configFileNames) {
-//            File dest = new File(repoHomeDir, configName);
-//            Resource source = new ClassPathResource("jcr/" + configName);
-//            copyDefaultConfig(dest, source);
-//            filePaths.add(dest.getAbsolutePath());
-//        }
-//        return filePaths;
-//    }
-//
-//
-//    /**
-//     * Similar to {@link RepositoryConfiguration#copyConfigs} method
-//     * @param repoConfig the repository configuration file
-//     * @param defaultRepoConfig the Resource with the default repository configuration
-//     * @throws IOException Exception thrown if an IO error occurs while operating on those files
-//     */
-//    private void copyDefaultConfig(File repoConfig, Resource defaultRepoConfig)
-//            throws IOException {
-//        if (!repoConfig.exists()){
-//            log.info("Copying default repository config to {}", repoConfig.getAbsolutePath());
-//            InputStream in = defaultRepoConfig.getInputStream();
-//            try (FileOutputStream os = FileUtils.openOutputStream(repoConfig)) {
-//                IOUtils.copy(in, os);
-//            }
-//        }
-//    }
+    /**
+     * Copies the configs from the 'resources/jcr' folder
+     *
+     * @param repoHomeDir the repository home directory
+     * @param configFileNames the config file names to copy
+     * @return The list of copied string
+     * @throws IOException Exception thrown if an IO error occurs while operating on those files
+     */
+    private List<String> copyConfigs(File repoHomeDir, List<String> configFileNames)
+            throws IOException {
+        List<String> filePaths = Lists.newArrayList();
+        for (String configName : configFileNames) {
+            File dest = new File(repoHomeDir, configName);
+            copyDefaultConfig(dest, configName);
+            filePaths.add(dest.getAbsolutePath());
+        }
+        return filePaths;
+    }
+
+
+    /**
+     * Similar to {@link RepositoryConfiguration#copyConfigs} method
+     * @param repoConfig the repository configuration file
+     * @param defaultRepoConfig the Resource with the default repository configuration
+     * @throws IOException Exception thrown if an IO error occurs while operating on those files
+     */
+    private void copyDefaultConfig(File repoConfig, String defaultRepoConfig)
+            throws IOException {
+        if (!repoConfig.exists()){
+            log.info("Copying default repository config to {}", repoConfig.getAbsolutePath());
+            try ( InputStream in = getClass().getClassLoader().getResourceAsStream("jcr/"+defaultRepoConfig) ){
+            	try (FileOutputStream os = FileUtils.openOutputStream(repoConfig)) {
+                    IOUtils.copy(in, os);
+                }
+            }catch (Exception e) {
+            	log.error(SystemMessages.KERNEL_PROPERTIES_ERROR.message(), e);
+			}
+            
+        }
+    }
 
 
     /**

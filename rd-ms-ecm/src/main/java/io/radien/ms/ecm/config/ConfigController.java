@@ -33,7 +33,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class ConfigController {
 
     @Inject
-    @ConfigProperty(name = "injected.value")
+    @ConfigProperty(name = "radien.module.name")
     private String injectedValue;
 
     @Path("/injected")

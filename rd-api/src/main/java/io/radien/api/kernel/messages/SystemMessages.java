@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.kernel.messages;
+package io.radien.api.kernel.messages;
 
 import java.text.MessageFormat;
 
@@ -22,7 +22,7 @@ import java.text.MessageFormat;
  * distinction
  *
  * @author Marco Weiland
- * @author jrodrigues
+ * 
  */
 
 public enum SystemMessages {

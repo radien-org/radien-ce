@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import io.radien.ms.ecm.model.RadienModel;
+import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.util.RadienModelMapper;
 
 
@@ -37,18 +37,18 @@ import io.radien.ms.ecm.util.RadienModelMapper;
  * @author Marco Weiland
  *
  */
-public class RadienModelMessageBodyWriter implements MessageBodyWriter<RadienModel> {
+public class RadienModelMessageBodyWriter implements MessageBodyWriter<EnterpriseContent> {
 
 	 @Override
 	    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(RadienModel.class);
+	        return type.equals(EnterpriseContent.class);
 	    }
 
 	    /*
 	    Deprecated in JAX RS 2.0
 	     */
 	    @Override
-	    public long getSize(RadienModel model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+	    public long getSize(EnterpriseContent model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 	        return 0;
 	    }
 
@@ -66,7 +66,7 @@ public class RadienModelMessageBodyWriter implements MessageBodyWriter<RadienMod
 	     * @throws WebApplicationException
 	     */
 	    @Override
-	    public void writeTo(RadienModel model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+	    public void writeTo(EnterpriseContent model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
 	        JsonWriter jsonWriter = Json.createWriter(entityStream);
 	        JsonObject jsonObject = RadienModelMapper.map(model);
 	        jsonWriter.writeObject(jsonObject);

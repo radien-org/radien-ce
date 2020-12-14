@@ -28,7 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import io.radien.api.OAFProperties;
-import io.radien.kernel.messages.SystemMessages;
+import io.radien.api.kernel.messages.SystemMessages;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
 import io.radien.webapp.RedirectUtil;
 import io.radien.webapp.UserSession;

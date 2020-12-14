@@ -27,6 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.model.RadienModel;
 import io.radien.ms.ecm.util.RadienModelMapper;
 
@@ -38,14 +39,14 @@ import io.radien.ms.ecm.util.RadienModelMapper;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
-public class RadienModelMessageBodyReader implements MessageBodyReader<RadienModel> {
+public class RadienModelMessageBodyReader implements MessageBodyReader<EnterpriseContent> {
 	 @Override
 	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 	        return type.equals(RadienModel.class);
 	    }
 
 	    @Override
-	    public RadienModel readFrom(Class<RadienModel> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+	    public EnterpriseContent readFrom(Class<EnterpriseContent> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
 	        return RadienModelMapper.map(entityStream);
 	    }
 }

@@ -27,7 +27,8 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 
-import io.radien.ms.ecm.model.RadienModel;
+import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 
 /**
  * @author Marco Weiland
@@ -35,10 +36,10 @@ import io.radien.ms.ecm.model.RadienModel;
  */
 public class RadienModelMapper {
 
-    public static JsonObject map(RadienModel model) {
+    public static JsonObject map(EnterpriseContent model) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        addValue(builder, "id", model.getId());
-        addValue(builder, "message", model.getMessage());
+        addValue(builder, "viewId", model.getId());
+        addValue(builder, "htmlContent", model.getHtmlContent());
         return builder.build();
     }
 
@@ -50,7 +51,7 @@ public class RadienModelMapper {
         }
     }
 
-    public static JsonArray map(List<RadienModel> models) {
+    public static JsonArray map(List<EnterpriseContent> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
             JsonObject jsonObject = map(model);
@@ -59,12 +60,12 @@ public class RadienModelMapper {
         return arrayBuilder.build();
     }
 
-    public static RadienModel map(InputStream is) {
+    public static EnterpriseContent map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
-            RadienModel model = new RadienModel();
-            model.setId(getStringFromJson("id", jsonObject));
-            model.setMessage(getStringFromJson("message", jsonObject));
+            EnterpriseContent model = new GenericEnterpriseContent();
+            model.setViewId(getStringFromJson("viewId", jsonObject));
+            model.setHtmlContent(getStringFromJson("htmlContent", jsonObject));
             return model;
         }
     }

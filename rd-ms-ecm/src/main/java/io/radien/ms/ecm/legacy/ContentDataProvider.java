@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -36,6 +37,7 @@ import io.radien.api.service.ecm.model.EnterpriseContent;
 /**
  * @author Marco Weiland
  */
+@RequestScoped
 public class ContentDataProvider {
 	protected static final Logger log = LoggerFactory.getLogger(ContentDataProvider.class);
 	private static final String INIT_FILE = "jcr/content.json";

@@ -31,7 +31,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import io.radien.ms.ecm.model.RadienModel;
+import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.util.RadienModelMapper;
 
 
@@ -42,7 +42,7 @@ import io.radien.ms.ecm.util.RadienModelMapper;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class RadienModelListMessageBodyWriter implements MessageBodyWriter<List<RadienModel>> {
+public class RadienModelListMessageBodyWriter implements MessageBodyWriter<List<EnterpriseContent>> {
 
 	@Override
 	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -50,13 +50,13 @@ public class RadienModelListMessageBodyWriter implements MessageBodyWriter<List<
 	}
 
 	@Override
-	public long getSize(List<RadienModel> t, Class<?> type, Type genericType,
+	public long getSize(List<EnterpriseContent> t, Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {
 		return 0;
 	}
 
 	@Override
-	public void writeTo(List<RadienModel> t, Class<?> type, Type genericType, Annotation[] annotations,
+	public void writeTo(List<EnterpriseContent> t, Class<?> type, Type genericType, Annotation[] annotations,
 			MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
 			throws IOException, WebApplicationException {
       JsonWriter jsonWriter = Json.createWriter(entityStream);

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 
@@ -45,6 +46,7 @@ import io.radien.ms.ecm.repository.ContentRepository;
  *
  * @author Marco Weiland
  */
+@RequestScoped
 public class ContentService implements ContentServiceAccess {
 
 	private static final Logger log = LoggerFactory.getLogger(ContentService.class);

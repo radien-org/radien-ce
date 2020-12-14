@@ -43,8 +43,8 @@ import io.radien.api.Event;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.SystemProperties;
+import io.radien.api.kernel.messages.SystemMessages;
 import io.radien.kernel.eventbus.EventBus;
-import io.radien.kernel.messages.SystemMessages;
 
 /**
  * Main OAF class that initializes application properties and manages the

@@ -1,0 +1,30 @@
+<oaf = 'http://www.jcp.org/jcr/mix/1.0'>
+[oaf:NodeType]
+  orderable mixin
+  - oaf:viewId (string) version mandatory
+  - oaf:name (string) version
+  - oaf:contentType (string) mandatory
+  - oaf:language (string) mandatory
+  - oaf:step (string) mandatory version
+  - oaf:htmlContent (string) version
+  - oaf:fileSize (long) version
+  - oaf:active (boolean)
+  - oaf:system (boolean)
+  - oaf:image (binary) version
+  - oaf:imageName (string) version
+  - oaf:imageMimeType (string) version
+  - oaf:tags (string) multiple
+  - oaf:app (string) version
+  - oaf:lastEditDate (date) version
+  - oaf:author (string)
+  - oaf:permissions (boolean) version
+  - oaf:externalPublic (boolean)
+  - oaf:versionComment (string) version
+  - oaf:validDate (date) version
+
+[oaf:VersionableMixin]
+ orderable mixin
+  - oaf:created (date) version
+  - oaf:version (string) version
+  - oaf:mandatoryView (boolean) version
+  - oaf:mandatoryApproval (boolean) version
