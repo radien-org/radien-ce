@@ -34,7 +34,6 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +43,7 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.RestTreeNode;
+import io.radien.ms.ecm.config.ConfigProvider;
 
 /**
  * @author Marco Weiland
@@ -58,33 +58,11 @@ public class RepositoryNodeService {
     public static final String IS_TRUE = "] = 'true' ";
 
     @Inject
-    @ConfigProperty(name = "system.jcr.node.root")
-    private String rootNode;
+    private ConfigProvider cfg;
 
     @Inject
-    @ConfigProperty(name = "system.jcr.node.documents")
-    private String documentNode;
-    
-    @Inject
-    @ConfigProperty(name = "system.jcr.node.html")
-    private String htmlNode;
-    
-    @Inject
-    @ConfigProperty(name = "system.jcr.node.newsfeed")
-    private String newsfeedNode;
-    
-    @Inject
-    @ConfigProperty(name = "system.jcr.node.images")
-    private String imageNode;
-    
-    @Inject
-    @ConfigProperty(name = "system.jcr.node.notifications")
-    private String notificationsNode;
-    
-    
-    
-    @Inject
     private ContentFactory contentFactory;
+    
     @Inject
     private JcrSessionHandler sessionHandler;
 
@@ -103,10 +81,10 @@ public class RepositoryNodeService {
 
     public void setUpNewNodeMixins(Node newNode, boolean isVersionable, EnterpriseContent object) throws RepositoryException {
         if (newNode != null) {
-            newNode.addMixin(CmsConstants.OAF_MIXIN_NODE_PROPS);
+            newNode.addMixin(CmsConstants.RD_MIXIN_NODE_PROPS);
             if(isVersionable) {
-                newNode.addMixin(CmsConstants.OAF_MIXIN_VERSIONABLE);
-                newNode.addMixin(CmsConstants.OAF_MIXIN_VERSIONABLE_PROPS);
+                newNode.addMixin(CmsConstants.RD_MIXIN_VERSIONABLE);
+                newNode.addMixin(CmsConstants.RD_MIXIN_VERSIONABLE_PROPS);
             }
         }
     }
@@ -138,9 +116,9 @@ public class RepositoryNodeService {
     }
 
     public Node addSupportedLocalesFolder(Node content, Node parent, String nameEscaped, List<String> supportedLanguages) throws RepositoryException {
-        if (nameEscaped.equals(htmlNode) ||
-                nameEscaped.equals(notificationsNode) ||
-                nameEscaped.equals(newsfeedNode) ) {
+        if (nameEscaped.equals(cfg.getHtmlNodeName()) ||
+                nameEscaped.equals(cfg.getNotificationsNodeName()) ||
+                nameEscaped.equals(cfg.getNewsFeedNodeName()) ) {
 
             for (String lang : supportedLanguages) {
                 try {
@@ -156,7 +134,7 @@ public class RepositoryNodeService {
     }
 
     public Node getNode(Session session, String nodeType, boolean containsImage, String language) throws RepositoryException {
-        Node resultNode = session.getRootNode().getNode(rootNode);
+        Node resultNode = session.getRootNode().getNode(cfg.getRootNodeName());
         if (resultNode != null) {
             resultNode = resultNode.getNode(nodeType);
         } else {
@@ -182,7 +160,7 @@ public class RepositoryNodeService {
     public Node prepareTagNode(Session session, String language, Node parent, String nameEscaped) throws RepositoryException {
         Node content = null;
         if (parent == null) {
-            parent = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_TAG, false, language);
+            parent = getNode(session, cfg.getTagNodeName(), false, language);
         }
         if (parent != null) {
             content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
@@ -193,7 +171,7 @@ public class RepositoryNodeService {
     public Node prepareFolderNode(Session session, String language, Node parent, String nameEscaped, List<String> supportedLanguages) throws RepositoryException {
         Node content = null;
         if (parent == null) {
-            parent = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, language);
+            parent = getNode(session, cfg.getDocumentsNodeName(), false, language);
         }
         if (parent != null) {
             content = parent.addNode(nameEscaped, JcrConstants.NT_FOLDER);
@@ -254,14 +232,14 @@ public class RepositoryNodeService {
         try {
             queryManager = session.getWorkspace().getQueryManager();
 
-            String expression = "select * from " + "[" + CmsConstants.OAF_MIXIN_NODE_PROPS + "] as node " + "where ["
-                    + CmsConstants.OAF_VIEW_ID + JCR_END_OBJ + viewId + "' ";
+            String expression = "select * from " + "[" + CmsConstants.RD_MIXIN_NODE_PROPS + "] as node " + "where ["
+                    + CmsConstants.RD_VIEW_ID + JCR_END_OBJ + viewId + "' ";
 
             if (StringUtils.isNotBlank(language)) {
-                expression += JCR_AND + CmsConstants.OAF_CONTENT_LANG + JCR_END_OBJ + language + "' ";
+                expression += JCR_AND + CmsConstants.RD_CONTENT_LANG + JCR_END_OBJ + language + "' ";
             }
             if (activeOnly) {
-                expression += JCR_AND + CmsConstants.OAF_ACTIVE + IS_TRUE;
+                expression += JCR_AND + CmsConstants.RD_ACTIVE + IS_TRUE;
             }
 
             Query query = queryManager.createQuery(expression, Query.JCR_SQL2);

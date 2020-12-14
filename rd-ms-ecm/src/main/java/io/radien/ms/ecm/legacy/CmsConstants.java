@@ -21,225 +21,177 @@ import org.apache.jackrabbit.JcrConstants;
  * @author Marco Weiland
  */
 public class CmsConstants {
-
-
-    /**
-     * Private constructor to prevent instantiation of class.
-     */
-    private CmsConstants() {
-    }
-
-    /**
-     * The Request attribute for whether or not editing is enabled
-     */
-    public static final String ATTR_EDIT_ENABLED = "cmsEditEnabled";
-
     /**
      * The Component type for pages
      */
     public static final String COMPONENT_TYPE_PAGE = "Page";
 
     /**
-     * Node type base.
-     */
-
-    private static final String NAMESPACE = "oaf";
-
-    /**
      * The subpath for the metadata under sling:File resources
      */
     public static final String NN_METADATA = "metadata";
-
+    
     /**
-     * Static content node type.
+     * Node type base.
      */
-    public static final String NT_STATIC_CONTENT = NAMESPACE + ":StaticContent";
+    private static final String NAMESPACE = "rd";
 
     /**
      * News feed node type
      */
-    private static final String NT_NEWS_FEED = NAMESPACE + ":NewsFeed";
-
-    /**
-     * Page node type.
-     */
-    private static final String NT_APP_INFO = NAMESPACE + ":AppInfo";
-
-    /**
-     * File node type.
-     */
-    private static final String NT_FILE = NAMESPACE + ":File";
+    private static final String NT_NEWS_FEED = NAMESPACE + ":Newsfeed";
 
     /**
      * Notification node type.
      */
-    public static final String NT_NOTIFICATION = NAMESPACE + ":Notification";
-
-    /**
-     * Video node type
-     */
-    private static final String NT_VIDEO = NAMESPACE + ":Iframe";
-
-
-    /**
-     * Constant for the last modified by user
-     */
-    public static final String PN_LAST_MODIFIED_BY = JcrConstants.JCR_LASTMODIFIED + "By";
-
+    public static final String RD_NOTIFICATION = NAMESPACE + ":Notification";
 
     /**
      * Mixin node name
      */
-    public static final String OAF_MIXIN_NODE_PROPS = "oaf:NodeType";
+    public static final String RD_MIXIN_NODE_PROPS = NAMESPACE + ":NodeType";
 
     /**
      * Versionable mixin
      */
-    public static final String OAF_MIXIN_VERSIONABLE = "oaf:versionable";
+    public static final String RD_MIXIN_VERSIONABLE = NAMESPACE + ":versionable";
 
     /**
      * Versionable create date mixin
      */
-    public static final String OAF_MIXIN_VERSIONABLE_PROPS = "oaf:VersionableMixin";
+    public static final String RD_MIXIN_VERSIONABLE_PROPS = NAMESPACE + ":VersionableMixin";
 
     /**
      * the content viewId property key
      */
-    public static final String OAF_VIEW_ID = "oaf:viewId";
+    public static final String RD_VIEW_ID = NAMESPACE + ":viewId";
+    
     /**
      * the content name property
      */
-    public static final String OAF_NAME = "oaf:name";
+    public static final String RD_NAME = NAMESPACE + ":name";
+    
     /**
      * i18n locale property
      */
-    public static final String OAF_CONTENT_LANG = "oaf:language";
+    public static final String RD_CONTENT_LANG = NAMESPACE + ":language";
+    
     /**
      * the content type property key
      */
-    public static final String OAF_CONTENT_TYPE = "oaf:contentType";
+    public static final String RD_CONTENT_TYPE = NAMESPACE + ":contentType";
+    
     /**
      * the content active property key
      */
-    public static final String OAF_ACTIVE = "oaf:active";
+    public static final String RD_ACTIVE = NAMESPACE + ":active";
+    
     /**
      * the content htmlContent property key
      */
-    public static final String OAF_HTML_CONTENT = "oaf:htmlContent";
+    public static final String RD_HTML_CONTENT = NAMESPACE + ":htmlContent";
+
     /**
      * the content viewId property key
      */
-    public static final String OAF_VERSION_COMMENT = "oaf:versionComment";
+    public static final String RD_VERSION_COMMENT = NAMESPACE + ":versionComment";
+    
     /**
      * the content system property key
      */
-    public static final String OAF_SYSTEM = NAMESPACE + ":system";
+    public static final String RD_SYSTEM = NAMESPACE + ":system";
 
-    public static final String OAF_CONTENT_PERMISSIONS = NAMESPACE + ":permissions" ;
+    /**
+     * 
+     */
+    public static final String RD_CONTENT_PERMISSIONS = NAMESPACE + ":permissions" ;
     /**
      * Published flag property
      */
-    public static final String OAF_STEP = NAMESPACE + ":step";
+    public static final String RD_STEP = NAMESPACE + ":step";
+    
     /**
      * the content fileSize property key
      */
-    public static final String OAF_FILE_SIZE = NAMESPACE + ":fileSize";
+    public static final String RD_FILE_SIZE = NAMESPACE + ":fileSize";
+    
     /**
      * the content tags property key
      */
-    public static final String OAF_TAGS = NAMESPACE + ":tags";
+    public static final String RD_TAGS = NAMESPACE + ":tags";
+    
     /**
      * the content linked application property key
      */
-    public static final String OAF_APP = NAMESPACE + ":app";
+    public static final String RD_APP = NAMESPACE + ":app";
 
     /**
      * the content image property key
      */
-    public static final String OAF_IMAGE = NAMESPACE + ":image";
+    public static final String RD_IMAGE = NAMESPACE + ":image";
+    
     /**
      * the content image name property key
      */
-    public static final String OAF_IMAGE_NAME = NAMESPACE + ":imageName";
+    public static final String RD_IMAGE_NAME = NAMESPACE + ":imageName";
+    
     /**
      * the content image mime type property key
      */
-    public static final String OAF_IMAGE_MIME_TYPE = NAMESPACE + ":imageMimeType";
+    public static final String RD_IMAGE_MIME_TYPE = NAMESPACE + ":imageMimeType";
+    
     /**
      * the content last edit date property
      */
-    public static final String OAF_LAST_EDIT_DATE = NAMESPACE + ":lastEditDate";
+    public static final String RD_LAST_EDIT_DATE = NAMESPACE + ":lastEditDate";
+    
     /**
      * the content valid date property
      */
-    public static final String OAF_VALID_DATE = NAMESPACE + ":validDate";
+    public static final String RD_VALID_DATE = NAMESPACE + ":validDate";
+    
     /**
      * the content creation date property
      */
-    public static final String JCR_CREATED = "jcr:created";
-    /**
-     * the content path property
-     */
-    public static final String JCR_PATH = "jcr:path";
-    /**
-     * the content creation date property
-     */
-    public static final String OAF_CREATED = "oaf:created";
+    public static final String RD_CREATED = NAMESPACE + ":created";
+
     /**
      * the content version property
      */
-    public static final String OAF_VERSION = "oaf:version";
-    /**
-     * the content mandatory view property
-     */
-    public static final String OAF_MANDATORY_VIEW = "oaf:mandatoryView";
-    /**
-     * the content mandatory approval property
-     */
-    public static final String OAF_MANDATORY_APPROVAL = "oaf:mandatoryApproval";
-    /**
-     * the content market property
-     */
-    public static final String OAF_MARKET = "oaf:market";
+    public static final String RD_VERSION = NAMESPACE + ":version";
+
     /**
      * the content author property
      */
-    public static final String OAF_CONTENT_AUTHOR = NAMESPACE + ":author";
-
-    /**
-     * The resource types which can be published
-     */
-    protected static final String[] PUBLISHABLE_TYPES = new String[] { CmsConstants.NT_FILE, CmsConstants.NT_NEWS_FEED, CmsConstants.NT_APP_INFO, CmsConstants.OAF_HTML_CONTENT };
+    public static final String RD_CONTENT_AUTHOR = NAMESPACE + ":author";
 
     /**
      * The name of the admin user
      */
     public static final String USER_ADMIN = "admin";
 
+
     /**
-     *
+     * Constant for the last modified by user
      */
-    public static class PropertyKeys {
-
-        public static final String OAF_NODE_TYPES = "jcr/oafnodetypes.cnd";
-        public static final String SYSTEM_CMS_CFG_NODE_ROOT = "system.jcr.node.root";
-        public static final String SYSTEM_CMS_CFG_NODE_HTML = "system.jcr.node.html";
-        public static final String SYSTEM_CMS_CFG_NODE_NEWS_FEED = "system.jcr.node.newsfeed";
-        public static final String SYSTEM_CMS_CFG_NODE_NOTIFICATION = "system.jcr.node.notifications";
-        public static final String SYSTEM_CMS_CFG_NODE_DOCS = "system.jcr.node.documents";
-        public static final String SYSTEM_CMS_CFG_NODE_IMAGE = "system.jcr.node.images";
-        public static final String SYSTEM_CMS_CFG_NODE_IFRAME = "system.jcr.node.iframe";
-        public static final String SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS = "system.jcr.document.autocreate.folder.names";
-        public static final String SYSTEM_CMS_CFG_NODE_APP_INFO = "system.jcr.node.appinfo";
-        public static final String SYSTEM_CMS_CFG_NODE_STATIC_CONTENT = "system.jcr.node.staticcontent";
-        public static final String SYSTEM_CMS_CFG_NODE_TAG = "system.jcr.node.tag";
-        public static final String SYSTEM_CMS_FILES_LOCAL = "system.cms.files.local";
-        public static final String SYSTEM_CMS_S3_REGION = "system.cms.s3.region";
-        public static final String SYSTEM_CMS_S3_BUCKET = "system.cms.s3.bucket";
-        public static final String SYSTEM_CMS_S3_WORKDIR = "system.cms.workdir";
-
-        private PropertyKeys() {}
-    }
-
+    public static final String JCR_LASTMODIFIED_BY = JcrConstants.JCR_LASTMODIFIED + "By";
+    
+    /**
+     * JCR Convenience Wrappers
+     */
+    /**
+     * the content creation date property
+     */
+    public static final String JCR_CREATED = JcrConstants.JCR_CREATED;
+    
+    /**
+     * the content path property
+     */
+    public static final String JCR_PATH = JcrConstants.JCR_PATH; 
+    
+    /**
+     * File node type.
+     */
+    private static final String NT_FILE = JcrConstants.NT_FILE;
 
 }

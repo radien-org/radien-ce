@@ -237,7 +237,7 @@ public class ContentFactory implements Serializable {
         try {
             mixinNodeTypes = node.getMixinNodeTypes();
             for (NodeType type : mixinNodeTypes) {
-                if (CmsConstants.OAF_MIXIN_NODE_PROPS.equalsIgnoreCase(type.getName())) {
+                if (CmsConstants.RD_MIXIN_NODE_PROPS.equalsIgnoreCase(type.getName())) {
                     result = true;
                 }
             }
@@ -277,48 +277,48 @@ public class ContentFactory implements Serializable {
      */
     private void decorateContent(Node node, EnterpriseContent systemContent) {
         try {
-            systemContent.setViewId(node.getProperty(CmsConstants.OAF_VIEW_ID).getString());
-            if(node.hasProperty(CmsConstants.OAF_NAME)) {
-                systemContent.setName(node.getProperty(CmsConstants.OAF_NAME).getString());
+            systemContent.setViewId(node.getProperty(CmsConstants.RD_VIEW_ID).getString());
+            if(node.hasProperty(CmsConstants.RD_NAME)) {
+                systemContent.setName(node.getProperty(CmsConstants.RD_NAME).getString());
             }
-            if (node.hasProperty(CmsConstants.OAF_HTML_CONTENT)) {
-                systemContent.setHtmlContent(node.getProperty(CmsConstants.OAF_HTML_CONTENT).getString());
+            if (node.hasProperty(CmsConstants.RD_HTML_CONTENT)) {
+                systemContent.setHtmlContent(node.getProperty(CmsConstants.RD_HTML_CONTENT).getString());
             }
-            systemContent.setContentType(ContentType.getByKey(node.getProperty(CmsConstants.OAF_CONTENT_TYPE).getString()));
-            systemContent.setActive(node.getProperty(CmsConstants.OAF_ACTIVE).getBoolean());
-            systemContent.setSystem(node.getProperty(CmsConstants.OAF_SYSTEM).getBoolean());
-            systemContent.setLanguage(node.getProperty(CmsConstants.OAF_CONTENT_LANG).getString());
-//            systemContent.setLastEditDate(node.getProperty(CmsConstants.OAF_LAST_EDIT_DATE).getDate().getTime());
-            if(node.hasProperty(CmsConstants.OAF_CREATED)) {
-                systemContent.setCreateDate(node.getProperty(CmsConstants.OAF_CREATED).getDate().getTime());
+            systemContent.setContentType(ContentType.getByKey(node.getProperty(CmsConstants.RD_CONTENT_TYPE).getString()));
+            systemContent.setActive(node.getProperty(CmsConstants.RD_ACTIVE).getBoolean());
+            systemContent.setSystem(node.getProperty(CmsConstants.RD_SYSTEM).getBoolean());
+            systemContent.setLanguage(node.getProperty(CmsConstants.RD_CONTENT_LANG).getString());
+//            systemContent.setLastEditDate(node.getProperty(CmsConstants.RD_LAST_EDIT_DATE).getDate().getTime());
+            if(node.hasProperty(CmsConstants.RD_CREATED)) {
+                systemContent.setCreateDate(node.getProperty(CmsConstants.RD_CREATED).getDate().getTime());
             } else {
                 systemContent.setCreateDate(node.getProperty(CmsConstants.JCR_CREATED).getDate().getTime());
             }
 
 
 
-            if(node.hasProperty(CmsConstants.OAF_CONTENT_PERMISSIONS)) {
-                systemContent.setPermissions(node.getProperty(CmsConstants.OAF_CONTENT_PERMISSIONS).getString());
+            if(node.hasProperty(CmsConstants.RD_CONTENT_PERMISSIONS)) {
+                systemContent.setPermissions(node.getProperty(CmsConstants.RD_CONTENT_PERMISSIONS).getString());
             }
-            if (node.hasProperty(CmsConstants.OAF_APP)) {
-                systemContent.setApp(node.getProperty(CmsConstants.OAF_APP).getString());
+            if (node.hasProperty(CmsConstants.RD_APP)) {
+                systemContent.setApp(node.getProperty(CmsConstants.RD_APP).getString());
             }
-            if(node.hasProperty(CmsConstants.OAF_CONTENT_AUTHOR)) {
-                systemContent.setAuthor(node.getProperty(CmsConstants.OAF_CONTENT_AUTHOR).getString());
+            if(node.hasProperty(CmsConstants.RD_CONTENT_AUTHOR)) {
+                systemContent.setAuthor(node.getProperty(CmsConstants.RD_CONTENT_AUTHOR).getString());
             }
 
             List<String> tags = new ArrayList<>();
-            if (node.hasProperty(CmsConstants.OAF_TAGS)) {
-                for (Value value : node.getProperty(CmsConstants.OAF_TAGS).getValues()) {
+            if (node.hasProperty(CmsConstants.RD_TAGS)) {
+                for (Value value : node.getProperty(CmsConstants.RD_TAGS).getValues()) {
                     tags.add(value.getString());
                 }
             }
-            if(node.hasProperty(CmsConstants.OAF_VERSION_COMMENT)) {
+            if(node.hasProperty(CmsConstants.RD_VERSION_COMMENT)) {
                 systemContent.setVersionable(true);
-                systemContent.setVersionComment(node.getProperty(CmsConstants.OAF_VERSION_COMMENT).getString());
+                systemContent.setVersionComment(node.getProperty(CmsConstants.RD_VERSION_COMMENT).getString());
             }
-            if(node.hasProperty(CmsConstants.OAF_VALID_DATE)) {
-                systemContent.setValidDate(node.getProperty(CmsConstants.OAF_VALID_DATE).getDate().getTime());
+            if(node.hasProperty(CmsConstants.RD_VALID_DATE)) {
+                systemContent.setValidDate(node.getProperty(CmsConstants.RD_VALID_DATE).getDate().getTime());
             }
 
             systemContent.setTags(tags);
@@ -371,7 +371,7 @@ public class ContentFactory implements Serializable {
     private void setDocumentFileSize(Node node, EnterpriseContent systemContent) {
         try {
             if (systemContent.getContentType() == ContentType.DOCUMENT) {
-                systemContent.setFileSize(node.getProperty(CmsConstants.OAF_FILE_SIZE).getLong());
+                systemContent.setFileSize(node.getProperty(CmsConstants.RD_FILE_SIZE).getLong());
             }
 
         } catch (Exception e) {
@@ -383,15 +383,15 @@ public class ContentFactory implements Serializable {
     	InputStream stream = null;
     	try {
             Binary bin = null;
-            if (node.hasProperty(CmsConstants.OAF_IMAGE)) {
-                bin = node.getProperty(CmsConstants.OAF_IMAGE).getBinary();
+            if (node.hasProperty(CmsConstants.RD_IMAGE)) {
+                bin = node.getProperty(CmsConstants.RD_IMAGE).getBinary();
             }
             if (bin != null) {
                 stream = bin.getStream();
                 byte[] imageArray = ByteStreams.toByteArray(stream);
                 systemContent.setImage(imageArray);
-                systemContent.setImageMimeType(node.getProperty(CmsConstants.OAF_IMAGE_MIME_TYPE).getString());
-                systemContent.setImageName(node.getProperty(CmsConstants.OAF_IMAGE_NAME).getString());
+                systemContent.setImageMimeType(node.getProperty(CmsConstants.RD_IMAGE_MIME_TYPE).getString());
+                systemContent.setImageName(node.getProperty(CmsConstants.RD_IMAGE_NAME).getString());
             }
         } catch (Exception e) {
             log.error("Error getting oaf:image from JCR", e);
@@ -410,7 +410,7 @@ public class ContentFactory implements Serializable {
             throws RepositoryException {
         EnterpriseContent enterpriseContent = null;
         try {
-            if(node.hasProperty(CmsConstants.OAF_VERSION_COMMENT)) {
+            if(node.hasProperty(CmsConstants.RD_VERSION_COMMENT)) {
                 enterpriseContent = new GenericEnterpriseContent();
                 enterpriseContent.setName(Text.unescapeIllegalJcrChars(node.getName()));
 
@@ -480,7 +480,7 @@ public class ContentFactory implements Serializable {
                         contentNode.setProperty(JcrConstants.JCR_DATA, file);
                         contentNode.setProperty(JcrConstants.JCR_MIMETYPE, obj.getMimeType());
                         contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, now);
-                        node.setProperty(CmsConstants.OAF_FILE_SIZE, file.getSize());
+                        node.setProperty(CmsConstants.RD_FILE_SIZE, file.getSize());
 
                     }
                     break;
@@ -525,9 +525,9 @@ public class ContentFactory implements Serializable {
             Binary binary = session.getValueFactory().createBinary(stream);
 
             if (binary != null) {
-                node.setProperty(CmsConstants.OAF_IMAGE, binary);
-                node.setProperty(CmsConstants.OAF_IMAGE_NAME, obj.getImageName());
-                node.setProperty(CmsConstants.OAF_IMAGE_MIME_TYPE, obj.getImageMimeType());
+                node.setProperty(CmsConstants.RD_IMAGE, binary);
+                node.setProperty(CmsConstants.RD_IMAGE_NAME, obj.getImageName());
+                node.setProperty(CmsConstants.RD_IMAGE_MIME_TYPE, obj.getImageMimeType());
             }
         } catch (Exception e){
             log.error("Error attaching image {} to EnterpriseContent - {}", obj.getImageName(), obj.getName());
@@ -541,17 +541,17 @@ public class ContentFactory implements Serializable {
      */
     private void setGlobalProperties(Node node, EnterpriseContent obj) {
         try {
-            node.setProperty(CmsConstants.OAF_VIEW_ID, obj.getViewId());
-            node.setProperty(CmsConstants.OAF_NAME, obj.getName());
-            node.setProperty(CmsConstants.OAF_CONTENT_TYPE, obj.getContentType().key());
-            node.setProperty(CmsConstants.OAF_ACTIVE, obj.isActive());
-            node.setProperty(CmsConstants.OAF_HTML_CONTENT, obj.getHtmlContent());
-            node.setProperty(CmsConstants.OAF_SYSTEM, obj.isSystem());
+            node.setProperty(CmsConstants.RD_VIEW_ID, obj.getViewId());
+            node.setProperty(CmsConstants.RD_NAME, obj.getName());
+            node.setProperty(CmsConstants.RD_CONTENT_TYPE, obj.getContentType().key());
+            node.setProperty(CmsConstants.RD_ACTIVE, obj.isActive());
+            node.setProperty(CmsConstants.RD_HTML_CONTENT, obj.getHtmlContent());
+            node.setProperty(CmsConstants.RD_SYSTEM, obj.isSystem());
             
-            node.setProperty(CmsConstants.OAF_CONTENT_LANG, obj.getLanguage());
-            node.setProperty(CmsConstants.OAF_CONTENT_AUTHOR, obj.getAuthor());
+            node.setProperty(CmsConstants.RD_CONTENT_LANG, obj.getLanguage());
+            node.setProperty(CmsConstants.RD_CONTENT_AUTHOR, obj.getAuthor());
             
-            node.setProperty(CmsConstants.OAF_CONTENT_PERMISSIONS, obj.getPermissions());
+            node.setProperty(CmsConstants.RD_CONTENT_PERMISSIONS, obj.getPermissions());
 
 //            Date lastEditDate = obj.getLastEditDate();
 //            if(lastEditDate == null) {
@@ -559,33 +559,33 @@ public class ContentFactory implements Serializable {
 //            }
             Calendar calendar = Calendar.getInstance();
 //            calendar.setTime(lastEditDate);
-//            node.setProperty(CmsConstants.OAF_LAST_EDIT_DATE, calendar);
+//            node.setProperty(CmsConstants.RD_LAST_EDIT_DATE, calendar);
 
             String app = obj.getApp();
             if(app!= null) {
-            	node.setProperty(CmsConstants.OAF_APP, app);
+            	node.setProperty(CmsConstants.RD_APP, app);
             }
 
             List<String> contentTags = obj.getTags();
             if(contentTags != null) {
                 String[] tags = new String[contentTags.size()];
                 tags = contentTags.toArray(tags);
-                node.setProperty(CmsConstants.OAF_TAGS, tags);
+                node.setProperty(CmsConstants.RD_TAGS, tags);
             }
 
             if(obj instanceof EnterpriseContent) {
                 GenericEnterpriseContent versionableObj = (GenericEnterpriseContent) obj;
-                node.setProperty(CmsConstants.OAF_VERSION_COMMENT, versionableObj.getVersionComment());
+                node.setProperty(CmsConstants.RD_VERSION_COMMENT, versionableObj.getVersionComment());
                 calendar.setTime(versionableObj.getValidDate());
-                node.setProperty(CmsConstants.OAF_VALID_DATE, calendar);
+                node.setProperty(CmsConstants.RD_VALID_DATE, calendar);
 
                 Date createdDate = versionableObj.getCreateDate();
                 if (createdDate == null) {
                     createdDate = new Date();
                 }
                 calendar.setTime(createdDate);
-                node.setProperty(CmsConstants.OAF_CREATED, calendar);
-                node.setProperty(CmsConstants.OAF_VERSION, versionableObj.getVersion().getVersion());
+                node.setProperty(CmsConstants.RD_CREATED, calendar);
+                node.setProperty(CmsConstants.RD_VERSION, versionableObj.getVersion().getVersion());
             }
             
 
@@ -658,8 +658,8 @@ public class ContentFactory implements Serializable {
             EnterpriseContent systemContent = getVersionedEnterpriseContent(versionNode);
             GenericEnterpriseContent resultDTO = (GenericEnterpriseContent) systemContent;
             if(resultDTO != null) {
-                if(versionNode.hasProperty(CmsConstants.OAF_VERSION)) {
-                    resultDTO.setVersion(new ContentVersion(versionNode.getProperty(CmsConstants.OAF_VERSION).getString()));
+                if(versionNode.hasProperty(CmsConstants.RD_VERSION)) {
+                    resultDTO.setVersion(new ContentVersion(versionNode.getProperty(CmsConstants.RD_VERSION).getString()));
                 } else {
                     resultDTO.setVersion(new ContentVersion(versionNode.getParent().getName()));
                 }
@@ -680,10 +680,10 @@ public class ContentFactory implements Serializable {
 
     private EnterpriseContent getVersionedEnterpriseContent(Node versionNode) throws RepositoryException {
         EnterpriseContent enterpriseContent = null;
-        if(versionNode.hasProperty(CmsConstants.OAF_VIEW_ID)) {
+        if(versionNode.hasProperty(CmsConstants.RD_VIEW_ID)) {
             enterpriseContent = new GenericEnterpriseContent();
             enterpriseContent.setName(Text.unescapeIllegalJcrChars(
-                   versionNode.getProperty(CmsConstants.OAF_VIEW_ID).getString()));
+                   versionNode.getProperty(CmsConstants.RD_VIEW_ID).getString()));
             enterpriseContent.setJcrPath(versionNode.getPath());
             enterpriseContent.setParentPath(versionNode.getParent().getPath());
         }

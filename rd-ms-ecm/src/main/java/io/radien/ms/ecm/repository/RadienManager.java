@@ -27,7 +27,6 @@ import javax.enterprise.context.ApplicationScoped;
 
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
-import io.radien.ms.ecm.model.RadienModel;
 
 
 /**

@@ -50,7 +50,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +61,8 @@ import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.RestTreeNode;
+import io.radien.ms.ecm.config.ConfigProvider;
 import io.radien.ms.ecm.legacy.CmsConstants;
-import io.radien.ms.ecm.legacy.ContentDataProvider;
 import io.radien.ms.ecm.legacy.ContentFactory;
 import io.radien.ms.ecm.legacy.JcrSessionHandler;
 import io.radien.ms.ecm.legacy.RepositoryNodeService;
@@ -87,27 +86,14 @@ public class ContentRepository implements Serializable {
     public static final String IS_TRUE = "] = 'true' ";
 
     @Inject
-    private ContentFactory contentFactory;
+    private ConfigProvider cfg;
     @Inject
-    private ContentDataProvider dataProvider;
+    private ContentFactory contentFactory;
     @Inject
     private JcrSessionHandler sessionHandler;
     @Inject
     private RepositoryNodeService nodeService;
     
-    @Inject
-    @ConfigProperty(name = "system.jcr.node.root")
-    private String rootNode;
-    
-    @Inject
-    @ConfigProperty(name = "system.jcr.node.documents")
-    private String docNode;
-    
-    
-
-    
-
-
     /**
      * saves the given {@link EnterpriseContent} in the jackrabbit repository
      *
@@ -191,26 +177,25 @@ public class ContentRepository implements Serializable {
         Node content = null;
         switch (obj.getContentType()) {
             case DOCUMENT:
-                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false);
+                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, cfg.getDocumentsNodeName(), false);
                 break;
             case FOLDER:
-                content = nodeService.prepareFolderNode(session, language, parent, viewIdEscaped, dataProvider.getSupportedLanguages());
+                content = nodeService.prepareFolderNode(session, language, parent, viewIdEscaped, cfg.getSupportedLanguages());
                 break;
             case HTML:
-                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, true);
+                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, cfg.getHtmlNodeName(), true);
                 break;
             case NEWS_FEED:
-                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NEWS_FEED, true);
+                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, cfg.getNewsFeedNodeName(), true);
                 break;
-            
             case TAG:
                 content = nodeService.prepareTagNode(session, language, parent, viewIdEscaped);
                 break;
             case IMAGE:
-                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_IMAGE, false);
+                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, cfg.getImagesNodeName(), false);
                 break;
             case NOTIFICATION:
-                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, true);
+                content = nodeService.addNodeToParent(session, language, parent, viewIdEscaped, cfg.getNotificationsNodeName(), true);
                 break;
             
             case ERROR:
@@ -259,10 +244,10 @@ public class ContentRepository implements Serializable {
         try {
             QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-            String expression = "select * from [" + CmsConstants.OAF_MIXIN_NODE_PROPS + "] as base where ["
-                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + content + JCR_AND_ESCAPED
-                    + CmsConstants.OAF_APP + JCR_END_OBJ + app + JCR_AND_ESCAPED
-                    + CmsConstants.OAF_CONTENT_LANG + JCR_END_OBJ + language + "'";
+            String expression = "select * from [" + CmsConstants.RD_MIXIN_NODE_PROPS + "] as base where ["
+                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + content + JCR_AND_ESCAPED
+                    + CmsConstants.RD_APP + JCR_END_OBJ + app + JCR_AND_ESCAPED
+                    + CmsConstants.RD_CONTENT_LANG + JCR_END_OBJ + language + "'";
 
             Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 
@@ -313,11 +298,11 @@ public class ContentRepository implements Serializable {
         try {
             QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-            String expression = "select * from " + "[" + CmsConstants.OAF_MIXIN_NODE_PROPS + "] as b where " + "["
-                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + contentType.key() + JCR_AND_ESCAPED
-                    + CmsConstants.OAF_CONTENT_LANG + JCR_END_OBJ + language + JCR_AND_ESCAPED
-                    + CmsConstants.OAF_SYSTEM + IS_TRUE + JCR_AND
-                    + CmsConstants.OAF_ACTIVE + IS_TRUE;
+            String expression = "select * from " + "[" + CmsConstants.RD_MIXIN_NODE_PROPS + "] as b where " + "["
+                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + contentType.key() + JCR_AND_ESCAPED
+                    + CmsConstants.RD_CONTENT_LANG + JCR_END_OBJ + language + JCR_AND_ESCAPED
+                    + CmsConstants.RD_SYSTEM + IS_TRUE + JCR_AND
+                    + CmsConstants.RD_ACTIVE + IS_TRUE;
 
             Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 
@@ -345,10 +330,10 @@ public class ContentRepository implements Serializable {
         try {
             QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-            String expression = "select [" + CmsConstants.OAF_HTML_CONTENT + "] from [" + CmsConstants.OAF_MIXIN_NODE_PROPS + "] as b where ["
-                    + CmsConstants.OAF_CONTENT_TYPE + "] = 'appinfo' and ["
-                    + CmsConstants.OAF_APP + JCR_END_OBJ + app + "' and ["
-                    + CmsConstants.OAF_CONTENT_LANG + JCR_END_OBJ + language + "'";
+            String expression = "select [" + CmsConstants.RD_HTML_CONTENT + "] from [" + CmsConstants.RD_MIXIN_NODE_PROPS + "] as b where ["
+                    + CmsConstants.RD_CONTENT_TYPE + "] = 'appinfo' and ["
+                    + CmsConstants.RD_APP + JCR_END_OBJ + app + "' and ["
+                    + CmsConstants.RD_CONTENT_LANG + JCR_END_OBJ + language + "'";
 
             Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 
@@ -375,9 +360,9 @@ public class ContentRepository implements Serializable {
         try {
             QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-            String expression = "select [" + CmsConstants.OAF_HTML_CONTENT + "] from [" + CmsConstants.OAF_MIXIN_NODE_PROPS + "] as b where ["
-                    + CmsConstants.OAF_CONTENT_TYPE + "] = 'appinfo' and ["
-                    + CmsConstants.OAF_CONTENT_LANG + JCR_END_OBJ + language + "'";
+            String expression = "select [" + CmsConstants.RD_HTML_CONTENT + "] from [" + CmsConstants.RD_MIXIN_NODE_PROPS + "] as b where ["
+                    + CmsConstants.RD_CONTENT_TYPE + "] = 'appinfo' and ["
+                    + CmsConstants.RD_CONTENT_LANG + JCR_END_OBJ + language + "'";
 
             Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 
@@ -406,15 +391,15 @@ public class ContentRepository implements Serializable {
 //        try {
 //            QueryManager queryManager = session.getWorkspace().getQueryManager();
 //
-//            StringBuilder expression = new StringBuilder("" + "select * " + "from " + "[" + CmsConstants.OAF_MIXIN_NODE_PROPS + "] as b " + "where " + "["
-//                    + CmsConstants.OAF_SYSTEM + JCR_END_OBJ + enableSystemContent + "' " + "and (" + "["
-//                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + ContentType.HTML.key() + "' " + JCR_OR
-//                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + ContentType.NEWS_FEED.key() + "' " + JCR_OR
-//                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + ContentType.NOTIFICATION.key() + "' " + ") ");
+//            StringBuilder expression = new StringBuilder("" + "select * " + "from " + "[" + CmsConstants.RD_MIXIN_NODE_PROPS + "] as b " + "where " + "["
+//                    + CmsConstants.RD_SYSTEM + JCR_END_OBJ + enableSystemContent + "' " + "and (" + "["
+//                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + ContentType.HTML.key() + "' " + JCR_OR
+//                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + ContentType.NEWS_FEED.key() + "' " + JCR_OR
+//                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + ContentType.NOTIFICATION.key() + "' " + ") ");
 //
 //            if (tags != null && !tags.isEmpty()) {
 //                for (String tag : tags) {
-//                    expression.append(JCR_AND).append(CmsConstants.OAF_TAGS).append(JCR_END_OBJ).append(tag).append("' ");
+//                    expression.append(JCR_AND).append(CmsConstants.RD_TAGS).append(JCR_END_OBJ).append(tag).append("' ");
 //                }
 //            }
 //
@@ -458,12 +443,12 @@ public class ContentRepository implements Serializable {
         TreeNode root = null;
         Session session = sessionHandler.createSession();
         try {
-            Node docsNode = nodeService.getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
+            Node docsNode = nodeService.getNode(session, cfg.getDocumentsNodeName(), false, null);
             if (docsNode != null) {
                 String rootName = docsNode.getName();
                 EnterpriseContent enterpriseContent = contentFactory.create(rootName, rootName, ContentType.FOLDER);
                 root = new RestTreeNode(enterpriseContent, null);
-                for (Node node : JcrUtils.getChildNodes(nodeService.getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null))) {
+                for (Node node : JcrUtils.getChildNodes(nodeService.getNode(session, cfg.getDocumentsNodeName(), false, null))) {
                     nodeService.loopNodes(root, node);
                 }
             }
@@ -512,12 +497,12 @@ public class ContentRepository implements Serializable {
         try {
             queryManager = session.getWorkspace().getQueryManager();
 
-            String expression = "" + "select * " + "from " + "[" + CmsConstants.OAF_MIXIN_NODE_PROPS + "] as b " + "where " + "["
-                    + CmsConstants.OAF_SYSTEM + IS_TRUE + JCR_AND
-                    + CmsConstants.OAF_TAGS + JCR_END_OBJ + name + "' and ( ["
-                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + ContentType.HTML.key() + "' " + JCR_OR
-                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + ContentType.NEWS_FEED.key() + "' " + JCR_OR
-                    + CmsConstants.OAF_CONTENT_TYPE + JCR_END_OBJ + ContentType.NOTIFICATION.key() + "' " + ") ";
+            String expression = "" + "select * " + "from " + "[" + CmsConstants.RD_MIXIN_NODE_PROPS + "] as b " + "where " + "["
+                    + CmsConstants.RD_SYSTEM + IS_TRUE + JCR_AND
+                    + CmsConstants.RD_TAGS + JCR_END_OBJ + name + "' and ( ["
+                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + ContentType.HTML.key() + "' " + JCR_OR
+                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + ContentType.NEWS_FEED.key() + "' " + JCR_OR
+                    + CmsConstants.RD_CONTENT_TYPE + JCR_END_OBJ + ContentType.NOTIFICATION.key() + "' " + ") ";
 
             Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 
@@ -534,8 +519,8 @@ public class ContentRepository implements Serializable {
 
     public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
         Session session = sessionHandler.createSession();
-        Node docsNode = nodeService.getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
-        JcrUtils.getOrCreateByPath(String.format("/%s/%s%s", rootNode, docsNode.getName(), path), JcrConstants.NT_FOLDER, session);
+        Node docsNode = nodeService.getNode(session, cfg.getDocumentsNodeName(), false, null);
+        JcrUtils.getOrCreateByPath(String.format("/%s/%s%s", cfg.getRootNodeName(), docsNode.getName(), path), JcrConstants.NT_FOLDER, session);
 
         session.save();
         session.logout();
@@ -545,9 +530,9 @@ public class ContentRepository implements Serializable {
     public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
         Session session = sessionHandler.createSession();
 
-        Node resultNode = session.getRootNode().getNode(rootNode);
+        Node resultNode = session.getRootNode().getNode(cfg.getRootNodeName());
         if (resultNode != null) {
-            resultNode = resultNode.getNode(String.format("%s%s", docNode, path));
+            resultNode = resultNode.getNode(String.format("%s%s", cfg.getDocumentsNodeName(), path));
         } else {
             throw new RepositoryException("Repository root node not available!");
         }
@@ -566,7 +551,7 @@ public class ContentRepository implements Serializable {
             session = sessionHandler.createSession();
             Node contentNode = session.getNode(contentPath);
             Node rootNode = session.getRootNode().getNode("oaf");
-            nodeService.addSupportedLocalesFolder(contentNode, rootNode, nameEscaped, dataProvider.getSupportedLanguages());
+            nodeService.addSupportedLocalesFolder(contentNode, rootNode, nameEscaped, cfg.getSupportedLanguages()); 
             session.save();
         } catch (RepositoryException e) {
             log.error("Repository exception. Not possible to update {}", nameEscaped, e);

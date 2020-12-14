@@ -1,30 +1,30 @@
-<oaf = 'http://www.jcp.org/jcr/mix/1.0'>
-[oaf:NodeType]
+<rd = 'http://www.jcp.org/jcr/mix/1.0'>
+[rd:NodeType]
   orderable mixin
-  - oaf:viewId (string) version mandatory
-  - oaf:name (string) version
-  - oaf:contentType (string) mandatory
-  - oaf:language (string) mandatory
-  - oaf:step (string) mandatory version
-  - oaf:htmlContent (string) version
-  - oaf:fileSize (long) version
-  - oaf:active (boolean)
-  - oaf:system (boolean)
-  - oaf:image (binary) version
-  - oaf:imageName (string) version
-  - oaf:imageMimeType (string) version
-  - oaf:tags (string) multiple
-  - oaf:app (string) version
-  - oaf:lastEditDate (date) version
-  - oaf:author (string)
-  - oaf:permissions (boolean) version
-  - oaf:externalPublic (boolean)
-  - oaf:versionComment (string) version
-  - oaf:validDate (date) version
+  - rd:viewId (string) version mandatory
+  - rd:name (string) version
+  - rd:contentType (string) mandatory
+  - rd:language (string) mandatory
+  - rd:step (string) mandatory version
+  - rd:htmlContent (string) version
+  - rd:fileSize (long) version
+  - rd:active (boolean)
+  - rd:system (boolean)
+  - rd:image (binary) version
+  - rd:imageName (string) version
+  - rd:imageMimeType (string) version
+  - rd:tags (string) multiple
+  - rd:app (string) version
+  - rd:lastEditDate (date) version
+  - rd:author (string)
+  - rd:permissions (boolean) version
+  - rd:externalPublic (boolean)
+  - rd:versionComment (string) version
+  - rd:validDate (date) version
 
-[oaf:VersionableMixin]
+[rd:VersionableMixin]
  orderable mixin
-  - oaf:created (date) version
-  - oaf:version (string) version
-  - oaf:mandatoryView (boolean) version
-  - oaf:mandatoryApproval (boolean) version
+  - rd:created (date) version
+  - rd:version (string) version
+  - rd:mandatoryView (boolean) version
+  - rd:mandatoryApproval (boolean) version
