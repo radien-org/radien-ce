@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.ms.ecm.model.RadienModel;
 
 
@@ -37,13 +39,13 @@ public class RadienManager {
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
     private AtomicInteger modelIdGenerator = new AtomicInteger(0);
 
-    private ConcurrentMap<String, RadienModel> inMemoryStore = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, EnterpriseContent> inMemoryStore = new ConcurrentHashMap<>();
 
     public RadienManager() {
-        RadienModel model = new RadienModel();
-        model.setId(getNextId());
-        model.setMessage("This is how to microprofile");
-        inMemoryStore.put(model.getId(), model);
+    	EnterpriseContent model = new GenericEnterpriseContent();
+        model.setViewId(getNextId());
+        model.setHtmlContent("This is how to microprofile");
+        inMemoryStore.put(model.getViewId(), model);
     }
 
     private String getNextId() {
@@ -51,19 +53,19 @@ public class RadienManager {
         return String.format("%04d-%s", modelIdGenerator.incrementAndGet(), date);
     }
 
-    public String add(RadienModel model) {
+    public String add(EnterpriseContent model) {
         String id = getNextId();
-        model.setId(id);
+        model.setViewId(id);
         inMemoryStore.put(id, model);
         return id;
     }
 
-    public RadienModel getModel(String id) {
+    public EnterpriseContent getModel(String id) {
         return inMemoryStore.get(id);
     }
 
-    public List<RadienModel> getAll() {
-        List<RadienModel> models = new ArrayList<>();
+    public List<EnterpriseContent> getAll() {
+        List<EnterpriseContent> models = new ArrayList<>();
         models.addAll(inMemoryStore.values());
         return models;
     }

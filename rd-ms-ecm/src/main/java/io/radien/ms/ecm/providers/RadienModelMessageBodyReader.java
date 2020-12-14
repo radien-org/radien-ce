@@ -28,7 +28,6 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import io.radien.api.service.ecm.model.EnterpriseContent;
-import io.radien.ms.ecm.model.RadienModel;
 import io.radien.ms.ecm.util.RadienModelMapper;
 
 
@@ -42,7 +41,7 @@ import io.radien.ms.ecm.util.RadienModelMapper;
 public class RadienModelMessageBodyReader implements MessageBodyReader<EnterpriseContent> {
 	 @Override
 	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(RadienModel.class);
+	        return type.equals(EnterpriseContent.class);
 	    }
 
 	    @Override
