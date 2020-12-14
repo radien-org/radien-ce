@@ -27,33 +27,14 @@ import io.radien.api.Model;
  */
 public interface SystemIdentity extends Model {
 
-	String getIdentityKey();
+	public String getFirstname();
+	public void setFirstname(String firstname);
 
-	void setIdentityKey(String id);
+	public String getLastname();
+	public void setLastname(String lastname);
 
-	String getGlobalId();
+	public String getFullname(boolean reverse);
+	public String getFullname();
 
-	void setGlobalId(String globalId);
 
-	String getFirstname();
-
-	void setFirstname(String firstname);
-
-	String getLastname();
-
-	void setLastname(String lastname);
-
-	String getFullname(boolean reverse);
-
-	String getFullname();
-
-	boolean isVerified();
-
-	void setVerified(boolean verified);
-
-	Date getVerificationDate();
-
-	void setVerificationDate(Date verificationDate);
-
-	List<SystemIdentityContact> getContacts();
 }

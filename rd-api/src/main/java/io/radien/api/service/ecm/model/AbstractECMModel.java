@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.radien.api.AbstractModel;
+import io.radien.api.model.AbstractModel;
 
 /**
  * @author Marco Weiland

@@ -28,58 +28,22 @@ import io.radien.api.Model;
  */
 public interface SystemUser extends Model {
 
-	String getLogon();
+	public String getLogon();
+	public void setLogon(String login);
 
-	void setLogon(String login);
+	public String getUserEmail();
+	public void setUserEmail(String userEmail);
+	
+	public String getPassword();
+	public void setPassword(String password);
 
-	String getUserEmail();
+	public Date getTerminationDate();
+	public void setTerminationDate(Date terminationDate);
 
-	void setUserEmail(String userEmail);
+	public SystemIdentity getIdentity();
+	public void setIdentity(SystemIdentity systemIdentity);
 
-	String getGlobalUserIdStatus();
-
-	void setGlobalUserIdStatus(String globalUserIdStatus);
-
-	String getPassword();
-
-	void setPassword(String password);
-
-	Date getRegisterDate();
-
-	void setRegisterDate(Date registerDate);
-
-	Date getTerminationDate();
-
-	void setTerminationDate(Date terminationDate);
-
-	SystemIdentity getIdentity();
-
-	void setIdentity(SystemIdentity systemIdentity);
-
-	String getFullName();
-
-	boolean isEnabled();
-
-	void setEnabled(boolean enabled);
-
-	String getLanguage();
-
-	void setLanguage(String language);
-
-	String getTimezone();
-
-	void setTimezone(String timezone);
-
-	Date getLastTOTPRequest();
-
-	void setLastTOTPRequest(Date lastTOTPRequest);
-
-	void setOtpState(String otpState);
-
-	String getOtpState();
-
-	void setLastLogin(Date date);
-
-	Date getLastLogin();
+	public boolean isEnabled();
+	public void setEnabled(boolean enabled);
 
 }

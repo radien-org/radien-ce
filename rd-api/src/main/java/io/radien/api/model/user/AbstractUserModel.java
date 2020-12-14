@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.model.identity;
+package io.radien.api.model.user;
 
 import io.radien.api.model.AbstractModel;
+import io.radien.api.model.identity.SystemUser;
 
 /**
- * Class that represents a user identity
- *
  * @author Marco Weiland
  */
-public abstract class AbstractIdentityModel extends AbstractModel implements SystemIdentity {
-	private static final long serialVersionUID = 1L;
-
-	public String getFullname(boolean reverse) {
-		return reverse ? getLastname() + ", " + getFirstname() : getFirstname() + " " + getLastname();
-	}
-
-	public String getFullname() {
-		return getFullname(false);
-	}
+public abstract class AbstractUserModel extends AbstractModel implements SystemUser {
+	private static final long serialVersionUID = -4165151447731450930L;
 
 }

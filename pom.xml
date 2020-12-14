@@ -17,6 +17,7 @@
 		<module>rd-web</module>
 		<module>rd-ms-template</module>
 		<module>rd-ms-ecm</module>
+		<module>rd-ms-usermanagement</module>
 	</modules>
 	<properties>
 

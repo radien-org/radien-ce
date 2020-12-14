@@ -15,7 +15,7 @@
  */
 package io.radien.api.model.identity;
 
-import io.radien.api.AbstractModel;
+import io.radien.api.model.AbstractModel;
 
 /**
  * Simple contact model

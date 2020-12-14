@@ -31,11 +31,7 @@ public interface SystemIdentityContact extends Model {
 	SystemIdentity getIdentity();
 
 	void setIdentity(SystemIdentity identity);
-
-	String getContactType();
-
-	void setContactType(String contactType);
-
+	
 	String getEmail();
 
 	void setEmail(String email);
