@@ -15,15 +15,18 @@
  */
 package io.radien.ms.usermanagement.legacy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
+import java.util.Collection;
+import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.UserNotFoundException;
 
 /**
  * @author Bruno Gama
@@ -32,24 +35,23 @@ import java.util.stream.Collectors;
 public class UserService implements UserServiceAccess {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
-	private static Marker audit = MarkerFactory.getMarker("AUDIT");
+
 
 	@Inject
 	private UserDataAccessLayer userDAL;
-	@Inject
-	private LoggingUtil loggingUtil;
+
 
 	@Override
 	public SystemUser getUserByLoginId(String loginId) throws UserNotFoundException {
 		SystemUser user = userDAL.getUserByLoginId(loginId);
-		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(user));
+//		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(user));
 		return user;
 	}
 
 	@Override
 	public SystemUser get(Long userId) {
 		SystemUser user = userDAL.get(userId);
-		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(user));
+//		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(user));
 		return user;
 	}
 
@@ -65,32 +67,32 @@ public class UserService implements UserServiceAccess {
 
 	@Override
 	public void save(SystemUser user) {
-		log.info(audit, loggingUtil.buildAuditLog("Attempting to save user: {}", user));
+//		log.info(audit, loggingUtil.buildAuditLog("Attempting to save user: {}", user));
 		userDAL.save(user);
 		//TODO rf: UNS
-		log.info(audit, loggingUtil.buildAuditLog("User saved successfully"));
+//		log.info(audit, loggingUtil.buildAuditLog("User saved successfully"));
 	}
 
 	@Override
 	@Deprecated
 	public SystemUser getUserByEmailAndEnabled(String email, boolean enabled) throws UserNotFoundException {
 		SystemUser user = userDAL.getUserByEmailAndEnabled(email, enabled);
-		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(user));
+//		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(user));
 		return user;
 	}
 
 	@Override
 	public void delete(SystemUser systemUser) {
-		log.info(audit, loggingUtil.buildAuditLog("Attempting to delete user: {}", systemUser.getFullName()));
+//		log.info(audit, loggingUtil.buildAuditLog("Attempting to delete user: {}", systemUser.getFullName()));
 		userDAL.delete(systemUser);
-		log.info(audit, loggingUtil.buildAuditLog("User deleted successfully"));
+//		log.info(audit, loggingUtil.buildAuditLog("User deleted successfully"));
 	}
 
 	@Override
 	public void delete(Collection<SystemUser> systemUsers) {
-		log.info(audit, loggingUtil.buildAuditLog("Attempting to delete users: {}",systemUsers.stream().map(i->Long.toString(i.getId())).collect(Collectors.joining(",")) ));
+//		log.info(audit, loggingUtil.buildAuditLog("Attempting to delete users: {}",systemUsers.stream().map(i->Long.toString(i.getId())).collect(Collectors.joining(",")) ));
 		userDAL.delete(systemUsers);
-		log.info(audit, loggingUtil.buildAuditLog("Users deleted successfully"));
+//		log.info(audit, loggingUtil.buildAuditLog("Users deleted successfully"));
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public class UserService implements UserServiceAccess {
 	@Override
 	public List<SystemUser> getUsersById(Collection<Long> ids) {
 		List<SystemUser> users = userDAL.getUsersById(ids);
-		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(users));
+//		log.debug(audit, loggingUtil.buildAuditLogNumberOfResults(users));
 		return users;
 	}
 }

@@ -49,7 +49,7 @@ public class ContentDataProvider {
 	private S3FileUtil s3FileUtil;
 
     @Inject
-    @ConfigProperty(name = "system.supported.locales")
+    @ConfigProperty(name = "system.supported.languages")
     private String supportedLanguagesCSV;
 	
 			

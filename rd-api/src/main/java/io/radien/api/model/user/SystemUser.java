@@ -15,30 +15,33 @@
 	limitations under the License.
 
  */
-package io.radien.ms.usermanagement.legacy;
+package io.radien.api.model.user;
 
-import java.io.Serializable;
-import java.util.Date;
+import io.radien.api.Model;
 
 /**
- * Interface defining the basic global auditing properties of a persistent Model
+ * Class that represents an application user
  *
  * @author Bruno Gama
  */
-public interface Model extends Serializable {
+public interface SystemUser extends Model {
 
-	Long getId();
-	void setId(Long id);
+	String getLogon();
 
-	Date getCreateDate();
-	void setCreateDate(Date createDate);
+	void setLogon(String login);
 
-	Date getLastUpdate();
-	void setLastUpdate(Date lastUpdate);
+	String getUserEmail();
 
-	Long getCreateUser();
-	void setCreateUser(Long createUser);
+	void setUserEmail(String userEmail);
 
-	Long getLastUpdateUser();
-	void setLastUpdateUser(Long lastUpdate);
+	String getPassword();
+
+	void setPassword(String password);
+
+	String getFullName();
+
+	boolean isEnabled();
+
+	void setEnabled(boolean enabled);
+
 }

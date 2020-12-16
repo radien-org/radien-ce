@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.RequestScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -63,6 +64,7 @@ import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.RestTreeNode;
 import io.radien.ms.ecm.config.ConfigProvider;
 import io.radien.ms.ecm.legacy.CmsConstants;
+import io.radien.ms.ecm.legacy.CmsSeeder;
 import io.radien.ms.ecm.legacy.ContentFactory;
 import io.radien.ms.ecm.legacy.JcrSessionHandler;
 import io.radien.ms.ecm.legacy.RepositoryNodeService;
@@ -70,7 +72,7 @@ import io.radien.ms.ecm.legacy.RepositoryNodeService;
 /**
  * @author Marco Weiland <m.weiland@radien.io>
  */
-@RequestScoped
+@ApplicationScoped
 public class ContentRepository implements Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(ContentRepository.class);
@@ -93,6 +95,17 @@ public class ContentRepository implements Serializable {
     private JcrSessionHandler sessionHandler;
     @Inject
     private RepositoryNodeService nodeService;
+    @Inject 
+    private CmsSeeder initializer;
+    
+    
+    @PostConstruct
+    private void init() {
+    	
+    	initializer.init(this, nodeService);
+    	
+    }
+    
     
     /**
      * saves the given {@link EnterpriseContent} in the jackrabbit repository

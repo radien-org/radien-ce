@@ -15,7 +15,7 @@ import javax.json.JsonString;
 import io.radien.ms.usermanagement.model.RadienModel;
 
 /**
- * @author mawe
+ * @author Marco Weiland 
  *
  */
 public class RadienModelMapper {

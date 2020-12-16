@@ -60,6 +60,10 @@ public class ConfigProvider {
     @Inject
     @ConfigProperty(name = "system.supported.languages")
     private String supportedLanguages;
+    
+    @Inject
+    @ConfigProperty(name = "system.jcr.nodetypes.cnd.file")
+    private String nodeTypesCNDFile;
 
 	/**
 	 * @return the rootNodeName
@@ -122,6 +126,13 @@ public class ConfigProvider {
 	 */
 	public String getTagNodeName() {
 		return tagNodeName;
+	}
+
+	/**
+	 * @return the nodeTypesCNDFile
+	 */
+	public String getNodeTypesCNDFile() {
+		return nodeTypesCNDFile;
 	}
     
     

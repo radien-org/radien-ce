@@ -19,6 +19,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.DataAccessLayer;
+import io.radien.exception.UserNotFoundException;
+
 /**
  * Interface that defines the user available operations
  *
