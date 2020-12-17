@@ -18,6 +18,9 @@
 package io.radien.api.model.user;
 
 import io.radien.api.Model;
+import io.radien.api.model.identity.SystemIdentity;
+
+import java.util.Date;
 
 /**
  * Class that represents an application user
@@ -26,22 +29,25 @@ import io.radien.api.Model;
  */
 public interface SystemUser extends Model {
 
-	String getLogon();
+	public String getLogon();
+	public void setLogon(String logon);
 
-	void setLogon(String login);
+	public String getUserEmail();
+	public void setUserEmail(String userEmail);
 
-	String getUserEmail();
+	public String getPassword();
+	public void setPassword(String password);
 
-	void setUserEmail(String userEmail);
+	public Date getTerminationDate();
+	public void setTerminationDate(Date terminationDate);
 
-	String getPassword();
+	public boolean isAcceptedTermsAndConditions();
+	public void setAcceptedTermsAndConditions(boolean acceptedTermsAndConditions);
 
-	void setPassword(String password);
+	public boolean isEnabled();
+	public void setEnabled(boolean enabled);
 
-	String getFullName();
-
-	boolean isEnabled();
-
-	void setEnabled(boolean enabled);
+	public SystemIdentity getIdentity();
+	public void setIdentity(SystemIdentity systemIdentity);
 
 }

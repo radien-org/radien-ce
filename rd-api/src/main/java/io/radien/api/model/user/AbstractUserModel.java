@@ -16,7 +16,6 @@
 package io.radien.api.model.user;
 
 import io.radien.api.model.AbstractModel;
-import io.radien.api.model.identity.SystemUser;
 
 /**
  * @author Marco Weiland

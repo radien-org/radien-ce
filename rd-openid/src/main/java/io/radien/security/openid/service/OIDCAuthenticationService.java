@@ -21,11 +21,11 @@ import java.io.Serializable;
 
 import javax.enterprise.context.RequestScoped;
 
+import io.radien.api.model.user.SystemUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import io.radien.api.model.identity.SystemUser;
 import io.radien.exception.AuthenticationFailedException;
 
 /**

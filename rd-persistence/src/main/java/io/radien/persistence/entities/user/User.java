@@ -33,8 +33,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import io.radien.api.model.identity.SystemIdentity;
-import io.radien.api.model.identity.SystemUser;
 import io.radien.api.model.user.AbstractUserModel;
+import io.radien.api.model.user.SystemUser;
 import io.radien.persistence.entities.identity.Identity;
 
 /**
@@ -106,14 +106,6 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.password = password;
 	}
 
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
-
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
-
 	public Date getTerminationDate() {
 		return terminationDate;
 	}
@@ -149,14 +141,6 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.userEmail = userEmail;
 	}
 
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
 	public boolean isAcceptedTermsAndConditions() {
 		return acceptedTermsAndConditions;
 	}
@@ -172,33 +156,4 @@ public class User extends AbstractUserModel implements SystemUser {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-
-	/**
-	 * @return the createUser
-	 */
-	public Long getCreateUser() {
-		return createUser;
-	}
-
-	/**
-	 * @param createUser the createUser to set
-	 */
-	public void setCreateUser(Long createUser) {
-		this.createUser = createUser;
-	}
-
-	/**
-	 * @return the lastUpdateUser
-	 */
-	public Long getLastUpdateUser() {
-		return lastUpdateUser;
-	}
-
-	/**
-	 * @param lastUpdateUser the lastUpdateUser to set
-	 */
-	public void setLastUpdateUser(Long lastUpdateUser) {
-		this.lastUpdateUser = lastUpdateUser;
-	}
-
 }

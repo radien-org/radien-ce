@@ -23,10 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import io.radien.api.model.user.SystemUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.radien.api.model.identity.SystemUser;
 import io.radien.exception.AccountNotValidException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.util.OAFHttpRequest;

@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.healthmarketscience.rmiio.RemoteInputStream;
 
-import io.radien.api.model.identity.SystemUser;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.ServiceAccess;
 import io.radien.api.service.mail.model.Mail;
 import io.radien.api.service.mail.model.MailContentType;

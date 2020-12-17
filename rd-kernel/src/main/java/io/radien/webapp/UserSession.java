@@ -27,13 +27,13 @@ import javax.security.auth.login.AccountExpiredException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.radien.api.model.user.SystemUser;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import io.radien.api.model.identity.SystemUser;
 import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.AccountNotValidException;
 import io.radien.exception.SessionNotValidException;
