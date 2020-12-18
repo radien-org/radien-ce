@@ -35,9 +35,7 @@ import java.util.*;
  * oaf applications
  *
  * @author Marco Weiland
- * @author José Rodrigues
- * @author Rafael Fernandes
- * @author João Alves Coelho
+ * 
  */
 @RequestScoped
 public class UserDataLayer implements UserDataAccessLayer {

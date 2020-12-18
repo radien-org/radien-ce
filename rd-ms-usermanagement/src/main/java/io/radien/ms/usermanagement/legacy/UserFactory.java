@@ -25,7 +25,6 @@ import java.io.Serializable;
  * Factory class responsible for producing User related objects
  *
  * @author Marco Weiland
- * @author jsr
  */
 @RequestScoped
 public class UserFactory implements Serializable {
