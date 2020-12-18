@@ -1,8 +1,8 @@
-FROM tomee:8-jre-8.0.5-plus as builder
+FROM tomee:latest as builder
 COPY target/rd-ms-ecm.war /web.war
 COPY cfg /cfg
 
-FROM tomee:8-jre-8.0.5-plus 
+FROM tomee:latest 
 WORKDIR /
 
 COPY --from=builder /web.war /usr/local/tomee/webapps/web.war

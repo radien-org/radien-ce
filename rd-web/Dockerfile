@@ -1,4 +1,4 @@
-FROM tomee:8-jre-8.0.5-plus as builder
+FROM tomee:latest as builder
 COPY target/web.war /web.war
 COPY cfg /cfg
 
