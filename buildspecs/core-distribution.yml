@@ -18,13 +18,13 @@ phases:
   build:
     commands:
       - mvn deploy -T 4C -e -P radien--radien-artifactory -B -s aws-build-settings.xml -DskipTests=true
-      - ls rd-ms-ecm/target/*exec.jar
+      #- ls rd-ms-ecm/target/*exec.jar
     finally:
-      - rm -r /root/.m2/repository/org/openappframe/
+      - rm -r /root/.m2/repository/io/radien/
 
 artifacts:
   files:
-    - rd-ms-ecm/target/rd-ms-ecm-exec.jar
+    - rd-ms-ecm/target/rd-ms-ecm.war
     - rd-ms-ecm/Dockerfile
     - rd-web/target/web.war
     - rd-web/Dockerfile
