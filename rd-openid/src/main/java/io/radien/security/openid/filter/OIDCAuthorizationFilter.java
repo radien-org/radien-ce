@@ -20,7 +20,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,6 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
 
 		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) res;
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		boolean isAnonymous = auth == null
@@ -59,10 +57,11 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 			if (!isAnonymous && sessionHandler.getUser(request) == null) {
 				String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				session.login(userDetails.getSub());
+				session.login(userDetails.getSub(),userDetails.getUserEmail(),userDetails.getUsername(),userDetails.getFullName());
 				log.info("User has logged in via OIDC. {}", userName);
 			}
 			chain.doFilter(req, res);
+			return;
 		} catch (Exception e) {
 			log.error("ERROR",e);
 			log.error(SystemMessages.KERNEL_UNKNOWN.message(e.getMessage()));

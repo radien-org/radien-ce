@@ -1,59 +1,51 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:b="http://bootsfaces.net/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      lang="#{localeManager.activeLocale}">
-    <f:view locale="#{localeManager.userLanguage}" contentType="text/html" encoding="UTF-8">
-        <h:head>
-            <title>#{webApp.appName}</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
-            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-
-        </h:head>
-        <h:body id="app-root" >
-            <script>
-                $(document).on('pfAjaxError', function(e, xhr, error) {
-                    console.log("Error on ajax call: " + JSON.stringify(error));
-                    if (xhr.status == 401) {
-                        window.location.href = "#{request.contextPath}/";
-                    }
-                });
-            </script>
-            <b:container>
-                <b:navBar brand="Project name" brandHref="#" fixed="top" inverse="true">
-                    <b:navbarLinks>
-                        <b:navLink value="Home" href="#"></b:navLink>
-                        <b:navLink value="About" href="#about"></b:navLink>
-                        <b:navLink value="Contact" href="#contact"></b:navLink>
-                        <b:dropMenu value="Dropdown">
-                            <b:navLink value="Action" href="#"></b:navLink>
-                            <b:navLink value="Another action" href="#"></b:navLink>
-                            <b:navLink value="Something else here" href="#"></b:navLink> 
-                            <b:navLink></b:navLink>
-                            <b:navLink header="Nav header"></b:navLink>
-                            <b:navLink value="Separated link" href="#"></b:navLink>
-                            <b:navLink value="One more separated link" href="#"></b:navLink>
-                        </b:dropMenu>
-                    </b:navbarLinks>
-
-
-                    <b:navbarLinks pull="right"><b:navLink value="    " href="#"></b:navLink></b:navbarLinks>
-                    <b:navbarLinks pull="right" styleClass="hidden-xs">
-                        <form class="navbar-form navbar-left hidden-md hidden-sm hidden-xs" role="search">
-                        <div class="form-group">
-                            <input type="text" class="form-control"/>
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                        </form>
-                    </b:navbarLinks>
-                </b:navBar>
-            </b:container>
-            <b:container fluid="true">
-                <ui:insert name="content" />
-            </b:container>
-        </h:body>
-    </f:view>
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	lang="#{localeManager.activeLocale}">
+<f:view locale="#{localeManager.userLanguage}" contentType="text/html"
+	encoding="UTF-8">
+	<h:head>
+		<title>#{msg.rd_html_title}</title>
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</h:head>
+	<h:body id="app-root">
+		<script>
+			$(document).on('pfAjaxError', function(e, xhr, error) {
+				console.log("Error on ajax call: " + JSON.stringify(error));
+				if (xhr.status == 401) {
+					window.location.href = "#{request.contextPath}/";
+				}
+			});
+		</script>
+		<b:container>
+			<b:navBar brand="#{msg.rd_app_name}" brandHref="#" position="top" sticky="true" inverse="true">
+				<b:navbarLinks>
+					<b:navLink value="#{msg.rd_home_page}" href="#"></b:navLink>
+					<b:navLink value="#{msg.rd_about_page}" href="#about"></b:navLink>
+					<b:navLink value="Contact" href="#contact"></b:navLink>
+					<b:dropMenu value="dynamic content menu">
+						<b:navLink value="content1" href="#"></b:navLink>
+						<b:navLink value="content2" href="#"></b:navLink>
+						<b:navLink></b:navLink>
+						<b:navLink header="content3"></b:navLink>
+						<b:navLink value="content4" href="#"></b:navLink>
+					</b:dropMenu>
+				
+					<b:dropMenu value="#{userSession.userFullName}" style-class="pull-right" rendered="#{userSession.active}"> 
+						<b:navLink value="#{msg.rd_user_profile}" href="${pageContext.request.contextPath}/module/userprofile"></b:navLink>
+					</b:dropMenu>
+					<b:navLink value="#{msg.login}" href="${pageContext.request.contextPath}/module/logintrigger" style-class="pull-right" rendered="#{not userSession.active}"></b:navLink>
+				</b:navbarLinks>
+			</b:navBar>
+		</b:container>
+		<b:container fluid="true">
+			<ui:insert name="content" />
+		</b:container>
+	</h:body>
+</f:view>
 </html>

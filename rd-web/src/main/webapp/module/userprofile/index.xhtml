@@ -8,23 +8,44 @@
     <ui:define name="content">
 
         <b:container>
-            <b:row>
-                <br />
-                <b:columm>
-                    <b:row>
-                        <h:panelGroup layout="block">
-                            <h:outputText value="#{msg.welcome} "/>
-                            <hr />
-                        </h:panelGroup>
-                    </b:row>
-                    <b:row>
-                        <b:column>
-                            <h:outputText value="welcome user" />
-                        </b:column>
-                        <b:column></b:column>
-                    </b:row>
-                </b:column>
-            </b:row>
+			<b:row>
+			    <h:panelGroup layout="block">
+			        <h1><h:outputText value="#{msg.rd_user_profile} "/></h1>
+			        <hr />
+			    </h:panelGroup>
+			</b:row>
+			<b:row>
+			    <b:column span="3">
+			        <h:outputText value="#{msg.preferred_user_name}" />
+			
+			    </b:column>
+			    <b:column span="9">
+			        <h:outputText value="#{userSession.preferredUserName}" />
+			
+			    </b:column>
+			</b:row>
+			<b:row>
+			    <b:column span="3">
+			        
+			        <h:outputText value="#{msg.email}" />
+			        
+			    </b:column>
+			    <b:column span="9">
+			        
+			        <h:outputText value="#{userSession.email}" />
+			        
+			    </b:column>
+			</b:row>
+			<b:row>
+			    <b:column span="3">
+			        
+			        <h:outputText value="#{msg.identity_id}" />
+			    </b:column>
+			    <b:column span="9">
+			        
+			        <h:outputText value="#{userSession.userIdSubject}" />
+			    </b:column>
+			</b:row>
         </b:container>
 
 

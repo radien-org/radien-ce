@@ -2,12 +2,11 @@ FROM tomee:latest as builder
 COPY target/web.war /web.war
 COPY cfg /cfg
 
-FROM tomcat:8-jdk8-corretto 
+FROM tomee:latest 
 WORKDIR /
-ENV SPRING_CONFIG_NAME=application,local
 
-COPY --from=builder /web.war /usr/local/tomcat/webapps/web.war
-COPY --from=builder /cfg/conf/* /usr/local/tomcat/conf/
-COPY --from=builder /cfg/lib/* /usr/local/tomcat/lib/
+COPY --from=builder /web.war /usr/local/tomee/webapps/web.war
+COPY --from=builder /cfg/conf/* /usr/local/tomee/conf/
+COPY --from=builder /cfg/lib/* /usr/local/tomee/lib/
 
 CMD ["catalina.sh", "run"]
