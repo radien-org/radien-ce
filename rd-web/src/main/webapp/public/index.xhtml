@@ -6,31 +6,7 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<ui:define name="content">
-		<b:container>
-			<b:row>
-				<ol>
-
-					<li><h:outputText value="#{msg.message}" /></li>
-
-					<li><h:outputText value="#{msg['message.test1']}" /></li>
-
-					<li><h:outputText value="#{msg['message.test2']}" /></li>
-					<li><h:outputText value="#{msg['message.test2']}"
-							escape="false" /></li>
-
-					<li><h:outputText value="#{msg['message.test3']}" /></li>
-					<li><h:outputText value="#{msg['message.test3']}"
-							escape="false" /></li>
-
-					<li><h:outputFormat value="#{msg['message.param1']}">
-							<f:param value="param0" />
-						</h:outputFormat></li>
-					<li><h:outputFormat value="#{msg['message.param2']}">
-							<f:param value="param0" />
-							<f:param value="param1" />
-						</h:outputFormat></li>
-				</ol>
-			</b:row>
-		</b:container>
+		<img src="#{resource['gfx:logos/radien.svg']}" style="display:block; margin: auto; margin-top: 100px;" width="15%"  />
 	</ui:define>
 </ui:composition>
+ 
