@@ -9,7 +9,7 @@
 		<view-id value="/public/index.oaf" />
 	</url-mapping>
 
-	<url-mapping id="loginTrigger">
+	<url-mapping id="logintrigger">
 		<pattern value="/module/logintrigger" />
 		<view-id value="/module/logintrigger.oaf" />
 	</url-mapping>

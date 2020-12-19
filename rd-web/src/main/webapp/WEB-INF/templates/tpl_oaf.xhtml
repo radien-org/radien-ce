@@ -9,9 +9,9 @@
 	encoding="UTF-8">
 	<h:head>
 		<title>#{msg.rd_html_title}</title>
-		<meta name="viewport"
-			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="shortcut icon" type="image/x-icon" href="#{resource['gfx/favicon.ico']}"/>
 	</h:head>
 	<h:body id="app-root">
 		<script>
@@ -23,25 +23,39 @@
 			});
 		</script>
 		<b:container>
-			<b:navBar brand="#{msg.rd_app_name}" brand-img="#{resource['gfx:logos/radien.svg']}" brand-img-style="width:50%" brandHref="#" position="top" sticky="true" inverse="true">
-				<b:navbarLinks>
-					<b:navLink value="#{msg.rd_home_page}" href="#"></b:navLink>
-					<b:navLink value="#{msg.rd_about_page}" href="#about"></b:navLink>
-					<b:navLink value="Contact" href="#contact"></b:navLink>
-					<b:dropMenu value="dynamic content menu">
-						<b:navLink value="content1" href="#"></b:navLink>
-						<b:navLink value="content2" href="#"></b:navLink>
-						<b:navLink></b:navLink>
-						<b:navLink header="content3"></b:navLink>
-						<b:navLink value="content4" href="#"></b:navLink>
-					</b:dropMenu>
-				
-					<b:dropMenu value="#{userSession.userFullName}" style-class="pull-right" rendered="#{userSession.active}"> 
-						<b:navLink value="#{msg.rd_user_profile}" href="${pageContext.request.contextPath}/module/userprofile"></b:navLink>
-					</b:dropMenu>
-					<b:navLink value="#{msg.login}" href="${pageContext.request.contextPath}/module/logintrigger" style-class="pull-right" rendered="#{not userSession.active}"></b:navLink>
-				</b:navbarLinks>
-			</b:navBar>
+			<h:form>
+				<b:navBar brand-img="#{resource['gfx:logos/radien.svg']}" brand-img-style="width:50%" brandHref="#" position="top" sticky="true" inverse="true">
+					<b:navbarLinks>
+						<b:navCommandLink value="#{msg.rd_home_page}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+	                        <f:param name="navigationNode" value="index" />
+	                        <f:attribute name="navigationNode" value="index" />
+	                    </b:navCommandLink>
+	
+						<b:navLink value="#{msg.rd_about_page}" href="#about"></b:navLink>
+	
+						<b:navLink value="Contact" href="#contact"></b:navLink>
+						<b:dropMenu value="dynamic content menu">
+							<b:navLink value="content1" href="#"></b:navLink>
+							<b:navLink value="content2" href="#"></b:navLink>
+							<b:navLink></b:navLink>
+							<b:navLink header="content3"></b:navLink>
+							<b:navLink value="content4" href="#"></b:navLink>
+						</b:dropMenu>
+					
+						<b:dropMenu value="#{userSession.userFullName}" style-class="pull-right" rendered="#{userSession.active}"> 
+							<b:navCommandLink value="#{msg.rd_user_profile}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+		                        <f:param name="navigationNode" value="userprofile" />
+		                        <f:attribute name="navigationNode" value="userprofile" />
+		                    </b:navCommandLink>
+						</b:dropMenu>
+						
+						<b:navCommandLink value="#{msg.login}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}" rendered="#{!userSession.active}">
+	                        <f:param name="navigationNode" value="logintrigger" />
+	                        <f:attribute name="navigationNode" value="logintrigger" />
+	                    </b:navCommandLink>
+					</b:navbarLinks>
+				</b:navBar>
+			</h:form>
 		</b:container>
 		<b:container fluid="true" style="margin-top: 1em;">
 			<ui:insert name="content" />
