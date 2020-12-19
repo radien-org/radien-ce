@@ -49,13 +49,13 @@ public @Model @SessionScoped class UserSession implements Serializable {
 		log.info("user logged in: {}", userIdSubject);
 		this.userIdSubject = userIdSubject;
 		this.email = email;
-		this.preferredUserName = preferredUserName;
 		this.userFullName = userFullName;
+		this.preferredUserName = (preferredUserName != null ? preferredUserName : email);
 		
 	}
 	
 	public boolean isActive() {
-		return (userIdSubject != null && userIdSubject.equalsIgnoreCase(""));
+		return (userIdSubject != null && !userIdSubject.equalsIgnoreCase(""));
 	}
 
 
