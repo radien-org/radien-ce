@@ -19,7 +19,10 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.persistence.entities.user.User;
 
 import javax.enterprise.context.RequestScoped;
+import javax.json.*;
 import java.io.Serializable;
+import java.util.Date;
+
 
 /**
  * Factory class responsible for producing User related objects
@@ -41,5 +44,75 @@ public class UserFactory implements Serializable {
 	public User convert(SystemUser o) {
 		User user = (User) o;
 		return user;
+	}
+
+	/**
+	 * Converts a JSONObject to a SystemUser object Used by the Application
+	 * DataInit to seed Data in the database
+	 *
+	 * @param person the JSONObject to convert
+	 * @return the SystemUserObject
+	 */
+	//TODO: Complete the object conversion fields missing
+	public static User convert(JsonObject person) {
+		String logon = getStringFromJson("logon", person);
+		String userEmail = getStringFromJson("userEmail", person);
+		String password = getStringFromJson("password", person);
+		String createUser = getStringFromJson("createUser", person);
+		String lastUpdateUser = getStringFromJson("lastUpdateUser", person);
+
+
+		User user = new User();
+		user.setLogon(logon);
+		user.setUserEmail(userEmail);
+		// TODO: Set password protected
+//		user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+		user.setCreateDate(new Date());
+		user.setLastUpdate(new Date());
+
+		return user;
+	}
+
+	//TODO: Complete the object conversion fields missing
+	public static JsonObject convertToJsonObject(SystemUser person) {
+		JsonObjectBuilder builder = Json.createObjectBuilder();
+
+		addValue(builder, "id", person.getId());
+		addValue(builder, "logon", person.getLogon());
+		addValue(builder, "userEmail", person.getUserEmail());
+		addValue(builder, "createUser", person.getCreateUser());
+		addValue(builder, "lastUpdateUser", person.getLastUpdateUser());
+
+		return  builder.build();
+	}
+
+	private static void addValue(JsonObjectBuilder builder, String key, Object value) {
+		if (value != null) {
+			builder.add(key, value.toString());
+		} else {
+			builder.addNull(key);
+		}
+	}
+
+	private static String getStringFromJson(String key, JsonObject json) {
+		String returnedString = null;
+		if (json.containsKey(key)) {
+			JsonString value = json.getJsonString(key);
+			if (value != null) {
+				returnedString = value.getString();
+			}
+		}
+		return returnedString;
+	}
+
+	private static Integer getIntFromJson(String key, JsonObject json) {
+		Integer returnedValue = null;
+		if (json.containsKey(key)) {
+			JsonNumber value = json.getJsonNumber(key);
+			if (value != null) {
+				returnedValue = value.intValue();
+			}
+		}
+		return returnedValue;
 	}
 }

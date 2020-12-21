@@ -33,8 +33,6 @@
 		validationQuery =
 	</Resource>
 
-
-
 	<!-- activate next line to be able to deploy applications in apps -->
 	<!-- <Deployments dir="apps" /> -->
 </tomee>

@@ -16,25 +16,25 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import io.radien.ms.usermanagement.model.RadienModel;
-import io.radien.ms.usermanagement.util.RadienModelMapper;
+import io.radien.ms.usermanagement.util.UserModelMapper;
+import io.radien.persistence.entities.user.User;
 
 /**
  * @author mawe
  *
  */
-public class RadienModelMessageBodyWriter implements MessageBodyWriter<RadienModel> {
+public class UserModelMessageBodyWriter implements MessageBodyWriter<User> {
 
 	 @Override
 	    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(RadienModel.class);
+	        return type.equals(User.class);
 	    }
 
 	    /*
 	    Deprecated in JAX RS 2.0
 	     */
 	    @Override
-	    public long getSize(RadienModel model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+	    public long getSize(User model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 	        return 0;
 	    }
 
@@ -52,9 +52,9 @@ public class RadienModelMessageBodyWriter implements MessageBodyWriter<RadienMod
 	     * @throws WebApplicationException
 	     */
 	    @Override
-	    public void writeTo(RadienModel model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+	    public void writeTo(User model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
 	        JsonWriter jsonWriter = Json.createWriter(entityStream);
-	        JsonObject jsonObject = RadienModelMapper.map(model);
+	        JsonObject jsonObject = UserModelMapper.map(model);
 	        jsonWriter.writeObject(jsonObject);
 	        jsonWriter.close();
 	    }

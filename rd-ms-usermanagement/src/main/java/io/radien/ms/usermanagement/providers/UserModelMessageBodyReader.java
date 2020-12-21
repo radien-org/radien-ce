@@ -16,7 +16,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import io.radien.ms.usermanagement.model.RadienModel;
-import io.radien.ms.usermanagement.util.RadienModelMapper;
+import io.radien.ms.usermanagement.util.UserModelMapper;
+import io.radien.persistence.entities.user.User;
 
 /**
  * @author mawe
@@ -24,14 +25,14 @@ import io.radien.ms.usermanagement.util.RadienModelMapper;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
-public class RadienModelMessageBodyReader implements MessageBodyReader<RadienModel> {
+public class UserModelMessageBodyReader implements MessageBodyReader<User> {
 	 @Override
 	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 	        return type.equals(RadienModel.class);
 	    }
 
 	    @Override
-	    public RadienModel readFrom(Class<RadienModel> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-	        return RadienModelMapper.map(entityStream);
+	    public User readFrom(Class<User> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+	        return UserModelMapper.map(entityStream);
 	    }
 }

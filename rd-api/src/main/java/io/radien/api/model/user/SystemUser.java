@@ -22,6 +22,8 @@ import io.radien.api.model.identity.SystemIdentity;
 
 import java.util.Date;
 
+import java.util.Date;
+
 /**
  * Class that represents an application user
  *
@@ -46,8 +48,5 @@ public interface SystemUser extends Model {
 
 	public boolean isEnabled();
 	public void setEnabled(boolean enabled);
-
-	public SystemIdentity getIdentity();
-	public void setIdentity(SystemIdentity systemIdentity);
 
 }

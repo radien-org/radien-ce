@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>rd-api</artifactId>
+	<artifactId>rd-ms-usermanagement-client</artifactId>
 	<packaging>jar</packaging>
-	<name>API - ${project.version}</name>
+	<name>Kernel - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -53,25 +53,39 @@
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>mbean-annotation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-api</artifactId>
+		</dependency>
 
+		<!-- logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
+		<!-- test -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
 		</dependency>
-
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>com.healthmarketscience.rmiio</groupId>
-			<artifactId>rmiio</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.rest.client</groupId>
+            <artifactId>microprofile-rest-client-api</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

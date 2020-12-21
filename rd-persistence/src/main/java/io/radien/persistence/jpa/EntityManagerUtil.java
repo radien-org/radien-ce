@@ -75,27 +75,18 @@ public class EntityManagerUtil {
 	 * @param em
 	 *                   the entityManager injected by the CDI
 	 */
-	public static void saveOrUpdate(Model entity, EntityManager em) {
-		EntityTransaction transaction = em.getTransaction();
-		boolean hadPreviousTransaction = true;
+	//TODO: Check if transactions are working
+	public static Long saveOrUpdate(Model entity, EntityManager em) {
 		try {
-			if (!transaction.isActive()) {
-				transaction.begin();
-				hadPreviousTransaction = false;
-			}
 			if (entity.getId() == null) {
 				em.persist(entity);
 			} else {
 				em.merge(entity);
 			}
-			if(!hadPreviousTransaction) {
-				transaction.commit();
-				log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
-			}
+
+			em.flush();
+			return entity.getId();
 		} catch (Exception e) {
-			if (transaction.isActive()) {
-				transaction.rollback();
-			}
 			log.error(ERROR_SAVING_ENTITY, e.getMessage());
 			throw e;
 		}

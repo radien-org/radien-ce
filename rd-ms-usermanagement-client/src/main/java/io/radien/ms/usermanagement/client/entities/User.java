@@ -15,62 +15,26 @@
 	limitations under the License.
 
  */
-package io.radien.persistence.entities.user;
-
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+package io.radien.ms.usermanagement.client.entities;
 
 import io.radien.api.model.user.AbstractUserModel;
 import io.radien.api.model.user.SystemUser;
 
+import java.util.Date;
 
-/**
- * JPA entity representing a user in the openappframe system
- *
- * @author Marco Weiland
- */
-
-@Entity
-@Table(name = "USR01")
 public class User extends AbstractUserModel implements SystemUser {
 
 	private static final long serialVersionUID = -3532886874455311100L;
 
-	@Id
-	@SequenceGenerator(name = "GEN_SEQ_USR01", sequenceName = "SEQ_USR01", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "GEN_SEQ_USR01")
 	private Long id;
 
-	@Column(unique = true)
 	private String logon;
-	@Column(unique = true)
 	private String userEmail;
-	@Column
 	private String password;
-	@Column
 	private String firstname;
-	@Column
 	private String lastname;
-	@Column
 	private Date terminationDate;
-	@Column
-	private Date createDate;
-	@Column
-	private Long createUser;
-	@Column
-	private Date lastUpdate;
-	@Column
-	private Long lastUpdateUser;
-	@Column
 	private boolean acceptedTermsAndConditions;
-	@Column
 	private boolean enabled;
 	
 	@Override
