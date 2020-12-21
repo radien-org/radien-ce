@@ -94,6 +94,11 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-persistence</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-usermanagement-client</artifactId>
+		</dependency>
+
 		<!-- Microprofile -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
@@ -128,12 +133,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-ms-usermanagement-client</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
 
 		<!-- ADD DEPENDENCIES FOR EVAL HERE -->
 		<!-- https://mvnrepository.com/artifact/com.github.openjson/openjson -->
@@ -144,8 +143,5 @@
 			<version>1.0.12</version>
 		</dependency>
 		-->
-
-
-
 	</dependencies>
 </project>

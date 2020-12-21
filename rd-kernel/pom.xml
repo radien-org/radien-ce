@@ -41,9 +41,10 @@
 							<app-version>${project.version}</app-version>
 							<!--suppress UnresolvedMavenProperty -->
 							<build-number>${buildNumber}</build-number>
+							<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
 						</manifestEntries>
 					</archive>
-					<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+
 				</configuration>
 			</plugin>
 		</plugins>

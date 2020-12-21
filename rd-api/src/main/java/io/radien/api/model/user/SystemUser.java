@@ -37,14 +37,8 @@ public interface SystemUser extends Model {
 	public String getUserEmail();
 	public void setUserEmail(String userEmail);
 
-	public String getPassword();
-	public void setPassword(String password);
-
 	public Date getTerminationDate();
 	public void setTerminationDate(Date terminationDate);
-
-	public boolean isAcceptedTermsAndConditions();
-	public void setAcceptedTermsAndConditions(boolean acceptedTermsAndConditions);
 
 	public boolean isEnabled();
 	public void setEnabled(boolean enabled);

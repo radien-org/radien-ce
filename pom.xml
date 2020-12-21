@@ -120,6 +120,11 @@
 				<artifactId>rd-openid</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-usermanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
 
 			<!-- Jakarta EE -->
 			<!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api -->
