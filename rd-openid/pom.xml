@@ -77,6 +77,15 @@
 			<groupId>com.auth0</groupId>
 			<artifactId>jwks-rsa</artifactId>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.okta.jwt/okta-jwt-verifier -->
+		<dependency>
+		    <groupId>com.okta.jwt</groupId>
+		    <artifactId>okta-jwt-verifier</artifactId>
+		    <version>0.5.0</version>
+		</dependency>
+
+		
 
 		<!-- ##################################################################################### -->
 		<!-- START OF WILL NOT BE PUT INTO ROOT POM, SPRING SECURITY WILL BE REPLACED BY OTHER LIB -->
