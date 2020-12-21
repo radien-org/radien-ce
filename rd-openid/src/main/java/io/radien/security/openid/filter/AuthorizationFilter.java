@@ -25,7 +25,7 @@ import io.radien.api.OAFAccess;
 public class AuthorizationFilter extends AbstractAuthorizationFilter {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	@Inject
 	private OAFAccess baseApp;
 

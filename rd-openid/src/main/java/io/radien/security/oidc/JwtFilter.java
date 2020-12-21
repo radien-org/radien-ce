@@ -1,7 +1,6 @@
 package io.radien.security.oidc;
 
 import java.io.IOException;
-import java.text.ParseException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -9,16 +8,11 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.okta.jwt.AccessTokenVerifier;
-import com.okta.jwt.Jwt;
-import com.okta.jwt.JwtVerifiers;
 
-
-@WebFilter(filterName = "jwtFilter")
+//@WebFilter(filterName = "jwtFilter")
 public class JwtFilter implements Filter {
     
 
@@ -29,9 +23,9 @@ public class JwtFilter implements Filter {
         	String clientId = "";
         	String clientSecret = "";
         	
-			AccessTokenVerifier accessTokenVerifier = JwtVerifiers.accessTokenVerifierBuilder().setIssuer(issuer).build();
-			
-			JwtVerifiers.idTokenVerifierBuilder().setIssuer(issuer).setClientId(clientId).build();
+//			AccessTokenVerifier accessTokenVerifier = JwtVerifiers.accessTokenVerifierBuilder().setIssuer(issuer).build();
+//			
+//			JwtVerifiers.idTokenVerifierBuilder().setIssuer(issuer).setClientId(clientId).build();
         	
     }
 

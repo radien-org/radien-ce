@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.radien.webapp.RedirectUtil;
-import io.radien.webapp.SessionHandler;
+import io.radien.webapp.UserSession;
 
 /**
  * Filter implementation that triggers if there is no user present on
@@ -41,11 +41,8 @@ public abstract class AbstractAuthorizationFilter extends AbstractWebFilter {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractAuthorizationFilter.class);
-
-	/** The sessionHandler that manages this session */
 	@Inject
-	protected SessionHandler sessionHandler;
-
+	protected UserSession session;
 	/** Bean responsible for utility redirect methods */
 	@Inject
 	protected RedirectUtil webapp;
@@ -69,7 +66,7 @@ public abstract class AbstractAuthorizationFilter extends AbstractWebFilter {
 
 		try {
 
-			if (sessionHandler.getUser(request) == null && reqURI.contains("/module/")
+			if (!session.isActive() && reqURI.contains("/module/")
 					&& reqURI.contains(ResourceHandler.RESOURCE_IDENTIFIER) && !reqURI.contains("/module/ecm/display")
 					&& !reqURI.contains("/saml") && !reqURI.contains("/oidc") && !reqURI.contains("/sps")) {
 				response.sendRedirect(getRedirect(request, response, chain));
