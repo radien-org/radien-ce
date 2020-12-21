@@ -5,7 +5,7 @@ public enum ErrorCodeMessage {
     // Bussiness Logic
     RESOURCE_NOT_FOUND(100, "Resource not found."),
     DUPLICATED_EMAIL(101, "There is more than one user with the same Email."),
-
+    ID_SHOULD_BE_NULL(102, "Id should be null"),
     // System Error
     GENERIC_ERROR(500, "Generic Error.");
 

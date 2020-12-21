@@ -30,7 +30,7 @@
 		testWhileIdle = false
 		timeBetweenEvictionRuns = -1 millisecond
 		userName = sa
-		validationQuery =
+		validationQuery = CALL NOW()
 	</Resource>
 
 	<!-- activate next line to be able to deploy applications in apps -->

@@ -16,7 +16,7 @@
 package io.radien.ms.usermanagement.legacy;
 
 import io.radien.api.model.user.SystemUser;
-import io.radien.persistence.entities.user.User;
+import io.radien.ms.usermanagement.entities.User;
 
 import javax.enterprise.context.RequestScoped;
 import javax.json.*;

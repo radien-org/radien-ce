@@ -15,7 +15,7 @@
 	limitations under the License.
 
  */
-package io.radien.persistence.entities.user;
+package io.radien.ms.usermanagement.entities;
 
 import java.util.Date;
 

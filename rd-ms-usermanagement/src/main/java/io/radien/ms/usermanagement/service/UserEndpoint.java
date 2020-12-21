@@ -16,15 +16,15 @@ import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
 import io.radien.ms.usermanagement.client.services.UserServiceClient;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
+import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserService;
-import io.radien.persistence.entities.user.User;
+
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -75,8 +75,11 @@ public class UserEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response add(User user) {
 		try {
-			Long id = userService.save(user);
-			return Response.created(UriBuilder.fromResource(this.getClass()).path(id.toString()).build()).build();
+			if(user.getId()!=null){
+				return Response.status(Response.Status.BAD_REQUEST).entity(ErrorCodeMessage.ID_SHOULD_BE_NULL).build();
+			}
+			userService.save(user);
+			return Response.ok().build();
 		} catch (InvalidRequestException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (Exception e) {
