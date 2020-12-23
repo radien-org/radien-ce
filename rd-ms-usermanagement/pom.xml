@@ -128,8 +128,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
-<<<<<<< HEAD
-		
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
@@ -138,32 +136,26 @@
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
 		</dependency>
-=======
->>>>>>> branch 'main' of git@github.com:re-think-innovations/radien.git
-
 		<!-- test -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
 			<artifactId>arquillian-openejb-embedded</artifactId>
 		</dependency>
-<<<<<<< HEAD
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
 
-
-
-=======
+		<!-- ADD DEPENDENCIES FOR EVAL HERE -->
+		<!-- https://mvnrepository.com/artifact/com.github.openjson/openjson -->
+		<!--
+		<dependency>
+			<groupId>com.github.openjson</groupId>
+			<artifactId>openjson</artifactId>
+			<version>1.0.12</version>
+		</dependency>
 		-->
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>eclipselink</artifactId>
-		</dependency>
->>>>>>> branch 'main' of git@github.com:re-think-innovations/radien.git
+
+
 	</dependencies>
 </project>
