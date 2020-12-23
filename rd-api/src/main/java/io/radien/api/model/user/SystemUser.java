@@ -43,4 +43,12 @@ public interface SystemUser extends Model {
 	public boolean isEnabled();
 	public void setEnabled(boolean enabled);
 
+	public String getSub();
+	public void setSub(String sub);
+
+	public String getFirstname();
+	public void setFirstname(String firstname);
+
+	public String getLastname();
+	public void setLastname(String firstname);
 }

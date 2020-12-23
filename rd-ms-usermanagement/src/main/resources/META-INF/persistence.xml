@@ -10,7 +10,7 @@
 
     <persistence-unit name="userPersistenceUnitLocal" transaction-type="JTA">
     	<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>java:/comp/env/jdbc/AppFrameDSHHSQL</jta-data-source>
+        <jta-data-source>java:/comp/env/jdbc/UserDSHHSQL</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
         <properties>

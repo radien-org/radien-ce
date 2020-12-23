@@ -68,7 +68,7 @@ public class UserService {
 		return new ArrayList<>(q.getResultList());
 	}
 
-	public Page<User> getAll(int pageNumber, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<User> getAll(int pageNumber, int pageSize, List<String> sortBy, boolean isAscending, List<String> subs) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 		Root<User> userRoot = criteriaQuery.from(User.class);
@@ -83,7 +83,19 @@ public class UserService {
 			}
 			criteriaQuery.orderBy(orders);
 		}
+		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));;
 
+		if(subs!=null && !subs.isEmpty()){
+			Predicate subPredicate;
+			if(subs.size()==1){
+				subPredicate = criteriaBuilder.equal(userRoot.get("sub"),subs.get(0));
+			} else {
+				subPredicate = userRoot.get("sub").in(subs);
+			}
+			global = criteriaBuilder.and( global, subPredicate);
+		}
+
+		criteriaQuery.where(global);
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
 		q.setFirstResult((pageNumber-1) * pageSize);
 		q.setMaxResults(pageSize);

@@ -32,6 +32,7 @@ public class User extends AbstractUserModel implements SystemUser {
 	private String userEmail;
 	private String firstname;
 	private String lastname;
+	private String sub;
 	private Date terminationDate;
 	private boolean enabled;
 	
@@ -91,5 +92,15 @@ public class User extends AbstractUserModel implements SystemUser {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	@Override
+	public String getSub() {
+		return sub;
+	}
+
+	@Override
+	public void setSub(String sub) {
+		this.sub = sub;
 	}
 }

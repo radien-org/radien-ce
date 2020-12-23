@@ -57,10 +57,11 @@ public class UserFactory implements Serializable {
 	public static User convert(JsonObject person) {
 		String logon = getStringFromJson("logon", person);
 		String userEmail = getStringFromJson("userEmail", person);
-		String password = getStringFromJson("password", person);
 		String createUser = getStringFromJson("createUser", person);
 		String lastUpdateUser = getStringFromJson("lastUpdateUser", person);
-
+		String sub = getStringFromJson("sub", person);
+		String firstname = getStringFromJson("firstname", person);
+		String lastname = getStringFromJson("lastname",person);
 
 		User user = new User();
 		user.setLogon(logon);
@@ -69,6 +70,9 @@ public class UserFactory implements Serializable {
 //		user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
 		user.setCreateDate(new Date());
 		user.setLastUpdate(new Date());
+		user.setSub(sub);
+		user.setFirstname(firstname);
+		user.setLastname(lastname);
 
 		return user;
 	}
@@ -82,7 +86,9 @@ public class UserFactory implements Serializable {
 		addValue(builder, "userEmail", person.getUserEmail());
 		addValue(builder, "createUser", person.getCreateUser());
 		addValue(builder, "lastUpdateUser", person.getLastUpdateUser());
-
+		addValue(builder, "sub", person.getSub());
+		addValue(builder, "firstname", person.getFirstname());
+		addValue(builder, "lastname", person.getLastname());
 		return  builder.build();
 	}
 

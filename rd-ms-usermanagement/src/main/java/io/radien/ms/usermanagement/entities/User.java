@@ -52,6 +52,9 @@ public class User extends AbstractUserModel implements SystemUser {
 	private String logon;
 	@Column(unique = true)
 	private String userEmail;
+	@Column(unique = true)
+	private String sub;
+
 	@Column
 	private String firstname;
 	@Column
@@ -126,4 +129,13 @@ public class User extends AbstractUserModel implements SystemUser {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+	public String getSub() {
+		return sub;
+	}
+
+	public void setSub(String sub) {
+		this.sub = sub;
+	}
+
 }
