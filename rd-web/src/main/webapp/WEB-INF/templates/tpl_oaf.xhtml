@@ -60,6 +60,11 @@
 		<b:container fluid="true" style="margin-top: 1em;">
 			<ui:insert name="content" />
 		</b:container>
+		<footer class="footer" style="position:fixed;height:100px;border:1px;boder-color:#000000; width:100%;bottom:0;">
+            
+            <h:outputText value="#{msg.version}: #{webApp.version}"/>
+            
+        </footer>
 	</h:body>
 </f:view>
 </html>
