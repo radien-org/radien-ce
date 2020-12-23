@@ -15,9 +15,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.model.RadienModel;
 import io.radien.ms.usermanagement.util.UserModelMapper;
-import io.radien.persistence.entities.user.User;
 
 /**
  * @author mawe

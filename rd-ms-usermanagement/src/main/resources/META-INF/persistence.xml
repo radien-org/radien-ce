@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- for eclipse warning, see http://stackoverflow.com/questions/8398393/multiple-persistence-unit-tags-in-one-persistence-xml -->
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+         version="2.1">
+
+    <!-- BEGIN DEFAULT PERSISTENCE UNIT -->
+
+    <persistence-unit name="userPersistenceUnitLocal" transaction-type="JTA">
+    	<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>java:/comp/env/jdbc/AppFrameDSHHSQL</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <shared-cache-mode>ALL</shared-cache-mode>
+        <properties>
+            <property name="javax.persistence.schema-generation.database.action" value="create-or-extend-tables"/>
+            <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
+            <property name="eclipselink.logging.level" value="ALL" />
+            <property name="eclipselink.target-database" value="HSQL"/>
+			<property name="eclipselink.cache.type" value="HARD_WEAK"/>
+			<property name="eclipselink.cache.size.default" value="1000"/>
+			<property name="eclipselink.logging.parameters" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+

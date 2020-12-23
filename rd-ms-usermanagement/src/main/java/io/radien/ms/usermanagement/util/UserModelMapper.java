@@ -9,8 +9,9 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
-import io.radien.persistence.entities.user.User;
+
 
 /**
  * @author Marco Weiland 

@@ -27,8 +27,7 @@ import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 
-import io.radien.persistence.entities.user.User;
-import io.radien.persistence.jpa.EntityManagerUtil;
+import io.radien.ms.usermanagement.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ public class UserService {
 
 	private static final long serialVersionUID = 1L;
 
-	@PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
+	@PersistenceContext(unitName = "userPersistenceUnitLocal", type = PersistenceContextType.EXTENDED)
 	private EntityManager em;
 
 	@Inject
@@ -105,14 +104,14 @@ public class UserService {
 		return q.getSingleResult();
 	}
 
-	public Long save(User user) throws InvalidRequestException {
+	public void save(User user) throws InvalidRequestException {
 		if(getUserByEmail(user.getUserEmail()).isPresent()) {
 			log.error(ErrorCodeMessage.DUPLICATED_EMAIL.toString());
 			throw new InvalidRequestException(ErrorCodeMessage.DUPLICATED_EMAIL.toString());
 		}
 
 		user.setLastUpdate(new Date());
-		return EntityManagerUtil.saveOrUpdate(user, em);
+		em.persist(user);
 	}
 
 	private Optional<SystemUser> getUserByEmail(String email) {

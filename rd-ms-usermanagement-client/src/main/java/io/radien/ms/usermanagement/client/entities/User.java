@@ -30,11 +30,9 @@ public class User extends AbstractUserModel implements SystemUser {
 
 	private String logon;
 	private String userEmail;
-	private String password;
 	private String firstname;
 	private String lastname;
 	private Date terminationDate;
-	private boolean acceptedTermsAndConditions;
 	private boolean enabled;
 	
 	@Override
@@ -55,14 +53,6 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.logon = logon;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public Date getTerminationDate() {
 		return terminationDate;
 	}
@@ -77,14 +67,6 @@ public class User extends AbstractUserModel implements SystemUser {
 
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
-	}
-
-	public boolean isAcceptedTermsAndConditions() {
-		return acceptedTermsAndConditions;
-	}
-
-	public void setAcceptedTermsAndConditions(boolean acceptedTermsAndConditions) {
-		this.acceptedTermsAndConditions = acceptedTermsAndConditions;
 	}
 
 	public String getFirstname() {

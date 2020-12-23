@@ -16,8 +16,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.util.UserModelMapper;
-import io.radien.persistence.entities.user.User;
+
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,7 +31,7 @@ public class UserModelListMessageBodyWriter implements MessageBodyWriter<List<Us
 
 	@Override
 	public long getSize(List<User> t, Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
+						Annotation[] annotations, MediaType mediaType) {
 		return 0;
 	}
 

@@ -60,6 +60,9 @@
 		<!-- Eclipselink -->
 		<version.eclipselink>2.7.7</version.eclipselink>
 
+		<!-- DB -->
+		<version.hsqldb>2.5.1</version.hsqldb>
+
 		<!-- Microprofile -->
 		<version.microprofile>3.3</version.microprofile>
 
@@ -118,6 +121,11 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-openid</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-usermanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 
@@ -299,6 +307,13 @@
 				<version>${version.junit}</version>
 				<scope>test</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>${version.hsqldb}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	<profiles>

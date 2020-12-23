@@ -15,7 +15,7 @@
 	limitations under the License.
 
  */
-package io.radien.persistence.entities.user;
+package io.radien.ms.usermanagement.entities;
 
 import java.util.Date;
 
@@ -53,8 +53,6 @@ public class User extends AbstractUserModel implements SystemUser {
 	@Column(unique = true)
 	private String userEmail;
 	@Column
-	private String password;
-	@Column
 	private String firstname;
 	@Column
 	private String lastname;
@@ -68,8 +66,6 @@ public class User extends AbstractUserModel implements SystemUser {
 	private Date lastUpdate;
 	@Column
 	private Long lastUpdateUser;
-	@Column
-	private boolean acceptedTermsAndConditions;
 	@Column
 	private boolean enabled;
 	
@@ -91,14 +87,6 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.logon = logon;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public Date getTerminationDate() {
 		return terminationDate;
 	}
@@ -113,14 +101,6 @@ public class User extends AbstractUserModel implements SystemUser {
 
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
-	}
-
-	public boolean isAcceptedTermsAndConditions() {
-		return acceptedTermsAndConditions;
-	}
-
-	public void setAcceptedTermsAndConditions(boolean acceptedTermsAndConditions) {
-		this.acceptedTermsAndConditions = acceptedTermsAndConditions;
 	}
 
 	public String getFirstname() {
