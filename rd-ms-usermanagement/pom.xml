@@ -135,15 +135,15 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- ADD DEPENDENCIES FOR EVAL HERE -->
-		<!-- https://mvnrepository.com/artifact/com.github.openjson/openjson -->
-		<!--
+		<!-- test -->
 		<dependency>
-			<groupId>com.github.openjson</groupId>
-			<artifactId>openjson</artifactId>
-			<version>1.0.12</version>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
 		</dependency>
-		-->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 
 
 
