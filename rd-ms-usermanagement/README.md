@@ -39,6 +39,9 @@ radien Enterprise Content Management Microservice
     curl -H "Content-Type: application/json" -X POST -d '{"id": "1", "message": "this is the model"}' http://localhost:8080/rd-ms-template/template/models
 ### - ___Create user:___
     curl --location --request POST 'http://localhost:8080/usermanagement/usermanagement/v1/user' --header 'Content-Type: application/json' --data-raw '{"logon":"logon1","userEmail":"useremail1@useremail1.pt", "firstName":"NameFirst", "lastName":"NameLast", "createUser":1,"lastUpdateUser":1}'
+    
+    curl -H "Content-Type: application/json" -X POST -d '{"logon":"logon1","userEmail":"radien1@byom.de", "firstName":"NameFirst", "lastName":"NameLast", "createUser":1,"lastUpdateUser":1}' 'http://localhost:8080/rd-ms-usermanagement/v1/user'
+    
 #
 * PUT Data
   ------
