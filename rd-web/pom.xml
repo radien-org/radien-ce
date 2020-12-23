@@ -41,8 +41,8 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<app-version>${project.version}</app-version>
-							<webapp-version>${project.version}</webapp-version>
+							<app-version>${project.parent.version}</app-version>
+							<webapp-version>${project.parent.version}</webapp-version>
 						</manifestEntries>
 					</archive>
 				</configuration>
