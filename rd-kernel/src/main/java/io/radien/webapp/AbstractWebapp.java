@@ -37,17 +37,17 @@ public abstract class AbstractWebapp implements Serializable, Appframeable {
 
 	public String getVersion() {
 		String version = getProperty(OAFProperties.SYS_MF_APP_VERSION);
-		if ( version != null &&  version.contains(SNAPSHOT) &&   getBuildNumber() != null && getBuildNumber().equalsIgnoreCase("")) {
-			version += ("-"+getBuildNumber());
-		}
+//		if ( version != null &&  version.contains(SNAPSHOT) &&   getBuildNumber() != null && getBuildNumber().equalsIgnoreCase("")) {
+//			version += ("-"+getBuildNumber());
+//		}
 		return version;
 	}
 
 	public String getWebappVersion() {
 		String version = getProperty(OAFProperties.SYS_MF_WEBAPP_VERSION);
-		if ( version != null && version.contains(SNAPSHOT)) {
-			version += ("-"+getBuildNumber());
-		}
+//		if ( version != null && version.contains(SNAPSHOT)) {
+//			version += ("-"+getBuildNumber());
+//		}
 		return version;
 	}
 
