@@ -24,7 +24,6 @@ import javax.json.*;
 import java.io.Serializable;
 import java.util.Date;
 
-
 /**
  * Factory class responsible for producing User related objects
  *
