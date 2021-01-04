@@ -1,14 +1,15 @@
 package io.radien.ms.usermanagement.client.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Page<T> {
+public class Page<T extends Serializable> implements Serializable {
 
-    List<T> results;
-    int currentPage;
-    int totalResults;
-    int totalPages;
-
+    private static final long serialVersionUID = 6812608123262067424L;
+    private List<T> results;
+    private int currentPage;
+    private int totalResults;
+    private int totalPages;
 
     public Page(List<T> results, int currentPage, int totalResults, int totalPages) {
         this.results = results;

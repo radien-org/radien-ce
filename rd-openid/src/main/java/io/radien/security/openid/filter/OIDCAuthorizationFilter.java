@@ -40,7 +40,6 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(OIDCAuthorizationFilter.class);
 
-
 	@Override
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -50,7 +49,8 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 			if (!isAnonymous && !session.isActive()) {
 				String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				session.login(userDetails.getSub(),userDetails.getUserEmail(),userDetails.getUsername(),userDetails.getFullName());
+				session.login(userDetails.getSub(),userDetails.getUserEmail(),userDetails.getUsername(),
+						userDetails.getGivenname(),userDetails.getFamilyname());
 				log.info("User has logged in via OIDC. {}", userName);
 			}
 			chain.doFilter(req, res);

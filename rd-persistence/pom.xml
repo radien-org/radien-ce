@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>rd-persistence</artifactId>
 	<packaging>jar</packaging>
-	<name>Kernel - ${project.version}</name>
+	<name>Persistence - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
 		<finalName>${project.artifactId}</finalName>

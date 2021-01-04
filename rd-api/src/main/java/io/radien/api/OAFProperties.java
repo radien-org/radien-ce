@@ -111,7 +111,9 @@ public enum OAFProperties implements SystemProperties{
 
 	PLUGIN_INITIALIZER_URL("plugin.initializer.url"),
     PLUGIN_INITIALIZER_CONNECTION_TIMEOUT("plugin.initializer.connection.timeout"),
-    PLUGIN_INITIALIZER_READ_TIMEOUT("plugin.initializer.read.timeout");
+    PLUGIN_INITIALIZER_READ_TIMEOUT("plugin.initializer.read.timeout"),
+
+    USER_MANAGEMENT_MS_URL("user.management.ms.url");
 
     private String propKey;
 

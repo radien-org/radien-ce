@@ -16,11 +16,16 @@
 package io.radien.webapp;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
+import javax.inject.Inject;
 
+import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.services.UserClientService;
+import io.radien.ms.usermanagement.client.services.UserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,28 +39,32 @@ public @Model @SessionScoped class UserSession implements Serializable {
 
 	private static final long serialVersionUID = 1198636791261091733L;
 	private static final Logger log = LoggerFactory.getLogger(UserSession.class);
-	
-	private String userIdSubject;
-	private String email;
-	private String preferredUserName; 
-	private String userFullName;
+
+	private User user;
+
+	@Inject
+	private UserClientService userClientService;
 	
 	@PostConstruct
 	private void init() {
-		userIdSubject = null;
+
 	}
 	
-	public void login(String userIdSubject,String email, String preferredUserName, String userFullName) {
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception {
 		log.info("user logged in: {}", userIdSubject);
-		this.userIdSubject = userIdSubject;
-		this.email = email;
-		this.userFullName = userFullName;
-		this.preferredUserName = (preferredUserName != null ? preferredUserName : email);
-		
+		Optional<User> existingUser = userClientService.getUserBySub(userIdSubject);
+		User user;
+		if(!existingUser.isPresent()){
+			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,email,null);
+			userClientService.create(user);
+		} else {
+			user = existingUser.get();
+		}
+		this.user = user;
 	}
 	
 	public boolean isActive() {
-		return (userIdSubject != null && !userIdSubject.equalsIgnoreCase(""));
+		return user!=null && user.isEnabled();
 	}
 
 
@@ -63,7 +72,7 @@ public @Model @SessionScoped class UserSession implements Serializable {
 	 * @return the userIdSubject
 	 */
 	public String getUserIdSubject() {
-		return userIdSubject;
+		return user.getSub();
 	}
 
 
@@ -71,7 +80,7 @@ public @Model @SessionScoped class UserSession implements Serializable {
 	 * @return the email
 	 */
 	public String getEmail() {
-		return email;
+		return user.getUserEmail();
 	}
 
 
@@ -79,7 +88,7 @@ public @Model @SessionScoped class UserSession implements Serializable {
 	 * @return the preferredUserName
 	 */
 	public String getPreferredUserName() {
-		return preferredUserName;
+		return user.getLogon() != null ? user.getLogon() : user.getUserEmail();
 	}
 
 
@@ -87,7 +96,7 @@ public @Model @SessionScoped class UserSession implements Serializable {
 	 * @return the userFullName
 	 */
 	public String getUserFullName() {
-		return userFullName;
+		return user.getFirstname() + " " + user.getLastname();
 	}
 
 }

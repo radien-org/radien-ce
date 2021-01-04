@@ -13,41 +13,33 @@ radien Enterprise Content Management Microservice
 ### - ___Run:___ 
     java -jar target/rd-ms-usermanagement-service.jar
 
-#
+### - ___Local TomEE Configuration:___
+    URL: https://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user
+    HTTP Port: 9080
+    HTTPS Port: 9443
+    JMX Port: 1100
+    Deployment: rd-ms-usermanagement:war exploded
+    Application Context: /rd-ms-usermanagement
+
 #
 # - cUrls
 
 * GET Data
   ------
-
-### - ___Microprofile:___
-    curl http://localhost:8080/usermagagement/models
-
-### - ___Local:___
-    curl http://localhost:8080/rd-ms-usermanagement/usermanagement/user
-
 ### - ___Get user by ID:___
-    curl --location --request GET 'http://localhost:8080/usermanagement/usermanagement/v1/user/{id}'
+    curl --location --request GET 'http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user/{id}'
 #
 * POST Data
   ------
-
-### - ___Microprofile:___
-    curl -H "Content-Type: application/json" -X POST -d '{"id": "1", "message": "this is the model"}' http://localhost:8080/template/models
-
-### - ___Local:___
-    curl -H "Content-Type: application/json" -X POST -d '{"id": "1", "message": "this is the model"}' http://localhost:8080/rd-ms-template/template/models
 ### - ___Create user:___
-    curl --location --request POST 'http://localhost:8080/usermanagement/usermanagement/v1/user' --header 'Content-Type: application/json' --data-raw '{"logon":"logon1","userEmail":"useremail1@useremail1.pt", "firstName":"NameFirst", "lastName":"NameLast", "createUser":1,"lastUpdateUser":1}'
-    
-    curl -H "Content-Type: application/json" -X POST -d '{"logon":"logon1","userEmail":"radien1@byom.de", "firstName":"NameFirst", "lastName":"NameLast", "createUser":1,"lastUpdateUser":1}' 'http://localhost:8080/rd-ms-usermanagement/v1/user'
-    
+    curl --location --request POST 'http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user' --header 'Content-Type: application/json' --data-raw '{"logon":"logon1","userEmail":"useremail1@useremail1.pt", "firstName":"NameFirst", "lastName":"NameLast", "createUser":1,"lastUpdateUser":1}'
 #
 * PUT Data
   ------
-
+### - ___Update user:___
+    curl --location --request PUT 'http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user/2' header 'Content-Type: application/json' data-raw '{"logon":"newLogon","userEmail":"newuseremail@newuseremail.pt", "firstName":"newFirstName", "lastName":"newLastName", "createUser":1,"lastUpdateUser":1}'
 #
 * DELETE Data
   ------
 ### - ___Delete user by ID:___
-    curl --location --request DELETE 'http://localhost:8080/usermanagement/usermanagement/v1/user/{id}'
+    curl --location --request DELETE 'http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user/{id}'

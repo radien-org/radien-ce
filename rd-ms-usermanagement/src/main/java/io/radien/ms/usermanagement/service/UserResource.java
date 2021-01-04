@@ -11,23 +11,15 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 import io.radien.api.model.user.SystemUser;
-import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
-import io.radien.ms.usermanagement.client.services.UserServiceClient;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
+import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
-import io.radien.ms.usermanagement.legacy.UserService;
 
-
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -37,28 +29,30 @@ import java.util.List;
  */
 @Path("user")
 @RequestScoped
-public class UserEndpoint {
+public class UserResource {
 
 	@Inject
 	private UserService userService;
 
-	private static final Logger log = LoggerFactory.getLogger(UserEndpoint.class);
+	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+	public Response getAll(@QueryParam("sub") List<String> subs, @QueryParam("userEmail") List<String> emails, @QueryParam("logon") List<String> logons,
+						   @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
 						   @DefaultValue("10") @QueryParam("pageSize") int pageSize,
-						   @QueryParam("sortBy") List<String> sortBy, @DefaultValue("true") @QueryParam("asc") boolean isAscending,
-						   @QueryParam("sub") List<String> subs) {
+						   @QueryParam("sortBy") List<String> sortBy,
+						   @DefaultValue("true") @QueryParam("asc") boolean isAscending,
+						   @DefaultValue("true") @QueryParam("isConjunction") boolean isConjunction) {
 		try {
-			return Response.ok(userService.getAll(pageNo, pageSize, sortBy, isAscending, subs)).build();
+			return Response.ok(userService.getAll(subs, emails, logons, pageNo, pageSize, sortBy, isAscending, isConjunction)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
 	}
 
 	/**
-	 * Returns JSON message with the specific required information search by th user ID.
+	 * Returns JSON message with the specific required information search by the user ID.
 	 * @param id to be search
 	 * @return Ok message if it has success. Returns error 404 Code to the user in case of resource is not existent.
 	 */
@@ -78,6 +72,29 @@ public class UserEndpoint {
 	}
 
 	/**
+	 * Will update the requested user in base of his id, with the given user information
+	 *
+	 * @param id of user to be updated
+	 * @param newUserInformation user information to update
+	 * @return Response ok in case of success
+	 */
+	@PUT
+	@Path("{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateUser(@PathParam("id") long id, User newUserInformation) {
+		try {
+			userService.update(id, newUserInformation);
+		} catch (NotFoundException notFoundException){
+			return getResourceNotFoundException();
+		} catch (InvalidRequestException invalidRequestException){
+			return getInvalidRequestResponse(invalidRequestException);
+		} catch (Exception e) {
+			return getGenericError(e);
+		}
+		return Response.ok().build();
+	}
+
+	/**
 	 * Deletes requested user from the DB
 	 * @param id of the user to be deleted
 	 * @return error 404 Code to the user in case of resource is not existent.
@@ -85,11 +102,11 @@ public class UserEndpoint {
 	@DELETE
 	@Path("/{id}")
 	@Transactional
-	public Response deleteOrganization(@NotNull @PathParam("id") Long id)  {
+	public Response delete(@NotNull @PathParam("id") Long id)  {
 		try {
 			userService.delete(id);
-		} catch (NotFoundException e) {
-			return getResourceNotFoundException();
+		} catch (Exception e){
+			return getGenericError(e);
 		}
 		return Response.ok().build();
 	}
@@ -103,41 +120,25 @@ public class UserEndpoint {
 	@POST
 	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response add(User user) {
+	public Response create(User user) {
 		try {
-			if(user.getId()!=null){
-				return Response.status(Response.Status.BAD_REQUEST).entity(ErrorCodeMessage.ID_SHOULD_BE_NULL).build();
-			}
+			user.setId(null);
 			userService.save(user);
 			return Response.ok().build();
 		} catch (InvalidRequestException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+			return getInvalidRequestResponse(e);
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
 	}
 
-	@Path("clientTest")
-	@GET
-	public String clientTest(){
-		try {
-			URL url = new URL("http://localhost:9080/rd-ms-usermanagement");
-
-			UserServiceClient client = RestClientBuilder.
-					newBuilder()
-					.baseUrl(url)
-					.register(UserResponseExceptionMapper.class)
-					.build(UserServiceClient.class);
-			client.getAll(1,1,null,true,null);
-		} catch ( MalformedURLException e) {
-			log.error(e.getMessage(),e);
-		}
-		return "I don't have your super seeds. Look elsewhere";
+	private Response getInvalidRequestResponse(InvalidRequestException e) {
+		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 	}
 
 	/**
 	 * Generic error exception. Launches a 500 Error Code to the user.
-	 * @param e
+	 * @param e exception to be throw
 	 * @return code 500 message Generic Exception
 	 */
 	private Response getGenericError(Exception e) {

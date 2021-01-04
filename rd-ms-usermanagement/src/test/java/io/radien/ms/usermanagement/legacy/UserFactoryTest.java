@@ -1,0 +1,75 @@
+package io.radien.ms.usermanagement.legacy;
+
+import io.radien.ms.usermanagement.entities.User;
+import junit.framework.TestCase;
+import org.junit.Test;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+
+public class UserFactoryTest extends TestCase {
+
+    JsonObject json;
+    User user;
+
+    /**
+     * Constructor class method were we are going to create the JSON and the user for
+     * testing purposes.
+     */
+    public UserFactoryTest() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("logon", "logonTest");
+        builder.add("userEmail", "emailtest@emailtest.pt");
+        builder.add("createUser", 2L);
+        builder.addNull("lastUpdateUser");
+        builder.addNull("sub");
+        builder.add("firstname", "testFirstName");
+        builder.add("lastname", "testLastname");
+        json = builder.build();
+
+        user = UserFactory.create("testFirstName", "testLastname", "logonTest", null, "emailtest@emailtest.pt", 2L);
+    }
+
+    /**
+     * Test method to validate the creation of a User using a Json
+     */
+    @Test
+    public void testCreate() {
+        assertEquals("logonTest", user.getLogon());
+        assertEquals("emailtest@emailtest.pt", user.getUserEmail());
+        assertEquals((Long) 2L, user.getCreateUser());
+        assertNull(user.getLastUpdateUser());
+        assertNull(user.getSub());
+        assertEquals("testFirstName", user.getFirstname());
+        assertEquals("testLastname", user.getLastname());
+    }
+
+    /**
+     * Test method to validate the conversion of a User using a Json
+     */
+    @Test
+    public void testConvert() {
+        User constructedNewUser = UserFactory.convert(json);
+
+        assertEquals(user.getId(), constructedNewUser.getId());
+        assertEquals(user.getLogon(), constructedNewUser.getLogon());
+        assertEquals(user.getUserEmail(), constructedNewUser.getUserEmail());
+        assertEquals(user.getCreateUser(), constructedNewUser.getCreateUser());
+        assertEquals(user.getLastUpdateUser(), constructedNewUser.getLastUpdateUser());
+        assertEquals(user.getSub(), constructedNewUser.getSub());
+        assertEquals(user.getFirstname(), constructedNewUser.getFirstname());
+        assertEquals(user.getLastname(), constructedNewUser.getLastname());
+    }
+
+    /**
+     * Test method to validate the conversion of a Json Object using a User
+     */
+    @Test
+    public void testConvertToJsonObject() {
+        JsonObject constructedNewJson = UserFactory.convertToJsonObject(user);
+
+        assertEquals(json.toString(), constructedNewJson.toString());
+    }
+}

@@ -16,6 +16,7 @@
 package io.radien.ms.usermanagement.legacy;
 
 import io.radien.api.model.user.SystemUser;
+import io.radien.ms.usermanagement.client.util.FactoryUtilService;
 import io.radien.ms.usermanagement.entities.User;
 
 import javax.enterprise.context.RequestScoped;
@@ -27,7 +28,8 @@ import java.util.Date;
 /**
  * Factory class responsible for producing User related objects
  *
- * @author Marco Weiland
+ * @author Bruno Gama
+ * @author Nuno Santana
  */
 @RequestScoped
 public class UserFactory implements Serializable {
@@ -35,15 +37,29 @@ public class UserFactory implements Serializable {
 	private static final long serialVersionUID = -5005556415803181075L;
 
 	/**
-	 * Converts a SystemUser object to the corresponding JPA entity
-	 * {@link User}, so it can be saved on the DB
+	 * Create a user with already predefine fields.
 	 *
-	 * @param o the SystemUser to convert
-	 * @return The jpa compliant {@link User}
+	 * @param firstname user first name
+	 * @param lastname user last name
+	 * @param logon user logon
+	 * @param sub user subject
+	 * @param createdUser the user which has created the user
+	 * @param email user email
+	 * @return a User object to be used
 	 */
-	public User convert(SystemUser o) {
-		User user = (User) o;
-		return user;
+	public static User create(String firstname, String lastname, String logon, String sub, String email, Long createdUser) {
+		User u = new User();
+		u.setFirstname(firstname);
+		u.setLastname(lastname);
+		u.setLogon(logon);
+		u.setEnabled(true);
+		u.setSub(sub);
+		u.setCreateUser(createdUser);
+		Date now = new Date();
+		u.setLastUpdate(now);
+		u.setCreateDate(now);
+		u.setUserEmail(email);
+		return u;
 	}
 
 	/**
@@ -55,70 +71,44 @@ public class UserFactory implements Serializable {
 	 */
 	//TODO: Complete the object conversion fields missing
 	public static User convert(JsonObject person) {
-		String logon = getStringFromJson("logon", person);
-		String userEmail = getStringFromJson("userEmail", person);
-		String createUser = getStringFromJson("createUser", person);
-		String lastUpdateUser = getStringFromJson("lastUpdateUser", person);
-		String sub = getStringFromJson("sub", person);
-		String firstname = getStringFromJson("firstname", person);
-		String lastname = getStringFromJson("lastname",person);
+		String logon = FactoryUtilService.getStringFromJson("logon", person);
+		String userEmail = FactoryUtilService.getStringFromJson("userEmail", person);
+		Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
+		Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", person);
+		String sub = FactoryUtilService.getStringFromJson("sub", person);
+		String firstname = FactoryUtilService.getStringFromJson("firstname", person);
+		String lastname = FactoryUtilService.getStringFromJson("lastname",person);
 
 		User user = new User();
 		user.setLogon(logon);
 		user.setUserEmail(userEmail);
-		// TODO: Set password protected
-//		user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
 		user.setCreateDate(new Date());
 		user.setLastUpdate(new Date());
 		user.setSub(sub);
 		user.setFirstname(firstname);
 		user.setLastname(lastname);
+		user.setCreateUser(createUser);
 
 		return user;
 	}
 
-	//TODO: Complete the object conversion fields missing
+	/**
+	 * Converts a System user to a Json Object
+	 *
+	 * @param person system user to be converted to json
+	 * @return json object with keys and values constructed
+	 */
 	public static JsonObject convertToJsonObject(SystemUser person) {
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 
-		addValue(builder, "id", person.getId());
-		addValue(builder, "logon", person.getLogon());
-		addValue(builder, "userEmail", person.getUserEmail());
-		addValue(builder, "createUser", person.getCreateUser());
-		addValue(builder, "lastUpdateUser", person.getLastUpdateUser());
-		addValue(builder, "sub", person.getSub());
-		addValue(builder, "firstname", person.getFirstname());
-		addValue(builder, "lastname", person.getLastname());
+		FactoryUtilService.addValue(builder, "id", person.getId());
+		FactoryUtilService.addValue(builder, "logon", person.getLogon());
+		FactoryUtilService.addValue(builder, "userEmail", person.getUserEmail());
+		FactoryUtilService.addValueLong(builder, "createUser", person.getCreateUser());
+		FactoryUtilService.addValueLong(builder, "lastUpdateUser", person.getLastUpdateUser());
+		FactoryUtilService.addValue(builder, "sub", person.getSub());
+		FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
+		FactoryUtilService.addValue(builder, "lastname", person.getLastname());
 		return  builder.build();
-	}
-
-	private static void addValue(JsonObjectBuilder builder, String key, Object value) {
-		if (value != null) {
-			builder.add(key, value.toString());
-		} else {
-			builder.addNull(key);
-		}
-	}
-
-	private static String getStringFromJson(String key, JsonObject json) {
-		String returnedString = null;
-		if (json.containsKey(key)) {
-			JsonString value = json.getJsonString(key);
-			if (value != null) {
-				returnedString = value.getString();
-			}
-		}
-		return returnedString;
-	}
-
-	private static Integer getIntFromJson(String key, JsonObject json) {
-		Integer returnedValue = null;
-		if (json.containsKey(key)) {
-			JsonNumber value = json.getJsonNumber(key);
-			if (value != null) {
-				returnedValue = value.intValue();
-			}
-		}
-		return returnedValue;
 	}
 }
