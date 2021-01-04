@@ -71,6 +71,7 @@ public class FactoryUtilServiceTest extends TestCase {
         assertEquals(123, integerTest);
     }
 
+
     @Test
     public void testGetLongFromJson() {
         Long createUser = FactoryUtilService.getLongFromJson("createUser", json);
@@ -128,5 +129,29 @@ public class FactoryUtilServiceTest extends TestCase {
 
         assertEquals((Long) 2L, createdUser);
         assertEquals((Long) 3L, updatedUser);
+    }
+
+    @Test
+    public void testAddValueNull(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValue(builder, "id",null);
+        JsonObject json = builder.build();
+        assertNull(FactoryUtilService.getStringFromJson("id" ,json));
+    }
+
+    @Test
+    public void testAddValueIntNull(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueInt(builder, "id",null);
+        JsonObject json = builder.build();
+        assertNull(FactoryUtilService.getIntFromJson("id" ,json));
+    }
+
+    @Test
+    public void testAddValueArrayNull(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueArray(builder, "elements",null);
+        JsonObject json = builder.build();
+        assertNull(FactoryUtilService.getIntFromJson("elements" ,json));
     }
 }
