@@ -23,6 +23,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 
+import io.radien.api.Appframeable;
+import io.radien.api.OAFAccess;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.services.UserClientService;
 import io.radien.ms.usermanagement.client.services.UserFactory;
@@ -35,15 +37,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marco Weiland
  */
-public @Model @SessionScoped class UserSession implements Serializable {
+public @Model @SessionScoped class UserSession implements Serializable, Appframeable {
 
 	private static final long serialVersionUID = 1198636791261091733L;
 	private static final Logger log = LoggerFactory.getLogger(UserSession.class);
 
-	private User user;
-
 	@Inject
 	private UserClientService userClientService;
+
+	@Inject
+	private OAFAccess oaf;
+	
+	private User user;
+
 	
 	@PostConstruct
 	private void init() {
@@ -55,7 +61,7 @@ public @Model @SessionScoped class UserSession implements Serializable {
 		Optional<User> existingUser = userClientService.getUserBySub(userIdSubject);
 		User user;
 		if(!existingUser.isPresent()){
-			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,email,null);
+			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,email,getOAF().getSystemAdminUserId());
 			userClientService.create(user);
 		} else {
 			user = existingUser.get();
@@ -97,6 +103,11 @@ public @Model @SessionScoped class UserSession implements Serializable {
 	 */
 	public String getUserFullName() {
 		return user.getFirstname() + " " + user.getLastname();
+	}
+
+	@Override
+	public OAFAccess getOAF() {
+		return oaf;
 	}
 
 }

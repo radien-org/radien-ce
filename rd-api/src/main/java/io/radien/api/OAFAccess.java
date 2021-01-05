@@ -26,18 +26,20 @@ import java.util.ResourceBundle;
  */
 public interface OAFAccess extends Serializable {
 
-	String getVersion();
+	public String getVersion();
 
-	String getProperty(SystemProperties cfg);
+	public String getProperty(SystemProperties cfg);
+	
+	public Long getSystemAdminUserId();
 
-	ResourceBundle getResourceBundle(String bundleName);
+	public ResourceBundle getResourceBundle(String bundleName);
 
-	void fireEvent(Event event);
+	public void fireEvent(Event event);
 
-	Locale getDefaultLocale();
+	public Locale getDefaultLocale();
 
-	Map<String, Locale> getSupportedLocales();
+	public Map<String, Locale> getSupportedLocales();
 
-	Locale findLocale(String language);
+	public Locale findLocale(String language);
 
 }

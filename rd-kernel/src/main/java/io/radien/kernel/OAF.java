@@ -317,7 +317,7 @@ public abstract class OAF implements OAFAccess {
     public String getVersion() {
         return getProperty(OAFProperties.SYS_MF_APP_VERSION);
     }
-
+    
     /**
      * Calls the method {@link OAF#getProperty(String)} using keys in the
      * {@link OAFProperties} enum
@@ -428,5 +428,11 @@ public abstract class OAF implements OAFAccess {
     public SystemMessages[] getSystemMessages() {
         return systemMessages;
     }
+    
+	@Override
+	public Long getSystemAdminUserId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
