@@ -8,15 +8,15 @@ radien Enterprise Content Management Microservice
  * http://link_to_mongo_instance
 
 ### - ___Package:___
-    mvn package
+    mvn -P tomee package
 
 ### - ___Run:___ 
     java -jar target/rd-ms-usermanagement-service.jar
 
 ### - ___Local TomEE Configuration:___
     URL: https://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user
-    HTTP Port: 9080
-    HTTPS Port: 9443
+    HTTP Port: 8081
+    HTTPS Port: 8444
     JMX Port: 1100
     Deployment: rd-ms-usermanagement:war exploded
     Application Context: /rd-ms-usermanagement
@@ -27,7 +27,7 @@ radien Enterprise Content Management Microservice
 * GET Data
   ------
 ### - ___Get user by ID:___
-    curl --location --request GET 'http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user/{id}'
+    curl --location --request GET 'http://localhost:8081/usermanagementservice/v1/user/{id}'
 #
 * POST Data
   ------

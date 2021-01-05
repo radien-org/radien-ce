@@ -15,7 +15,7 @@
 	<name>Usermanagement Microservice - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
-		<finalName>rd-ms-usermanagement</finalName>
+		<finalName>usermanagementservice</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -73,11 +73,11 @@
 							</execution>
 						</executions>
 						<configuration>
-							<context>ROOT</context>
+							<context>${finalName}</context>
 							<tomeeClassifier>microprofile</tomeeClassifier>
-							<tomeeHttpPort>8080</tomeeHttpPort>
-							<tomeeShutdownPort>8005</tomeeShutdownPort>
-							<tomeeAjpPort>8009</tomeeAjpPort>
+							<tomeeHttpPort>8081</tomeeHttpPort>
+							<tomeeShutdownPort>8006</tomeeShutdownPort>
+							<tomeeAjpPort>8010</tomeeAjpPort>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -135,6 +135,7 @@
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- test -->
 		<dependency>

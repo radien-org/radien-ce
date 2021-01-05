@@ -22,7 +22,7 @@ import javax.ws.rs.core.Application;
  * @author mawe
  *
  */
-@ApplicationPath("usermanagement/v1")
+@ApplicationPath("v1")
 public class RadienApplication extends Application {
 
 }
