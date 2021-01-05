@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 
 import java.util.List;
 
-@Path("usermanagement/v1/user")
+@Path("user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface UserResourceClient {
