@@ -27,7 +27,8 @@ radien Enterprise Content Management Microservice
 * GET Data
   ------
 ### - ___Get user by ID:___
-    curl --location --request GET 'http://localhost:8081/usermanagementservice/v1/user/{id}'
+    curl -H -X GET 'http://localhost:8081/usermanagementservice/v1/user'
+    curl -X GET 'http://localhost:8081/usermanagementservice/v1/user/{id}'
 #
 * POST Data
   ------

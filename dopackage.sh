@@ -1,1 +1,1 @@
-mvn -T C4 -P tomee package -DskipTests=true
+mvn -T C4 -P tomee clean install package -DskipTests=true
