@@ -94,6 +94,11 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-aws-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!-- Microprofile -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
@@ -188,13 +193,7 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
-		<!-- AWS -->
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>s3</artifactId>
-			<version>2.11.9</version>
-			<scope>compile</scope>
-		</dependency>
+
 
 		<!-- -->
 		<!-- EVAL -->

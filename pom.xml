@@ -19,6 +19,7 @@
 		<module>rd-ms-ecm</module>
 		<module>rd-ms-usermanagement</module>
 		<module>rd-ms-usermanagement-client</module>
+		<module>rd-aws-utils</module>
 	</modules>
 	<properties>
 

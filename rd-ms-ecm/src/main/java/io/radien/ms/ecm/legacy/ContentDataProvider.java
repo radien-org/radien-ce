@@ -15,6 +15,7 @@
  */
 package io.radien.ms.ecm.legacy;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class ContentDataProvider {
 		}
 	}
 
-	private JSONArray getJSONDataSourceArray() {
+	private JSONArray getJSONDataSourceArray() throws IOException {
 		List<String> contentFiles;
 		if(!s3FileUtil.isLoadLocalFiles()) {
 			s3FileUtil.getS3FilesStartingWith(S3_FILE_PREFIX);

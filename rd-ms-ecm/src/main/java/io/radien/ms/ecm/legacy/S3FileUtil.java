@@ -23,7 +23,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -32,16 +31,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import software.amazon.awssdk.core.exception.SdkClientException;
-import software.amazon.awssdk.core.sync.ResponseTransformer;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
-import software.amazon.awssdk.services.s3.model.S3Object;
+
 
 /**
  * @author Marco Weiland
@@ -78,100 +68,18 @@ public class S3FileUtil {
     }
 
     public void delete(Path x) throws IOException {
-        try {
-            Files.delete(x);
-        } catch (NoSuchFileException e) {
-            log.info("File not found for deletion", e);
-        }
+        io.radien.aws.utils.s3.S3FileUtil.deleteIfExists(x);
     }
 
-    public void getS3FileWithName(String name) {
+    public void getS3FileWithName(String name) throws IOException {
         log.info("Starting transfer of the file {}", name);
         //Authorization is done in the machine scope and SDK takes care of get it
-       
-
-        try {
-            S3Client s3 = S3Client.builder().region(Region.of(s3Region)).build();
-            Path x = Paths.get(s3WorkDir
-                    + File.separator + name);
-            delete(x);
-
-            s3.getObject(GetObjectRequest.builder().bucket(s3Bucket).key(name).build(),
-                    ResponseTransformer.toFile(x));
-            log.info("Transfer of file {} finished with success", name);
-        } catch (NoSuchBucketException e) {
-            log.error("Bucket: {} {}", s3Bucket , e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getMessage());
-            }
-            throw new RuntimeException(e.getMessage());
-        } catch (NoSuchKeyException e) {
-            String msg = String.format("Expected file %s, not found on bucket %s", name, s3Bucket);
-            log.error(msg);
-            log.error(e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getMessage());
-            }
-            throw new RuntimeException(msg);
-        } catch (SdkClientException e) {
-            log.error(e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getMessage());
-            }
-            throw new RuntimeException(e.getMessage());
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getMessage());
-            }
-            throw new RuntimeException(e.getMessage());
-        }
-
+        io.radien.aws.utils.s3.S3FileUtil.getS3FileWithName(s3Region,s3Bucket,s3WorkDir,name);
 
     }
 
-    public int getS3FilesStartingWith(String prefix) {
-        
-
-        try {
-            int count = 0;
-
-            ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
-                    .bucket(s3Bucket)
-                    .maxKeys(5000)
-                    .build();
-
-            boolean done = false;
-            S3Client s3 = S3Client.builder().region(Region.of(s3Region)).build();
-            while(!done) {
-                ListObjectsV2Response listObjectsV2Response = s3.listObjectsV2(listObjectsV2Request);
-                for(S3Object content : listObjectsV2Response.contents()) {
-                    if(content.key().startsWith(prefix)) {
-                        getS3FileWithName(content.key());
-                        count++;
-                    }
-                }
-                if(listObjectsV2Response.nextContinuationToken() == null) {
-                    done = true;
-                }
-                listObjectsV2Request = listObjectsV2Request.toBuilder()
-                        .continuationToken(listObjectsV2Response.nextContinuationToken())
-                        .build();
-            }
-            return count;
-        } catch (NoSuchBucketException e) {
-            log.error("Bucket: " + s3Bucket + e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getMessage());
-            }
-            throw new RuntimeException(e.getMessage());
-        }  catch (SdkClientException e) {
-            log.error(e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getMessage());
-            }
-            throw new RuntimeException(e.getMessage());
-        }
+    public int getS3FilesStartingWith(String prefix) throws IOException {
+        return io.radien.aws.utils.s3.S3FileUtil.getS3FilesStartingWith(s3Region,s3Bucket,s3WorkDir,prefix);
     }
 
 }
