@@ -24,11 +24,9 @@ import java.util.ResourceBundle;
  * @author Marco Weiland
  * 
  */
-public interface OAFAccess extends Serializable {
+public interface OAFAccess extends Serializable, Configurable {
 
 	public String getVersion();
-
-	public String getProperty(SystemProperties cfg);
 	
 	public Long getSystemAdminUserId();
 

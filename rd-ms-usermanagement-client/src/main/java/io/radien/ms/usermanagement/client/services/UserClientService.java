@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.api.Configurable;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -47,7 +48,7 @@ public class UserClientService {
 
 
     @Inject
-    private OAFAccess oaf;
+    private Configurable configurable;
     @Inject
     private ClientServiceUtil clientServiceUtil;
     /**
@@ -59,7 +60,7 @@ public class UserClientService {
      */
     public Optional<User> getUserBySub(String sub) throws Exception {
         try {
-            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
             try {
                 Response response = client.getAll(Collections.singletonList(sub), null, null, 1, 2, null, null, null);
                 Page<User> page = PageModelMapper.map((InputStream) response.getEntity());
@@ -90,7 +91,7 @@ public class UserClientService {
      * @throws MalformedURLException in case of URL specification
      */
     public boolean create(User user) throws MalformedURLException {
-        UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
+        UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
         try (Response response = client.create(user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
