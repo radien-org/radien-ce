@@ -1,11 +1,8 @@
-radien Enterprise Content Management Microservice
+radien User Management Microservice
 ======
 
-@andres sousa: documentation goes here
 #
 # - Pre requirements:
- Mongo DB has to run under:
- * http://link_to_mongo_instance
 
 ### - ___Package:___
     mvn -P tomee package
