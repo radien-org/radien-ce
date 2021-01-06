@@ -163,5 +163,16 @@
 			<version>8.0.5</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- Dependencies for rd-ms-usermanagement-client (Under provided scope) -->
+		<dependency>
+			<groupId>org.eclipse.microprofile.rest.client</groupId>
+			<artifactId>microprofile-rest-client-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-mp-client</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
