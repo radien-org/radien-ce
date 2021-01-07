@@ -47,6 +47,11 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.tomee.maven</groupId>
+				<artifactId>tomee-maven-plugin</artifactId>
+				<version>${version.tomee-maven-plugin}</version>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
