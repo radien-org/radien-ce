@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.user.UserServiceAccess;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
@@ -44,20 +45,21 @@ import java.util.List;
 public class UserResource {
 
 	@Inject
-	private UserService userService;
+	private UserServiceAccess userService;
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
 	@GET
+	@Path("/search/{search}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAll(@QueryParam("sub") List<String> subs, @QueryParam("userEmail") List<String> emails, @QueryParam("logon") List<String> logons,
+	public Response getAll(@PathParam("search") String search,
 						   @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
 						   @DefaultValue("10") @QueryParam("pageSize") int pageSize,
 						   @QueryParam("sortBy") List<String> sortBy,
 						   @DefaultValue("true") @QueryParam("asc") boolean isAscending,
 						   @DefaultValue("true") @QueryParam("isConjunction") boolean isConjunction) {
 		try {
-			return Response.ok(userService.getAll(subs, emails, logons, pageNo, pageSize, sortBy, isAscending, isConjunction)).build();
+			return Response.ok(userService.getAll(search, pageNo, pageSize, sortBy, isAscending, isConjunction)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
@@ -69,7 +71,7 @@ public class UserResource {
 	 * @return Ok message if it has success. Returns error 404 Code to the user in case of resource is not existent.
 	 */
 	@GET
-	@Path("{id}")
+	@Path("/id/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getById(@PathParam("id") Long id) {
 		try {
@@ -91,15 +93,17 @@ public class UserResource {
 	 * @return Response ok in case of success
 	 */
 	@PUT
-	@Path("{id}")
+	@Path("/id/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateUser(@PathParam("id") long id, User newUserInformation) {
 		try {
-			userService.update(id, newUserInformation);
-		} catch (NotFoundException notFoundException){
-			return getResourceNotFoundException();
-		} catch (InvalidRequestException invalidRequestException){
-			return getInvalidRequestResponse(invalidRequestException);
+			SystemUser user = null;
+			userService.save(user);
+//		} catch (NotFoundException notFoundException){
+//			return getResourceNotFoundException();
+//		} catch (InvalidRequestException invalidRequestException){
+//			return getInvalidRequestResponse(invalidRequestException);
+		
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
@@ -137,8 +141,8 @@ public class UserResource {
 			user.setId(null);
 			userService.save(user);
 			return Response.ok().build();
-		} catch (InvalidRequestException e) {
-			return getInvalidRequestResponse(e);
+//		} catch (InvalidRequestException e) {
+//			return getInvalidRequestResponse(e);
 		} catch (Exception e) {
 			return getGenericError(e);
 		}

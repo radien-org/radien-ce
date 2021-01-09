@@ -15,6 +15,10 @@
  */
 package io.radien.exception;
 
+/**
+ * @author Marco Weiland <m.weiland@radien.io>
+ *
+ */
 public class UserNotFoundException extends Exception {
 	private static final long serialVersionUID = 1L;
 

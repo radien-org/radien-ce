@@ -21,7 +21,9 @@ import javax.persistence.*;
 import javax.persistence.criteria.*;
 
 import io.radien.api.model.user.SystemUser;
-
+import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.Page;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
  */
 
 @Stateful
-public class UserService {
+public class UserService implements UserServiceAccess{
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,7 +63,7 @@ public class UserService {
 	 * @return the system user requested to be found.
 	 * @throws NotFoundException if user can not be found will return NotFoundException
 	 */
-	public SystemUser get(Long userId) throws NotFoundException {
+	public SystemUser get(Long userId) throws UserNotFoundException {
 		return em.find(User.class, userId);
 	}
 
@@ -97,7 +99,7 @@ public class UserService {
 	 * @param subs subject filter criteria.
 	 * @return a page of users.
 	 */
-	public Page<User> getAll(List<String> subs, List<String> emails, List<String> logons,
+	public Page<User> getAll(String search,
 							 int pageNumber, int pageSize, List<String> sortBy,
 							 Boolean isAscending, Boolean isLogicalConjunction) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -115,14 +117,17 @@ public class UserService {
 			criteriaQuery.orderBy(orders);
 		}
 
-		Predicate global = getFilteredPredicate(subs, emails, logons, isLogicalConjunction, criteriaBuilder, userRoot);
-
-		criteriaQuery.where(global);
+//		Predicate global = getFilteredPredicate(search, isLogicalConjunction, criteriaBuilder, userRoot);
+//		criteriaQuery.where(global);
+		
+		criteriaQuery.where(criteriaBuilder.like(userRoot.get("logon"), search ));
+		
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
 		q.setFirstResult((pageNumber-1) * pageSize);
 		q.setMaxResults(pageSize);
-		int totalResults = Math.toIntExact(getCount(global, userRoot));
-		int totalPages = totalResults%pageSize==0 ? totalResults/pageSize : totalResults/pageSize+1;
+		
+//		int totalResults = Math.toIntExact(getCount(global, userRoot));
+//		int totalPages = totalResults%pageSize==0 ? totalResults/pageSize : totalResults/pageSize+1;
 
 		return new Page<User>(q.getResultList(), pageNumber, totalResults, totalPages);
 	}
@@ -139,55 +144,56 @@ public class UserService {
 	 * @param userRoot instance created to define a range variable in the FROM clause
 	 * @return a completed predicate of where clause
 	 */
-	private Predicate getFilteredPredicate(List<String> subs, List<String> emails, List<String> logons, Boolean isLogicalConjunction, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
+	private Predicate getFilteredPredicate(String search, Boolean isLogicalConjunction, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
 		Predicate global;
+		//TODO: comment what is that for
 		if(isLogicalConjunction) {
 			global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 		} else {
 			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
 		}
 
-		if(subs !=null && !subs.isEmpty()){
-			Predicate subPredicate;
-			if(subs.size()==1){
-				subPredicate = criteriaBuilder.equal(userRoot.get("sub"), subs.get(0));
-			} else {
-				subPredicate = userRoot.get("sub").in(subs);
-			}
-			if(isLogicalConjunction) {
-				global = criteriaBuilder.and(global, subPredicate);
-			} else {
-				global = criteriaBuilder.or(global, subPredicate);
-			}
-		}
-
-		if(emails !=null && !emails.isEmpty()){
-			Predicate emailPredicate;
-			if(emails.size()==1){
-				emailPredicate = criteriaBuilder.equal(userRoot.get("userEmail"), emails.get(0));
-			} else {
-				emailPredicate = userRoot.get("userEmail").in(emails);
-			}
-			if(isLogicalConjunction) {
-				global = criteriaBuilder.and(global, emailPredicate);
-			} else {
-				global = criteriaBuilder.or(global, emailPredicate);
-			}
-		}
-
-		if(logons !=null && !logons.isEmpty()){
-			Predicate logonPredicate;
-			if(logons.size()==1){
-				logonPredicate = criteriaBuilder.equal(userRoot.get("logon"), logons.get(0));
-			} else {
-				logonPredicate = userRoot.get("logon").in(logons);
-			}
-			if(isLogicalConjunction) {
-				global = criteriaBuilder.and(global, logonPredicate);
-			} else {
-				global = criteriaBuilder.or(global, logonPredicate);
-			}
-		}
+		
+//			Predicate subPredicate;
+//			if(subs.size()==1){
+//				subPredicate = criteriaBuilder.equal(userRoot.get("sub"), subs.get(0));
+//			} else {
+//				subPredicate = userRoot.get("sub").in(subs);
+//			}
+//			if(isLogicalConjunction) {
+//				global = criteriaBuilder.and(global, subPredicate);
+//			} else {
+//				global = criteriaBuilder.or(global, subPredicate);
+//			}
+//		
+//
+//		
+//			Predicate emailPredicate;
+//			if(emails.size()==1){
+//				emailPredicate = criteriaBuilder.equal(userRoot.get("userEmail"), emails.get(0));
+//			} else {
+//				emailPredicate = userRoot.get("userEmail").in(emails);
+//			}
+//			if(isLogicalConjunction) {
+//				global = criteriaBuilder.and(global, emailPredicate);
+//			} else {
+//				global = criteriaBuilder.or(global, emailPredicate);
+//			}
+//		
+//
+//		
+//			Predicate logonPredicate;
+//			if(logons.size()==1){
+//				logonPredicate = criteriaBuilder.equal(userRoot.get("logon"), logons.get(0));
+//			} else {
+//				logonPredicate = userRoot.get("logon").in(logons);
+//			}
+//			if(isLogicalConjunction) {
+//				global = criteriaBuilder.and(global, logonPredicate);
+//			} else {
+//				global = criteriaBuilder.or(global, logonPredicate);
+//			}
+		
 		return global;
 	}
 
@@ -212,24 +218,28 @@ public class UserService {
 	 * @param user to be added/inserted
 	 * @throws InvalidRequestException in case of duplicated email/duplicated logon
 	 */
-	public void create(User user) throws InvalidRequestException {
-		if(getUserByEmail(user.getUserEmail()).isPresent()) {
-			log.error(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
-			throw new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
-		}
-		if(getUserByLogon(user.getLogon()).isPresent()) {
-			log.error(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
-			throw new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
-		}
-		Optional<String> sub = keycloakService.createUser(user);
-		if(sub.isPresent()){
+	public void save(SystemUser user)  {
+//		if(getUserByEmail(user.getUserEmail()).isPresent()) {
+//			log.error(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+//			throw new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+//		}
+//		if(getUserByLogon(user.getLogon()).isPresent()) {
+//			log.error(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
+//			throw new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
+//		}
+//		Optional<String> sub = keycloakService.createUser(user);
+//		if(sub.isPresent()){
 			user.setLastUpdate(new Date());
-			user.setSub(sub.get());
+			user.setLastUpdateUser(null);
+			
+			//TODO: this has to be done somewhere else:
+//			user.setSub(sub.get());
 			em.persist(user);
-		} else {
-			//TODO: Error handling
-			throw new InvalidRequestException(ErrorCodeMessage.GENERIC_ERROR.toString("Keycloak Integration"));
-		}
+			
+//		} else {
+//			//TODO: Error handling
+//			throw new InvalidRequestException(ErrorCodeMessage.GENERIC_ERROR.toString("Keycloak Integration"));
+//		}
 
 	}
 
@@ -240,7 +250,7 @@ public class UserService {
 	 * @throws NotFoundException in case of requested user to be updated cannot be found
 	 * @throws InvalidRequestException in case of requested information to be updated already exists in the DB
 	 */
-	public void update(long id, User newUserInformation) throws NotFoundException, InvalidRequestException {
+	private void update(long id, User newUserInformation) throws UserNotFoundException, InvalidRequestException {
 		User dbUser = null;
 
 		dbUser = (User) get(id);
