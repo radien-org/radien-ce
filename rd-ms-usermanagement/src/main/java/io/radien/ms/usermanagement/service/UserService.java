@@ -50,6 +50,8 @@ public class UserService {
 
 	@Inject
 	private UserFactory userFactory;
+	@Inject
+	private KeycloakService keycloakService;
 
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -210,7 +212,7 @@ public class UserService {
 	 * @param user to be added/inserted
 	 * @throws InvalidRequestException in case of duplicated email/duplicated logon
 	 */
-	public void save(User user) throws InvalidRequestException {
+	public void create(User user) throws InvalidRequestException {
 		if(getUserByEmail(user.getUserEmail()).isPresent()) {
 			log.error(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
 			throw new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
@@ -219,9 +221,16 @@ public class UserService {
 			log.error(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
 			throw new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
 		}
+		Optional<String> sub = keycloakService.createUser(user);
+		if(sub.isPresent()){
+			user.setLastUpdate(new Date());
+			user.setSub(sub.get());
+			em.persist(user);
+		} else {
+			//TODO: Error handling
+			throw new InvalidRequestException(ErrorCodeMessage.GENERIC_ERROR.toString("Keycloak Integration"));
+		}
 
-		user.setLastUpdate(new Date());
-		em.persist(user);
 	}
 
 	/**
