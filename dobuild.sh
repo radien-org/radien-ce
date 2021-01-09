@@ -1,1 +1,1 @@
-mvn -T C4 clean install -DskipTests=true
+mvn -T C20 clean install -DskipTests=true
