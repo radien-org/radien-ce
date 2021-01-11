@@ -15,7 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.providers;
 
-import io.radien.ms.usermanagement.client.entities.Page;
+import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.util.PageModelMapper;
 
 import javax.ws.rs.Consumes;

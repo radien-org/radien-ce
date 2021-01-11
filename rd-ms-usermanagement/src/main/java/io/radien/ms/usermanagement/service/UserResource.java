@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
 import io.radien.ms.usermanagement.entities.User;
 
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class UserResource {
 						   @DefaultValue("10") @QueryParam("pageSize") int pageSize,
 						   @QueryParam("sortBy") List<String> sortBy,
 						   @DefaultValue("true") @QueryParam("asc") boolean isAscending,
-						   @DefaultValue("true") @QueryParam("isConjunction") boolean isConjunction) {
+						   @DefaultValue("false") @QueryParam("isConjunction") boolean isConjunction) {
 		try {
 			return Response.ok(userService.getAll(search, pageNo, pageSize, sortBy, isAscending, isConjunction)).build();
 		} catch (Exception e) {
@@ -83,31 +82,6 @@ public class UserResource {
 			return getGenericError(e);
 		}
 	}
-
-//	/**
-//	 * Will update the requested user in base of his id, with the given user information
-//	 *
-//	 * @param id of user to be updated
-//	 * @param newUserInformation user information to update
-//	 * @return Response ok in case of success
-//	 */
-//	@PUT
-//	@Path("/id/{id}")
-//	@Consumes(MediaType.APPLICATION_JSON)
-//	public Response updateUser(@PathParam("id") long id, User newUserInformation) {
-//		try {
-//			SystemUser user = null;
-//			userService.save(user);
-////		} catch (NotFoundException notFoundException){
-////			return getResourceNotFoundException();
-////		} catch (InvalidRequestException invalidRequestException){
-////			return getInvalidRequestResponse(invalidRequestException);
-//
-//		} catch (Exception e) {
-//			return getGenericError(e);
-//		}
-//		return Response.ok().build();
-//	}
 
 	/**
 	 * Deletes requested user from the DB
@@ -140,15 +114,9 @@ public class UserResource {
 			user.setId(null);
 			userService.save(user);
 			return Response.ok().build();
-//		} catch (InvalidRequestException e) {
-//			return getInvalidRequestResponse(e);
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
-	}
-
-	private Response getInvalidRequestResponse(InvalidRequestException e) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 	}
 
 	/**

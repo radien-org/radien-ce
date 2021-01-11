@@ -20,11 +20,10 @@ import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UserNotFoundException;
-import io.radien.ms.usermanagement.client.entities.Page;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 
@@ -90,17 +89,52 @@ public class UserService implements UserServiceAccess{
 
 	/**
 	 * Gets all the users into a pagination mode.
-	 * Can be filtered by sortBy, ascending and subject.
+	 * Can be filtered by logon or user email.
+	 * @param search specific logon or user email
 	 * @param pageNo of the requested information. Where the user is.
 	 * @param pageSize total number of pages returned in the request.
 	 * @param sortBy sort filter criteria.
 	 * @param isAscending ascending filter criteria.
-	 * @param isConjunction subject filter criteria. // TODO: Change the explanation
-	 * @return a page of users.
+	 * @param isConjunction is search criteria and or or
+	 * @return a page of system users.
 	 */
 	@Override
-	public List<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending, boolean isConjunction) {
-		return null;
+	public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending, boolean isConjunction) {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> userRoot = criteriaQuery.from(User.class);
+
+		criteriaQuery.select(userRoot);
+		if(sortBy != null && !sortBy.isEmpty()){
+			List<Order> orders;
+			if(isAscending){
+				orders = sortBy.stream().map(i->criteriaBuilder.asc(userRoot.get(i))).collect(Collectors.toList());
+			} else {
+				orders = sortBy.stream().map(i->criteriaBuilder.desc(userRoot.get(i))).collect(Collectors.toList());
+			}
+			criteriaQuery.orderBy(orders);
+		}
+
+		if(isConjunction) {
+			criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.like(userRoot.get("logon"), "%" + search + "%"), criteriaBuilder.like(userRoot.get("userEmail"), "%" + search + "%")));
+		} else {
+			criteriaQuery.where(criteriaBuilder.or(criteriaBuilder.like(userRoot.get("logon"), "%" + search + "%"), criteriaBuilder.like(userRoot.get("userEmail"), "%" + search + "%")));
+		}
+
+		TypedQuery<User> q=em.createQuery(criteriaQuery);
+		q.setFirstResult((pageNo-1) * pageSize);
+		q.setMaxResults(pageSize);
+
+		List<SystemUser> systemUsers = new ArrayList<>();
+
+		for(User u : q.getResultList()) {
+			systemUsers.add((SystemUser) u);
+		}
+
+		int totalRecords = systemUsers.size();
+		int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
+
+		return new Page<SystemUser>(systemUsers, pageNo, pageSize, totalPages);
 	}
 
 	/**

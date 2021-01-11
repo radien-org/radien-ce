@@ -17,15 +17,12 @@ package io.radien.ms.usermanagement.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
-import io.radien.ms.usermanagement.client.entities.Page;
+import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
 import io.radien.ms.usermanagement.client.util.FactoryUtilService;
-import io.radien.ms.usermanagement.client.util.PageModelMapper;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
-import junit.framework.TestCase;
 import org.apache.cxf.bus.extension.ExtensionException;
-import org.apache.cxf.message.Message;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

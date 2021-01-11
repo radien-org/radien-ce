@@ -15,19 +15,14 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import io.radien.ms.usermanagement.client.entities.Page;
+import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
 
 public class PageFactoryTest extends TestCase {
 

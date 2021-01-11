@@ -15,7 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import io.radien.ms.usermanagement.client.entities.Page;
+import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.FactoryUtilService;
 

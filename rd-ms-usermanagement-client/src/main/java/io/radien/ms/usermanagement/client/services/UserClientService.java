@@ -16,10 +16,9 @@
 package io.radien.ms.usermanagement.client.services;
 
 import io.radien.api.Configurable;
-import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.entities.Page;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
 import io.radien.ms.usermanagement.client.util.PageModelMapper;

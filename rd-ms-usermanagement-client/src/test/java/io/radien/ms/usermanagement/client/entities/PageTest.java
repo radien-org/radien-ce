@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.entities;
 
+import io.radien.api.entity.Page;
 import org.junit.Test;
 
 import java.util.ArrayList;

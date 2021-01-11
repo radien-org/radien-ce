@@ -18,6 +18,7 @@ package io.radien.api.service.user;
 import java.util.Collection;
 import java.util.List;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.UserNotFoundException;
@@ -32,7 +33,7 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public List<SystemUser> get(List<Long> userId);
 
-    public List<SystemUser> getAll(String search,  int pageNo, int pageSize, List<String> sortBy, boolean isAscending, boolean isConjunction);
+    public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending, boolean isConjunction);
 
     public void save(SystemUser user);
 
