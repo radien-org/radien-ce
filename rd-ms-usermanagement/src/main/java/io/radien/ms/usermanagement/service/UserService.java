@@ -52,8 +52,6 @@ public class UserService implements UserServiceAccess{
 
 	@Inject
 	private UserFactory userFactory;
-	@Inject
-	private KeycloakService keycloakService;
 
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -119,13 +117,13 @@ public class UserService implements UserServiceAccess{
 
 //		Predicate global = getFilteredPredicate(search, isLogicalConjunction, criteriaBuilder, userRoot);
 //		criteriaQuery.where(global);
-		
+
 		criteriaQuery.where(criteriaBuilder.like(userRoot.get("logon"), search ));
-		
+
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
 		q.setFirstResult((pageNumber-1) * pageSize);
 		q.setMaxResults(pageSize);
-		
+
 //		int totalResults = Math.toIntExact(getCount(global, userRoot));
 //		int totalPages = totalResults%pageSize==0 ? totalResults/pageSize : totalResults/pageSize+1;
 
@@ -153,7 +151,7 @@ public class UserService implements UserServiceAccess{
 			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
 		}
 
-		
+
 //			Predicate subPredicate;
 //			if(subs.size()==1){
 //				subPredicate = criteriaBuilder.equal(userRoot.get("sub"), subs.get(0));
@@ -165,9 +163,9 @@ public class UserService implements UserServiceAccess{
 //			} else {
 //				global = criteriaBuilder.or(global, subPredicate);
 //			}
-//		
 //
-//		
+//
+//
 //			Predicate emailPredicate;
 //			if(emails.size()==1){
 //				emailPredicate = criteriaBuilder.equal(userRoot.get("userEmail"), emails.get(0));
@@ -179,9 +177,9 @@ public class UserService implements UserServiceAccess{
 //			} else {
 //				global = criteriaBuilder.or(global, emailPredicate);
 //			}
-//		
 //
-//		
+//
+//
 //			Predicate logonPredicate;
 //			if(logons.size()==1){
 //				logonPredicate = criteriaBuilder.equal(userRoot.get("logon"), logons.get(0));
@@ -193,7 +191,7 @@ public class UserService implements UserServiceAccess{
 //			} else {
 //				global = criteriaBuilder.or(global, logonPredicate);
 //			}
-		
+
 		return global;
 	}
 
@@ -231,11 +229,11 @@ public class UserService implements UserServiceAccess{
 //		if(sub.isPresent()){
 			user.setLastUpdate(new Date());
 			user.setLastUpdateUser(null);
-			
+
 			//TODO: this has to be done somewhere else:
 //			user.setSub(sub.get());
 			em.persist(user);
-			
+
 //		} else {
 //			//TODO: Error handling
 //			throw new InvalidRequestException(ErrorCodeMessage.GENERIC_ERROR.toString("Keycloak Integration"));
