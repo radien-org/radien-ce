@@ -27,7 +27,6 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
-import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
 
 import org.slf4j.Logger;
