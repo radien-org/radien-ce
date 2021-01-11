@@ -84,30 +84,30 @@ public class UserResource {
 		}
 	}
 
-	/**
-	 * Will update the requested user in base of his id, with the given user information
-	 *
-	 * @param id of user to be updated
-	 * @param newUserInformation user information to update
-	 * @return Response ok in case of success
-	 */
-	@PUT
-	@Path("/id/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateUser(@PathParam("id") long id, User newUserInformation) {
-		try {
-			SystemUser user = null;
-			userService.save(user);
-//		} catch (NotFoundException notFoundException){
-//			return getResourceNotFoundException();
-//		} catch (InvalidRequestException invalidRequestException){
-//			return getInvalidRequestResponse(invalidRequestException);
-		
-		} catch (Exception e) {
-			return getGenericError(e);
-		}
-		return Response.ok().build();
-	}
+//	/**
+//	 * Will update the requested user in base of his id, with the given user information
+//	 *
+//	 * @param id of user to be updated
+//	 * @param newUserInformation user information to update
+//	 * @return Response ok in case of success
+//	 */
+//	@PUT
+//	@Path("/id/{id}")
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	public Response updateUser(@PathParam("id") long id, User newUserInformation) {
+//		try {
+//			SystemUser user = null;
+//			userService.save(user);
+////		} catch (NotFoundException notFoundException){
+////			return getResourceNotFoundException();
+////		} catch (InvalidRequestException invalidRequestException){
+////			return getInvalidRequestResponse(invalidRequestException);
+//
+//		} catch (Exception e) {
+//			return getGenericError(e);
+//		}
+//		return Response.ok().build();
+//	}
 
 	/**
 	 * Deletes requested user from the DB
