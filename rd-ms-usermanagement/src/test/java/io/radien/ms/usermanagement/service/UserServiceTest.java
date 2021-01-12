@@ -63,15 +63,15 @@
 //
 //        userService = (UserService) context.lookup("java:global/rd-ms-usermanagement//UserService");
 //
-//        String sub = "270e0461-416d-4faf-af9f-d6b45619ed62";
-//        Page<User> userPage = userService.getAll(Collections.singletonList(sub), null, null, 1, 2, null, null, true);
-//        if(userPage.getTotalResults()>0) {
-//            uTest = userPage.getResults().get(0);
-//        } else {
-//            uTest = UserFactory.create("firstName", "lastName", "logon",
-//                    sub, "email@email.pt", 2L);
-//            userService.save(uTest);
-//        }
+////        String sub = "270e0461-416d-4faf-af9f-d6b45619ed62";
+////        Page<User> userPage = userService.getAll(Collections.singletonList(sub), null, null, 1, 2, null, null, true);
+////        if(userPage.getTotalResults()>0) {
+////            uTest = userPage.getResults().get(0);
+////        } else {
+////            uTest = UserFactory.create("firstName", "lastName", "logon",
+////                    sub, "email@email.pt", 2L);
+////            userService.save(uTest);
+////        }
 //    }
 //
 //    /**

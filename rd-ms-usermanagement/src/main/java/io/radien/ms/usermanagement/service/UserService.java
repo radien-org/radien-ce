@@ -24,6 +24,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UserNotFoundException;
+import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 
@@ -142,15 +143,36 @@ public class UserService implements UserServiceAccess{
 	 * @param user to be added/inserted
 	 * @throws InvalidRequestException in case of duplicated email/duplicated logon
 	 */
-	//TODO: Error handling
 	@Override
 	public void save(SystemUser user) {
-		user.setLastUpdate(new Date());
-		user.setLastUpdateUser(null);
+		List<SystemUser> isUser;
+		try{
+			Query q = em
+					.createNativeQuery("SELECT USR01.logon, USR01.userEmail FROM USR01 \n" +
+							"WHERE USR01.logon = ?1 AND USR01.userEmail = ?2 ");
+			q.setParameter(1, user.getLogon());
+			q.setParameter(2, user.getUserEmail());
+			isUser = q.getResultList();
+
+			if(isUser == null) {
+				em.persist(user);
+				log.info("User saved successfully with emailId: " + user.getUserEmail() + " and logon: " + " user.getLogon()");
+			} else{
+				boolean isUserLogon = user.getUserEmail().equals(isUser.get(0).getLogon());
+				boolean isUserEmail = user.getUserEmail().equals(isUser.get(0).getUserEmail());
+				if(isUserEmail && isUserLogon){
+					user.setLastUpdate(new Date());
+					user.setLastUpdateUser(null);
+					em.merge(user);
+					log.info("User updated successfully with emailId: " + user.getUserEmail() + " and logon: " + " user.getLogon()");
+				}
+			}
+		}catch (Exception e){
+			new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString(user.getUserEmail()));
+		}
 
 		//TODO: this has to be done somewhere else:
 //			user.setSub(sub.get());
-		em.persist(user);
 	}
 
 	/**
