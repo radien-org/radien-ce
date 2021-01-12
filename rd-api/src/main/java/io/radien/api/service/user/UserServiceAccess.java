@@ -33,7 +33,7 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public List<SystemUser> get(List<Long> userId);
 
-    public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending, boolean isConjunction);
+    public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     public void save(SystemUser user);
 

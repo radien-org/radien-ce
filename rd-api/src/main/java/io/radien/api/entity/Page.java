@@ -19,26 +19,30 @@ package io.radien.api.entity;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author Nuno Santana
+ * @author Bruno Gama
+ */
 public class Page<T extends Serializable> implements Serializable {
 
     private static final long serialVersionUID = 6812608123262067424L;
-    private List<T> results;
+    private List<? extends T> results;
     private int currentPage;
     private int totalResults;
     private int totalPages;
 
-    public Page(List<T> results, int currentPage, int totalResults, int totalPages) {
+    public Page(List<? extends T> results, int currentPage, int totalResults, int totalPages) {
         this.results = results;
         this.currentPage = currentPage;
         this.totalResults = totalResults;
         this.totalPages = totalPages;
     }
 
-    public List<T> getResults() {
+    public List<? extends T> getResults() {
         return results;
     }
 
-    public void setResults(List<T> results) {
+    public void setResults(List<? extends T> results) {
         this.results = results;
     }
 

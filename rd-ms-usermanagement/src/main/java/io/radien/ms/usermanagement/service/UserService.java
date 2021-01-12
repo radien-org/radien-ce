@@ -96,11 +96,10 @@ public class UserService implements UserServiceAccess{
 	 * @param pageSize total number of pages returned in the request.
 	 * @param sortBy sort filter criteria.
 	 * @param isAscending ascending filter criteria.
-	 * @param isConjunction is search criteria and or or
 	 * @return a page of system users.
 	 */
 	@Override
-	public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending, boolean isConjunction) {
+	public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 		Root<User> userRoot = criteriaQuery.from(User.class);
@@ -116,23 +115,20 @@ public class UserService implements UserServiceAccess{
 			criteriaQuery.orderBy(orders);
 		}
 
-		if(isConjunction) {
-			criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.like(userRoot.get("logon"), "%" + search + "%"), criteriaBuilder.like(userRoot.get("userEmail"), "%" + search + "%")));
-		} else {
+		if(search!= null) {
 			criteriaQuery.where(criteriaBuilder.or(criteriaBuilder.like(userRoot.get("logon"), "%" + search + "%"), criteriaBuilder.like(userRoot.get("userEmail"), "%" + search + "%")));
 		}
 
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
+
+		int totalRecords = q.getResultList().size();
+
 		q.setFirstResult((pageNo-1) * pageSize);
 		q.setMaxResults(pageSize);
 
-		List<SystemUser> systemUsers = new ArrayList<>();
+		List<? extends SystemUser> systemUsers = q.getResultList();
 
-		for(User u : q.getResultList()) {
-			systemUsers.add((SystemUser) u);
-		}
 
-		int totalRecords = systemUsers.size();
 		int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
 		return new Page<SystemUser>(systemUsers, pageNo, pageSize, totalPages);

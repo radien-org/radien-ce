@@ -16,6 +16,7 @@
 package io.radien.ms.usermanagement.client.entities;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.user.SystemUser;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -46,12 +47,12 @@ public class PageTest {
 
     @Test
     public void getResults() {
-        List<User> listOfExtractedUsers = page.getResults();
+        List<? extends SystemUser> listOfExtractedUsers = page.getResults();
         assertEquals(listOfExtractedUsers, listOfUsers);
         assertEquals(listOfExtractedUsers.size(), listOfUsers.size());
 
-        User firstExtractedUser = listOfExtractedUsers.get(0);
-        User secondExtractedUser = listOfExtractedUsers.get(1);
+        SystemUser firstExtractedUser = listOfExtractedUsers.get(0);
+        SystemUser secondExtractedUser = listOfExtractedUsers.get(1);
 
         assertEquals("user1Logon", firstExtractedUser.getLogon());
         assertEquals("65c31b6d-1a82-4fa5-96a0-b889de9aceb6", firstExtractedUser.getSub());
@@ -71,11 +72,11 @@ public class PageTest {
         newListOfUsers.add(user3);
         page.setResults(newListOfUsers);
 
-        List<User> newListOfExtractedUsers = page.getResults();
+        List<? extends SystemUser> newListOfExtractedUsers = page.getResults();
         assertEquals(newListOfExtractedUsers, newListOfUsers);
         assertEquals(newListOfExtractedUsers.size(), newListOfUsers.size());
 
-        User newFirstExtractedUser = newListOfExtractedUsers.get(0);
+        SystemUser newFirstExtractedUser = newListOfExtractedUsers.get(0);
 
         assertEquals("user3Logon", newFirstExtractedUser.getLogon());
         assertEquals("user3Email@user3Email.pt", newFirstExtractedUser.getUserEmail());

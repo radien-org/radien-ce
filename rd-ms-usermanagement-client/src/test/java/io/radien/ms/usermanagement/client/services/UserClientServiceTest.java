@@ -42,13 +42,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Nuno Santana
+ * @author Bruno Gama
+ */
 public class UserClientServiceTest {
 
     @InjectMocks
@@ -86,9 +89,7 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(
-                Collections.singletonList(a), null, null, 1,
-                2, null, null, null))
+        when(resourceClient.getAll(null, 1, 10, null, true))
                 .thenReturn(response);
 
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
@@ -128,9 +129,7 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(
-                Collections.singletonList(a), null, null, 1,
-                2, null, null, null))
+        when(resourceClient.getAll(null, 1, 10, null, true))
                 .thenReturn(response);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
@@ -158,9 +157,7 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(
-                Collections.singletonList(a), null, null, 1,
-                2, null, null, null))
+        when(resourceClient.getAll(null, 1, 10, null, true))
                 .thenReturn(response);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
@@ -188,9 +185,7 @@ public class UserClientServiceTest {
         boolean success = false;
         String a = "a";
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(
-                Collections.singletonList(a), null, null, 1,
-                2, null, null, null))
+        when(resourceClient.getAll(null, 1, 10, null, true))
                 .thenThrow(new ProcessingException("test"));
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
@@ -204,7 +199,7 @@ public class UserClientServiceTest {
     @Test
     public void testCreate() throws MalformedURLException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.create(any())).thenReturn(Response.ok().build());
+        when(resourceClient.save(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
         assertTrue(target.create(new User()));
@@ -213,7 +208,7 @@ public class UserClientServiceTest {
     @Test
     public void testCreateFail() throws MalformedURLException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.create(any())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
         assertFalse(target.create(new User()));
@@ -223,7 +218,7 @@ public class UserClientServiceTest {
     @Test
     public void testCreateProcessingException() throws MalformedURLException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.create(any())).thenThrow(new ProcessingException(""));
+        when(resourceClient.save(any())).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {

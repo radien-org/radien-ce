@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 import io.radien.api.Appframeable;
 import io.radien.api.OAFAccess;
-import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.services.UserClientService;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public @Model @SessionScoped class UserSession implements Serializable, Appframe
 	@Inject
 	private OAFAccess oaf;
 	
-	private User user;
+	private SystemUser user;
 
 	
 	@PostConstruct
@@ -58,8 +58,8 @@ public @Model @SessionScoped class UserSession implements Serializable, Appframe
 	
 	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception {
 		log.info("user logged in: {}", userIdSubject);
-		Optional<User> existingUser = userClientService.getUserBySub(userIdSubject);
-		User user;
+		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
+		SystemUser user;
 		if(!existingUser.isPresent()){
 			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,email,getOAF().getSystemAdminUserId());
 			userClientService.create(user);

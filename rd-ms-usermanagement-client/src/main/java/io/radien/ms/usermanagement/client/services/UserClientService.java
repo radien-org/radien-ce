@@ -18,6 +18,7 @@ package io.radien.ms.usermanagement.client.services;
 import io.radien.api.Configurable;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
@@ -32,7 +33,6 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,14 +57,14 @@ public class UserClientService {
      * @return Optional List of Users
      * @throws Exception in case it founds multiple users or if URL is malformed
      */
-    public Optional<User> getUserBySub(String sub) throws Exception {
+    public Optional<SystemUser> getUserBySub(String sub) throws Exception {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
             try {
-                Response response = client.getAll(Collections.singletonList(sub), null, null, 1, 2, null, null, null);
+                Response response = client.getAll(null, 1, 10, null, true);
                 Page<User> page = PageModelMapper.map((InputStream) response.getEntity());
                 if (page.getTotalResults() == 1) {
-                    List<User> users = page.getResults();
+                    List<? extends SystemUser> users = page.getResults();
                     return Optional.ofNullable(users.get(0));
                 } else if (page.getTotalResults() == 0) {
                     return Optional.empty();
@@ -89,9 +89,9 @@ public class UserClientService {
      * @return true if user has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(User user) throws MalformedURLException {
+    public boolean create(SystemUser user) throws MalformedURLException {
         UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
-        try (Response response = client.create(user)) {
+        try (Response response = client.save(user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {

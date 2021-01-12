@@ -48,16 +48,14 @@ public class UserResource {
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
 	@GET
-	@Path("/search/{search}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAll(@PathParam("search") String search,
+	public Response getAll(@QueryParam("search") String search,
 						   @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
 						   @DefaultValue("10") @QueryParam("pageSize") int pageSize,
 						   @QueryParam("sortBy") List<String> sortBy,
-						   @DefaultValue("true") @QueryParam("asc") boolean isAscending,
-						   @DefaultValue("false") @QueryParam("isConjunction") boolean isConjunction) {
+						   @DefaultValue("true") @QueryParam("asc") boolean isAscending) {
 		try {
-			return Response.ok(userService.getAll(search, pageNo, pageSize, sortBy, isAscending, isConjunction)).build();
+			return Response.ok(userService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
@@ -69,7 +67,7 @@ public class UserResource {
 	 * @return Ok message if it has success. Returns error 404 Code to the user in case of resource is not existent.
 	 */
 	@GET
-	@Path("/id/{id}")
+	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getById(@PathParam("id") Long id) {
 		try {
@@ -101,7 +99,7 @@ public class UserResource {
 	}
 
 	/**
-	 * Adds user to the DB.
+	 * Save user to the DB.
 	 *
 	 * @param user to be added
 	 * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
@@ -109,7 +107,7 @@ public class UserResource {
 	@POST
 	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response create(User user) {
+	public Response save(User user) {
 		try {
 			user.setId(null);
 			userService.save(user);
