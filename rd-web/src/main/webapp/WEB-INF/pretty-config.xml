@@ -18,6 +18,11 @@
 		<pattern value="/module/user/profile" />
 		<view-id value="/module/userprofile/index.oaf" />
 	</url-mapping>
+	
+	<url-mapping id="users">
+		<pattern value="/module/users/search" />
+		<view-id value="/module/users/search.oaf" />
+	</url-mapping>
 
 	<url-mapping id="content_public">
 		<pattern

@@ -34,12 +34,11 @@
 						<b:navLink value="#{msg.rd_about_page}" href="#about"></b:navLink>
 	
 						<b:navLink value="Contact" href="#contact"></b:navLink>
-						<b:dropMenu value="dynamic content menu">
-							<b:navLink value="content1" href="#"></b:navLink>
-							<b:navLink value="content2" href="#"></b:navLink>
-							<b:navLink></b:navLink>
-							<b:navLink header="content3"></b:navLink>
-							<b:navLink value="content4" href="#"></b:navLink>
+						<b:dropMenu value="#{msg.rd_system_menu}" style-class="pull-right">
+							<b:navCommandLink value="#{msg.rd_users_menu}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+		                        <f:param name="navigationNode" value="users" />
+		                        <f:attribute name="navigationNode" value="users" />
+		                    </b:navCommandLink>
 						</b:dropMenu>
 					
 						<b:dropMenu value="#{userSession.userFullName}" style-class="pull-right" rendered="#{userSession.active}"> 
