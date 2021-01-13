@@ -407,11 +407,27 @@ public class UserServiceTest {
         assertEquals("a",userPageWhere.getResults().get(0).getFirstname());
     }
     @Test
-    public void testGetBy() throws UniquenessConstraintException, UserNotFoundException {
-        uTest = UserFactory.create("zz", "lastName", "zz",
+    public void testGetByIsExactOrLogical() throws UniquenessConstraintException, UserNotFoundException {
+        SystemUser testById1 = UserFactory.create("zz", "lastName", "zz",
                 "zz", "zz@b.pt", 1L);
-        userServiceAccess.save(uTest);
-        List<? extends SystemUser> users = userServiceAccess.getUsersBy("zz","zz@b.pt","zz",true,true);
-        assertEquals(1,users.size());
+
+        SystemUser testById2 = UserFactory.create("aa", "lastName", "aa",
+                "aa", "aa@b.pt", 1L);
+
+        SystemUser testById3 = UserFactory.create("aabb", "lastName", "aabb",
+                "aabb", "aabb@b.pt", 1L);
+
+        userServiceAccess.save(testById1);
+        userServiceAccess.save(testById2);
+        userServiceAccess.save(testById3);
+
+        List<? extends SystemUser> usersAnd = userServiceAccess.getUsersBy("zz","zz@b.pt","zz",true,true);
+        assertEquals(1,usersAnd.size());
+
+        List<? extends SystemUser> usersOr = userServiceAccess.getUsersBy("aa","aa@b.pt","zz",true,false);
+        assertEquals(2,usersOr.size());
+
+        List<? extends SystemUser> usersNotExact = userServiceAccess.getUsersBy("aa","aa","aa",false,true);
+        assertEquals(2,usersNotExact.size());
     }
 }
