@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
+import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.entities.User;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -25,11 +26,11 @@ import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
-public class UserModelMessageBodyReaderTest extends TestCase {
+public class SystemUserMessageBodyReaderTest extends TestCase {
 
     @Test
     public void testIsReadable() {
-        UserModelMessageBodyReader target = new UserModelMessageBodyReader();
+        SystemUserMessageBodyReader target = new SystemUserMessageBodyReader();
         assertTrue(target.isReadable(User.class,null,null,null));
     }
 
@@ -45,9 +46,9 @@ public class UserModelMessageBodyReaderTest extends TestCase {
                 "\"firstname\":\"a\"," +
                 "\"lastname\":\"b\"" +
                 "}";
-        UserModelMessageBodyReader target = new UserModelMessageBodyReader();
+        SystemUserMessageBodyReader target = new SystemUserMessageBodyReader();
         InputStream inputStream = new ByteArrayInputStream(read.getBytes());
-        User user =target.readFrom(null,null,null,null,null, inputStream);
+        SystemUser user =target.readFrom(null,null,null,null,null, inputStream);
         assertNull(user.getId());
         assertEquals("logon",user.getLogon());
         assertEquals("email@server.pt",user.getUserEmail());

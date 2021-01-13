@@ -91,7 +91,7 @@ public class UserClientService {
      */
     public boolean create(SystemUser user) throws MalformedURLException {
         UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
-        try (Response response = client.save(user)) {
+        try (Response response = client.save((User)user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {

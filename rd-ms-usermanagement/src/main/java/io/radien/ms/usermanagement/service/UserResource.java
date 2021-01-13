@@ -17,18 +17,17 @@ package io.radien.ms.usermanagement.service;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
+
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.client.services.UserResourceClient;
 
+import io.radien.ms.usermanagement.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,22 +40,27 @@ import java.util.List;
  */
 @Path("user")
 @RequestScoped
-public class UserResource {
+public class UserResource implements UserResourceClient {
 
 	@Inject
 	private UserServiceAccess userService;
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAll(@QueryParam("search") String search,
-						   @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-						   @DefaultValue("10") @QueryParam("pageSize") int pageSize,
-						   @QueryParam("sortBy") List<String> sortBy,
-						   @DefaultValue("true") @QueryParam("asc") boolean isAscending) {
+	@Override
+	public Response getAll(String search, int pageNo, int pageSize,
+						   List<String> sortBy, boolean isAscending) {
 		try {
 			return Response.ok(userService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
+		} catch (Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	@Override
+	public Response getUsersBy(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction) {
+		try {
+			return Response.ok(userService.getUsersBy(sub,email,logon,isExact,isLogicalConjunction)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
@@ -67,10 +71,7 @@ public class UserResource {
 	 * @param id to be search
 	 * @return Ok message if it has success. Returns error 404 Code to the user in case of resource is not existent.
 	 */
-	@GET
-	@Path("/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getById(@PathParam("id") Long id) {
+	public Response getById(Long id) {
 		try {
 			SystemUser systemUser = userService.get(id);
 			if(systemUser == null){
@@ -87,10 +88,7 @@ public class UserResource {
 	 * @param id of the user to be deleted
 	 * @return error 404 Code to the user in case of resource is not existent.
 	 */
-	@DELETE
-	@Path("/{id}")
-	@Transactional
-	public Response delete(@NotNull @PathParam("id") Long id)  {
+	public Response delete(long id)  {
 		try {
 			userService.delete(id);
 		} catch (Exception e){
@@ -99,18 +97,16 @@ public class UserResource {
 		return Response.ok().build();
 	}
 
+
 	/**
 	 * Save user to the DB.
 	 *
 	 * @param user to be added
 	 * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
 	 */
-	@POST
-	@Transactional
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response save(User user) {
+	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			userService.save(user);
+			userService.save(new User(user));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return getInvalidRequestResponse(e);
