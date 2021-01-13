@@ -249,4 +249,69 @@ public class UserService implements UserServiceAccess{
 		criteriaDelete.where(userRoot.get("id").in(userIds));
 		em.createQuery(criteriaDelete).executeUpdate();
 	}
+
+	/**
+	 * Get UsersBy unique columns
+	 * @param sub value to use on predicate with column sub (if null will be predicate will be ignored)
+	 * @param email value to use on predicate with column userEmail (if null will be predicate will be ignored)
+	 * @param logon value to use on predicate with column logon (if null will be predicate will be ignored)
+	 * @param isExact if true uses equals on on provided predicates
+	 * @param isLogicalConjunction if true joins the Predicates with "and". If false joins with "or"
+	 */
+	@Override
+	public List<? extends SystemUser> getUsersBy(String sub, String email,String logon, boolean isExact,boolean isLogicalConjunction) {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> userRoot = criteriaQuery.from(User.class);
+
+		criteriaQuery.select(userRoot);
+
+		Predicate global = getFilteredPredicate(sub, email, logon, isExact,isLogicalConjunction, criteriaBuilder, userRoot);
+
+		criteriaQuery.where(global);
+		TypedQuery<User> q=em.createQuery(criteriaQuery);
+
+		return q.getResultList();
+	}
+
+	private Predicate getFilteredPredicate(String sub,String email, String logon, boolean isExact, boolean isLogicalConjunction, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
+		Predicate global;
+
+		// is LogicalConjuction represents if you join the fields on the predicates with "or" or "and"
+		// the predicate is build with the logic (start,operator,newPredicate)
+		// where start represents the already joined predicates
+		// operator is "and" or "or"
+		// depending on the operator the start may need to be true or false
+		// true and predicate1 and predicate2
+		// false or predicate1 or predicate2
+		if(isLogicalConjunction) {
+			global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+		} else {
+			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
+		}
+
+		global = getFieldPredicate("sub", sub, isLogicalConjunction, criteriaBuilder, userRoot, global,isExact);
+		global = getFieldPredicate("userEmail", email, isLogicalConjunction, criteriaBuilder, userRoot, global,isExact);
+		global = getFieldPredicate("logon", logon, isLogicalConjunction, criteriaBuilder, userRoot, global,isExact);
+
+		return global;
+	}
+
+	private Predicate getFieldPredicate(String name, String value, boolean isLogicalConjunction, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global, boolean isExact) {
+		if(value != null) {
+			Predicate subPredicate;
+			if (isExact) {
+				subPredicate = criteriaBuilder.equal(userRoot.get(name), value);
+			} else {
+				subPredicate = criteriaBuilder.like(userRoot.get(name),"%"+value+"%");
+			}
+
+			if(isLogicalConjunction) {
+				global = criteriaBuilder.and(global, subPredicate);
+			} else {
+				global = criteriaBuilder.or(global, subPredicate);
+			}
+		}
+		return global;
+	}
 }

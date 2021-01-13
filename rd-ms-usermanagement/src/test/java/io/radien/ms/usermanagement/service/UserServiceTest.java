@@ -406,4 +406,12 @@ public class UserServiceTest {
 
         assertEquals("a",userPageWhere.getResults().get(0).getFirstname());
     }
+    @Test
+    public void testGetBy() throws UniquenessConstraintException, UserNotFoundException {
+        uTest = UserFactory.create("zz", "lastName", "zz",
+                "zz", "zz@b.pt", 1L);
+        userServiceAccess.save(uTest);
+        List<? extends SystemUser> users = userServiceAccess.getUsersBy("zz","zz@b.pt","zz",true,true);
+        assertEquals(1,users.size());
+    }
 }

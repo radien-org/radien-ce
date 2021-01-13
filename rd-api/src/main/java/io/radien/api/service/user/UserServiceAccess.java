@@ -42,4 +42,6 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public void delete(Collection<Long> userIds);
 
+    public List<? extends SystemUser> getUsersBy(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction);
+
 }
