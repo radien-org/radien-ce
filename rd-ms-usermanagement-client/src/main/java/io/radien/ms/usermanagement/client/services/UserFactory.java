@@ -19,9 +19,12 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.FactoryUtilService;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserFactory {
 
@@ -106,4 +109,7 @@ public class UserFactory {
         return  builder.build();
     }
 
+    public static List<User> convert(JsonArray jsonArray) {
+        return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
+    }
 }
