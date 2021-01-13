@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.entities.User;
 
@@ -109,12 +110,22 @@ public class UserResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(User user) {
 		try {
-			user.setId(null);
 			userService.save(user);
 			return Response.ok().build();
+		} catch (UniquenessConstraintException e) {
+			return getInvalidRequestResponse(e);
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
+	}
+
+	/**
+	 * Invalid Request error exception. Launches a 400 Error Code to the user.
+	 * @param e exception to be throw
+	 * @return code 400 message Generic Exception
+	 */
+	private Response getInvalidRequestResponse(UniquenessConstraintException e) {
+		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 	}
 
 	/**

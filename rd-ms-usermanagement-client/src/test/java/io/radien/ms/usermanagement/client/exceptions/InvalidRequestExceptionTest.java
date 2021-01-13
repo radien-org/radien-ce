@@ -15,17 +15,19 @@
  */
 package io.radien.ms.usermanagement.client.exceptions;
 
+import io.radien.exception.UniquenessConstraintException;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
+/**
+ * @author Bruno Gama
+ */
 public class InvalidRequestExceptionTest extends TestCase {
     @Test
     public void testInvalidRequestException(){
-        InvalidRequestException exception = new InvalidRequestException();
+        UniquenessConstraintException exception = new UniquenessConstraintException();
         assertNotNull(exception);
-        InvalidRequestException exception2 = new InvalidRequestException("message");
+        UniquenessConstraintException exception2 = new UniquenessConstraintException("message");
         assertEquals("message",exception2.getMessage());
     }
 }

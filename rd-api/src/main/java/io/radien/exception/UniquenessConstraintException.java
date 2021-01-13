@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client.exceptions;
+package io.radien.exception;
 
-public class InvalidRequestException extends Exception{
+/**
+ * @author Bruno Gama
+ */
+public class UniquenessConstraintException extends Exception{
 	private static final long serialVersionUID = 1L;
 
-	public InvalidRequestException() {
+	public UniquenessConstraintException() {
         super();
     }
 
-    public InvalidRequestException(String message) {
+    public UniquenessConstraintException(String message) {
         super(message);
     }
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 
 /**
@@ -35,7 +36,7 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
-    public void save(SystemUser user);
+    public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException;
 
     public void delete(Long userId);
 

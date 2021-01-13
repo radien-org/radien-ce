@@ -70,6 +70,7 @@ public class UserFactory implements Serializable {
 	 */
 	//TODO: Complete the object conversion fields missing
 	public static User convert(JsonObject person) {
+		Long id = FactoryUtilService.getLongFromJson("id", person);
 		String logon = FactoryUtilService.getStringFromJson("logon", person);
 		String userEmail = FactoryUtilService.getStringFromJson("userEmail", person);
 		Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
@@ -79,6 +80,7 @@ public class UserFactory implements Serializable {
 		String lastname = FactoryUtilService.getStringFromJson("lastname",person);
 
 		User user = new User();
+		user.setId(id);
 		user.setLogon(logon);
 		user.setUserEmail(userEmail);
 		user.setCreateDate(new Date());
