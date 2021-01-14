@@ -43,6 +43,6 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public void delete(Collection<Long> userIds);
 
-    public List<? extends SystemUser> getUsersBy(SystemUserSearchFilter filter);
+    public List<? extends SystemUser> getUsers(SystemUserSearchFilter filter);
 
 }

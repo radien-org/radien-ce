@@ -80,7 +80,7 @@ public class UserClientServiceTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
 
-        when(resourceClient.getUsersBy(a,null,null,true,true))
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenReturn(response);
 
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
@@ -113,7 +113,7 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getUsersBy(a,null,null,true,true))
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
@@ -140,7 +140,7 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getUsersBy(a,null,null,true,true))
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
@@ -168,7 +168,7 @@ public class UserClientServiceTest {
         boolean success = false;
         String a = "a";
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getUsersBy(a,null,null,true,true))
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenThrow(new ProcessingException("test"));
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 

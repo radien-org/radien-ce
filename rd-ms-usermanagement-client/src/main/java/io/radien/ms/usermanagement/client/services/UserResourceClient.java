@@ -45,11 +45,11 @@ public interface UserResourceClient {
     @GET
     @Path("find")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsersBy(@QueryParam("sub") String sub,
-                               @QueryParam("userEmail") String email,
-                               @QueryParam("logon") String logon,
-                               @DefaultValue("true") @QueryParam("isExact") boolean isExact,
-                               @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
+    public Response getUsers(@QueryParam("sub") String sub,
+                             @QueryParam("userEmail") String email,
+                             @QueryParam("logon") String logon,
+                             @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                             @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
     @Path("/{id}")

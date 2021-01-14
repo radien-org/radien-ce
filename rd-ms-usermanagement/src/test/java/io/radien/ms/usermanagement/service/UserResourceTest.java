@@ -28,7 +28,7 @@ public class UserResourceTest {
     @InjectMocks
     UserResource userResource;
     @Mock
-    UserService userService;
+    UserBusinessService userBusinessService;
 
     @Before
     public void before(){
@@ -70,7 +70,7 @@ public class UserResourceTest {
      */
     @Test
     public void testGetById() throws UserNotFoundException {
-        when(userService.get(1L)).thenReturn(new User());
+        when(userBusinessService.get(1L)).thenReturn(new User());
         Response response = userResource.getById(1L);
         assertEquals(200,response.getStatus());
     }
@@ -81,7 +81,7 @@ public class UserResourceTest {
      */
     @Test
     public void testGetByIdGenericException() throws UserNotFoundException {
-        when(userService.get(1L)).thenThrow(new RuntimeException());
+        when(userBusinessService.get(1L)).thenThrow(new RuntimeException());
         Response response = userResource.getById(1L);
         assertEquals(500,response.getStatus());
     }
@@ -91,7 +91,7 @@ public class UserResourceTest {
      */
     @Test
     public void testGetUsersBy() {
-        Response response = userResource.getUsersBy("subj","email@email.pt","logon",true,true);
+        Response response = userResource.getUsers("subj","email@email.pt","logon",true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -100,8 +100,8 @@ public class UserResourceTest {
      */
     @Test
     public void testGetUsersByException() {
-        doThrow(new RuntimeException()).when(userService).getUsersBy(any());
-        Response response = userResource.getUsersBy("subj","email@email.pt","logon",true,true);
+        doThrow(new RuntimeException()).when(userBusinessService).getUsers(any());
+        Response response = userResource.getUsers("subj","email@email.pt","logon",true,true);
         assertEquals(500,response.getStatus());
     }
 
@@ -119,7 +119,7 @@ public class UserResourceTest {
      */
     @Test
     public void testDeleteGenericError() {
-        doThrow(new RuntimeException()).when(userService).delete(1l);
+        doThrow(new RuntimeException()).when(userBusinessService).delete(1l);
         Response response = userResource.delete(1l);
         assertEquals(500,response.getStatus());
     }
@@ -141,7 +141,7 @@ public class UserResourceTest {
      */
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException {
-        doThrow(new UniquenessConstraintException()).when(userService).save(any());
+        doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any());
         Response response = userResource.save(new User());
         assertEquals(400,response.getStatus());
     }
@@ -154,7 +154,7 @@ public class UserResourceTest {
      */
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException {
-        doThrow(new RuntimeException()).when(userService).save(any());
+        doThrow(new RuntimeException()).when(userBusinessService).save(any());
         Response response = userResource.save(new User());
         assertEquals(500,response.getStatus());
     }

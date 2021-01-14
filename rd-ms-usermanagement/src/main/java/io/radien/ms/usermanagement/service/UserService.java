@@ -256,7 +256,7 @@ public class UserService implements UserServiceAccess{
 	 * @param filter entity with available filters to search user
 	 */
 	@Override
-	public List<? extends SystemUser> getUsersBy(SystemUserSearchFilter filter) {
+	public List<? extends SystemUser> getUsers(SystemUserSearchFilter filter) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 		Root<User> userRoot = criteriaQuery.from(User.class);

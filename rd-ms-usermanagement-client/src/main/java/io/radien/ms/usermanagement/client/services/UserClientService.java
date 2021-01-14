@@ -59,7 +59,7 @@ public class UserClientService {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
 
-            Response response = client.getUsersBy(sub,null,null,true,true);
+            Response response = client.getUsers(sub,null,null,true,true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));

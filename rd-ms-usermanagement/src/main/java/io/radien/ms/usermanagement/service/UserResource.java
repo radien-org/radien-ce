@@ -23,7 +23,6 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
-import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
@@ -45,7 +44,7 @@ import java.util.List;
 public class UserResource implements UserResourceClient {
 
 	@Inject
-	private UserServiceAccess userService;
+	private UserBusinessService userBusinessService;
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
@@ -53,17 +52,17 @@ public class UserResource implements UserResourceClient {
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 		try {
-			return Response.ok(userService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
+			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
 	}
 
 	@Override
-	public Response getUsersBy(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction) {
+	public Response getUsers(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction) {
 		try {
 			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,isExact,isLogicalConjunction);
-			return Response.ok(userService.getUsersBy(filter)).build();
+			return Response.ok(userBusinessService.getUsers(filter)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
@@ -76,7 +75,7 @@ public class UserResource implements UserResourceClient {
 	 */
 	public Response getById(Long id) {
 		try {
-			SystemUser systemUser = userService.get(id);
+			SystemUser systemUser = userBusinessService.get(id);
 			if(systemUser == null){
 				return getResourceNotFoundException();
 			}
@@ -93,7 +92,7 @@ public class UserResource implements UserResourceClient {
 	 */
 	public Response delete(long id)  {
 		try {
-			userService.delete(id);
+			userBusinessService.delete(id);
 		} catch (Exception e){
 			return getGenericError(e);
 		}
@@ -109,7 +108,7 @@ public class UserResource implements UserResourceClient {
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			userService.save(new User(user));
+			userBusinessService.save(new User(user));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return getInvalidRequestResponse(e);
