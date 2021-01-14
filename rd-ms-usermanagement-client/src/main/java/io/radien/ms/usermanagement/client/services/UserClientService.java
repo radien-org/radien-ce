@@ -17,13 +17,10 @@ package io.radien.ms.usermanagement.client.services;
 
 import io.radien.api.Configurable;
 import io.radien.api.OAFProperties;
-import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
 import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
-import io.radien.ms.usermanagement.client.util.PageModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,7 +2,7 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.client.entities.User;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,6 +12,8 @@ import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -85,6 +87,25 @@ public class UserResourceTest {
     }
 
     /**
+     * Test Get users by should return success with a 200 code
+     */
+    @Test
+    public void tetGetUsersBy() {
+        Response response = userResource.getUsersBy("subj","email@email.pt","logon",true,true);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test Get users by should return error with a 500 error code message
+     */
+    @Test
+    public void tetGetUsersByException() {
+        when(userResource.getUsersBy("subj","email@email.pt","logon",true,true)).thenThrow(new RuntimeException());
+        Response response = userResource.getUsersBy("subj","email@email.pt","logon",true,true);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
      * Deletion of the record with success, should return a 200 code message
      */
     @Test
@@ -120,9 +141,8 @@ public class UserResourceTest {
      */
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException {
-        User u = new User();
-        doThrow(new UniquenessConstraintException()).when(userService).save(u);
-        Response response = userResource.save(u);
+        doThrow(new UniquenessConstraintException()).when(userService).save(any());
+        Response response = userResource.save(new User());
         assertEquals(400,response.getStatus());
     }
 
@@ -134,9 +154,8 @@ public class UserResourceTest {
      */
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException {
-        User u = new User();
-        doThrow(new RuntimeException()).when(userService).save(u);
-        Response response = userResource.save(u);
+        doThrow(new RuntimeException()).when(userService).save(any());
+        Response response = userResource.save(new User());
         assertEquals(500,response.getStatus());
     }
 }
