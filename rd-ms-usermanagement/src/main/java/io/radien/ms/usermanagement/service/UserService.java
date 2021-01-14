@@ -22,6 +22,7 @@ import javax.persistence.criteria.*;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -252,21 +253,17 @@ public class UserService implements UserServiceAccess{
 
 	/**
 	 * Get UsersBy unique columns
-	 * @param sub value to use on predicate with column sub (if null will be predicate will be ignored)
-	 * @param email value to use on predicate with column userEmail (if null will be predicate will be ignored)
-	 * @param logon value to use on predicate with column logon (if null will be predicate will be ignored)
-	 * @param isExact if true uses equals on on provided predicates
-	 * @param isLogicalConjunction if true joins the Predicates with "and". If false joins with "or"
+	 * @param filter entity with available filters to search user
 	 */
 	@Override
-	public List<? extends SystemUser> getUsersBy(String sub, String email,String logon, boolean isExact,boolean isLogicalConjunction) {
+	public List<? extends SystemUser> getUsersBy(SystemUserSearchFilter filter) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 		Root<User> userRoot = criteriaQuery.from(User.class);
 
 		criteriaQuery.select(userRoot);
 
-		Predicate global = getFilteredPredicate(sub, email, logon, isExact,isLogicalConjunction, criteriaBuilder, userRoot);
+		Predicate global = getFilteredPredicate(filter, criteriaBuilder, userRoot);
 
 		criteriaQuery.where(global);
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
@@ -274,39 +271,39 @@ public class UserService implements UserServiceAccess{
 		return q.getResultList();
 	}
 
-	private Predicate getFilteredPredicate(String sub,String email, String logon, boolean isExact, boolean isLogicalConjunction, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
+	private Predicate getFilteredPredicate(SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
 		Predicate global;
 
-		// is LogicalConjuction represents if you join the fields on the predicates with "or" or "and"
+		// is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
 		// the predicate is build with the logic (start,operator,newPredicate)
 		// where start represents the already joined predicates
 		// operator is "and" or "or"
 		// depending on the operator the start may need to be true or false
 		// true and predicate1 and predicate2
 		// false or predicate1 or predicate2
-		if(isLogicalConjunction) {
+		if(filter.isLogicConjunction()) {
 			global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 		} else {
 			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
 		}
 
-		global = getFieldPredicate("sub", sub, isLogicalConjunction, criteriaBuilder, userRoot, global,isExact);
-		global = getFieldPredicate("userEmail", email, isLogicalConjunction, criteriaBuilder, userRoot, global,isExact);
-		global = getFieldPredicate("logon", logon, isLogicalConjunction, criteriaBuilder, userRoot, global,isExact);
+		global = getFieldPredicate("sub", filter.getSub(), filter, criteriaBuilder, userRoot, global);
+		global = getFieldPredicate("userEmail", filter.getEmail(), filter, criteriaBuilder, userRoot, global);
+		global = getFieldPredicate("logon", filter.getLogon(), filter, criteriaBuilder, userRoot, global);
 
 		return global;
 	}
 
-	private Predicate getFieldPredicate(String name, String value, boolean isLogicalConjunction, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global, boolean isExact) {
+	private Predicate getFieldPredicate(String name, String value, SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global) {
 		if(value != null) {
 			Predicate subPredicate;
-			if (isExact) {
+			if (filter.isExact()) {
 				subPredicate = criteriaBuilder.equal(userRoot.get(name), value);
 			} else {
 				subPredicate = criteriaBuilder.like(userRoot.get(name),"%"+value+"%");
 			}
 
-			if(isLogicalConjunction) {
+			if(filter.isLogicConjunction()) {
 				global = criteriaBuilder.and(global, subPredicate);
 			} else {
 				global = criteriaBuilder.or(global, subPredicate);

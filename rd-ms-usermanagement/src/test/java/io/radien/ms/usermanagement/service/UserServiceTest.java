@@ -20,6 +20,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
+import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
@@ -421,13 +422,13 @@ public class UserServiceTest {
         userServiceAccess.save(testById2);
         userServiceAccess.save(testById3);
 
-        List<? extends SystemUser> usersAnd = userServiceAccess.getUsersBy("zz","zz@b.pt","zz",true,true);
+        List<? extends SystemUser> usersAnd = userServiceAccess.getUsersBy(new UserSearchFilter("zz","zz@b.pt","zz",true,true));
         assertEquals(1,usersAnd.size());
 
-        List<? extends SystemUser> usersOr = userServiceAccess.getUsersBy("aa","aa@b.pt","zz",true,false);
+        List<? extends SystemUser> usersOr = userServiceAccess.getUsersBy(new UserSearchFilter("aa","aa@b.pt","zz",true,false));
         assertEquals(2,usersOr.size());
 
-        List<? extends SystemUser> usersNotExact = userServiceAccess.getUsersBy("aa","aa","aa",false,true);
+        List<? extends SystemUser> usersNotExact = userServiceAccess.getUsersBy(new UserSearchFilter("aa","aa","aa",false,true));
         assertEquals(2,usersNotExact.size());
     }
 }

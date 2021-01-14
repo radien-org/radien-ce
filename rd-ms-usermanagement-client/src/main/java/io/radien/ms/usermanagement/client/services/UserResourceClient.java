@@ -49,7 +49,7 @@ public interface UserResourceClient {
                                @QueryParam("userEmail") String email,
                                @QueryParam("logon") String logon,
                                @DefaultValue("true") @QueryParam("isExact") boolean isExact,
-                               @DefaultValue("true") @QueryParam("isLogicalConjuction") boolean isLogicalConjunction);
+                               @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
     @Path("/{id}")

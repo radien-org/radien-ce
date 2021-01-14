@@ -22,8 +22,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
 
@@ -60,7 +62,8 @@ public class UserResource implements UserResourceClient {
 	@Override
 	public Response getUsersBy(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction) {
 		try {
-			return Response.ok(userService.getUsersBy(sub,email,logon,isExact,isLogicalConjunction)).build();
+			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,isExact,isLogicalConjunction);
+			return Response.ok(userService.getUsersBy(filter)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}

@@ -20,6 +20,7 @@ import java.util.List;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -42,6 +43,6 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public void delete(Collection<Long> userIds);
 
-    public List<? extends SystemUser> getUsersBy(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction);
+    public List<? extends SystemUser> getUsersBy(SystemUserSearchFilter filter);
 
 }
