@@ -90,7 +90,7 @@ public class UserResourceTest {
      * Test Get users by should return success with a 200 code
      */
     @Test
-    public void tetGetUsersBy() {
+    public void testGetUsersBy() {
         Response response = userResource.getUsersBy("subj","email@email.pt","logon",true,true);
         assertEquals(200,response.getStatus());
     }
@@ -99,8 +99,8 @@ public class UserResourceTest {
      * Test Get users by should return error with a 500 error code message
      */
     @Test
-    public void tetGetUsersByException() {
-        when(userResource.getUsersBy("subj","email@email.pt","logon",true,true)).thenThrow(new RuntimeException());
+    public void testGetUsersByException() {
+        doThrow(new RuntimeException()).when(userService).getUsersBy(any());
         Response response = userResource.getUsersBy("subj","email@email.pt","logon",true,true);
         assertEquals(500,response.getStatus());
     }
