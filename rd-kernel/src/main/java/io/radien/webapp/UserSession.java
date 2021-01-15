@@ -58,14 +58,14 @@ public @Model @SessionScoped class UserSession implements Serializable, Appframe
 	
 	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception {
 		log.info("user logged in: {}", userIdSubject);
-		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
+//		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 		SystemUser user;
-		if(!existingUser.isPresent()){
+//		if(!existingUser.isPresent()){
 			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,email,getOAF().getSystemAdminUserId());
-			userClientService.create(user);
-		} else {
-			user = existingUser.get();
-		}
+//			userClientService.create(user);
+//		} else {
+//			user = existingUser.get();
+//		}
 		this.user = user;
 	}
 	

@@ -18,10 +18,45 @@
 		<pattern value="/module/user/profile" />
 		<view-id value="/module/userprofile/index.oaf" />
 	</url-mapping>
-	
+
+	<!-- Usersmanagement -->
 	<url-mapping id="users">
-		<pattern value="/module/users/search" />
-		<view-id value="/module/users/search.oaf" />
+		<pattern value="/module/users" />
+		<view-id value="/module/users/users.oaf" />
+	</url-mapping>
+	<url-mapping id="users">
+		<pattern value="/module/users" />
+		<view-id value="/module/users/users.oaf" />
+	</url-mapping>
+	
+	<!-- Rolesmanagement -->
+	<url-mapping id="roles">
+		<pattern value="/module/roles" />
+		<view-id value="/module/roles/roles.oaf" />
+	</url-mapping>
+	<url-mapping id="role">
+		<pattern value="/module/role" />
+		<view-id value="/module/role/role.oaf" />
+	</url-mapping>
+	
+	<!-- Permissionsmanagement -->
+	<url-mapping id="permissions">
+		<pattern value="/module/permissions" />
+		<view-id value="/module/permissions/permissions.oaf" />
+	</url-mapping>
+	<url-mapping id="permission">
+		<pattern value="/module/permission" />
+		<view-id value="/module/permission/permission.oaf" />
+	</url-mapping>
+	
+	<!-- Contractsmanagement -->
+	<url-mapping id="contracts">
+		<pattern value="/module/contracts" />
+		<view-id value="/module/contracts/contracts.oaf" />
+	</url-mapping>
+	<url-mapping id="contract">
+		<pattern value="/module/contract" />
+		<view-id value="/module/contract/contract.oaf" />
 	</url-mapping>
 
 	<url-mapping id="content_public">
