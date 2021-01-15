@@ -451,7 +451,7 @@
 
 							<dataFile>target/jacoco.exec</dataFile>
 							<!-- Sets the output directory for the code coverage report. -->
-							<outputDirectory>target/my-reports</outputDirectory>
+							<outputDirectory>target/reports</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
