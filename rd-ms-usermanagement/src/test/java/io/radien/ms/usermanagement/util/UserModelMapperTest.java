@@ -26,6 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 
+/**
+ * @author Nuno Santana
+ * @author Bruno Gama
+ */
 public class UserModelMapperTest extends TestCase {
 
     @Test
@@ -43,7 +47,7 @@ public class UserModelMapperTest extends TestCase {
         User user = UserModelMapper.map(in);
         assertEquals("a",user.getFirstname());
         assertEquals("b",user.getLastname());
-        assertNull(user.getId());
+        assertEquals((Long) 28L, user.getId());
         assertFalse(user.isEnabled());
         assertEquals("aa34433",user.getLogon());
         assertEquals("aa234433@email.tt", user.getUserEmail());

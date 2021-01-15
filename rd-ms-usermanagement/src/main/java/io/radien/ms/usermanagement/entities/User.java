@@ -37,103 +37,62 @@ import io.radien.api.model.user.SystemUser;
 
 @Entity
 @Table(name = "USR01")
-public class User extends AbstractUserModel implements SystemUser {
+public class User extends io.radien.ms.usermanagement.client.entities.User {
 
 	private static final long serialVersionUID = -3532886874455311100L;
 
+	public User(){ }
+
+	public User(io.radien.ms.usermanagement.client.entities.User user){
+		super(user);
+	}
 	@Id
 	@SequenceGenerator(name = "GEN_SEQ_USR01", sequenceName = "SEQ_USR01", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "GEN_SEQ_USR01")
-	private Long id;
-
-	@Column(unique = true)
-	private String logon;
-	@Column(unique = true)
-	private String userEmail;
-	@Column(unique = true)
-	private String sub;
-
-	@Column
-	private String firstname;
-	@Column
-	private String lastname;
-	@Column
-	private Date terminationDate;
-	@Column
-	private Date createDate;
-	@Column
-	private Long createUser;
-	@Column
-	private Date lastUpdate;
-	@Column
-	private Long lastUpdateUser;
-	@Column
-	private boolean enabled;
-	
 	@Override
 	public Long getId() {
-		return id;
+		return super.getId();
 	}
 
+	@Column(unique = true)
 	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getLogon() {
-		return logon;
+		return super.getLogon();
 	}
 
-	public void setLogon(String logon) {
-		this.logon = logon;
-	}
-
-	public Date getTerminationDate() {
-		return terminationDate;
-	}
-
-	public void setTerminationDate(Date terminationDate) {
-		this.terminationDate = terminationDate;
-	}
-
+	@Column(unique = true)
+	@Override
 	public String getUserEmail() {
-		return userEmail;
+		return super.getUserEmail();
 	}
 
-	public void setUserEmail(String userEmail) {
-		this.userEmail = userEmail;
-	}
-
+	@Column
+	@Override
 	public String getFirstname() {
-		return firstname;
+		return super.getFirstname();
 	}
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
-
+	@Column
+	@Override
 	public String getLastname() {
-		return lastname;
+		return super.getLastname();
 	}
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
+	@Column
+	@Override
 	public boolean isEnabled() {
-		return enabled;
+		return super.isEnabled();
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
+	@Column(unique = true)
+	@Override
 	public String getSub() {
-		return sub;
+		return super.getSub();
 	}
 
-	public void setSub(String sub) {
-		this.sub = sub;
+	@Column
+	@Override
+	public Date getTerminationDate() {
+		return super.getTerminationDate();
 	}
-
 }

@@ -21,7 +21,6 @@ import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
 import io.radien.ms.usermanagement.client.util.FactoryUtilService;
-import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
+import javax.json.*;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -71,17 +66,12 @@ public class UserClientServiceTest {
     @Test
     public void testGetUserBySub() throws Exception {
         String a = "a";
-        Page<User> page = new Page<>(new ArrayList<>(),1,0,0);
 
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        FactoryUtilService.addValueInt(builder, "currentPage", page.getCurrentPage());
-        //FactoryUtilService.addValue(builder, "results", page.getResults());
-        FactoryUtilService.addValueInt(builder, "totalPages", page.getTotalPages());
-        FactoryUtilService.addValueInt(builder, "totalResults", page.getTotalResults());
+        JsonArrayBuilder builder = Json.createArrayBuilder();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeObject(builder.build());
+        jsonWriter.writeArray(builder.build());
         jsonWriter.close();
 
         InputStream is = new ByteArrayInputStream(baos.toByteArray());
@@ -89,7 +79,8 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(null, 1, 10, null, true))
+
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenReturn(response);
 
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
@@ -102,26 +93,19 @@ public class UserClientServiceTest {
         when(oafAccess.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL)).thenReturn(url);
         return url;
     }
+
     @Test
     public void testGetUserBySubWithResults() throws Exception {
         String a = "a";
-        Page<User> page = new Page<>(new ArrayList<>(),1,1,0);
+        User user = UserFactory.create(null, null, "logon", null, null, null);
+        user.setSub(a);
 
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        FactoryUtilService.addValueInt(builder, "currentPage", page.getCurrentPage());
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-
-        JsonObject jsonObject = UserModelMapper.map(new User());
-        arrayBuilder.add(jsonObject);
-
-
-        FactoryUtilService.addValueArray(builder, "results", arrayBuilder.build());
-        FactoryUtilService.addValueInt(builder, "totalPages", page.getTotalPages());
-        FactoryUtilService.addValueInt(builder, "totalResults", page.getTotalResults());
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(UserFactory.convertToJsonObject(user));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeObject(builder.build());
+        jsonWriter.writeArray(builder.build());
         jsonWriter.close();
 
         InputStream is = new ByteArrayInputStream(baos.toByteArray());
@@ -129,7 +113,7 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(null, 1, 10, null, true))
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
@@ -143,7 +127,6 @@ public class UserClientServiceTest {
 
         JsonObjectBuilder builder = Json.createObjectBuilder();
         FactoryUtilService.addValueInt(builder, "currentPage", page.getCurrentPage());
-        //FactoryUtilService.addValue(builder, "results", page.getResults());
         FactoryUtilService.addValueInt(builder, "totalPages", page.getTotalPages());
         FactoryUtilService.addValueInt(builder, "totalResults", page.getTotalResults());
 
@@ -157,7 +140,7 @@ public class UserClientServiceTest {
         Response response = Response.ok(is).build();
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(null, 1, 10, null, true))
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
@@ -185,7 +168,7 @@ public class UserClientServiceTest {
         boolean success = false;
         String a = "a";
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.getAll(null, 1, 10, null, true))
+        when(resourceClient.getUsers(a,null,null,true,true))
                 .thenThrow(new ProcessingException("test"));
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 

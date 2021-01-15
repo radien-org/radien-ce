@@ -18,6 +18,7 @@ package io.radien.ms.usermanagement.client.services;
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.entities.User;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,23 +35,32 @@ import java.util.List;
 public interface UserResourceClient {
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getAll(@QueryParam("search") String search,
-                           @QueryParam("pageNo") int pageNo,
-                           @QueryParam("pageSize") int pageSize,
+                           @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,
-                           @QueryParam("asc") boolean isAscending);
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     @GET
-    public Response getById(Long id);
+    @Path("find")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUsers(@QueryParam("sub") String sub,
+                             @QueryParam("userEmail") String email,
+                             @QueryParam("logon") String logon,
+                             @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                             @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
-    // TODO: To be removed since it does not exist in the UserResource.java
-    @PUT
-    public Response updateUser(long id, User newUserInformation);
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getById(@PathParam("id") Long id);
 
-    // TODO: To be removed since it does not exist in the UserResource.java
     @DELETE
-    public Response deleteOrganization(Long id);
+    @Path("/{id}")
+    public Response delete(@NotNull @PathParam("id") long id);
 
     @POST
-    public Response save(SystemUser user);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response save(User user);
 }

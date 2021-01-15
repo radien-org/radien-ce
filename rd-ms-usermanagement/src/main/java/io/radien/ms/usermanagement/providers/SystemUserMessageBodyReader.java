@@ -27,6 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.util.UserModelMapper;
 
@@ -36,14 +37,15 @@ import io.radien.ms.usermanagement.util.UserModelMapper;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserModelMessageBodyReader implements MessageBodyReader<User> {
+public class SystemUserMessageBodyReader implements MessageBodyReader<SystemUser> {
 	 	@Override
 	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 	        return type.equals(User.class);
 	    }
 
-	    @Override
-	    public User readFrom(Class<User> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-	        return UserModelMapper.map(entityStream);
-	    }
+	@Override
+	public SystemUser readFrom(Class<SystemUser> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, InputStream inputStream) throws IOException, WebApplicationException {
+		return UserModelMapper.map(inputStream);
+	}
+
 }

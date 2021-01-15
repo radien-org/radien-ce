@@ -33,7 +33,24 @@ public class User extends AbstractUserModel implements SystemUser {
 	private String sub;
 	private Date terminationDate;
 	private boolean enabled;
-	
+
+	public User(){}
+
+	public User(User u) {
+		this.id = u.getId();
+		this.logon = u.getLogon();
+		this.userEmail = u.getUserEmail();
+		this.firstname = u.getFirstname();
+		this.lastname = u.getLastname();
+		this.sub = u.getSub();
+		this.terminationDate = u.getTerminationDate();
+		this.enabled = u.enabled;
+		this.setCreateDate(u.getCreateDate());
+		this.setCreateUser(u.getCreateUser());
+		this.setLastUpdateUser(u.getLastUpdateUser());
+		this.setLastUpdate(u.getLastUpdate());
+	}
+
 	@Override
 	public Long getId() {
 		return id;

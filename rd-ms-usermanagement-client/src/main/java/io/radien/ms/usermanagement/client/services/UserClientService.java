@@ -17,12 +17,10 @@ package io.radien.ms.usermanagement.client.services;
 
 import io.radien.api.Configurable;
 import io.radien.api.OAFProperties;
-import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
-import io.radien.ms.usermanagement.client.util.PageModelMapper;
+import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,27 +58,18 @@ public class UserClientService {
     public Optional<SystemUser> getUserBySub(String sub) throws Exception {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
-            try {
-                Response response = client.getAll(null, 1, 10, null, true);
-                Page<User> page = PageModelMapper.map((InputStream) response.getEntity());
-                if (page.getTotalResults() == 1) {
-                    List<? extends SystemUser> users = page.getResults();
-                    return Optional.ofNullable(users.get(0));
-                } else if (page.getTotalResults() == 0) {
-                    return Optional.empty();
-                } else {
-                    log.error("The subject field should and needs to be unique, this restriction doesn't seem to be met. Please revalidate the sub field.");
-                    throw new Exception(ErrorCodeMessage.GENERIC_ERROR.toString());
-                }
-            } catch (ProcessingException pe) {
-                log.error(pe.getMessage(), pe);
-                throw pe;
+
+            Response response = client.getUsers(sub,null,null,true,true);
+            List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
+            if (list.size() == 1) {
+                return Optional.ofNullable(list.get(0));
+            } else {
+                return Optional.empty();
             }
-        }        catch (ExtensionException es){
+        }        catch (ExtensionException|ProcessingException es){
             log.error(es.getMessage(),es);
             throw es;
         }
-        //ProcessingException
     }
 
     /**
@@ -91,7 +80,7 @@ public class UserClientService {
      */
     public boolean create(SystemUser user) throws MalformedURLException {
         UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
-        try (Response response = client.save(user)) {
+        try (Response response = client.save((User)user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {

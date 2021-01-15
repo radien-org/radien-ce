@@ -22,10 +22,11 @@ import javax.persistence.criteria.*;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.usermanagement.client.exceptions.InvalidRequestException;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 
 import io.radien.ms.usermanagement.entities.User;
@@ -105,6 +106,13 @@ public class UserService implements UserServiceAccess{
 		Root<User> userRoot = criteriaQuery.from(User.class);
 
 		criteriaQuery.select(userRoot);
+
+		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+		if(search!= null) {
+			global = criteriaBuilder.and(criteriaBuilder.or(criteriaBuilder.like(userRoot.get("logon"), search), criteriaBuilder.like(userRoot.get("userEmail"), search)));
+			criteriaQuery.where(global);
+		}
+
 		if(sortBy != null && !sortBy.isEmpty()){
 			List<Order> orders;
 			if(isAscending){
@@ -115,60 +123,104 @@ public class UserService implements UserServiceAccess{
 			criteriaQuery.orderBy(orders);
 		}
 
-		if(search!= null) {
-			criteriaQuery.where(criteriaBuilder.or(criteriaBuilder.like(userRoot.get("logon"), "%" + search + "%"), criteriaBuilder.like(userRoot.get("userEmail"), "%" + search + "%")));
-		}
-
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
-
-		int totalRecords = q.getResultList().size();
 
 		q.setFirstResult((pageNo-1) * pageSize);
 		q.setMaxResults(pageSize);
 
 		List<? extends SystemUser> systemUsers = q.getResultList();
 
-
+		int totalRecords = Math.toIntExact(getCount(global, userRoot));
 		int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
-		return new Page<SystemUser>(systemUsers, pageNo, pageSize, totalPages);
+		return new Page<SystemUser>(systemUsers, pageNo, totalRecords, totalPages);
 	}
 
 	/**
-	 * Saves the requested and given user information into the DB.
-	 * @param user to be added/inserted
-	 * @throws InvalidRequestException in case of duplicated email/duplicated logon
+	 * Count the number of users existent in the DB.
+	 * @return the count of users
+	 */
+	private long getCount(Predicate global, Root<User> userRoot) {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+		criteriaQuery.where(global);
+
+		criteriaQuery.select(criteriaBuilder.count(userRoot));
+
+		TypedQuery<Long> q=em.createQuery(criteriaQuery);
+		return q.getSingleResult();
+	}
+
+	/**
+	 * Saves or updates the requested and given user information into the DB.
+	 * @param user to be added/inserted or updated
+	 * @throws UserNotFoundException in case the user does not exist in the DB, or cannot be found.
+	 * @throws UniquenessConstraintException in case of duplicated email/duplicated logon
 	 */
 	@Override
-	public void save(SystemUser user) {
-		List<SystemUser> isUser;
-		try{
-			Query q = em
-					.createNativeQuery("SELECT USR01.logon, USR01.userEmail FROM USR01 \n" +
-							"WHERE USR01.logon = ?1 AND USR01.userEmail = ?2 ");
-			q.setParameter(1, user.getLogon());
-			q.setParameter(2, user.getUserEmail());
-			isUser = q.getResultList();
+	public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException {
+		List<User> alreadyExistentRecords = searchDuplicatedEmailOrLogon(user);
 
-			if(isUser == null) {
+		if(user.getId() == null) {
+			if(alreadyExistentRecords.isEmpty()) {
 				em.persist(user);
-				log.info("User saved successfully with emailId: " + user.getUserEmail() + " and logon: " + " user.getLogon()");
-			} else{
-				boolean isUserLogon = user.getUserEmail().equals(isUser.get(0).getLogon());
-				boolean isUserEmail = user.getUserEmail().equals(isUser.get(0).getUserEmail());
-				if(isUserEmail && isUserLogon){
-					user.setLastUpdate(new Date());
-					user.setLastUpdateUser(null);
-					em.merge(user);
-					log.info("User updated successfully with emailId: " + user.getUserEmail() + " and logon: " + " user.getLogon()");
-				}
+			} else {
+				validateUniquenessRecords(alreadyExistentRecords, user);
 			}
-		}catch (Exception e){
-			new InvalidRequestException(ErrorCodeMessage.DUPLICATED_FIELD.toString(user.getUserEmail()));
-		}
+		} else {
+			validateUniquenessRecords(alreadyExistentRecords, user);
 
-		//TODO: this has to be done somewhere else:
-//			user.setSub(sub.get());
+			em.merge(user);
+		}
+	}
+
+	/**
+	 * Query to validate if an existent email address or logon already exists in the database or not.
+	 * @param user user information to look up.
+	 * @return list of users with duplicated information.
+	 */
+	//TODO: validate the subject also
+	private List<User> searchDuplicatedEmailOrLogon(SystemUser user) {
+		List<User> alreadyExistentRecords;
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> userRoot = criteriaQuery.from(User.class);
+		criteriaQuery.select(userRoot);
+		Predicate global = criteriaBuilder.or(
+				criteriaBuilder.equal(userRoot.get("logon"), user.getLogon()),
+				criteriaBuilder.equal(userRoot.get("userEmail"), user.getUserEmail()));
+		if(user.getId()!= null) {
+			global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get("id"), user.getId()));
+		}
+		criteriaQuery.where(global);
+		TypedQuery<User> q = em.createQuery(criteriaQuery);
+		alreadyExistentRecords = q.getResultList();
+		return alreadyExistentRecords;
+	}
+
+	/**
+	 * When updating the user information this method will validate if the unique values maintain as unique.
+	 * Will search for the user email and logon, given in the information to be updated, to see if they are not already in the DB in another user.
+	 * @param alreadyExistentRecords list of duplicated user information
+	 * @param newUserInformation user information to update into the requested one
+	 * @throws UniquenessConstraintException in case of requested information to be updated already exists in the DB
+	 */
+	private void validateUniquenessRecords(List<User> alreadyExistentRecords, SystemUser newUserInformation) throws UniquenessConstraintException {
+		if (alreadyExistentRecords.size() == 2) {
+			throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
+		} else if(!alreadyExistentRecords.isEmpty()) {
+			boolean isSameUserEmail = alreadyExistentRecords.get(0).getUserEmail().equals(newUserInformation.getUserEmail());
+			boolean isSameLogon = alreadyExistentRecords.get(0).getLogon().equals(newUserInformation.getLogon());
+
+			if(!isSameUserEmail && isSameLogon) {
+				throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
+			} else if(isSameUserEmail && !isSameLogon) {
+				throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+			} else if(isSameUserEmail && isSameLogon) {
+				throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
+			}
+		}
 	}
 
 	/**
@@ -197,5 +249,66 @@ public class UserService implements UserServiceAccess{
 
 		criteriaDelete.where(userRoot.get("id").in(userIds));
 		em.createQuery(criteriaDelete).executeUpdate();
+	}
+
+	/**
+	 * Get UsersBy unique columns
+	 * @param filter entity with available filters to search user
+	 */
+	@Override
+	public List<? extends SystemUser> getUsers(SystemUserSearchFilter filter) {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> userRoot = criteriaQuery.from(User.class);
+
+		criteriaQuery.select(userRoot);
+
+		Predicate global = getFilteredPredicate(filter, criteriaBuilder, userRoot);
+
+		criteriaQuery.where(global);
+		TypedQuery<User> q=em.createQuery(criteriaQuery);
+
+		return q.getResultList();
+	}
+
+	private Predicate getFilteredPredicate(SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
+		Predicate global;
+
+		// is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
+		// the predicate is build with the logic (start,operator,newPredicate)
+		// where start represents the already joined predicates
+		// operator is "and" or "or"
+		// depending on the operator the start may need to be true or false
+		// true and predicate1 and predicate2
+		// false or predicate1 or predicate2
+		if(filter.isLogicConjunction()) {
+			global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+		} else {
+			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
+		}
+
+		global = getFieldPredicate("sub", filter.getSub(), filter, criteriaBuilder, userRoot, global);
+		global = getFieldPredicate("userEmail", filter.getEmail(), filter, criteriaBuilder, userRoot, global);
+		global = getFieldPredicate("logon", filter.getLogon(), filter, criteriaBuilder, userRoot, global);
+
+		return global;
+	}
+
+	private Predicate getFieldPredicate(String name, String value, SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global) {
+		if(value != null) {
+			Predicate subPredicate;
+			if (filter.isExact()) {
+				subPredicate = criteriaBuilder.equal(userRoot.get(name), value);
+			} else {
+				subPredicate = criteriaBuilder.like(userRoot.get(name),"%"+value+"%");
+			}
+
+			if(filter.isLogicConjunction()) {
+				global = criteriaBuilder.and(global, subPredicate);
+			} else {
+				global = criteriaBuilder.or(global, subPredicate);
+			}
+		}
+		return global;
 	}
 }
