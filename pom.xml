@@ -14,6 +14,8 @@
 		<module>rd-persistence</module>
 		<module>rd-openid</module>
 		<module>rd-kernel</module>
+		<module>rd-web-api</module>
+		<module>rd-web-impl</module>
 		<module>rd-web</module>
 		<module>rd-ms-template</module>
 		<module>rd-ms-ecm</module>
@@ -113,6 +115,16 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-api</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-web-api</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-web-impl</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>

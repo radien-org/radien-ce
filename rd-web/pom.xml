@@ -55,7 +55,14 @@
 		</plugins>
 	</build>
 	<dependencies>
-
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-web-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-web-impl</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-kernel</artifactId>
