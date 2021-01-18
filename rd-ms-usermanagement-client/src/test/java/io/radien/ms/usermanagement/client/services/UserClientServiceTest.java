@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.api.Configurable;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
@@ -56,7 +57,7 @@ public class UserClientServiceTest {
     ClientServiceUtil clientServiceUtil;
 
     @Mock
-    OAFAccess oafAccess;
+    Configurable oafAccess;
 
     @Before
     public void before(){
@@ -90,7 +91,7 @@ public class UserClientServiceTest {
 
     private String getUserManagementUrl(){
         String url = "";
-        when(oafAccess.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL)).thenReturn(url);
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn(url);
         return url;
     }
 

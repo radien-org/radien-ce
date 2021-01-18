@@ -57,7 +57,7 @@ public class UserClientService {
      */
     public Optional<SystemUser> getUserBySub(String sub) throws Exception {
         try {
-            UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
             Response response = client.getUsers(sub,null,null,true,true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
@@ -79,7 +79,7 @@ public class UserClientService {
      * @throws MalformedURLException in case of URL specification
      */
     public boolean create(SystemUser user) throws MalformedURLException {
-        UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.USER_MANAGEMENT_MS_URL));
+        UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
         try (Response response = client.save((User)user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;

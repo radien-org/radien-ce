@@ -91,6 +91,10 @@
 		</dependency>
 		<dependency>
 			<groupId>io.radien</groupId>
+			<artifactId>rd-kernel</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-usermanagement-client</artifactId>
 		</dependency>
 

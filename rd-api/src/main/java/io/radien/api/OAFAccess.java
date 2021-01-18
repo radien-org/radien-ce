@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
  * @author Marco Weiland
  * 
  */
-public interface OAFAccess extends Serializable, Configurable {
+public interface OAFAccess extends Serializable {
 
 	public String getVersion();
 	
@@ -39,5 +39,7 @@ public interface OAFAccess extends Serializable, Configurable {
 	public Map<String, Locale> getSupportedLocales();
 
 	public Locale findLocale(String language);
+	
+	public String getProperty(SystemProperties cfg);
 
 }

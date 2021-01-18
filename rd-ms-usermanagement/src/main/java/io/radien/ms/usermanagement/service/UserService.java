@@ -47,7 +47,7 @@ public class UserService implements UserServiceAccess{
 
 	private static final long serialVersionUID = 1L;
 
-	@PersistenceContext(unitName = "userPersistenceUnitLocal", type = PersistenceContextType.EXTENDED)
+	@PersistenceContext(unitName = "userPersistenceUnit", type = PersistenceContextType.EXTENDED)
 	private EntityManager em;
 
 	@Inject

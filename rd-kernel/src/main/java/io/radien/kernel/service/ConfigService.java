@@ -1,4 +1,4 @@
-package io.radien.ms.usermanagement.service;
+package io.radien.kernel.service;
 
 import io.radien.api.Configurable;
 import io.radien.api.SystemProperties;
