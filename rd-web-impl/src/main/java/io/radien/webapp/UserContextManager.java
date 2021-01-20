@@ -10,6 +10,8 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.radien.webapp.security.UserSession;
+
 /**
  * Class responsible for managing the current user context and all other
  * available contexts in this session.

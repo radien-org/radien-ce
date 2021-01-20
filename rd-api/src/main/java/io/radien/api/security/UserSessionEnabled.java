@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * Copyright (c) 2016-present radien.io & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.security.openid.filter;
+package io.radien.api.security;
 
-import javax.inject.Inject;
-
-import io.radien.api.OAFAccess;
+import io.radien.api.Appframeable;
 
 /**
- * @author Marco Weiland
+ * @author Marco Weiland <m.weiland@radien.io>
+ *
  */
-public class AuthorizationFilter extends AbstractAuthorizationFilter {
+public interface UserSessionEnabled extends Appframeable {
 
-	private static final long serialVersionUID = 1L;
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception;
 	
-	@Inject
-	private OAFAccess baseApp;
+	public boolean isActive();
 
-	@Override
-	public OAFAccess getOAF() {
-		return baseApp;
-	}
+	public String getUserIdSubject();
+
+	public String getEmail() ;
+
+	public String getPreferredUserName() ;
+
+	public String getUserFullName();
+
 
 }

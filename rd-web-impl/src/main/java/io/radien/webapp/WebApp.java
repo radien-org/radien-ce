@@ -1,4 +1,4 @@
-package org.openappframe.webapp;
+package io.radien.webapp;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Model;

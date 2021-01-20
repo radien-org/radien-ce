@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.webapp;
-
-import java.io.Serializable;
-import java.util.Optional;
+package io.radien.webapp.security;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 
-import io.radien.api.Appframeable;
-import io.radien.api.OAFAccess;
-import io.radien.api.model.user.SystemUser;
-import io.radien.ms.usermanagement.client.services.UserClientService;
-import io.radien.ms.usermanagement.client.services.UserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.radien.api.OAFAccess;
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.ms.usermanagement.client.services.UserFactory;
 
 
 /**
@@ -37,13 +34,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marco Weiland
  */
-public @Model @SessionScoped class UserSession implements Serializable, Appframeable {
+public @SessionScoped class UserSession implements UserSessionEnabled {
 
 	private static final long serialVersionUID = 1198636791261091733L;
 	private static final Logger log = LoggerFactory.getLogger(UserSession.class);
 
 	@Inject
-	private UserClientService userClientService;
+	private UserRESTServiceAccess userClientService;
 
 	@Inject
 	private OAFAccess oaf;

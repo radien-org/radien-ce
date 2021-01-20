@@ -15,8 +15,6 @@
  */
 package io.radien.webapp;
 
-import java.io.Serializable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,7 @@ import io.radien.api.OAFProperties;
 /**
  * @author Marco Weiland
  */
-public abstract class AbstractWebapp implements Serializable, Appframeable {
+public abstract class AbstractWebapp implements Appframeable {
 	private static final long serialVersionUID = 1L;
 	protected static final Logger log = LoggerFactory.getLogger(AbstractWebapp.class);
 	private static final String SNAPSHOT = "SNAPSHOT";

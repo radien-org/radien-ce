@@ -48,10 +48,10 @@ import static org.mockito.Mockito.when;
  * @author Nuno Santana
  * @author Bruno Gama
  */
-public class UserClientServiceTest {
+public class UserRESTServiceClientTest {
 
     @InjectMocks
-    UserClientService target;
+    UserRESTServiceClient target;
 
     @Mock
     ClientServiceUtil clientServiceUtil;

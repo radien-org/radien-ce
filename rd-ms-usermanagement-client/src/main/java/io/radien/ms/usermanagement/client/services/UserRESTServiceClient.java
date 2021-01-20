@@ -15,39 +15,46 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import io.radien.api.Configurable;
-import io.radien.api.OAFProperties;
-import io.radien.api.model.user.SystemUser;
-import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
-import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
+
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
+import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
 
 /**
  *
  * @author Bruno Gama
  * @author Nuno Santana
  */
-@Stateless
-public class UserClientService {
-    private static final Logger log = LoggerFactory.getLogger(UserClientService.class);
+@Stateless @Default
+public class UserRESTServiceClient implements UserRESTServiceAccess {
+	private static final long serialVersionUID = 1L;
 
+	private static final Logger log = LoggerFactory.getLogger(UserRESTServiceClient.class);
 
     @Inject
-    private Configurable configurable;
+    private OAFAccess oaf;
+    
     @Inject
     private ClientServiceUtil clientServiceUtil;
+    
     /**
      * Gets all the users in the DB searching for the field Subject
      *
@@ -57,7 +64,7 @@ public class UserClientService {
      */
     public Optional<SystemUser> getUserBySub(String sub) throws Exception {
         try {
-            UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
             Response response = client.getUsers(sub,null,null,true,true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
@@ -79,7 +86,7 @@ public class UserClientService {
      * @throws MalformedURLException in case of URL specification
      */
     public boolean create(SystemUser user) throws MalformedURLException {
-        UserResourceClient client = clientServiceUtil.getUserResourceClient(configurable.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+        UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
         try (Response response = client.save((User)user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -92,4 +99,9 @@ public class UserClientService {
             throw pe;
         }
     }
+
+	@Override
+	public OAFAccess getOAF() {
+		return oaf;
+	}
 }

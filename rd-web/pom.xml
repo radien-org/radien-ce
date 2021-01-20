@@ -71,6 +71,10 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-openid</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-usermanagement-client</artifactId>
+		</dependency>
 		<!-- jee -->
 		<dependency>
 			<groupId>jakarta.platform</groupId>

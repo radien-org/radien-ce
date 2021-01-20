@@ -54,7 +54,7 @@
 
 	<filter>
 		<filter-name>OAF Authfilter</filter-name>
-		<filter-class>io.radien.security.openid.filter.OIDCAuthorizationFilter</filter-class>
+		<filter-class>io.radien.webapp.security.OIDCAuthorizationFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>OAF Authfilter</filter-name>

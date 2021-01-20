@@ -15,7 +15,7 @@
 	limitations under the License.
 
  */
-package org.openappframe.webapp;
+package io.radien.webapp;
 
 import java.io.Serializable;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.security.openid.filter;
+package io.radien.webapp.security;
 
 import java.io.IOException;
 

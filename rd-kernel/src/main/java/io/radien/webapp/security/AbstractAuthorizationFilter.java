@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.security.openid.filter;
+package io.radien.webapp.security;
 
 import javax.faces.application.ResourceHandler;
 import javax.inject.Inject;
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.radien.api.security.UserSessionEnabled;
 import io.radien.webapp.RedirectUtil;
-import io.radien.webapp.UserSession;
 
 /**
  * Filter implementation that triggers if there is no user present on
@@ -42,7 +42,7 @@ public abstract class AbstractAuthorizationFilter extends AbstractWebFilter {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractAuthorizationFilter.class);
 	@Inject
-	protected UserSession session;
+	protected UserSessionEnabled session;
 	/** Bean responsible for utility redirect methods */
 	@Inject
 	protected RedirectUtil webapp;

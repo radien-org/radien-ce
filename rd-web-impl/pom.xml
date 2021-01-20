@@ -52,11 +52,15 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.radien</groupId>
-			<artifactId>rd-persistence</artifactId>
+			<artifactId>rd-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.radien</groupId>
-			<artifactId>rd-api</artifactId>
+			<artifactId>rd-kernel</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-web-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.platform</groupId>

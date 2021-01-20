@@ -44,6 +44,10 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
@@ -56,16 +60,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-api</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-kernel</artifactId>
 		</dependency>
 
 		<dependency>
@@ -84,8 +78,6 @@
 		    <artifactId>okta-jwt-verifier</artifactId>
 		    <version>0.5.0</version>
 		</dependency>
-
-		
 
 		<!-- ##################################################################################### -->
 		<!-- START OF WILL NOT BE PUT INTO ROOT POM, SPRING SECURITY WILL BE REPLACED BY OTHER LIB -->
