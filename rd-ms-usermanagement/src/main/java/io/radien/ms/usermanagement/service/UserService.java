@@ -15,10 +15,25 @@
  */
 package io.radien.ms.usermanagement.service;
 
-import javax.ejb.Stateful;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
@@ -28,32 +43,22 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
-
 import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Nuno Santana
  * @author Bruno Gama
+ * @author Marco Weiland
  */
 
-@Stateful
+@Stateless
 public class UserService implements UserServiceAccess{
-
 	private static final long serialVersionUID = 1L;
-
-	@PersistenceContext(unitName = "userPersistenceUnit", type = PersistenceContextType.EXTENDED)
-	private EntityManager em;
-
-	@Inject
-	private UserFactory userFactory;
-
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+	@PersistenceContext(unitName = "userPersistenceUnit")
+	private EntityManager em;
 
 	/**
 	 * Gets the System User searching by the PK (id).

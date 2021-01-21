@@ -45,7 +45,7 @@ public abstract class AbstractAuthorizationFilter extends AbstractWebFilter {
 	protected UserSessionEnabled session;
 	/** Bean responsible for utility redirect methods */
 	@Inject
-	protected RedirectUtil webapp;
+	protected RedirectUtil webapp; 
 
 	/**
 	 * Processes all requests that have no user in session and are within the

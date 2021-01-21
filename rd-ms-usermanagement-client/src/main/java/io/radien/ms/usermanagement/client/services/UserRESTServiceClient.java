@@ -34,6 +34,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
 import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
@@ -42,6 +43,7 @@ import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
  *
  * @author Bruno Gama
  * @author Nuno Santana
+ * @author Marco Weiland
  */
 @Stateless @Default
 public class UserRESTServiceClient implements UserRESTServiceAccess {
@@ -62,7 +64,7 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
      * @return Optional List of Users
      * @throws Exception in case it founds multiple users or if URL is malformed
      */
-    public Optional<SystemUser> getUserBySub(String sub) throws Exception {
+    public Optional<SystemUser> getUserBySub(String sub) throws SystemException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
@@ -73,9 +75,9 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
             } else {
                 return Optional.empty();
             }
-        }        catch (ExtensionException|ProcessingException es){
-            log.error(es.getMessage(),es);
-            throw es;
+        } catch (ExtensionException|ProcessingException | MalformedURLException e){
+            log.error(e.getMessage(),e);
+            throw new SystemException(e);
         }
     }
 
@@ -85,8 +87,14 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
      * @return true if user has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(SystemUser user) throws MalformedURLException {
-        UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+    public boolean create(SystemUser user) throws SystemException {
+    	UserResourceClient client;
+		try {
+			client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+		} catch (MalformedURLException e) {
+			log.error(e.getMessage(),e);
+            throw new SystemException(e);
+		}        
         try (Response response = client.save((User)user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -94,9 +102,9 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
                 log.error(response.readEntity(String.class));
                 return false;
             }
-        } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
-            throw pe;
+        } catch (ProcessingException e) {
+        	log.error(e.getMessage(),e);
+            throw new SystemException(e);
         }
     }
 

@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
+import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
@@ -45,6 +46,9 @@ public class UserResource implements UserResourceClient {
 
 	@Inject
 	private UserBusinessService userBusinessService;
+	
+	@Inject
+	private UserServiceAccess userServiceAccess;
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
@@ -52,7 +56,7 @@ public class UserResource implements UserResourceClient {
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 		try {
-			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
+			return Response.ok(userServiceAccess.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
@@ -62,7 +66,7 @@ public class UserResource implements UserResourceClient {
 	public Response getUsers(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction) {
 		try {
 			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,isExact,isLogicalConjunction);
-			return Response.ok(userBusinessService.getUsers(filter)).build();
+			return Response.ok(userServiceAccess.getUsers(filter)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}

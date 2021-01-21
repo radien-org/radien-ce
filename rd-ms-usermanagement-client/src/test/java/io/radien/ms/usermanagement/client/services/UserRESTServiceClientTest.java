@@ -19,6 +19,7 @@ import io.radien.api.Configurable;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
 import io.radien.ms.usermanagement.client.util.FactoryUtilService;
@@ -185,17 +186,26 @@ public class UserRESTServiceClientTest {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-
-        assertTrue(target.create(new User()));
-
+        boolean success = false;
+        try {
+			assertTrue(target.create(new User()));
+		} catch (SystemException e) {
+			success = true;
+        }
+        assertTrue(success);
     }
     @Test
     public void testCreateFail() throws MalformedURLException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-
-        assertFalse(target.create(new User()));
+        boolean success = false;
+        try {
+			assertFalse(target.create(new User()));
+		} catch (SystemException e) {
+			 success = true;
+        }
+        assertTrue(success);
 
     }
 
@@ -207,7 +217,7 @@ public class UserRESTServiceClientTest {
         boolean success = false;
         try {
             target.create(new User());
-        }catch (ProcessingException es){
+        }catch (ProcessingException | SystemException es){
             success = true;
         }
         assertTrue(success);

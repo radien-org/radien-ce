@@ -20,13 +20,14 @@ import java.util.Optional;
 
 import io.radien.api.Appframeable;
 import io.radien.api.model.user.SystemUser;
+import io.radien.exception.SystemException;
 
 /**
  * @author Marco Weiland <m.weiland@radien.io>
  *
  */
 public interface UserRESTServiceAccess extends Appframeable{
-	public Optional<SystemUser> getUserBySub(String sub) throws Exception ;
+	public Optional<SystemUser> getUserBySub(String sub) throws SystemException ;
 
     /**
      * Creates given user
@@ -34,5 +35,5 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return true if user has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(SystemUser user) throws MalformedURLException;
+    public boolean create(SystemUser user) throws SystemException;
 }
