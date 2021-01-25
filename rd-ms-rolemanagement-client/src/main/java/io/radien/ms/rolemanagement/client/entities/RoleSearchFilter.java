@@ -18,6 +18,8 @@ package io.radien.ms.rolemanagement.client.entities;
 import io.radien.api.model.role.SystemRoleSearchFilter;
 
 /**
+ * Role search object constructor
+ *
  * @author Bruno Gama
  */
 public class RoleSearchFilter implements SystemRoleSearchFilter {

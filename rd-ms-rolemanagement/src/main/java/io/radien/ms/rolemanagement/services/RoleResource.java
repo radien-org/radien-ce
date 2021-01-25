@@ -40,26 +40,43 @@ import javax.ws.rs.core.Response;
 @RequestScoped
 public class RoleResource implements RoleResourceClient {
 
-    // TODO: Bruno Gama - Handle Exceptions
-
     @Inject
     private RoleServiceAccess roleServiceAccess;
 
     private static final Logger log = LoggerFactory.getLogger(RoleResource.class);
 
-
+    /**
+     * Gets all the role information into a paginated mode and retun those information to the user.
+     * @param pageNo page number where the user is seeing the information.
+     * @param pageSize number of roles to be showed in each page.
+     * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
+     * error.
+     */
     @Override
     public Response getAll(int pageNo, int pageSize) {
         try {
+            log.info("Will get all the role information I can find!");
             return Response.ok(roleServiceAccess.getAll(pageNo, pageSize)).build();
         } catch(Exception e) {
             return getGenericError(e);
         }
     }
 
+    /**
+     * Retrieve all the information which has a specific name or description.
+     * @param name to be find.
+     * @param description to be find.
+     * @param isExact true if the value to be searched must be exactly as it is given
+     *                or false if it must only contain such value.
+     * @param isLogicalConjunction true if the search between the values should be and or false if it should be or.
+     * @return a paginated response with the requested information. 200 code message if success, 500 code message
+     * if there is any error.
+     */
     @Override
     public Response getSpecificRoles(String name, String description, boolean isExact, boolean isLogicalConjunction) {
         try {
+            log.info("Will search for a specific role with the name {}, description {}. With the following criteria: " +
+                    "Values must be exact: {}; Is a logical conjunction: {}", name, description, isExact, isLogicalConjunction);
             SystemRoleSearchFilter filter = new RoleSearchFilter(name, description, isExact, isLogicalConjunction);
             return Response.ok(roleServiceAccess.getSpecificRoles(filter)).build();
         } catch (Exception e) {
@@ -67,10 +84,17 @@ public class RoleResource implements RoleResourceClient {
         }
     }
 
-
+    /**
+     *  Gets the information of a role which will be found using the id.
+     *
+     * @param id to be searched for
+     * @return a paginated response with the requested information. 200 code message if success,
+     * 404 if role is not found, 500 code message if there is any error.
+     */
     @Override
     public Response getById(Long id) {
         try{
+            log.info("Will search for a specific role with the following id {}.", id);
             SystemRole systemRole = roleServiceAccess.get(id);
             return Response.ok(systemRole).build();
         } catch (RoleNotFoundException e) {
@@ -80,9 +104,16 @@ public class RoleResource implements RoleResourceClient {
         }
     }
 
+    /**
+     * Delete request which will delete the given id role information
+     *
+     * @param id record to be deleted
+     * @return 200 code message if success, 404 if role is not found, 500 code message if there is any error.
+     */
     @Override
     public Response delete(long id) {
         try {
+            log.info("Will delete a specific role with the following id {}.", id);
             roleServiceAccess.get(id);
             roleServiceAccess.delete(id);
         } catch (RoleNotFoundException e) {
@@ -93,9 +124,18 @@ public class RoleResource implements RoleResourceClient {
         return Response.ok().build();
     }
 
+    /**
+     * Inserts the given role information, wither creates a new record or updated one already existent one, depending
+     * if the given role has an id or not.
+     *
+     * @param role information to be updat or created.
+     * @return 200 code message if success, 400 code message if there are duplicated fields that can not be,
+     * 404 if role is not found, 500 code message if there is any error.
+     */
     @Override
     public Response save(Role role) {
         try {
+            log.info("New information to be created/updated it's on it's way!");
             roleServiceAccess.save(new io.radien.ms.rolemanagement.entities.Role(role));
             return Response.ok().build();
         } catch (RoleNotFoundException e) {

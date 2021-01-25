@@ -21,6 +21,8 @@ import io.radien.api.model.role.SystemRole;
 import java.util.Date;
 
 /**
+ * Client Role constructor
+ *
  * @author Bruno Gama
  */
 public class Role extends AbstractRoleModel implements SystemRole {

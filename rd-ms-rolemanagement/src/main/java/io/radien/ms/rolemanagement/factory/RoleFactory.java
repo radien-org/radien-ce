@@ -18,6 +18,8 @@ package io.radien.ms.rolemanagement.factory;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.rolemanagement.entities.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -26,7 +28,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Role conversion factory
+ * Role conversions factory
  *
  * @author Bruno Gama
  */
@@ -34,11 +36,13 @@ public class RoleFactory implements Serializable {
 
     private static final long serialVersionUID = -4078040120809206776L;
 
+    private static final Logger log = LoggerFactory.getLogger(RoleFactory.class);
+
     /**
      * Create a role with already predefined fields.
      *
-     * @param name role name
-     * @param description role type
+     * @param name role name.
+     * @param description role type.
      * @return a Role object to be used.
      */
     public static Role create(String name, String description, Long createdUser) {
@@ -51,14 +55,17 @@ public class RoleFactory implements Serializable {
         role.setLastUpdate(now);
         role.setCreateDate(now);
 
+        log.info("Will begin to create a new Role object with the specific values" +
+                " Name: {}, Description: {}, Created User: {}", name, description, createdUser);
+
         return role;
     }
 
     /**
-     * Converts a JSONObject to a Role object that will be used by the Application
+     * Converts a JSONObject to a Role object that will be used by the Application.
      *
-     * @param jsonRole
-     * @return
+     * @param jsonRole receives a json object with all the information.
+     * @return a Role object constructed by the given json.
      */
     public static Role convert(JsonObject jsonRole) {
         Long id = FactoryUtilService.getLongFromJson("id", jsonRole);
@@ -71,17 +78,21 @@ public class RoleFactory implements Serializable {
         role.setName(name);
         role.setDescription(description);
         role.setCreateUser(createUser);
-        role.setCreateDate(new Date());
-        role.setLastUpdate(new Date());
+        Date date = new Date();
+        role.setCreateDate(date);
+        role.setLastUpdate(date);
+
+        log.info("Will begin to create a new Role object with the specific values received in the json" +
+                " ID: {}, Name: {}, Description: {}, Created User: {}", id, name, description, createUser);
 
         return role;
     }
 
     /**
-     * Converts a System Role to a Json Object
+     * Converts a System Role to a Json Object.
      *
-     * @param role system role to be converted to json
-     * @return json object with the keys and values constructed by the given object
+     * @param role system role to be converted to json.
+     * @return json object with the keys and values constructed by the given object.
      */
     public static JsonObject convertToJsonObject(SystemRole role) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -91,6 +102,9 @@ public class RoleFactory implements Serializable {
         FactoryUtilService.addValue(builder, "description", role.getDescription());
         FactoryUtilService.addValueLong(builder, "createUser", role.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", role.getLastUpdateUser());
+
+        log.info("Will begin to create a new json object with the specific values received in the give role" +
+                " ID: {}, Name: {}, Description: {}, Created User: {}", role.getId(), role.getName(), role.getDescription(), role.getCreateUser());
 
         return builder.build();
     }

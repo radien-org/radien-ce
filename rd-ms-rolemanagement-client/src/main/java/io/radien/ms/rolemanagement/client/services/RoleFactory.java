@@ -17,6 +17,8 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.rolemanagement.client.entities.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -27,15 +29,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Client Role Factory conversions
+ *
  * @author Bruno Gama
  */
 public class RoleFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(RoleFactory.class);
+
     /**
      * Create a role with already predefined fields.
      *
-     * @param name role name
-     * @param description role type
+     * @param name role name.
+     * @param description role type.
      * @return a Role object to be used.
      */
     public static Role create(String name, String description, Long createdUser) {
@@ -48,14 +54,17 @@ public class RoleFactory {
         role.setLastUpdate(now);
         role.setCreateDate(now);
 
+        log.info("Client will begin to create a new Role object with the specific values" +
+                " Name: {}, Description: {}, Created User: {}", name, description, createdUser);
+
         return role;
     }
 
     /**
-     * Converts a JSONObject to a Role object that will be used by the Application
+     * Converts a JSONObject to a Role object that will be used by the Application.
      *
-     * @param jsonRole json message to be converted
-     * @return the System Role Object
+     * @param jsonRole receives a json object with all the information.
+     * @return a Role object constructed by the given json.
      */
     public static Role convert(JsonObject jsonRole) {
         Long id = FactoryUtilService.getLongFromJson("id", jsonRole);
@@ -71,14 +80,17 @@ public class RoleFactory {
         role.setCreateDate(new Date());
         role.setLastUpdate(new Date());
 
+        log.info("Client will begin to create a new Role object with the specific values received in the json" +
+                " ID: {}, Name: {}, Description: {}, Created User: {}", id, name, description, createUser);
+
         return role;
     }
 
     /**
-     * Converts a System role to a Json Object
+     * Converts a System Role to a Json Object.
      *
-     * @param role system user to be converted to json
-     * @return json object with keys and values constructed
+     * @param role system role to be converted to json.
+     * @return json object with the keys and values constructed by the given object.
      */
     public static JsonObject convertToJsonObject(Role role) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -89,9 +101,17 @@ public class RoleFactory {
         FactoryUtilService.addValueLong(builder, "createUser", role.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", role.getLastUpdateUser());
 
+        log.info("Will begin to create a new json object with the specific values received in the give role" +
+                " ID: {}, Name: {}, Description: {}, Created User: {}", role.getId(), role.getName(), role.getDescription(), role.getCreateUser());
+
         return builder.build();
     }
 
+    /**
+     * Converts a Json Array into a List of Roles.
+     * @param jsonArray to be converted.
+     * @return a list of roles.
+     */
     public static List<Role> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
     }

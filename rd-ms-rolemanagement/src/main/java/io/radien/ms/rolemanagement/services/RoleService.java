@@ -18,21 +18,19 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
-import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,24 +41,29 @@ public class RoleService implements RoleServiceAccess {
     private static final long serialVersionUID = 1L;
 
     @PersistenceContext(unitName = "rolePersistenceUnit")
-    private EntityManager em;
+    private EntityManager entityManager;
+
+    private static final Logger log = LoggerFactory.getLogger(RoleService.class);
 
     /**
-     * Gets all the users into a pagination mode.
+     * Gets all the role into a pagination mode.
      * @param pageNo of the requested information. Where the user is.
      * @param pageSize total number of pages returned in the request.
      * @return a page of system roles.
      */
     @Override
     public Page<SystemRole> getAll(int pageNo, int pageSize) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+
+        log.info("Going to create a new pagination!");
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Role> criteriaQuery = criteriaBuilder.createQuery(Role.class);
         Root<Role> roleRoot = criteriaQuery.from(Role.class);
 
         criteriaQuery.select(roleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
-        TypedQuery<Role> q=em.createQuery(criteriaQuery);
+        TypedQuery<Role> q= entityManager.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
@@ -70,16 +73,22 @@ public class RoleService implements RoleServiceAccess {
         int totalRecords = Math.toIntExact(getCount(global, roleRoot));
         int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
+        log.info("New pagination ready to be showed!");
+
         return new Page<SystemRole>(systemRoles, pageNo, totalRecords, totalPages);
     }
 
     /**
-     * Get Roles by specific columns already given to be searched
-     * @param filter entity with available filters to search role
+     * Get Roles by specific columns already given to be searched.
+     *
+     * @param filter entity with available filters to search role.
      */
     @Override
     public List<? extends SystemRole> getSpecificRoles(SystemRoleSearchFilter filter) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+
+        log.info("Ready to search by a specific role!");
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Role> criteriaQuery = criteriaBuilder.createQuery(Role.class);
         Root<Role> roleRoot = criteriaQuery.from(Role.class);
 
@@ -88,11 +97,21 @@ public class RoleService implements RoleServiceAccess {
         Predicate global = getFilteredPredicate(filter, criteriaBuilder, roleRoot);
 
         criteriaQuery.where(global);
-        TypedQuery<Role> q=em.createQuery(criteriaQuery);
+        TypedQuery<Role> q= entityManager.createQuery(criteriaQuery);
+
+        log.info("Specific role information prepared to be showed!");
 
         return q.getResultList();
     }
 
+    /**
+     * Creates the query predicate to search for hte specifi information.
+     *
+     * @param filter complete information to be filtered.
+     * @param criteriaBuilder query to be worked on.
+     * @param roleRoot table to search the information.
+     * @return a completed predicate to be used in the search criteria.
+     */
     private Predicate getFilteredPredicate(SystemRoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> roleRoot) {
         Predicate global;
 
@@ -115,6 +134,17 @@ public class RoleService implements RoleServiceAccess {
         return global;
     }
 
+    /**
+     * Creates the where clause in the query predicate.
+     *
+     * @param name string of the value name
+     * @param value value to be searched for
+     * @param filter complete information to be filtered.
+     * @param criteriaBuilder query to be worked on.
+     * @param userRoot table to search the information.
+     * @param global global predicate to be used.
+     * @return a where predicate to be used in the search criteria.
+     */
     private Predicate getFieldPredicate(String name, String value, SystemRoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> userRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate;
@@ -134,18 +164,22 @@ public class RoleService implements RoleServiceAccess {
     }
 
     /**
-     * Count the number of users existent in the DB.
+     * Count the number of roles existent in the DB.
      * @return the count of users
      */
     private long getCount(Predicate global, Root<Role> userRoot) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+
+        log.info("Going to count the existent records.");
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
         criteriaQuery.where(global);
 
         criteriaQuery.select(criteriaBuilder.count(userRoot));
 
-        TypedQuery<Long> q=em.createQuery(criteriaQuery);
+        TypedQuery<Long> q= entityManager.createQuery(criteriaQuery);
+
         return q.getSingleResult();
     }
 
@@ -157,40 +191,57 @@ public class RoleService implements RoleServiceAccess {
      */
     @Override
     public SystemRole get(Long roleId) throws RoleNotFoundException {
-        if(em.find(Role.class, roleId) == null) {
+        if(entityManager.find(Role.class, roleId) == null) {
             throw new RoleNotFoundException(RoleErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
         }
-        return em.find(Role.class, roleId);
+
+        log.info("I found the record!");
+
+        return entityManager.find(Role.class, roleId);
     }
 
+    /**
+     * Saves or updates an record based on the given information.
+     * @param role information to create/update.
+     * @throws RoleNotFoundException in case of update if we cannot find the specific role.
+     * @throws UniquenessConstraintException in case of update if any new given information already exists and
+     * cannot be duplicated
+     */
     @Override
     public void save(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException {
+
+        log.info("New record information to be used!");
+
         List<Role> alreadyExistentRecords = searchDuplicatedName(role);
 
         if(role.getId() == null) {
             if(alreadyExistentRecords.isEmpty()) {
-                em.persist(role);
+                log.info("It's a creation!");
+                entityManager.persist(role);
             } else {
+                log.info("No id has been given, but there is already another record with some of the given information");
                 validateUniquenessRecords(alreadyExistentRecords, role);
             }
         } else {
+            log.info("We are going to update");
             //Validate if record exists
             get(role.getId());
-
             validateUniquenessRecords(alreadyExistentRecords, role);
 
-            em.merge(role);
+            entityManager.merge(role);
         }
     }
 
     /**
      * When updating the role information this method will validate if the unique values maintain as unique.
-     * Will search for the role name, given in the information to be updated, to see if they are not already in the DB in another user.
+     * Will search for the role name, given in the information to be updated, to see if they are not already
+     * in the DB in another role.
      * @param alreadyExistentRecords list of duplicated role information
      * @param newRoleInformation role information to update into the requested one
      * @throws UniquenessConstraintException in case of requested information to be updated already exists in the DB
      */
     private void validateUniquenessRecords(List<Role> alreadyExistentRecords, SystemRole newRoleInformation) throws UniquenessConstraintException {
+        log.info("Validating duplicated information that must be unique");
         if(!alreadyExistentRecords.isEmpty()) {
             boolean isSameUserEmail = alreadyExistentRecords.get(0).getName().equals(newRoleInformation.getName());
 
@@ -201,13 +252,16 @@ public class RoleService implements RoleServiceAccess {
     }
 
     /**
-     * Query to validate if an existent email address or logon already exists in the database or not.
-     * @param role user information to look up.
-     * @return list of users with duplicated information.
+     * Query to validate if an existent name already exists in the database or not.
+     * @param role role information to look up.
+     * @return list of roles with duplicated information.
      */
     private List<Role> searchDuplicatedName(SystemRole role) {
+
+        log.info("Going to search for duplicated names");
+
         List<Role> alreadyExistentRecords;
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Role> criteriaQuery = criteriaBuilder.createQuery(Role.class);
         Root<Role> userRoot = criteriaQuery.from(Role.class);
         criteriaQuery.select(userRoot);
@@ -216,18 +270,25 @@ public class RoleService implements RoleServiceAccess {
             global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get("id"), role.getId()));
         }
         criteriaQuery.where(global);
-        TypedQuery<Role> q = em.createQuery(criteriaQuery);
+        TypedQuery<Role> q = entityManager.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
     }
 
+    /**
+     * Deletes a role record by a given id.
+     * @param roleId to be deleted
+     */
     @Override
     public void delete(Long roleId) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        log.info("I'm going to delete the following record!");
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<Role> criteriaDelete = cb.createCriteriaDelete(Role.class);
         Root<Role> roleRoot = criteriaDelete.from(Role.class);
 
         criteriaDelete.where(cb.equal(roleRoot.get("id"),roleId));
-        em.createQuery(criteriaDelete).executeUpdate();
+        entityManager.createQuery(criteriaDelete).executeUpdate();
     }
 }

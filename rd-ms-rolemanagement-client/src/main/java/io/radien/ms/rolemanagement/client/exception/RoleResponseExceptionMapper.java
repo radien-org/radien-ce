@@ -29,8 +29,6 @@ import javax.ws.rs.core.Response;
 public class RoleResponseExceptionMapper implements
         ResponseExceptionMapper<Exception> {
 
-    // TODO: Bruno Gama - Make your own exceptions
-
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
@@ -40,10 +38,13 @@ public class RoleResponseExceptionMapper implements
 
     @Override
     public Exception toThrowable(Response response) {
-        switch(response.getStatus()) {
-            case 400: return new BadRequestException(response.readEntity(String.class));
-            case 404: return new NotFoundException(response.readEntity(String.class));
-            case 500: return new InternalServerErrorException(response.readEntity(String.class));
+        switch (response.getStatus()) {
+            case 400:
+                return new BadRequestException(response.readEntity(String.class));
+            case 404:
+                return new NotFoundException(response.readEntity(String.class));
+            case 500:
+                return new InternalServerErrorException(response.readEntity(String.class));
         }
         return null;
     }
