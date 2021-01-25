@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.util;
 
+import io.radien.api.util.FactoryUtilService;
 import junit.framework.TestCase;
 import org.junit.Test;
 

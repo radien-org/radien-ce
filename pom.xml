@@ -22,6 +22,8 @@
 		<module>rd-ms-usermanagement</module>
 		<module>rd-ms-usermanagement-client</module>
 		<module>rd-aws-utils</module>
+		<module>rd-ms-rolemanagement</module>
+		<module>rd-ms-rolemanagement-client</module>
 	</modules>
 	<properties>
 
@@ -145,6 +147,11 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-usermanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-rolemanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client.util;
+package io.radien.api.util;
 
 import javax.json.*;
 import java.io.Serializable;
