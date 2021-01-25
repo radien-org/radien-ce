@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>rd-web-impl</artifactId>
 	<packaging>jar</packaging>
-	<name>Kernel - ${project.version}</name>
+	<name>Web Impl - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
 		<finalName>${project.artifactId}</finalName>

@@ -20,10 +20,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -44,7 +44,6 @@ import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
-import io.radien.ms.usermanagement.legacy.UserFactory;
 
 /**
  * @author Nuno Santana
@@ -52,12 +51,12 @@ import io.radien.ms.usermanagement.legacy.UserFactory;
  * @author Marco Weiland
  */
 
-@Stateless
+@Stateful
 public class UserService implements UserServiceAccess{
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-	@PersistenceContext(unitName = "userPersistenceUnit")
+	@PersistenceContext(unitName = "userPersistenceUnit", type = PersistenceContextType.EXTENDED)
 	private EntityManager em;
 
 	/**

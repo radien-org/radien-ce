@@ -73,7 +73,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<context>${finalName}</context>
+							<context>ROOT</context>
 							<tomeeClassifier>microprofile</tomeeClassifier>
 							<tomeeHttpPort>8081</tomeeHttpPort>
 							<tomeeShutdownPort>8006</tomeeShutdownPort>
@@ -89,10 +89,7 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-kernel</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-usermanagement-client</artifactId>

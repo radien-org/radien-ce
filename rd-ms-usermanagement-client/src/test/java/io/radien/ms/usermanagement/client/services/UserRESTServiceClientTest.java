@@ -15,14 +15,26 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import io.radien.api.Configurable;
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
-import io.radien.api.entity.Page;
-import io.radien.exception.SystemException;
-import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
-import io.radien.ms.usermanagement.client.util.FactoryUtilService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,19 +43,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.*;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import io.radien.api.Configurable;
+import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
+import io.radien.exception.SystemException;
+import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
+import io.radien.ms.usermanagement.client.util.FactoryUtilService;
 
 /**
  * @author Nuno Santana
