@@ -72,6 +72,31 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-core</artifactId>
+			<version>1.2.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-mockito</artifactId>
+			<version>8.0.5</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.eclipse.microprofile.rest.client</groupId>
 			<artifactId>microprofile-rest-client-api</artifactId>

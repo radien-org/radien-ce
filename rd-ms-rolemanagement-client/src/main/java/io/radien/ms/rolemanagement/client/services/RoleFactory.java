@@ -106,13 +106,4 @@ public class RoleFactory {
 
         return builder.build();
     }
-
-    /**
-     * Converts a Json Array into a List of Roles.
-     * @param jsonArray to be converted.
-     * @return a list of roles.
-     */
-    public static List<Role> convert(JsonArray jsonArray) {
-        return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
-    }
 }
