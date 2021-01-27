@@ -1,0 +1,1 @@
+java -jar target/${package}-exec.jar

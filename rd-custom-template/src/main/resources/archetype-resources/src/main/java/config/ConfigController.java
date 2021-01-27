@@ -1,4 +1,4 @@
-package io.radien.microprofile.tpl.config;
+package ${package}.config;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
