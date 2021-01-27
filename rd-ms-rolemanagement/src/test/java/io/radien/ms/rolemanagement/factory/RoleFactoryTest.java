@@ -1,12 +1,13 @@
-package io.radien.ms.rolemanagement.client.services;
+package io.radien.ms.rolemanagement.factory;
 
-import io.radien.ms.rolemanagement.client.entities.Role;
+import io.radien.ms.rolemanagement.entities.Role;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+
 
 public class RoleFactoryTest extends TestCase {
 

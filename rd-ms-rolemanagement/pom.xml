@@ -146,5 +146,39 @@
 			<artifactId>microprofile-rest-client-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-mp-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.openjson</groupId>
+			<artifactId>openjson</artifactId>
+			<version>1.0.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-core</artifactId>
+			<version>1.2.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-mockito</artifactId>
+			<version>8.0.5</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
