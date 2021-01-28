@@ -24,6 +24,7 @@ phases:
 
 artifacts:
   files:
+    - rd-ms-usermanagement/target/usermanagement.war
     - rd-ms-ecm/target/rd-ms-ecm.war
     - rd-ms-ecm/Dockerfile
     - rd-web/target/web.war
