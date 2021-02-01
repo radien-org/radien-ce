@@ -330,12 +330,15 @@ public class ActionServiceTest {
 
         SystemAction testById6 = ActionFactory.create("ddd", ActionType.READ, 1L);
 
+        SystemAction testById7 = ActionFactory.create("xxx", ActionType.EXECUTION, 1L);
+
         actionServiceAccess.save(testById1);
         actionServiceAccess.save(testById2);
         actionServiceAccess.save(testById3);
         actionServiceAccess.save(testById4);
         actionServiceAccess.save(testById5);
         actionServiceAccess.save(testById6);
+        actionServiceAccess.save(testById7);
 
         List<? extends SystemAction> actionsAnd = actionServiceAccess.getActions(
                 new ActionSearchFilter("zz", null, true,true));
@@ -353,6 +356,22 @@ public class ActionServiceTest {
                 new ActionSearchFilter("aabac", ActionType.READ, false,false));
 
         assertEquals(4, actions.size());
+
+        actions = actionServiceAccess.getActions(
+                new ActionSearchFilter("aabac", ActionType.READ, false,true));
+
+        assertEquals(2, actions.size());
+
+        actions = actionServiceAccess.getActions(
+                new ActionSearchFilter(null, ActionType.EXECUTION, false,true));
+
+        assertEquals(2, actions.size());
+
+        actions = actionServiceAccess.getActions(
+                new ActionSearchFilter("xxx", ActionType.EXECUTION, true,true));
+
+        assertEquals(1, actions.size());
+
     }
 
 
