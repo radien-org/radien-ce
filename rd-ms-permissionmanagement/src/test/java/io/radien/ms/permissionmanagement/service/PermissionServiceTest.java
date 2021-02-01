@@ -99,7 +99,7 @@ public class PermissionServiceTest {
         Permission u = PermissionFactory.create("permissionName", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(u));
         String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one permission with the same value for the field: Name\"}";
+                " one resource with the same value for the field: Name\"}";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -253,7 +253,7 @@ public class PermissionServiceTest {
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> permissionServiceAccess.save(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one permission with the same value for the field: Name\"}";
+        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Name\"}";
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
 
     }
@@ -266,7 +266,7 @@ public class PermissionServiceTest {
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
         String expectedMessageName = "{\"code\":101, \"key\":\"error.duplicated.field\", " +
-                "\"message\":\"There is more than one permission with the same value for the field: Name\"}";
+                "\"message\":\"There is more than one resource with the same value for the field: Name\"}";
 
         Permission p1 = PermissionFactory.create("permissionNamePerm1", 2L);
         permissionServiceAccess.save(p1);

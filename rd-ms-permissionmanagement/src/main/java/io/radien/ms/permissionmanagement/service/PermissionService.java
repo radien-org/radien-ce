@@ -194,7 +194,8 @@ public class PermissionService implements PermissionServiceAccess {
 
     /**
      * When updating the Permission information this method will validate if the unique values maintain as unique.
-     * Will search for the Permission name, given in the information to be updated, to see if they are not already in the DB in another Permission.
+     * Will search for the Permission name, given in the information to be updated, to see if they are
+     * not already in the DB in another Permission.
      * @param alreadyExistentRecords list of duplicated Permission information
      * @param newPermissionInformation Permission information to update into the requested one
      * @throws UniquenessConstraintException in case of requested information to be updated already exists in the DB

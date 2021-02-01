@@ -20,8 +20,8 @@ public enum ErrorCodeMessage {
     /**
      * Business Error Code Messages
      */
-    RESOURCE_NOT_FOUND(100, "error.resource.not.found","Permission not found."),
-    DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one permission with the same value for the field: %s"),
+    RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
+    DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
     /**
      * System Error Code Messages
      */
