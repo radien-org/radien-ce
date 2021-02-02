@@ -17,6 +17,8 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.batch.BatchSummary;
+import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -29,9 +31,10 @@ import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
@@ -430,5 +433,104 @@ public class UserServiceTest {
 
         List<? extends SystemUser> usersNotExact = userServiceAccess.getUsers(new UserSearchFilter("aa","aa","aa",false,true));
         assertEquals(2,usersNotExact.size());
+    }
+
+
+    @Test
+    public void testBatchAllElementsInserted() {
+        List<User> users = new ArrayList<>();
+        int size = 100;
+        for (int i=1; i<=size; i++) {
+            users.add(UserFactory.create("userb",
+                    String.valueOf(i),
+                    String.format("userb.%d", i),
+                    String.format("sub%d", i),
+                    String.format("userb.%d@emmail.pt", i),
+                    1L));
+        }
+        BatchSummary batchSummary = userServiceAccess.create(users);
+        assertNotNull(batchSummary);
+        assertEquals(batchSummary.getTotalProcessed(), size);
+        assertEquals(batchSummary.getTotal(), batchSummary.getTotalProcessed());
+        assertEquals(batchSummary.getTotalNonProcessed(), 0);
+        assertNotNull(batchSummary.getNonProcessedItems());
+        assertEquals(batchSummary.getNonProcessedItems().size(), 0);
+
+        Page<? extends SystemUser> page = userServiceAccess.getAll("userb.%", 1, 200, null, true);
+        assertNotNull(page);
+        assertEquals(batchSummary.getTotalProcessed(), page.getTotalResults());
+    }
+
+    @Test
+    public void testBatchNotAllElementsInserted() {
+        List<User> users = new ArrayList<>();
+        int firstSetSize = 4;
+        for (int i=1; i<=firstSetSize; i++) {
+            users.add(UserFactory.create("userbatch",
+                    String.valueOf(i),
+                    String.format("userbatch.%d", i),
+                    String.format("userbatch%d", i),
+                    String.format("userbatch.%d@emmail.pt", i),
+                    1L));
+        }
+        BatchSummary batchSummary = userServiceAccess.create(users);
+        assertNotNull(batchSummary);
+        assertEquals(batchSummary.getTotal(), firstSetSize);
+        assertEquals(batchSummary.getTotalProcessed(), firstSetSize);
+        assertEquals(batchSummary.getTotalNonProcessed(), 0);
+        assertNotNull(batchSummary.getNonProcessedItems());
+        assertEquals(batchSummary.getNonProcessedItems().size(), 0);
+
+        // Preparing a new set
+        users.clear();
+        int secondSetSize = 20;
+        for (int i=1; i<=secondSetSize; i++) {
+            users.add(UserFactory.create("userbatch",
+                    String.valueOf(i+secondSetSize),
+                    String.format("userbatch.%d", i+secondSetSize),
+                    String.format("userbatch%d", i+secondSetSize),
+                    String.format("userbatch.%d@emmail.pt", i+secondSetSize),
+                    1L));
+        }
+
+        // Setting repeated info
+        users.get(5).setUserEmail("userbatch.1@emmail.pt");
+        users.get(3).setLogon("userbatch.2");
+        users.get(8).setUserEmail("userbatch.1@emmail.pt");
+        users.get(9).setLogon("userbatch.3");
+        users.get(10).setLogon("userbatch.21");
+        users.get(10).setUserEmail("userbatch.22@emmail.pt");
+        users.get(10).setSub("userbatch24");
+
+        // Adding 2 issues into 5th element (info already inserted
+        users.get(4).setLogon("userbatch.4");
+        users.get(4).setUserEmail("userbatch.1@emmail.pt");
+
+        batchSummary = userServiceAccess.create(users);
+        assertNotNull(batchSummary);
+        assertEquals(batchSummary.getTotal(), secondSetSize);
+        assertEquals(batchSummary.getTotalProcessed(), secondSetSize-6);
+        assertEquals(batchSummary.getTotalNonProcessed(), 6);
+        assertNotNull(batchSummary.getNonProcessedItems());
+        assertEquals(batchSummary.getNonProcessedItems().size(), 6);
+
+        // Retrieving issues for 5th element
+        Optional<DataIssue> issue = batchSummary.getNonProcessedItems().stream().filter(
+                dataIssue -> dataIssue.getRowId() == 5l).findFirst();
+        assertTrue(issue.isPresent());
+        assertTrue(issue.get().getRowId() == 5l);
+        assertTrue(issue.get().getReasons().size() == 2);
+
+        // Retrieving issue for 11th element
+        issue = batchSummary.getNonProcessedItems().stream().filter(
+                dataIssue -> dataIssue.getRowId() == 11l).findFirst();
+        assertTrue(issue.isPresent());
+        assertTrue(issue.get().getRowId() == 11l);
+        assertTrue(issue.get().getReasons().size() == 3);
+
+        Page<? extends SystemUser> page = userServiceAccess.getAll("userbatch%", 1, 200, null, true);
+        assertNotNull(page);
+        assertEquals((firstSetSize + secondSetSize) - 6, page.getTotalResults());
+
     }
 }

@@ -2,6 +2,7 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -20,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -83,4 +86,19 @@ public class UserBusinessServiceTest extends TestCase {
         }
         assertTrue(success);
     }
+
+    @Test
+    public void testSaveBatch() {
+        List<io.radien.ms.usermanagement.entities.User> users = new ArrayList<>();
+        int numberOfElementsToInsert = 100;
+        when(userServiceAccess.create(anyList())).thenReturn(new BatchSummary(numberOfElementsToInsert));
+        BatchSummary batchSummary = userServiceAccess.create(users);
+        assertNotNull(batchSummary);
+        assertEquals(batchSummary.getTotalProcessed(), numberOfElementsToInsert);
+        assertEquals(batchSummary.getTotal(), batchSummary.getTotalProcessed());
+        assertEquals(batchSummary.getTotalNonProcessed(), 0);
+        assertNotNull(batchSummary.getNonProcessedItems());
+        assertEquals(batchSummary.getNonProcessedItems().size(), 0);
+    }
+
 }

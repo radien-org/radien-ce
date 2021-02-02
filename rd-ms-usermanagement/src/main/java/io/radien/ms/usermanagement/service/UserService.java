@@ -15,9 +15,13 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
@@ -38,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
+import io.radien.api.service.batch.BatchSummary;
+import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -45,12 +51,13 @@ import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
 
+import java.util.stream.IntStream;
+
 /**
  * @author Nuno Santana
  * @author Bruno Gama
  * @author Marco Weiland
  */
-
 @Stateful
 public class UserService implements UserServiceAccess{
 	private static final long serialVersionUID = 1L;
@@ -315,4 +322,105 @@ public class UserService implements UserServiceAccess{
 		}
 		return global;
 	}
+
+	@Override
+	public BatchSummary create(List<? extends SystemUser> users) {
+		BatchSummary batchSummary = new BatchSummary(users.size());
+
+		// Retrieve all possible issues
+		Map<Integer, DataIssue> issues = retrieveIssues(users);
+
+		// Filter elements ready for insertion
+		List<? extends SystemUser> insertion = IntStream.range(0, users.size()).
+				filter(index -> !issues.containsKey(index)).
+				mapToObj(users::get).collect(Collectors.toList());
+
+		for (SystemUser u: insertion) {
+			em.persist(u);
+		}
+		batchSummary.addNonProcessedItems(issues.values());
+
+		return batchSummary;
+	}
+
+	private Map<Integer, DataIssue> retrieveIssues(
+			List<? extends SystemUser> insertionUsers) {
+
+		Map<Integer, DataIssue> issuesByRow = new HashMap<>();
+
+		Set<String> logonsAsParameter = new HashSet<>();
+		Set<String> emailsAsParameter = new HashSet<>();
+		Set<String> subsAsParameter = new HashSet<>();
+
+		// Searching for repeated elements and gathering params for Query
+		for (int index=0; index<insertionUsers.size(); index++) {
+			SystemUser u = insertionUsers.get(index);
+			populateParametersAndFindIssues("logon", u.getLogon(), index, issuesByRow, logonsAsParameter);
+			populateParametersAndFindIssues("sub", u.getSub(), index, issuesByRow, subsAsParameter);
+			populateParametersAndFindIssues("userEmail", u.getUserEmail(), index, issuesByRow, emailsAsParameter);
+		}
+
+		// Search for already inserted elements (sub, userEmail and logon) on the database
+		Set<String> emailsAlreadyInserted = new HashSet<>(
+				retrieveDataFromDB("userEmail", emailsAsParameter));
+		Set<String> logonsAlreadyInserted = new HashSet<>(
+				retrieveDataFromDB("logon", logonsAsParameter));
+		Set<String> subsAlreadyInserted = new HashSet<>(
+				retrieveDataFromDB("sub", subsAsParameter));
+
+		for (int index=0; index<insertionUsers.size(); index++) {
+			SystemUser u = insertionUsers.get(index);
+			seekForIssue("logon", u.getLogon(), index, issuesByRow, logonsAlreadyInserted);
+			seekForIssue("userEmail", u.getUserEmail(), index, issuesByRow, emailsAlreadyInserted);
+			seekForIssue("sub", u.getSub(), index, issuesByRow, subsAlreadyInserted);
+		}
+
+		return issuesByRow;
+	}
+
+	private void populateParametersAndFindIssues(String field,
+												 String value,
+												 int index,
+												 Map<Integer, DataIssue> issuesByRow,
+												 Set<String> parameterSet) {
+
+		if (!parameterSet.add(value)){
+			addNewFoundIssue(index, issuesByRow,
+					ErrorCodeMessage.DUPLICATED_FIELD.toString(field));
+		}
+	}
+
+	private void seekForIssue(String field,
+							  String value,
+							  int index,
+							  Map<Integer, DataIssue> issuesByRow,
+							  Set<String> searchArea) {
+
+		if (searchArea.contains(value)){
+			addNewFoundIssue(index, issuesByRow,
+					ErrorCodeMessage.DUPLICATED_FIELD.toString(field));
+		}
+	}
+
+	private List<String> retrieveDataFromDB(String property, Collection<String> parameters) {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
+		Root<User> userRoot = criteriaQuery.from(User.class);
+
+		criteriaQuery.select(userRoot.get(property)).where(userRoot.get(property).in(parameters));
+		TypedQuery<String> typedQuery = em.createQuery(criteriaQuery);
+		return typedQuery.getResultList();
+	}
+
+	private void addNewFoundIssue (Integer index, Map<Integer, DataIssue> map, String issueDescription) {
+		DataIssue di = map.get(index);
+		if (di == null) {
+			di = new DataIssue(index+1, issueDescription);
+			map.put(index, di);
+		}
+		else {
+			di.addReason(issueDescription);
+		}
+	}
+
 }

@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
+import io.radien.api.service.batch.BatchSummary;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
 import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  *
@@ -105,6 +108,35 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
         } catch (ProcessingException e) {
         	log.error(e.getMessage(),e);
             throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Adds multiple users into the DB.
+     *
+     * @param systemUsers of users to be added
+     * @return returns Optional containing the process summary.<br>
+     * There will be a summary when:<br>
+     *  If ALL users were added without any issue (Http Status = 200)<br>
+     *  If issues regarding some users were found (Http status = 202)<br>
+     *  If none users were added, what means that all informed users contained issues (Http status = 400) <br>
+     *  In case of 500 error the returned optional will be empty
+     * and the found issues as well.
+     */
+    public Optional<BatchSummary> create(List<SystemUser> systemUsers) throws MalformedURLException {
+        UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+        List<User> users = systemUsers.stream().map(User.class::cast).collect(toList());
+        try (Response response = client.create(users)) {
+            if(response.getStatus() == Response.Status.OK.getStatusCode() ||
+                response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
+                return Optional.of(response.readEntity(BatchSummary.class));
+            } else {
+                log.error(response.readEntity(String.class));
+                return Optional.empty();
+            }
+        } catch (ProcessingException pe) {
+            log.error(pe.getMessage(), pe);
+            throw pe;
         }
     }
 

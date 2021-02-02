@@ -22,9 +22,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.usermanagement.batch.BatchResponse;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
@@ -34,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Nuno Santana
@@ -147,5 +150,35 @@ public class UserResource implements UserResourceClient {
 	 */
 	private Response getResourceNotFoundException() {
 		return Response.status(Response.Status.NOT_FOUND).entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
+	}
+
+	/**
+	 * Adds multiple users into the DB.
+	 *
+	 * @param userList of users to be added
+	 * @return returns
+	 *
+	 * <ul>
+	 *     <li>OK (Http status 200):</li>
+	 *     <ul>
+	 *         <li>All users were added</li>
+	 *         <li>Some users were not added due found issues</li>	 *
+	 *     </ul>
+	 *     <li>BAD REQUEST (Http status 400): None users were added, were found issues for all them/li>
+	 * </ul>
+	 *
+	 * For all cases the response must contains the quantity of not added users (not-processed-items),
+	 * the found issues and an internal status as well (SUCCESS, PARTIAL_SUCCESS and FAIL).
+	 */
+	@Override
+	public Response create(List<io.radien.ms.usermanagement.client.entities.User> userList) {
+		try {
+			List<User> users = userList.stream().map(u -> new User(u)).collect(Collectors.toList());
+			BatchSummary batchSummary = this.userBusinessService.create(users);
+			return BatchResponse.get(batchSummary);
+		}
+		catch (Exception e) {
+			return getGenericError(e);
+		}
 	}
 }

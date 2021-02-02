@@ -15,10 +15,9 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -26,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.json.Json;
@@ -35,6 +35,11 @@ import javax.json.JsonWriter;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
+import io.radien.api.OAFAccess;
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.batch.BatchSummary;
+import io.radien.api.service.batch.DataIssue;
+import io.radien.api.util.FactoryUtilService;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +54,6 @@ import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
-import io.radien.ms.usermanagement.client.util.FactoryUtilService;
 
 /**
  * @author Nuno Santana
@@ -64,7 +68,7 @@ public class UserRESTServiceClientTest {
     ClientServiceUtil clientServiceUtil;
 
     @Mock
-    Configurable oafAccess;
+    OAFAccess oafAccess;
 
     @Before
     public void before(){
@@ -166,8 +170,10 @@ public class UserRESTServiceClientTest {
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(new ExtensionException(new Exception()));
         try {
             target.getUserBySub("a");
-        }catch (ExtensionException es){
-            success = true;
+        }catch (SystemException es){
+            if (es.getMessage().contains(ExtensionException.class.getName())) {
+                success = true;
+            }
         }
         assertTrue(success);
     }
@@ -182,37 +188,26 @@ public class UserRESTServiceClientTest {
 
         try {
             target.getUserBySub(a);
-        }catch (ProcessingException es){
-            success = true;
+        }catch (SystemException es){
+            if (es.getMessage().contains(ProcessingException.class.getName())) {
+                success = true;
+            }
         }
         assertTrue(success);
     }
     @Test
-    public void testCreate() throws MalformedURLException {
+    public void testCreate() throws MalformedURLException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        boolean success = false;
-        try {
-			assertTrue(target.create(new User()));
-		} catch (SystemException e) {
-			success = true;
-        }
-        assertTrue(success);
+        assertTrue(target.create(new User()));
     }
     @Test
-    public void testCreateFail() throws MalformedURLException {
+    public void testCreateFail() throws MalformedURLException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        boolean success = false;
-        try {
-			assertFalse(target.create(new User()));
-		} catch (SystemException e) {
-			 success = true;
-        }
-        assertTrue(success);
-
+        assertFalse(target.create(new User()));
     }
 
     @Test
@@ -228,6 +223,73 @@ public class UserRESTServiceClientTest {
         }
         assertTrue(success);
 
+    }
+
+    @Test
+    public void testCreateBatch() throws MalformedURLException {
+        List<SystemUser> userList = new ArrayList<>();
+        BatchSummary batchSummary = new BatchSummary(100);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.create(anyList())).thenReturn(Response.ok().entity(batchSummary).build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Optional<BatchSummary> opt = target.create(userList);
+        assertTrue(opt.isPresent());
+        assertNotNull(opt.get());
+        assertEquals(opt.get().getInternalStatus(), BatchSummary.ProcessingStatus.SUCCESS);
+    }
+
+    @Test
+    public void testCreateBatchNoneInserted() throws MalformedURLException {
+        int rows = 4;
+        List<SystemUser> userList = new ArrayList<>();
+        List<DataIssue> issues = new ArrayList<>();
+        for (int rowIndex=1; rowIndex<=rows; rowIndex++) {
+            issues.add(new DataIssue(rowIndex, "Invalid fiel"));
+        }
+        BatchSummary batchSummary = new BatchSummary(rows, issues);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.create(anyList())).thenReturn(Response.ok().entity(batchSummary).build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Optional<BatchSummary> opt = target.create(userList);
+        assertTrue(opt.isPresent());
+        assertNotNull(opt.get());
+        assertEquals(opt.get().getTotal(), rows);
+        assertEquals(opt.get().getTotalProcessed(), 0);
+        assertEquals(opt.get().getTotalNonProcessed(), rows);
+        assertEquals(opt.get().getInternalStatus(), BatchSummary.ProcessingStatus.FAIL);
+    }
+
+    @Test
+    public void testCreateBatchSomeNotInserted() throws MalformedURLException {
+        int rows = 10;
+        List<SystemUser> userList = new ArrayList<>();
+        List<DataIssue> issues = new ArrayList<>();
+        for (int rowIndex=1; rowIndex<=rows-6; rowIndex++) {
+            issues.add(new DataIssue(rowIndex, "Invalid fiel"));
+        }
+        BatchSummary batchSummary = new BatchSummary(rows, issues);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.create(anyList())).thenReturn(Response.ok().entity(batchSummary).build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Optional<BatchSummary> opt = target.create(userList);
+        assertTrue(opt.isPresent());
+        assertNotNull(opt.get());
+        assertEquals(opt.get().getTotal(), rows);
+        assertEquals(opt.get().getTotalProcessed(), 6);
+        assertEquals(opt.get().getNonProcessedItems().size(), 4);
+        assertEquals(opt.get().getInternalStatus(), BatchSummary.ProcessingStatus.PARTIAL_SUCCESS);
+    }
+
+
+    @Test
+    public void testCreateBatchFail() throws MalformedURLException {
+        List<SystemUser> userList = new ArrayList<>();
+        BatchSummary batchSummary = new BatchSummary(100);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.create(anyList())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Optional<BatchSummary> opt = target.create(userList);
+        assertFalse(opt.isPresent());
     }
 
 }

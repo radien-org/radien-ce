@@ -70,4 +70,10 @@ public interface UserResourceClient {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response save(User user);
+
+    @POST
+    @Path("/multipleCreation")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response create(List<User> userList);
 }

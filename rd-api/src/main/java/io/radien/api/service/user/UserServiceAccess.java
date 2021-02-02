@@ -22,6 +22,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.api.service.batch.BatchSummary;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 
@@ -45,4 +46,5 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public List<? extends SystemUser> getUsers(SystemUserSearchFilter filter);
 
+    public BatchSummary create(List<? extends SystemUser> users);
 }

@@ -17,13 +17,7 @@ package io.radien.ms.usermanagement.entities;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import io.radien.api.model.user.AbstractUserModel;
 import io.radien.api.model.user.SystemUser;
@@ -47,8 +41,8 @@ public class User extends io.radien.ms.usermanagement.client.entities.User {
 		super(user);
 	}
 	@Id
-	@SequenceGenerator(name = "GEN_SEQ_USR01", sequenceName = "SEQ_USR01", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "GEN_SEQ_USR01")
+	@TableGenerator(name = "GEN_SEQ_USR01", allocationSize = 2000)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_USR01")
 	@Override
 	public Long getId() {
 		return super.getId();

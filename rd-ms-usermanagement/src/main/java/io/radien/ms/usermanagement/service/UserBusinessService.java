@@ -18,6 +18,7 @@ package io.radien.ms.usermanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
+import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -67,4 +68,8 @@ public class UserBusinessService implements Serializable {
 		userServiceAccess.save(user);
 	}
 
+	public BatchSummary create(List<? extends SystemUser> users) {
+		BatchSummary summary = userServiceAccess.create(users);
+		return summary;
+	}
 }
