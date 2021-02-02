@@ -15,13 +15,12 @@
  */
 package io.radien.ms.permissionmanagement.client.services;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 
+import io.radien.api.util.FactoryUtilService;
+import io.radien.ms.permissionmanagement.client.entities.Action;
+import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
-import io.radien.ms.permissionmanagement.client.util.FactoryUtilService;
 
 import java.util.Date;
 import java.util.List;
@@ -36,13 +35,14 @@ public class PermissionFactory {
      * @param createUser the user which has created the permission
      * @return a Permission object to be used
      */
-    public static Permission create(String name, Long createUser){
+    public static Permission create(String name, Action action, Long createUser){
         Permission u = new Permission();
         u.setName(name);
         u.setCreateUser(createUser);
         Date now = new Date();
         u.setLastUpdate(now);
         u.setCreateDate(now);
+        u.setAction(action);
         return u;
     }
 
@@ -57,13 +57,20 @@ public class PermissionFactory {
         Long id = FactoryUtilService.getLongFromJson("id", permission);
         String name = FactoryUtilService.getStringFromJson("name", permission);
         Long createPermission = FactoryUtilService.getLongFromJson("createUser", permission);
-        
+        Long updatePermission = FactoryUtilService.getLongFromJson("lastUpdateUser", permission);
+
         Permission perm = new Permission();
         perm.setId(id);
         perm.setName(name);
         perm.setCreateUser(createPermission);
+        perm.setLastUpdateUser(updatePermission);
         perm.setCreateDate(new Date());
         perm.setLastUpdate(new Date());
+
+        JsonValue actionAsJsonValue = permission.get("action");
+        if (actionAsJsonValue != null && actionAsJsonValue.getValueType() == JsonValue.ValueType.OBJECT) {
+            perm.setAction(ActionFactory.convert(actionAsJsonValue.asJsonObject()));
+        }
         return perm;
     }
 
@@ -75,11 +82,16 @@ public class PermissionFactory {
      */
     public static JsonObject convertToJsonObject(Permission perm) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        FactoryUtilService.addValue(builder, "id", perm.getId());
+        FactoryUtilService.addValueLong(builder, "id", perm.getId());
         FactoryUtilService.addValue(builder, "name", perm.getName());
         FactoryUtilService.addValueLong(builder, "createUser", perm.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", perm.getLastUpdateUser());
-        return  builder.build();
+        if (perm.getAction() != null) {
+            builder.add("action", ActionFactory.convertToJsonObject(perm.getAction()));
+        } else {
+            builder.addNull("action");
+        }
+        return builder.build();
     }
 
     public static List<Permission> convert(JsonArray jsonArray) {
