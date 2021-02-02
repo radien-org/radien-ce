@@ -29,6 +29,10 @@ public class Permission extends io.radien.ms.permissionmanagement.client.entitie
 
 	public Permission(io.radien.ms.permissionmanagement.client.entities.Permission p) {
 		super(p);
+		// TODO: Necessary review it
+		if (p.getAction() != null) {
+			this.setAction(new Action(p.getAction()));
+		}
 	}
 
 	@Override
