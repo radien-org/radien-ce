@@ -16,6 +16,7 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.AbstractPermissionModel;
+import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 
 public class Permission extends AbstractPermissionModel implements SystemPermission {
@@ -24,12 +25,14 @@ public class Permission extends AbstractPermissionModel implements SystemPermiss
 
 	private Long id;
 	private String name;
+	private Action action;
 	
 	public Permission(){}
 
 	public Permission(Permission p) {
 		this.id = p.getId();
 		this.name = p.getName();
+		this.action = p.getAction();
 	}
 
 	@Override
@@ -52,5 +55,11 @@ public class Permission extends AbstractPermissionModel implements SystemPermiss
 		this.name = name;
 	}
 
-	
+	public Action getAction() {
+		return action;
+	}
+
+	public void setAction(SystemAction a) {
+		this.action = (Action) a;
+	}
 }
