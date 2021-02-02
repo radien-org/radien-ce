@@ -369,24 +369,20 @@ public class PermissionServiceTest {
 
     @Test
     public void associatePermissionAndAction() throws UniquenessConstraintException {
-        SystemPermission permission = PermissionFactory.create("perm-radien-1", null, 1L);
-        permissionServiceAccess.save(permission);
-        permission = PermissionFactory.create("perm-radien-2", null, 1L);
-        permissionServiceAccess.save(permission);
-//        permission = PermissionFactory.create("perm-radien-3", null, 1L);
-//        permissionServiceAccess.save(permission);
+        SystemPermission sp = PermissionFactory.create("perm-radien-1", null, 1L);
+        permissionServiceAccess.save(sp);
+        sp = PermissionFactory.create("perm-radien-2", null, 1L);
+        permissionServiceAccess.save(sp);
 
-        SystemAction action = ActionFactory.create("read-contract", ActionType.READ, null);
-        actionServiceAccess.save(action);
-        action = ActionFactory.create("write-contract", ActionType.WRITE, null);
-        actionServiceAccess.save(action);
+        SystemAction sa = ActionFactory.create("read-contract", ActionType.READ, null);
+        actionServiceAccess.save(sa);
 
         // Retrieve the permission
         SystemPermissionSearchFilter permissionFilter = new PermissionSearchFilter();
         permissionFilter.setName("perm-radien-1");
         permissionFilter.setExact(true);
         List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(permissionFilter);
-        permission = permissions.get(0);
+        Permission permission = (Permission) permissions.get(0);
 
         // Retrieve the action
         SystemActionSearchFilter filter = new ActionSearchFilter();
@@ -394,15 +390,19 @@ public class PermissionServiceTest {
         filter.setActionType(ActionType.READ);
         filter.setLogicConjunction(true);
         List<? extends SystemAction> actions = actionServiceAccess.getActions(filter);
-        action = actions.get(0);
+        Action action = (Action) actions.get(0);
+
+        assertNotNull(action);
+        assertEquals(action.getName(), sa.getName());
+        assertEquals(action.getActionType(), sa.getActionType());
 
         // Setting action
         permission.setAction(action);
 
-        // Save action
+        // Save permission
         permissionServiceAccess.save(permission);
 
-        // Retrieve the action again
+        // Retrieve the permission again
         permissions = permissionServiceAccess.getPermissions(permissionFilter);
         SystemPermission p = permissions.get(0);
 
