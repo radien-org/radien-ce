@@ -14,7 +14,7 @@ public class ActionFactory {
         Date now = new Date();
         action.setLastUpdate(now);
         action.setCreateDate(now);
-        action.setActionType(actionType);
+        action.setType(actionType);
         return action;
     }
 }

@@ -2,9 +2,7 @@ package io.radien.ms.permissionmanagement.client.providers;
 
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.ActionType;
-import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.services.ActionFactory;
-import io.radien.ms.permissionmanagement.client.services.PermissionFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +46,7 @@ public class ActionMessageBodyReaderTest {
         Assert.assertEquals(a.getCreateUser(), a2.getCreateUser());
         Assert.assertEquals(a.getLastUpdateUser(), a2.getLastUpdateUser());
         Assert.assertEquals(a.getName(), a2.getName());
-        Assert.assertEquals(a.getActionType(), a2.getActionType());
+        Assert.assertEquals(a.getType(), a2.getType());
 
         // Setting others fields with null (id, action, createUser, lastUpdateUser,..., etc)
         a = ActionFactory.create(actionName, null, null);
@@ -62,10 +60,10 @@ public class ActionMessageBodyReaderTest {
         Assert.assertEquals(a.getCreateUser(), a2.getCreateUser());
         Assert.assertEquals(a.getLastUpdateUser(), a2.getLastUpdateUser());
         Assert.assertEquals(a.getName(), a2.getName());
-        Assert.assertEquals(a.getActionType(), a2.getActionType());
+        Assert.assertEquals(a.getType(), a2.getType());
 
         a.setLastUpdateUser(111111L);
-        a.setActionType(ActionType.WRITE);
+        a.setType(ActionType.WRITE);
         json = getJsonOmittingNullFields(a);
         in = new ByteArrayInputStream(json.getBytes());
         a2 = reader.readFrom(null, null,
@@ -75,7 +73,7 @@ public class ActionMessageBodyReaderTest {
         Assert.assertEquals(a.getCreateUser(), a2.getCreateUser());
         Assert.assertEquals(a.getLastUpdateUser(), a2.getLastUpdateUser());
         Assert.assertEquals(a.getName(), a2.getName());
-        Assert.assertEquals(a.getActionType(), a2.getActionType());
+        Assert.assertEquals(a.getType(), a2.getType());
     }
 
     private String getJsonString(Action a) {
@@ -86,7 +84,7 @@ public class ActionMessageBodyReaderTest {
         params.append("\"lastUpdateUser\":").append(a.getLastUpdateUser()).append(",");
         params.append("\"name\":\"").append(a.getName()).append("\"").append(",");
 
-        String actionAsString = a.getActionType() != null ? a.getActionType().getName() : null;
+        String actionAsString = a.getType() != null ? a.getType().getName() : null;
         params.append("\"type\":");
         if (actionAsString != null) {
             params.append("\"");
@@ -127,9 +125,9 @@ public class ActionMessageBodyReaderTest {
             params.append("\"name\":\"").append(a.getName()).append("\"");
         }
 
-        if (a.getActionType() != null) {
+        if (a.getType() != null) {
             params.append(",");
-            params.append("\"type\":\"").append(a.getActionType().getName()).append("\"");
+            params.append("\"type\":\"").append(a.getType().getName()).append("\"");
         }
 
         StringBuffer bf = new StringBuffer();

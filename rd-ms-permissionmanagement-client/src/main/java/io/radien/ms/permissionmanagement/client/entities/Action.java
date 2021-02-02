@@ -13,7 +13,7 @@ public class Action extends AbstractActionModel {
     public Action(Action a) {
         this.id = a.getId();
         this.name = a.getName();
-        this.actionType = a.getActionType();
+        this.actionType = a.getType();
     }
 
     @Override
@@ -37,12 +37,12 @@ public class Action extends AbstractActionModel {
     }
 
     @Override
-    public ActionType getActionType() {
+    public ActionType getType() {
         return actionType;
     }
 
     @Override
-    public void setActionType(SystemActionType actionType) {
+    public void setType(SystemActionType actionType) {
         this.actionType = (ActionType) actionType;
     }
 }

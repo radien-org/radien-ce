@@ -394,7 +394,7 @@ public class PermissionServiceTest {
 
         assertNotNull(action);
         assertEquals(action.getName(), sa.getName());
-        assertEquals(action.getActionType(), sa.getActionType());
+        assertEquals(action.getType(), sa.getType());
 
         // Setting action
         permission.setAction(action);
@@ -408,7 +408,7 @@ public class PermissionServiceTest {
 
         assertNotNull(p.getAction());
         assertEquals(p.getAction().getId(), action.getId());
-        assertEquals(p.getAction().getActionType(), action.getActionType());
+        assertEquals(p.getAction().getType(), action.getType());
         assertEquals(p.getAction().getName(), action.getName());
     }
 }

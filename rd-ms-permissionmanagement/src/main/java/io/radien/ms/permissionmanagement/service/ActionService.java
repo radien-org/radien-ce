@@ -257,7 +257,7 @@ public class ActionService implements ActionServiceAccess {
         }
 
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, actionRoot, global);
-        global = getFieldPredicate("actionType", filter.getActionType(), filter, criteriaBuilder, actionRoot, global);
+        global = getFieldPredicate("type", filter.getActionType(), filter, criteriaBuilder, actionRoot, global);
 
         return global;
     }

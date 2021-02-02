@@ -50,11 +50,11 @@ public class Action extends io.radien.ms.permissionmanagement.client.entities.Ac
 	@Override
 	@Enumerated
 	@Column(name = "TYPE", nullable = false)
-	public ActionType getActionType() {
-		return super.getActionType();
+	public ActionType getType() {
+		return super.getType();
 	}
 
-	public void setActionType(ActionType a) {
-		super.setActionType(a);
+	public void setType(ActionType a) {
+		super.setType(a);
 	}
 }

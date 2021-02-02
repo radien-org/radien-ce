@@ -44,7 +44,7 @@ public class ActionFactory {
         u.setLastUpdate(now);
         u.setCreateDate(now);
         if (actionType != null)
-            u.setActionType(actionType);
+            u.setType(actionType);
         return u;
     }
 
@@ -73,7 +73,7 @@ public class ActionFactory {
             ActionType type = ActionType.getByName(actionTypeAsString);
             if (type == null)
                 throw new IllegalStateException("Unknown action type");
-            action.setActionType(type);
+            action.setType(type);
         }
         return action;
     }
@@ -81,16 +81,16 @@ public class ActionFactory {
     /**
      * Converts a System action to a Json Object
      *
-     * @param perm system action to be converted to json
+     * @param a system action to be converted to json
      * @return json object with keys and values constructed
      */
-    public static JsonObject convertToJsonObject(Action perm) {
+    public static JsonObject convertToJsonObject(Action a) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        FactoryUtilService.addValueLong(builder, "id", perm.getId());
-        FactoryUtilService.addValue(builder, "name", perm.getName());
-        FactoryUtilService.addValueLong(builder, "createUser", perm.getCreateUser());
-        FactoryUtilService.addValueLong(builder, "lastUpdateUser", perm.getLastUpdateUser());
-        FactoryUtilService.addValue(builder, "type", perm.getActionType());
+        FactoryUtilService.addValueLong(builder, "id", a.getId());
+        FactoryUtilService.addValue(builder, "name", a.getName());
+        FactoryUtilService.addValueLong(builder, "createUser", a.getCreateUser());
+        FactoryUtilService.addValueLong(builder, "lastUpdateUser", a.getLastUpdateUser());
+        FactoryUtilService.addValue(builder, "type", a.getType());
         return builder.build();
     }
 

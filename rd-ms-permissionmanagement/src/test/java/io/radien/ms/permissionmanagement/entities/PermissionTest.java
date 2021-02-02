@@ -70,7 +70,7 @@ public class PermissionTest extends TestCase {
     public void testGetAction() {
         assertNotNull(permission.getAction());
         assertEquals(permission.getAction().getName(), "Create Contract");
-        assertEquals(permission.getAction().getActionType(), ActionType.EXECUTION);
+        assertEquals(permission.getAction().getType(), ActionType.EXECUTION);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class PermissionTest extends TestCase {
         permission.setAction(newAction);
         assertNotNull(permission.getAction());
         assertEquals(permission.getAction().getName(), "Update Contract");
-        assertEquals(permission.getAction().getActionType(), ActionType.READ);
+        assertEquals(permission.getAction().getType(), ActionType.READ);
     }
 
 }

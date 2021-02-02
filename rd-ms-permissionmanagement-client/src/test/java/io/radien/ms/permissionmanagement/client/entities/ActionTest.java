@@ -30,7 +30,7 @@ public class ActionTest {
     public ActionTest() {
         action.setId(2L);
         action.setName("action-test");
-        action.setActionType(ActionType.WRITE);
+        action.setType(ActionType.WRITE);
     }
 
     @Test
@@ -57,12 +57,12 @@ public class ActionTest {
 
     @Test
     public void getActionType() {
-        assertEquals(action.getActionType(), ActionType.WRITE);
+        assertEquals(action.getType(), ActionType.WRITE);
     }
 
     @Test
     public void setActionType() {
-        action.setActionType(ActionType.READ);
-        assertEquals(action.getActionType(), ActionType.READ);
+        action.setType(ActionType.READ);
+        assertEquals(action.getType(), ActionType.READ);
     }
 }

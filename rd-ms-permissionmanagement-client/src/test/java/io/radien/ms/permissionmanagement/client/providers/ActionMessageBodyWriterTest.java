@@ -79,7 +79,7 @@ public class ActionMessageBodyWriterTest {
         action.setId(1L);
         action.setCreateUser(28L);
         action.setLastUpdateUser(100L);
-        action.setActionType(ActionType.READ);
+        action.setType(ActionType.READ);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         target.writeTo(action,null,null,

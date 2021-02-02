@@ -37,7 +37,7 @@ public class PermissionFactoryTest extends TestCase {
      */
     public PermissionFactoryTest() {
         action = new Action();
-        action.setActionType(ActionType.WRITE);
+        action.setType(ActionType.WRITE);
         action.setName("WRITE-PERMISSION-ON-SOME_RADIEN_MODULE");
         action.setId(2L);
         action.setCreateUser(4L);
@@ -47,7 +47,7 @@ public class PermissionFactoryTest extends TestCase {
                 add("name", action.getName()).
                 add("createUser", action.getCreateUser()).
                 addNull("lastUpdateUser").
-                add("type", action.getActionType().getName()).build();
+                add("type", action.getType().getName()).build();
 
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");

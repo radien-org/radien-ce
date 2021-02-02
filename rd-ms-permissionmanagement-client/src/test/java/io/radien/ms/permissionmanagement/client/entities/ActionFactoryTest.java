@@ -16,7 +16,6 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.ms.permissionmanagement.client.services.ActionFactory;
-import io.radien.ms.permissionmanagement.client.services.ActionFactory;
 import org.junit.Test;
 
 import javax.json.Json;
@@ -58,7 +57,7 @@ public class ActionFactoryTest {
         assertEquals(action.getId(), newtAction.getId());
         assertEquals(action.getCreateUser(), newtAction.getCreateUser());
         assertEquals(action.getLastUpdateUser(), newtAction.getLastUpdateUser());
-        assertEquals(action.getActionType(), newtAction.getActionType());
+        assertEquals(action.getType(), newtAction.getType());
     }
 
     /**
@@ -72,7 +71,7 @@ public class ActionFactoryTest {
         assertEquals(action.getCreateUser(), newAct.getCreateUser());
         assertEquals(action.getLastUpdateUser(), newAct.getLastUpdateUser());
         assertEquals(action.getName(), newAct.getName());
-        assertEquals(action.getActionType(), newAct.getActionType());
+        assertEquals(action.getType(), newAct.getType());
     }
 
     @Test

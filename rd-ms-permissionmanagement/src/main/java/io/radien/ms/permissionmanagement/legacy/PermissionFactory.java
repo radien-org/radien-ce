@@ -99,7 +99,7 @@ public class PermissionFactory {
             ActionType type = ActionType.getByName(actionTypeAsString);
             if (type == null)
                 throw new IllegalStateException("Unknown action type");
-            action.setActionType(type);
+            action.setType(type);
         }
         return action;
     }
@@ -130,7 +130,7 @@ public class PermissionFactory {
         FactoryUtilService.addValue(builder, "name", sa.getName());
         FactoryUtilService.addValueLong(builder, "createUser", sa.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", sa.getLastUpdateUser());
-        FactoryUtilService.addValue(builder, "type", sa.getActionType());
+        FactoryUtilService.addValue(builder, "type", sa.getType());
         return builder.build();
     }
 }
