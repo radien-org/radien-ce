@@ -233,8 +233,6 @@ public class UserRESTServiceClientTest {
         }
         assertFalse(success);
 
-        assertFalse(target.create(new User()));
-
     }
 
     @Test
