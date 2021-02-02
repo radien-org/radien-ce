@@ -13,6 +13,7 @@
         <jta-data-source>java:/comp/env/jdbc/AppFrameUserDS</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
+
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="create-or-extend-tables"/>
             <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
@@ -26,30 +27,13 @@
             <property name="eclipselink.jdbc.cache-statements" value="true"/>
         </properties>
     </persistence-unit>
-
-    <persistence-unit name="userPersistenceUnitLocalMySQL" transaction-type="JTA">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>java:/comp/env/jdbc/UserDSMySQL</jta-data-source>
-        <non-jta-data-source>java:/comp/env/jdbc/AppFrameDSNonJta</non-jta-data-source>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <shared-cache-mode>ALL</shared-cache-mode>
-        <properties>
-            <property name="javax.persistence.schema-generation.database.action" value="create-or-extend-tables"/>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="eclipselink.target-database" value="MySQL"/>
-            <property name="eclipselink.jdbc.batch-writing" value="JDBC" />
-            <property name="eclipselink.jdbc.batch-writing.size" value="500" />
-            <property name="eclipselink.jdbc.cache-statements" value="true"/>
-            <property name="eclipselink.logging.level" value="SEVERE" />
-            <property name="eclipselink.logging.parameters" value="true"/>
-            <property name="eclipselink.cache.size.default" value="100"/>
-            <property name="eclipselink.cache.type" value="HARD_WEAK"/>
-            <!--
-           <property name="eclipselink.cache.coordination.protocol" value="jms" />
-           <property name="eclipselink.cache.coordination.jms.topic" value="java:comp/env/jms/eclipseLinkCacheTopic" />
-           <property name="eclipselink.cache.coordination.jms.factory" value="java:comp/env/jms/connectionFactory" />
-            -->
-        </properties>
-    </persistence-unit>
+ 
+<!--    <persistence-unit name="userPersistenceUnitLocalMySQL" transaction-type="JTA">-->
+<!--        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
+<!--        <jta-data-source>java:/comp/env/jdbc/UserDSMySQL</jta-data-source>-->
+<!--        <non-jta-data-source>java:/comp/env/jdbc/AppFrameDSNonJta</non-jta-data-source>-->
+<!--        <exclude-unlisted-classes>false</exclude-unlisted-classes>-->
+<!--        <shared-cache-mode>ALL</shared-cache-mode>-->
+<!--    </persistence-unit>-->
 </persistence>
 

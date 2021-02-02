@@ -2,65 +2,96 @@
 <tomee>
 	<!-- see http://tomee.apache.org/containers-and-resources.html -->
 
-	<Resource id="jdbc/AppFrameDSHHSQL" type="javax.sql.DataSource">
-		accessToUnderlyingConnectionAllowed = false
-		alternateUsernameAllowed = false
+	<Resource id="jdbc/AppFrameUserDS" type="javax.sql.DataSource">
+		accessToUnderlyingConnectionAllowed = ${true_value}
+		alternateUsernameAllowed = ${false_value}
 		connectionProperties =
-		defaultAutoCommit = true
+		defaultAutoCommit = ${true_value}
 		defaultReadOnly =
 		definition =
-		ignoreDefaultValues = false
-		initialSize = 0
-		jdbcDriver = org.hsqldb.jdbcDriver
-		jdbcUrl = jdbc:hsqldb:mem:hsqldb
-		jtaManaged = true
-		maxActive = 20
-		maxIdle = 20
-		maxOpenPreparedStatements = 0
-		maxWaitTime = -1 millisecond
-		minEvictableIdleTime = 30 minutes
-		minIdle = 0
-		numTestsPerEvictionRun = 3
+		ignoreDefaultValues = ${false_value}
+		initialSize = ${AppFrameUserDS_initialSize}
+		jdbcDriver = ${AppFrameUserDS_jdbcDriver}
+		jdbcUrl = ${AppFrameUserDS_jdbcUrl}
+		jtaManaged = ${true_value}
+		maxActive = ${AppFrameUserDS_maxActive}
+		maxIdle = ${AppFrameUserDS_maxIdle}
+		maxOpenPreparedStatements = ${AppFrameUserDS_maxOpenPreparedStatements}
+		maxWaitTime = ${AppFrameUserDS_maxWaitTime}
+		minEvictableIdleTime = ${AppFrameUserDS_minEvictableIdleTime}
+		minIdle = ${AppFrameUserDS_minIdle}
+		numTestsPerEvictionRun = ${AppFrameUserDS_numTestsPerEvictionRun}
 		password =
-		passwordCipher = PlainText
-		poolPreparedStatements = false
+		passwordCipher = ${plainText_value}
+		poolPreparedStatements = ${false_value}
 		serviceId =
-		testOnBorrow = true
-		testOnReturn = false
-		testWhileIdle = false
-		timeBetweenEvictionRuns = -1 millisecond
-		userName = sa
-		validationQuery = CALL NOW()
+		testOnBorrow = ${true_value}
+		testOnReturn = ${false_value}
+		testWhileIdle = ${false_value}
+		timeBetweenEvictionRuns = ${AppFrameUserDS_timeBetweenEvictionRuns}
+		userName = ${sa_username}
+		validationQuery = ${AppFrameUserDS_validationQuery}
 	</Resource>
 	<Resource id="jdbc/UserDSHHSQL" type="javax.sql.DataSource">
-		accessToUnderlyingConnectionAllowed = false
-		alternateUsernameAllowed = false
+		accessToUnderlyingConnectionAllowed = ${false_value}
+		alternateUsernameAllowed = ${false_value}
 		connectionProperties =
-		defaultAutoCommit = true
+		defaultAutoCommit = ${true_value}
 		defaultReadOnly =
 		definition =
-		ignoreDefaultValues = false
-		initialSize = 0
-		jdbcDriver = org.hsqldb.jdbcDriver
-		jdbcUrl = jdbc:hsqldb:file:userdb
-		jtaManaged = true
-		maxActive = 20
-		maxIdle = 20
-		maxOpenPreparedStatements = 0
-		maxWaitTime = -1 millisecond
-		minEvictableIdleTime = 30 minutes
-		minIdle = 0
-		numTestsPerEvictionRun = 3
+		ignoreDefaultValues = ${false_value}
+		initialSize = ${UserDSHHSQL_initialSize}
+		jdbcDriver = ${UserDSHHSQL_jdbcDriver}
+		jdbcUrl = ${UserDSHHSQL_jdbcUrl}
+		jtaManaged = ${true_value}
+		maxActive = ${UserDSHHSQL_maxActive}
+		maxIdle = ${UserDSHHSQL_maxIdle}
+		maxOpenPreparedStatements = ${UserDSHHSQL_maxOpenPreparedStatements}
+		maxWaitTime = ${UserDSHHSQL_maxWaitTime}
+		minEvictableIdleTime = ${UserDSHHSQL_minEvictableIdleTime}
+		minIdle = ${UserDSHHSQL_minIdle}
+		numTestsPerEvictionRun = ${UserDSHHSQL_numTestsPerEvictionRun}
 		password =
-		passwordCipher = PlainText
-		poolPreparedStatements = false
+		passwordCipher = ${plainText_value}
+		poolPreparedStatements = ${false_value}
 		serviceId =
-		testOnBorrow = true
-		testOnReturn = false
-		testWhileIdle = false
-		timeBetweenEvictionRuns = -1 millisecond
-		userName = sa
-		validationQuery = CALL NOW()
+		testOnBorrow = ${true_value}
+		testOnReturn = ${false_value}
+		testWhileIdle = ${false_value}
+		timeBetweenEvictionRuns = ${UserDSHHSQL_timeBetweenEvictionRuns}
+		userName = ${sa_username}
+		validationQuery = ${UserDSHHSQL_validationQuery}
+	</Resource>
+
+	<Resource id="jdbc/UserDSMySQL" type="javax.sql.DataSource">
+		accessToUnderlyingConnectionAllowed = ${false_value}
+		alternateUsernameAllowed = ${false_value}
+		connectionProperties =
+		defaultAutoCommit = ${true_value}
+		defaultReadOnly =
+		definition =
+		ignoreDefaultValues = ${false_value}
+		initialSize = ${UserDSMySQL_initialSize}
+		jdbcDriver = ${UserDSMySQL_jdbcDriver}
+		jdbcUrl = ${UserDSMySQL_jdbcUrl}
+		jtaManaged = ${true_value}
+		maxActive = ${UserDSMySQL_maxActive}
+		maxIdle = ${UserDSMySQL_maxIdle}
+		maxOpenPreparedStatements = ${UserDSMySQL_maxOpenPreparedStatements}
+		maxWaitTime = ${UserDSMySQL_maxWaitTime}
+		minEvictableIdleTime = ${UserDSMySQL_minEvictableIdleTime}
+		minIdle = ${UserDSMySQL_minIdle}
+		numTestsPerEvictionRun = ${UserDSMySQL_numTestsPerEvictionRun}
+		password = ${UserDSMySQL_password}
+		passwordCipher = ${plainText_value}
+		poolPreparedStatements = ${false_value}
+		serviceId =
+		testOnBorrow = ${true_value}
+		testOnReturn = ${false_value}
+		testWhileIdle = ${false_value}
+		timeBetweenEvictionRuns = ${UserDSMySQL_timeBetweenEvictionRuns}
+		userName = ${UserDSMySQL_userName}
+		validationQuery = ${UserDSMySQL_validationQuery}
 	</Resource>
 
 	<!-- activate next line to be able to deploy applications in apps -->
