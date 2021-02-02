@@ -112,10 +112,12 @@ public class PermissionServiceTest {
      * Tested methods: void save(Permission Permission)
      */
     @Test
-    public void testAddDuplicatedName() {
-//        Permission u = PermissionFactory.create("permissionName", ActionType.LIST,2L);
-        Permission u = PermissionFactory.create("permissionName", null,2L);
-        Exception exception = assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(u));
+    public void testAddDuplicatedName() throws UniquenessConstraintException {
+        Permission u = PermissionFactory.create("permissionNameXYZ", null,2L);
+        permissionServiceAccess.save(u);
+
+        Permission u2 = PermissionFactory.create("permissionNameXYZ", null,2L);
+        Exception exception = assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(u2));
         String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
                 " one resource with the same value for the field: Name\"}";
         String actualMessage = exception.getMessage();

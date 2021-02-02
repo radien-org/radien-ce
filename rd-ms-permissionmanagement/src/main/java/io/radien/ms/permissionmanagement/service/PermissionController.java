@@ -21,10 +21,12 @@ import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
+import io.radien.ms.permissionmanagement.model.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -48,6 +50,9 @@ public class PermissionController {
 
 	@Inject
 	private PermissionServiceAccess permissionServiceAccess;
+
+	@Inject
+	private PermissionBusinessService businessService;
 
 	@GET
 	public Response getAll(@QueryParam("search") String search,
@@ -108,6 +113,35 @@ public class PermissionController {
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return getInvalidRequestResponse(e);
+		} catch (Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	@POST
+	@Path("/{permissionId}/association/{actionId}")
+	public Response associate(@NotNull @PathParam("permissionId") long permissionId,
+							  @NotNull @PathParam("actionId") long actionId) {
+		try {
+			AssociationStatus associationStatus = businessService.associate(permissionId, actionId);
+			if (associationStatus.isOK()) {
+				return Response.ok().build();
+			}
+			return Response.status(Response.Status.BAD_REQUEST).entity(associationStatus.getMessage()).build();
+		} catch (Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	@POST
+	@Path("/{permissionId}/dissociation")
+	public Response dissociate(@NotNull @PathParam("permissionId") long permissionId) {
+		try {
+			AssociationStatus associationStatus = businessService.dissociation(permissionId);
+			if (associationStatus.isOK()) {
+				return Response.ok().build();
+			}
+			return Response.status(Response.Status.BAD_REQUEST).entity(associationStatus.getMessage()).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}

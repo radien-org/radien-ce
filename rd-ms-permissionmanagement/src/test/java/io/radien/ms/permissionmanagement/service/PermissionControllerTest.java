@@ -3,6 +3,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.permissionmanagement.model.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.Permission;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,8 @@ public class PermissionControllerTest {
     PermissionController permissionResource;
     @Mock
     PermissionServiceAccess permissionServiceAccess;
+    @Mock
+    PermissionBusinessService permissionBusinessService;
     
     @Before
     public void before(){
@@ -91,7 +94,7 @@ public class PermissionControllerTest {
      * Test Get permissions by should return success with a 200 code
      */
     @Test
-    public void testgetPermissionsBy() {
+    public void testGetPermissionsBy() {
         Response response = permissionResource.getPermissions("permission",true,true);
         assertEquals(200,response.getStatus());
     }
@@ -100,7 +103,7 @@ public class PermissionControllerTest {
      * Test Get permissions by should return error with a 500 error code message
      */
     @Test
-    public void testgetPermissionsByException() {
+    public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(permissionServiceAccess).getPermissions(any());
         Response response = permissionResource.getPermissions("perm",true,true);
         assertEquals(500,response.getStatus());
@@ -133,6 +136,44 @@ public class PermissionControllerTest {
         Response response = permissionResource.save(new Permission());
         assertEquals(200,response.getStatus());
     }
+
+    @Test
+    public void testSuccessfulAssociationWithAction() {
+        when(permissionBusinessService.associate(any(), any())).thenReturn(new AssociationStatus());
+        Response response = permissionResource.associate(11l, 12L);
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testUnsuccessfulAssociationWithAction() {
+        when(permissionBusinessService.associate(any(), any())).thenReturn(
+                new AssociationStatus(false, "unsuccessful operation"));
+        Response response = permissionResource.associate(11l, 12L);
+        assertEquals(400,response.getStatus());
+        assertEquals(response.getEntity().getClass(), String.class);
+        assertEquals(response.getEntity().toString(), "unsuccessful operation");
+    }
+
+    @Test
+    public void testSuccessfulDissociation() {
+        Long permissionId = 11L;
+        when(permissionBusinessService.dissociation(permissionId)).thenReturn(new AssociationStatus());
+        Response response = permissionResource.dissociate(permissionId);
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testUnsuccessfulDissociation() {
+        AssociationStatus associationStatus = new AssociationStatus(false, "something happen...");
+        Long permissionId = 11L;
+        when(permissionBusinessService.dissociation(permissionId)).thenReturn(associationStatus);
+        Response response = permissionResource.dissociate(permissionId);
+        assertEquals(400,response.getStatus());
+        assertEquals(response.getEntity().getClass(), String.class);
+        assertEquals(response.getEntity().toString(), associationStatus.getMessage());
+    }
+
+
 
     /**
      * Creation with error of a record. Should return a 400 code message Invalid Requested Exception

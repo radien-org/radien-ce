@@ -29,6 +29,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
