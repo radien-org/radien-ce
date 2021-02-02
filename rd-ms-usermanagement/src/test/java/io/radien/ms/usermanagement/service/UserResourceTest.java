@@ -1,8 +1,12 @@
 package io.radien.ms.usermanagement.service;
 
+
+import io.radien.exception.SystemException;
+
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
+
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -127,7 +131,7 @@ public class UserResourceTest {
      * Deletion of the record with error, should return a generic 500 error code message
      */
     @Test
-    public void testDeleteGenericError() {
+    public void testDeleteGenericError() throws UserNotFoundException, SystemException {
         doThrow(new RuntimeException()).when(userBusinessService).delete(1l);
         Response response = userResource.delete(1l);
         assertEquals(500,response.getStatus());
@@ -149,7 +153,7 @@ public class UserResourceTest {
      * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, SystemException {
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any());
         Response response = userResource.save(new User());
         assertEquals(400,response.getStatus());
@@ -162,7 +166,7 @@ public class UserResourceTest {
      * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException, SystemException {
         doThrow(new RuntimeException()).when(userBusinessService).save(any());
         Response response = userResource.save(new User());
         assertEquals(500,response.getStatus());

@@ -20,9 +20,11 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
+import org.keycloak.admin.client.Keycloak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Nuno Santana
@@ -44,6 +47,8 @@ public class UserBusinessService implements Serializable {
 
 	@Inject
 	private UserServiceAccess userServiceAccess;
+	@Inject
+	private KeycloakService keycloakService;
 
 	public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending){
 		return userServiceAccess.getAll(search,pageNo,pageSize,sortBy,isAscending);
@@ -60,16 +65,45 @@ public class UserBusinessService implements Serializable {
 		return userServiceAccess.get(ids);
 	}
 
-	public void delete(long id){
+	public void delete(long id) throws UserNotFoundException, SystemException {
+		SystemUser u =userServiceAccess.get(id);
+		if(u.getSub() != null){
+			keycloakService.deleteUser(u.getSub());
+		}
 		userServiceAccess.delete(id);
 	}
 
-	public void save(User user) throws UniquenessConstraintException, UserNotFoundException {
+	public void save(User user) throws UniquenessConstraintException, UserNotFoundException, SystemException {
+		if(user.getLogon().isEmpty()){
+			//according to current keycloak config
+			throw new SystemException("logon cannot be empty");
+		}
+		if(user.getUserEmail().isEmpty()){
+			//for the user to be able to login he needs to be able to set password
+			throw new SystemException("email cannot be empty");
+		}
+		boolean creation = user.getId() == null;
 		userServiceAccess.save(user);
+		if(creation){
+			try {
+				user.setSub(keycloakService.createUser(user));
+			} catch (SystemException e) {
+				userServiceAccess.delete(user.getId());
+				throw e;
+			}
+		} else {
+			try{
+				keycloakService.updateUser(user);
+			}catch (SystemException e){
+				//TODO: rollback
+				throw e;
+			}
+		}
 	}
 
 	public BatchSummary create(List<? extends SystemUser> users) {
 		BatchSummary summary = userServiceAccess.create(users);
 		return summary;
 	}
+
 }

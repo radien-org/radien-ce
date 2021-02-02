@@ -71,6 +71,7 @@ public class UserFactory {
         String sub = FactoryUtilService.getStringFromJson("sub", person);
         String firstname = FactoryUtilService.getStringFromJson("firstname", person);
         String lastname = FactoryUtilService.getStringFromJson("lastname",person);
+        Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",person);
 
         User user = new User();
         user.setId(id);
@@ -84,6 +85,7 @@ public class UserFactory {
         user.setSub(sub);
         user.setFirstname(firstname);
         user.setLastname(lastname);
+        user.setEnabled(enabled);
 
         return user;
     }

@@ -73,7 +73,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<context>ROOT</context>
+							<context>${project.build.finalName}</context>
 							<tomeeClassifier>microprofile</tomeeClassifier>
 							<tomeeHttpPort>8081</tomeeHttpPort>
 							<tomeeShutdownPort>8006</tomeeShutdownPort>
@@ -89,7 +89,6 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-usermanagement-client</artifactId>
@@ -174,6 +173,54 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-mp-client</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- version should match keycloak server version -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<version>11.0.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-multipart-provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-jackson2-provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-jaxb-provider</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.config</groupId>
+			<artifactId>geronimo-config-impl</artifactId>
+			<version>1.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>2.0.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito2</artifactId>
+			<version>2.0.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.konghq</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>3.11.10</version>
+			<classifier>standalone</classifier>
 		</dependency>
 	</dependencies>
 </project>
