@@ -46,4 +46,13 @@ public class Permission extends io.radien.ms.permissionmanagement.client.entitie
 		return super.getName();
 	}
 
+	@OneToOne(targetEntity = io.radien.ms.permissionmanagement.model.Action.class)
+	@JoinColumn(name = "ACTION_ID")
+	public Action getAction() {
+		return (Action) super.getAction();
+	}
+
+	public void setAction(Action a) {
+		super.setAction(a);
+	}
 }

@@ -52,31 +52,30 @@ public class ActionFactory {
      * Converts a JSONObject to a SystemAction object Used by the Application
      * DataInit to seed Data in the database
      *
-     * @param action the JSONObject to convert
+     * @param actionAsJsonObject the JSONObject to convert
      * @return the SystemAction object
      */
-    public static Action convert(JsonObject action) {
-        Long id = FactoryUtilService.getLongFromJson("id", action);
-        String name = FactoryUtilService.getStringFromJson("name", action);
-        Long createAction = FactoryUtilService.getLongFromJson("createUser", action);
-        Long updateAction = FactoryUtilService.getLongFromJson("lastUpdateUser", action);
-        String actionTypeAsString = FactoryUtilService.getStringFromJson("type", action);
-        Action perm = new Action();
-        perm.setId(id);
-        perm.setName(name);
-        perm.setCreateUser(createAction);
-        perm.setLastUpdateUser(updateAction);
-        perm.setCreateDate(new Date());
-        perm.setLastUpdate(new Date());
+    public static Action convert(JsonObject actionAsJsonObject) {
+        Long id = FactoryUtilService.getLongFromJson("id", actionAsJsonObject);
+        String name = FactoryUtilService.getStringFromJson("name", actionAsJsonObject);
+        Long createAction = FactoryUtilService.getLongFromJson("createUser", actionAsJsonObject);
+        Long updateAction = FactoryUtilService.getLongFromJson("lastUpdateUser", actionAsJsonObject);
+        String actionTypeAsString = FactoryUtilService.getStringFromJson("type", actionAsJsonObject);
+        Action action = new Action();
+        action.setId(id);
+        action.setName(name);
+        action.setCreateUser(createAction);
+        action.setLastUpdateUser(updateAction);
+        action.setCreateDate(new Date());
+        action.setLastUpdate(new Date());
 
         if (actionTypeAsString != null) {
             ActionType type = ActionType.getByName(actionTypeAsString);
             if (type == null)
                 throw new IllegalStateException("Unknown action type");
-            perm.setActionType(type);
+            action.setActionType(type);
         }
-
-        return perm;
+        return action;
     }
 
     /**

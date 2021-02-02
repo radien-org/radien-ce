@@ -15,15 +15,18 @@
  */
 package io.radien.ms.permissionmanagement.legacy;
 
+import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.model.user.SystemUser;
-import io.radien.ms.permissionmanagement.client.util.FactoryUtilService;
+import io.radien.api.util.FactoryUtilService;
+import io.radien.ms.permissionmanagement.client.entities.ActionType;
+import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.Permission;
 
 import javax.enterprise.context.RequestScoped;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import java.util.Date;
 
 /**
@@ -40,13 +43,14 @@ public class PermissionFactory {
      * @param name description for the permission
      * @return a User object to be used
      */
-    public static Permission create(String name, Long createdUser) {
+    public static Permission create(String name, Action action, Long createdUser) {
         Permission p = new Permission();
         p.setName(name);
         p.setCreateUser(createdUser);
         Date now = new Date();
         p.setLastUpdate(now);
         p.setCreateDate(now);
+        p.setAction(action);
         return p;
     }
 
@@ -57,7 +61,6 @@ public class PermissionFactory {
      * @param permission the JSONObject to convert
      * @return the SystemUserObject
      */
-    //TODO: Complete the object conversion fields missing
     public static Permission convert(JsonObject permission) {
         Long id = FactoryUtilService.getLongFromJson("id", permission);
         String name = FactoryUtilService.getStringFromJson("name", permission);
@@ -71,7 +74,34 @@ public class PermissionFactory {
         p.setLastUpdate(new Date());
         p.setCreateUser(createUser);
         p.setLastUpdateUser(lastUpdateUser);
+
+        JsonValue jsonValue = permission.get("action");
+        if (jsonValue != null && JsonValue.ValueType.OBJECT == jsonValue.getValueType()) {
+            p.setAction(createActionFromJson(jsonValue.asJsonObject()));
+        }
         return p;
+    }
+
+    private static Action createActionFromJson(JsonObject actionAsJsonObject) {
+        Long id = FactoryUtilService.getLongFromJson("id", actionAsJsonObject);
+        String name = FactoryUtilService.getStringFromJson("name", actionAsJsonObject);
+        Long createAction = FactoryUtilService.getLongFromJson("createUser", actionAsJsonObject);
+        Long updateAction = FactoryUtilService.getLongFromJson("lastUpdateUser", actionAsJsonObject);
+        String actionTypeAsString = FactoryUtilService.getStringFromJson("type", actionAsJsonObject);
+
+        Action action = new Action();
+        action.setId(id);
+        action.setName(name);
+        action.setCreateUser(createAction);
+        action.setLastUpdateUser(updateAction);
+
+        if (actionTypeAsString != null) {
+            ActionType type = ActionType.getByName(actionTypeAsString);
+            if (type == null)
+                throw new IllegalStateException("Unknown action type");
+            action.setActionType(type);
+        }
+        return action;
     }
 
     /**
@@ -86,6 +116,21 @@ public class PermissionFactory {
         FactoryUtilService.addValue(builder, "name", permission.getName());
         FactoryUtilService.addValueLong(builder, "createUser", permission.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", permission.getLastUpdateUser());
+        if (permission.getAction() != null) {
+            builder.add("action", convertActionToJson(permission.getAction()));
+        } else {
+            builder.addNull("action");
+        }
         return  builder.build();
+    }
+
+    private static JsonObject convertActionToJson(SystemAction sa) {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueLong(builder, "id", sa.getId());
+        FactoryUtilService.addValue(builder, "name", sa.getName());
+        FactoryUtilService.addValueLong(builder, "createUser", sa.getCreateUser());
+        FactoryUtilService.addValueLong(builder, "lastUpdateUser", sa.getLastUpdateUser());
+        FactoryUtilService.addValue(builder, "type", sa.getActionType());
+        return builder.build();
     }
 }

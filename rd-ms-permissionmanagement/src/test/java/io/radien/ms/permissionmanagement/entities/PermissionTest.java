@@ -15,7 +15,11 @@
  */
 package io.radien.ms.permissionmanagement.entities;
 
+import io.radien.api.model.permission.SystemAction;
+import io.radien.ms.permissionmanagement.client.entities.ActionType;
+import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
+import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.Permission;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -24,39 +28,58 @@ import java.util.Date;
 
 public class PermissionTest extends TestCase {
 
-    Permission user;
+    Permission permission;
+    Action action;
     private final Date terminationDate = new Date();
 
     public PermissionTest() {
-        user = PermissionFactory.create("testPermissionName", 3L);
-        user.setId(2L);
+        action = ActionFactory.create("Create Contract", ActionType.EXECUTION, 3l);
+        action.setId(33L);
+        permission = PermissionFactory.create("testPermissionName", action, 3L);
+        permission.setId(2L);
     }
 
     @Test
     public void testGetId() {
-        assertNotNull(user.getId());
-        assertEquals((Long) 2L, user.getId());
+        assertNotNull(permission.getId());
+        assertEquals((Long) 2L, permission.getId());
     }
 
     @Test
     public void testSetId() {
-        user.setId(4L);
+        permission.setId(4L);
 
-        assertNotNull(user.getId());
-        assertEquals((Long) 4L, user.getId());
+        assertNotNull(permission.getId());
+        assertEquals((Long) 4L, permission.getId());
     }
 
     @Test
     public void testGetName() {
-        assertNotNull(user.getName());
-        assertEquals("testPermissionName", user.getName());
+        assertNotNull(permission.getName());
+        assertEquals("testPermissionName", permission.getName());
     }
 
     @Test
     public void testSetName() {
-        user.setName("permTestRefactored");
-        assertNotNull(user.getName());
-        assertEquals("permTestRefactored", user.getName());
+        permission.setName("permTestRefactored");
+        assertNotNull(permission.getName());
+        assertEquals("permTestRefactored", permission.getName());
+    }
+
+    @Test
+    public void testGetAction() {
+        assertNotNull(permission.getAction());
+        assertEquals(permission.getAction().getName(), "Create Contract");
+        assertEquals(permission.getAction().getActionType(), ActionType.EXECUTION);
+    }
+
+    @Test
+    public void testSetAction() {
+        SystemAction newAction = ActionFactory.create("Update Contract", ActionType.READ, null);
+        permission.setAction(newAction);
+        assertNotNull(permission.getAction());
+        assertEquals(permission.getAction().getName(), "Update Contract");
+        assertEquals(permission.getAction().getActionType(), ActionType.READ);
     }
 
 }
