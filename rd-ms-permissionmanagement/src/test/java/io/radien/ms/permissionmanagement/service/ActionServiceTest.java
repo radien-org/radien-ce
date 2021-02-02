@@ -357,8 +357,12 @@ public class ActionServiceTest {
 
         assertEquals(4, actions.size());
 
-        actions = actionServiceAccess.getActions(
-                new ActionSearchFilter("aabac", ActionType.READ, false,true));
+        ActionSearchFilter actionSearchFilter = new ActionSearchFilter();
+        actionSearchFilter.setName("aabac");
+        actionSearchFilter.setActionType(ActionType.READ);
+        actionSearchFilter.setExact(false);
+        actionSearchFilter.setLogicConjunction(true);
+        actions = actionServiceAccess.getActions(actionSearchFilter);
 
         assertEquals(2, actions.size());
 
