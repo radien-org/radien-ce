@@ -65,7 +65,7 @@ public class ActionController {
 
 	@GET
 	@Path("find")
-	public Response getPermissions(@QueryParam("name") String name,
+	public Response getActions(@QueryParam("name") String name,
 								   @QueryParam("actionType") String actionType,
 								   @DefaultValue("true") @QueryParam("isExact") boolean isExact,
 								   @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction) {
