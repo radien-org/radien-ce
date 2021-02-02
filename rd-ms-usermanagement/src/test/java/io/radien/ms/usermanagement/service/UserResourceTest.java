@@ -1,11 +1,15 @@
 package io.radien.ms.usermanagement.service;
 
 
+import io.radien.api.service.user.UserServiceAccess;
+
+
 import io.radien.exception.SystemException;
 
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
+
 
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -37,6 +41,8 @@ public class UserResourceTest {
     @InjectMocks
     UserResource userResource;
 
+    @Mock
+    UserServiceAccess userServiceAccess;
     @Mock
     UserBusinessService userBusinessService;
 

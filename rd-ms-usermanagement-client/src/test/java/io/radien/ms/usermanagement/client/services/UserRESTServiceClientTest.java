@@ -36,9 +36,11 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.OAFAccess;
+
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
+
 import io.radien.api.util.FactoryUtilService;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
@@ -172,8 +174,10 @@ public class UserRESTServiceClientTest {
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(new ExtensionException(new Exception()));
         try {
             target.getUserBySub("a");
+
         }catch (SystemException es){
             if (es.getMessage().contains(ExtensionException.class.getName())) {
+
                 success = true;
             }
         }
@@ -190,8 +194,9 @@ public class UserRESTServiceClientTest {
 
         try {
             target.getUserBySub(a);
-        }catch (SystemException es){
-            if (es.getMessage().contains(ProcessingException.class.getName())) {
+
+        }catch (SystemException se){
+            if (se.getMessage().contains(ProcessingException.class.getName())) {
                 success = true;
             }
         }
@@ -202,14 +207,34 @@ public class UserRESTServiceClientTest {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        boolean success = false;
+        try {
+			assertTrue(target.create(new User()));
+		} catch (SystemException e) {
+			success = true;
+        }
+        assertFalse(success);
+
         assertTrue(target.create(new User()));
+
     }
     @Test
     public void testCreateFail() throws MalformedURLException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        boolean success = false;
+        try {
+			assertFalse(target.create(new User()));
+		} catch (SystemException e) {
+			 success = true;
+        }
+        assertFalse(success);
+
         assertFalse(target.create(new User()));
+
     }
 
     @Test
@@ -220,11 +245,12 @@ public class UserRESTServiceClientTest {
         boolean success = false;
         try {
             target.create(new User());
-        }catch (ProcessingException | SystemException es){
-            success = true;
+        }catch (SystemException se){
+            if (se.getMessage().contains(ProcessingException.class.getName())) {
+                success = true;
+            }
         }
         assertTrue(success);
-
     }
 
     @Test
@@ -293,5 +319,6 @@ public class UserRESTServiceClientTest {
         Optional<BatchSummary> opt = target.create(userList);
         assertFalse(opt.isPresent());
     }
+
 
 }
