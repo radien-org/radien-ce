@@ -23,6 +23,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ActionFactoryTest {
 
@@ -78,5 +79,25 @@ public class ActionFactoryTest {
     public void testConvertToJsonObject() {
         JsonObject constructedNewJson = ActionFactory.convertToJsonObject(action);
         assertEquals(json.toString(), constructedNewJson.toString());
+    }
+
+    @Test
+    public void testConvertUsingInvalidActionType() {
+        String invalidActionTypeName = "CRUD";
+        JsonObject jsonObject = Json.createObjectBuilder().
+            addNull("id").
+            add("name", "action-ccc").
+            add("createUser", 2L).
+            addNull("lastUpdateUser").
+            add("type", invalidActionTypeName).build();
+
+        boolean raiseException = false;
+        try {
+            ActionFactory.convert(jsonObject);
+        }
+        catch (Exception e) {
+            raiseException = true;
+        }
+        assertTrue(raiseException);
     }
 }

@@ -108,6 +108,13 @@ public class ActionControllerTest {
         assertEquals(500,response.getStatus());
     }
 
+    @Test
+    public void testGetPermissionInformingInvalidType() {
+        Response response = actionController.getActions("action-name",
+                "UNKNOWN-TYPE", true,true);
+        assertEquals(500,response.getStatus());
+    }
+
     /**
      * Deletion of the record with success, should return a 200 code message
      */

@@ -1,8 +1,10 @@
 package io.radien.ms.permissionmanagement.client.providers;
 
+import io.radien.api.model.permission.SystemAction;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.services.ActionFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +25,21 @@ public class ActionMessageBodyReaderTest {
     public void testIsReadable() {
         Assert.assertFalse(reader.isReadable(null, null, null, null));
         Assert.assertTrue(reader.isReadable(Action.class, null, null, null));
+    }
+
+    @Test
+    public void testReadUnknownActionType() throws IOException {
+        String json = "{\"id\": 3, \"name\": \"action-2\", \"type\": \"READ-WWW\"}";
+        InputStream inputStream = new ByteArrayInputStream(json.getBytes());
+        boolean foundIssue = false;
+        try {
+            SystemAction sa = reader.readFrom(Action.class,
+                    Action.class, null, null, null, inputStream);
+        }
+        catch(Exception e) {
+            foundIssue = true;
+        }
+        Assert.assertTrue(foundIssue);
     }
 
     @Test

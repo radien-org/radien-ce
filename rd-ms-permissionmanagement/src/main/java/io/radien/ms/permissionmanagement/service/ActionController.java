@@ -18,6 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.client.entities.ActionType;
@@ -72,9 +73,11 @@ public class ActionController {
 
 		try {
 			ActionType type = ActionType.getByName(actionType);
-			SystemActionSearchFilter filter = new ActionSearchFilter(name,
-					type, isExact, isLogicalConjunction);
-			return Response.ok(actionServiceAccess.getActions(filter)).build();
+			if (type == null) {
+				throw new SystemException("Unknown Action Type");
+			}
+			return Response.ok(actionServiceAccess.getActions(new ActionSearchFilter(name,
+					type, isExact, isLogicalConjunction))).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
