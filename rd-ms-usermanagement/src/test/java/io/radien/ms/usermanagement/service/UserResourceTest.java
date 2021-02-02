@@ -114,7 +114,7 @@ public class UserResourceTest {
      */
     @Test
     public void testGetUsersByException() {
-        doThrow(new RuntimeException()).when(userServiceAccess).getUsers(any());
+        doThrow(new RuntimeException()).when(userBusinessService).getUsers(any());
         Response response = userResource.getUsers("subj","email@email.pt","logon",true,true);
         assertEquals(500,response.getStatus());
     }
