@@ -21,6 +21,8 @@
 		<module>rd-ms-ecm</module>
 		<module>rd-ms-usermanagement</module>
 		<module>rd-ms-usermanagement-client</module>
+		<module>rd-ms-contractmanagement</module>
+		<module>rd-ms-contractmanagement-client</module>
 		<module>rd-aws-utils</module>
 		<module>rd-ms-permissionmanagement-client</module>
 		<module>rd-ms-permissionmanagement</module>
@@ -153,10 +155,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.radien</groupId>
+
+				<artifactId>rd-ms-contractmanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+    	<dependency>
+
 				<artifactId>rd-ms-permissionmanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
+
 				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-rolemanagement-client</artifactId>
 				<version>${project.parent.version}</version>
