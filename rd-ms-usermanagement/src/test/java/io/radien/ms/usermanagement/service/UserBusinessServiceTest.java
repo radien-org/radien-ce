@@ -125,8 +125,8 @@ public class UserBusinessServiceTest extends TestCase {
 
     //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
 
-    @Test
-    public void testSaveCreationTrue() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+//    @Test
+//    public void testSaveCreationTrue() throws UniquenessConstraintException, UserNotFoundException, SystemException {
 //        User u = UserFactory.create("a","b","lCreation","s","eCreation",1L);
 //
 //        //TODO: Test implementation, keycloak null, check history 16:04
@@ -144,6 +144,7 @@ public class UserBusinessServiceTest extends TestCase {
 //    }
 
 
+    @Test
     public void testSaveBatch() {
         List<io.radien.ms.usermanagement.entities.User> users = new ArrayList<>();
         int numberOfElementsToInsert = 100;

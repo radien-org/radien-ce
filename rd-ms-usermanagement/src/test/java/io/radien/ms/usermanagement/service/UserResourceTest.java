@@ -1,36 +1,33 @@
 package io.radien.ms.usermanagement.service;
 
 
-import io.radien.api.service.user.UserServiceAccess;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
-
-import io.radien.exception.SystemException;
-
-import io.radien.api.service.batch.BatchSummary;
-import io.radien.api.service.batch.DataIssue;
-import io.radien.api.service.user.UserServiceAccess;
-
-
-import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
-import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import javax.ws.rs.core.Response;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import io.radien.api.service.batch.BatchSummary;
+import io.radien.api.service.batch.DataIssue;
+import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserNotFoundException;
+import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 
 /**
  * @author Nuno Santana
@@ -46,8 +43,6 @@ public class UserResourceTest {
     @Mock
     UserBusinessService userBusinessService;
 
-    @Mock
-    UserServiceAccess userServiceAccess;
 
     @Before
     public void before(){
