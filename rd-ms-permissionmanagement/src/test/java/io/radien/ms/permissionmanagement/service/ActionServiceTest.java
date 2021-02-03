@@ -42,19 +42,11 @@ import static org.junit.Assert.*;
  */
 public class ActionServiceTest {
 
-    Properties p;
     ActionServiceAccess actionServiceAccess;
     SystemAction uTest;
 
     public ActionServiceTest() throws Exception {
-        p = new Properties();
-        p.put("appframeDatabase", "new://Resource?type=DataSource");
-        p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
-        p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
-        p.put("appframeDatabase.userName", "sa");
-        p.put("appframeDatabase.password", "");
-
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
 
         actionServiceAccess = (ActionServiceAccess) 
                 context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
@@ -97,9 +89,12 @@ public class ActionServiceTest {
      * Tested methods: void save(Action Action)
      */
     @Test
-    public void testAddDuplicatedName() {
-        Action u = ActionFactory.create("actionName", ActionType.LIST,2L);
-        Exception exception = assertThrows(UniquenessConstraintException.class, () -> actionServiceAccess.save(u));
+    public void testAddDuplicatedName() throws UniquenessConstraintException {
+        Action u = ActionFactory.create("actionNameXXX", ActionType.LIST,2L);
+        actionServiceAccess.save(u);
+
+        Action u2 = ActionFactory.create("actionNameXXX", ActionType.LIST,2L);
+        Exception exception = assertThrows(UniquenessConstraintException.class, () -> actionServiceAccess.save(u2));
         String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
                 " one resource with the same value for the field: Name\"}";
         String actualMessage = exception.getMessage();
@@ -360,6 +355,11 @@ public class ActionServiceTest {
 
         List<? extends SystemAction> actions = actionServiceAccess.getActions(
                 new ActionSearchFilter("aabac", ActionType.READ, false,false));
+
+
+        for (SystemAction sa:actions) {
+            System.out.println(sa.getName() + " " + sa.getType());
+        }
 
         assertEquals(4, actions.size());
 

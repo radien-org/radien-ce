@@ -52,21 +52,13 @@ import static org.junit.Assert.*;
  */
 public class PermissionServiceTest {
 
-    Properties p;
     PermissionServiceAccess permissionServiceAccess;
     ActionServiceAccess actionServiceAccess;
     SystemPermission pTest;
     SystemAction aTest;
 
     public PermissionServiceTest() throws Exception {
-        p = new Properties();
-        p.put("appframeDatabase", "new://Resource?type=DataSource");
-        p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
-        p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
-        p.put("appframeDatabase.userName", "sa");
-        p.put("appframeDatabase.password", "");
-
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
 
         permissionServiceAccess = (PermissionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");
         actionServiceAccess= (ActionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//ActionService");

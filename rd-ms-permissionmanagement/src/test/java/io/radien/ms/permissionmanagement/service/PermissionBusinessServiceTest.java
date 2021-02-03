@@ -13,7 +13,9 @@ import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.Permission;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -21,6 +23,8 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class PermissionBusinessServiceTest {
 
@@ -32,14 +36,7 @@ public class PermissionBusinessServiceTest {
     SystemAction action;
 
     public PermissionBusinessServiceTest() throws NamingException, UniquenessConstraintException {
-        Properties p = new Properties();
-        p.put("appframeDatabase", "new://Resource?type=DataSource");
-        p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
-        p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien-permission-association-with-action");
-        p.put("appframeDatabase.userName", "sa");
-        p.put("appframeDatabase.password", "");
-
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
 
         permissionServiceAccess = (PermissionServiceAccess)
                 context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");
@@ -48,32 +45,43 @@ public class PermissionBusinessServiceTest {
         permissionBusinessService = (PermissionBusinessService)
                 context.lookup("java:global/rd-ms-permissionmanagement//PermissionBusinessService");
 
+    }
+
+    @Before
+    public void init() throws UniquenessConstraintException {
+
+        action = new Action();
+        action.setName("remove-user-from-tenant");
+        actionServiceAccess.save(action);
         List<? extends SystemAction> actions = actionServiceAccess.getActions(new ActionSearchFilter(
                 "remove-user-from-tenant", null, true, false));
 
-        if (actions.isEmpty()) {
-            action = new Action();
-            action.setType(ActionType.READ);
-            action.setName("remove-user-from-tenant");
-            actionServiceAccess.save(action);
-            actions = actionServiceAccess.getActions(new ActionSearchFilter(
-                    "remove-user-from-tenant", null, true, false));
-        }
-
         action = actions.get(0);
+
+        permission = new Permission();
+        permission.setName("removing-asset");
+        permissionServiceAccess.save(permission);
 
         List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(new PermissionSearchFilter(
                 "removing-asset", true, false));
 
-        if (permissions.isEmpty()) {
-            permission = new Permission();
-            permission.setName("removing-asset");
-            permissionServiceAccess.save(permission);
-            permissions = permissionServiceAccess.getPermissions(new PermissionSearchFilter(
-                    "removing-asset", true, false));
+        permission = permissions.get(0);
+    }
+
+    @After
+    public void tear() {
+
+        Page<SystemPermission> pagePermissions = permissionServiceAccess.getAll(null, 1, 1000, null, true);
+
+        if (pagePermissions.getResults().size() > 0) {
+            permissionServiceAccess.delete(pagePermissions.getResults().stream().map(p -> p.getId()).collect(Collectors.toList()));
         }
 
-        permission = permissions.get(0);
+        Page<SystemAction> pageActions = actionServiceAccess.getAll(null, 1, 1000, null, true);
+
+        if (pageActions.getResults().size() > 0) {
+            actionServiceAccess.delete(pageActions.getResults().stream().map(a -> a.getId()).collect(Collectors.toList()));
+        }
     }
 
     @Test
