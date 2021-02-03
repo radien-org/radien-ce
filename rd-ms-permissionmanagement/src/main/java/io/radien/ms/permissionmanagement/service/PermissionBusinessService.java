@@ -27,62 +27,42 @@ public class PermissionBusinessService {
     @Inject
     private ActionServiceAccess actionServiceAccess;
 
+    private final String BASE_MSG = "%s not found for %n";
+
     public AssociationStatus associate(Long permissionId, Long actionId) {
-
-        SystemPermission sp = null;
         try {
-            sp = permissionServiceAccess.get(permissionId);
+            SystemPermission sp = permissionServiceAccess.get(permissionId);
             if (sp == null) {
-                throw new PermissionNotFoundException("Permission not found for " + permissionId);
+                throw new PermissionNotFoundException(String.format(BASE_MSG, "Permission", permissionId));
             }
-        } catch (PermissionNotFoundException e) {
-            this.log.error("error associating permission with action", e);
-            return new AssociationStatus(false, "Permission Not Found");
-        }
 
-        SystemAction sa = null;
-        try {
-            sa = actionServiceAccess.get(actionId);
+            SystemAction sa = actionServiceAccess.get(actionId);
             if (sa == null) {
-                throw new ActionNotFoundException("Action not found for " + actionId);
+                throw new ActionNotFoundException(String.format(BASE_MSG, "Action", actionId));
             }
-        }
-        catch (ActionNotFoundException a) {
-            this.log.error("error associating permission with action", a);
-            return new AssociationStatus(false, "Action Not Found");
-        }
 
-        try {
             sp.setAction(sa);
             permissionServiceAccess.save(sp);
-        } catch (UniquenessConstraintException e) {
-            this.log.error("error associating permission with action", e);
-            return new AssociationStatus(false, "Error associating Permission and action");
         }
-
+        catch (ActionNotFoundException | PermissionNotFoundException | UniquenessConstraintException | RuntimeException e) {
+            this.log.error("error associating permission with action", e);
+            return new AssociationStatus(false, e.getMessage());
+        }
         return new AssociationStatus();
     }
 
-    public AssociationStatus dissociation(long permissionId) {
-        SystemPermission sp = null;
+    public AssociationStatus dissociation(Long permissionId) {
         try {
-            sp = permissionServiceAccess.get(permissionId);
+            SystemPermission sp = permissionServiceAccess.get(permissionId);
             if (sp == null) {
-                throw new PermissionNotFoundException("Permission not found for " + permissionId);
+                throw new PermissionNotFoundException(String.format(BASE_MSG, "Permission", permissionId));
             }
-        } catch (PermissionNotFoundException e) {
-            this.log.error("error associating permission with action", e);
-            return new AssociationStatus(false, "Permission Not Found");
-        }
-
-        try {
             sp.setAction(null);
             permissionServiceAccess.save(sp);
-        } catch (UniquenessConstraintException e) {
-            this.log.error("error dissociating permission with action", e);
-            return new AssociationStatus(false, "Error associating Permission and action");
+        } catch (PermissionNotFoundException | UniquenessConstraintException | RuntimeException e) {
+            this.log.error("error associating permission with action", e);
+            return new AssociationStatus(false, e.getMessage());
         }
-
         return new AssociationStatus();
     }
 }

@@ -106,4 +106,28 @@ public class PermissionBusinessServiceTest {
         Assert.assertNull(sp.getAction());
     }
 
+    @Test
+    public void testAssociatingNotExistentPermission() {
+        AssociationStatus associationStatus =
+                this.permissionBusinessService.associate(100000L, action.getId());
+        Assert.assertFalse(associationStatus.isOK());
+        Assert.assertTrue(associationStatus.getMessage().contains("Permission not found"));
+    }
+
+    @Test
+    public void testAssociatingNotExistentAction() {
+        AssociationStatus associationStatus =
+                this.permissionBusinessService.associate(permission.getId(), 111111L);
+        Assert.assertFalse(associationStatus.isOK());
+        Assert.assertTrue(associationStatus.getMessage().contains("Action not found"));
+    }
+
+    @Test
+    public void testDissociatingNotExistentPermission() {
+        AssociationStatus associationStatus =
+                this.permissionBusinessService.dissociation(100000L);
+        Assert.assertFalse(associationStatus.isOK());
+        Assert.assertTrue(associationStatus.getMessage().contains("Permission not found"));
+    }
+
 }

@@ -84,6 +84,12 @@ public class ActionServiceTest {
         assertNotNull(result);
     }
 
+    @Test
+    public void testGetNotExistentAction() throws ActionNotFoundException {
+        SystemAction result = actionServiceAccess.get(111111111L);
+        assertNull(result);
+    }
+
     /**
      * Add Action test with duplicated Name.
      * Will create and save the Action, with an already existent name.

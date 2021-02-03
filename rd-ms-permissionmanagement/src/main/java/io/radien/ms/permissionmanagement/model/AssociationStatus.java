@@ -13,10 +13,6 @@ public class AssociationStatus {
         this.message = message;
     }
 
-    public AssociationStatus(boolean status) {
-        this.successful = status;
-    }
-
     public boolean isOK() {
         return successful;
     }
