@@ -11,10 +11,7 @@ import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.model.Action;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +47,7 @@ public class ActionService implements ActionServiceAccess {
      */
     @Override
     public SystemAction get(Long actionId)  {
-        return emf.createEntityManager().find(Action.class, actionId);
+        return getEntityManager().find(Action.class, actionId);
     }
 
     /**
@@ -65,7 +62,7 @@ public class ActionService implements ActionServiceAccess {
             return results;
         }
 
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
         Root<Action> ActionRoot = criteriaQuery.from(Action.class);
@@ -91,7 +88,7 @@ public class ActionService implements ActionServiceAccess {
     public Page<SystemAction> getAll(String search, int pageNo, int pageSize,
                                      List<String> sortBy,
                                      boolean isAscending) {
-        EntityManager em = this.emf.createEntityManager();
+        EntityManager em = this.getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
         Root<Action> actionRoot = criteriaQuery.from(Action.class);
@@ -135,7 +132,7 @@ public class ActionService implements ActionServiceAccess {
     @Override
     public void save(SystemAction action) throws UniquenessConstraintException {
         List<Action> alreadyExistentRecords = searchDuplicatedName(action);
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getEntityManager();
         if(action.getId() == null) {
             if(alreadyExistentRecords.isEmpty()) {
                 em.persist(action);
@@ -156,7 +153,7 @@ public class ActionService implements ActionServiceAccess {
      */
     private List<Action> searchDuplicatedName(SystemAction action) {
         List<Action> alreadyExistentRecords;
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
         Root<Action> ActionRoot = criteriaQuery.from(Action.class);
@@ -193,7 +190,7 @@ public class ActionService implements ActionServiceAccess {
      */
     @Override
     public void delete(Long actionId) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<Action> criteriaDelete = cb.createCriteriaDelete(Action.class);
         Root<Action> ActionRoot = criteriaDelete.from(Action.class);
@@ -208,7 +205,7 @@ public class ActionService implements ActionServiceAccess {
      */
     @Override
     public void delete(Collection<Long> actionIds) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<Action> criteriaDelete = cb.createCriteriaDelete(Action.class);
         Root<Action> actionRoot = criteriaDelete.from(Action.class);
@@ -223,7 +220,7 @@ public class ActionService implements ActionServiceAccess {
      */
     @Override
     public List<? extends SystemAction> getActions(SystemActionSearchFilter filter) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
         Root<Action> ActionRoot = criteriaQuery.from(Action.class);
@@ -288,5 +285,8 @@ public class ActionService implements ActionServiceAccess {
         }
         return global;
     }
-
+    
+    protected EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
 }
