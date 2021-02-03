@@ -16,14 +16,15 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.ms.permissionmanagement.client.services.ActionFactory;
+import io.radien.ms.permissionmanagement.client.util.ActionModelMapper;
 import org.junit.Test;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class ActionFactoryTest {
 
@@ -99,5 +100,24 @@ public class ActionFactoryTest {
             raiseException = true;
         }
         assertTrue(raiseException);
+    }
+
+    @Test
+    public void testConvertingArray() {
+
+        List<Action> originalCollection = new ArrayList<>();
+        originalCollection.add(
+                ActionFactory.create("perm1", ActionType.READ, 0L));
+        originalCollection.add(
+                ActionFactory.create("perm2", ActionType.EXECUTION, 0L));
+        originalCollection.add(
+                ActionFactory.create("perm3", ActionType.WRITE, 0L));
+
+        JsonArray array = ActionModelMapper.map(originalCollection);
+
+        List<Action> rebuild = ActionFactory.convert(array);
+        assertNotNull(rebuild);
+        assertFalse(rebuild.isEmpty());
+        assertEquals(originalCollection.size(), rebuild.size());
     }
 }

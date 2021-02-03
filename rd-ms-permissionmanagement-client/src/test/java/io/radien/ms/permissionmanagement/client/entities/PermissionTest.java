@@ -54,4 +54,29 @@ public class PermissionTest {
         permission.setName("permission-test");
         assertEquals("permission-test", permission.getName());
     }
+
+    @Test
+    public void testConstruct() {
+        Action originalAction = new Action();
+        originalAction.setId(11L);
+        originalAction.setName("originalAction");
+        originalAction.setType(ActionType.WRITE);
+
+        Permission originalPermission = new Permission();
+        originalPermission.setAction(originalAction);
+        originalPermission.setId(111L);
+        originalPermission.setName("originalPermission");
+
+        Permission newPermission = new Permission(originalPermission);
+
+        assertNotNull(newPermission.getAction());
+        assertNotNull(newPermission.getName());
+        assertNotNull(newPermission.getId());
+
+        assertEquals(newPermission.getId(), originalPermission.getId());
+        assertEquals(newPermission.getName(), originalPermission.getName());
+        assertEquals(newPermission.getAction().getId(), originalPermission.getAction().getId());
+        assertEquals(newPermission.getAction().getName(), originalPermission.getAction().getName());
+        assertEquals(newPermission.getAction().getType(), originalPermission.getAction().getType());
+    }
 }

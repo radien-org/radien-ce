@@ -19,8 +19,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 public class ActionTest {
 
@@ -64,5 +63,22 @@ public class ActionTest {
     public void setActionType() {
         action.setType(ActionType.READ);
         assertEquals(action.getType(), ActionType.READ);
+    }
+
+    @Test
+    public void testConstructor() {
+        Action original = new Action();
+        original.setId(11L);
+        original.setName("original");
+        original.setType(ActionType.WRITE);
+
+        Action newAction = new Action(original);
+        assertNotNull(newAction.getId());
+        assertNotNull(newAction.getName());
+        assertNotNull(newAction.getType());
+
+        assertEquals(newAction.getId(), original.getId());
+        assertEquals(newAction.getName(), original.getName());
+        assertEquals(newAction.getType(), original.getType());
     }
 }

@@ -229,4 +229,21 @@ public class PermissionRESTServiceClientTest {
 
     }
 
+    @Test
+    public void testCommunicationFail() throws MalformedURLException {
+        MalformedURLException malformedURLException =
+                new MalformedURLException("Error accessing permission microservice");
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                thenThrow(malformedURLException);
+        SystemException se = assertThrows(SystemException.class, () -> target.create(new Permission()));
+        assertNotNull(se);
+        assertTrue(se.getMessage().contains(malformedURLException.getMessage()));
+    }
+
+    @Test
+    public void testAccessingOAF() {
+        OAFAccess oafAccess = target.getOAF();
+        assertNotNull(oafAccess);
+    }
+
 }
