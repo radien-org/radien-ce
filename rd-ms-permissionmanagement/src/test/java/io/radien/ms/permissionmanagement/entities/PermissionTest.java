@@ -16,12 +16,14 @@
 package io.radien.ms.permissionmanagement.entities;
 
 import io.radien.api.model.permission.SystemAction;
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.Permission;
 import junit.framework.TestCase;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
@@ -80,6 +82,30 @@ public class PermissionTest extends TestCase {
         assertNotNull(permission.getAction());
         assertEquals(permission.getAction().getName(), "Update Contract");
         assertEquals(permission.getAction().getType(), ActionType.READ);
+    }
+
+    @Test
+    public void testConstructor() {
+        io.radien.ms.permissionmanagement.client.entities.Permission systemPermission =
+                new io.radien.ms.permissionmanagement.client.entities.Permission();
+
+        systemPermission.setId(11L);
+        systemPermission.setName("test");
+
+        SystemAction systemAction =
+                new io.radien.ms.permissionmanagement.client.entities.Action();
+
+        systemAction.setId(22L);
+        systemAction.setName("actionTest");
+        systemAction.setType(ActionType.READ);
+        systemPermission.setAction(systemAction);
+
+        SystemPermission permission2 = new Permission(systemPermission);
+
+        assertEquals(permission2.getId(), systemPermission.getId());
+        assertEquals(permission2.getAction().getId(), systemPermission.getAction().getId());
+        assertEquals(permission2.getAction().getName(), systemPermission.getAction().getName());
+        assertEquals(permission2.getAction().getType(), systemPermission.getAction().getType());
     }
 
 }

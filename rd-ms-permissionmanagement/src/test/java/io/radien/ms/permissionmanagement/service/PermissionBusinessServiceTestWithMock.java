@@ -27,6 +27,8 @@ import javax.naming.NamingException;
 import java.util.List;
 import java.util.Properties;
 
+import static org.junit.Assert.*;
+
 public class PermissionBusinessServiceTestWithMock {
 
     @Mock
@@ -57,23 +59,25 @@ public class PermissionBusinessServiceTestWithMock {
         Mockito.doThrow(new RuntimeException("persistence layer error")).
                 when(permissionServiceAccess).save(permission);
 
-        AssociationStatus status = permissionBusinessService.associate(permission.getId(), action.getId());
-        Assert.assertFalse(status.isOK());
-        Assert.assertTrue(status.getMessage().contains("persistence layer error"));
+        Exception exception =
+                assertThrows(Exception.class,
+                        () -> permissionBusinessService.associate(permission.getId(), action.getId()));
+        assertNotNull(exception);
+        assertTrue(exception.getMessage().contains("persistence layer error"));
     }
 
     @Test
     public void simulatingExceptionDuringSaveDissociation() throws PermissionNotFoundException, ActionNotFoundException, UniquenessConstraintException {
         Permission permission = new Permission();
         permission.setId(5L);
-
         Mockito.when(permissionServiceAccess.get(permission.getId())).thenReturn(permission);
-
         Mockito.doThrow(new RuntimeException("persistence layer error")).
                 when(permissionServiceAccess).save(permission);
-
-        AssociationStatus status = permissionBusinessService.dissociation(permission.getId());
-        Assert.assertFalse(status.isOK());
-        Assert.assertTrue(status.getMessage().contains("persistence layer error"));
+        Exception exception =
+                assertThrows(Exception.class,
+                        () -> permissionBusinessService.dissociation(permission.getId()));
+        assertNotNull(exception);
+        assertTrue(exception.getMessage().contains("persistence layer error"));
     }
+
 }

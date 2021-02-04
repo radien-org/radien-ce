@@ -85,7 +85,7 @@ public class PermissionBusinessServiceTest {
     }
 
     @Test
-    public void testAssociation() {
+    public void testAssociation() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
                 this.permissionBusinessService.associate(permission.getId(), action.getId());
         Assert.assertTrue(associationStatus.isOK());
@@ -100,7 +100,7 @@ public class PermissionBusinessServiceTest {
     }
 
     @Test
-    public void testDissociation() {
+    public void testDissociation() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
                 this.permissionBusinessService.dissociation(permission.getId());
         Assert.assertTrue(associationStatus.isOK());
@@ -115,7 +115,7 @@ public class PermissionBusinessServiceTest {
     }
 
     @Test
-    public void testAssociatingNotExistentPermission() {
+    public void testAssociatingNotExistentPermission() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
                 this.permissionBusinessService.associate(100000L, action.getId());
         Assert.assertFalse(associationStatus.isOK());
@@ -123,7 +123,7 @@ public class PermissionBusinessServiceTest {
     }
 
     @Test
-    public void testAssociatingNotExistentAction() {
+    public void testAssociatingNotExistentAction() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
                 this.permissionBusinessService.associate(permission.getId(), 111111L);
         Assert.assertFalse(associationStatus.isOK());
@@ -131,7 +131,7 @@ public class PermissionBusinessServiceTest {
     }
 
     @Test
-    public void testDissociatingNotExistentPermission() {
+    public void testDissociatingNotExistentPermission() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
                 this.permissionBusinessService.dissociation(100000L);
         Assert.assertFalse(associationStatus.isOK());

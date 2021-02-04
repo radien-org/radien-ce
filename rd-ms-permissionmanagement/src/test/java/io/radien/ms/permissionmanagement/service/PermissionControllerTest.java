@@ -138,14 +138,14 @@ public class PermissionControllerTest {
     }
 
     @Test
-    public void testSuccessfulAssociationWithAction() {
+    public void testSuccessfulAssociationWithAction() throws UniquenessConstraintException {
         when(permissionBusinessService.associate(any(), any())).thenReturn(new AssociationStatus());
         Response response = permissionResource.associate(11l, 12L);
         assertEquals(200,response.getStatus());
     }
 
     @Test
-    public void testUnsuccessfulAssociationWithAction() {
+    public void testUnsuccessfulAssociationWithAction() throws UniquenessConstraintException {
         when(permissionBusinessService.associate(any(), any())).thenReturn(
                 new AssociationStatus(false, "unsuccessful operation"));
         Response response = permissionResource.associate(11l, 12L);
@@ -155,7 +155,15 @@ public class PermissionControllerTest {
     }
 
     @Test
-    public void testSuccessfulDissociation() {
+    public void testUnsuccessfulAssociationByException() throws UniquenessConstraintException {
+        when(permissionBusinessService.associate(any(), any())).
+                thenThrow(new RuntimeException("unsuccessful operation"));
+        Response response = permissionResource.associate(11l, 12L);
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testSuccessfulDissociation() throws UniquenessConstraintException {
         Long permissionId = 11L;
         when(permissionBusinessService.dissociation(permissionId)).thenReturn(new AssociationStatus());
         Response response = permissionResource.dissociate(permissionId);
@@ -163,7 +171,16 @@ public class PermissionControllerTest {
     }
 
     @Test
-    public void testUnsuccessfulDissociation() {
+    public void testUnsuccessfulDissociation() throws UniquenessConstraintException {
+        Long permissionId = 11L;
+        when(permissionBusinessService.dissociation(permissionId)).thenThrow(
+                new RuntimeException("something happen"));
+        Response response = permissionResource.dissociate(permissionId);
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testUnsuccessfulDissociationByException() throws UniquenessConstraintException {
         AssociationStatus associationStatus = new AssociationStatus(false, "something happen...");
         Long permissionId = 11L;
         when(permissionBusinessService.dissociation(permissionId)).thenReturn(associationStatus);
@@ -172,8 +189,6 @@ public class PermissionControllerTest {
         assertEquals(response.getEntity().getClass(), String.class);
         assertEquals(response.getEntity().toString(), associationStatus.getMessage());
     }
-
-
 
     /**
      * Creation with error of a record. Should return a 400 code message Invalid Requested Exception
