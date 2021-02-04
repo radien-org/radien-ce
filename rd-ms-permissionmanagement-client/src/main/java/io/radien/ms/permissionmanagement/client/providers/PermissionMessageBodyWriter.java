@@ -33,7 +33,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author mawe
+ * @author n.carvalho
  *
  */
 @Provider

@@ -16,7 +16,6 @@
 package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.api.util.FactoryUtilService;
-import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 

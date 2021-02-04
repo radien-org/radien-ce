@@ -15,9 +15,9 @@
  */
 package io.radien.ms.permissionmanagement.client.providers;
 
-import io.radien.api.model.permission.SystemAction;
-import io.radien.ms.permissionmanagement.client.entities.Action;
-import io.radien.ms.permissionmanagement.client.util.ActionModelMapper;
+import io.radien.api.model.permission.SystemPermission;
+import io.radien.ms.permissionmanagement.client.entities.Permission;
+import io.radien.ms.permissionmanagement.client.util.PermissionModelMapper;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -32,17 +32,17 @@ import java.lang.reflect.Type;
 
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
-public class ActionMessageBodyReader implements MessageBodyReader<Action> {
+public class PermissionMessageBodyReader implements MessageBodyReader<Permission> {
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type != null && SystemAction.class.isAssignableFrom(type);
+        return type != null && SystemPermission.class.isAssignableFrom(type);
     }
 
     @Override
-    public Action readFrom(Class<Action> type, Type genericType,
+    public Permission readFrom(Class<Permission> type, Type genericType,
                                Annotation[] annotations, MediaType mediaType,
                                MultivaluedMap<String, String> httpHeaders,
                                InputStream entityStream) throws IOException, WebApplicationException {
-        return ActionModelMapper.map(entityStream);
+        return PermissionModelMapper.map(entityStream);
     }
 }

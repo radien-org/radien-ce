@@ -43,9 +43,7 @@ import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 
 /**
  *
- * @author Bruno Gama
- * @author Nuno Santana
- * @author Marco Weiland
+ * @author n.carvalho
  */
 @Stateless @Default
 public class PermissionRESTServiceClient implements PermissionRESTServiceAccess {

@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * @author Marco Weiland 
+ * @author n.carvalho
  *
  */
 public class ActionModelMapper {

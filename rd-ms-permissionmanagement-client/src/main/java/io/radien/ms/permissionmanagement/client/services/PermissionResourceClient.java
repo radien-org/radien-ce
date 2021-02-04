@@ -25,8 +25,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * @author Nuno Santana
- * @author Bruno Gama
+ * @author n.carvalho
  */
 @Path("permission")
 @Produces(MediaType.APPLICATION_JSON)
