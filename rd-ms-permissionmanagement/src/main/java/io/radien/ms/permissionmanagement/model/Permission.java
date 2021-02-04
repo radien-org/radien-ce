@@ -18,7 +18,7 @@ package io.radien.ms.permissionmanagement.model;
 import javax.persistence.*;
 
 /**
- * @author mawe
+ * @author n.carvalho
  *
  */
 @Entity

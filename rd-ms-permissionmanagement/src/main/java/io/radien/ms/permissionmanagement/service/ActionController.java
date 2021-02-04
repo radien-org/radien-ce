@@ -37,7 +37,7 @@ import java.util.List;
 
 
 /**
- * @author mawe
+ * @author n.carvalho
  *
  */
 @Path("action")

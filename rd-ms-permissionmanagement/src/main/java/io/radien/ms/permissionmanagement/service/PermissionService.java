@@ -27,7 +27,6 @@ import javax.persistence.*;
 import javax.persistence.criteria.*;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
@@ -35,12 +34,10 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 
 import io.radien.ms.permissionmanagement.model.Permission;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
- * @author mawe
+ * @author n.carvalho
  *
  */
 @Stateless

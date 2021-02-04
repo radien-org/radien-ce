@@ -20,7 +20,7 @@ import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import javax.persistence.*;
 
 /**
- * @author mawe
+ * @author n.carvalho
  *
  */
 @Entity
