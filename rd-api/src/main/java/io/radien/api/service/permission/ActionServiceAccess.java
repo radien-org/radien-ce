@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author n.carvalho
  *
  */
 public interface ActionServiceAccess extends ServiceAccess {

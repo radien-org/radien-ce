@@ -23,7 +23,7 @@ import java.net.MalformedURLException;
 import java.util.Optional;
 
 /**
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author n.carvalho
  *
  */
 public interface PermissionRESTServiceAccess extends Appframeable {
