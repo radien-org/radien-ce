@@ -20,14 +20,20 @@ import io.radien.api.model.permission.SystemActionType;
 import java.util.Arrays;
 
 public enum ActionType implements SystemActionType {
+    CREATE(4l, "CREATE"),
+
+    UPDATE(5l, "UPDATE"),
+
+    DELETE(6L, "DELETE"),
+
+    LIST(7l, "LIST"),
 
     READ(1L, "READ"),
+
     WRITE(2l, "WRITE"),
-    EXECUTION(3l, "EXECUTION"),
-    CREATE(4l, "CREATE"),
-    UPDATE(5l, "UPDATE"),
-    DELETE(6L, "DELETE"),
-    LIST(7l, "LIST");
+
+    EXECUTION(3l, "EXECUTION");
+
 
     private Long id;
     private String name;

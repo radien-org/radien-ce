@@ -15,21 +15,20 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
-import io.radien.api.model.permission.SystemAction;
-import io.radien.api.model.permission.SystemActionSearchFilter;
-import io.radien.api.service.permission.ActionServiceAccess;
-import io.radien.exception.SystemException;
+import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.permission.SystemPermissionSearchFilter;
+import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
+import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
+import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
+import io.radien.ms.permissionmanagement.model.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -40,81 +39,96 @@ import java.util.List;
  * @author n.carvalho
  *
  */
-@Path("action")
+@Path("permission")
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ActionController {
+public class PermissionResource implements PermissionResourceClient {
 
-	private Logger log = LoggerFactory.getLogger(ActionController.class);
+	private Logger log = LoggerFactory.getLogger(PermissionResource.class);
 
 	@Inject
-	private ActionServiceAccess actionServiceAccess;
+	private PermissionServiceAccess permissionServiceAccess;
 
-	@GET
-	public Response getAll(@QueryParam("search") String search,
-						   @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-						   @DefaultValue("10") @QueryParam("pageSize") int pageSize,
-						   @QueryParam("sortBy") List<String> sortBy,
-						   @DefaultValue("true") @QueryParam("asc") boolean isAscending) {
+	@Inject
+	private PermissionBusinessService businessService;
+
+	public Response getAll(String search,
+						   int pageNo,
+						   int pageSize,
+						   List<String> sortBy,
+						   boolean isAscending) {
 		try {
-			return Response.ok(actionServiceAccess.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
+			return Response.ok(permissionServiceAccess.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
 	}
 
-	@GET
-	@Path("find")
-	public Response getActions(@QueryParam("name") String name,
-								   @QueryParam("actionType") String actionType,
-								   @DefaultValue("true") @QueryParam("isExact") boolean isExact,
-								   @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction) {
+	public Response getPermissions(String name,
+								   boolean isExact,
+								   boolean isLogicalConjunction) {
 
 		try {
-			ActionType type = ActionType.getByName(actionType);
-			if (type == null) {
-				throw new SystemException("Unknown Action Type");
-			}
-			return Response.ok(actionServiceAccess.getActions(new ActionSearchFilter(name,
-					type, isExact, isLogicalConjunction))).build();
+			SystemPermissionSearchFilter filter = new PermissionSearchFilter(name,isExact,isLogicalConjunction);
+			return Response.ok(permissionServiceAccess.getPermissions(filter)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
 	}
 
-	@GET
-	@Path("/{id}")
-	public Response getById(@PathParam("id") Long id) {
+	public Response getById(Long id) {
 		try {
-			SystemAction systemAction = actionServiceAccess.get(id);
-			if(systemAction == null){
+			SystemPermission systemPermission = permissionServiceAccess.get(id);
+			if(systemPermission == null){
 				return getResourceNotFoundException();
 			}
-			return Response.ok(systemAction).build();
+			return Response.ok(systemPermission).build();
 		} catch(Exception e) {
 			return getGenericError(e);
 		}
 	}
 
-	@DELETE
-	@Path("/{id}")
-	public Response delete(@NotNull @PathParam("id") long id) {
+	public Response delete(long id) {
 		try {
-			actionServiceAccess.delete(id);
+			permissionServiceAccess.delete(id);
 		} catch (Exception e){
 			return getGenericError(e);
 		}
 		return Response.ok().build();
 	}
 
-	@POST
-	public Response save(io.radien.ms.permissionmanagement.client.entities.Action action) {
+	public Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission) {
 		try {
-			actionServiceAccess.save(new Action(action));
+			permissionServiceAccess.save(new Permission(permission));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return getInvalidRequestResponse(e);
+		} catch (Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	public Response associate(long permissionId,
+							  long actionId) {
+		try {
+			AssociationStatus associationStatus = businessService.associate(permissionId, actionId);
+			if (associationStatus.isOK()) {
+				return Response.ok().build();
+			}
+			return Response.status(Response.Status.BAD_REQUEST).entity(associationStatus.getMessage()).build();
+		} catch (Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	public Response dissociate(long permissionId) {
+		try {
+			AssociationStatus associationStatus = businessService.dissociation(permissionId);
+			if (associationStatus.isOK()) {
+				return Response.ok().build();
+			}
+			return Response.status(Response.Status.BAD_REQUEST).entity(associationStatus.getMessage()).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}

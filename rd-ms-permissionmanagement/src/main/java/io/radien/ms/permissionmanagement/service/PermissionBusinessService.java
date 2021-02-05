@@ -22,14 +22,12 @@ import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.model.AssociationStatus;
-import io.radien.ms.permissionmanagement.model.Permission;
+import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 @Stateless
 public class PermissionBusinessService {
@@ -46,11 +44,13 @@ public class PermissionBusinessService {
 
     public AssociationStatus associate(Long permissionId, Long actionId) throws UniquenessConstraintException{
         try {
+            // TODO: Change to Exists
             SystemPermission sp = permissionServiceAccess.get(permissionId);
             if (sp == null) {
                 throw new PermissionNotFoundException(String.format(BASE_MSG, "Permission", permissionId));
             }
 
+            // TODO: Change to Exists
             SystemAction sa = actionServiceAccess.get(actionId);
             if (sa == null) {
                 throw new ActionNotFoundException(String.format(BASE_MSG, "Action", actionId));

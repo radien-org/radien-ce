@@ -1,31 +1,18 @@
 package io.radien.ms.permissionmanagement.service;
 
-import io.radien.api.model.permission.SystemAction;
-import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
-import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.model.Action;
-import io.radien.ms.permissionmanagement.model.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.Permission;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.naming.NamingException;
-import java.util.List;
-import java.util.Properties;
 
 import static org.junit.Assert.*;
 

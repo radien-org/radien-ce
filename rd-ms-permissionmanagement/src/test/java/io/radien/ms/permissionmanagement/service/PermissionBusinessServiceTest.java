@@ -7,11 +7,9 @@ import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
-import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 import io.radien.ms.permissionmanagement.model.Action;
-import io.radien.ms.permissionmanagement.model.AssociationStatus;
+import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.Permission;
 import org.junit.After;
 import org.junit.Assert;
@@ -23,7 +21,6 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class PermissionBusinessServiceTest {

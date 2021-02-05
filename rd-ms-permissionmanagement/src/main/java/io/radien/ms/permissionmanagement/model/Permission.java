@@ -20,6 +20,9 @@ import javax.persistence.*;
 /**
  * @author n.carvalho
  *
+ * Contains the definitions of a Permssion described on
+ * {@link io.radien.ms.permissionmanagement.client.entities.Permission}
+ * plus the JPA entity mapping
  */
 @Entity
 @Table(name = "PERM01")

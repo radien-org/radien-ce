@@ -3,7 +3,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.model.AssociationStatus;
+import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.Permission;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,10 +25,10 @@ import static org.junit.Assert.assertEquals;
  * @author Nuno Santana
  * @author Bruno Gama
  */
-public class PermissionControllerTest {
+public class PermissionResourceTest {
 
     @InjectMocks
-    PermissionController permissionResource;
+    PermissionResource permissionResource;
     @Mock
     PermissionServiceAccess permissionServiceAccess;
     @Mock

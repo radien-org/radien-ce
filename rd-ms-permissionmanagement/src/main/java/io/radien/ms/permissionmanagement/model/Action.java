@@ -22,6 +22,9 @@ import javax.persistence.*;
 /**
  * @author n.carvalho
  *
+ * Contains the definitions of an Action described on
+ * {@link io.radien.ms.permissionmanagement.client.entities.Action}
+ * plus the JPA entity mapping
  */
 @Entity
 @Table(name = "ACT01")
@@ -47,9 +50,38 @@ public class Action extends io.radien.ms.permissionmanagement.client.entities.Ac
 		return super.getName();
 	}
 
-	@Override
-	@Enumerated
-	@Column(name = "TYPE", nullable = false)
+//	private Long typeId;
+//
+//	@PostLoad
+//	public void loadType() {
+//		this.setType(ActionType.getById(typeId));
+//	}
+//
+//	@PrePersist
+//	public void fetchTypeId() {
+//		this.typeId = this.getType().getId();
+//	}
+//
+//	@Basic
+//	public Long getTypeId() {
+//		return typeId;
+//	}
+//
+//	public void setTypeId(Long typeId) {
+//		this.typeId = typeId;
+//	}
+
+	//	@Override
+//	@Enumerated
+//	@Column(name = "TYPE", nullable = false)
+//	public ActionType getType() {
+//		return super.getType();
+//	}
+//
+//	public void setType(ActionType a) {
+//		super.setType(a);
+//	}
+
 	public ActionType getType() {
 		return super.getType();
 	}

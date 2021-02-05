@@ -23,10 +23,10 @@ import static org.mockito.Mockito.when;
  * @author Nuno Santana
  * @author Bruno Gama
  */
-public class ActionControllerTest {
+public class ActionResourceTest {
 
     @InjectMocks
-    ActionController actionController;
+    ActionResource actionResource;
 
     @Mock
     ActionServiceAccess actionServiceAccess;
@@ -41,7 +41,7 @@ public class ActionControllerTest {
      */
     @Test
     public void testGetAll() {
-        Response response = actionController.getAll(null,1,10,null,true);
+        Response response = actionResource.getAll(null,1,10,null,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -50,9 +50,9 @@ public class ActionControllerTest {
      */
     @Test
     public void testGetAllGenericException() throws MalformedURLException {
-        when(actionController.getAll(null,1,10,null,true))
+        when(actionResource.getAll(null,1,10,null,true))
                 .thenThrow(new RuntimeException());
-        Response response = actionController.getAll(null,1,10,null,true);
+        Response response = actionResource.getAll(null,1,10,null,true);
         assertEquals(500,response.getStatus());
     }
 
@@ -61,7 +61,7 @@ public class ActionControllerTest {
      */
     @Test
     public void testGetById404() {
-        Response response = actionController.getById(1L);
+        Response response = actionResource.getById(1L);
         assertEquals(404,response.getStatus());
     }
 
@@ -72,7 +72,7 @@ public class ActionControllerTest {
     @Test
     public void testGetById() throws ActionNotFoundException {
         when(actionServiceAccess.get(1L)).thenReturn(new Action());
-        Response response = actionController.getById(1L);
+        Response response = actionResource.getById(1L);
         assertEquals(200,response.getStatus());
     }
 
@@ -83,7 +83,7 @@ public class ActionControllerTest {
     @Test
     public void testGetByIdGenericException() throws ActionNotFoundException {
         when(actionServiceAccess.get(1L)).thenThrow(new RuntimeException());
-        Response response = actionController.getById(1L);
+        Response response = actionResource.getById(1L);
         assertEquals(500,response.getStatus());
     }
 
@@ -92,7 +92,7 @@ public class ActionControllerTest {
      */
     @Test
     public void testGetActionsBy() {
-        Response response = actionController.getActions("action-name",
+        Response response = actionResource.getActions("action-name",
                 ActionType.WRITE.getName(), true,true);
         assertEquals(200,response.getStatus());
     }
@@ -103,14 +103,14 @@ public class ActionControllerTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(actionServiceAccess).getActions(any());
-        Response response = actionController.getActions("action-name",
+        Response response = actionResource.getActions("action-name",
                 ActionType.WRITE.getName(), true,true);
         assertEquals(500,response.getStatus());
     }
 
     @Test
     public void testGetPermissionInformingInvalidType() {
-        Response response = actionController.getActions("action-name",
+        Response response = actionResource.getActions("action-name",
                 "UNKNOWN-TYPE", true,true);
         assertEquals(500,response.getStatus());
     }
@@ -120,7 +120,7 @@ public class ActionControllerTest {
      */
     @Test
     public void testDelete() {
-        Response response = actionController.delete(1l);
+        Response response = actionResource.delete(1l);
         assertEquals(200,response.getStatus());
     }
 
@@ -130,7 +130,7 @@ public class ActionControllerTest {
     @Test
     public void testDeleteGenericError() {
         doThrow(new RuntimeException()).when(actionServiceAccess).delete(1l);
-        Response response = actionController.delete(1l);
+        Response response = actionResource.delete(1l);
         assertEquals(500,response.getStatus());
     }
 
@@ -139,7 +139,7 @@ public class ActionControllerTest {
      */
     @Test
     public void testSave() {
-        Response response = actionController.save(new io.radien.ms.permissionmanagement.client.entities.Action());
+        Response response = actionResource.save(new io.radien.ms.permissionmanagement.client.entities.Action());
         assertEquals(200,response.getStatus());
     }
 
@@ -151,7 +151,7 @@ public class ActionControllerTest {
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException {
         doThrow(new UniquenessConstraintException()).when(actionServiceAccess).save(any());
-        Response response = actionController.save(new io.radien.ms.permissionmanagement.client.entities.Action());
+        Response response = actionResource.save(new io.radien.ms.permissionmanagement.client.entities.Action());
         assertEquals(400,response.getStatus());
     }
 
@@ -163,7 +163,7 @@ public class ActionControllerTest {
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException {
         doThrow(new RuntimeException()).when(actionServiceAccess).save(any());
-        Response response = actionController.save(new io.radien.ms.permissionmanagement.client.entities.Action());
+        Response response = actionResource.save(new io.radien.ms.permissionmanagement.client.entities.Action());
         assertEquals(500,response.getStatus());
     }
 }

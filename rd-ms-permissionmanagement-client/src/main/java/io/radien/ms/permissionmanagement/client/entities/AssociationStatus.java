@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.permissionmanagement.model;
+package io.radien.ms.permissionmanagement.client.entities;
 
 /**
  * @author n.carvalho
- *
- * Bean that encapsulates the outcome of an association operation
- *
+ * This class describes the result of an association operation
  */
 public class AssociationStatus {
     private final boolean successful;
@@ -34,10 +32,18 @@ public class AssociationStatus {
         this.message = message;
     }
 
+    /**
+     * Indicates if the operation was successful or not
+     * @return
+     */
     public boolean isOK() {
         return successful;
     }
 
+    /**
+     * Describes the issue occurred during the operation
+     * @return
+     */
     public String getMessage() {
         return message;
     }

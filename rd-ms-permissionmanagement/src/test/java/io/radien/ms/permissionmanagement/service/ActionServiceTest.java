@@ -17,6 +17,7 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
+import io.radien.api.model.permission.SystemActionType;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -24,14 +25,12 @@ import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.model.Action;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -356,11 +355,6 @@ public class ActionServiceTest {
         List<? extends SystemAction> actions = actionServiceAccess.getActions(
                 new ActionSearchFilter("aabac", ActionType.READ, false,false));
 
-
-        for (SystemAction sa:actions) {
-            System.out.println(sa.getName() + " " + sa.getType());
-        }
-
         assertEquals(4, actions.size());
 
         ActionSearchFilter actionSearchFilter = new ActionSearchFilter();
@@ -384,5 +378,33 @@ public class ActionServiceTest {
 
     }
 
+    @Test
+    public void compareEnums() throws UniquenessConstraintException {
+        SystemAction systemAction = null;
+        ActionType[] actionTypes = ActionType.values();
+        Map<Long, SystemActionType> m = new HashMap<>();
+        for (int i=0; i<actionTypes.length; i++) {
+            systemAction = new Action();
+            systemAction.setType(actionTypes[i]);
+            systemAction.setName("actionTest_" + actionTypes[i].getName());
+            m.put(actionTypes[i].getId(), actionTypes[i]);
+            actionServiceAccess.save(systemAction);
+        }
+
+        List<? extends SystemAction> actions =
+                actionServiceAccess.getActions(new ActionSearchFilter("actionTest_",
+                        null, false, false));
+
+        assertEquals(actions.size(), actionTypes.length);
+        assertEquals(actions.size(), m.size());
+
+        for (int i=0; i<actions.size(); i++) {
+            SystemAction sa = actions.get(i);
+            SystemActionType type = m.get(sa.getType().getId());
+            assertTrue(sa.getName().contains(type.getName()));
+            m.remove(sa.getType().getId());
+        }
+
+    }
 
 }
