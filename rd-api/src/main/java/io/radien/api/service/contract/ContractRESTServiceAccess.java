@@ -19,7 +19,9 @@ import io.radien.api.Appframeable;
 import io.radien.api.model.contract.SystemContract;
 import io.radien.api.model.user.SystemUser;
 
+import javax.ws.rs.ProcessingException;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,13 +37,13 @@ public interface ContractRESTServiceAccess {
      * @return true if contract has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-	public Optional<SystemContract> getContractByName(String name) throws Exception ;
+    public Optional<SystemContract> getContractByName(String name) throws MalformedURLException, ParseException, Exception ;
 
     /**
      * Fetches all Contracts
      * @return List of Contracts
      */
-    public List<? extends SystemContract> getAll() throws MalformedURLException;
+    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException;
 
     /**
      * Creates given contract

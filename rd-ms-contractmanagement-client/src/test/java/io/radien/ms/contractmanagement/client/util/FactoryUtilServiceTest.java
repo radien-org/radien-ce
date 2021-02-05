@@ -132,6 +132,14 @@ public class FactoryUtilServiceTest extends TestCase {
     }
 
     @Test
+    public void testAddValueLongNull(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueLong(builder, "id",null);
+        JsonObject json = builder.build();
+        assertNull(FactoryUtilService.getLongFromJson("id" ,json));
+    }
+
+    @Test
     public void testAddValueNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
         FactoryUtilService.addValue(builder, "id",null);
@@ -153,5 +161,16 @@ public class FactoryUtilServiceTest extends TestCase {
         FactoryUtilService.addValueArray(builder, "elements",null);
         JsonObject json = builder.build();
         assertNull(FactoryUtilService.getIntFromJson("elements" ,json));
+    }
+
+    @Test
+    public void testAddValueArray(){
+        JsonObjectBuilder wrapperObj = Json.createObjectBuilder();
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        JsonObjectBuilder arrayElement =  Json.createObjectBuilder();
+        arrayElement.add("val","value");
+        arrayBuilder.add(arrayElement);
+        FactoryUtilService.addValueArray(wrapperObj, "elements",arrayBuilder.build());
+        assertEquals(1,FactoryUtilService.getArrayFromJson("elements" ,wrapperObj.build()).size());
     }
 }

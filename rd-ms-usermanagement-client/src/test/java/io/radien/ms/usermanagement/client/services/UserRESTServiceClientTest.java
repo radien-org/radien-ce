@@ -223,7 +223,7 @@ public class UserRESTServiceClientTest {
     public void testCreateFail() throws MalformedURLException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
-        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
 
         boolean success = false;
         try {

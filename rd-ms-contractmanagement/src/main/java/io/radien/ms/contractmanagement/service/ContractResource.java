@@ -55,7 +55,11 @@ public class ContractResource implements ContractResourceClient {
 	@Override
 	public Response getById(Long id) {
 		try {
-			return Response.ok(contractService.get(id)).build();
+			SystemContract contract = contractService.get(id);
+			if(contract == null){
+				return getResourceNotFoundException();
+			}
+			return Response.ok(contract).build();
 		}catch (Exception e){
 			return getGenericError(e);
 		}
@@ -114,4 +118,13 @@ public class ContractResource implements ContractResourceClient {
 	private Response getInvalidRequestResponse(UniquenessConstraintException e) {
 		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 	}
+
+	/**
+	 * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
+	 * @return code 100 message Resource not found.
+	 */
+	private Response getResourceNotFoundException() {
+		return Response.status(Response.Status.NOT_FOUND).entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
+	}
+
 }

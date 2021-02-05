@@ -23,6 +23,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
@@ -48,9 +49,7 @@ public class SystemContractMessageBodyReader implements MessageBodyReader<System
 		try {
 			return ContractModelMapper.map(inputStream);
 		} catch (ParseException e) {
-			e.printStackTrace();
-			//TODO improve error handling
-			return null;
+			throw new WebApplicationException(e,Response.Status.BAD_REQUEST);
 		}
 	}
 

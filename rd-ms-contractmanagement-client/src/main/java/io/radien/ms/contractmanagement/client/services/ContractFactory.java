@@ -17,14 +17,17 @@ package io.radien.ms.contractmanagement.client.services;
 
 import io.radien.ms.contractmanagement.client.entities.Contract;
 import io.radien.ms.contractmanagement.client.util.FactoryUtilService;
+import sun.jvm.hotspot.debugger.posix.elf.ELFException;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,9 +80,13 @@ public class ContractFactory {
         contract.setLastUpdateUser(lastUpdateUser);
         if(createDate != null) {
             contract.setCreateDate(formatter.parse(createDate));
+        } else {
+          contract.setCreateDate(null);
         }
         if(lastUpdate != null) {
             contract.setLastUpdate(formatter.parse(lastUpdate));
+        } else {
+            contract.setLastUpdate(null);
         }
         return contract;
     }
@@ -94,7 +101,7 @@ public class ContractFactory {
     public static JsonObject convertToJsonObject(Contract contract) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        FactoryUtilService.addValue(builder, "id", contract.getId());
+        FactoryUtilService.addValueLong(builder, "id", contract.getId());
         FactoryUtilService.addValue(builder, "name", contract.getName());
         FactoryUtilService.addValue(builder, "start", contract.getStart());
         FactoryUtilService.addValue(builder, "end", contract.getEnd());
@@ -106,15 +113,12 @@ public class ContractFactory {
         return  builder.build();
     }
 
-    public static List<Contract> convert(JsonArray jsonArray) {
-        return jsonArray.stream().map(i-> {
-            try {
-                return convert(i.asJsonObject());
-            } catch (ParseException e) {
-                e.printStackTrace();
-                //TODO: Rethink this
-            }
-            return null;
-        }).collect(Collectors.toList());
+    public static List<Contract> convert(JsonArray jsonArray) throws ParseException{
+        List<Contract> list = new ArrayList<>();
+        for (JsonValue i : jsonArray) {
+            Contract convert = convert(i.asJsonObject());
+            list.add(convert);
+        }
+        return list;
     }
 }

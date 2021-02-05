@@ -50,15 +50,11 @@ public class ContractModelMapper {
         return arrayBuilder.build();
     }
 
-    public static Contract map(InputStream is) {
+    public static Contract map(InputStream is) throws ParseException{
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
 
             return new Contract(ContractFactory.convert(jsonObject));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            //TODO : improve error handling
-            return null;
         }
     }
 }

@@ -17,6 +17,7 @@ package io.radien.ms.contractmanagement.client.services;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -65,7 +66,8 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
      * @param name to be looked after
      * @return Optional Contract
      */
-    public Optional<SystemContract> getContractByName(String name) throws MalformedURLException {
+    @Override
+    public Optional<SystemContract> getContractByName(String name) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_CONTRACTMANAGEMENT));
 
@@ -76,20 +78,20 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
             } else {
                 return Optional.empty();
             }
-        }        catch (ExtensionException | ProcessingException | MalformedURLException es){
+        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
             log.error(es.getMessage(),es);
             throw es;
         }
     }
 
     @Override
-    public List<? extends SystemContract> getAll() throws MalformedURLException {
+    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_CONTRACTMANAGEMENT));
 
             Response response = client.get(null);
             return ListContractModelMapper.map((InputStream) response.getEntity());
-        }        catch (ExtensionException | ProcessingException | MalformedURLException es){
+        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
             log.error(es.getMessage(),es);
             throw es;
         }
