@@ -15,8 +15,6 @@
  */
 package io.radien.ms.permissionmanagement.model;
 
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
-
 import javax.persistence.*;
 
 /**
@@ -48,45 +46,5 @@ public class Action extends io.radien.ms.permissionmanagement.client.entities.Ac
 	@Column(name = "NAME", nullable = false, unique = true)
 	public String getName() {
 		return super.getName();
-	}
-
-//	private Long typeId;
-//
-//	@PostLoad
-//	public void loadType() {
-//		this.setType(ActionType.getById(typeId));
-//	}
-//
-//	@PrePersist
-//	public void fetchTypeId() {
-//		this.typeId = this.getType().getId();
-//	}
-//
-//	@Basic
-//	public Long getTypeId() {
-//		return typeId;
-//	}
-//
-//	public void setTypeId(Long typeId) {
-//		this.typeId = typeId;
-//	}
-
-	//	@Override
-//	@Enumerated
-//	@Column(name = "TYPE", nullable = false)
-//	public ActionType getType() {
-//		return super.getType();
-//	}
-//
-//	public void setType(ActionType a) {
-//		super.setType(a);
-//	}
-
-	public ActionType getType() {
-		return super.getType();
-	}
-
-	public void setType(ActionType a) {
-		super.setType(a);
 	}
 }

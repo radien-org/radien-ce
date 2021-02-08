@@ -15,7 +15,6 @@
  */
 package io.radien.ms.permissionmanagement.legacy;
 
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.model.Permission;
 import io.radien.ms.permissionmanagement.model.Action;
 import junit.framework.TestCase;
@@ -37,27 +36,19 @@ public class PermissionFactoryTest extends TestCase {
      */
     public PermissionFactoryTest() {
         action = new Action();
-        action.setType(ActionType.WRITE);
         action.setName("WRITE-PERMISSION-ON-SOME_RADIEN_MODULE");
         action.setId(2L);
         action.setCreateUser(4L);
-
-        JsonObject jObj = Json.createObjectBuilder().
-                add("id", action.getId()).
-                add("name", action.getName()).
-                add("createUser", action.getCreateUser()).
-                addNull("lastUpdateUser").
-                add("type", action.getType().getName()).build();
 
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "permissionTest");
         builder.add("createUser", 2L);
         builder.addNull("lastUpdateUser");
-        builder.add("action", jObj);
+        builder.add("actionId", action.getId());
         json = builder.build();
         perm = PermissionFactory.create("permissionTest",
-                action,2L);
+                action.getId(),2L);
     }
 
     /**
@@ -67,7 +58,6 @@ public class PermissionFactoryTest extends TestCase {
     public void testCreate() {
         assertEquals("permissionTest", perm.getName());
         assertEquals((Long) 2L, perm.getCreateUser());
-        //assertEquals(ActionType.EXECUTION, perm.getActionType());
     }
 
     /**
@@ -80,7 +70,7 @@ public class PermissionFactoryTest extends TestCase {
         assertEquals(perm.getName(), constructedNewPermission.getName());
         assertEquals(perm.getCreateUser(), constructedNewPermission.getCreateUser());
         assertEquals(perm.getLastUpdateUser(), constructedNewPermission.getLastUpdateUser());
-//        assertEquals(perm.getAction(), constructedNewPermission.getAction());
+        assertEquals(perm.getActionId(), constructedNewPermission.getActionId());
     }
 
     /**

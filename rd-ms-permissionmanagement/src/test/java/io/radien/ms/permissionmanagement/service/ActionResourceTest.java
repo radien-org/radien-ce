@@ -3,7 +3,6 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.model.Action;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,8 +91,7 @@ public class ActionResourceTest {
      */
     @Test
     public void testGetActionsBy() {
-        Response response = actionResource.getActions("action-name",
-                ActionType.WRITE.getName(), true,true);
+        Response response = actionResource.getActions("action-name",true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -103,15 +101,7 @@ public class ActionResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(actionServiceAccess).getActions(any());
-        Response response = actionResource.getActions("action-name",
-                ActionType.WRITE.getName(), true,true);
-        assertEquals(500,response.getStatus());
-    }
-
-    @Test
-    public void testGetPermissionInformingInvalidType() {
-        Response response = actionResource.getActions("action-name",
-                "UNKNOWN-TYPE", true,true);
+        Response response = actionResource.getActions("action-name",true,true);
         assertEquals(500,response.getStatus());
     }
 

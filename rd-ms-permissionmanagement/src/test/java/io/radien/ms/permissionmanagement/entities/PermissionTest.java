@@ -17,7 +17,6 @@ package io.radien.ms.permissionmanagement.entities;
 
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 import io.radien.ms.permissionmanagement.model.Action;
@@ -35,9 +34,9 @@ public class PermissionTest extends TestCase {
     private final Date terminationDate = new Date();
 
     public PermissionTest() {
-        action = ActionFactory.create("Create Contract", ActionType.EXECUTION, 3l);
+        action = ActionFactory.create("Create Contract", 3l);
         action.setId(33L);
-        permission = PermissionFactory.create("testPermissionName", action, 3L);
+        permission = PermissionFactory.create("testPermissionName", action.getId(), 3L);
         permission.setId(2L);
     }
 
@@ -70,18 +69,16 @@ public class PermissionTest extends TestCase {
 
     @Test
     public void testGetAction() {
-        assertNotNull(permission.getAction());
-        assertEquals(permission.getAction().getName(), "Create Contract");
-        assertEquals(permission.getAction().getType(), ActionType.EXECUTION);
+        assertNotNull(permission.getActionId());
     }
 
     @Test
     public void testSetAction() {
-        SystemAction newAction = ActionFactory.create("Update Contract", ActionType.READ, null);
-        permission.setAction(newAction);
-        assertNotNull(permission.getAction());
-        assertEquals(permission.getAction().getName(), "Update Contract");
-        assertEquals(permission.getAction().getType(), ActionType.READ);
+        SystemAction newAction = ActionFactory.create("Update Contract", null);
+        newAction.setId(111111L);
+        permission.setActionId(newAction.getId());
+        assertNotNull(permission.getActionId());
+        assertEquals(permission.getActionId(), newAction.getId());
     }
 
     @Test
@@ -97,15 +94,11 @@ public class PermissionTest extends TestCase {
 
         systemAction.setId(22L);
         systemAction.setName("actionTest");
-        systemAction.setType(ActionType.READ);
-        systemPermission.setAction(systemAction);
 
         SystemPermission permission2 = new Permission(systemPermission);
 
         assertEquals(permission2.getId(), systemPermission.getId());
-        assertEquals(permission2.getAction().getId(), systemPermission.getAction().getId());
-        assertEquals(permission2.getAction().getName(), systemPermission.getAction().getName());
-        assertEquals(permission2.getAction().getType(), systemPermission.getAction().getType());
+        assertEquals(permission2.getActionId(), systemPermission.getActionId());
     }
 
 }

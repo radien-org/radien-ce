@@ -15,25 +15,34 @@
  */
 package io.radien.ms.permissionmanagement.client.providers;
 
-import junit.framework.TestCase;
+import io.radien.ms.permissionmanagement.client.entities.Action;
+import io.radien.ms.permissionmanagement.client.services.ActionFactory;
 import org.junit.Test;
 
 import io.radien.ms.permissionmanagement.client.entities.Permission;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class PermissionMessageBodyWriterTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PermissionMessageBodyWriterTest {
+
+    @InjectMocks
+    PermissionMessageBodyWriter target;
 
     @Test
     public void testIsWriteable() {
-        PermissionMessageBodyWriter target = new PermissionMessageBodyWriter();
         assertTrue(target.isWriteable(Permission.class,null,null,null));
     }
 
     @Test
     public void testGetSize() {
-        PermissionMessageBodyWriter target = new PermissionMessageBodyWriter();
         assertEquals(0L,target.getSize(null,null,null,null,null));
     }
 
@@ -43,14 +52,44 @@ public class PermissionMessageBodyWriterTest extends TestCase {
                 "id\":null," +
                 "\"name\":\"a\"," +
                 "\"createUser\":null," +
-                "\"lastUpdateUser\":null" +
+                "\"lastUpdateUser\":null," +
+                "\"actionId\":null" +
                 "}";
-        PermissionMessageBodyWriter target = new PermissionMessageBodyWriter();
+
         Permission permission = new Permission();
         permission.setName("a");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        target.writeTo(permission,null,null,null, null,null, baos);
 
-        assertEquals(result,baos.toString());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        target.writeTo(permission,null,null,
+                null, null,null, out);
+
+        assertEquals(result, out.toString());
+    }
+
+    @Test
+    public void test2WriteTo() throws IOException {
+        String action = "{\"id\":11,\"name\":\"Update-Radien-User\",\"createUser\":28,\"lastUpdateUser\":null}";
+        String result = "{\"" +
+                "id\":1," +
+                "\"name\":\"permission-a\"," +
+                "\"createUser\":28," +
+                "\"lastUpdateUser\":100," +
+                "\"actionId\":11}";
+
+        Permission permission = new Permission();
+        permission.setName("permission-a");
+        permission.setId(1L);
+        permission.setCreateUser(28L);
+        permission.setLastUpdateUser(100L);
+
+        Action a = ActionFactory.create("Update-Radien-User", 28L);
+        a.setId(11L);
+        permission.setActionId(a.getId());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        target.writeTo(permission,null,null,
+                null, null,null, out);
+
+        assertEquals(result, out.toString());
     }
 }

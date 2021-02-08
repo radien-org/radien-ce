@@ -17,7 +17,6 @@ package io.radien.ms.permissionmanagement.client.entities;
 
 import org.junit.Test;
 
-import io.radien.ms.permissionmanagement.client.entities.Permission;
 
 import java.util.Date;
 
@@ -60,23 +59,20 @@ public class PermissionTest {
         Action originalAction = new Action();
         originalAction.setId(11L);
         originalAction.setName("originalAction");
-        originalAction.setType(ActionType.WRITE);
 
         Permission originalPermission = new Permission();
-        originalPermission.setAction(originalAction);
+        originalPermission.setActionId(originalAction.getId());
         originalPermission.setId(111L);
         originalPermission.setName("originalPermission");
 
         Permission newPermission = new Permission(originalPermission);
 
-        assertNotNull(newPermission.getAction());
+        assertNotNull(newPermission.getActionId());
         assertNotNull(newPermission.getName());
         assertNotNull(newPermission.getId());
 
         assertEquals(newPermission.getId(), originalPermission.getId());
         assertEquals(newPermission.getName(), originalPermission.getName());
-        assertEquals(newPermission.getAction().getId(), originalPermission.getAction().getId());
-        assertEquals(newPermission.getAction().getName(), originalPermission.getAction().getName());
-        assertEquals(newPermission.getAction().getType(), originalPermission.getAction().getType());
+        assertEquals(newPermission.getActionId(), originalPermission.getActionId());
     }
 }

@@ -24,10 +24,6 @@ public interface SystemActionSearchFilter {
 
     String getName();
 
-    void setActionType(SystemActionType type);
-
-    SystemActionType getActionType();
-
     boolean isExact();
 
     void setExact(boolean exact);

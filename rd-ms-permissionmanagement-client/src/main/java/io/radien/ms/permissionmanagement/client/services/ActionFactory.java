@@ -16,7 +16,6 @@
 package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 
 import javax.json.Json;
@@ -36,15 +35,13 @@ public class ActionFactory {
      * @param createUser the user which has created the permission
      * @return a Action object to be used
      */
-    public static Action create(String name, ActionType actionType, Long createUser){
+    public static Action create(String name, Long createUser){
         Action u = new Action();
         u.setName(name);
         u.setCreateUser(createUser);
         Date now = new Date();
         u.setLastUpdate(now);
         u.setCreateDate(now);
-        if (actionType != null)
-            u.setType(actionType);
         return u;
     }
 
@@ -60,7 +57,6 @@ public class ActionFactory {
         String name = FactoryUtilService.getStringFromJson("name", actionAsJsonObject);
         Long createAction = FactoryUtilService.getLongFromJson("createUser", actionAsJsonObject);
         Long updateAction = FactoryUtilService.getLongFromJson("lastUpdateUser", actionAsJsonObject);
-        String actionTypeAsString = FactoryUtilService.getStringFromJson("type", actionAsJsonObject);
         Action action = new Action();
         action.setId(id);
         action.setName(name);
@@ -68,13 +64,6 @@ public class ActionFactory {
         action.setLastUpdateUser(updateAction);
         action.setCreateDate(new Date());
         action.setLastUpdate(new Date());
-
-        if (actionTypeAsString != null) {
-            ActionType type = ActionType.getByName(actionTypeAsString);
-            if (type == null)
-                throw new RuntimeException("Unknown action type");
-            action.setType(type);
-        }
         return action;
     }
 
@@ -90,7 +79,6 @@ public class ActionFactory {
         FactoryUtilService.addValue(builder, "name", a.getName());
         FactoryUtilService.addValueLong(builder, "createUser", a.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", a.getLastUpdateUser());
-        FactoryUtilService.addValue(builder, "type", a.getType());
         return builder.build();
     }
 

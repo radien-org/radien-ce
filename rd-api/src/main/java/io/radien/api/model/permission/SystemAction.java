@@ -21,6 +21,4 @@ public interface SystemAction extends Model {
     void setId(Long id);
     String getName();
     void setName(String name);
-    SystemActionType getType();
-    void setType(SystemActionType actionType);
 }

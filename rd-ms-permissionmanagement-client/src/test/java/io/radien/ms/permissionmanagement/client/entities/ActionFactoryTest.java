@@ -41,11 +41,8 @@ public class ActionFactoryTest {
         builder.add("name", "action-bbb");
         builder.add("createUser", 2L);
         builder.addNull("lastUpdateUser");
-        builder.add("type", String.valueOf(ActionType.WRITE));
-
         json = builder.build();
-        action = ActionFactory.create("action-bbb",
-                ActionType.WRITE, 2L);
+        action = ActionFactory.create("action-bbb", 2L);
     }
 
     /**
@@ -53,13 +50,11 @@ public class ActionFactoryTest {
      */
     @Test
     public void create() {
-        Action newtAction = ActionFactory.create("permission-bbb",
-                        ActionType.WRITE, 2L);
+        Action newtAction = ActionFactory.create("permission-bbb", 2L);
 
         assertEquals(action.getId(), newtAction.getId());
         assertEquals(action.getCreateUser(), newtAction.getCreateUser());
         assertEquals(action.getLastUpdateUser(), newtAction.getLastUpdateUser());
-        assertEquals(action.getType(), newtAction.getType());
     }
 
     /**
@@ -73,7 +68,6 @@ public class ActionFactoryTest {
         assertEquals(action.getCreateUser(), newAct.getCreateUser());
         assertEquals(action.getLastUpdateUser(), newAct.getLastUpdateUser());
         assertEquals(action.getName(), newAct.getName());
-        assertEquals(action.getType(), newAct.getType());
     }
 
     @Test
@@ -83,35 +77,12 @@ public class ActionFactoryTest {
     }
 
     @Test
-    public void testConvertUsingInvalidActionType() {
-        String invalidActionTypeName = "CRUD";
-        JsonObject jsonObject = Json.createObjectBuilder().
-            addNull("id").
-            add("name", "action-ccc").
-            add("createUser", 2L).
-            addNull("lastUpdateUser").
-            add("type", invalidActionTypeName).build();
-
-        boolean raiseException = false;
-        try {
-            ActionFactory.convert(jsonObject);
-        }
-        catch (Exception e) {
-            raiseException = true;
-        }
-        assertTrue(raiseException);
-    }
-
-    @Test
     public void testConvertingArray() {
 
         List<Action> originalCollection = new ArrayList<>();
-        originalCollection.add(
-                ActionFactory.create("perm1", ActionType.READ, 0L));
-        originalCollection.add(
-                ActionFactory.create("perm2", ActionType.EXECUTION, 0L));
-        originalCollection.add(
-                ActionFactory.create("perm3", ActionType.WRITE, 0L));
+        originalCollection.add(ActionFactory.create("perm1", 0L));
+        originalCollection.add(ActionFactory.create("perm2", 0L));
+        originalCollection.add(ActionFactory.create("perm3", 0L));
 
         JsonArray array = ActionModelMapper.map(originalCollection);
 

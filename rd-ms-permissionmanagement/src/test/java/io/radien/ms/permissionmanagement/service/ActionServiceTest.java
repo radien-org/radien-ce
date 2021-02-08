@@ -17,15 +17,12 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
-import io.radien.api.model.permission.SystemActionType;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.model.Action;
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -42,7 +39,7 @@ import static org.junit.Assert.*;
 public class ActionServiceTest {
 
     ActionServiceAccess actionServiceAccess;
-    SystemAction uTest;
+    SystemAction actionTest;
 
     public ActionServiceTest() throws Exception {
         final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
@@ -53,10 +50,10 @@ public class ActionServiceTest {
         Page<? extends SystemAction> actionPage =
                 actionServiceAccess.getAll(null, 1, 10, null, true);
         if (actionPage.getTotalResults() > 0) {
-            uTest = actionPage.getResults().get(0);
+            actionTest = actionPage.getResults().get(0);
         } else {
-            uTest = ActionFactory.create("actionName", ActionType.CREATE, 2L);
-            actionServiceAccess.save(uTest);
+            actionTest = ActionFactory.create("actionName", 2L);
+            actionServiceAccess.save(actionTest);
         }
     }
 
@@ -71,7 +68,7 @@ public class ActionServiceTest {
      */
     @Test
     public void testAddAction() throws ActionNotFoundException {
-        SystemAction result = actionServiceAccess.get(uTest.getId());
+        SystemAction result = actionServiceAccess.get(actionTest.getId());
         assertNotNull(result);
     }
 
@@ -89,10 +86,10 @@ public class ActionServiceTest {
      */
     @Test
     public void testAddDuplicatedName() throws UniquenessConstraintException {
-        Action u = ActionFactory.create("actionNameXXX", ActionType.LIST,2L);
+        Action u = ActionFactory.create("actionNameXXX", 2L);
         actionServiceAccess.save(u);
 
-        Action u2 = ActionFactory.create("actionNameXXX", ActionType.LIST,2L);
+        Action u2 = ActionFactory.create("actionNameXXX", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> actionServiceAccess.save(u2));
         String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
                 " one resource with the same value for the field: Name\"}";
@@ -112,7 +109,7 @@ public class ActionServiceTest {
      */
     @Test
     public void testGetById() throws ActionNotFoundException, UniquenessConstraintException {
-        Action u = ActionFactory.create("testGetIdFirstName", ActionType.CREATE, 2L);
+        Action u = ActionFactory.create("testGetIdFirstName", 2L);
         actionServiceAccess.save(u);
         SystemAction result = actionServiceAccess.get(u.getId());
         assertNotNull(result);
@@ -129,10 +126,10 @@ public class ActionServiceTest {
      */
     @Test
     public void testGetByListOfIds() throws UniquenessConstraintException, ActionNotFoundException {
-        Action p1 = ActionFactory.create("testGetByListOfIdsFirstName1", ActionType.LIST, 2L);
+        Action p1 = ActionFactory.create("testGetByListOfIdsFirstName1", 2L);
         actionServiceAccess.save(p1);
 
-        Action p2 = ActionFactory.create("testGetByListOfIdsFirstName2", ActionType.DELETE,2L);
+        Action p2 = ActionFactory.create("testGetByListOfIdsFirstName2", 2L);
         actionServiceAccess.save(p2);
 
         List<Long> ActionIds = Arrays.asList(p1.getId(), p2.getId());
@@ -159,11 +156,11 @@ public class ActionServiceTest {
      */
     @Test
     public void testDeleteById() throws ActionNotFoundException {
-        SystemAction result = actionServiceAccess.get(uTest.getId());
+        SystemAction result = actionServiceAccess.get(actionTest.getId());
         assertNotNull(result);
-        assertEquals(uTest.getName(), result.getName());
-        actionServiceAccess.delete(uTest.getId());
-        result = actionServiceAccess.get(uTest.getId());
+        assertEquals(actionTest.getName(), result.getName());
+        actionServiceAccess.delete(actionTest.getId());
+        result = actionServiceAccess.get(actionTest.getId());
         assertNull(result);
     }
 
@@ -179,16 +176,13 @@ public class ActionServiceTest {
      */
     @Test
     public void testDeleteByListOfIds() throws ActionNotFoundException, UniquenessConstraintException {
-        SystemAction p1 = ActionFactory.create("testDeleteByListOfIdsFirstName1",
-                ActionType.WRITE, 2L);
+        SystemAction p1 = ActionFactory.create("testDeleteByListOfIdsFirstName1", 2L);
         actionServiceAccess.save(p1);
 
-        SystemAction p2 = ActionFactory.create("testDeleteByListOfIdsFirstName2",
-                ActionType.WRITE, 2L);
+        SystemAction p2 = ActionFactory.create("testDeleteByListOfIdsFirstName2",2L);
         actionServiceAccess.save(p2);
 
-        SystemAction p3 = ActionFactory.create("testDeleteByListOfIdsFirstName3",
-                ActionType.WRITE, 2L);
+        SystemAction p3 = ActionFactory.create("testDeleteByListOfIdsFirstName3",2L);
         actionServiceAccess.save(p3);
 
         List<Long> actionIds = Arrays.asList(p1.getId(), p2.getId());
@@ -209,16 +203,13 @@ public class ActionServiceTest {
      */
     @Test
     public void testUpdateSuccess() throws Exception {
-        SystemAction p1 = ActionFactory.create("testUpdateActionName1",
-                ActionType.WRITE, 2L);
+        SystemAction p1 = ActionFactory.create("testUpdateActionName1",2L);
         actionServiceAccess.save(p1);
 
-        SystemAction p2 = ActionFactory.create("testUpdateActionName2",
-                ActionType.WRITE, 2L);
+        SystemAction p2 = ActionFactory.create("testUpdateActionName2",2L);
         actionServiceAccess.save(p2);
 
-        SystemAction p3 = ActionFactory.create("testUpdateActionName1",
-                ActionType.WRITE, 2L);
+        SystemAction p3 = ActionFactory.create("testUpdateActionName1",2L);
 
         p3.setId(p1.getId());
 
@@ -227,8 +218,7 @@ public class ActionServiceTest {
         p1 = actionServiceAccess.get(p1.getId());
 
         assertEquals(p1.getName(), p3.getName());
-        SystemAction u4 = ActionFactory.create("testUpdateActionName4",
-                ActionType.WRITE, 2L);
+        SystemAction u4 = ActionFactory.create("testUpdateActionName4",2L);
 
         u4.setId(p1.getId());
 
@@ -242,16 +232,16 @@ public class ActionServiceTest {
 
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
-        Action p1 = ActionFactory.create("actionName1", ActionType.WRITE, 2L);
+        Action p1 = ActionFactory.create("actionName1", 2L);
         actionServiceAccess.save(p1);
 
-        Action p2 = ActionFactory.create("actionName2", ActionType.WRITE, 2L);
+        Action p2 = ActionFactory.create("actionName2", 2L);
         actionServiceAccess.save(p2);
 
-        Action p3 = ActionFactory.create("actionName3", ActionType.WRITE, 2L);
+        Action p3 = ActionFactory.create("actionName3", 2L);
         actionServiceAccess.save(p3);
 
-        Action u4 = ActionFactory.create("actionName1", ActionType.WRITE, 2L);
+        Action u4 = ActionFactory.create("actionName1", 2L);
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> actionServiceAccess.save(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
@@ -270,19 +260,19 @@ public class ActionServiceTest {
         String expectedMessageName = "{\"code\":101, \"key\":\"error.duplicated.field\", " +
                 "\"message\":\"There is more than one resource with the same value for the field: Name\"}";
 
-        Action p1 = ActionFactory.create("actionNamePerm1", ActionType.WRITE, 2L);
+        Action p1 = ActionFactory.create("actionNamePerm1", 2L);
         actionServiceAccess.save(p1);
 
-        Action p2 = ActionFactory.create("actionNamePerm2", ActionType.WRITE, 2L);
+        Action p2 = ActionFactory.create("actionNamePerm2", 2L);
         actionServiceAccess.save(p2);
 
-        Action p3 = ActionFactory.create("actionNamePerm1", ActionType.WRITE, 2L);
+        Action p3 = ActionFactory.create("actionNamePerm1", 2L);
 
         Exception exceptionForFieldName = assertThrows(Exception.class, () -> actionServiceAccess.save(p3));
         String actualMessage = exceptionForFieldName.getMessage();
         assertTrue(actualMessage.contains(expectedMessageName));
 
-        Action u4 = ActionFactory.create("actionNamePerm2", ActionType.WRITE, 2L);
+        Action u4 = ActionFactory.create("actionNamePerm2", 2L);
 
         Exception exceptionName2 = assertThrows(Exception.class, () -> actionServiceAccess.save(u4));
         String messageFromException = exceptionName2.getMessage();
@@ -291,17 +281,18 @@ public class ActionServiceTest {
 
     @Test
     public void testGetAllSort() throws UniquenessConstraintException, ActionNotFoundException {
-        SystemAction actionA = ActionFactory.create("a", ActionType.WRITE, 2L);
+        SystemAction actionA = ActionFactory.create("a", 2L);
         actionServiceAccess.save(actionA);
-        SystemAction actionB = ActionFactory.create("zzz", ActionType.WRITE, 2L);
+        SystemAction actionB = ActionFactory.create("zzz", 2L);
         actionServiceAccess.save(actionB);
-        SystemAction actionC = ActionFactory.create("d", ActionType.WRITE, 2L);
+        SystemAction actionC = ActionFactory.create("d", 2L);
         actionServiceAccess.save(actionC);
 
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
 
-        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1, 10, orderby, true);
+        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1, 10,
+                orderby, true);
   
         assertTrue(actionPage.getTotalResults()>=3);
 
@@ -318,19 +309,13 @@ public class ActionServiceTest {
     }
     @Test
     public void testGetByIsExactOrLogical() throws UniquenessConstraintException, ActionNotFoundException {
-        SystemAction testById1 = ActionFactory.create("zz", ActionType.WRITE, 1L);
-
-        SystemAction testById2 = ActionFactory.create("aa", ActionType.READ, 1L);
-
-        SystemAction testById3 = ActionFactory.create("aabb", ActionType.EXECUTION, 1L);
-
-        SystemAction testById4 = ActionFactory.create("aabaco", ActionType.READ, 1L);
-
-        SystemAction testById5 = ActionFactory.create("aabaco0", ActionType.READ, 1L);
-
-        SystemAction testById6 = ActionFactory.create("ddd", ActionType.READ, 1L);
-
-        SystemAction testById7 = ActionFactory.create("xxx", ActionType.EXECUTION, 1L);
+        SystemAction testById1 = ActionFactory.create("zz", 1L);
+        SystemAction testById2 = ActionFactory.create("aa", 1L);
+        SystemAction testById3 = ActionFactory.create("aabb", 1L);
+        SystemAction testById4 = ActionFactory.create("aabaco", 1L);
+        SystemAction testById5 = ActionFactory.create("aabaco0", 1L);
+        SystemAction testById6 = ActionFactory.create("ddd", 1L);
+        SystemAction testById7 = ActionFactory.create("xxx", 1L);
 
         actionServiceAccess.save(testById1);
         actionServiceAccess.save(testById2);
@@ -341,25 +326,24 @@ public class ActionServiceTest {
         actionServiceAccess.save(testById7);
 
         List<? extends SystemAction> actionsAnd = actionServiceAccess.getActions(
-                new ActionSearchFilter("zz", null, true,true));
+                new ActionSearchFilter("zz",true,true));
         assertEquals(1, actionsAnd.size());
 
         List<? extends SystemAction> actionsOr = actionServiceAccess.getActions(
-                new ActionSearchFilter("aa", null, true,false));
+                new ActionSearchFilter("aa", true,false));
         assertEquals(1, actionsOr.size());
 
         List<? extends SystemAction> actionsNotExact = actionServiceAccess.getActions(
-                new ActionSearchFilter("aa", null, false,true));
+                new ActionSearchFilter("aa", false,true));
         assertEquals(4, actionsNotExact.size());
 
         List<? extends SystemAction> actions = actionServiceAccess.getActions(
-                new ActionSearchFilter("aabac", ActionType.READ, false,false));
+                new ActionSearchFilter("aabac", false,false));
 
-        assertEquals(4, actions.size());
+        assertEquals(2, actions.size());
 
         ActionSearchFilter actionSearchFilter = new ActionSearchFilter();
         actionSearchFilter.setName("aabac");
-        actionSearchFilter.setActionType(ActionType.READ);
         actionSearchFilter.setExact(false);
         actionSearchFilter.setLogicConjunction(true);
         actions = actionServiceAccess.getActions(actionSearchFilter);
@@ -367,44 +351,14 @@ public class ActionServiceTest {
         assertEquals(2, actions.size());
 
         actions = actionServiceAccess.getActions(
-                new ActionSearchFilter(null, ActionType.EXECUTION, false,true));
+                new ActionSearchFilter(null, false,true));
 
-        assertEquals(2, actions.size());
+        // In necessary to count with the first ever inserted (variable "actionTest")
+        assertEquals(8, actions.size());
 
-        actions = actionServiceAccess.getActions(
-                new ActionSearchFilter("xxx", ActionType.EXECUTION, true,true));
+        actions = actionServiceAccess.getActions(new ActionSearchFilter("xxx", true,true));
 
         assertEquals(1, actions.size());
 
     }
-
-    @Test
-    public void compareEnums() throws UniquenessConstraintException {
-        SystemAction systemAction = null;
-        ActionType[] actionTypes = ActionType.values();
-        Map<Long, SystemActionType> m = new HashMap<>();
-        for (int i=0; i<actionTypes.length; i++) {
-            systemAction = new Action();
-            systemAction.setType(actionTypes[i]);
-            systemAction.setName("actionTest_" + actionTypes[i].getName());
-            m.put(actionTypes[i].getId(), actionTypes[i]);
-            actionServiceAccess.save(systemAction);
-        }
-
-        List<? extends SystemAction> actions =
-                actionServiceAccess.getActions(new ActionSearchFilter("actionTest_",
-                        null, false, false));
-
-        assertEquals(actions.size(), actionTypes.length);
-        assertEquals(actions.size(), m.size());
-
-        for (int i=0; i<actions.size(); i++) {
-            SystemAction sa = actions.get(i);
-            SystemActionType type = m.get(sa.getType().getId());
-            assertTrue(sa.getName().contains(type.getName()));
-            m.remove(sa.getType().getId());
-        }
-
-    }
-
 }

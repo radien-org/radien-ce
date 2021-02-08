@@ -29,7 +29,6 @@ public class ActionTest {
     public ActionTest() {
         action.setId(2L);
         action.setName("action-test");
-        action.setType(ActionType.WRITE);
     }
 
     @Test
@@ -54,31 +53,18 @@ public class ActionTest {
         assertEquals("action-test2", action.getName());
     }
 
-    @Test
-    public void getActionType() {
-        assertEquals(action.getType(), ActionType.WRITE);
-    }
-
-    @Test
-    public void setActionType() {
-        action.setType(ActionType.READ);
-        assertEquals(action.getType(), ActionType.READ);
-    }
 
     @Test
     public void testConstructor() {
         Action original = new Action();
         original.setId(11L);
         original.setName("original");
-        original.setType(ActionType.WRITE);
 
         Action newAction = new Action(original);
         assertNotNull(newAction.getId());
         assertNotNull(newAction.getName());
-        assertNotNull(newAction.getType());
 
         assertEquals(newAction.getId(), original.getId());
         assertEquals(newAction.getName(), original.getName());
-        assertEquals(newAction.getType(), original.getType());
     }
 }

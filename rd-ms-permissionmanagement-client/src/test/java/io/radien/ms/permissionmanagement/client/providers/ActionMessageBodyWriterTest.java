@@ -15,7 +15,6 @@
  */
 package io.radien.ms.permissionmanagement.client.providers;
 
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,8 +49,7 @@ public class ActionMessageBodyWriterTest {
                 "id\":null," +
                 "\"name\":\"a\"," +
                 "\"createUser\":null," +
-                "\"lastUpdateUser\":null," +
-                "\"type\":\"READ\"" +
+                "\"lastUpdateUser\":null" +
                 "}";
 
         Action action = new Action();
@@ -70,8 +68,7 @@ public class ActionMessageBodyWriterTest {
                 "id\":1," +
                 "\"name\":\"action-a\"," +
                 "\"createUser\":28," +
-                "\"lastUpdateUser\":100," +
-                "\"type\":\"" + ActionType.READ.getName() + "\"" +
+                "\"lastUpdateUser\":100" +
                 "}";
 
         Action action = new Action();
@@ -79,7 +76,6 @@ public class ActionMessageBodyWriterTest {
         action.setId(1L);
         action.setCreateUser(28L);
         action.setLastUpdateUser(100L);
-        action.setType(ActionType.READ);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         target.writeTo(action,null,null,

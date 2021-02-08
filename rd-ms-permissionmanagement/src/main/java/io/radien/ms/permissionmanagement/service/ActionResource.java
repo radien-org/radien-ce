@@ -20,7 +20,6 @@ import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
 import io.radien.ms.permissionmanagement.model.Action;
@@ -61,16 +60,12 @@ public class ActionResource implements ActionResourceClient {
 	}
 
 	@Override
-	public Response getActions(String name, String actionType, boolean isExact,
+	public Response getActions(String name, boolean isExact,
 							   boolean isLogicalConjunction) {
 
 		try {
-			ActionType type = ActionType.getByName(actionType);
-			if (type == null) {
-				throw new SystemException("Unknown Action Type");
-			}
 			return Response.ok(actionServiceAccess.getActions(new ActionSearchFilter(name,
-					type, isExact, isLogicalConjunction))).build();
+					isExact, isLogicalConjunction))).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}

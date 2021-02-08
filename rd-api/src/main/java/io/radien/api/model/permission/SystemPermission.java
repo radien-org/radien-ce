@@ -23,4 +23,6 @@ import io.radien.api.model.Model;
 public interface SystemPermission extends Model {
     String getName();
     void setName(String name);
+    Long getActionId();
+    void setActionId(Long actionId);
 }

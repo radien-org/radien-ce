@@ -1,9 +1,6 @@
 package io.radien.ms.permissionmanagement.client.providers;
 
-import io.radien.api.model.permission.SystemAction;
-import io.radien.api.model.permission.SystemPermission;
 import io.radien.ms.permissionmanagement.client.entities.Action;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.services.ActionFactory;
 import io.radien.ms.permissionmanagement.client.services.PermissionFactory;
@@ -30,36 +27,13 @@ public class PermissionMessageBodyReaderTest {
     }
 
     @Test
-    public void testReadUnknownActionType() throws IOException {
-        String json = "{\n" +
-                "    \"id\": 4,\n" +
-                "    \"name\": \"permission-5\",\n" +
-                "    \"action\": {\n" +
-                "            \"id\": 3,\n" +
-                "            \"name\": \"action-2\",\n" +
-                "            \"type\": \"READ-W\"\n" +
-                "        }\n" +
-                "}";
-        InputStream inputStream = new ByteArrayInputStream(json.getBytes());
-        boolean foundIssue = false;
-        try {
-            SystemPermission sa = reader.readFrom(Permission.class,
-                    Permission.class, null, null, null, inputStream);
-        }
-        catch(Exception e) {
-            foundIssue = true;
-        }
-        Assert.assertTrue(foundIssue);
-    }
-
-    @Test
     public void testRead() throws IOException {
         String permissionName = "permission-radien-a";
         Long id = 111L;
         Long createUser = 222L;
         Long updateUser = 333L;
         Action action = null;
-        Permission p = PermissionFactory.create(permissionName, action,
+        Permission p = PermissionFactory.create(permissionName, null,
                 createUser);
         p.setLastUpdateUser(updateUser);
         p.setId(id);
@@ -73,7 +47,7 @@ public class PermissionMessageBodyReaderTest {
         Assert.assertEquals(p.getCreateUser(), p2.getCreateUser());
         Assert.assertEquals(p.getLastUpdateUser(), p2.getLastUpdateUser());
         Assert.assertEquals(p.getName(), p2.getName());
-        compareActions(p.getAction(), p2.getAction());
+        Assert.assertEquals(p.getActionId(), p2.getActionId());
 
         // Setting others fields with null (id, action, createUser, lastUpdateUser,..., etc)
         p = PermissionFactory.create(permissionName, null, null);
@@ -87,12 +61,12 @@ public class PermissionMessageBodyReaderTest {
         Assert.assertEquals(p.getCreateUser(), p2.getCreateUser());
         Assert.assertEquals(p.getLastUpdateUser(), p2.getLastUpdateUser());
         Assert.assertEquals(p.getName(), p2.getName());
-        compareActions(p.getAction(), p2.getAction());
+        Assert.assertEquals(p.getActionId(), p2.getActionId());
 
         p.setLastUpdateUser(111111L);
-        action = ActionFactory.create("Update-Radien-User", ActionType.WRITE, 28L);
+        action = ActionFactory.create("Update-Radien-User", 28L);
         action.setId(11L);
-        p.setAction(action);
+        p.setActionId(action.getId());
 
         json = getJsonOmittingNullFields(p);
         in = new ByteArrayInputStream(json.getBytes());
@@ -103,19 +77,7 @@ public class PermissionMessageBodyReaderTest {
         Assert.assertEquals(p.getCreateUser(), p2.getCreateUser());
         Assert.assertEquals(p.getLastUpdateUser(), p2.getLastUpdateUser());
         Assert.assertEquals(p.getName(), p2.getName());
-        compareActions(p.getAction(), p2.getAction());
-    }
-
-    private void compareActions(Action a, Action b) {
-        if (a == null) {
-            Assert.assertNull(b);
-            return;
-        }
-
-        Assert.assertNotNull(b);
-        Assert.assertEquals(a.getName(), b.getName());
-        Assert.assertEquals(a.getType(), b.getType());
-        Assert.assertEquals(a.getId(), b.getId());
+        Assert.assertEquals(p.getActionId(), p2.getActionId());
     }
 
     private java.lang.String getJsonString(Permission p) {
@@ -124,16 +86,8 @@ public class PermissionMessageBodyReaderTest {
         params.append("\"id\":").append(p.getId()).append(",");
         params.append("\"createUser\":").append(p.getCreateUser()).append(",");
         params.append("\"lastUpdateUser\":").append(p.getLastUpdateUser()).append(",");
+        params.append("\"actionId\":").append(p.getActionId()).append(",");
         params.append("\"name\":\"").append(p.getName()).append("\"");
-
-        params.append(",");
-        params.append("\"action\":");
-        if (p.getAction() != null) {
-            params.append(ActionFactory.convertToJsonObject(p.getAction()));
-        }
-        else {
-            params.append("null");
-        }
 
         StringBuffer bf = new StringBuffer();
         bf.append("{").append(params).append("}");
@@ -166,9 +120,9 @@ public class PermissionMessageBodyReaderTest {
             params.append("\"name\":\"").append(p.getName()).append("\"");
         }
 
-        if (p.getAction() != null) {
+        if (p.getActionId() != null) {
             params.append(",");
-            params.append("\"action\":").append(ActionFactory.convertToJsonObject(p.getAction()));
+            params.append("\"actionId\":").append(p.getActionId());
         }
 
         StringBuffer bf = new StringBuffer();

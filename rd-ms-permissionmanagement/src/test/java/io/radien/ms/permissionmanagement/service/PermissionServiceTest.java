@@ -26,7 +26,6 @@ import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
@@ -77,7 +76,7 @@ public class PermissionServiceTest {
             }
             aTest = actionPage.getResults().get(0);
 
-            pTest = PermissionFactory.create("permissionName", (Action) aTest, 2L);
+            pTest = PermissionFactory.create("permissionName", aTest.getId(), 2L);
             permissionServiceAccess.save(pTest);
         }
     }
@@ -368,7 +367,7 @@ public class PermissionServiceTest {
         sp = PermissionFactory.create("perm-radien-2", null, 1L);
         permissionServiceAccess.save(sp);
 
-        SystemAction sa = ActionFactory.create("read-contract", ActionType.READ, null);
+        SystemAction sa = ActionFactory.create("read-contract", null);
         actionServiceAccess.save(sa);
 
         // Retrieve the permission
@@ -381,17 +380,15 @@ public class PermissionServiceTest {
         // Retrieve the action
         SystemActionSearchFilter filter = new ActionSearchFilter();
         filter.setName("read-contract");
-        filter.setActionType(ActionType.READ);
         filter.setLogicConjunction(true);
         List<? extends SystemAction> actions = actionServiceAccess.getActions(filter);
         Action action = (Action) actions.get(0);
 
         assertNotNull(action);
         assertEquals(action.getName(), sa.getName());
-        assertEquals(action.getType(), sa.getType());
 
         // Setting action
-        permission.setAction(action);
+        permission.setActionId(action.getId());
 
         // Save permission
         permissionServiceAccess.save(permission);
@@ -400,9 +397,7 @@ public class PermissionServiceTest {
         permissions = permissionServiceAccess.getPermissions(permissionFilter);
         SystemPermission p = permissions.get(0);
 
-        assertNotNull(p.getAction());
-        assertEquals(p.getAction().getId(), action.getId());
-        assertEquals(p.getAction().getType(), action.getType());
-        assertEquals(p.getAction().getName(), action.getName());
+        assertNotNull(p.getActionId());
+        assertEquals(p.getActionId(), action.getId());
     }
 }

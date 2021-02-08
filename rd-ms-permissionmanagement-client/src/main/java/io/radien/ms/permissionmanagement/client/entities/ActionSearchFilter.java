@@ -22,16 +22,14 @@ import io.radien.api.model.permission.SystemPermissionSearchFilter;
 public class ActionSearchFilter implements SystemActionSearchFilter {
 
     private String name;
-    private ActionType actionType;
     private boolean isExact;
     private boolean isLogicConjunction;
 
     public ActionSearchFilter(){}
 
-    public ActionSearchFilter(String name, ActionType type,
+    public ActionSearchFilter(String name,
                               boolean isExact, boolean isLogicConjunction) {
         this.name = name;
-        this.actionType = type;
         this.isExact = isExact;
         this.isLogicConjunction = isLogicConjunction;
     }
@@ -41,14 +39,6 @@ public class ActionSearchFilter implements SystemActionSearchFilter {
 
     @Override
     public void setName(String name) { this.name = name; }
-
-    public ActionType getActionType() { return actionType; }
-
-    public void setActionType(ActionType type) { this.actionType = type; }
-
-    public void setActionType(SystemActionType type) {
-        this.setActionType((ActionType) type);
-    }
 
     @Override
     public boolean isExact() {

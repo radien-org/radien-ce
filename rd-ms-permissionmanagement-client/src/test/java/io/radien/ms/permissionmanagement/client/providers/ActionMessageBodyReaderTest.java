@@ -2,7 +2,6 @@ package io.radien.ms.permissionmanagement.client.providers;
 
 import io.radien.api.model.permission.SystemAction;
 import io.radien.ms.permissionmanagement.client.entities.Action;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.services.ActionFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -28,29 +27,13 @@ public class ActionMessageBodyReaderTest {
     }
 
     @Test
-    public void testReadUnknownActionType() throws IOException {
-        String json = "{\"id\": 3, \"name\": \"action-2\", \"type\": \"READ-WWW\"}";
-        InputStream inputStream = new ByteArrayInputStream(json.getBytes());
-        boolean foundIssue = false;
-        try {
-            SystemAction sa = reader.readFrom(Action.class,
-                    Action.class, null, null, null, inputStream);
-        }
-        catch(Exception e) {
-            foundIssue = true;
-        }
-        Assert.assertTrue(foundIssue);
-    }
-
-    @Test
     public void testRead() throws IOException {
         String actionName = "action-radien-a";
         Long id = 111L;
         Long createUser = 222L;
         Long updateUser = 333L;
-        ActionType action = ActionType.READ;
 
-        Action a = ActionFactory.create(actionName, action, createUser);
+        Action a = ActionFactory.create(actionName, createUser);
         a.setLastUpdateUser(updateUser);
         a.setId(id);
         String json = getJsonString(a);
@@ -63,10 +46,9 @@ public class ActionMessageBodyReaderTest {
         Assert.assertEquals(a.getCreateUser(), a2.getCreateUser());
         Assert.assertEquals(a.getLastUpdateUser(), a2.getLastUpdateUser());
         Assert.assertEquals(a.getName(), a2.getName());
-        Assert.assertEquals(a.getType(), a2.getType());
 
         // Setting others fields with null (id, action, createUser, lastUpdateUser,..., etc)
-        a = ActionFactory.create(actionName, null, null);
+        a = ActionFactory.create(actionName, null);
 
         json = getJsonString(a);
         in = new ByteArrayInputStream(json.getBytes());
@@ -77,10 +59,8 @@ public class ActionMessageBodyReaderTest {
         Assert.assertEquals(a.getCreateUser(), a2.getCreateUser());
         Assert.assertEquals(a.getLastUpdateUser(), a2.getLastUpdateUser());
         Assert.assertEquals(a.getName(), a2.getName());
-        Assert.assertEquals(a.getType(), a2.getType());
 
         a.setLastUpdateUser(111111L);
-        a.setType(ActionType.WRITE);
         json = getJsonOmittingNullFields(a);
         in = new ByteArrayInputStream(json.getBytes());
         a2 = reader.readFrom(null, null,
@@ -90,7 +70,6 @@ public class ActionMessageBodyReaderTest {
         Assert.assertEquals(a.getCreateUser(), a2.getCreateUser());
         Assert.assertEquals(a.getLastUpdateUser(), a2.getLastUpdateUser());
         Assert.assertEquals(a.getName(), a2.getName());
-        Assert.assertEquals(a.getType(), a2.getType());
     }
 
     private String getJsonString(Action a) {
@@ -99,17 +78,7 @@ public class ActionMessageBodyReaderTest {
         params.append("\"id\":").append(a.getId()).append(",");
         params.append("\"createUser\":").append(a.getCreateUser()).append(",");
         params.append("\"lastUpdateUser\":").append(a.getLastUpdateUser()).append(",");
-        params.append("\"name\":\"").append(a.getName()).append("\"").append(",");
-
-        String actionAsString = a.getType() != null ? a.getType().getName() : null;
-        params.append("\"type\":");
-        if (actionAsString != null) {
-            params.append("\"");
-        }
-        params.append(actionAsString);
-        if (actionAsString != null) {
-            params.append("\"");
-        }
+        params.append("\"name\":\"").append(a.getName()).append("\"");
 
         StringBuffer bf = new StringBuffer();
         bf.append("{").append(params).append("}");
@@ -140,11 +109,6 @@ public class ActionMessageBodyReaderTest {
             if (params.length() > 0)
                 params.append(",");
             params.append("\"name\":\"").append(a.getName()).append("\"");
-        }
-
-        if (a.getType() != null) {
-            params.append(",");
-            params.append("\"type\":\"").append(a.getType().getName()).append("\"");
         }
 
         StringBuffer bf = new StringBuffer();

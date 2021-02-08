@@ -56,7 +56,7 @@ public class PermissionBusinessService {
                 throw new ActionNotFoundException(String.format(BASE_MSG, "Action", actionId));
             }
 
-            sp.setAction(sa);
+            sp.setActionId(sa.getId());
             permissionServiceAccess.save(sp);
         }
         catch (ActionNotFoundException | PermissionNotFoundException e) {
@@ -72,7 +72,7 @@ public class PermissionBusinessService {
             if (sp == null) {
                 throw new PermissionNotFoundException(String.format(BASE_MSG, "Permission", permissionId));
             }
-            sp.setAction(null);
+            sp.setActionId(null);
             permissionServiceAccess.save(sp);
         } catch (PermissionNotFoundException e) {
             this.log.error("error associating permission with action", e);

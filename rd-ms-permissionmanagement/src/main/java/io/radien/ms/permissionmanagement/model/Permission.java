@@ -32,10 +32,6 @@ public class Permission extends io.radien.ms.permissionmanagement.client.entitie
 
 	public Permission(io.radien.ms.permissionmanagement.client.entities.Permission p) {
 		super(p);
-		// TODO: Necessary review it
-		if (p.getAction() != null) {
-			this.setAction(new Action(p.getAction()));
-		}
 	}
 
 	@Override
@@ -46,20 +42,15 @@ public class Permission extends io.radien.ms.permissionmanagement.client.entitie
 		return super.getId();
 	}
 
-
 	@Override
 	@Column(name = "NAME", nullable = false, unique = true)
 	public String getName() {
 		return super.getName();
 	}
 
-	@OneToOne(targetEntity = io.radien.ms.permissionmanagement.model.Action.class)
-	@JoinColumn(name = "ACTION_ID")
-	public Action getAction() {
-		return (Action) super.getAction();
-	}
-
-	public void setAction(Action a) {
-		super.setAction(a);
+	@Override
+	@Column
+	public Long getActionId() {
+		return super.getActionId();
 	}
 }

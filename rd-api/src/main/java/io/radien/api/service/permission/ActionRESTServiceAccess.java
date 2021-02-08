@@ -25,10 +25,26 @@ import java.util.Optional;
 /**
  * @author n.carvalho
  *
+ * Contract for Rest Service Client regarding SystemAction domain object
+ *
  */
 public interface ActionRESTServiceAccess extends Appframeable {
 
-    public Optional<SystemAction> getActionByName(String name) throws SystemException ;
+    /**
+     * Retrieves a Action by Id
+     * @param id
+     * @return
+     * @throws SystemException
+     */
+    public Optional<SystemAction> getActionById(Long id) throws SystemException;
+
+    /**
+     * Retrieves a Action by Name
+     * @param name
+     * @return
+     * @throws SystemException
+     */
+    public Optional<SystemAction> getActionByName(String name) throws SystemException;
 
     /**
      * Creates given action

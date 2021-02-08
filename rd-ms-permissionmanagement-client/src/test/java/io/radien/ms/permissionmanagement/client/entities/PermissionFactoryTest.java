@@ -16,14 +16,14 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.ms.permissionmanagement.client.services.PermissionFactory;
-import junit.framework.TestCase;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
-public class PermissionFactoryTest extends TestCase {
+public class PermissionFactoryTest {
 
     JsonObject json;
     Permission perm;
@@ -38,8 +38,9 @@ public class PermissionFactoryTest extends TestCase {
         builder.add("name", "permissionTest");
         builder.add("createUser", 2L);
         builder.addNull("lastUpdateUser");
+        builder.addNull("actionId");
         json = builder.build();
-        perm = PermissionFactory.create("permissionTest", 2L);
+        perm = PermissionFactory.create("permissionTest", null,2L);
     }
 
     /**
@@ -47,8 +48,9 @@ public class PermissionFactoryTest extends TestCase {
      */
     @Test
     public void testCreate() {
-        assertEquals("permissionTest", perm.getName());
-        assertEquals((Long) 2L, perm.getCreateUser());
+        Assert.assertEquals("permissionTest", perm.getName());
+        Assert.assertEquals((Long) 2L, perm.getCreateUser());
+        Assert.assertEquals(null, perm.getActionId());
     }
 
     /**
@@ -57,10 +59,11 @@ public class PermissionFactoryTest extends TestCase {
     @Test
     public void testConvert() {
         Permission constructedNewPermission = PermissionFactory.convert(json);
-        assertEquals(perm.getId(), constructedNewPermission.getId());
-        assertEquals(perm.getName(), constructedNewPermission.getName());
-        assertEquals(perm.getCreateUser(), constructedNewPermission.getCreateUser());
-        assertEquals(perm.getLastUpdateUser(), constructedNewPermission.getLastUpdateUser());
+        Assert.assertEquals(perm.getId(), constructedNewPermission.getId());
+        Assert.assertEquals(perm.getName(), constructedNewPermission.getName());
+        Assert.assertEquals(perm.getCreateUser(), constructedNewPermission.getCreateUser());
+        Assert.assertEquals(perm.getLastUpdateUser(), constructedNewPermission.getLastUpdateUser());
+        Assert.assertEquals(perm.getActionId(), constructedNewPermission.getActionId());
     }
 
     /**
@@ -69,6 +72,6 @@ public class PermissionFactoryTest extends TestCase {
     @Test
     public void testConvertToJsonObject() {
         JsonObject constructedNewJson = PermissionFactory.convertToJsonObject(perm);
-        assertEquals(json.toString(), constructedNewJson.toString());
+        Assert.assertEquals(json.toString(), constructedNewJson.toString());
     }
 }

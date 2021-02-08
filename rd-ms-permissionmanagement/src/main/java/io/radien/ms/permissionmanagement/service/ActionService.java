@@ -21,7 +21,6 @@ import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.model.Action;
 
@@ -268,8 +267,7 @@ public class ActionService implements ActionServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, actionRoot, global);
-        global = getFieldPredicate("type", filter.getActionType(), filter, criteriaBuilder, actionRoot, global);
+        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, actionRoot, global);;
 
         return global;
     }
@@ -282,15 +280,10 @@ public class ActionService implements ActionServiceAccess {
         if(value != null) {
             Predicate subPredicate;
 
-            if (value instanceof ActionType) {
+            if (filter.isExact()) {
                 subPredicate = criteriaBuilder.equal(actionRoot.get(name), value);
-            }
-            else {
-                if (filter.isExact()) {
-                    subPredicate = criteriaBuilder.equal(actionRoot.get(name), value);
-                } else {
-                    subPredicate = criteriaBuilder.like(actionRoot.get(name), "%" + value + "%");
-                }
+            } else {
+                subPredicate = criteriaBuilder.like(actionRoot.get(name), "%" + value + "%");
             }
             if(filter.isLogicConjunction()) {
                 global = criteriaBuilder.and(global, subPredicate);

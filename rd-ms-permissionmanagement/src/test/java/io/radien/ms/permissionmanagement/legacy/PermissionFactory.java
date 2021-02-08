@@ -18,7 +18,6 @@ package io.radien.ms.permissionmanagement.legacy;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.permissionmanagement.client.entities.ActionType;
 import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.Permission;
 
@@ -43,14 +42,14 @@ public class PermissionFactory {
      * @param name description for the permission
      * @return a User object to be used
      */
-    public static Permission create(String name, Action action, Long createdUser) {
+    public static Permission create(String name, Long action, Long createdUser) {
         Permission p = new Permission();
         p.setName(name);
         p.setCreateUser(createdUser);
         Date now = new Date();
         p.setLastUpdate(now);
         p.setCreateDate(now);
-        p.setAction(action);
+        p.setActionId(action);
         return p;
     }
 
@@ -66,6 +65,7 @@ public class PermissionFactory {
         String name = FactoryUtilService.getStringFromJson("name", permission);
         Long createUser = FactoryUtilService.getLongFromJson("createUser", permission);
         Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", permission);
+        Long actionId = FactoryUtilService.getLongFromJson("actionId", permission);
 
         Permission p = new Permission();
         p.setId(id);
@@ -74,11 +74,7 @@ public class PermissionFactory {
         p.setLastUpdate(new Date());
         p.setCreateUser(createUser);
         p.setLastUpdateUser(lastUpdateUser);
-
-        JsonValue jsonValue = permission.get("action");
-        if (jsonValue != null && JsonValue.ValueType.OBJECT == jsonValue.getValueType()) {
-            p.setAction(createActionFromJson(jsonValue.asJsonObject()));
-        }
+        p.setActionId(actionId);
         return p;
     }
 
@@ -87,20 +83,12 @@ public class PermissionFactory {
         String name = FactoryUtilService.getStringFromJson("name", actionAsJsonObject);
         Long createAction = FactoryUtilService.getLongFromJson("createUser", actionAsJsonObject);
         Long updateAction = FactoryUtilService.getLongFromJson("lastUpdateUser", actionAsJsonObject);
-        String actionTypeAsString = FactoryUtilService.getStringFromJson("type", actionAsJsonObject);
 
         Action action = new Action();
         action.setId(id);
         action.setName(name);
         action.setCreateUser(createAction);
         action.setLastUpdateUser(updateAction);
-
-        if (actionTypeAsString != null) {
-            ActionType type = ActionType.getByName(actionTypeAsString);
-            if (type == null)
-                throw new IllegalStateException("Unknown action type");
-            action.setType(type);
-        }
         return action;
     }
 
@@ -116,11 +104,7 @@ public class PermissionFactory {
         FactoryUtilService.addValue(builder, "name", permission.getName());
         FactoryUtilService.addValueLong(builder, "createUser", permission.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", permission.getLastUpdateUser());
-        if (permission.getAction() != null) {
-            builder.add("action", convertActionToJson(permission.getAction()));
-        } else {
-            builder.addNull("action");
-        }
+        FactoryUtilService.addValueLong(builder, "actionId", permission.getActionId());
         return  builder.build();
     }
 
@@ -130,7 +114,6 @@ public class PermissionFactory {
         FactoryUtilService.addValue(builder, "name", sa.getName());
         FactoryUtilService.addValueLong(builder, "createUser", sa.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", sa.getLastUpdateUser());
-        FactoryUtilService.addValue(builder, "type", sa.getType());
         return builder.build();
     }
 }

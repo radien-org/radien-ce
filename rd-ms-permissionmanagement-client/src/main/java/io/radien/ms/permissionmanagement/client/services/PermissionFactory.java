@@ -16,7 +16,6 @@
 package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 
 import javax.json.JsonArray;
@@ -38,14 +37,14 @@ public class PermissionFactory {
      * @param createUser the user which has created the permission
      * @return a Permission object to be used
      */
-    public static Permission create(String name, Action action, Long createUser){
+    public static Permission create(String name, Long actionId, Long createUser){
         Permission u = new Permission();
         u.setName(name);
         u.setCreateUser(createUser);
         Date now = new Date();
         u.setLastUpdate(now);
         u.setCreateDate(now);
-        u.setAction(action);
+        u.setActionId(actionId);
         return u;
     }
 
@@ -61,19 +60,15 @@ public class PermissionFactory {
         String name = FactoryUtilService.getStringFromJson("name", permission);
         Long createPermission = FactoryUtilService.getLongFromJson("createUser", permission);
         Long updatePermission = FactoryUtilService.getLongFromJson("lastUpdateUser", permission);
-
+        Long actionId = FactoryUtilService.getLongFromJson("actionId", permission);
         Permission perm = new Permission();
         perm.setId(id);
         perm.setName(name);
         perm.setCreateUser(createPermission);
         perm.setLastUpdateUser(updatePermission);
+        perm.setActionId(actionId);
         perm.setCreateDate(new Date());
         perm.setLastUpdate(new Date());
-
-        JsonValue actionAsJsonValue = permission.get("action");
-        if (actionAsJsonValue != null && actionAsJsonValue.getValueType() == JsonValue.ValueType.OBJECT) {
-            perm.setAction(ActionFactory.convert(actionAsJsonValue.asJsonObject()));
-        }
         return perm;
     }
 
@@ -89,11 +84,7 @@ public class PermissionFactory {
         FactoryUtilService.addValue(builder, "name", perm.getName());
         FactoryUtilService.addValueLong(builder, "createUser", perm.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", perm.getLastUpdateUser());
-        if (perm.getAction() != null) {
-            builder.add("action", ActionFactory.convertToJsonObject(perm.getAction()));
-        } else {
-            builder.addNull("action");
-        }
+        FactoryUtilService.addValueLong(builder, "actionId", perm.getActionId());
         return builder.build();
     }
 

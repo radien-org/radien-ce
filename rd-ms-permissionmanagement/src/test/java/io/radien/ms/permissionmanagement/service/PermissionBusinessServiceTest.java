@@ -51,7 +51,7 @@ public class PermissionBusinessServiceTest {
         action.setName("remove-user-from-tenant");
         actionServiceAccess.save(action);
         List<? extends SystemAction> actions = actionServiceAccess.getActions(new ActionSearchFilter(
-                "remove-user-from-tenant", null, true, false));
+                "remove-user-from-tenant", true, false));
 
         action = actions.get(0);
 
@@ -93,7 +93,7 @@ public class PermissionBusinessServiceTest {
         SystemPermission sp = list.get(0);
 
         Assert.assertNotNull(sp);
-        Assert.assertNotNull(sp.getAction());
+        Assert.assertNotNull(sp.getActionId());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class PermissionBusinessServiceTest {
         SystemPermission sp = list.get(0);
 
         Assert.assertNotNull(sp);
-        Assert.assertNull(sp.getAction());
+        Assert.assertNull(sp.getActionId());
     }
 
     @Test

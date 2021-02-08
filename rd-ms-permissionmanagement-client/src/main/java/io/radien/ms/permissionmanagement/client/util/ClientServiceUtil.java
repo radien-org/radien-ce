@@ -15,13 +15,17 @@
  */
 package io.radien.ms.permissionmanagement.client.util;
 
+import io.radien.ms.permissionmanagement.client.entities.Action;
+import io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyWriter;
 import io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyWriter;
+import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import io.radien.ms.permissionmanagement.client.PermissionResponseExceptionMapper;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
 
 import javax.ejb.Stateless;
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -36,4 +40,14 @@ public class ClientServiceUtil {
                 .register(PermissionMessageBodyWriter.class)
                 .build(PermissionResourceClient.class);
     }
+    public ActionResourceClient getActionResourceClient(String urlStr) throws MalformedURLException {
+        URL url = new URL(urlStr);
+        return RestClientBuilder.
+                newBuilder()
+                .baseUrl(url)
+                .register(PermissionResponseExceptionMapper.class)
+                .register(ActionMessageBodyWriter.class)
+                .build(ActionResourceClient.class);
+    }
+
 }

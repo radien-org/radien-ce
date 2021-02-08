@@ -25,9 +25,24 @@ import java.util.Optional;
 /**
  * @author n.carvalho
  *
+ * Contract for Rest Service Client regarding SystemPermission domain object
  */
 public interface PermissionRESTServiceAccess extends Appframeable {
 
+    /**
+     * Retrieves a Permission by Id
+     * @param id
+     * @return
+     * @throws SystemException
+     */
+    public Optional<SystemPermission> getPermissionById(Long id) throws SystemException ;
+
+    /**
+     * Retrieves a Permission by Name
+     * @param name
+     * @return
+     * @throws SystemException
+     */
     public Optional<SystemPermission> getPermissionByName(String name) throws SystemException ;
 
     /**

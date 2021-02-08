@@ -43,17 +43,13 @@ public class PermissionFactoryTest2 {
         builder.add("createUser", 2L);
 
         //builder.add("actionType", String.valueOf(ActionType.WRITE));
-        action = ActionFactory.create("Add new user to radien", ActionType.WRITE, 28L);
+        action = ActionFactory.create("Add new user to radien", 28L);
         action.setId(100L);
-        JsonObject actionJsonObject = Json.createObjectBuilder().
-                add("id", action.getId()).
-                add("name", action.getName()).
-                add("type", action.getType().getName()).build();
-        builder.add("action", actionJsonObject);
+        builder.add("actionId", action.getId());
 
         json = builder.build();
         permission = PermissionFactory.create("permission-bbb",
-                action, 2L);
+                action.getId(), 2L);
     }
 
     /**
@@ -62,14 +58,12 @@ public class PermissionFactoryTest2 {
     @Test
     public void create() {
         Permission constructedNewPermission = PermissionFactory.create("permission-bbb",
-                        action, 2L);
+                        action.getId(), 2L);
 
         assertEquals(permission.getId(), constructedNewPermission.getId());
         assertEquals(permission.getCreateUser(), constructedNewPermission.getCreateUser());
         assertEquals(permission.getLastUpdateUser(), constructedNewPermission.getLastUpdateUser());
-        assertEquals(permission.getAction().getName(), constructedNewPermission.getAction().getName());
-        assertEquals(permission.getAction().getType(), constructedNewPermission.getAction().getType());
-        assertEquals(permission.getAction().getId(), constructedNewPermission.getAction().getId());
+        assertEquals(permission.getActionId(), constructedNewPermission.getActionId());
     }
 
     /**
@@ -84,8 +78,6 @@ public class PermissionFactoryTest2 {
         assertEquals(permission.getLastUpdateUser(), newPermission.getLastUpdateUser());
         assertEquals(permission.getName(), newPermission.getName());
 
-        assertEquals(permission.getAction().getName(), newPermission.getAction().getName());
-        assertEquals(permission.getAction().getType(), newPermission.getAction().getType());
-        assertEquals(permission.getAction().getId(), newPermission.getAction().getId());
+        assertEquals(permission.getActionId(), newPermission.getActionId());
     }
 }

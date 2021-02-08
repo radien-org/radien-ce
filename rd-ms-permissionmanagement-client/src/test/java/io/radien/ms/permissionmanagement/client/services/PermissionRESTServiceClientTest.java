@@ -43,6 +43,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 /**
@@ -246,4 +247,38 @@ public class PermissionRESTServiceClientTest {
         assertNotNull(oafAccess);
     }
 
+
+    @Test
+    public void testGetPermissionByIdExtensionException() throws Exception {
+        boolean success = false;
+        when(clientServiceUtil.getPermissionResourceClient(
+                getPermissionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        try {
+            target.getPermissionById(1L);
+        }catch (SystemException se){
+            if (se.getMessage().contains(ExtensionException.class.getName())) {
+                success = true;
+            }
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testGetPermissionByIdProcessingException() throws Exception {
+        boolean success = false;
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(resourceClient.getById(anyLong()))
+                .thenThrow(new ProcessingException("test"));
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+
+        try {
+            target.getPermissionById(1L);
+        }
+        catch (SystemException se){
+            if (se.getMessage().contains(ProcessingException.class.getName())) {
+                success = true;
+            }
+        }
+        assertTrue(success);
+    }
 }
