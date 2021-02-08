@@ -18,12 +18,12 @@ package io.radien.ms.permissionmanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
-import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.permission.SystemAction;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
+import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
-
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -51,10 +54,10 @@ import static org.mockito.Mockito.when;
  * @author Nuno Santana
  * @author Bruno Gama
  */
-public class PermissionRESTServiceClientTest {
+public class ActionRESTServiceClientTest {
 
     @InjectMocks
-    PermissionRESTServiceClient target;
+    ActionRESTServiceClient target;
 
     @Mock
     ClientServiceUtil clientServiceUtil;
@@ -68,7 +71,7 @@ public class PermissionRESTServiceClientTest {
     }
 
     @Test
-    public void testGetPermissionByName() throws Exception {
+    public void testGetActionByName() throws Exception {
         String a = "a";
 
         JsonArrayBuilder builder = Json.createArrayBuilder();
@@ -82,29 +85,28 @@ public class PermissionRESTServiceClientTest {
 
         Response response = Response.ok(is).build();
 
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
 
-        when(resourceClient.getPermissions(a,true,true)).thenReturn(response);
+        when(resourceClient.getActions(a,true,true)).thenReturn(response);
 
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
-        assertEquals(Optional.empty(),target.getPermissionByName(a));
+        assertEquals(Optional.empty(),target.getActionByName(a));
     }
 
-    private String getPermissionManagementUrl(){
+    private String getActionManagementUrl(){
         String url = "";
         when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT)).thenReturn(url);
         return url;
     }
 
     @Test
-    public void testGetPermissionByNameWithResults() throws Exception {
+    public void testGetActionByNameWithResults() throws Exception {
         String a = "a";
-        Permission permission = PermissionFactory.create("permission-aaa", null,null);
-        permission.setName(a);
+        Action action = ActionFactory.create("action-aaa", null);
 
         JsonArrayBuilder builder = Json.createArrayBuilder();
-        builder.add(PermissionFactory.convertToJsonObject(permission));
+        builder.add(ActionFactory.convertToJsonObject(action));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonWriter jsonWriter = Json.createWriter(baos);
@@ -115,67 +117,43 @@ public class PermissionRESTServiceClientTest {
 
         Response response = Response.ok(is).build();
 
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
-        when(resourceClient.getPermissions(a,true,true))
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(resourceClient.getActions(a,true,true))
                 .thenReturn(response);
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
-        assertTrue(target.getPermissionByName(a).isPresent());
+        assertTrue(target.getActionByName(a).isPresent());
     }
 
     @Test
-    public void testGetPermissionByIdWithResults() throws Exception {
-//        String a = "a";
-//        Permission permission = PermissionFactory.create("permission-aaa", null,null);
-//        permission.setName(a);
-//
-//        JsonArrayBuilder builder = Json.createArrayBuilder();
-//        builder.add(PermissionFactory.convertToJsonObject(permission));
-//
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        JsonWriter jsonWriter = Json.createWriter(baos);
-//        jsonWriter.writeArray(builder.build());
-//        jsonWriter.close();
-//
-//        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-//
-//        Response response = Response.ok(is).build();
-
-
-
-        Permission p = PermissionFactory.create("permission-a", 1L, 2l);
-        p.setId(11L);
+    public void testGetActionByIdWithResults() throws Exception {
+        Action action = ActionFactory.create("permission-a", 2l);
+        action.setId(11L);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeObject(PermissionFactory.convertToJsonObject(p));
+        jsonWriter.writeObject(ActionFactory.convertToJsonObject(action));
         jsonWriter.close();
 
         InputStream is = new ByteArrayInputStream(baos.toByteArray());
 
         Response response = Response.ok(is).build();
 
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         when(resourceClient.getById(anyLong())).
                 thenReturn(response);
 
-        Optional<SystemPermission> opt = target.getPermissionById(p.getId());
+        Optional<SystemAction> opt = target.getActionById(action.getId());
         assertNotNull(opt);
         assertTrue(opt.isPresent());
-        assertEquals(opt.get().getId(), p.getId());
-//
-//        resourceClient.getById()
-//
-//        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
-//
-//        assertTrue(target.getPermissionByName(a).isPresent());
+        assertEquals(opt.get().getId(), action.getId());
     }
 
     @Test
-    public void testGetPermissionByNameNonUnique() throws Exception {
+    public void testGetActionByNameNonUnique() throws Exception {
         String a = "a";
-        Page<Permission> page = new Page<>(new ArrayList<>(),1,2,0);
+        Page<Action> page = new Page<>(new ArrayList<>(),1,2,0);
 
         JsonObjectBuilder builder = Json.createObjectBuilder();
         FactoryUtilService.addValueInt(builder, "currentPage", page.getCurrentPage());
@@ -191,13 +169,13 @@ public class PermissionRESTServiceClientTest {
 
         Response response = Response.ok(is).build();
 
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
-        when(resourceClient.getPermissions(a,true,true))
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(resourceClient.getActions(a,true,true))
                 .thenReturn(response);
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {
-            target.getPermissionByName(a);
+            target.getActionByName(a);
         } catch (Exception e){
             success = true;
         }
@@ -205,11 +183,11 @@ public class PermissionRESTServiceClientTest {
     }
 
     @Test
-    public void testGetPermissionByNameExtensionException() throws Exception {
+    public void testGetActionByNameExtensionException() throws Exception {
         boolean success = false;
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
         try {
-            target.getPermissionByName("a");
+            target.getActionByName("a");
         }catch (SystemException se){
         	if (se.getMessage().contains(ExtensionException.class.getName())) {
         		success = true;
@@ -219,16 +197,16 @@ public class PermissionRESTServiceClientTest {
     }
 
     @Test
-    public void testGetPermissionByNameProcessingException() throws Exception {
+    public void testGetActionByNameProcessingException() throws Exception {
         boolean success = false;
         String a = "a";
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
-        when(resourceClient.getPermissions(a,true,true))
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(resourceClient.getActions(a,true,true))
                 .thenThrow(new ProcessingException("test"));
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
         try {
-            target.getPermissionByName(a);
+            target.getActionByName(a);
         }
         catch (SystemException se){
         	if (se.getMessage().contains(ProcessingException.class.getName())) {
@@ -239,12 +217,12 @@ public class PermissionRESTServiceClientTest {
     }
     @Test
     public void testCreate() throws MalformedURLException {
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.ok().build());
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {
-			assertTrue(target.create(new Permission()));
+			assertTrue(target.create(new Action()));
 		} catch (SystemException e) {
 			success = true;
         }
@@ -252,12 +230,12 @@ public class PermissionRESTServiceClientTest {
     }
     @Test
     public void testCreateFail() throws MalformedURLException {
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {
-			assertFalse(target.create(new Permission()));
+			assertFalse(target.create(new Action()));
 		} catch (SystemException e) {
 			 success = true;
         }
@@ -266,12 +244,12 @@ public class PermissionRESTServiceClientTest {
 
     @Test
     public void testCreateProcessingException() throws MalformedURLException {
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.save(any())).thenThrow(new ProcessingException(""));
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {
-            target.create(new Permission());
+            target.create(new Action());
         }catch (ProcessingException | SystemException es){
             success = true;
         }
@@ -283,9 +261,9 @@ public class PermissionRESTServiceClientTest {
     public void testCommunicationFail() throws MalformedURLException {
         MalformedURLException malformedURLException =
                 new MalformedURLException("Error accessing permission microservice");
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).
                 thenThrow(malformedURLException);
-        SystemException se = assertThrows(SystemException.class, () -> target.create(new Permission()));
+        SystemException se = assertThrows(SystemException.class, () -> target.create(new Action()));
         assertNotNull(se);
         assertTrue(se.getMessage().contains(malformedURLException.getMessage()));
     }
@@ -298,12 +276,12 @@ public class PermissionRESTServiceClientTest {
 
 
     @Test
-    public void testGetPermissionByIdExtensionException() throws Exception {
+    public void testGetActionByIdExtensionException() throws Exception {
         boolean success = false;
-        when(clientServiceUtil.getPermissionResourceClient(
-                getPermissionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        when(clientServiceUtil.getActionResourceClient(
+                getActionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
         try {
-            target.getPermissionById(1L);
+            target.getActionById(1L);
         }catch (SystemException se){
             if (se.getMessage().contains(ExtensionException.class.getName())) {
                 success = true;
@@ -313,15 +291,15 @@ public class PermissionRESTServiceClientTest {
     }
 
     @Test
-    public void testGetPermissionByIdProcessingException() throws Exception {
+    public void testGetActionByIdProcessingException() throws Exception {
         boolean success = false;
-        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.getById(anyLong()))
                 .thenThrow(new ProcessingException("test"));
-        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
         try {
-            target.getPermissionById(1L);
+            target.getActionById(1L);
         }
         catch (SystemException se){
             if (se.getMessage().contains(ProcessingException.class.getName())) {
