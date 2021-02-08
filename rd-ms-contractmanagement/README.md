@@ -29,14 +29,32 @@ radien Contract Management Microservice
 * POST Data
   ------
 ### - ___Create contract:___
-
-    curl -H "Content-Type: application/json" -X POST -d '{"name": "AA","start": "2021-01-22T13:59:17.468","end": "2021-01-22T13:59:17.555"}' http://localhost:8082/contractmanagementservice/v1/contract
+    curl -H "Content-Type: application/json" -X POST \
+      --data-raw '{
+        "name": "AZ",
+        "start": "2021-01-22T13:59:17.468",
+        "end": "2021-01-22T13:59:17.555",
+        "createUser": null,
+        "lastUpdateUser": null,
+        "createDate": null,
+        "lastUpdate": null
+      }' http://localhost:8082/contractmanagementservice/v1/contract
 
 #
 * PUT Data
   ------
 ### - ___Update contract:___
-    curl --location --request PUT 'http://localhost:8082/contractmanagementservice/v1/contract/{id}' header 'Content-Type: application/json' data-raw '{"name": "AA","start": "2021-01-22T13:59:17.468","end": "2021-01-22T13:59:17.555"}'
+    curl -H "Content-Type: application/json" -X POST \
+      --data-raw '{
+        "name": "AZ",
+        "start": "2021-01-22T13:59:17.468",
+        "end": "2021-01-22T13:59:17.555",
+        "createUser": null,
+        "lastUpdateUser": null,
+        "createDate": null,
+        "lastUpdate": null
+      }' http://localhost:8082/contractmanagementservice/v1/contract/{id}
+
 #
 * DELETE Data
   ------
