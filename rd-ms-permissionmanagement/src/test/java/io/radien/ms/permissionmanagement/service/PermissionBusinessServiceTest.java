@@ -134,5 +134,4 @@ public class PermissionBusinessServiceTest {
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Permission not found"));
     }
-
 }

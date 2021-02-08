@@ -15,19 +15,25 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
-import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
+import io.radien.ms.permissionmanagement.model.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 @Stateless
 public class PermissionBusinessService {
@@ -37,33 +43,33 @@ public class PermissionBusinessService {
     @Inject
     private PermissionServiceAccess permissionServiceAccess;
 
-    @Inject
-    private ActionServiceAccess actionServiceAccess;
+    @PersistenceUnit
+    private EntityManagerFactory emf;
 
     private final String BASE_MSG = "%s not found for %n";
 
     public AssociationStatus associate(Long permissionId, Long actionId) throws UniquenessConstraintException{
         try {
-            // TODO: Change to Exists
             SystemPermission sp = permissionServiceAccess.get(permissionId);
             if (sp == null) {
                 throw new PermissionNotFoundException(String.format(BASE_MSG, "Permission", permissionId));
             }
 
-            // TODO: Change to Exists
-            SystemAction sa = actionServiceAccess.get(actionId);
-            if (sa == null) {
+            if (!checkIfActionExists(actionId)) {
                 throw new ActionNotFoundException(String.format(BASE_MSG, "Action", actionId));
             }
-
-            sp.setActionId(sa.getId());
-            permissionServiceAccess.save(sp);
+            sp.setActionId(actionId);
+            savePermission(sp);
         }
         catch (ActionNotFoundException | PermissionNotFoundException e) {
             this.log.error("error associating permission with action", e);
             return new AssociationStatus(false, e.getMessage());
         }
         return new AssociationStatus();
+    }
+
+    protected void savePermission(SystemPermission sp) throws UniquenessConstraintException {
+        permissionServiceAccess.save(sp);
     }
 
     public AssociationStatus dissociation(Long permissionId) throws UniquenessConstraintException {
@@ -73,11 +79,23 @@ public class PermissionBusinessService {
                 throw new PermissionNotFoundException(String.format(BASE_MSG, "Permission", permissionId));
             }
             sp.setActionId(null);
-            permissionServiceAccess.save(sp);
+            savePermission(sp);
         } catch (PermissionNotFoundException e) {
             this.log.error("error associating permission with action", e);
             return new AssociationStatus(false, e.getMessage());
         }
         return new AssociationStatus();
+    }
+
+    protected boolean checkIfActionExists(Long actionId) {
+        EntityManager em = emf.createEntityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+
+        criteriaQuery.select(actionRoot.get("id")).where(criteriaBuilder.equal(actionRoot.get("id"), actionId));
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
+        return typedQuery.getResultStream().findFirst().isPresent();
     }
 }
