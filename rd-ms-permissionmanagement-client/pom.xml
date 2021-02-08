@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>rd-ms-permissionmanagement-client</artifactId>
 	<packaging>jar</packaging>
-	<name>Permission Management Microservice Client - ${project.version}</name>
+	<name>Permission Management Client - ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
 		<finalName>${project.artifactId}</finalName>
