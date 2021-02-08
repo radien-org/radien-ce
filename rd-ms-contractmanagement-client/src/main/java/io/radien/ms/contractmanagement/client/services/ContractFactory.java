@@ -17,7 +17,6 @@ package io.radien.ms.contractmanagement.client.services;
 
 import io.radien.ms.contractmanagement.client.entities.Contract;
 import io.radien.ms.contractmanagement.client.util.FactoryUtilService;
-import sun.jvm.hotspot.debugger.posix.elf.ELFException;
 
 import javax.json.Json;
 import javax.json.JsonArray;
