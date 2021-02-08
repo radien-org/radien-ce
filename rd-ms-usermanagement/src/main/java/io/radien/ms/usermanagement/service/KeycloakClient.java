@@ -17,6 +17,7 @@ package io.radien.ms.usermanagement.service;
 
 
 import io.radien.exception.SystemException;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
@@ -86,7 +87,7 @@ public class KeycloakClient {
         return result.get("refresh_token");
     }
 
-    public HashMap login() throws SystemException {
+    public HashMap login() throws RemoteResourceException {
         HttpResponse<HashMap> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field("client_id", clientId)
@@ -100,11 +101,11 @@ public class KeycloakClient {
             return result;
         } else {
             //TODO: improve Error handling
-            throw new SystemException("Error on login");
+            throw new RemoteResourceException("Error on login");
         }
     }
 
-    public String createUser(UserRepresentation userRepresentation) throws SystemException {
+    public String createUser(UserRepresentation userRepresentation) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.post(idpUrl + userPath)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -128,10 +129,10 @@ public class KeycloakClient {
         } else {
             log.error("Status:{}, Body{}", response.getStatus(), response.getBody());
         }
-        throw new SystemException("Unable to create User");
+        throw new RemoteResourceException("Unable to create User");
     }
 
-    public void sendUpdatePasswordEmail(String sub) throws SystemException {
+    public void sendUpdatePasswordEmail(String sub) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub + "/execute-actions-email")
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -139,22 +140,22 @@ public class KeycloakClient {
                 .asObject(String.class);
         if (!response.isSuccess()) {
             log.error("status {},body {}",response.getStatus(),response.getBody());
-            throw new SystemException("Unable to send update password email");
+            throw new RemoteResourceException("Unable to send update password email");
         }
     }
 
-    public void deleteUser(String sub) throws SystemException {
+    public void deleteUser(String sub) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.delete(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .asObject(String.class);
         if (!response.isSuccess()) {
             log.error(response.getBody());
-            throw new SystemException("Unable to delete User");
+            throw new RemoteResourceException("Unable to delete User");
         }
     }
 
-    public void refreshToken() throws SystemException {
+    public void refreshToken() throws RemoteResourceException {
         HttpResponse<HashMap> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field("client_id", clientId)
@@ -165,18 +166,18 @@ public class KeycloakClient {
             result = response.getBody();
         } else {
             //TODO: improve Error handling
-            throw new SystemException("Unable to refresh token");
+            throw new RemoteResourceException("Unable to refresh token");
         }
     }
 
-    public void updateUser(String sub,UserRepresentation userRepresentation) throws SystemException {
+    public void updateUser(String sub,UserRepresentation userRepresentation) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .body(userRepresentation)
                 .asString();
         if(!response.isSuccess()){
-            throw new SystemException("Unable to update user");
+            throw new RemoteResourceException("Unable to update user");
         }
     }
 

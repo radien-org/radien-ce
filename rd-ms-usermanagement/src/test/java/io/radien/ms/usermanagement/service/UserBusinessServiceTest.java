@@ -9,6 +9,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -86,7 +87,7 @@ public class UserBusinessServiceTest extends TestCase {
 //    }
 
     @Test
-    public void testSave() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testSave() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = UserFactory.create("a","b","l","s","e",1L);
         doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
@@ -99,25 +100,25 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = UserFactory.create("a","b","","s","e",1L);
         //doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
         try{
             userBusinessService.save(u);
-        } catch (SystemException e){
+        } catch (RemoteResourceException e){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testSaveEmptyEmail() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testSaveEmptyEmail() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = UserFactory.create("a","b","l","s","",1L);
         boolean success = false;
         try{
             userBusinessService.save(u);
-        } catch (SystemException e){
+        } catch (RemoteResourceException e){
             success = true;
         }
         assertTrue(success);

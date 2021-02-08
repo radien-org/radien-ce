@@ -23,6 +23,6 @@ import javax.ws.rs.core.Application;
  *
  */
 @ApplicationPath("v1")
-public class RadienApplication extends Application {
+public class UserManagementApplication extends Application {
 
 }

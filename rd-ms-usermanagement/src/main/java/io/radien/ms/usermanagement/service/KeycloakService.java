@@ -18,6 +18,7 @@ package io.radien.ms.usermanagement.service;
 import io.radien.api.SystemProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.exception.SystemException;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.config.KeycloakConfigs;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -36,7 +37,7 @@ public class KeycloakService {
 
     private static final Logger log = LoggerFactory.getLogger(KeycloakService.class);
 
-    private KeycloakClient getKeycloakClient() throws SystemException {
+    private KeycloakClient getKeycloakClient() throws RemoteResourceException {
         KeycloakClient client = new KeycloakClient()
                 .clientId(getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
                 .username(getProperty(KeycloakConfigs.ADMIN_USER))
@@ -49,55 +50,27 @@ public class KeycloakService {
         return client;
     }
 
-    public String createUser(SystemUser user) throws SystemException {
+    public String createUser(SystemUser user) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(user);
         KeycloakClient client = getKeycloakClient();
         String sub= client.createUser(userRepresentation);
         try {
+            client.refreshToken();
             client.sendUpdatePasswordEmail(sub);
-        } catch (SystemException e){
+        } catch (RemoteResourceException e){
             deleteUser(sub);
             throw e;
         }
 
         return sub;
-//        try(Response response = usersResource.create(userRepresentation)){
-//            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-//                userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
-//                try {
-//                    sendUpdatePasswordEmail(usersResource, userId);
-//                } catch (SystemException e){
-//                    deleteUser(userId);
-//                    throw new SystemException("Unable to create User caused by:"+ e.getMessage());
-//                }
-//                return userId;
-//            } else {
-//                //TODO: ERROR HANDLING
-//                //response.readEntity(Map.class).get("errorMessage");
-//                String msg = response.readEntity(String.class);
-//                log.error(msg);
-//                //can be caused by user exists with same username
-//                //can be caused by username is empty
-//                throw new SystemException("Unable to create user on keycloak:" + msg);
-//            }
-//        } catch (ProcessingException e) {
-//            //can be caused by ClientProtocolException when no host is provided
-//            //can be caused by UnknownHostException when dns is not resolved
-//            //can be caused by NotAuthorizedException when password is not present or wrong
-//            //can be caused by NotFoundException when host is resolved but it doesn't have an answer
-//            //  happens for example when configurations are not set other than the host
-//            log.error(e.getMessage(),e);
-//            throw new SystemException("Unable to contact Keycloak");
-//        }
-
     }
 
-    public void deleteUser(String sub) throws SystemException {
+    public void deleteUser(String sub) throws RemoteResourceException {
         KeycloakClient client = getKeycloakClient();
         client.deleteUser(sub);
     }
 
-    public void updateUser(SystemUser newUser) throws SystemException {
+    public void updateUser(SystemUser newUser) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(newUser);
         KeycloakClient client = getKeycloakClient();
         client.updateUser(newUser.getSub(), userRepresentation);

@@ -29,15 +29,20 @@ radien User Management Microservice
 #
 * POST Data
   ------
-### - ___Create user:___
+### - ___Save/Create user:___
 
-curl -H "Content-Type: application/json" -X POST -d '{"logon":"logon1","userEmail":"useremail1@useremail1.pt", "firstName":"NameFirst", "lastName":"NameLast", "createUser":1,"lastUpdateUser":1}' http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user
+    curl -H "Content-Type: application/json" -X POST \
+      --data-raw '{
+        "logon": "AZ",
+        "userEmail": "user@radien.io",
+        "firstName": "user",
+        "lastName": "name",
+        "createUser": 1,
+        "lastUpdateUser": 1,
+        "createDate": null,
+        "lastUpdate": null
+      }' http://localhost:8081/usermanagementservice/v1/user/{id}
 
-#
-* PUT Data
-  ------
-### - ___Update user:___
-    curl --location --request PUT 'http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user/2' header 'Content-Type: application/json' data-raw '{"logon":"newLogon","userEmail":"newuseremail@newuseremail.pt", "firstName":"newFirstName", "lastName":"newLastName", "createUser":1,"lastUpdateUser":1}'
 #
 * DELETE Data
   ------

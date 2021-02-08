@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -132,8 +133,8 @@ public class UserResourceTest {
      * Deletion of the record with error, should return a generic 500 error code message
      */
     @Test
-    public void testDeleteGenericError() throws UserNotFoundException, SystemException {
-        doThrow(new RuntimeException()).when(userBusinessService).delete(1l);
+    public void testDeleteGenericError() throws UserNotFoundException, RemoteResourceException {
+        doThrow(new RemoteResourceException()).when(userBusinessService).delete(1l);
         Response response = userResource.delete(1l);
         assertEquals(500,response.getStatus());
     }
@@ -154,7 +155,7 @@ public class UserResourceTest {
      * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any());
         Response response = userResource.save(new User());
         assertEquals(400,response.getStatus());
@@ -167,7 +168,20 @@ public class UserResourceTest {
      * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testCreateRemoteResourceError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        doThrow(new RemoteResourceException()).when(userBusinessService).save(any());
+        Response response = userResource.save(new User());
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Creation of a record with error. Should return a generic error message 500
+     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
+     * message reason
+     * @throws UserNotFoundException in case of user not found
+     */
+    @Test
+    public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         doThrow(new RuntimeException()).when(userBusinessService).save(any());
         Response response = userResource.save(new User());
         assertEquals(500,response.getStatus());

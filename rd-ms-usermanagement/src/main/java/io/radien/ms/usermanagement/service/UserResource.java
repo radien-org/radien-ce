@@ -29,6 +29,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.usermanagement.batch.BatchResponse;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
 
 import io.radien.ms.usermanagement.entities.User;
@@ -97,6 +98,9 @@ public class UserResource implements UserResourceClient {
 	public Response delete(long id)  {
 		try {
 			userBusinessService.delete(id);
+
+		} catch (RemoteResourceException e){
+			return getRemoteResourceExceptionError(e);
 		} catch (Exception e){
 			return getGenericError(e);
 		}
@@ -116,9 +120,9 @@ public class UserResource implements UserResourceClient {
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return getInvalidRequestResponse(e);
-		}catch (SystemException e) {
+		}catch (RemoteResourceException e) {
 			//TODO: ERROR HANDLING
-			return getGenericError(e);
+			return getRemoteResourceExceptionError(e);
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
@@ -142,6 +146,17 @@ public class UserResource implements UserResourceClient {
 		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
 		log.error(message, e);
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
+	}
+
+	/**
+	 * Generic error exception. Launches a 500 Error Code to the user.
+	 * @param e exception to be throw
+	 * @return code 500 message Generic Exception
+	 */
+	private Response getRemoteResourceExceptionError(RemoteResourceException e) {
+		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
+		log.error(message, e);
+		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 	}
 
 	/**

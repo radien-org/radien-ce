@@ -85,8 +85,10 @@ public class UserFactory {
         user.setSub(sub);
         user.setFirstname(firstname);
         user.setLastname(lastname);
-        user.setEnabled(enabled);
-
+        //If not present is set to boolean default
+        if(enabled != null) {
+            user.setEnabled(enabled);
+        }
         return user;
     }
 

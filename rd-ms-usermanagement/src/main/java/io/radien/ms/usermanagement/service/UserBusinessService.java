@@ -24,6 +24,7 @@ import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.keycloak.admin.client.Keycloak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class UserBusinessService implements Serializable {
 		return userServiceAccess.get(ids);
 	}
 
-	public void delete(long id) throws UserNotFoundException, SystemException {
+	public void delete(long id) throws UserNotFoundException, RemoteResourceException {
 		SystemUser u =userServiceAccess.get(id);
 		if(u.getSub() != null){
 			keycloakService.deleteUser(u.getSub());
@@ -73,28 +74,28 @@ public class UserBusinessService implements Serializable {
 		userServiceAccess.delete(id);
 	}
 
-	public void save(User user) throws UniquenessConstraintException, UserNotFoundException, SystemException {
+	public void save(User user) throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
 		if(user.getLogon().isEmpty()){
 			//according to current keycloak config
-			throw new SystemException("logon cannot be empty");
+			throw new RemoteResourceException("logon cannot be empty");
 		}
 		if(user.getUserEmail().isEmpty()){
 			//for the user to be able to login he needs to be able to set password
-			throw new SystemException("email cannot be empty");
+			throw new RemoteResourceException("email cannot be empty");
 		}
 		boolean creation = user.getId() == null;
 		userServiceAccess.save(user);
 		if(creation){
 			try {
 				user.setSub(keycloakService.createUser(user));
-			} catch (SystemException e) {
+			} catch (RemoteResourceException e) {
 				userServiceAccess.delete(user.getId());
 				throw e;
 			}
 		} else {
 			try{
 				keycloakService.updateUser(user);
-			}catch (SystemException e){
+			}catch (RemoteResourceException e){
 				//TODO: rollback
 				throw e;
 			}
