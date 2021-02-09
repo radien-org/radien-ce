@@ -83,32 +83,43 @@ public class PermissionBusinessServiceTest {
 
     @Test
     public void testAssociation() throws UniquenessConstraintException {
+
+        List<? extends SystemPermission> list = permissionServiceAccess.getPermissions(new PermissionSearchFilter(
+                "removing-asset", true, false));
+
+        SystemPermission sp = list.get(0);
+        Assert.assertNull(sp.getActionId());
+
         AssociationStatus associationStatus =
                 this.permissionBusinessService.associate(permission.getId(), action.getId());
         Assert.assertTrue(associationStatus.isOK());
 
-        List<? extends SystemPermission> list = permissionServiceAccess.getPermissions(new PermissionSearchFilter(
+        list = permissionServiceAccess.getPermissions(new PermissionSearchFilter(
                 "removing-asset", true, false));
 
-        SystemPermission sp = list.get(0);
-
-        Assert.assertNotNull(sp);
-        Assert.assertNotNull(sp.getActionId());
+        SystemPermission sp2 = list.get(0);
+        Assert.assertNotNull(sp2.getActionId());
     }
 
     @Test
     public void testDissociation() throws UniquenessConstraintException {
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.dissociation(permission.getId());
-        Assert.assertTrue(associationStatus.isOK());
+
+        this.permissionBusinessService.associate(permission.getId(), action.getId());
 
         List<? extends SystemPermission> list = permissionServiceAccess.getPermissions(new PermissionSearchFilter(
                 "removing-asset", true, false));
 
         SystemPermission sp = list.get(0);
+        Assert.assertNotNull(sp.getActionId());
 
-        Assert.assertNotNull(sp);
-        Assert.assertNull(sp.getActionId());
+        AssociationStatus associationStatus = this.permissionBusinessService.dissociation(permission.getId());
+        Assert.assertTrue(associationStatus.isOK());
+
+        list = permissionServiceAccess.getPermissions(new PermissionSearchFilter(
+                "removing-asset", true, false));
+
+        SystemPermission sp2 = list.get(0);
+        Assert.assertNull(sp2.getActionId());
     }
 
     @Test
