@@ -18,7 +18,7 @@ package io.radien.ms.permissionmanagement.model;
 import javax.persistence.*;
 
 /**
- * @author n.carvalho
+ * @author Newton Carvalho
  *
  * Contains the definitions of an Action described on
  * {@link io.radien.ms.permissionmanagement.client.entities.Action}

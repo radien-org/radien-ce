@@ -17,6 +17,9 @@ package io.radien.api.model.permission;
 
 import io.radien.api.model.AbstractModel;
 
+/**
+ * @author Newton Carvalho
+ */
 public abstract class AbstractActionModel extends AbstractModel
         implements SystemAction {
 }

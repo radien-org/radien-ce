@@ -45,8 +45,8 @@ import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 
 /**
- *
- * @author n.carvalho
+ * @author Newton Carvalho
+ * Contract for Rest Service Client regarding Permission domain object
  */
 @Stateless @Default
 public class PermissionRESTServiceClient implements PermissionRESTServiceAccess {

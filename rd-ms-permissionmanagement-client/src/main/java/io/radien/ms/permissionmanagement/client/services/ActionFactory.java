@@ -26,6 +26,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Newton Carvalho
+ * Utilitary class to create Action class instances
+ */
 public class ActionFactory {
 
     /**
@@ -82,6 +86,11 @@ public class ActionFactory {
         return builder.build();
     }
 
+    /**
+     * Converts a Json Array into an Action List
+     * @param jsonArray
+     * @return
+     */
     public static List<Action> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
     }

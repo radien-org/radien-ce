@@ -16,9 +16,11 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.SystemActionSearchFilter;
-import io.radien.api.model.permission.SystemActionType;
-import io.radien.api.model.permission.SystemPermissionSearchFilter;
 
+/**
+ * @author Newton Carvalho
+ * Encapsulates the parameters applied to search for actions
+ */
 public class ActionSearchFilter implements SystemActionSearchFilter {
 
     private String name;

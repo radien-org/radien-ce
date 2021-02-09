@@ -29,8 +29,18 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Utility class that produces Rest Clients for Permission and Action
+ */
 @Stateless
 public class ClientServiceUtil {
+
+    /**
+     * Gets a Rest Client for Permission
+     * @param urlStr url of rest endpoint
+     * @return
+     * @throws MalformedURLException
+     */
     public PermissionResourceClient getPermissionResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         return RestClientBuilder.
@@ -40,6 +50,13 @@ public class ClientServiceUtil {
                 .register(PermissionMessageBodyWriter.class)
                 .build(PermissionResourceClient.class);
     }
+
+    /**
+     * Gets a Rest Client for Action
+     * @param urlStr url of rest endpoint
+     * @return
+     * @throws MalformedURLException
+     */
     public ActionResourceClient getActionResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         return RestClientBuilder.

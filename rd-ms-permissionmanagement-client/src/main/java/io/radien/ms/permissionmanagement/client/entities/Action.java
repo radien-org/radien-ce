@@ -16,8 +16,11 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.AbstractActionModel;
-import io.radien.api.model.permission.SystemActionType;
 
+/**
+ * @author Newton Carvalho
+ * Entity that corresponds to the Action
+ */
 public class Action extends AbstractActionModel {
     private Long id;
     private String name;

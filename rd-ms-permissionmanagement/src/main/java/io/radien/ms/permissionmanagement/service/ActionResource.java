@@ -34,8 +34,9 @@ import java.util.List;
 
 
 /**
- * @author n.carvalho
- *
+ * @author Newton Carvalho
+ * Controller implementation responsible for deal with CRUD
+ * operations requests (CRUD) regarding Action domain objectject
  */
 @Path("action")
 @RequestScoped
@@ -46,7 +47,18 @@ public class ActionResource implements ActionResourceClient {
 	@Inject
 	private ActionServiceAccess actionServiceAccess;
 
-	@Override
+	/**
+	 * Retrieves a page object containing actions that matches search parameter.
+	 * In case of omitted (empty) search parameter retrieves ALL actions
+	 * @param search search parameter for matching actions (optional).
+	 * @param pageNo page number
+	 * @param pageSize page size
+	 * @param sortBy Sorting fields
+	 * @param isAscending Defines if ascending or descending in relation of sorting fields
+	 * @return In case of successful operation returns OK (http status 200)
+	 * and the page object (filled or not).<br>
+	 * Otherwise, in case of operational error, returns Internal Server Error (500)
+	 */
 	public Response getAll(String search,
 						   int pageNo,
 						   int pageSize,
@@ -59,7 +71,15 @@ public class ActionResource implements ActionResourceClient {
 		}
 	}
 
-	@Override
+	/**
+	 * Finds all actions that matches a name
+	 * @param name action name
+	 * @param isExact indicates if the match is for approximated value or not
+	 * @param isLogicalConjunction
+	 * @return In case of successful operation returns 200 (http status)
+	 * and the collection (filled or not).<br>
+	 * Otherwise, in case of operational error, returns 500
+	 */
 	public Response getActions(String name, boolean isExact,
 							   boolean isLogicalConjunction) {
 
@@ -71,7 +91,13 @@ public class ActionResource implements ActionResourceClient {
 		}
 	}
 
-	@Override
+	/**
+	 * Retrieves an action by its identifier
+	 * @param id action identifier
+	 * @return If action exists returns 200 status (and the correspondent object)
+	 * Otherwise, if does not exist, return 404 status
+	 * In case of operational error return 500 status
+	 */
 	public Response getById(Long id) {
 		try {
 			SystemAction systemAction = actionServiceAccess.get(id);
@@ -84,7 +110,11 @@ public class ActionResource implements ActionResourceClient {
 		}
 	}
 
-	@Override
+	/**
+	 * Deletes an action by its identifier
+	 * @param id action identifier
+	 * @return Returns 200 status, Otherwise, in case of operational error return 500 status
+	 */
 	public Response delete(long id) {
 		try {
 			actionServiceAccess.delete(id);
@@ -94,7 +124,13 @@ public class ActionResource implements ActionResourceClient {
 		return Response.ok().build();
 	}
 
-	@Override
+	/**
+	 * Saves an action (Creation or Update).
+	 * @param action action to be created or update
+	 * @return Http status 200 in case of successful operation.<br>
+	 * Bad request (404) in case of trying to create an action with repeated description.<br>
+	 * Internal Server Error (500) in case of operational error
+	 */
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Action action) {
 		try {
 			actionServiceAccess.save(new Action(action));

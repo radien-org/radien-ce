@@ -17,22 +17,34 @@ package io.radien.ms.permissionmanagement.client.util;
 
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.services.ActionFactory;
-import io.radien.ms.permissionmanagement.client.services.PermissionFactory;
-
-import javax.json.*;
+import javax.json.JsonObject;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonReader;
 import java.io.InputStream;
 import java.util.List;
 
 /**
- * @author n.carvalho
- *
+ * @author Newton Carvalho
+ * This class maps the Action pojos into Json objects an vice-versa
  */
 public class ActionModelMapper {
 
+    /**
+     * Maps one Action into a Json Object
+     * @param model
+     * @return
+     */
     public static JsonObject map(Action model) {
         return ActionFactory.convertToJsonObject(model);
     }
 
+    /**
+     * Maps an Action Collection into a Json Array
+     * @param models
+     * @return
+     */
     public static JsonArray map(List<Action> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
@@ -42,6 +54,11 @@ public class ActionModelMapper {
         return arrayBuilder.build();
     }
 
+    /**
+     * Maps a Json stream into a Action
+     * @param is
+     * @return
+     */
     public static Action map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();

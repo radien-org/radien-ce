@@ -16,6 +16,12 @@
 package io.radien.api.model.permission;
 
 import io.radien.api.Model;
+
+
+/**
+ * @author Newton Carvalho
+ * Contract description for Action
+ */
 public interface SystemAction extends Model {
     Long getId();
     void setId(Long id);

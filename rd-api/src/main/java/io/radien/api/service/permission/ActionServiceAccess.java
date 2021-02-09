@@ -18,7 +18,6 @@ package io.radien.api.service.permission;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
-import io.radien.api.model.permission.SystemActionType;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -27,23 +26,61 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author n.carvalho
- *
+ * @author Newton Carvalho
+ * Contract description for the Data Service responsible for handle Actions (CRUD)
  */
 public interface ActionServiceAccess extends ServiceAccess {
 
-    public SystemAction get(Long actionId) throws ActionNotFoundException;
+    /**
+     * Retrieve an Action by an identifier
+     * @param actionId action identifier
+     * @return
+     */
+    SystemAction get(Long actionId);
 
-    public List<SystemAction> get(List<Long> actionId);
+    /**
+     * Retrieves a collection of Actions by its identifiers
+     * @param actionId list of identifiers
+     * @return
+     */
+    List<SystemAction> get(List<Long> actionId);
 
-    public Page<SystemAction> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    /**
+     * Retrieves actions using pagination approach
+     * @param search
+     * @param pageNo Page number
+     * @param pageSize Page size
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
+     * @return
+     */
+    Page<SystemAction> getAll(String search, int pageNo, int pageSize,
+                              List<String> sortBy, boolean isAscending);
 
-    public void save(SystemAction action) throws UniquenessConstraintException;
+    /**
+     * Save an action (Create or Update)
+     * @param action
+     * @throws UniquenessConstraintException
+     */
+    void save(SystemAction action) throws UniquenessConstraintException;
 
-    public void delete(Long actionId);
+    /**
+     * Delete an action
+     * @param actionId action identifier
+     */
+    void delete(Long actionId);
 
-    public void delete(Collection<Long> actionIds);
+    /**
+     * Deletes a set of actions
+     * @param actionIds action identifiers
+     */
+    void delete(Collection<Long> actionIds);
 
-    public List<? extends SystemAction> getActions(SystemActionSearchFilter filter);
+    /**
+     * Retrieve Actions using a search filter
+     * @param filter
+     * @return
+     */
+    List<? extends SystemAction> getActions(SystemActionSearchFilter filter);
 
 }

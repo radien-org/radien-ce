@@ -25,21 +25,29 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 
-
 import java.io.InputStream;
 import java.util.List;
 
 /**
- * @author Marco Weiland 
- *
+ * @author Newton Carvalho
+ * This class maps the Permission pojos into Json objects an vice-versa
  */
 public class PermissionModelMapper {
 
-
+    /**
+     * Maps one Permission into a Json Object
+     * @param model
+     * @return
+     */
     public static JsonObject map(Permission model) {
         return PermissionFactory.convertToJsonObject(model);
     }
 
+    /**
+     * Maps a Permission Collection into a Json Array
+     * @param models
+     * @return
+     */
     public static JsonArray map(List<Permission> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
@@ -49,10 +57,14 @@ public class PermissionModelMapper {
         return arrayBuilder.build();
     }
 
+    /**
+     * Maps a Json stream into a Permission
+     * @param is
+     * @return
+     */
     public static Permission map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
-
             return PermissionFactory.convert(jsonObject);
         }
     }

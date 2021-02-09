@@ -23,8 +23,7 @@ import java.net.MalformedURLException;
 import java.util.Optional;
 
 /**
- * @author n.carvalho
- *
+ * @author Newton Carvalho
  * Contract for Rest Service Client regarding SystemPermission domain object
  */
 public interface PermissionRESTServiceAccess extends Appframeable {
@@ -35,7 +34,7 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    public Optional<SystemPermission> getPermissionById(Long id) throws SystemException ;
+    Optional<SystemPermission> getPermissionById(Long id) throws SystemException ;
 
     /**
      * Retrieves a Permission by Name
@@ -43,7 +42,7 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    public Optional<SystemPermission> getPermissionByName(String name) throws SystemException ;
+    Optional<SystemPermission> getPermissionByName(String name) throws SystemException ;
 
     /**
      * Creates given permission
@@ -51,5 +50,5 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @return true if permission has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(SystemPermission permission) throws SystemException;
+    boolean create(SystemPermission permission) throws SystemException;
 }

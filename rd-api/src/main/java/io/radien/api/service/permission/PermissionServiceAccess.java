@@ -26,23 +26,60 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author n.carvalho
- *
+ * @author Newton Carvalho
+ * Contract description for the Data Service responsible for handle Permissions (CRUD)
  */
 public interface PermissionServiceAccess extends ServiceAccess {
 
-    public SystemPermission get(Long permissionId) throws PermissionNotFoundException;
+    /**
+     * Retrieve an Action by an identifier
+     * @param permissionId permission identifier
+     * @return
+     */
+    public SystemPermission get(Long permissionId);
 
+    /**
+     * Retrieves a collection of Actions by its identifiers
+     * @param permissionId list of identifiers
+     * @return
+     */
     public List<SystemPermission> get(List<Long> permissionId);
 
+    /**
+     * Retrieves permissions using pagination approach
+     * @param search
+     * @param pageNo Page number
+     * @param pageSize Page size
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
+     * @return
+     */
     public Page<SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
+    /**
+     * Save an permission (Create or Update)
+     * @param permission
+     * @throws UniquenessConstraintException
+     */
     public void save(SystemPermission permission) throws UniquenessConstraintException;
 
+    /**
+     * Delete an permission
+     * @param permissionId permission identifier
+     */
     public void delete(Long permissionId);
 
+    /**
+     * Deletes a set of permissions
+     * @param permissionIds permission identifiers
+     */
     public void delete(Collection<Long> permissionIds);
 
+    /**
+     * Retrieve Actions using a search filter
+     * @param filter
+     * @return
+     */
     public List<? extends SystemPermission> getPermissions(SystemPermissionSearchFilter filter);
 
 }

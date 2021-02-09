@@ -25,7 +25,8 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * @author n.carvalho
+ * @author Newton Carvalho
+ * Contract for Rest Service Client regarding Action domain object
  */
 @Path("permission")
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,10 +55,12 @@ public interface PermissionResourceClient {
 
 	@POST
 	Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission);
+
 	@POST
 	@Path("/{permissionId}/association/{actionId}")
 	Response associate(@NotNull @PathParam("permissionId") long permissionId,
 					   @NotNull @PathParam("actionId") long actionId);
+
 	@POST
 	@Path("/{permissionId}/dissociation")
 	Response dissociate(@NotNull @PathParam("permissionId") long permissionId);

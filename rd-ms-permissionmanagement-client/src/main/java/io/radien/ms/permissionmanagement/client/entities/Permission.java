@@ -19,6 +19,10 @@ import io.radien.api.model.permission.AbstractPermissionModel;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 
+/**
+ * @author Newton Carvalho
+ * Entity that corresponds to the Permission
+ */
 public class Permission extends AbstractPermissionModel implements SystemPermission {
 
 	private static final long serialVersionUID = -3532886874455311100L;

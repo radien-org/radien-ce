@@ -36,8 +36,9 @@ import java.util.List;
 
 
 /**
- * @author n.carvalho
- *
+ * @author Newton Carvalho
+ * Controller implementation responsible for deal with CRUD
+ * operations requests (CRUD) regarding Permission domain object
  */
 @Path("permission")
 @RequestScoped
@@ -53,6 +54,18 @@ public class PermissionResource implements PermissionResourceClient {
 	@Inject
 	private PermissionBusinessService businessService;
 
+	/**
+	 * Retrieves a page object containing permissions that matches search parameter.
+	 * In case of omitted (empty) search parameter retrieves ALL permissions
+	 * @param search search parameter for matching permissions (optional).
+	 * @param pageNo page number
+	 * @param pageSize page size
+	 * @param sortBy Sorting fields
+	 * @param isAscending Defines if ascending or descending in relation of sorting fields
+	 * @return In case of successful operation returns OK (http status 200)
+	 * and the page object (filled or not).<br>
+	 * Otherwise, in case of operational error, returns Internal Server Error (500)
+	 */
 	public Response getAll(String search,
 						   int pageNo,
 						   int pageSize,
@@ -65,6 +78,15 @@ public class PermissionResource implements PermissionResourceClient {
 		}
 	}
 
+	/**
+	 * Finds all permissions that matches a name
+	 * @param name permission name
+	 * @param isExact indicates if the match is for approximated value or not
+	 * @param isLogicalConjunction
+	 * @return In case of successful operation returns 200 (http status)
+	 * and the collection (filled or not).<br>
+	 * Otherwise, in case of operational error, returns 500
+	 */
 	public Response getPermissions(String name,
 								   boolean isExact,
 								   boolean isLogicalConjunction) {
@@ -77,6 +99,13 @@ public class PermissionResource implements PermissionResourceClient {
 		}
 	}
 
+	/**
+	 * Retrieves an permission by its identifier
+	 * @param id permission identifier
+	 * @return If permission exists returns 200 status (and the correspondent object)
+	 * Otherwise, if does not exist, return 404 status
+	 * In case of operational error return 500 status
+	 */
 	public Response getById(Long id) {
 		try {
 			SystemPermission systemPermission = permissionServiceAccess.get(id);
@@ -89,6 +118,11 @@ public class PermissionResource implements PermissionResourceClient {
 		}
 	}
 
+	/**
+	 * Deletes an permission by its identifier
+	 * @param id permission identifier
+	 * @return Returns 200 status, Otherwise, in case of operational error return 500 status
+	 */
 	public Response delete(long id) {
 		try {
 			permissionServiceAccess.delete(id);
@@ -98,6 +132,13 @@ public class PermissionResource implements PermissionResourceClient {
 		return Response.ok().build();
 	}
 
+	/**
+	 * Saves an permission (Creation or Update).
+	 * @param permission permission to be created or update
+	 * @return Http status 200 in case of successful operation.<br>
+	 * Bad request (404) in case of trying to create an permission with repeated description.<br>
+	 * Internal Server Error (500) in case of operational error
+	 */
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission) {
 		try {
 			permissionServiceAccess.save(new Permission(permission));
@@ -109,6 +150,15 @@ public class PermissionResource implements PermissionResourceClient {
 		}
 	}
 
+	/**
+	 * Rest endpoint operation to assign an action to a permission
+	 * @param permissionId permission identifier
+	 * @param actionId action identifier
+	 * @return OK (200): in case of successful operation.<br>
+	 * Bad Request (404) and issue description: If the association could not be perform for not attending
+	 * some business rules.
+	 * Internal server error (500): In case of some error during processing
+	 */
 	public Response associate(long permissionId,
 							  long actionId) {
 		try {
@@ -116,12 +166,21 @@ public class PermissionResource implements PermissionResourceClient {
 			if (associationStatus.isOK()) {
 				return Response.ok().build();
 			}
-			return Response.status(Response.Status.BAD_REQUEST).entity(associationStatus.getMessage()).build();
+			return Response.status(Response.Status.BAD_REQUEST).
+					entity(associationStatus.getMessage()).build();
 		} catch (Exception e) {
 			return getGenericError(e);
 		}
 	}
 
+	/**
+	 * Rest endpoint operation to (un)assign an action to a permission
+	 * @param permissionId permission identifier
+	 * @return OK (200): in case of successful operation.<br>
+	 * Bad Request (404) and issue description: If the association could not be perform for not attending
+	 * some business rules.
+	 * Internal server error (500): In case of some error during processing
+	 */
 	public Response dissociate(long permissionId) {
 		try {
 			AssociationStatus associationStatus = businessService.dissociation(permissionId);

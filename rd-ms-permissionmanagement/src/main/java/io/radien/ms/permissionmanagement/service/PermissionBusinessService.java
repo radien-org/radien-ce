@@ -35,6 +35,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+/**
+ * @author Newton Carvalho
+ * Service facade to perform operations beyond the simple CRUD contract
+ */
 @Stateless
 public class PermissionBusinessService {
 
@@ -46,9 +50,23 @@ public class PermissionBusinessService {
     @PersistenceUnit
     private EntityManagerFactory emf;
 
-    private final String BASE_MSG = "%s not found for %n";
+    private final String BASE_MSG = "%s not found for id=%d";
 
+    /***
+     * Assign an action to a permission
+     * @param permissionId
+     * @param actionId
+     * @return AssociationStatus describing the status operation (if it was successful or not) and the
+     * issue description (in case of unsuccessful operation)
+     * @throws UniquenessConstraintException
+     */
     public AssociationStatus associate(Long permissionId, Long actionId) throws UniquenessConstraintException{
+        if (permissionId == null)
+            return new AssociationStatus(false, "Permission Id not informed");
+
+        if (actionId == null)
+            return new AssociationStatus(false, "Action Id not informed");
+
         try {
             SystemPermission sp = permissionServiceAccess.get(permissionId);
             if (sp == null) {
@@ -59,7 +77,7 @@ public class PermissionBusinessService {
                 throw new ActionNotFoundException(String.format(BASE_MSG, "Action", actionId));
             }
             sp.setActionId(actionId);
-            savePermission(sp);
+            permissionServiceAccess.save(sp);
         }
         catch (ActionNotFoundException | PermissionNotFoundException e) {
             this.log.error("error associating permission with action", e);
@@ -68,18 +86,24 @@ public class PermissionBusinessService {
         return new AssociationStatus();
     }
 
-    protected void savePermission(SystemPermission sp) throws UniquenessConstraintException {
-        permissionServiceAccess.save(sp);
-    }
-
+    /***
+     * UnAssign an action to a permission
+     * @param permissionId
+     * @return AssociationStatus describing the status operation (if it was successful or not) and the
+     * issue description (in case of unsuccessful operation)
+     * @throws UniquenessConstraintException
+     */
     public AssociationStatus dissociation(Long permissionId) throws UniquenessConstraintException {
+        if (permissionId == null)
+            return new AssociationStatus(false, "Permission Id not informed");
+
         try {
             SystemPermission sp = permissionServiceAccess.get(permissionId);
             if (sp == null) {
                 throw new PermissionNotFoundException(String.format(BASE_MSG, "Permission", permissionId));
             }
             sp.setActionId(null);
-            savePermission(sp);
+            permissionServiceAccess.save(sp);
         } catch (PermissionNotFoundException e) {
             this.log.error("error associating permission with action", e);
             return new AssociationStatus(false, e.getMessage());
@@ -87,6 +111,11 @@ public class PermissionBusinessService {
         return new AssociationStatus();
     }
 
+    /**
+     * Check if an action exists on the DB
+     * @param actionId
+     * @return
+     */
     protected boolean checkIfActionExists(Long actionId) {
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();

@@ -16,7 +16,7 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 /**
- * @author n.carvalho
+ * @author Newton Carvalho
  * This class describes the result of an association operation
  */
 public class AssociationStatus {

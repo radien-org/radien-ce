@@ -15,6 +15,9 @@
  */
 package io.radien.ms.permissionmanagement.client.exceptions;
 
+/**
+ * @author Newton Carvalho
+ */
 public enum ErrorCodeMessage {
 
     /**

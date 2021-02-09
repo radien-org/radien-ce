@@ -18,7 +18,8 @@ package io.radien.api.model.permission;
 import io.radien.api.model.Model;
 
 /**
- * This interface describes the contract for entity permission
+ * @author Newton Carvalho
+ * Contract description for Permission
  */
 public interface SystemPermission extends Model {
     String getName();

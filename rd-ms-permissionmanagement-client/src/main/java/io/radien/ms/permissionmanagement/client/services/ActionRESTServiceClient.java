@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- *
- * @author n.carvalho
+ * @author Newton Carvalho
+ * Implementation for Rest Service Client regarding Action domain object
  */
 @Stateless @Default
 public class ActionRESTServiceClient implements ActionRESTServiceAccess {

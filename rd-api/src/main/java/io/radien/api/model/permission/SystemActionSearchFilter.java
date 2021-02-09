@@ -16,7 +16,8 @@
 package io.radien.api.model.permission;
 
 /**
- * SearchFilter for Permissions
+ * @author Newton Carvalho
+ * Contract description for actions search filter
  */
 public interface SystemActionSearchFilter {
 

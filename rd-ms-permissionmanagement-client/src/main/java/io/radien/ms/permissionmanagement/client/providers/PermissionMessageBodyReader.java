@@ -30,6 +30,10 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+/**
+ * @author Newton Carvalho
+ * Message body reader that converts a Json stream into an Permission
+ */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class PermissionMessageBodyReader implements MessageBodyReader<Permission> {

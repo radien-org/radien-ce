@@ -23,10 +23,8 @@ import java.net.MalformedURLException;
 import java.util.Optional;
 
 /**
- * @author n.carvalho
- *
- * Contract for Rest Service Client regarding SystemAction domain object
- *
+ * @author Newton Carvalho
+ * Contract for Rest Service Client regarding Action domain object
  */
 public interface ActionRESTServiceAccess extends Appframeable {
 
@@ -36,7 +34,7 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    public Optional<SystemAction> getActionById(Long id) throws SystemException;
+    Optional<SystemAction> getActionById(Long id) throws SystemException;
 
     /**
      * Retrieves a Action by Name
@@ -44,7 +42,7 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    public Optional<SystemAction> getActionByName(String name) throws SystemException;
+    Optional<SystemAction> getActionByName(String name) throws SystemException;
 
     /**
      * Creates given action
@@ -52,5 +50,5 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @return true if action has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(SystemAction action) throws SystemException;
+    boolean create(SystemAction action) throws SystemException;
 }

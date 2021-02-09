@@ -33,8 +33,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author n.carvalho
+ * @author Newton Carvalho
  *
+ * Converts a Action Pojo object into a Json Stream
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

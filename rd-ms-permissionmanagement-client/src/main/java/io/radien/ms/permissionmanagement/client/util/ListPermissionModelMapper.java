@@ -25,6 +25,10 @@ import javax.json.JsonReader;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.ms.permissionmanagement.client.services.PermissionFactory;
 
+/**
+ * @author Newton Carvalho
+ * Maps a Json Array input stream into a Collection (Permission)
+ */
 public class ListPermissionModelMapper {
     public static List<? extends SystemPermission> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
