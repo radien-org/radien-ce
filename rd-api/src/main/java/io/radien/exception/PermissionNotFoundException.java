@@ -16,8 +16,8 @@
 package io.radien.exception;
 
 /**
- * @author Marco Weiland <m.weiland@radien.io>
- *
+ * @author Newton Carvalho
+ * To be describe situations whereas an expected Permission could not be found
  */
 public class PermissionNotFoundException extends Exception {
 	private static final long serialVersionUID = 1L;
