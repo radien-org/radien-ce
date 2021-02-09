@@ -110,6 +110,7 @@ public class UserFactory implements Serializable {
 		FactoryUtilService.addValue(builder, "sub", person.getSub());
 		FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
 		FactoryUtilService.addValue(builder, "lastname", person.getLastname());
+		FactoryUtilService.addValueBoolean(builder, "enabled", person.isEnabled());
 		return  builder.build();
 	}
 }

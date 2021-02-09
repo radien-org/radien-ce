@@ -33,7 +33,8 @@ public interface UserSessionEnabled extends Appframeable {
 
 	public String getPreferredUserName() ;
 
-	public String getUserFullName();
+	public String getUserFirstName();
 
+	public String getUserLastName();
 
 }

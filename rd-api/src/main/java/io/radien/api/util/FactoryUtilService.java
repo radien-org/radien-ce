@@ -138,6 +138,21 @@ public class FactoryUtilService implements Serializable {
     }
 
     /**
+     * Adds the values String to the designated keys in a json object
+     *
+     * @param builder Json Object builder that it is being used
+     * @param key value of the json field
+     * @param value value of the field to be added
+     */
+    public static void addValueBoolean(JsonObjectBuilder builder, String key, Boolean value) {
+        if (value != null) {
+            builder.add(key, value);
+        } else {
+            builder.addNull(key);
+        }
+    }
+
+    /**
      * Adds the values Long to the designated keys in a json object
      *
      * @param builder Json Object builder that it is being used

@@ -16,13 +16,23 @@
 			</b:row>
 			<b:row>
 			    <b:column span="3">
-			        <h:outputText value="#{msg.preferred_user_name}" />
+			        <h:outputText value="#{msg.firstname}" />
 			
 			    </b:column>
 			    <b:column span="9">
-			        <h:outputText value="#{userSession.preferredUserName}" />
+			        <h:outputText value="#{userSession.userFirstName}" />
 			
 			    </b:column>
+			</b:row>
+			<b:row>
+				<b:column span="3">
+					<h:outputText value="#{msg.lastname}" />
+
+				</b:column>
+				<b:column span="9">
+					<h:outputText value="#{userSession.userLastName}" />
+
+				</b:column>
 			</b:row>
 			<b:row>
 			    <b:column span="3">
@@ -35,6 +45,18 @@
 			        <h:outputText value="#{userSession.email}" />
 			        
 			    </b:column>
+			</b:row>
+			<b:row>
+				<b:column span="3">
+
+					<h:outputText value="#{msg.rd_user}" />
+
+				</b:column>
+				<b:column span="9">
+
+					<h:outputText value="#{userSession.preferredUserName}" />
+
+				</b:column>
 			</b:row>
 			<b:row>
 			    <b:column span="3">

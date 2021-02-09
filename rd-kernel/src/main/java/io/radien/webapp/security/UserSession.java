@@ -18,6 +18,7 @@ package io.radien.webapp.security;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ import java.util.Optional;
  *
  * @author Marco Weiland
  */
-public @SessionScoped class UserSession implements UserSessionEnabled {
+public @Named @SessionScoped class UserSession implements UserSessionEnabled {
 
 	private static final long serialVersionUID = 1198636791261091733L;
 	private static final Logger log = LoggerFactory.getLogger(UserSession.class);
@@ -52,10 +53,11 @@ public @SessionScoped class UserSession implements UserSessionEnabled {
 	
 	@PostConstruct
 	private void init() {
-
+		log.info("Session initiated");
 	}
 	
 	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception {
+		log.info("User session login starting");
 		log.info("user logged in: {}", userIdSubject);
 		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 		SystemUser user;
@@ -93,15 +95,33 @@ public @SessionScoped class UserSession implements UserSessionEnabled {
 	 * @return the preferredUserName
 	 */
 	public String getPreferredUserName() {
+		log.info("get preferred user Name");
 		return user.getLogon() != null ? user.getLogon() : user.getUserEmail();
 	}
 
 
 	/**
-	 * @return the userFullName
+	 * @return the userFirstName
+	 */
+	public String getUserFirstName() {
+		log.info("get First Name");
+		return user.getFirstname();
+	}
+
+	/**
+	 * @return the userLastName
+	 */
+	public String getUserLastName() {
+		log.info("get Last Name");
+		return user.getLastname();
+	}
+
+	/**
+	 * @return the userLastName
 	 */
 	public String getUserFullName() {
-		return user.getFirstname() + " " + user.getLastname();
+		log.info("get Full Name");
+		return user.getFirstname() + " " +user.getLastname();
 	}
 
 	@Override

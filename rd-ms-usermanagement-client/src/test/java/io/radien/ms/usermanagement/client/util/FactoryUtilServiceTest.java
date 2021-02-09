@@ -133,6 +133,19 @@ public class FactoryUtilServiceTest extends TestCase {
     }
 
     @Test
+    public void testAddValueBoolean() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+
+        FactoryUtilService.addValueBoolean(builder, "enabled", true);
+
+        JsonObject json = builder.build();
+
+        Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled", json);
+
+        assertTrue(enabled);
+    }
+
+    @Test
     public void testAddValueNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
         FactoryUtilService.addValue(builder, "id",null);
@@ -146,6 +159,14 @@ public class FactoryUtilServiceTest extends TestCase {
         FactoryUtilService.addValueInt(builder, "id",null);
         JsonObject json = builder.build();
         assertNull(FactoryUtilService.getIntFromJson("id" ,json));
+    }
+
+    @Test
+    public void testAddValueBooleanNull(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueBoolean(builder, "id",null);
+        JsonObject json = builder.build();
+        assertNull(FactoryUtilService.getBooleanFromJson("id" ,json));
     }
 
     @Test
