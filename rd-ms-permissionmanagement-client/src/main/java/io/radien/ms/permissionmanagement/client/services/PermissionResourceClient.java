@@ -33,36 +33,37 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface PermissionResourceClient {
 
-	@GET
-	Response getAll(@QueryParam("search") String search,
-						   @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-						   @DefaultValue("10") @QueryParam("pageSize") int pageSize,
-						   @QueryParam("sortBy") List<String> sortBy,
-						   @DefaultValue("true") @QueryParam("asc") boolean isAscending);
+    @GET
+    public Response getAll(@QueryParam("search") String search,
+                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize,
+                           @QueryParam("sortBy") List<String> sortBy,
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
-	@GET
-	@Path("find")
-	Response getPermissions(@QueryParam("name") String name,
-								   @DefaultValue("true") @QueryParam("isExact") boolean isExact,
-								   @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
-	@GET
-	@Path("/{id}")
-	Response getById(@PathParam("id") Long id);
+    @GET
+    @Path("find")
+    public Response getPermissions(@QueryParam("name") String name,
+                             @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                             @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
-	@DELETE
-	@Path("/{id}")
-	Response delete(@NotNull @PathParam("id") long id);
+    @GET
+    @Path("/{id}")
+    public Response getById(@PathParam("id") Long id);
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@NotNull @PathParam("id") long id);
 
 	@POST
-	Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission);
+	public Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission);
 
 	@POST
 	@Path("/{permissionId}/association/{actionId}")
-	Response associate(@NotNull @PathParam("permissionId") long permissionId,
+	public Response associate(@NotNull @PathParam("permissionId") long permissionId,
 					   @NotNull @PathParam("actionId") long actionId);
 
 	@POST
 	@Path("/{permissionId}/dissociation")
-	Response dissociate(@NotNull @PathParam("permissionId") long permissionId);
+	public Response dissociate(@NotNull @PathParam("permissionId") long permissionId);
 
 }

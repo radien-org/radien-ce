@@ -27,31 +27,27 @@ import java.util.List;
 public interface ActionResourceClient {
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    Response getAll(@QueryParam("search") String search,
+    public Response getAll(@QueryParam("search") String search,
                     @DefaultValue("1") @QueryParam("pageNo") int pageNo,
                     @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                     @QueryParam("sortBy") List<String> sortBy,
                     @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("find")
-    Response getActions(@QueryParam("name") String name,
+    public Response getActions(@QueryParam("name") String name,
                         @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    Response getById(@PathParam("id") Long id);
+    public Response getById(@PathParam("id") Long id);
 
     @DELETE
     @Path("/{id}")
-    Response delete(@NotNull @PathParam("id") long id);
+    public Response delete(@NotNull @PathParam("id") long id);
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    Response save(io.radien.ms.permissionmanagement.client.entities.Action action);
+    public Response save(io.radien.ms.permissionmanagement.client.entities.Action action);
 
 }

@@ -34,7 +34,7 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    Optional<SystemPermission> getPermissionById(Long id) throws SystemException ;
+    public Optional<SystemPermission> getPermissionById(Long id) throws SystemException ;
 
     /**
      * Retrieves a Permission by Name
@@ -42,7 +42,7 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    Optional<SystemPermission> getPermissionByName(String name) throws SystemException ;
+    public Optional<SystemPermission> getPermissionByName(String name) throws SystemException ;
 
     /**
      * Creates given permission
@@ -50,5 +50,5 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @return true if permission has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    boolean create(SystemPermission permission) throws SystemException;
+    public boolean create(SystemPermission permission) throws SystemException;
 }

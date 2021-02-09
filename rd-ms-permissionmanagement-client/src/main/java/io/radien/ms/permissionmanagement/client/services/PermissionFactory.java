@@ -19,7 +19,6 @@ import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 
 import javax.json.JsonArray;
-import javax.json.JsonValue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;

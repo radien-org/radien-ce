@@ -34,7 +34,7 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    Optional<SystemAction> getActionById(Long id) throws SystemException;
+    public Optional<SystemAction> getActionById(Long id) throws SystemException;
 
     /**
      * Retrieves a Action by Name
@@ -42,7 +42,7 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @return
      * @throws SystemException
      */
-    Optional<SystemAction> getActionByName(String name) throws SystemException;
+    public Optional<SystemAction> getActionByName(String name) throws SystemException;
 
     /**
      * Creates given action
@@ -50,5 +50,5 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @return true if action has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    boolean create(SystemAction action) throws SystemException;
+    public boolean create(SystemAction action) throws SystemException;
 }
