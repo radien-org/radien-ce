@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -127,9 +128,13 @@ public class KeycloakClient {
                 }
             }
         } else {
-            log.error("Status:{}, Body{}", response.getStatus(), response.getBody());
+            log.error("Status:{}, Body:{}", response.getStatus(), response.getBody());
+            if(Response.Status.CONFLICT.getStatusCode() == response.getStatus ()){
+                String message = "User may already exist in Keycloak";
+                throw new RemoteResourceException(message);
+            }
         }
-        throw new RemoteResourceException("Unable to create User");
+        throw new RemoteResourceException("Unable to create User in keycloak");
     }
 
     public void sendUpdatePasswordEmail(String sub) throws RemoteResourceException {

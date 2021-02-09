@@ -102,7 +102,7 @@ public class UserFactory {
     public static JsonObject convertToJsonObject(User person) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        FactoryUtilService.addValue(builder, "id", person.getId());
+        FactoryUtilService.addValueLong(builder, "id", person.getId());
         FactoryUtilService.addValue(builder, "logon", person.getLogon());
         FactoryUtilService.addValue(builder, "userEmail", person.getUserEmail());
         FactoryUtilService.addValueLong(builder, "createUser", person.getCreateUser());

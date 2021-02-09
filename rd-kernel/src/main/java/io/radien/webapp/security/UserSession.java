@@ -28,6 +28,8 @@ import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 
+import java.util.Optional;
+
 
 /**
  * Class responsible for managing the current user session
@@ -55,14 +57,14 @@ public @SessionScoped class UserSession implements UserSessionEnabled {
 	
 	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception {
 		log.info("user logged in: {}", userIdSubject);
-//		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
+		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 		SystemUser user;
-//		if(!existingUser.isPresent()){
+		if(!existingUser.isPresent()){
 			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,email,getOAF().getSystemAdminUserId());
 			userClientService.create(user);
-//		} else {
-//			user = existingUser.get();
-//		}
+		} else {
+			user = existingUser.get();
+		}
 		this.user = user;
 	}
 	
