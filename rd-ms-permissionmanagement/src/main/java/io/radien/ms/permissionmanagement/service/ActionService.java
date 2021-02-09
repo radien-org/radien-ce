@@ -19,19 +19,32 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
-import io.radien.exception.ActionNotFoundException;
+
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.model.Action;
 
 import javax.ejb.Stateless;
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.PersistenceUnit;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Order;
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Newton Carvalho
+ */
 @Stateless
 public class ActionService implements ActionServiceAccess {
 

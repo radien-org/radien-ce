@@ -17,7 +17,6 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
-import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;

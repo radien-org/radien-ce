@@ -18,13 +18,20 @@ package io.radien.ms.permissionmanagement.service;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.PersistenceUnit;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Order;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
@@ -37,7 +44,7 @@ import io.radien.ms.permissionmanagement.model.Permission;
 
 
 /**
- * @author n.carvalho
+ * @author Newton Carvalho
  *
  */
 @Stateless
@@ -303,5 +310,6 @@ public class PermissionService implements PermissionServiceAccess {
     
     protected EntityManager getEntityManager() {
         return this.emf.createEntityManager();
+//        return em;
     }
 }
