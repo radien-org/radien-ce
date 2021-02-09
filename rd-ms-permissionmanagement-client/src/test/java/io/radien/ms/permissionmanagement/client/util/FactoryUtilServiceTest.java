@@ -15,11 +15,9 @@
  */
 package io.radien.ms.permissionmanagement.client.util;
 
+import io.radien.api.util.FactoryUtilService;
 import junit.framework.TestCase;
 import org.junit.Test;
-
-import io.radien.ms.permissionmanagement.client.util.FactoryUtilService;
-
 import javax.json.*;
 
 public class FactoryUtilServiceTest extends TestCase {

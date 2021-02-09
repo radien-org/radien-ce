@@ -111,5 +111,5 @@
 			<version>8.0.6</version>
 			<scope>test</scope>
 		</dependency>
-    </dependencies>
+	</dependencies>
 </project>

@@ -23,10 +23,10 @@ import java.util.Optional;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
-import io.radien.api.Configurable;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
