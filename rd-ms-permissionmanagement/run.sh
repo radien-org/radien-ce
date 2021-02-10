@@ -1,1 +1,1 @@
-java -jar target/rd-ms-permissionmanagement.jar
+java -jar target/permissionmanagementservice-exec.jar
