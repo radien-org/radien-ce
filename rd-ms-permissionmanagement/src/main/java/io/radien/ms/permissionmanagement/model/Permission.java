@@ -36,8 +36,8 @@ public class Permission extends io.radien.ms.permissionmanagement.client.entitie
 
 	@Override
 	@Id
-	@SequenceGenerator(name = "GEN_SEQ_PERM01", sequenceName = "SEQ_PERM01", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "GEN_SEQ_PERM01")
+	@TableGenerator(name = "GEN_SEQ_PERM01", allocationSize = 2000)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_PERM01")
 	public Long getId() {
 		return super.getId();
 	}
