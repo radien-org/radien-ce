@@ -126,7 +126,7 @@
 		userName = sa
 		validationQuery = CALL NOW()
 	</Resource>
-	<Resource id="jdbc/AppFrameContractDS" type="javax.sql.DataSource">
+	<Resource id="jdbc/AppFrameTenantDS" type="javax.sql.DataSource">
 		accessToUnderlyingConnectionAllowed = false
 		alternateUsernameAllowed = false
 		connectionProperties =

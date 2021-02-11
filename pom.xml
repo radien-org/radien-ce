@@ -21,8 +21,8 @@
 		<module>rd-ms-ecm</module>
 		<module>rd-ms-usermanagement</module>
 		<module>rd-ms-usermanagement-client</module>
-		<module>rd-ms-contractmanagement</module>
-		<module>rd-ms-contractmanagement-client</module>
+		<module>rd-ms-tenantmanagement</module>
+		<module>rd-ms-tenantmanagement-client</module>
 		<module>rd-aws-utils</module>
 		<module>rd-ms-permissionmanagement-client</module>
 		<module>rd-ms-permissionmanagement</module>
@@ -45,7 +45,7 @@
 		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
 		<version.maven-surefire-plugin>2.21.0</version.maven-surefire-plugin>
 
-		<version.tomee-maven-plugin>8.0.5</version.tomee-maven-plugin>
+		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
 
 		<!-- Microservices / Runtimes -->
 		<version.openliberty-runtime>20.0.0.12</version.openliberty-runtime>

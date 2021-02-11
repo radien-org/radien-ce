@@ -42,6 +42,7 @@ public class UserFactoryTest extends TestCase {
         builder.addNull("sub");
         builder.add("firstname", "testFirstName");
         builder.add("lastname", "testLastname");
+        builder.add("enabled",true);
         json = builder.build();
 
         user = UserFactory.create("testFirstName", "testLastname", "logonTest", null, "emailtest@emailtest.pt", 2L);

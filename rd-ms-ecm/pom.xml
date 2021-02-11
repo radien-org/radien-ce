@@ -16,7 +16,7 @@
 	<url>http://www.radien.io</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.tomee-maven-plugin>8.0.5</version.tomee-maven-plugin>
+		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
 	</properties>
 	<build>
 		<finalName>rd-ms-ecm</finalName>

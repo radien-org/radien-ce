@@ -1,0 +1,1 @@
+java -jar target/tenantmanagementservice-exec.jar
