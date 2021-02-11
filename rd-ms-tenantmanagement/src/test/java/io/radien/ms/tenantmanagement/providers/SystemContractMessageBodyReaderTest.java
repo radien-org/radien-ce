@@ -15,7 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.providers;
 
-import io.radien.api.model.contract.SystemContract;
+import io.radien.api.model.tenant.SystemContract;
 import io.radien.ms.tenantmanagement.entities.Contract;
 import junit.framework.TestCase;
 import org.junit.Test;

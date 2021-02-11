@@ -25,27 +25,26 @@ import javax.persistence.TableGenerator;
 import java.time.LocalDateTime;
 
 
-
 /**
- * JPA entity representing a contract in the openappframe system
+ * JPA entity representing a Tenant
  *
  * @author Santana
  */
 
 @Entity
-@Table(name = "CTR01")
-public class Contract extends io.radien.ms.tenantmanagement.client.entities.Contract {
+@Table(name = "TNT01")
+public class Tenant extends io.radien.ms.tenantmanagement.client.entities.Tenant {
 
-	private static final long serialVersionUID = -7928267613860708799L;
+	private static final long serialVersionUID = 307978393054123750L;
 
-	public Contract(){ }
+	public Tenant(){ }
 
-	public Contract(io.radien.ms.tenantmanagement.client.entities.Contract contract){
-		super(contract);
+	public Tenant(io.radien.ms.tenantmanagement.client.entities.Tenant tenant){
+		super(tenant);
 	}
 	@Id
-	@TableGenerator(name = "GEN_SEQ_CTR01", allocationSize = 100)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_CTR01")
+	@TableGenerator(name = "GEN_SEQ_TNT01", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT01")
 	@Override
 	public Long getId() {
 		return super.getId();
@@ -57,16 +56,5 @@ public class Contract extends io.radien.ms.tenantmanagement.client.entities.Cont
 		return super.getName();
 	}
 
-	@Column
-	@Override
-	public LocalDateTime getStart() {
-		return super.getStart();
-	}
-
-	@Column
-	@Override
-	public LocalDateTime getEnd() {
-		return super.getEnd();
-	}
 
 }

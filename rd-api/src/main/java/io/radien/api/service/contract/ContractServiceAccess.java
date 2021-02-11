@@ -15,7 +15,7 @@
  */
 package io.radien.api.service.contract;
 
-import io.radien.api.model.contract.SystemContract;
+import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;

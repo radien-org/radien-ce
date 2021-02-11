@@ -15,26 +15,21 @@
 	limitations under the License.
 
  */
-package io.radien.api.model.contract;
+package io.radien.api.model.tenant;
 
 import io.radien.api.Model;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
- * Class that represents an application contract
+ * Class that represents an tenant
  *
  * @author Santana
  */
-public interface SystemContract extends Model {
+public interface SystemTenant extends Model {
 
 	public String getName();
 	public void setName(String name);
 
-	public LocalDateTime getStart();
-	public void setStart(LocalDateTime time);
 
-	public LocalDateTime getEnd();
-	public void setEnd(LocalDateTime time);
 }

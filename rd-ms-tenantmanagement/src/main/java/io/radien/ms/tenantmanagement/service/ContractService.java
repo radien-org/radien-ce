@@ -15,7 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import io.radien.api.model.contract.SystemContract;
+import io.radien.api.model.tenant.SystemContract;
 
 import io.radien.api.service.contract.ContractServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.TypedQuery;

@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
-import io.radien.api.model.contract.SystemContract;
+import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.contract.ContractRESTServiceAccess;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;

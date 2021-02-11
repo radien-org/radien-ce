@@ -1,6 +1,6 @@
 package io.radien.ms.tenantmanagement.client.util;
 
-import io.radien.api.model.contract.SystemContract;
+import io.radien.api.model.tenant.SystemContract;
 import io.radien.ms.tenantmanagement.client.services.ContractFactory;
 
 import javax.json.Json;

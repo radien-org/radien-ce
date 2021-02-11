@@ -15,11 +15,8 @@
  */
 package io.radien.api.service.contract;
 
-import io.radien.api.Appframeable;
-import io.radien.api.model.contract.SystemContract;
-import io.radien.api.model.user.SystemUser;
+import io.radien.api.model.tenant.SystemContract;
 
-import javax.ws.rs.ProcessingException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;

@@ -15,7 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import io.radien.api.model.contract.SystemContract;
+import io.radien.api.model.tenant.SystemContract;
 
 import io.radien.api.service.contract.ContractServiceAccess;
 

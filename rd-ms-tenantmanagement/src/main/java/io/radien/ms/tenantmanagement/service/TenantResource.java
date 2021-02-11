@@ -15,19 +15,19 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
-
-import io.radien.api.model.tenant.SystemContract;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.contract.ContractServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.tenantmanagement.client.entities.Contract;
+import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
+import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,16 +35,16 @@ import java.util.List;
  *
  */
 @RequestScoped
-public class ContractResource implements ContractResourceClient {
+public class TenantResource implements TenantResourceClient {
 
-	private static final Logger log = LoggerFactory.getLogger(ContractResource.class);
+	private static final Logger log = LoggerFactory.getLogger(TenantResource.class);
 	@Inject
 	private ContractServiceAccess contractService;
 
 	@Override
 	public Response get(String name) {
 		try {
-			List<? extends SystemContract> list= contractService.get(name);
+			List<? extends SystemTenant> list= new ArrayList<>();
 			return Response.ok(list).build();
 		}catch (Exception e){
 			return getGenericError(e);
@@ -55,11 +55,11 @@ public class ContractResource implements ContractResourceClient {
 	@Override
 	public Response getById(Long id) {
 		try {
-			SystemContract contract = contractService.get(id);
-			if(contract == null){
+			SystemTenant tenant = new Tenant();
+			if(tenant == null){
 				return getResourceNotFoundException();
 			}
-			return Response.ok(contract).build();
+			return Response.ok(tenant).build();
 		}catch (Exception e){
 			return getGenericError(e);
 		}
@@ -68,32 +68,32 @@ public class ContractResource implements ContractResourceClient {
 	@Override
 	public Response delete(long id) {
 		try {
-			return Response.ok(contractService.delete(id)).build();
+			return Response.ok(true).build();
 		}catch (Exception e){
 			return getGenericError(e);
 		}
 	}
 
 	@Override
-	public Response create(Contract contract) {
+	public Response create(Tenant tenant) {
 		try {
-            contractService.create(new io.radien.ms.tenantmanagement.entities.Contract(contract));
-			return Response.ok(contract.getId()).build();
-		}catch (UniquenessConstraintException u){
-			return getInvalidRequestResponse(u);
+            SystemTenant result = new io.radien.ms.tenantmanagement.entities.Tenant(tenant);
+			return Response.ok(result.getId()).build();
+		//} catch (UniquenessConstraintException u){
+		//	return getInvalidRequestResponse(u);
 		} catch (Exception e){
 			return getGenericError(e);
 		}
 	}
 
 	@Override
-	public Response update(long id, Contract contract) {
+	public Response update(long id, Tenant tenant) {
 		try {
-			contract.setId(id);
-            contractService.update(new io.radien.ms.tenantmanagement.entities.Contract(contract));
+			tenant.setId(id);
+            new io.radien.ms.tenantmanagement.entities.Tenant(tenant);
 			return Response.ok().build();
-		}catch (UniquenessConstraintException u){
-			return getInvalidRequestResponse(u);
+		//}catch (UniquenessConstraintException u){
+		//	return getInvalidRequestResponse(u);
 		} catch (Exception e){
 			return getGenericError(e);
 		}

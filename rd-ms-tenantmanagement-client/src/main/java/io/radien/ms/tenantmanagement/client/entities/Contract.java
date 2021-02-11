@@ -16,7 +16,7 @@
 package io.radien.ms.tenantmanagement.client.entities;
 
 import io.radien.api.model.AbstractModel;
-import io.radien.api.model.contract.SystemContract;
+import io.radien.api.model.tenant.SystemContract;
 
 import java.time.LocalDateTime;
 
