@@ -1,4 +1,4 @@
-radien Contract Management Microservice
+radien Tenant Management Microservice
 ======
 
 #
@@ -8,15 +8,15 @@ radien Contract Management Microservice
     mvn -P tomee package
 
 ### - ___Run:___
-    java -jar target/contractmanagementservice-exec.jar
+    java -jar target/tenantmanagementservice-exec.jar
 
 ### - ___Local TomEE Configuration:___
-    URL: https://localhost:8082/contractmanagement/v1/contract
+    URL: https://localhost:8082/tenantmanagement/v1/contract
     HTTP Port: 8082
     HTTPS Port: 8445
     JMX Port: 1101
-    Deployment: rd-ms-contractmanagement:war exploded
-    Application Context: /contractmanagementservice
+    Deployment: rd-ms-tenantmanagement:war exploded
+    Application Context: /tenantmanagementservice
 
 #
 # - cUrls
@@ -24,7 +24,10 @@ radien Contract Management Microservice
 * GET Data
   ------
 ### - ___Get contract by ID:___
-    curl -X GET 'http://localhost:8082/contractmanagementservice/v1/contract/{id}'
+    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
+#
+### - ___Get list of contracts:___
+    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract'
 #
 * POST Data
   ------
@@ -38,7 +41,7 @@ radien Contract Management Microservice
         "lastUpdateUser": null,
         "createDate": null,
         "lastUpdate": null
-      }' http://localhost:8082/contractmanagementservice/v1/contract
+      }' http://localhost:8082/tenantmanagementservice/v1/contract
 
 #
 * PUT Data
@@ -53,10 +56,10 @@ radien Contract Management Microservice
         "lastUpdateUser": null,
         "createDate": null,
         "lastUpdate": null
-      }' http://localhost:8082/contractmanagementservice/v1/contract/{id}
+      }' http://localhost:8082/tenantmanagementservice/v1/contract/{id}
 
 #
 * DELETE Data
   ------
 ### - ___Delete user by ID:___
-    curl --location --request DELETE 'http://localhost:8082/contractmanagementservice/v1/contract/{id}'
+    curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
