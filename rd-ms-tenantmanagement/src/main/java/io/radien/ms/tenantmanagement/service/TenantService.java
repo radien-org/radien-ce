@@ -15,12 +15,11 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import io.radien.api.model.tenant.SystemContract;
-
-import io.radien.api.service.tenant.ContractServiceAccess;
+import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.tenantmanagement.entities.Contract;
+import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +30,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -43,14 +40,14 @@ import java.util.List;
  */
 
 @Stateful
-public class ContractService implements ContractServiceAccess {
+public class TenantService implements TenantServiceAccess {
 
     private static final long serialVersionUID = 1L;
 
     @Inject
     private EntityManagerHolder emh;
 
-    private static final Logger log = LoggerFactory.getLogger(ContractService.class);
+    private static final Logger log = LoggerFactory.getLogger(TenantService.class);
 
     /**
      * Gets the System Contract searching by the PK (id).
@@ -59,49 +56,49 @@ public class ContractService implements ContractServiceAccess {
      * @return the system contract requested to be found.
      */
     @Override
-    public SystemContract get(Long contractId) {
-        return emh.getEm().find(Contract.class, contractId);
+    public SystemTenant get(Long contractId) {
+        return emh.getEm().find(Tenant.class, contractId);
     }
 
 
     /**
-     * Gets all the contracts.
+     * Gets all the tenants.
      * Can be filtered by name
      *
      * @param name specific logon or user email
      * @return a List of system contracts.
      */
     @Override
-    public List<? extends SystemContract> get(String name) {
+    public List<? extends SystemTenant> get(String name) {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Contract> criteriaQuery = criteriaBuilder.createQuery(Contract.class);
-        Root<Contract> userRoot = criteriaQuery.from(Contract.class);
+        CriteriaQuery<Tenant> criteriaQuery = criteriaBuilder.createQuery(Tenant.class);
+        Root<Tenant> root = criteriaQuery.from(Tenant.class);
 
-        criteriaQuery.select(userRoot);
+        criteriaQuery.select(root);
 
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if (name != null) {
             global = criteriaBuilder.and(global,
-                    criteriaBuilder.equal(userRoot.get("name"), name));
+                    criteriaBuilder.equal(root.get("name"), name));
             criteriaQuery.where(global);
         }
 
-        TypedQuery<Contract> q = em.createQuery(criteriaQuery);
+        TypedQuery<Tenant> q = em.createQuery(criteriaQuery);
         return q.getResultList();
     }
 
     /**
      * Creates the requested and given Contract information into the DB.
      *
-     * @param contract to be added
+     * @param tenant to be added
      * @throws UniquenessConstraintException in case of duplicated email/duplicated logon
      */
     @Override
-    public void create(SystemContract contract) throws UniquenessConstraintException {
-        List<Contract> alreadyExistentRecords = searchDuplicatedFields(contract);
+    public void create(SystemTenant tenant) throws UniquenessConstraintException {
+        List<Tenant> alreadyExistentRecords = searchDuplicatedFields(tenant);
         if (alreadyExistentRecords.isEmpty()) {
-            emh.getEm().persist(contract);
+            emh.getEm().persist(tenant);
         } else {
             throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
@@ -110,14 +107,14 @@ public class ContractService implements ContractServiceAccess {
     /**
      * Updates the requested and given Contract information into the DB.
      *
-     * @param contract to be updated
+     * @param tenant to be updated
      * @throws UniquenessConstraintException in case of duplicated name
      */
     @Override
-    public void update(SystemContract contract) throws UniquenessConstraintException {
-        List<Contract> alreadyExistentRecords = searchDuplicatedFields(contract);
+    public void update(SystemTenant tenant) throws UniquenessConstraintException {
+        List<Tenant> alreadyExistentRecords = searchDuplicatedFields(tenant);
         if (alreadyExistentRecords.isEmpty()) {
-            emh.getEm().merge(contract);
+            emh.getEm().merge(tenant);
         } else {
             throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
@@ -126,23 +123,23 @@ public class ContractService implements ContractServiceAccess {
     /**
      * Query to validate if an existent name already exists in the database or not.
      *
-     * @param contract user information to look up.
+     * @param tenant user information to look up.
      * @return list of users with duplicated information.
      */
-    private List<Contract> searchDuplicatedFields(SystemContract contract) {
+    private List<Tenant> searchDuplicatedFields(SystemTenant tenant) {
         EntityManager em = emh.getEm();
-        List<Contract> alreadyExistentRecords;
+        List<Tenant> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Contract> criteriaQuery = criteriaBuilder.createQuery(Contract.class);
-        Root<Contract> root = criteriaQuery.from(Contract.class);
+        CriteriaQuery<Tenant> criteriaQuery = criteriaBuilder.createQuery(Tenant.class);
+        Root<Tenant> root = criteriaQuery.from(Tenant.class);
         criteriaQuery.select(root);
         Predicate global = criteriaBuilder.or(
-                criteriaBuilder.equal(root.get("name"), contract.getName()));
-        if (contract.getId() != null) {
-            global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), contract.getId()));
+                criteriaBuilder.equal(root.get("name"), tenant.getName()));
+        if (tenant.getId() != null) {
+            global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), tenant.getId()));
         }
         criteriaQuery.where(global);
-        TypedQuery<Contract> q = em.createQuery(criteriaQuery);
+        TypedQuery<Tenant> q = em.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
     }
@@ -150,16 +147,16 @@ public class ContractService implements ContractServiceAccess {
     /**
      * Deletes a unique contract selected by his id.
      *
-     * @param contractId to be deleted.
+     * @param tenantId to be deleted.
      */
     @Override
-    public boolean delete(Long contractId) {
+    public boolean delete(Long tenantId) {
         EntityManager em = emh.getEm();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Contract> criteriaDelete = cb.createCriteriaDelete(Contract.class);
-        Root<Contract> userRoot = criteriaDelete.from(Contract.class);
+        CriteriaDelete<Tenant> criteriaDelete = cb.createCriteriaDelete(Tenant.class);
+        Root<Tenant> userRoot = criteriaDelete.from(Tenant.class);
 
-        criteriaDelete.where(cb.equal(userRoot.get("id"), contractId));
+        criteriaDelete.where(cb.equal(userRoot.get("id"), tenantId));
         int ret = em.createQuery(criteriaDelete).executeUpdate();
         return ret > 0;
     }
@@ -173,8 +170,8 @@ public class ContractService implements ContractServiceAccess {
     public void delete(Collection<Long> contractIds) {
         EntityManager em = emh.getEm();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Contract> criteriaDelete = cb.createCriteriaDelete(Contract.class);
-        Root<Contract> userRoot = criteriaDelete.from(Contract.class);
+        CriteriaDelete<Tenant> criteriaDelete = cb.createCriteriaDelete(Tenant.class);
+        Root<Tenant> userRoot = criteriaDelete.from(Tenant.class);
 
         criteriaDelete.where(userRoot.get("id").in(contractIds));
         em.createQuery(criteriaDelete).executeUpdate();

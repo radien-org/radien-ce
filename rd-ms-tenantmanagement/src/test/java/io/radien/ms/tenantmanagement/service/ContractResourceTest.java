@@ -13,7 +13,7 @@ import java.net.MalformedURLException;
 
 import javax.ws.rs.core.Response;
 
-import io.radien.api.service.contract.ContractServiceAccess;
+import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.ms.tenantmanagement.entities.Contract;
 import org.junit.Before;
 import org.junit.Test;

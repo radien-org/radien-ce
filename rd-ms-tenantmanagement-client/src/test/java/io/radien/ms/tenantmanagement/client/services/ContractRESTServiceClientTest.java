@@ -90,7 +90,7 @@ public class ContractRESTServiceClientTest {
 
     private String getContractManagementUrl(){
         String url = "";
-        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_CONTRACTMANAGEMENT)).thenReturn(url);
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT)).thenReturn(url);
         return url;
     }
 

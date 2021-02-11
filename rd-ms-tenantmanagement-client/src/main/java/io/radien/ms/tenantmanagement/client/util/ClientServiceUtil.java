@@ -15,9 +15,11 @@
  */
 package io.radien.ms.tenantmanagement.client.util;
 
-import io.radien.ms.tenantmanagement.client.ContractResponseExceptionMapper;
+import io.radien.ms.tenantmanagement.client.ResponseExceptionMapper;
 import io.radien.ms.tenantmanagement.client.providers.ContractMessageBodyWriter;
+import io.radien.ms.tenantmanagement.client.providers.TenantMessageBodyWriter;
 import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
+import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import javax.ejb.Stateless;
@@ -31,8 +33,17 @@ public class ClientServiceUtil {
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
-                .register(ContractResponseExceptionMapper.class)
+                .register(ResponseExceptionMapper.class)
                 .register(ContractMessageBodyWriter.class)
                 .build(ContractResourceClient.class);
+    }
+    public TenantResourceClient getTenantResourceClient(String urlStr) throws MalformedURLException {
+        URL url = new URL(urlStr);
+        return RestClientBuilder.
+                newBuilder()
+                .baseUrl(url)
+                .register(ResponseExceptionMapper.class)
+                .register(TenantMessageBodyWriter.class)
+                .build(TenantResourceClient.class);
     }
 }

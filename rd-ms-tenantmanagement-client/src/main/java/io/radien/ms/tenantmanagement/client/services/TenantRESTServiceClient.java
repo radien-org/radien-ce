@@ -15,39 +15,36 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.util.List;
-import java.util.Optional;
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
+import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
+import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
-
-import io.radien.api.model.tenant.SystemContract;
-import io.radien.api.service.tenant.ContractRESTServiceAccess;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
-
-import io.radien.ms.tenantmanagement.client.entities.Contract;
-import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
-import io.radien.ms.tenantmanagement.client.util.ListContractModelMapper;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Santana
  */
 @Stateless @Default
-public class ContractRESTServiceClient implements ContractRESTServiceAccess {
-	private static final long serialVersionUID = 1L;
+public class TenantRESTServiceClient implements TenantRESTServiceAccess {
+	private static final long serialVersionUID = 4007939167636938896L;
 
-	private static final Logger log = LoggerFactory.getLogger(ContractRESTServiceClient.class);
+	private static final Logger log = LoggerFactory.getLogger(TenantRESTServiceClient.class);
     
     @Inject
     private ClientServiceUtil clientServiceUtil;
@@ -62,12 +59,12 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
      * @return Optional Contract
      */
     @Override
-    public Optional<SystemContract> getContractByName(String name) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
+    public Optional<SystemTenant> getTenantByName(String name) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
         try {
-            ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
             Response response = client.get(name);
-            List<? extends SystemContract> list = ListContractModelMapper.map((InputStream) response.getEntity());
+            List<? extends SystemTenant> list = TenantModelMapper.mapList((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
             } else {
@@ -80,12 +77,12 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
     }
 
     @Override
-    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException {
+    public List<? extends SystemTenant> getAll() throws MalformedURLException, ParseException {
         try {
-            ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
             Response response = client.get(null);
-            return ListContractModelMapper.map((InputStream) response.getEntity());
+            return TenantModelMapper.mapList((InputStream) response.getEntity());
         }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
             log.error(es.getMessage(),es);
             throw es;
@@ -93,15 +90,15 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
     }
 
     /**
-     * Creates given Contract
-     * @param contract to be created
+     * Creates given Tenant
+     * @param tenant to be created
      * @return true if user has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
     @Override
-    public boolean create(SystemContract contract) throws MalformedURLException {
-        ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        try (Response response = client.create((Contract)contract)) {
+    public boolean create(SystemTenant tenant) throws MalformedURLException {
+        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        try (Response response = client.create((Tenant) tenant)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -116,7 +113,7 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
 
     @Override
     public boolean delete(long contractId) throws MalformedURLException {
-        ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         try (Response response = client.delete(contractId)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -131,9 +128,9 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
     }
 
     @Override
-    public boolean update(SystemContract contract) throws MalformedURLException {
-        ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        try (Response response = client.update(contract.getId(),(Contract)contract)) {
+    public boolean update(SystemTenant tenant) throws MalformedURLException {
+        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        try (Response response = client.update(tenant.getId(),(Tenant) tenant)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {

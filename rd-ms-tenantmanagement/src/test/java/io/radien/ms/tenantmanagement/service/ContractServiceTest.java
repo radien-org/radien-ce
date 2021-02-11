@@ -17,7 +17,7 @@ package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.model.tenant.SystemContract;
 
-import io.radien.api.service.contract.ContractServiceAccess;
+import io.radien.api.service.tenant.ContractServiceAccess;
 
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;

@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.tenant.SystemContract;
-import io.radien.api.service.contract.ContractServiceAccess;
+import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;

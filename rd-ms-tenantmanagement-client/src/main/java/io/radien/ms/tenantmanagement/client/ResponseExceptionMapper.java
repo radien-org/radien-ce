@@ -18,15 +18,14 @@ package io.radien.ms.tenantmanagement.client;
 import io.radien.ms.tenantmanagement.client.exceptions.BadRequestException;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.tenantmanagement.client.exceptions.NotFoundException;
-import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class ContractResponseExceptionMapper implements
-        ResponseExceptionMapper<Exception> {
+public class ResponseExceptionMapper implements
+        org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper<Exception> {
 
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {

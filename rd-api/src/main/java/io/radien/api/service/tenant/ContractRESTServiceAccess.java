@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.service.contract;
+package io.radien.api.service.tenant;
 
 import io.radien.api.model.tenant.SystemContract;
 

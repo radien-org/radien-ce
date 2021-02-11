@@ -25,11 +25,11 @@ import javax.ws.rs.core.Response.Status;
 
 import static org.junit.Assert.*;
 
-public class ContractResponseExceptionMapperTest {
+public class ResponseExceptionMapperTest {
 
     @Test
     public void handles() {
-        ContractResponseExceptionMapper uRexceptionMapper = new ContractResponseExceptionMapper();
+        ResponseExceptionMapper uRexceptionMapper = new ResponseExceptionMapper();
         boolean handlesException200 = uRexceptionMapper.handles(200, null);
         boolean handlesException400 = uRexceptionMapper.handles(400, null);
         boolean handlesException404 = uRexceptionMapper.handles(404, null);
@@ -45,7 +45,7 @@ public class ContractResponseExceptionMapperTest {
     @Test
     public void toThrowable() {
         String msg = "messageException";
-        ContractResponseExceptionMapper target = new ContractResponseExceptionMapper();
+        ResponseExceptionMapper target = new ResponseExceptionMapper();
 
         Response responseOk = Response.status(Status.OK).entity(msg).build();
         Exception exceptionOk = target.toThrowable(responseOk);

@@ -115,11 +115,11 @@ public enum OAFProperties implements SystemProperties{
 
     SYSTEM_MS_ENDPOINT_USERMANAGEMENT("system.ms.endpoint.usermanagement"),
 
-    SYSTEM_MS_ENDPOINT_CONTRACTMANAGEMENT("system.ms.endpoint.contractmanagement"),
+    SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT("system.ms.endpoint.tenantmanagement"),
 
     SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT("system.ms.endpoint.permissionmanagement"),
 
-    SYSTEM_MS_ENDPOINT_ECM("system.ms.endpoint.ecm"),;
+    SYSTEM_MS_ENDPOINT_ECM("system.ms.endpoint.ecm");
 
     private String propKey;
 

@@ -16,7 +16,7 @@
 package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.service.contract.ContractServiceAccess;
+import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,12 +38,12 @@ public class TenantResource implements TenantResourceClient {
 
 	private static final Logger log = LoggerFactory.getLogger(TenantResource.class);
 	@Inject
-	private ContractServiceAccess contractService;
+	private TenantServiceAccess tenantService;
 
 	@Override
 	public Response get(String name) {
 		try {
-			List<? extends SystemTenant> list= new ArrayList<>();
+			List<? extends SystemTenant> list= tenantService.get(name);
 			return Response.ok(list).build();
 		}catch (Exception e){
 			return getGenericError(e);
@@ -55,7 +54,7 @@ public class TenantResource implements TenantResourceClient {
 	@Override
 	public Response getById(Long id) {
 		try {
-			SystemTenant tenant = new Tenant();
+			SystemTenant tenant = tenantService.get(id);
 			if(tenant == null){
 				return getResourceNotFoundException();
 			}
@@ -68,7 +67,7 @@ public class TenantResource implements TenantResourceClient {
 	@Override
 	public Response delete(long id) {
 		try {
-			return Response.ok(true).build();
+			return Response.ok(tenantService.delete(id)).build();
 		}catch (Exception e){
 			return getGenericError(e);
 		}
@@ -77,10 +76,10 @@ public class TenantResource implements TenantResourceClient {
 	@Override
 	public Response create(Tenant tenant) {
 		try {
-            SystemTenant result = new io.radien.ms.tenantmanagement.entities.Tenant(tenant);
-			return Response.ok(result.getId()).build();
-		//} catch (UniquenessConstraintException u){
-		//	return getInvalidRequestResponse(u);
+            tenantService.create(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
+			return Response.ok(tenant.getId()).build();
+		} catch (UniquenessConstraintException u){
+			return getInvalidRequestResponse(u);
 		} catch (Exception e){
 			return getGenericError(e);
 		}
@@ -90,10 +89,10 @@ public class TenantResource implements TenantResourceClient {
 	public Response update(long id, Tenant tenant) {
 		try {
 			tenant.setId(id);
-            new io.radien.ms.tenantmanagement.entities.Tenant(tenant);
+            tenantService.update(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
 			return Response.ok().build();
-		//}catch (UniquenessConstraintException u){
-		//	return getInvalidRequestResponse(u);
+		}catch (UniquenessConstraintException u){
+			return getInvalidRequestResponse(u);
 		} catch (Exception e){
 			return getGenericError(e);
 		}
