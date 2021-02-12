@@ -155,7 +155,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.radien</groupId>
-				<artifactId>rd-ms-contractmanagement-client</artifactId>
+				<artifactId>rd-ms-tenantmanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
