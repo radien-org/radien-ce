@@ -117,15 +117,18 @@ public class UserResource implements UserResourceClient {
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
 			userBusinessService.save(new User(user));
-			return Response.ok().build();
+			
 		} catch (UniquenessConstraintException e) {
+			log.error("error",e);
 			return getInvalidRequestResponse(e);
 		}catch (RemoteResourceException e) {
-			//TODO: ERROR HANDLING
-			return getRemoteResourceExceptionError(e);
+			log.error("error",e);
+//			return getRemoteResourceExceptionError(e);
 		} catch (Exception e) {
+			log.error("error",e);
 			return getGenericError(e);
 		}
+		return Response.ok().build();
 	}
 
 	/**
