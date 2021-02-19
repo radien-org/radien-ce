@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-		<version>0.0.1</version>
+		<version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -97,7 +97,7 @@
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-aws-utils</artifactId>
-			<version>0.0.1</version>
+			<version>rd-0.0.2-SNAPSHOT</version>
 		</dependency>
 		<!-- Microprofile -->
 		<dependency>
