@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-		<version>0.0.1</version>
+		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>rd-ms-tomee-microprofile</artifactId>
 	<version>1.0-SNAPSHOT</version>
