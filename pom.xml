@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 	<name>radien - an open appframe - ${project.version}</name>
 	<description>radien - an open app frame</description>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<modules>
 		<module>rd-api</module>
 		<module>rd-persistence</module>
@@ -48,7 +48,7 @@
 		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
 
 		<!-- Microservices / Runtimes -->
-		<version.openliberty-runtime>20.0.0.2-SNAPSHOT2</version.openliberty-runtime>
+		<version.openliberty-runtime>20.0.0.12</version.openliberty-runtime>
 
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
