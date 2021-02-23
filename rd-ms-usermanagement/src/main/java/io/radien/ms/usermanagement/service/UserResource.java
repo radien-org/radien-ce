@@ -18,13 +18,17 @@ package io.radien.ms.usermanagement.service;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+import com.google.gson.JsonObject;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
-import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.batch.BatchResponse;
@@ -51,12 +55,23 @@ public class UserResource implements UserResourceClient {
 
 	@Inject
 	private UserBusinessService userBusinessService;
+	@Context
+	private HttpServletRequest servletRequest;
+	//@Context private HttpServletContext servletContext;
+	//@Inject
+	//private UserSession session;
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
 	@Override
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
+
+		servletRequest.getRequestURL(); //fullpath
+		servletRequest.getRequestURI(); //relativePath
+		servletRequest.getHeader("Authorization"); //null on empty
+		SystemUser user = (io.radien.ms.usermanagement.client.entities.User) servletRequest.getSession().getAttribute("USER");
+
 		try {
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {

@@ -13,6 +13,8 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
@@ -20,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import io.radien.api.service.batch.BatchSummary;
@@ -43,6 +46,8 @@ public class UserResourceTest {
     @Mock
     UserBusinessService userBusinessService;
 
+    @Mock
+    HttpServletRequest servletRequest;
 
     @Before
     public void before(){
@@ -54,6 +59,8 @@ public class UserResourceTest {
      */
     @Test
     public void testGetAll() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(200,response.getStatus());
     }
@@ -63,6 +70,9 @@ public class UserResourceTest {
      */
     @Test
     public void testGetAllGenericException() throws MalformedURLException {
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
         when(userBusinessService.getAll(null,1,10,null,true))
                 .thenThrow(new RuntimeException());
         Response response = userResource.getAll(null,1,10,null,true);
