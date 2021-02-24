@@ -25,6 +25,7 @@ import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.model.Action;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
@@ -48,8 +49,8 @@ import java.util.stream.Collectors;
 @Stateless
 public class ActionService implements ActionServiceAccess {
 
-    @PersistenceUnit
-    private EntityManagerFactory emf;
+    @Inject
+    private EntityManagerHolder holder;
 
     /**
      * Count the number of Actions existent in the DB.
@@ -158,17 +159,14 @@ public class ActionService implements ActionServiceAccess {
      */
     @Override
     public void save(SystemAction action) throws UniquenessConstraintException {
-        List<Action> alreadyExistentRecords = searchDuplicatedName(action);
         EntityManager em = getEntityManager();
+        List<Action> alreadyExistentRecords = searchDuplicatedName(action, em);
+        if (!alreadyExistentRecords.isEmpty()) {
+            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+        }
         if(action.getId() == null) {
-            if(alreadyExistentRecords.isEmpty()) {
-                em.persist(action);
-            } else {
-                validateUniquenessRecords(alreadyExistentRecords, action);
-            }
+            em.persist(action);
         } else {
-            validateUniquenessRecords(alreadyExistentRecords, action);
-
             em.merge(action);
         }
     }
@@ -178,9 +176,8 @@ public class ActionService implements ActionServiceAccess {
      * @param action Action information to look up.
      * @return list of Actions with duplicated information.
      */
-    private List<Action> searchDuplicatedName(SystemAction action) {
+    private List<Action> searchDuplicatedName(SystemAction action, EntityManager em) {
         List<Action> alreadyExistentRecords;
-        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
         Root<Action> ActionRoot = criteriaQuery.from(Action.class);
@@ -193,22 +190,6 @@ public class ActionService implements ActionServiceAccess {
         TypedQuery<Action> q = em.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
-    }
-
-    /**
-     * When updating the Action information this method will validate if the unique values maintain as unique.
-     * Will search for the Action name, given in the information to be updated, to see if they are not already in the DB in another Action.
-     * @param alreadyExistentRecords list of duplicated Action information
-     * @param newActionInformation Action information to update into the requested one
-     * @throws UniquenessConstraintException in case of requested information to be updated already exists in the DB
-     */
-    private void validateUniquenessRecords(List<Action> alreadyExistentRecords, SystemAction newActionInformation) throws UniquenessConstraintException {
-        if(!alreadyExistentRecords.isEmpty()) {
-            boolean isSameName = alreadyExistentRecords.get(0).getName().equals(newActionInformation.getName());
-            if(isSameName) {
-                throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
-            }
-        }
     }
 
     /**
@@ -232,6 +213,9 @@ public class ActionService implements ActionServiceAccess {
      */
     @Override
     public void delete(Collection<Long> actionIds) {
+        if (actionIds == null || actionIds.isEmpty()) {
+            return;
+        }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<Action> criteriaDelete = cb.createCriteriaDelete(Action.class);
@@ -308,6 +292,6 @@ public class ActionService implements ActionServiceAccess {
     }
     
     protected EntityManager getEntityManager() {
-        return emf.createEntityManager();
+        return holder.getEntityManager();
     }
 }

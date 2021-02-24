@@ -18,7 +18,7 @@ package io.radien.ms.permissionmanagement.client.exceptions;
 /**
  * @author Newton Carvalho
  */
-public class InternalServerErrorException extends Exception{
+public class InternalServerErrorException extends Exception {
 
 	private static final long serialVersionUID = 858909633422934639L;
 

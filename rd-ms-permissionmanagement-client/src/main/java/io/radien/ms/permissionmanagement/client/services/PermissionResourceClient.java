@@ -15,8 +15,6 @@
  */
 package io.radien.ms.permissionmanagement.client.services;
 
-import io.radien.ms.permissionmanagement.client.entities.Permission;
-
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -43,6 +41,8 @@ public interface PermissionResourceClient {
     @GET
     @Path("find")
     public Response getPermissions(@QueryParam("name") String name,
+                             @QueryParam("action") Long action,
+                             @QueryParam("resource") Long resource,
                              @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                              @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
@@ -58,12 +58,17 @@ public interface PermissionResourceClient {
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission);
 
 	@POST
-	@Path("/{permissionId}/association/{actionId}")
+	@Path("/{permissionId}/action/{actionId}/resource/{resourceId}")
 	public Response associate(@NotNull @PathParam("permissionId") long permissionId,
-					   @NotNull @PathParam("actionId") long actionId);
+					   @NotNull @PathParam("actionId") long actionId,
+                       @NotNull @PathParam("resourceId") long resourceId);
 
 	@POST
 	@Path("/{permissionId}/dissociation")
 	public Response dissociate(@NotNull @PathParam("permissionId") long permissionId);
+
+    @GET
+    @Path("/exists/{id}")
+    public Response exists(@NotNull @PathParam("id") Long id);
 
 }

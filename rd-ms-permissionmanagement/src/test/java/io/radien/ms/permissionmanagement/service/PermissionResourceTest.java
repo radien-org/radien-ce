@@ -1,6 +1,7 @@
 package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.service.permission.PermissionServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
@@ -13,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -52,7 +52,7 @@ public class PermissionResourceTest {
      * Test the Get All request Exception which will return a generic error message code 500.
      */
     @Test
-    public void testGetAllGenericException() throws MalformedURLException {
+    public void testGetAllGenericException() {
         when(permissionResource.getAll(null,1,10,null,true))
                 .thenThrow(new RuntimeException());
         Response response = permissionResource.getAll(null,1,10,null,true);
@@ -95,7 +95,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testGetPermissionsBy() {
-        Response response = permissionResource.getPermissions("permission",true,true);
+        Response response = permissionResource.getPermissions("permission", 11L, 100L,true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -105,7 +105,7 @@ public class PermissionResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(permissionServiceAccess).getPermissions(any());
-        Response response = permissionResource.getPermissions("perm",true,true);
+        Response response = permissionResource.getPermissions("perm", 1l, 2l,true,true);
         assertEquals(500,response.getStatus());
     }
 
@@ -139,16 +139,16 @@ public class PermissionResourceTest {
 
     @Test
     public void testSuccessfulAssociationWithAction() throws UniquenessConstraintException {
-        when(permissionBusinessService.associate(any(), any())).thenReturn(new AssociationStatus());
-        Response response = permissionResource.associate(11l, 12L);
+        when(permissionBusinessService.associate(any(), any(), any())).thenReturn(new AssociationStatus());
+        Response response = permissionResource.associate(11l, 12L, 13L);
         assertEquals(200,response.getStatus());
     }
 
     @Test
     public void testUnsuccessfulAssociationWithAction() throws UniquenessConstraintException {
-        when(permissionBusinessService.associate(any(), any())).thenReturn(
+        when(permissionBusinessService.associate(any(), any(), any())).thenReturn(
                 new AssociationStatus(false, "unsuccessful operation"));
-        Response response = permissionResource.associate(11l, 12L);
+        Response response = permissionResource.associate(11l, 12L, 13L);
         assertEquals(400,response.getStatus());
         assertEquals(response.getEntity().getClass(), String.class);
         assertEquals(response.getEntity().toString(), "unsuccessful operation");
@@ -156,9 +156,9 @@ public class PermissionResourceTest {
 
     @Test
     public void testUnsuccessfulAssociationByException() throws UniquenessConstraintException {
-        when(permissionBusinessService.associate(any(), any())).
+        when(permissionBusinessService.associate(any(), any(), any())).
                 thenThrow(new RuntimeException("unsuccessful operation"));
-        Response response = permissionResource.associate(11l, 12L);
+        Response response = permissionResource.associate(11l, 12L, 13L);
         assertEquals(500,response.getStatus());
     }
 
@@ -197,7 +197,7 @@ public class PermissionResourceTest {
      * @throws PermissionNotFoundException in case of permission not found
      */
     @Test
-    public void testCreateInvalid() throws UniquenessConstraintException, PermissionNotFoundException {
+    public void testCreateInvalid() throws UniquenessConstraintException {
         doThrow(new UniquenessConstraintException()).when(permissionServiceAccess).save(any());
         Response response = permissionResource.save(new Permission());
         assertEquals(400,response.getStatus());
@@ -210,9 +210,30 @@ public class PermissionResourceTest {
      * @throws PermissionNotFoundException in case of permission not found
      */
     @Test
-    public void testCreateGenericError() throws UniquenessConstraintException, PermissionNotFoundException {
+    public void testCreateGenericError() throws UniquenessConstraintException {
         doThrow(new RuntimeException()).when(permissionServiceAccess).save(any());
         Response response = permissionResource.save(new Permission());
         assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Tests the does record exist method
+     * @throws NotFoundException ic case of record not be found
+     */
+    @Test
+    public void testExists() throws NotFoundException {
+        when(permissionServiceAccess.exists(any())).thenReturn(true);
+        Response response = permissionResource.exists(2L);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests the does record exist method
+     */
+    @Test
+    public void testExistsNotFound() {
+        Response response = permissionResource.exists(2L);
+        assertEquals(200,response.getStatus());
+        assertEquals(response.getEntity().toString(), "false");
     }
 }

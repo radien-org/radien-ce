@@ -30,6 +30,7 @@ public class Permission extends AbstractPermissionModel implements SystemPermiss
 	private Long id;
 	private String name;
 	private Long actionId;
+	private Long resourceId;
 
 	public Permission(){}
 
@@ -37,6 +38,7 @@ public class Permission extends AbstractPermissionModel implements SystemPermiss
 		this.id = p.getId();
 		this.name = p.getName();
 		this.actionId = p.getActionId();
+		this.resourceId = p.getResourceId();
 	}
 
 	@Override
@@ -67,4 +69,10 @@ public class Permission extends AbstractPermissionModel implements SystemPermiss
 	public void setActionId(Long actionId) {
 		this.actionId = actionId;
 	}
+
+	@Override
+	public Long getResourceId() { return resourceId; }
+
+	@Override
+	public void setResourceId(Long resourceId) { this.resourceId = resourceId; }
 }

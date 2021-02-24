@@ -70,11 +70,15 @@ public class UserService implements UserServiceAccess{
 	 * Gets the System User searching by the PK (id).
 	 * @param userId to be searched.
 	 * @return the system user requested to be found.
-	 * @throws NotFoundException if user can not be found will return NotFoundException
+	 * @throws UserNotFoundException if user can not be found will return NotFoundException
 	 */
 	@Override
 	public SystemUser get(Long userId) throws UserNotFoundException {
-		return em.find(User.class, userId);
+		User result = em.find(User.class, userId);
+		if(result == null){
+			throw new UserNotFoundException(userId.toString());
+		}
+		return result;
 	}
 
 	/**

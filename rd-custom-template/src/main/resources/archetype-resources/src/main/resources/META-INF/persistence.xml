@@ -7,10 +7,9 @@
              version="2.1">
 
     <!-- BEGIN DEFAULT PERSISTENCE UNIT -->
-
     <persistence-unit name="${persistence-unit-name}" transaction-type="JTA">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>java:/comp/env/jdbc/${library-name}DSHHSQL</jta-data-source>
+        <jta-data-source>java:/comp/env/jdbc/${resource-name}DSHHSQL</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
         <properties>

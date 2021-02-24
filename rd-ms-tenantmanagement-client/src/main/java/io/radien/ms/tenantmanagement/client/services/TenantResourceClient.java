@@ -56,4 +56,8 @@ public interface TenantResourceClient {
     @Path("/{id}")
     public Response update(@NotNull @PathParam("id") long id,Tenant contract);
 
+    @GET
+    @Path("/exists/{id}")
+    public Response exists(@NotNull @PathParam("id") Long id);
+
 }

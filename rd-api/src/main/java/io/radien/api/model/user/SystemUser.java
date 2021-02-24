@@ -51,4 +51,8 @@ public interface SystemUser extends Model {
 
 	public String getLastname();
 	public void setLastname(String firstname);
+
+	public boolean isDelegatedCreation();
+	public void setDelegatedCreation(boolean delegatedCreation);
+
 }

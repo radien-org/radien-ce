@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.OAFAccess;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -42,6 +44,9 @@ public class RoleService implements RoleServiceAccess {
 
     @PersistenceContext(unitName = "rolePersistenceUnit")
     private EntityManager entityManager;
+
+    @Inject
+    OAFAccess oaf;
 
     private static final Logger log = LoggerFactory.getLogger(RoleService.class);
 
@@ -105,8 +110,14 @@ public class RoleService implements RoleServiceAccess {
     }
 
     /**
-     * Creates the query predicate to search for hte specifi information.
-     *
+     * Creates the query predicate to search for hte specific information.
+     * is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
+     * the predicate is build with the logic (start,operator,newPredicate)
+     * where start represents the already joined predicates
+     * operator is "and" or "or"
+     * depending on the operator the start may need to be true or false
+     * true and predicate1 and predicate2
+     * false or predicate1 or predicate2
      * @param filter complete information to be filtered.
      * @param criteriaBuilder query to be worked on.
      * @param roleRoot table to search the information.
@@ -114,14 +125,6 @@ public class RoleService implements RoleServiceAccess {
      */
     private Predicate getFilteredPredicate(SystemRoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> roleRoot) {
         Predicate global;
-
-        // is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
-        // the predicate is build with the logic (start,operator,newPredicate)
-        // where start represents the already joined predicates
-        // operator is "and" or "or"
-        // depending on the operator the start may need to be true or false
-        // true and predicate1 and predicate2
-        // false or predicate1 or predicate2
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         } else {
@@ -290,5 +293,26 @@ public class RoleService implements RoleServiceAccess {
 
         criteriaDelete.where(cb.equal(roleRoot.get("id"),roleId));
         entityManager.createQuery(criteriaDelete).executeUpdate();
+    }
+
+    /**
+     * Validates if a certain specified role is existent
+     * @param roleId to be found
+     * @return true if it exists.
+     */
+    public boolean checkIfRolesExist(Long roleId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Role> contractRoot = criteriaQuery.from(Role.class);
+
+        criteriaQuery.select(criteriaBuilder.count(contractRoot));
+        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), roleId));
+
+        Long size = entityManager.createQuery(criteriaQuery).getSingleResult();
+
+        if(size == 0) {
+            return false;
+        }
+        return true;
     }
 }

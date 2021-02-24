@@ -15,9 +15,13 @@
  */
 package io.radien.ms.tenantmanagement.client.exceptions;
 
+import io.radien.exception.NotFoundException;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+/**
+ * @author Bruno Gama
+ */
 public class NotFoundExceptionTest extends TestCase {
 
     @Test

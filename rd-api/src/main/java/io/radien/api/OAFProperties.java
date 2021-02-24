@@ -119,7 +119,12 @@ public enum OAFProperties implements SystemProperties{
 
     SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT("system.ms.endpoint.permissionmanagement"),
 
-    SYSTEM_MS_ENDPOINT_ECM("system.ms.endpoint.ecm");
+    SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT("system.ms.endpoint.rolemanagement"),
+    SYSTEM_MS_ENDPOINT_ECM("system.ms.endpoint.ecm"),
+
+	SYSTEM_MS_SECRET_ECM("system.ms.secret.ecm"),
+	SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM("system.supported.languages"),
+    SYSTEM_MS_CONFIG_DEFAULT_LANG_ECM("system.default.language");
 
     private String propKey;
 

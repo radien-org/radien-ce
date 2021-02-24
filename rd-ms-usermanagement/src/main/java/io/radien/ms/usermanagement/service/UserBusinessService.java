@@ -74,7 +74,7 @@ public class UserBusinessService implements Serializable {
 		userServiceAccess.delete(id);
 	}
 
-	public void save(User user) throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+	public void save(User user,boolean skipKeycloak) throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
 		if(user.getLogon().isEmpty()){
 			//according to current keycloak config
 			throw new RemoteResourceException("logon cannot be empty");
@@ -85,14 +85,14 @@ public class UserBusinessService implements Serializable {
 		}
 		boolean creation = user.getId() == null;
 		userServiceAccess.save(user);
-		if(creation){
+		if(creation && !skipKeycloak){
 			try {
 				user.setSub(keycloakService.createUser(user));
 			} catch (RemoteResourceException e) {
 				userServiceAccess.delete(user.getId());
 				throw e;
 			}
-		} else {
+		} else if(!skipKeycloak){
 			try{
 				keycloakService.updateUser(user);
 			}catch (RemoteResourceException e){

@@ -78,6 +78,7 @@ public class UserFactory implements Serializable {
 		String sub = FactoryUtilService.getStringFromJson("sub", person);
 		String firstname = FactoryUtilService.getStringFromJson("firstname", person);
 		String lastname = FactoryUtilService.getStringFromJson("lastname",person);
+		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);
 
 		User user = new User();
 		user.setId(id);
@@ -89,6 +90,9 @@ public class UserFactory implements Serializable {
 		user.setFirstname(firstname);
 		user.setLastname(lastname);
 		user.setCreateUser(createUser);
+		if(delegatedCreation != null) {
+			user.setDelegatedCreation(delegatedCreation);
+		}
 
 		return user;
 	}
@@ -110,6 +114,7 @@ public class UserFactory implements Serializable {
 		FactoryUtilService.addValue(builder, "sub", person.getSub());
 		FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
 		FactoryUtilService.addValue(builder, "lastname", person.getLastname());
+		FactoryUtilService.addValueBoolean(builder, "delegatedCreation", person.isDelegatedCreation());
 		FactoryUtilService.addValueBoolean(builder, "enabled", person.isEnabled());
 		return  builder.build();
 	}

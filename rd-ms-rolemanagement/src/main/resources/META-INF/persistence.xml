@@ -10,7 +10,7 @@
 
     <persistence-unit name="rolePersistenceUnit" transaction-type="JTA">
     	<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>java:/comp/env/jdbc/AppFrameUserDS</jta-data-source>
+        <jta-data-source>java:/comp/env/jdbc/RoleDSHHSQL</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
         <properties>

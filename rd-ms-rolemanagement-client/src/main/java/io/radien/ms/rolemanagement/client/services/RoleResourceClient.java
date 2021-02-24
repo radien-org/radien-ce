@@ -42,9 +42,9 @@ public interface RoleResourceClient {
     @Path("/find")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSpecificRoles(@QueryParam("name") String name,
-                             @QueryParam("description") String type,
-                             @DefaultValue("true") @QueryParam("isExact") boolean isExact,
-                             @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
+                                     @QueryParam("description") String description,
+                                     @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                                     @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
     @Path("/{id}")

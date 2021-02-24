@@ -92,7 +92,7 @@ public class UserBusinessServiceTest extends TestCase {
         doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
         try{
-            userBusinessService.save(u);
+            userBusinessService.save(u,true);
         } catch (UserNotFoundException e){
             success = true;
         }
@@ -105,7 +105,7 @@ public class UserBusinessServiceTest extends TestCase {
         //doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
         try{
-            userBusinessService.save(u);
+            userBusinessService.save(u,false);
         } catch (RemoteResourceException e){
             success = true;
         }
@@ -117,7 +117,7 @@ public class UserBusinessServiceTest extends TestCase {
         User u = UserFactory.create("a","b","l","s","",1L);
         boolean success = false;
         try{
-            userBusinessService.save(u);
+            userBusinessService.save(u,true);
         } catch (RemoteResourceException e){
             success = true;
         }

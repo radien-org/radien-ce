@@ -15,7 +15,10 @@
  */
 package io.radien.ms.tenantmanagement.client.exceptions;
 
-public class InternalServerErrorException extends Exception{
+/**
+ * @author Bruno Gama
+ */
+public class InternalServerErrorException extends Exception {
 
     public InternalServerErrorException() {
         super();

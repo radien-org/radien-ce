@@ -26,6 +26,7 @@ import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.batch.BatchResponse;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
@@ -59,7 +60,7 @@ public class UserResource implements UserResourceClient {
 		try {
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return getResponseFromException(e);
 		}
 	}
 
@@ -69,7 +70,7 @@ public class UserResource implements UserResourceClient {
 			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,isExact,isLogicalConjunction);
 			return Response.ok(userBusinessService.getUsers(filter)).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return getResponseFromException(e);
 		}
 	}
 
@@ -81,12 +82,9 @@ public class UserResource implements UserResourceClient {
 	public Response getById(Long id) {
 		try {
 			SystemUser systemUser = userBusinessService.get(id);
-			if(systemUser == null){
-				return getResourceNotFoundException();
-			}
 			return Response.ok(systemUser).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return getResponseFromException(e);
 		}
 	}
 
@@ -98,11 +96,8 @@ public class UserResource implements UserResourceClient {
 	public Response delete(long id)  {
 		try {
 			userBusinessService.delete(id);
-
-		} catch (RemoteResourceException e){
-			return getRemoteResourceExceptionError(e);
-		} catch (Exception e){
-			return getGenericError(e);
+		}  catch (Exception e){
+			return getResponseFromException(e);
 		}
 		return Response.ok().build();
 	}
@@ -116,17 +111,9 @@ public class UserResource implements UserResourceClient {
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			userBusinessService.save(new User(user));
-			
-		} catch (UniquenessConstraintException e) {
-			log.error("error",e);
-			return getInvalidRequestResponse(e);
-		}catch (RemoteResourceException e) {
-			log.error("error",e);
-//			return getRemoteResourceExceptionError(e);
+			userBusinessService.save(new User(user),user.isDelegatedCreation());
 		} catch (Exception e) {
-			log.error("error",e);
-			return getGenericError(e);
+			return getResponseFromException(e);
 		}
 		return Response.ok().build();
 	}
@@ -196,7 +183,24 @@ public class UserResource implements UserResourceClient {
 			return BatchResponse.get(batchSummary);
 		}
 		catch (Exception e) {
-			return getGenericError(e);
+			return getResponseFromException(e);
 		}
+	}
+
+	private Response getResponseFromException(Exception e){
+		Response response;
+		try{
+			log.error("ERROR: ",e);
+			throw e;
+		} catch (RemoteResourceException rre){
+			response = getRemoteResourceExceptionError(rre);
+		} catch (UserNotFoundException unfe){
+			response = getResourceNotFoundException();
+		} catch (UniquenessConstraintException uce) {
+			return getInvalidRequestResponse(uce);
+		}catch (Exception et){
+			response = getGenericError(et);
+		}
+		return response;
 	}
 }

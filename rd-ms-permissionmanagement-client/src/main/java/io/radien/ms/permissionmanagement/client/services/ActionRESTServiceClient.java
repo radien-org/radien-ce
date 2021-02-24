@@ -53,16 +53,15 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
 
     @Inject
     private OAFAccess oaf;
-    
+
     @Inject
     private ClientServiceUtil clientServiceUtil;
-    
+
     /**
      * Gets an Action in the DB searching for the field Id
-     *
      * @param id to be looked after
      * @return Optional List of Actions
-     * @throws Exception in case it founds multiple actions or if URL is malformed
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public Optional<SystemAction> getActionById(Long id) throws SystemException {
         try {

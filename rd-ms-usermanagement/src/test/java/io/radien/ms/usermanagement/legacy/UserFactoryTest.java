@@ -23,6 +23,9 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
+/**
+ * @author Bruno Gama
+ */
 public class UserFactoryTest extends TestCase {
 
     JsonObject json;
@@ -42,6 +45,7 @@ public class UserFactoryTest extends TestCase {
         builder.addNull("sub");
         builder.add("firstname", "testFirstName");
         builder.add("lastname", "testLastname");
+        builder.add("delegatedCreation",false);
         builder.add("enabled",true);
         json = builder.build();
 

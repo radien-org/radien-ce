@@ -45,5 +45,4 @@ public class PermissionResponseExceptionMapper implements
         }
         return null;
     }
-
 }

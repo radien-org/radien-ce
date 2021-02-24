@@ -62,17 +62,20 @@ public class PermissionTest {
 
         Permission originalPermission = new Permission();
         originalPermission.setActionId(originalAction.getId());
+        originalPermission.setResourceId(111111L);
         originalPermission.setId(111L);
         originalPermission.setName("originalPermission");
 
         Permission newPermission = new Permission(originalPermission);
 
         assertNotNull(newPermission.getActionId());
+        assertNotNull(newPermission.getResourceId());
         assertNotNull(newPermission.getName());
         assertNotNull(newPermission.getId());
 
         assertEquals(newPermission.getId(), originalPermission.getId());
         assertEquals(newPermission.getName(), originalPermission.getName());
         assertEquals(newPermission.getActionId(), originalPermission.getActionId());
+        assertEquals(newPermission.getResourceId(), originalPermission.getResourceId());
     }
 }

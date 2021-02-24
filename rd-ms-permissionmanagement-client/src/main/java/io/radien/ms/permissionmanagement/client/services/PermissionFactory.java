@@ -40,7 +40,7 @@ public class PermissionFactory {
      * @param createUser the user which has created the permission
      * @return a Permission object to be used
      */
-    public static Permission create(String name, Long actionId, Long createUser){
+    public static Permission create(String name, Long actionId, Long resourceId, Long createUser){
         Permission u = new Permission();
         u.setName(name);
         u.setCreateUser(createUser);
@@ -48,6 +48,7 @@ public class PermissionFactory {
         u.setLastUpdate(now);
         u.setCreateDate(now);
         u.setActionId(actionId);
+        u.setResourceId(resourceId);
         return u;
     }
 
@@ -64,12 +65,14 @@ public class PermissionFactory {
         Long createPermission = FactoryUtilService.getLongFromJson("createUser", permission);
         Long updatePermission = FactoryUtilService.getLongFromJson("lastUpdateUser", permission);
         Long actionId = FactoryUtilService.getLongFromJson("actionId", permission);
+        Long resourceId = FactoryUtilService.getLongFromJson("resourceId", permission);
         Permission perm = new Permission();
         perm.setId(id);
         perm.setName(name);
         perm.setCreateUser(createPermission);
         perm.setLastUpdateUser(updatePermission);
         perm.setActionId(actionId);
+        perm.setResourceId(resourceId);
         perm.setCreateDate(new Date());
         perm.setLastUpdate(new Date());
         return perm;
@@ -88,6 +91,7 @@ public class PermissionFactory {
         FactoryUtilService.addValueLong(builder, "createUser", perm.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", perm.getLastUpdateUser());
         FactoryUtilService.addValueLong(builder, "actionId", perm.getActionId());
+        FactoryUtilService.addValueLong(builder, "resourceId", perm.getResourceId());
         return builder.build();
     }
 

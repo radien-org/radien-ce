@@ -15,9 +15,9 @@
  */
 package io.radien.ms.tenantmanagement.client;
 
+import io.radien.exception.NotFoundException;
 import io.radien.ms.tenantmanagement.client.exceptions.BadRequestException;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
-import io.radien.ms.tenantmanagement.client.exceptions.NotFoundException;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -43,5 +43,4 @@ public class ResponseExceptionMapper implements
         }
         return null;
     }
-
 }

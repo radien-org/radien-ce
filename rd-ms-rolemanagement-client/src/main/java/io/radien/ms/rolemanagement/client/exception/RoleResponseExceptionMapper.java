@@ -15,11 +15,9 @@
  */
 package io.radien.ms.rolemanagement.client.exception;
 
+import io.radien.exception.NotFoundException;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 

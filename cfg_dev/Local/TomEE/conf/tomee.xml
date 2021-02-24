@@ -156,6 +156,36 @@
 		userName = sa
 		validationQuery = CALL NOW()
 	</Resource>
+	<Resource id="jdbc/RoleDSHHSQL" type="javax.sql.DataSource">
+		accessToUnderlyingConnectionAllowed = false
+		alternateUsernameAllowed = false
+		connectionProperties =
+		defaultAutoCommit = true
+		defaultReadOnly =
+		definition =
+		ignoreDefaultValues = false
+		initialSize = 0
+		jdbcDriver = org.hsqldb.jdbcDriver
+		jdbcUrl = jdbc:hsqldb:file:roledb
+		jtaManaged = true
+		maxActive = 20
+		maxIdle = 20
+		maxOpenPreparedStatements = 0
+		maxWaitTime = -1 millisecond
+		minEvictableIdleTime = 30 minutes
+		minIdle = 0
+		numTestsPerEvictionRun = 3
+		password =
+		passwordCipher = PlainText
+		poolPreparedStatements = false
+		serviceId =
+		testOnBorrow = true
+		testOnReturn = false
+		testWhileIdle = false
+		timeBetweenEvictionRuns = -1 millisecond
+		userName = sa
+		validationQuery = CALL NOW()
+	</Resource>
 	<!-- activate next line to be able to deploy applications in apps -->
 	<!-- <Deployments dir="apps" /> -->
 </tomee>

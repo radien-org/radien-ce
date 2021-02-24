@@ -17,7 +17,6 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
-import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.Role;
@@ -41,12 +40,12 @@ import javax.ws.rs.core.Response;
 public class RoleResource implements RoleResourceClient {
 
     @Inject
-    private RoleServiceAccess roleServiceAccess;
+    private RoleBusinessService roleBusinessService;
 
     private static final Logger log = LoggerFactory.getLogger(RoleResource.class);
 
     /**
-     * Gets all the role information into a paginated mode and retun those information to the user.
+     * Gets all the role information into a paginated mode and return those information to the user.
      * @param pageNo page number where the user is seeing the information.
      * @param pageSize number of roles to be showed in each page.
      * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
@@ -56,7 +55,7 @@ public class RoleResource implements RoleResourceClient {
     public Response getAll(int pageNo, int pageSize) {
         try {
             log.info("Will get all the role information I can find!");
-            return Response.ok(roleServiceAccess.getAll(pageNo, pageSize)).build();
+            return Response.ok(roleBusinessService.getAll(pageNo, pageSize)).build();
         } catch(Exception e) {
             return getGenericError(e);
         }
@@ -78,7 +77,7 @@ public class RoleResource implements RoleResourceClient {
             log.info("Will search for a specific role with the name {}, description {}. With the following criteria: " +
                     "Values must be exact: {}; Is a logical conjunction: {}", name, description, isExact, isLogicalConjunction);
             SystemRoleSearchFilter filter = new RoleSearchFilter(name, description, isExact, isLogicalConjunction);
-            return Response.ok(roleServiceAccess.getSpecificRoles(filter)).build();
+            return Response.ok(roleBusinessService.getSpecificRoles(filter)).build();
         } catch (Exception e) {
             return getGenericError(e);
         }
@@ -95,7 +94,7 @@ public class RoleResource implements RoleResourceClient {
     public Response getById(Long id) {
         try{
             log.info("Will search for a specific role with the following id {}.", id);
-            SystemRole systemRole = roleServiceAccess.get(id);
+            SystemRole systemRole = roleBusinessService.getById(id);
             return Response.ok(systemRole).build();
         } catch (RoleNotFoundException e) {
             return getRoleNotFoundException();
@@ -114,8 +113,8 @@ public class RoleResource implements RoleResourceClient {
     public Response delete(long id) {
         try {
             log.info("Will delete a specific role with the following id {}.", id);
-            roleServiceAccess.get(id);
-            roleServiceAccess.delete(id);
+            roleBusinessService.getById(id);
+            roleBusinessService.delete(id);
         } catch (RoleNotFoundException e) {
             return getRoleNotFoundException();
         } catch (Exception e){
@@ -128,7 +127,7 @@ public class RoleResource implements RoleResourceClient {
      * Inserts the given role information, wither creates a new record or updated one already existent one, depending
      * if the given role has an id or not.
      *
-     * @param role information to be updat or created.
+     * @param role information to be update or created.
      * @return 200 code message if success, 400 code message if there are duplicated fields that can not be,
      * 404 if role is not found, 500 code message if there is any error.
      */
@@ -136,7 +135,7 @@ public class RoleResource implements RoleResourceClient {
     public Response save(Role role) {
         try {
             log.info("New information to be created/updated it's on it's way!");
-            roleServiceAccess.save(new io.radien.ms.rolemanagement.entities.Role(role));
+            roleBusinessService.save(new io.radien.ms.rolemanagement.entities.Role(role));
             return Response.ok().build();
         } catch (RoleNotFoundException e) {
             return getRoleNotFoundException();

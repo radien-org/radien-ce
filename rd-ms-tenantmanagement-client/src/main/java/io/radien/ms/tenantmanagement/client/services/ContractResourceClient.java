@@ -48,4 +48,7 @@ public interface ContractResourceClient {
     @Path("/{id}")
     public Response update(@NotNull @PathParam("id") long id,Contract contract);
 
+    @GET
+    @Path("/exists/{id}")
+    public Response exists(@NotNull @PathParam("id") Long id);
 }

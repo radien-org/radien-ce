@@ -21,9 +21,6 @@ import io.radien.api.model.role.SystemRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
-
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -31,16 +28,20 @@ import java.util.List;
  */
 public interface RoleServiceAccess extends ServiceAccess {
 
-    // TODO: Bruno Gama - Handle exceptions
-    // TODO: getAll
-
     public SystemRole get(Long roleId) throws RoleNotFoundException;
 
     public Page<SystemRole> getAll(int pageNo, int pageSize);
 
     public List<? extends SystemRole> getSpecificRoles(SystemRoleSearchFilter filter);
 
-    public void save(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException ;
+    public void save(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException;
 
     public void delete(Long roleId) throws RoleNotFoundException;
+
+    /**
+     * Validates if a certain specified role is existent
+     * @param roleId to be found
+     * @return true if it exists.
+     */
+    public boolean checkIfRolesExist(Long roleId);
 }

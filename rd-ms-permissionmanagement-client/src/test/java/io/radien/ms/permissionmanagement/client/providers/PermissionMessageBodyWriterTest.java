@@ -53,7 +53,8 @@ public class PermissionMessageBodyWriterTest {
                 "\"name\":\"a\"," +
                 "\"createUser\":null," +
                 "\"lastUpdateUser\":null," +
-                "\"actionId\":null" +
+                "\"actionId\":null," +
+                "\"resourceId\":null" +
                 "}";
 
         Permission permission = new Permission();
@@ -68,13 +69,13 @@ public class PermissionMessageBodyWriterTest {
 
     @Test
     public void test2WriteTo() throws IOException {
-        String action = "{\"id\":11,\"name\":\"Update-Radien-User\",\"createUser\":28,\"lastUpdateUser\":null}";
         String result = "{\"" +
                 "id\":1," +
                 "\"name\":\"permission-a\"," +
                 "\"createUser\":28," +
                 "\"lastUpdateUser\":100," +
-                "\"actionId\":11}";
+                "\"actionId\":11," +
+                "\"resourceId\":33}";
 
         Permission permission = new Permission();
         permission.setName("permission-a");
@@ -85,6 +86,7 @@ public class PermissionMessageBodyWriterTest {
         Action a = ActionFactory.create("Update-Radien-User", 28L);
         a.setId(11L);
         permission.setActionId(a.getId());
+        permission.setResourceId(33L);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         target.writeTo(permission,null,null,

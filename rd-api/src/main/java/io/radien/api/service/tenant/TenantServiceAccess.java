@@ -17,8 +17,9 @@ package io.radien.api.service.tenant;
 
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
+
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
  */
 public interface TenantServiceAccess extends ServiceAccess {
 
-    public SystemTenant get(Long tenantId) throws UserNotFoundException;
+    public SystemTenant get(Long tenantId) ;
 
     public List<? extends SystemTenant> get(String name);
 
@@ -39,5 +40,12 @@ public interface TenantServiceAccess extends ServiceAccess {
     public boolean delete(Long tenantId);
 
     public void delete(Collection<Long> tenantIds);
+
+    /**
+     * Validates if specific requested tenant exists
+     * @param tenantId to be searched
+     * @return response true if it exists
+     */
+    public boolean exists(Long tenantId) throws NotFoundException;
 
 }

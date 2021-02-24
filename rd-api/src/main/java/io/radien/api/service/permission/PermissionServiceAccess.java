@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.PermissionNotFoundException;
 
@@ -32,54 +33,60 @@ import java.util.List;
 public interface PermissionServiceAccess extends ServiceAccess {
 
     /**
-     * Retrieve an Action by an identifier
-     * @param permissionId permission identifier
-     * @return
+     * Gets the System Permission searching by the PK (id).
+     * @param permissionId to be searched.
+     * @return the system Permission requested to be found.
      */
-    public SystemPermission get(Long permissionId);
+    public SystemPermission get(Long permissionId) throws PermissionNotFoundException;
 
     /**
-     * Retrieves a collection of Actions by its identifiers
-     * @param permissionId list of identifiers
-     * @return
+     * Gets a list of System Permissions searching by multiple PK's (id) requested in a list.
+     * @param permissionId to be searched.
+     * @return the list of system Permissions requested to be found.
      */
     public List<SystemPermission> get(List<Long> permissionId);
 
     /**
-     * Retrieves permissions using pagination approach
-     * @param search
-     * @param pageNo Page number
-     * @param pageSize Page size
-     * @param sortBy Sorting fields
-     * @param isAscending Defines if ascending or descending in relation of sorting fields
-     * @return
+     * Gets all the Permissions into a pagination mode.
+     * Can be filtered by name Permission.
+     * @param search name description for some permission
+     * @param pageNo of the requested information. Where the Permission is.
+     * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.
+     * @return a page of system Permissions.
      */
     public Page<SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
-     * Save an permission (Create or Update)
-     * @param permission
-     * @throws UniquenessConstraintException
+     * Saves or updates the requested and given Permission information into the DB.
+     * @param permission to be added/inserted or updated
+     * @throws UniquenessConstraintException in case of duplicated name
      */
     public void save(SystemPermission permission) throws UniquenessConstraintException;
 
     /**
-     * Delete an permission
-     * @param permissionId permission identifier
+     * Deletes a unique Permission selected by his id.
+     * @param permissionId to be deleted.
      */
     public void delete(Long permissionId);
 
     /**
-     * Deletes a set of permissions
-     * @param permissionIds permission identifiers
+     * Deletes a list of Permissions selected by his id.
+     * @param permissionIds to be deleted.
      */
     public void delete(Collection<Long> permissionIds);
 
     /**
-     * Retrieve Actions using a search filter
-     * @param filter
-     * @return
+     * Get PermissionsBy unique columns
+     * @param filter entity with available filters to search Permission
      */
     public List<? extends SystemPermission> getPermissions(SystemPermissionSearchFilter filter);
 
+    /**
+     * Validates if specific requested permission exists
+     * @param permissionId to be searched
+     * @return response true if it exists
+     */
+    public boolean exists(Long permissionId);
 }

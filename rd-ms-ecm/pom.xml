@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-		<version>rd-0.0.2-SNAPSHOT</version>
+	  <version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -77,11 +77,11 @@
 							</execution>
 						</executions>
 						<configuration>
-							<context>ROOT</context>
+							<context>${project.build.finalName}</context>
 							<tomeeClassifier>microprofile</tomeeClassifier>
-							<tomeeHttpPort>8080</tomeeHttpPort>
-							<tomeeShutdownPort>8005</tomeeShutdownPort>
-							<tomeeAjpPort>8009</tomeeAjpPort>
+							<tomeeHttpPort>8083</tomeeHttpPort>
+							<tomeeShutdownPort>8008</tomeeShutdownPort>
+							<tomeeAjpPort>8012</tomeeAjpPort>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -96,8 +96,12 @@
 		</dependency>
 		<dependency>
 			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-ecm-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
 			<artifactId>rd-aws-utils</artifactId>
-			<version>rd-0.0.2-SNAPSHOT</version>
+	  <version>${project.parent.version}</version>
 		</dependency>
 		<!-- Microprofile -->
 		<dependency>
@@ -182,7 +186,28 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.12.7</version>
 		</dependency>
-
+		<!--JNoSQL Dependencies -->
+		<!-- https://mvnrepository.com/artifact/org.jnosql/jnosql-parent -->
+		<dependency>
+			<groupId>org.jnosql.diana</groupId>
+			<artifactId>diana-document</artifactId>
+			<version>0.0.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jnosql.diana</groupId>
+			<artifactId>mongodb-driver</artifactId>
+			<version>0.0.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jnosql.artemis</groupId>
+			<artifactId>artemis-configuration</artifactId>
+			<version>0.0.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jnosql.artemis</groupId>
+			<artifactId>artemis-document</artifactId>
+			<version>0.0.9</version>
+		</dependency>
 		<!-- Commons -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -211,6 +236,24 @@
 		</dependency>
 
 		<!-- -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-core</artifactId>
+			<version>1.2.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-mockito</artifactId>
+			<version>8.0.6</version>
+			<scope>test</scope>
+		</dependency>
+
 
 		<!-- logging -->
 		<dependency>
@@ -228,6 +271,11 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.12</version>
 		</dependency>
 	</dependencies>
 </project>

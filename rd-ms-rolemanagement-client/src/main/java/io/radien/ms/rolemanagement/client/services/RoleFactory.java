@@ -106,4 +106,8 @@ public class RoleFactory {
 
         return builder.build();
     }
+
+    public static List<Role> convert(JsonArray jsonArray) {
+        return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
+    }
 }

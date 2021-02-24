@@ -72,6 +72,8 @@ public class UserFactory {
         String firstname = FactoryUtilService.getStringFromJson("firstname", person);
         String lastname = FactoryUtilService.getStringFromJson("lastname",person);
         Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",person);
+        Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);
+
 
         User user = new User();
         user.setId(id);
@@ -88,6 +90,9 @@ public class UserFactory {
         //If not present is set to boolean default
         if(enabled != null) {
             user.setEnabled(enabled);
+        }
+        if(delegatedCreation != null){
+            user.setDelegatedCreation(delegatedCreation);
         }
         return user;
     }
@@ -110,6 +115,8 @@ public class UserFactory {
         FactoryUtilService.addValue(builder, "sub", person.getSub());
         FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
         FactoryUtilService.addValue(builder, "lastname", person.getLastname());
+        FactoryUtilService.addValueBoolean(builder, "delegatedCreation", person.isDelegatedCreation());
+        FactoryUtilService.addValueBoolean(builder, "enabled", person.isEnabled());
         return  builder.build();
     }
 

@@ -7,45 +7,79 @@
     <artifactId>${artifactId}</artifactId>
     <version>${version}</version>
     <packaging>war</packaging>
-    <name>${artifactId.replace("-","  ")}</name>
+    <name>${artifact-name}</name>
     <build>
-        <finalName>${artifactId}</finalName>
+        <finalName>${resource-name-variable}managementservice</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${version.maven-compiler-plugin}</version>
             </plugin>
-
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${version.maven-surefire-plugin}</version>
             </plugin>
 
-        <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>${version.maven-war-plugin}</version>
-            <configuration>
-                <failOnMissingWebXml>false</failOnMissingWebXml>
-            </configuration>
-        </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.maven-war-plugin}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
 
-        <plugin>
-            <groupId>org.apache.tomee.maven</groupId>
-            <artifactId>tomee-maven-plugin</artifactId>
-            <version>${version.tomee-maven-plugin}</version>
-        </plugin>
+            <plugin>
+                <groupId>org.apache.tomee.maven</groupId>
+                <artifactId>tomee-maven-plugin</artifactId>
+                <version>${version.tomee-maven-plugin}</version>
+            </plugin>
 
-        <!-- <plugin> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-maven-plugin</artifactId>
-            <version>3.1.2</version> <executions> <execution> <id>enhancer</id> <phase>process-classes</phase>
-            <goals> <goal>enhance</goal> </goals> </execution> </executions> <dependencies>
-            <dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId>
-            <version>3.1.2</version> </dependency> </dependencies> <configuration> <includes>**/entities/*.class</includes>
-            <excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor>
-            <enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration>
-            </plugin> -->
+            <!-- <plugin> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-maven-plugin</artifactId>
+                <version>3.1.2</version> <executions> <execution> <id>enhancer</id> <phase>process-classes</phase>
+                <goals> <goal>enhance</goal> </goals> </execution> </executions> <dependencies>
+                <dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId>
+                <version>3.1.2</version> </dependency> </dependencies> <configuration> <includes>**/entities/*.class</includes>
+                <excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor>
+                <enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration>
+                </plugin> -->
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>tomee</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.tomee.maven</groupId>
+                        <artifactId>tomee-maven-plugin</artifactId>
+                        <version>${version.tomee-maven-plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>executable-jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <context>${finalName}</context>
+                            <tomeeClassifier>microprofile</tomeeClassifier>
+                            <tomeeHttpPort>8085</tomeeHttpPort>
+                            <tomeeShutdownPort>8015</tomeeShutdownPort>
+                            <tomeeAjpPort>8019</tomeeAjpPort>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
         <!-- Microprofile -->
         <dependency>
@@ -54,6 +88,7 @@
             <version>${version.tomee-javaee-api}</version>
             <scope>provided</scope>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
@@ -79,6 +114,52 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- test -->
+        <dependency>
+            <groupId>org.apache.tomee</groupId>
+            <artifactId>arquillian-openejb-embedded</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- ADD DEPENDENCIES FOR EVAL HERE -->
+        <!-- https://mvnrepository.com/artifact/org.apache.johnzon/johnzon-core -->
+        <dependency>
+            <groupId>org.apache.johnzon</groupId>
+            <artifactId>johnzon-core</artifactId>
+            <version>1.2.10</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
+        <dependency>
+            <groupId>org.apache.tomee</groupId>
+            <artifactId>openejb-mockito</artifactId>
+            <version>8.0.6</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Dependencies for rd-ms-usermanagement-client (Under provided scope) -->
+        <dependency>
+            <groupId>org.eclipse.microprofile.rest.client</groupId>
+            <artifactId>microprofile-rest-client-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-mp-client</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -56,16 +56,16 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
 
     @Inject
     private OAFAccess oaf;
-    
+
     @Inject
     private ClientServiceUtil clientServiceUtil;
-    
+
     /**
      * Gets all the users in the DB searching for the field Subject
      *
      * @param sub to be looked after
      * @return Optional List of Users
-     * @throws Exception in case it founds multiple users or if URL is malformed
+     * @throws SystemException in case it founds multiple users or if URL is malformed
      */
     public Optional<SystemUser> getUserBySub(String sub) throws SystemException {
         try {
@@ -90,14 +90,17 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
      * @return true if user has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(SystemUser user) throws SystemException {
+    public boolean create(SystemUser user,boolean skipKeycloak) throws SystemException {
     	UserResourceClient client;
 		try {
 			client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 		} catch (MalformedURLException e) {
 			log.error(e.getMessage(),e);
             throw new SystemException(e);
-		}        
+		}
+		if(skipKeycloak) {
+            user.setDelegatedCreation(true);
+        }
         try (Response response = client.save((User)user)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -106,7 +109,6 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException e) {
-        	log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
     }

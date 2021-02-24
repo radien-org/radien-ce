@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
@@ -17,8 +32,10 @@ import java.util.Properties;
 
 import static org.junit.Assert.*;
 
+/**
+ * @author Bruno Gama
+ */
 public class RoleServiceTest {
-
     Properties p;
     RoleServiceAccess roleServiceAccess;
     SystemRole systemRole;
@@ -114,5 +131,17 @@ public class RoleServiceTest {
 
         List<? extends SystemRole> rolesNotExact = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("Find","Find",false,true));
         assertEquals(2,rolesNotExact.size());
+    }
+
+    @Test
+    public void testUpdate() throws RoleNotFoundException, UniquenessConstraintException {
+        SystemRole testUpdate1 = RoleFactory.create("nameUpdate1", "descriptionUpdate1", 2L);
+        SystemRole testUpdate2 = RoleFactory.create("nameUpdate2", "descriptionUpdate2", 2L);
+
+        roleServiceAccess.save(testUpdate1);
+        long id = testUpdate1.getId();
+
+        testUpdate2.setId(id);
+        roleServiceAccess.save(testUpdate2);
     }
 }

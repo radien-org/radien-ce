@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Santana
@@ -59,17 +58,12 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
      * @return Optional Contract
      */
     @Override
-    public Optional<SystemTenant> getTenantByName(String name) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
+    public List<? extends SystemTenant> getTenantByName(String name) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
             Response response = client.get(name);
-            List<? extends SystemTenant> list = TenantModelMapper.mapList((InputStream) response.getEntity());
-            if (list.size() == 1) {
-                return Optional.ofNullable(list.get(0));
-            } else {
-                return Optional.empty();
-            }
+            return TenantModelMapper.mapList((InputStream) response.getEntity());
         }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
             log.error(es.getMessage(),es);
             throw es;
@@ -141,5 +135,34 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
             log.error(pe.getMessage(), pe);
             throw pe;
         }
+    }
+
+    /**
+     * Sends a request to the tenant client to validate if a specific tenant exists
+     * @param tenantId to be found
+     * @return true in case of success response
+     * @throws MalformedURLException in case of any error in the specified url
+     */
+    @Override
+    public boolean isTenantExistent(Long tenantId) throws MalformedURLException {
+        TenantResourceClient client;
+        try {
+            client = clientServiceUtil.
+                    getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch(MalformedURLException e) {
+            log.error(e.getMessage(),e);
+            throw new MalformedURLException();
+        }
+
+        try {
+            Response response = client.exists(tenantId);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            }
+        } catch(ProcessingException e) {
+            log.error(e.getMessage(),e);
+            throw new ProcessingException(e);
+        }
+        return false;
     }
 }

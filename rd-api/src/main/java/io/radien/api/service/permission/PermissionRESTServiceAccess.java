@@ -20,6 +20,7 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.exception.SystemException;
 
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,26 +30,54 @@ import java.util.Optional;
 public interface PermissionRESTServiceAccess extends Appframeable {
 
     /**
+     * Fetches all permissions
+     * @return list of permissions
+     */
+    public List<? extends SystemPermission> getAll() throws MalformedURLException, SystemException;
+
+    /**
+     * Fetches list of specific permissions
+     * @return list of Permissions
+     */
+    public List<? extends SystemPermission> getPermissions(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException, SystemException;
+
+    /**
+     * Retrieves from DB a collection containing permissions. The retrieval process will be
+     * based on action identifier and (plus) a resource identifier
+     * @param actionId action identifier
+     * @param resourceId resource identifier
+     * @return a list of permissions found using the action and the resource id
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public List<? extends SystemPermission> getPermissionByActionAndResource(Long actionId, Long resourceId) throws SystemException;
+
+
+    /**
      * Retrieves a Permission by Id
-     * @param id
-     * @return
-     * @throws SystemException
+     * @param id to be searched
+     * @return Optional of permissions
+     * @throws SystemException in case of not being able to find the record
      */
     public Optional<SystemPermission> getPermissionById(Long id) throws SystemException ;
 
     /**
-     * Retrieves a Permission by Name
-     * @param name
-     * @return
-     * @throws SystemException
+     * Deletes given permission
+     * @param permissionId id of the permissions to be deleted
+     * @return true in case of success
      */
-    public Optional<SystemPermission> getPermissionByName(String name) throws SystemException ;
+    public boolean delete(long permissionId) throws SystemException;
 
     /**
      * Creates given permission
      * @param permission to be created
-     * @return true if permission has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @return true in case of success
      */
     public boolean create(SystemPermission permission) throws SystemException;
+
+    /**
+     * Checks if permission is existent in the db
+     * @param permissionId to be found
+     * @return true in case of success
+     */
+    public boolean isPermissionExistent(Long permissionId) throws SystemException;
 }

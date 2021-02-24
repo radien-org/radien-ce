@@ -204,30 +204,30 @@ public class UserRESTServiceClientTest {
     }
     @Test
     public void testCreate() throws MalformedURLException, SystemException {
+        User u = new User();
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(any())).thenReturn(Response.ok().build());
+        when(resourceClient.save(u)).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
         boolean success = false;
         try {
-			assertTrue(target.create(new User()));
+			assertTrue(target.create(u,true));
 		} catch (SystemException e) {
 			success = true;
         }
         assertFalse(success);
 
-        assertTrue(target.create(new User()));
-
     }
     @Test
     public void testCreateFail() throws MalformedURLException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
+        User u = new User();
+        when(resourceClient.save(u)).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
 
         boolean success = false;
         try {
-			assertFalse(target.create(new User()));
+			assertFalse(target.create(u,true));
 		} catch (SystemException e) {
 			 success = true;
         }
@@ -238,11 +238,12 @@ public class UserRESTServiceClientTest {
     @Test
     public void testCreateProcessingException() throws MalformedURLException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(any())).thenThrow(new ProcessingException(""));
+        User u = new User();
+        when(resourceClient.save(u)).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {
-            target.create(new User());
+            target.create(u,true);
         }catch (SystemException se){
             if (se.getMessage().contains(ProcessingException.class.getName())) {
                 success = true;

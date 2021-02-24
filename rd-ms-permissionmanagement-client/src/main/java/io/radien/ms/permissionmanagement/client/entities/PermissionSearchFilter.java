@@ -24,13 +24,18 @@ import io.radien.api.model.permission.SystemPermissionSearchFilter;
 public class PermissionSearchFilter implements SystemPermissionSearchFilter {
 
     private String name;
+    private Long actionId;
+    private Long resourceId;
     private boolean isExact;
     private boolean isLogicConjunction;
 
     public PermissionSearchFilter(){}
 
-    public PermissionSearchFilter(String name, boolean isExact, boolean isLogicConjunction) {
+    public PermissionSearchFilter(String name, Long actionId, Long resourceId,
+                                  boolean isExact, boolean isLogicConjunction) {
         this.name = name;
+        this.actionId = actionId;
+        this.resourceId = resourceId;
         this.isExact = isExact;
         this.isLogicConjunction = isLogicConjunction;
     }
@@ -40,6 +45,18 @@ public class PermissionSearchFilter implements SystemPermissionSearchFilter {
 
     @Override
     public void setName(String name) { this.name = name; }
+
+    @Override
+    public Long getActionId() { return actionId; }
+
+    @Override
+    public void setActionId(Long actionId) { this.actionId = actionId; }
+
+    @Override
+    public Long getResourceId() { return resourceId; }
+
+    @Override
+    public void setResourceId(Long resourceId) { this.resourceId = resourceId; }
 
     @Override
     public boolean isExact() {

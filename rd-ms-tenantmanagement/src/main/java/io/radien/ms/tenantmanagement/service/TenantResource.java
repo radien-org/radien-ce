@@ -17,6 +17,7 @@ package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
@@ -95,6 +96,20 @@ public class TenantResource implements TenantResourceClient {
 			return getInvalidRequestResponse(u);
 		} catch (Exception e){
 			return getGenericError(e);
+		}
+	}
+
+	/**
+	 * Validates if specific requested Tenant exists
+	 * @param id to be searched
+	 * @return response true if it exists
+	 */
+	@Override
+	public Response exists(Long id) {
+		try {
+			return Response.ok(tenantService.exists(id)).build();
+		}catch (NotFoundException e){
+			return getResourceNotFoundException();
 		}
 	}
 

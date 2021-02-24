@@ -5,7 +5,7 @@
 
     <groupId>io.radien</groupId>
     <artifactId>rd-custom-template</artifactId>
-    <version>rd-0.0.2-SNAPSHOT</version>
+	  <version>rd-0.0.2-SNAPSHOT</version>
     <name>Radien Custom Template</name>
     <packaging>maven-archetype</packaging>
 

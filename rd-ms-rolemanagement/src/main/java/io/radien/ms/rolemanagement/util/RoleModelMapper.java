@@ -27,10 +27,20 @@ import java.util.List;
  */
 public class RoleModelMapper {
 
+    /**
+     * Maps into a Json Object a Role
+     * @param model role that has the information to be converted
+     * @return a json object created based the role
+     */
     public static JsonObject map(Role model) {
         return RoleFactory.convertToJsonObject(model);
     }
 
+    /**
+     * Maps into a Json Object array based on a role array list
+     * @param models role that have the information to be converted
+     * @returna json array created based on the multiple roles
+     */
     public static JsonArray map(List<Role> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
@@ -40,6 +50,11 @@ public class RoleModelMapper {
         return arrayBuilder.build();
     }
 
+    /**
+     * Creates a role based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a role object based in the received information
+     */
     public static Role map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();

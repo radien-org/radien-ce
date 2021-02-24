@@ -34,7 +34,7 @@ public class PermissionMessageBodyReaderTest {
         Long updateUser = 333L;
         Action action = null;
         Permission p = PermissionFactory.create(permissionName, null,
-                createUser);
+                null, createUser);
         p.setLastUpdateUser(updateUser);
         p.setId(id);
         String json = getJsonString(p);
@@ -50,7 +50,7 @@ public class PermissionMessageBodyReaderTest {
         Assert.assertEquals(p.getActionId(), p2.getActionId());
 
         // Setting others fields with null (id, action, createUser, lastUpdateUser,..., etc)
-        p = PermissionFactory.create(permissionName, null, null);
+        p = PermissionFactory.create(permissionName, null, null, null);
 
         json = getJsonString(p);
         in = new ByteArrayInputStream(json.getBytes());

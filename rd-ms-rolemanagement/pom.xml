@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-		<version>rd-0.0.2-SNAPSHOT</version>
+	  <version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -97,6 +97,14 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-rolemanagement-client</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-tenantmanagement-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-permissionmanagement-client</artifactId>
+		</dependency>
 
 		<!-- Microprofile -->
 		<dependency>
@@ -144,7 +152,7 @@
 		<dependency>
 			<groupId>org.eclipse.microprofile.rest.client</groupId>
 			<artifactId>microprofile-rest-client-api</artifactId>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Testing -->

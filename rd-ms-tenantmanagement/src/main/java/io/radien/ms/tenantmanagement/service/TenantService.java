@@ -19,6 +19,7 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
+import io.radien.ms.tenantmanagement.entities.Contract;
 import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,8 +134,8 @@ public class TenantService implements TenantServiceAccess {
         CriteriaQuery<Tenant> criteriaQuery = criteriaBuilder.createQuery(Tenant.class);
         Root<Tenant> root = criteriaQuery.from(Tenant.class);
         criteriaQuery.select(root);
-        Predicate global = criteriaBuilder.or(
-                criteriaBuilder.equal(root.get("name"), tenant.getName()));
+        Predicate global =
+                criteriaBuilder.equal(root.get("name"), tenant.getName());
         if (tenant.getId() != null) {
             global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), tenant.getId()));
         }
@@ -175,5 +176,25 @@ public class TenantService implements TenantServiceAccess {
 
         criteriaDelete.where(userRoot.get("id").in(contractIds));
         em.createQuery(criteriaDelete).executeUpdate();
+    }
+
+    /**
+     * Validates if specific requested Tenant exists
+     * @param tenantId to be searched
+     * @return response true if it exists
+     */
+    @Override
+    public boolean exists(Long tenantId) {
+        EntityManager em = emh.getEm();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Tenant> contractRoot = criteriaQuery.from(Tenant.class);
+
+        criteriaQuery.select(criteriaBuilder.count(contractRoot));
+        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), tenantId));
+
+        Long size = em.createQuery(criteriaQuery).getSingleResult();
+
+        return size != 0;
     }
 }

@@ -36,8 +36,8 @@ public class Role extends io.radien.ms.rolemanagement.client.entities.Role {
     }
 
     @Id
-    @SequenceGenerator(name = "GEN_SEQ_ROL01", sequenceName = "SEQ_ROL01", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "GEN_SEQ_ROL01")
+    @TableGenerator(name = "GEN_SEQ_ROL01", allocationSize = 100)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_ROL01")
     @Override
     public Long getId() {
         return super.getId();

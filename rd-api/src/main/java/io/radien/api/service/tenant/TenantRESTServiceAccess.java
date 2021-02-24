@@ -15,13 +15,12 @@
  */
 package io.radien.api.service.tenant;
 
-import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.exception.SystemException;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Santana
@@ -35,7 +34,7 @@ public interface TenantRESTServiceAccess {
      * @return true if contract has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public Optional<SystemTenant> getTenantByName(String name) throws MalformedURLException, ParseException, Exception ;
+    public List<? extends SystemTenant> getTenantByName(String name) throws Exception ;
 
     /**
      * Fetches all tenants
@@ -66,4 +65,11 @@ public interface TenantRESTServiceAccess {
      * @throws MalformedURLException in case of URL specification
      */
      public boolean update(SystemTenant contract) throws MalformedURLException;
+
+    /**
+     * Checks if tenant is existent in the db
+     * @param tenantId to be found
+     * @return true in case of success
+     */
+    public boolean isTenantExistent(Long tenantId) throws MalformedURLException, SystemException;
 }

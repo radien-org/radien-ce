@@ -24,7 +24,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 
-
+/**
+ * @author Bruno Gama
+ */
 public class UserModelListMessageBodyWriterTest extends TestCase {
 
     @Test
@@ -50,6 +52,7 @@ public class UserModelListMessageBodyWriterTest extends TestCase {
                             "\"sub\":\"sub\"," +
                             "\"firstname\":\"a\"," +
                             "\"lastname\":\"b\"," +
+                            "\"delegatedCreation\":false," +
                             "\"enabled\":true" +
                         "}]";
         UserModelListMessageBodyWriter target = new UserModelListMessageBodyWriter();

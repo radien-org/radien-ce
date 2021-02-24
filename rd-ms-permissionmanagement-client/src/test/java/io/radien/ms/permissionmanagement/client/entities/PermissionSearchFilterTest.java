@@ -31,17 +31,28 @@ public class PermissionSearchFilterTest {
         filter.setName("perm1");
         Assert.assertNotNull(filter.getName());
         Assert.assertEquals(filter.getName(), "perm1");
+
+        filter.setActionId(1L);
+        filter.setResourceId(2L);
+
+        Assert.assertNotNull(filter.getActionId());
+        Assert.assertEquals(filter.getActionId(), new Long(1L));
+        Assert.assertNotNull(filter.getResourceId());
+        Assert.assertEquals(filter.getResourceId(), new Long(2L));
+
     }
 
     @Test
     public void testConstruct() {
         SystemPermissionSearchFilter filter =
-                new PermissionSearchFilter("perm1", true, true);
+                new PermissionSearchFilter("perm1", null, null, true, true);
         Assert.assertTrue(filter.isLogicConjunction());
         Assert.assertTrue(filter.isExact());
         filter.setName("perm1");
         Assert.assertNotNull(filter.getName());
         Assert.assertEquals(filter.getName(), "perm1");
+        Assert.assertNull(filter.getActionId());
+        Assert.assertNull(filter.getResourceId());
     }
 
 

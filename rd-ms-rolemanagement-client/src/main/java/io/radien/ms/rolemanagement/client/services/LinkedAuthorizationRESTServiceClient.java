@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.radien.ms.rolemanagement.client.services;
+
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
+import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
+import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
+import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
+import io.radien.ms.rolemanagement.client.util.ListLinkedAuthorizationModelMapper;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.List;
+
+/**
+ * @author Bruno Gama
+ */
+@Stateless @Default
+public class LinkedAuthorizationRESTServiceClient implements LinkedAuthorizationRESTServiceAccess {
+
+    private static final long serialVersionUID = -7001657359045981674L;
+
+    private static final Logger log = LoggerFactory.getLogger(LinkedAuthorizationRESTServiceClient.class);
+
+    @Inject
+    private OAFAccess oaf;
+
+    @Inject
+    private ClientServiceUtil linkedAuthorizationServiceUtil;
+
+    /**
+     * Gets all the Linked Authorization in the DB searching for the field role id
+     *
+     * @param role to be looked after
+     * @return list of linked authorizations
+     * @throws SystemException in case it founds multiple linked authorizations or if URL is malformed
+     */
+    @Override
+    public List<? extends SystemLinkedAuthorization> getLinkedAuthorizationByRoleId(Long role) throws SystemException {
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getSpecificAssociation(null, null,role,false);
+            return ListLinkedAuthorizationModelMapper.map((InputStream) response.getEntity());
+        } catch (ExtensionException|ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Creates given linked authorization
+     * @param linkedAuthorization to be created
+     * @return true if linked authorization has been created with success or false if not
+     * @throws MalformedURLException in case of URL specification
+     */
+    public boolean create(SystemLinkedAuthorization linkedAuthorization) throws SystemException {
+        LinkedAuthorizationResourceClient client;
+        try {
+            client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
+            throw new SystemException(e);
+        }
+        try (Response response = client.saveAssociation((LinkedAuthorization) linkedAuthorization)) {
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                log.error(response.readEntity(String.class));
+                return false;
+            }
+        } catch (ProcessingException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    @Override
+    public OAFAccess getOAF() {
+        return oaf;
+    }
+}

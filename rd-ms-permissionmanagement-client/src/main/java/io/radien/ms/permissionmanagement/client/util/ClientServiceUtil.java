@@ -15,31 +15,32 @@
  */
 package io.radien.ms.permissionmanagement.client.util;
 
-import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyWriter;
 import io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyWriter;
+import io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyWriter;
 import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
+import io.radien.ms.permissionmanagement.client.services.ResourceResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import io.radien.ms.permissionmanagement.client.PermissionResponseExceptionMapper;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
 
-import javax.ejb.Stateless;
-import javax.ws.rs.ext.MessageBodyWriter;
+import javax.enterprise.context.RequestScoped;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
+ * @author Bruno Gama
  * Utility class that produces Rest Clients for Permission and Action
  */
-@Stateless
+@RequestScoped
 public class ClientServiceUtil {
 
     /**
      * Gets a Rest Client for Permission
      * @param urlStr url of rest endpoint
-     * @return
-     * @throws MalformedURLException
+     * @return a client form the permissions
+     * @throws MalformedURLException in case of any url issue
      */
     public PermissionResourceClient getPermissionResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
@@ -67,4 +68,19 @@ public class ClientServiceUtil {
                 .build(ActionResourceClient.class);
     }
 
+    /**
+     * Gets a Rest Client for Resource
+     * @param urlStr url of rest endpoint
+     * @return
+     * @throws MalformedURLException
+     */
+    public ResourceResourceClient getResourceResourceClient(String urlStr) throws MalformedURLException {
+        URL url = new URL(urlStr);
+        return RestClientBuilder.
+                newBuilder()
+                .baseUrl(url)
+                .register(PermissionResponseExceptionMapper.class)
+                .register(ResourceMessageBodyWriter.class)
+                .build(ResourceResourceClient.class);
+    }
 }

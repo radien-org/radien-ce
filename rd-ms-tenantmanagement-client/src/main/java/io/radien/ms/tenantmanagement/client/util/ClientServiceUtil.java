@@ -22,12 +22,24 @@ import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@Stateless
+/**
+ * @author Bruno Gama
+ */
+@RequestScoped
+@Named("ContractClientServiceUtil")
 public class ClientServiceUtil {
+
+    /**
+     * Gets a Rest Client for Contracts
+     * @param urlStr url of rest endpoint
+     * @return a client from the contract
+     * @throws MalformedURLException in case of any url issue
+     */
     public ContractResourceClient getContractResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         return RestClientBuilder.
@@ -37,6 +49,7 @@ public class ClientServiceUtil {
                 .register(ContractMessageBodyWriter.class)
                 .build(ContractResourceClient.class);
     }
+
     public TenantResourceClient getTenantResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         return RestClientBuilder.

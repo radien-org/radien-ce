@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-present openappframe.org & its legal owners. All rights reserved.
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,38 +15,111 @@
  */
 package io.radien.ms.ecm.config;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
+import io.radien.api.*;
+import io.radien.api.kernel.messages.SystemMessages;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * @author Marco Weiland <m.weiland@radien.io>
- *
- */
-@Path("/config")
-@RequestScoped
-public class ConfigController {
+import javax.enterprise.context.ApplicationScoped;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
-    @Inject
-    @ConfigProperty(name = "radien.module.name")
-    private String injectedValue;
+@ApplicationScoped
+public class ConfigController implements OAFAccess {
 
-    @Path("/injected")
-    @GET
-    public String getInjectedConfigValue() {
-        return "Config value as Injected by CDI " + injectedValue;
+    private final Config config;
+
+    private Map<String, Locale> supportedLocales = new HashMap<>();
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    public ConfigController() {
+        config = ConfigProvider.getConfig();
     }
 
-    @Path("/lookup")
-    @GET
-    public String getLookupConfigValue() {
-        Config config = ConfigProvider.getConfig();
-        String value = config.getValue("value", String.class);
-        return "Config value from ConfigProvider " + value;
+    @Override
+    public String getVersion() {
+        return null;
+    }
+
+    @Override
+    public Long getSystemAdminUserId() {
+        return 0L;
+    }
+
+    @Override
+    public void fireEvent(Event event) {
+
+    }
+
+    @Override
+    public Locale findLocale(String language) {
+        try {
+            for (String key : getSupportedLocales().keySet()) {
+                Locale locale = getSupportedLocales().get(key);
+                if (locale.toLanguageTag().equalsIgnoreCase(language)) {
+                    return locale;
+                }
+            }
+        } catch (Exception e) {
+            log.error(SystemMessages.KERNEL_LOCALE_ERROR.message(), e);
+        }
+        return getDefaultLocale();
+    }
+
+    @Override
+    public String getProperty(SystemProperties cfg) {
+        return config.getValue(cfg.propKey(),String.class);
+    }
+
+    /**
+     * Returns this application {@link ResourceBundle} object based on its name
+     *
+     * @param bundleName
+     *                       the name of the resourceBundle to return
+     * @return {@link ResourceBundle} identified by the bundleName
+     */
+    @Override
+    public ResourceBundle getResourceBundle(String bundleName) {
+        Locale locale = Locale.getDefault();
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        return ResourceBundle.getBundle(bundleName, locale);
+    }
+
+    @Override
+    public Map<String, Locale> getSupportedLocales() {
+        loadSupportedLocales();
+        return supportedLocales;
+    }
+
+    private void loadSupportedLocales() {
+        try {
+            for (String languageTag : getProperty(OAFProperties.SYS_SUPPORTED_LOCALES).split(",")) {
+                try {
+                    Locale locale = Locale.forLanguageTag(languageTag);
+                    supportedLocales.put(locale.toLanguageTag(), locale);
+                    log.info("[OAF] added locale {}", locale);
+                } catch (Exception e) {
+                    log.error("[OAF] IETF BCP 47 languageTag {} for registering supported locale is not supported.", languageTag);
+                }
+
+            }
+        } catch (Exception e) {
+            log.error(SystemMessages.KERNEL_LOCALE_ERROR.message(), e);
+        }
+    }
+
+    @Override
+    public Locale getDefaultLocale() {
+        try {
+            return Locale.forLanguageTag(getProperty(OAFProperties.SYS_DEFAULT_LOCALE));
+        } catch (Exception e) {
+            log.error("[OAF] IETF BCP 47 languageTag {} for default locale is not supported.", getProperty(OAFProperties.SYS_DEFAULT_LOCALE));
+        }
+        return Locale.forLanguageTag("en-us");
     }
 }

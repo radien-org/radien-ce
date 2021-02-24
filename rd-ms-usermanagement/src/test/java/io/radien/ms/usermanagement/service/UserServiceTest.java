@@ -194,8 +194,13 @@ public class UserServiceTest {
         assertNotNull(result);
         assertEquals(uTest.getUserEmail(), result.getUserEmail());
         userServiceAccess.delete(uTest.getId());
-        result = userServiceAccess.get(uTest.getId());
-        assertNull(result);
+        boolean success = false;
+        try {
+            result = userServiceAccess.get(uTest.getId());
+        } catch (UserNotFoundException e){
+            success = true;
+        }
+        assertTrue(success);
     }
 
     /**

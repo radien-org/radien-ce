@@ -35,5 +35,5 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return true if user has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(SystemUser user) throws SystemException;
+    public boolean create(SystemUser user,boolean skipKeycloak) throws SystemException;
 }

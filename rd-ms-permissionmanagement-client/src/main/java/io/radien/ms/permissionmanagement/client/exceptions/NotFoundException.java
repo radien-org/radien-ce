@@ -18,7 +18,7 @@ package io.radien.ms.permissionmanagement.client.exceptions;
 /**
  * @author Newton Carvalho
  */
-public class NotFoundException extends Exception{
+public class NotFoundException extends Exception {
 
 	private static final long serialVersionUID = 4865108199427159028L;
 

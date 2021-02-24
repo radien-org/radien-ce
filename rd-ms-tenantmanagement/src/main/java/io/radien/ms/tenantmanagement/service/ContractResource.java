@@ -24,6 +24,7 @@ import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,6 @@ import java.util.List;
 
 /**
  * @author Santana
- *
  */
 @RequestScoped
 public class ContractResource implements ContractResourceClient {
@@ -96,6 +96,20 @@ public class ContractResource implements ContractResourceClient {
 			return getInvalidRequestResponse(u);
 		} catch (Exception e){
 			return getGenericError(e);
+		}
+	}
+
+	/**
+	 * Validates if specific requested Contract exists
+	 * @param id to be searched
+	 * @return response true if it exists
+	 */
+	@Override
+	public Response exists(Long id) {
+		try {
+			return Response.ok(contractService.exists(id)).build();
+		}catch (NotFoundException e){
+			return getResourceNotFoundException();
 		}
 	}
 

@@ -61,12 +61,20 @@ public class PermissionModelMapperTest {
             assertEquals(perm.getActionId(),
                     Long.valueOf(jsonObject.getJsonNumber("actionId").longValue()));
         }
+
+        if (perm.getResourceId() == null) {
+            assertTrue(jsonObject.get("resourceId").getValueType().toString().equals("NULL"));
+        }
+        else {
+            assertEquals(perm.getActionId(),
+                    Long.valueOf(jsonObject.getJsonNumber("resourceId").longValue()));
+        }
     }
 
     @Test
     public void testMapJsonObject() {
         String firstName = "aa";
-        Permission permission = PermissionFactory.create(firstName, null,100L);
+        Permission permission = PermissionFactory.create(firstName, null, null,100L);
         JsonObject jsonObject = PermissionModelMapper.map(permission);
         validatePermissionJsonObject(permission, jsonObject);
     }
@@ -74,22 +82,10 @@ public class PermissionModelMapperTest {
     @Test
     public void testMapList() {
         String firstName = "aa";
-        Permission permission = PermissionFactory.create(firstName, null, null);
+        Permission permission = PermissionFactory.create(firstName, null, null,null);
         JsonArray jsonArray = PermissionModelMapper.map(Collections.singletonList(permission));
         assertEquals(1,jsonArray.size());
         JsonObject jsonObject = jsonArray.getJsonObject(0);
         validatePermissionJsonObject(permission,jsonObject);
     }
-
-    @Test
-    public void newTest() {
-        String firstName = "aa";
-        Permission permission = PermissionFactory.create(firstName, null, 100L);
-        JsonArray jsonArray = PermissionModelMapper.map(Collections.singletonList(permission));
-        assertEquals(1,jsonArray.size());
-        JsonObject jsonObject = jsonArray.getJsonObject(0);
-        validatePermissionJsonObject(permission,jsonObject);
-    }
-
-
 }

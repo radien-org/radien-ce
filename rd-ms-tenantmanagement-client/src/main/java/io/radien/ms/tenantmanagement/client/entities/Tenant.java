@@ -11,6 +11,11 @@ public class Tenant extends AbstractModel implements SystemTenant {
     public Tenant(){
     }
 
+    public Tenant(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Tenant(Tenant other) {
         this.id = other.getId();
         this.name = other.getName();

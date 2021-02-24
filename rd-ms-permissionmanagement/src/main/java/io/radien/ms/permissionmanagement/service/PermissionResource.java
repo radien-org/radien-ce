@@ -18,6 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
@@ -88,11 +89,13 @@ public class PermissionResource implements PermissionResourceClient {
 	 * Otherwise, in case of operational error, returns 500
 	 */
 	public Response getPermissions(String name,
+								   Long action,
+								   Long resource,
 								   boolean isExact,
 								   boolean isLogicalConjunction) {
 
 		try {
-			SystemPermissionSearchFilter filter = new PermissionSearchFilter(name,isExact,isLogicalConjunction);
+			SystemPermissionSearchFilter filter = new PermissionSearchFilter(name,action,resource,isExact,isLogicalConjunction);
 			return Response.ok(permissionServiceAccess.getPermissions(filter)).build();
 		} catch (Exception e) {
 			return getGenericError(e);
@@ -154,15 +157,17 @@ public class PermissionResource implements PermissionResourceClient {
 	 * Rest endpoint operation to assign an action to a permission
 	 * @param permissionId permission identifier
 	 * @param actionId action identifier
+	 * @param resourceId resource identifier
 	 * @return OK (200): in case of successful operation.<br>
 	 * Bad Request (404) and issue description: If the association could not be perform for not attending
 	 * some business rules.
 	 * Internal server error (500): In case of some error during processing
 	 */
 	public Response associate(long permissionId,
-							  long actionId) {
+							  long actionId,
+							  long resourceId) {
 		try {
-			AssociationStatus associationStatus = businessService.associate(permissionId, actionId);
+			AssociationStatus associationStatus = businessService.associate(permissionId, actionId, resourceId);
 			if (associationStatus.isOK()) {
 				return Response.ok().build();
 			}
@@ -220,5 +225,15 @@ public class PermissionResource implements PermissionResourceClient {
 	private Response getResourceNotFoundException() {
 		return Response.status(Response.Status.NOT_FOUND).
 				entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
+	}
+
+	/**
+	 * Validates if specific requested Permission exists
+	 * @param id to be searched
+	 * @return 200 status code message if it exists or 500 in case of any issue
+	 */
+	@Override
+	public Response exists(Long id) {
+		return Response.ok(permissionServiceAccess.exists(id)).build();
 	}
 }

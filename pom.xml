@@ -19,6 +19,7 @@
 		<module>rd-web</module>
 		<module>rd-ms-template</module>
 		<module>rd-ms-ecm</module>
+		<module>rd-ms-ecm-client</module>
 		<module>rd-ms-usermanagement</module>
 		<module>rd-ms-usermanagement-client</module>
 		<module>rd-ms-tenantmanagement</module>
@@ -48,7 +49,7 @@
 		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
 
 		<!-- Microservices / Runtimes -->
-		<version.openliberty-runtime>20.0.0.12</version.openliberty-runtime>
+		<version.openliberty-runtime>20.0.0.2-SNAPSHOT2</version.openliberty-runtime>
 
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
@@ -150,6 +151,11 @@
 			</dependency>
 			<dependency>
 				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-ecm-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-usermanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
@@ -166,6 +172,11 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-rolemanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-aws-utils</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 

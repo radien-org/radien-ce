@@ -15,7 +15,10 @@
  */
 package io.radien.ms.tenantmanagement.client.exceptions;
 
-public class BadRequestException extends Exception{
+/**
+ * @author Bruno Gama
+ */
+public class BadRequestException extends Exception {
 
     public BadRequestException() {
         super();

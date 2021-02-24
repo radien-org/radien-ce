@@ -15,6 +15,7 @@
  */
 package io.radien.ms.permissionmanagement.client.entities;
 
+import io.radien.ms.permissionmanagement.client.services.ActionFactory;
 import io.radien.ms.permissionmanagement.client.services.PermissionFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,20 +28,25 @@ public class PermissionFactoryTest {
 
     JsonObject json;
     Permission perm;
+    Action action;
 
     /**
      * Constructor class method were we are going to create the JSON and the permission for
      * testing purposes.
      */
     public PermissionFactoryTest() {
+        action = ActionFactory.create("add-new-user", 28L);
+        action.setId(100L);
+
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "permissionTest");
         builder.add("createUser", 2L);
         builder.addNull("lastUpdateUser");
-        builder.addNull("actionId");
+        builder.add("actionId", action.getId());
+        builder.addNull("resourceId");
         json = builder.build();
-        perm = PermissionFactory.create("permissionTest", null,2L);
+        perm = PermissionFactory.create("permissionTest", action.getId(), null, 2L);
     }
 
     /**
@@ -50,7 +56,9 @@ public class PermissionFactoryTest {
     public void testCreate() {
         Assert.assertEquals("permissionTest", perm.getName());
         Assert.assertEquals((Long) 2L, perm.getCreateUser());
-        Assert.assertEquals(null, perm.getActionId());
+        Assert.assertNotNull(perm.getActionId());
+        Assert.assertEquals(perm.getActionId(), action.getId());
+        Assert.assertNull(perm.getResourceId());
     }
 
     /**
@@ -64,6 +72,7 @@ public class PermissionFactoryTest {
         Assert.assertEquals(perm.getCreateUser(), constructedNewPermission.getCreateUser());
         Assert.assertEquals(perm.getLastUpdateUser(), constructedNewPermission.getLastUpdateUser());
         Assert.assertEquals(perm.getActionId(), constructedNewPermission.getActionId());
+        Assert.assertEquals(perm.getResourceId(), constructedNewPermission.getResourceId());
     }
 
     /**

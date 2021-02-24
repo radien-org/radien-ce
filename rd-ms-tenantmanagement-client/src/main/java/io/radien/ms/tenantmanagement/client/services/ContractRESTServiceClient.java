@@ -17,18 +17,20 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
+import javax.enterprise.context.RequestScoped;
+
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.tenant.ContractRESTServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.ms.tenantmanagement.client.entities.Contract;
+import io.radien.ms.tenantmanagement.client.util.ListContractModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,16 +38,14 @@ import org.slf4j.LoggerFactory;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 
-import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
-import io.radien.ms.tenantmanagement.client.util.ListContractModelMapper;
 
 /**
  * @author Santana
  */
-@Stateless @Default
+@RequestScoped
 public class ContractRESTServiceClient implements ContractRESTServiceAccess {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7576466262027147334L;
 
 	private static final Logger log = LoggerFactory.getLogger(ContractRESTServiceClient.class);
     
@@ -54,95 +54,133 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
 
     @Inject
     private OAFAccess oafAccess;
-    
+
     /**
-     * Gets the contract in the DB searching for the field Name
-     *
-     * @param name to be looked after
-     * @return Optional Contract
+     * Send a request to the contract client requesting all the contracts with a specific name
+     * @param name of the contract to be retrieved
+     * @return true in case of success response
+     * @throws Exception in case of any issue
      */
     @Override
-    public Optional<SystemContract> getContractByName(String name) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
+    public List<? extends SystemContract> getContractByName(String name) throws Exception {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
             Response response = client.get(name);
-            List<? extends SystemContract> list = ListContractModelMapper.map((InputStream) response.getEntity());
-            if (list.size() == 1) {
-                return Optional.ofNullable(list.get(0));
-            } else {
-                return Optional.empty();
-            }
-        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
-            log.error(es.getMessage(),es);
-            throw es;
-        }
-    }
-
-    @Override
-    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException {
-        try {
-            ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-
-            Response response = client.get(null);
             return ListContractModelMapper.map((InputStream) response.getEntity());
-        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
-            log.error(es.getMessage(),es);
-            throw es;
+        } catch (ExtensionException |ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
         }
     }
 
     /**
-     * Creates given Contract
-     * @param contract to be created
-     * @return true if user has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * Sends a creation request to the contract client
+     * @param systemContract to be created
+     * @return true in case of success response
+     * @throws MalformedURLException in case of any error in the specified url
      */
     @Override
-    public boolean create(SystemContract contract) throws MalformedURLException {
-        ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        try (Response response = client.create((Contract)contract)) {
+    public boolean create(SystemContract systemContract) throws MalformedURLException {
+        ContractResourceClient client;
+        try {
+            client = clientServiceUtil.
+                    getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch(MalformedURLException e) {
+            throw new MalformedURLException();
+        }
+
+        try {
+            Response response = client.create((Contract) systemContract);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
-            } else {
-                log.error(response.readEntity(String.class));
-                return false;
             }
-        } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
-            throw pe;
+        } catch(ProcessingException e) {
+            throw new ProcessingException(e);
         }
+        return false;
     }
 
+    /**
+     * Sends a request to the contract client to delete a specific record
+     * @param contractId id of the contract to be deleted
+     * @return true in case of success response
+     * @throws MalformedURLException in case of any error in the specified url
+     */
     @Override
     public boolean delete(long contractId) throws MalformedURLException {
-        ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        try (Response response = client.delete(contractId)) {
+        ContractResourceClient client;
+        try {
+            client = clientServiceUtil.
+                    getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch(MalformedURLException e) {
+            throw new MalformedURLException();
+        }
+
+        try {
+            Response response = client.delete(contractId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
-            } else {
-                log.error(response.readEntity(String.class));
-                return false;
             }
-        } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
-            throw pe;
+        } catch(ProcessingException e) {
+            throw new ProcessingException(e);
         }
+        return false;
     }
 
+    /**
+     * Requests to the contract client an update
+     * @param contractId to be updated
+     * @param systemContract with the information to be update
+     * @return true in case of success response
+     * @throws MalformedURLException in case of any error in the specified url
+     */
     @Override
-    public boolean update(SystemContract contract) throws MalformedURLException {
-        ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        try (Response response = client.update(contract.getId(),(Contract)contract)) {
+    public boolean update(Long contractId, SystemContract systemContract) throws MalformedURLException {
+        ContractResourceClient client;
+        try {
+            client = clientServiceUtil.
+                    getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch(MalformedURLException e) {
+            throw new MalformedURLException();
+        }
+
+        try {
+            Response response = client.update(contractId, (Contract) systemContract);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
-            } else {
-                log.error(response.readEntity(String.class));
-                return false;
             }
-        } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
-            throw pe;
+        } catch(ProcessingException e) {
+            throw new ProcessingException(e);
         }
+        return false;
+    }
+
+    /**
+     * Sends a request to the contract client to validdate if a specific contract exists
+     * @param contractId to be found
+     * @return true in case of success response
+     * @throws MalformedURLException in case of any error in the specified url
+     */
+    @Override
+    public boolean isContractExistent(Long contractId) throws MalformedURLException {
+        ContractResourceClient client;
+        try {
+            client = clientServiceUtil.
+                    getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch(MalformedURLException e) {
+            log.error(e.getMessage(),e);
+            throw new MalformedURLException();
+        }
+
+        try {
+            Response response = client.exists(contractId);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            }
+        } catch(ProcessingException e) {
+            log.error(e.getMessage(),e);
+            throw new ProcessingException(e);
+        }
+        return false;
     }
 }

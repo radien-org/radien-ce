@@ -26,4 +26,6 @@ public interface SystemPermission extends Model {
     void setName(String name);
     Long getActionId();
     void setActionId(Long actionId);
+    Long getResourceId();
+    void setResourceId(Long resourceId);
 }

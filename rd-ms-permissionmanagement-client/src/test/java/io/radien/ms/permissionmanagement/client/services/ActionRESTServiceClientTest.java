@@ -23,6 +23,7 @@ import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
+import io.radien.ms.permissionmanagement.client.util.ActionModelMapper;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
@@ -32,10 +33,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
+import javax.json.*;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -43,6 +41,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -129,21 +129,12 @@ public class ActionRESTServiceClientTest {
     public void testGetActionByIdWithResults() throws Exception {
         Action action = ActionFactory.create("permission-a", 2l);
         action.setId(11L);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeObject(ActionFactory.convertToJsonObject(action));
-        jsonWriter.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
+        InputStream is = new ByteArrayInputStream(ActionModelMapper.map(action).toString().getBytes());
         Response response = Response.ok(is).build();
-
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         when(resourceClient.getById(anyLong())).
                 thenReturn(response);
-
         Optional<SystemAction> opt = target.getActionById(action.getId());
         assertNotNull(opt);
         assertTrue(opt.isPresent());
@@ -152,34 +143,22 @@ public class ActionRESTServiceClientTest {
 
     @Test
     public void testGetActionByNameNonUnique() throws Exception {
-        String a = "a";
-        Page<Action> page = new Page<>(new ArrayList<>(),1,2,0);
+        String actionName = "a";
+        List<Action> actionList = new ArrayList<>();
+        actionList.add(ActionFactory.create("a1", null));
+        actionList.add(ActionFactory.create("a2", null));
 
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        FactoryUtilService.addValueInt(builder, "currentPage", page.getCurrentPage());
-        FactoryUtilService.addValueInt(builder, "totalPages", page.getTotalPages());
-        FactoryUtilService.addValueInt(builder, "totalResults", page.getTotalResults());
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeObject(builder.build());
-        jsonWriter.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
+        JsonArray jsonArray = ActionModelMapper.map(actionList);
+        InputStream is = new ByteArrayInputStream(jsonArray.toString().getBytes());
         Response response = Response.ok(is).build();
 
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-        when(resourceClient.getActions(a,true,true))
+        when(resourceClient.getActions(actionName,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-        boolean success = false;
-        try {
-            target.getActionByName(a);
-        } catch (Exception e){
-            success = true;
-        }
-        assertTrue(success);
+        Optional<SystemAction> result = target.getActionByName(actionName);
+        assertNotNull(result);
+        assertFalse(result.isPresent());
     }
 
     @Test

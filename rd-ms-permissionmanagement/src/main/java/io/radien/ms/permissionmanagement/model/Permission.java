@@ -53,4 +53,8 @@ public class Permission extends io.radien.ms.permissionmanagement.client.entitie
 	public Long getActionId() {
 		return super.getActionId();
 	}
+
+	@Override
+	@Column
+	public Long getResourceId() { return super.getResourceId(); }
 }

@@ -47,7 +47,9 @@ public class UserMessageBodyWriterTest extends TestCase {
                 "\"lastUpdateUser\":null," +
                 "\"sub\":\"sub\"," +
                 "\"firstname\":\"a\"," +
-                "\"lastname\":\"b\"" +
+                "\"lastname\":\"b\"," +
+                "\"delegatedCreation\":false," +
+                "\"enabled\":true" +
                 "}";
         UserMessageBodyWriter target = new UserMessageBodyWriter();
         User user = UserFactory.create("a","b","logon","sub","email@server.pt", null);

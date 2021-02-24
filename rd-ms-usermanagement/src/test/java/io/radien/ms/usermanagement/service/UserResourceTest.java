@@ -4,6 +4,7 @@ package io.radien.ms.usermanagement.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -40,14 +41,12 @@ public class UserResourceTest {
     UserResource userResource;
 
     @Mock
-    UserServiceAccess userServiceAccess;
-    @Mock
     UserBusinessService userBusinessService;
 
 
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
+       MockitoAnnotations.initMocks(this);
     }
 
     /**
@@ -64,7 +63,7 @@ public class UserResourceTest {
      */
     @Test
     public void testGetAllGenericException() throws MalformedURLException {
-        when(userResource.getAll(null,1,10,null,true))
+        when(userBusinessService.getAll(null,1,10,null,true))
                 .thenThrow(new RuntimeException());
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(500,response.getStatus());
@@ -74,7 +73,8 @@ public class UserResourceTest {
      * Test that will test the error message 404 User Not Found
      */
     @Test
-    public void testGetById404() {
+    public void testGetById404() throws UserNotFoundException {
+        when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
         Response response = userResource.getById(1L);
         assertEquals(404,response.getStatus());
     }
@@ -156,7 +156,7 @@ public class UserResourceTest {
      */
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any());
+        doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
         Response response = userResource.save(new User());
         assertEquals(400,response.getStatus());
     }
@@ -169,8 +169,9 @@ public class UserResourceTest {
      */
     @Test
     public void testCreateRemoteResourceError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        doThrow(new RemoteResourceException()).when(userBusinessService).save(any());
-        Response response = userResource.save(new User());
+        User u = new User();
+        doThrow(new RemoteResourceException()).when(userBusinessService).save(any(),anyBoolean());
+        Response response = userResource.save(u);
         assertEquals(500,response.getStatus());
     }
 
@@ -182,8 +183,9 @@ public class UserResourceTest {
      */
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        doThrow(new RuntimeException()).when(userBusinessService).save(any());
-        Response response = userResource.save(new User());
+        User u = new User();
+        doThrow(new RuntimeException()).when(userBusinessService).save(any(),anyBoolean());
+        Response response = userResource.save(u);
         assertEquals(500,response.getStatus());
     }
 

@@ -5,11 +5,20 @@
         xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <id>rd-custom-template</id>
-
     <requiredProperties>
-        <requiredProperty key="library-name">
+        <requiredProperty key="artifact-name">
         </requiredProperty>
-        <requiredProperty key="database-name">
+        <requiredProperty key="client-packageName">
+        </requiredProperty>
+        <requiredProperty key="client-artifactId">
+        </requiredProperty>
+        <requiredProperty key="resource-name">
+        </requiredProperty>
+        <requiredProperty key="resource-name-variable">
+        </requiredProperty>
+        <requiredProperty key="base-application-path">
+        </requiredProperty>
+        <requiredProperty key="db-entity-table-name">
         </requiredProperty>
         <requiredProperty key="persistence-unit-name">
         </requiredProperty>
@@ -17,9 +26,6 @@
     <fileSets>
         <fileSet filtered="true" packaged="true" encoding="UTF-8">
             <directory>src/main/java</directory>
-        </fileSet>
-        <fileSet filtered="true" packaged="false" encoding="UTF-8">
-            <directory>src/main/liberty</directory>
         </fileSet>
         <fileSet filtered="true" packaged="true" encoding="UTF-8">
             <directory>src/test/java</directory>
@@ -32,6 +38,7 @@
             </directory>
             <includes>
                 <include>README.md</include>
+                <include>dopackage.sh</include>
                 <include>run.sh</include>
             </includes>
         </fileSet>

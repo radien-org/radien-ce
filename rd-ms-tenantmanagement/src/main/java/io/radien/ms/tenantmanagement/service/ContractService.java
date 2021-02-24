@@ -20,6 +20,7 @@ import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.ms.tenantmanagement.entities.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,5 +179,25 @@ public class ContractService implements ContractServiceAccess {
 
         criteriaDelete.where(userRoot.get("id").in(contractIds));
         em.createQuery(criteriaDelete).executeUpdate();
+    }
+
+    /**
+     * Validates if specific requested Contract exists
+     * @param contractId to be searched
+     * @return response true if it exists
+     */
+    @Override
+    public boolean exists(Long contractId) {
+        EntityManager em = emh.getEm();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Contract> contractRoot = criteriaQuery.from(Contract.class);
+
+        criteriaQuery.select(criteriaBuilder.count(contractRoot));
+        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), contractId));
+
+        Long size = em.createQuery(criteriaQuery).getSingleResult();
+
+        return size != 0;
     }
 }

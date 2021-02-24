@@ -25,6 +25,14 @@ public interface SystemPermissionSearchFilter {
 
     String getName();
 
+    void setActionId(Long actionId);
+
+    Long getActionId();
+
+    void setResourceId(Long resourceId);
+
+    Long getResourceId();
+
     boolean isExact();
 
     void setExact(boolean exact);

@@ -26,8 +26,14 @@ radien Tenant Management Microservice
 ### - ___Get contract by ID:___
     curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
 #
+### - ___Get tenant by ID:___
+    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/tenant/{id}'
+#
 ### - ___Get list of contracts:___
     curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract'
+#
+### - ___Get list of tenants:___
+    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/tenant'
 #
 * POST Data
   ------
@@ -42,7 +48,16 @@ radien Tenant Management Microservice
         "createDate": null,
         "lastUpdate": null
       }' http://localhost:8082/tenantmanagementservice/v1/contract
-
+#
+### - ___Create tenant:___
+    curl -H "Content-Type: application/json" -X POST \
+      --data-raw '{
+        "name": "AZ",
+        "createUser": null,
+        "lastUpdateUser": null,
+        "createDate": null,
+        "lastUpdate": null
+      }' http://localhost:8082/tenantmanagementservice/v1/tenant
 #
 * PUT Data
   ------
@@ -57,9 +72,22 @@ radien Tenant Management Microservice
         "createDate": null,
         "lastUpdate": null
       }' http://localhost:8082/tenantmanagementservice/v1/contract/{id}
-
 #
+### - ___Update tenant:___
+    curl -H "Content-Type: application/json" -X POST \
+      --data-raw '{
+        "name": "AZ",
+        "createUser": null,
+        "lastUpdateUser": null,
+        "createDate": null,
+        "lastUpdate": null
+      }' http://localhost:8082/tenantmanagementservice/v1/tenant/{id}
+#
+
 * DELETE Data
   ------
-### - ___Delete user by ID:___
+### - ___Delete Contract by ID:___
     curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
+#
+### - ___Delete Tenant by ID:___
+    curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/tenant/{id}'

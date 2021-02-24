@@ -23,6 +23,7 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
@@ -33,6 +34,8 @@ import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 
 import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.Permission;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -41,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -58,27 +62,22 @@ public class PermissionServiceTest {
 
     public PermissionServiceTest() throws Exception {
         final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
-
         permissionServiceAccess = (PermissionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");
         actionServiceAccess= (ActionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
+    }
 
-        Page<? extends SystemPermission> permissionPage = permissionServiceAccess.getAll(null, 1, 10, null, true);
-        if (permissionPage.getTotalResults() > 0) {
-            pTest = permissionPage.getResults().get(0);
-        } else {
+    @Before
+    public void init() throws UniquenessConstraintException {
+        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1,
+                1000, null, true);
+        Page<? extends SystemPermission> permissionPage = permissionServiceAccess.getAll(null,
+                1, 1000, null, true);
 
-            Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1, 10, null, true);
-            if (actionPage.getTotalResults() == 0) {
-                Action a = new Action();
-                a.setName("Some read permssion");
-                actionServiceAccess.save(a);
-                actionPage = actionServiceAccess.getAll(null, 1, 10, null, true);
-            }
-            aTest = actionPage.getResults().get(0);
+        permissionServiceAccess.delete(permissionPage.getResults().stream().
+                map(SystemPermission::getId).collect(Collectors.toList()));
 
-            pTest = PermissionFactory.create("permissionName", aTest.getId(), 2L);
-            permissionServiceAccess.save(pTest);
-        }
+        actionServiceAccess.delete(actionPage.getResults().stream().
+                map(SystemAction::getId).collect(Collectors.toList()));
     }
 
     /**
@@ -88,12 +87,24 @@ public class PermissionServiceTest {
      * Tested methods: void save(Permission Permission)
      *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws io.radien.ms.permissionmanagement.client.exceptions.NotFoundException in case no Permission was found after the save in the DB
      */
     @Test
-    public void testAddPermission() throws PermissionNotFoundException {
-        SystemPermission result = permissionServiceAccess.get(pTest.getId());
-        assertNotNull(result);
+    public void testAddPermission() throws UniquenessConstraintException {
+        final String name = "TestReadPermission";
+        SystemPermission permission = new Permission();
+        permission.setName(name);
+        permission.setResourceId(1L);
+        permission.setActionId(111L);
+        permissionServiceAccess.save(permission);
+
+        List<? extends SystemPermission> permissions = permissionServiceAccess.
+                getPermissions(new PermissionSearchFilter(name, 111L, 1L, true, true));
+
+        assertNotNull(permissions);
+        assertEquals(permissions.size(), 1);
+
+        SystemPermission systemPermission = permissions.get(0);
+        assertEquals(systemPermission.getName(), permission.getName());
     }
 
     /**
@@ -173,7 +184,9 @@ public class PermissionServiceTest {
      * @throws PermissionNotFoundException in case no Permission was found after the save in the DB
      */
     @Test
-    public void testDeleteById() throws PermissionNotFoundException {
+    public void testDeleteById() throws UniquenessConstraintException, PermissionNotFoundException {
+        pTest = PermissionFactory.create("testGetIdFirstName", null, 2L);
+        permissionServiceAccess.save(pTest);
         SystemPermission result = permissionServiceAccess.get(pTest.getId());
         assertNotNull(result);
         assertEquals(pTest.getName(), result.getName());
@@ -316,7 +329,6 @@ public class PermissionServiceTest {
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
 
-
         Page<? extends SystemPermission> permissionPage = permissionServiceAccess.getAll(null, 1, 10, orderby, true);
   
         assertTrue(permissionPage.getTotalResults()>=3);
@@ -348,15 +360,15 @@ public class PermissionServiceTest {
         permissionServiceAccess.save(testById4);
 
         List<? extends SystemPermission> permissionsAnd = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("zz",true,true));
+                new PermissionSearchFilter("zz",null, null,true,true));
         assertEquals(1, permissionsAnd.size());
 
         List<? extends SystemPermission> permissionsOr = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("aa",true,false));
+                new PermissionSearchFilter("aa",null, null,true,false));
         assertEquals(1, permissionsOr.size());
 
         List<? extends SystemPermission> permissionsNotExact = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("aa",false,true));
+                new PermissionSearchFilter("aa",null,null,false,true));
         assertEquals(3, permissionsNotExact.size());
     }
 
@@ -399,5 +411,121 @@ public class PermissionServiceTest {
 
         assertNotNull(p.getActionId());
         assertEquals(p.getActionId(), action.getId());
+    }
+
+    @Test
+    public void testFilterPermissionByAction() throws UniquenessConstraintException {
+        Long actionId1 = 111L;
+        Long actionId2 = 101L;
+        Long actionId3 = 11L;
+
+        SystemPermission p1 = new Permission();
+        p1.setName("perm1");
+        p1.setActionId(actionId1);
+        permissionServiceAccess.save(p1);
+
+        SystemPermission p2 = new Permission();
+        p2.setName("perm2");
+        p2.setActionId(actionId2);
+        permissionServiceAccess.save(p2);
+
+        SystemPermission p3 = new Permission();
+        p3.setName("perm3");
+        p3.setActionId(actionId3);
+        permissionServiceAccess.save(p3);
+
+        SystemPermission p4 = new Permission();
+        p4.setName("perm4");
+        p4.setActionId(actionId3);
+        permissionServiceAccess.save(p4);
+
+        SystemPermission p5 = new Permission();
+        p5.setName("perm5");
+        p5.setActionId(actionId3);
+        permissionServiceAccess.save(p5);
+
+        SystemPermission p6 = new Permission();
+        p6.setName("perm6");
+        p6.setActionId(actionId2);
+        permissionServiceAccess.save(p6);
+
+        // Retrieving permissions by actionId3
+        SystemPermissionSearchFilter filter = new PermissionSearchFilter(null, actionId3,
+                null, true, true);
+        List<? extends SystemPermission> systemPermissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(systemPermissions.size(), 3);
+
+        // Retrieving permissions by actionId2
+        filter = new PermissionSearchFilter(null, actionId2,
+                null, true, true);
+        systemPermissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(systemPermissions.size(), 2);
+
+        // Retrieving permissions by actionId1
+        filter = new PermissionSearchFilter(null, actionId1,
+                null, true, true);
+        systemPermissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(systemPermissions.size(), 1);
+    }
+
+    @Test
+    public void testFilterPermissionByActionAndResource() throws UniquenessConstraintException {
+        Long actionId1 = 111L;
+        Long resourceId1 = 11111L;
+        Long actionId2 = 101L;
+        Long resourceId2 = 10101L;
+        Long actionId3 = 11L;
+
+        SystemPermission p1 = new Permission();
+        p1.setName("perm1");
+        p1.setActionId(actionId1);
+        p1.setResourceId(resourceId1);
+        permissionServiceAccess.save(p1);
+
+        SystemPermission p2 = new Permission();
+        p2.setName("perm2");
+        p2.setActionId(actionId2);
+        p2.setResourceId(resourceId2);
+        permissionServiceAccess.save(p2);
+
+        SystemPermission p3 = new Permission();
+        p3.setName("perm3");
+        p3.setActionId(actionId3);
+        p3.setResourceId(resourceId2);
+        permissionServiceAccess.save(p3);
+
+        SystemPermission p4 = new Permission();
+        p4.setName("perm4");
+        p4.setActionId(actionId3);
+        p4.setResourceId(resourceId2);
+        permissionServiceAccess.save(p4);
+
+        SystemPermissionSearchFilter filter = new PermissionSearchFilter("perm3",
+                actionId3, resourceId2, true, true);
+        List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(permissions.size(), 1);
+        assertEquals(permissions.get(0).getId(), p3.getId());
+        assertEquals(permissions.get(0).getActionId(), p3.getActionId());
+        assertEquals(permissions.get(0).getResourceId(), p3.getResourceId());
+
+        filter = new PermissionSearchFilter("perm",
+                actionId3, resourceId2, false, true);
+        permissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(permissions.size(), 2);
+
+        // Only p3 and p4 have actionId3 and resourceId2
+        boolean p3AndP4 = permissions.stream().
+                allMatch(p -> p.getId() == p3.getId() || p.getId() == p4.getId());
+        assertTrue(p3AndP4);
+
+        filter = new PermissionSearchFilter("perm",
+                null, resourceId2, false, true);
+        permissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(permissions.size(), 3);
+
+        // Only p3 and p4 have actionId3 and resourceId2
+        boolean p2AndP3AndP4 = permissions.stream().
+                allMatch( p -> p.getId() == p2.getId() || p.getId() == p3.getId() || p.getId() == p4.getId());
+        assertTrue(p2AndP3AndP4);
     }
 }

@@ -24,21 +24,37 @@
   ------
 ### - ___Get all roles:___
     curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role'
+### - ___Get all Linked authorization association:___
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization'
+#
 ### - ___Get roles by ID:___
     curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role/{id}'
+### - ___Get Linked authorization association by ID:___
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/{id}'
+#
 ### - ___Get roles by Documentation:___
-    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role/find?documentation=valueToBeSearched' --data-raw ''
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role/find?documentation={fieldValue}' --data-raw ''
+### - ___Get specific Linked authorization association by searched field:___
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/find?{fieldName}={fieldValue}' --data-raw ''
+#
 #
 * POST Data
   ------
 ### - ___Create role:___
     curl --location --request POST 'http://localhost:8083/rolemanagementservice/v1/role' --header 'Content-Type: application/json' --data-raw '{"name":"roleName","description":"roleDescription"}'
+### - ___Create Linked authorization association:___
+    curl --location --request POST 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization' --header 'Content-Type: application/json' --data-raw '{"tenantId":3,"permissionId":3, "roleId":3}'
 
+#
 ### - ___Update role:___
     curl --location --request POST 'http://localhost:8083/rolemanagementservice/v1/role' --header 'Content-Type: application/json' --data-raw '{"id":roleIdOfRecordToBeUpdated, "name":"roleNameToInsert","description":"roleDescriptionToInsert"}'
+### - ___Update Linked authorization association:___
+    curl --location --request POST 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization' --header 'Content-Type: application/json' --data-raw '{"id":2, "tenantId":3,"permissionId":3, "roleId":3}'
+
 #
 * DELETE Data
   ------
 ### - ___Delete role by ID:___
     curl --location --request DELETE 'http://localhost:8083/rolemanagementservice/v1/role/{id}' --data-raw ''
-
+### - ___Delete Linked authorization association by ID:___
+    curl --location --request DELETE 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/1' --data-raw ''

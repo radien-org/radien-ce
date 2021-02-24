@@ -33,6 +33,7 @@ public class User extends AbstractUserModel implements SystemUser {
 	private String sub;
 	private Date terminationDate;
 	private boolean enabled;
+	private boolean delegatedCreation;
 
 	public User(){}
 
@@ -49,7 +50,9 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.setCreateUser(u.getCreateUser());
 		this.setLastUpdateUser(u.getLastUpdateUser());
 		this.setLastUpdate(u.getLastUpdate());
+
 	}
+
 
 	@Override
 	public Long getId() {
@@ -117,5 +120,13 @@ public class User extends AbstractUserModel implements SystemUser {
 	@Override
 	public void setSub(String sub) {
 		this.sub = sub;
+	}
+
+	public boolean isDelegatedCreation() {
+		return delegatedCreation;
+	}
+
+	public void setDelegatedCreation(boolean delegatedCreation) {
+		this.delegatedCreation = delegatedCreation;
 	}
 }

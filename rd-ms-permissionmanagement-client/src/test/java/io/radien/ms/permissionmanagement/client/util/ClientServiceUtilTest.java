@@ -57,4 +57,15 @@ public class ClientServiceUtilTest {
         }
         assertTrue(valid);
     }
+
+    @Test
+    public void testGetResourceResourceClient() {
+        boolean valid = true;
+        try {
+            clientServiceUtil.getResourceResourceClient("http://url.test.pt") ;
+        } catch (MalformedURLException e) {
+            valid = false;
+        }
+        assertTrue(valid);
+    }
 }

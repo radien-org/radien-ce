@@ -17,7 +17,6 @@ package io.radien.ms.permissionmanagement.client;
 
 import org.junit.Test;
 
-import io.radien.ms.permissionmanagement.client.PermissionResponseExceptionMapper;
 import io.radien.ms.permissionmanagement.client.exceptions.BadRequestException;
 import io.radien.ms.permissionmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.permissionmanagement.client.exceptions.NotFoundException;
@@ -43,7 +42,6 @@ public class PermissionResponseExceptionMapperTest {
         assertTrue(handlesException500);
     }
 
-    // TODO: toThrowable Exception validation to be performed
     @Test
     public void toThrowable() {
         String msg = "messageException";
