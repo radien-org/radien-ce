@@ -19,6 +19,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,14 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 			if (!isAnonymous && !session.isActive()) {
 				String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				HttpServletRequest request =(HttpServletRequest) req;
+				HttpSession httpSession = request.getSession(false);
+				String accessToken = httpSession.getAttribute("accessToken").toString();
+				String refreshToken = httpSession.getAttribute("refreshToken").toString();
 				session.login(userDetails.getSub(),userDetails.getUserEmail(),userDetails.getUsername(),
-						userDetails.getGivenname(),userDetails.getFamilyname());
+						userDetails.getGivenname(),userDetails.getFamilyname(),accessToken,refreshToken);
+
+
 				log.info("User has logged in via OIDC. {}", userName);
 			}
 			chain.doFilter(req, res);

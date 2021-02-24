@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -91,6 +92,9 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 
 			final OpenIdConnectUserDetails user = new OpenIdConnectUserDetails(authInfo);
 			logger.info("Authentication attempt finished");
+			HttpSession session = request.getSession(true);
+			session.setAttribute("accessToken",token.getValue());
+			session.setAttribute("refreshToken",token.getRefreshToken());
 			return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 		} catch (Exception e) {
 			logger.error("Could not obtain user details from token", e);

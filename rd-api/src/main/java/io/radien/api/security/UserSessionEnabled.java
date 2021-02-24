@@ -23,7 +23,7 @@ import io.radien.api.Appframeable;
  */
 public interface UserSessionEnabled extends Appframeable {
 
-	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception;
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName, String accessToken, String refreshToken) throws Exception;
 	
 	public boolean isActive();
 

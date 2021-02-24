@@ -20,6 +20,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.radien.api.security.TokensPlaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ import java.util.Optional;
  *
  * @author Marco Weiland
  */
-public @Named @SessionScoped class UserSession implements UserSessionEnabled {
+public @Named @SessionScoped class UserSession implements UserSessionEnabled, TokensPlaceHolder {
 
 	private static final long serialVersionUID = 1198636791261091733L;
 	private static final Logger log = LoggerFactory.getLogger(UserSession.class);
@@ -50,15 +51,22 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled {
 	
 	private SystemUser user;
 
+	private String accessToken;
+
+	private String refreshToken;
 	
 	@PostConstruct
 	private void init() {
 		log.info("Session initiated");
 	}
 	
-	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName) throws Exception {
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName,String accessToken, String refreshToken) throws Exception {
 		log.info("User session login starting");
 		log.info("user logged in: {}", userIdSubject);
+		//TODO: put ACCESS TOKEN IN HEADERS
+		//		refresh access token if needed
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
 		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 		SystemUser user;
 		if(!existingUser.isPresent()){
@@ -68,6 +76,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled {
 			user = existingUser.get();
 		}
 		this.user = user;
+
 	}
 	
 	public boolean isActive() {
@@ -129,4 +138,19 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled {
 		return oaf;
 	}
 
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 }
