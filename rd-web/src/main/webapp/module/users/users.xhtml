@@ -1,39 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:b="http://bootsfaces.net/ui"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	template="/WEB-INF/templates/tpl_oaf.xhtml">
-	<ui:define name="content">
-		<b:container>
-			<b:row>
-				<h:panelGroup layout="block">
-					<h1>
-						<h:outputText value="#{msg.rd_users} " />
-					</h1>
-					<hr />
-					<h:inputText></h:inputText>
-					<h:commandButton value="search"></h:commandButton>
-				</h:panelGroup>
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<ui:define name="content" bootsFacesDecorator="true">
+		<h:form id="usersForm">
+			<b:container>
+				<b:row>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+				</b:row>
 
-				<h:panelGroup layout="block">
-					<h:dataTable >
-						<h:column>
-							<f:facet name="header">ID</f:facet>
+				<b:row>
+					<b:dataTable value="#{userDataModel.users}"
+								 var="row"
+								 caption="Users Table"
+								 mark-search-results="true"
+								 page-length="5"
+								 page-length-menu="5,10,20,50"
+					>
 
-						</h:column>
-						<h:column>
-							<f:facet name="header">Name</f:facet>
-
-						</h:column>
-						<h:column>
-							<f:facet name="header">Price</f:facet>
-
-						</h:column>
-					</h:dataTable>
-				</h:panelGroup>
-			</b:row>
-		</b:container>
+						<b:dataTableColumn value="#{row.firstname}"
+										   order="asc"
+										   data-order="#{row.firstname}"/>
+						<b:dataTableColumn value="#{row.lastname}"/>
+						<b:dataTableColumn value="#{row.logon}"/>
+						<b:dataTableColumn value="#{row.userEmail}"/>
+						<b:dataTableColumn label="Profile">
+							<b:commandButton value=" profile"
+											 iconAwesome="fa-user"
+											 iconAlign="center"
+											 onclick="ajax:userDataModel.login()"
+											 update="@none"/>
+						</b:dataTableColumn>
+					</b:dataTable>
+				</b:row>
+			</b:container>
+		</h:form>
 	</ui:define>
 </ui:composition>

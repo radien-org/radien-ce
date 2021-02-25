@@ -50,9 +50,15 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.setCreateUser(u.getCreateUser());
 		this.setLastUpdateUser(u.getLastUpdateUser());
 		this.setLastUpdate(u.getLastUpdate());
-
 	}
 
+	public User(String firstname, String lastname, String logon, String userEmail){
+		super();
+		this.firstname=firstname;
+		this.lastname=firstname;
+		this.logon=firstname;
+		this.userEmail=firstname;
+	}
 
 	@Override
 	public Long getId() {

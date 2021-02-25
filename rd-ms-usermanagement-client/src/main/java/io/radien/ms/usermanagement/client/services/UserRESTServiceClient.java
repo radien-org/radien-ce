@@ -17,6 +17,7 @@ package io.radien.ms.usermanagement.client.services;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,8 @@ import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
+import com.github.openjson.JSONArray;
+import com.github.openjson.JSONObject;
 import io.radien.api.service.batch.BatchSummary;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
@@ -111,6 +114,29 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
         } catch (ProcessingException e) {
             throw new SystemException(e);
         }
+    }
+
+    @Override
+    public List<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException {
+        UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+        Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+        JSONArray jsonArray = new JSONObject(response.readEntity(String.class)).getJSONArray("results");
+        List<User> listUsers = new ArrayList<>();
+        try{
+            if(jsonArray.length() !=0){
+                for (int i=0; i<jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String firstname = jsonObject.has("firstname") ? jsonObject.getString("firstname") : "" ;
+                    String lastname = jsonObject.has("lastname")  ? jsonObject.getString("lastname") : "";
+                    String logon = jsonObject.has("logon") ? jsonObject.getString("logon") : "";
+                    String userEmail = jsonObject.has("userEmail") ? jsonObject.getString("userEmail") : "";
+                    listUsers.add(new User(firstname,lastname,logon,userEmail));
+                }
+            }
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }
+        return listUsers;
     }
 
     /**

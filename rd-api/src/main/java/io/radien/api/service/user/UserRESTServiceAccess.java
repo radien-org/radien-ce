@@ -16,6 +16,7 @@
 package io.radien.api.service.user;
 
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Optional;
 
 import io.radien.api.Appframeable;
@@ -36,4 +37,6 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @throws MalformedURLException in case of URL specification
      */
     public boolean create(SystemUser user,boolean skipKeycloak) throws SystemException;
+
+    public List<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException;
 }
