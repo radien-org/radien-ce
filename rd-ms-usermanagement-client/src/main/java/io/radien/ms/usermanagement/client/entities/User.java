@@ -55,9 +55,9 @@ public class User extends AbstractUserModel implements SystemUser {
 	public User(String firstname, String lastname, String logon, String userEmail){
 		super();
 		this.firstname=firstname;
-		this.lastname=firstname;
-		this.logon=firstname;
-		this.userEmail=firstname;
+		this.lastname=lastname;
+		this.logon=logon;
+		this.userEmail=userEmail;
 	}
 
 	@Override
