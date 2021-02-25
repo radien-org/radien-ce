@@ -16,6 +16,11 @@
 package io.radien.ms.usermanagement.security;
 
 
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.UrlJwkProvider;
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
@@ -24,6 +29,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import io.radien.ms.usermanagement.client.entities.User;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.AuthorizationContext;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.common.util.Base64;
@@ -52,6 +58,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -73,6 +81,7 @@ public class AuthenticationFilter implements Filter {
     @Context
     private ResourceInfo resourceInfo;
     private static final Logger log = LoggerFactory.getLogger(AuthenticationFilter.class);
+
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -108,24 +117,40 @@ public class AuthenticationFilter implements Filter {
         try {
             JWSObject jwsObject = JWSObject.parse(accessToken);
 
-            String text = readFromResource("keycloak.pem",StandardCharsets.UTF_8);
-            //TODO: validate that this was signed by keycloak public key present in URL
-            //        https://idp-int.radien.io/auth/realms/radien/protocol/openid-connect/certs
-            //          in x5c field
+            String issuer= ConfigProvider.getConfig().getValue("auth.issuer",String.class);
+            String jwkUrl= ConfigProvider.getConfig().getValue("auth.jwkUrl",String.class);
 
+            //check acr on payload when with totp
+            //acr stands for Authentication Context Class
 
             JWSHeader header = jwsObject.getHeader();
             String kid = header.getKeyID();
 
-            Payload payload =jwsObject.getPayload();
+            final JwkProvider provider = new UrlJwkProvider(new URL(jwkUrl));
+            final Jwk jwk = provider.get(kid);
+
+
+            JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) jwk.getPublicKey());
+            if(!jwsObject.verify(verifier)){
+                return false;
+            }
+
+            Payload payload = jwsObject.getPayload();
             JsonReader reader = Json.createReader(new StringReader(payload.toString()));
             JsonObject jsonObject = reader.readObject();
             String[] scopes = jsonObject.getString("scope").split(" ");
             //TODO: validate scopes
 
+            if(!issuer.equals(jsonObject.getString("iss"))){
+                return false;
+            }
+
+            if(!jsonObject.getString("typ").equals("Bearer")){
+                return false;
+            }
+
             LocalDateTime exp = LocalDateTime.ofInstant(Instant.ofEpochSecond(jsonObject.getJsonNumber("exp").longValue()), ZoneId.systemDefault());
-            LocalDateTime now = exp.now();
-            if(exp.isBefore(now)){
+            if(exp.isBefore(LocalDateTime.now())){
                 //TODO: refresh token
                 return false;
 
@@ -134,7 +159,7 @@ public class AuthenticationFilter implements Filter {
             session.setAttribute("USER",principal);
 
             return true;
-        } catch (ParseException e) {
+        } catch (ParseException | MalformedURLException | JwkException | JOSEException e) {
             log.error("Unable to parse Access Token",e);
         }
         return false;

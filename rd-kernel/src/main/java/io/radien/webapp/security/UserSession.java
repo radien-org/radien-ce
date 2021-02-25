@@ -63,10 +63,10 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName,String accessToken, String refreshToken) throws Exception {
 		log.info("User session login starting");
 		log.info("user logged in: {}", userIdSubject);
-		//TODO: put ACCESS TOKEN IN HEADERS
-		//		refresh access token if needed
+		//TODO:		refresh access token if needed
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
+
 		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 		SystemUser user;
 		if(!existingUser.isPresent()){

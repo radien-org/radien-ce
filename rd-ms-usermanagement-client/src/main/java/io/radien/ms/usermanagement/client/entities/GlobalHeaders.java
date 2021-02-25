@@ -19,13 +19,13 @@ public class GlobalHeaders implements ClientHeadersFactory {
 
     @Override
     public MultivaluedMap<String, String> update(MultivaluedMap<String, String> incomingHeaders, MultivaluedMap<String, String> outgoingHeaders) {
+        //TODO: Understand why standard injection is not working
         tokensPlaceHolder =  CDI.current().select(TokensPlaceHolder.class).get();
         MultivaluedMap<String, String> result = new MultivaluedHashMap<>();
-        if(tokensPlaceHolder == null) {
-            result.add(HttpHeaders.AUTHORIZATION.toString(),"Bearer " +"superSeed");
-            return result;
+
+        if(tokensPlaceHolder.getAccessToken() != null) {
+            result.add(HttpHeaders.AUTHORIZATION.toString(), "Bearer " + tokensPlaceHolder.getAccessToken());
         }
-        result.add(HttpHeaders.AUTHORIZATION.toString(),"Bearer " +tokensPlaceHolder.getAccessToken());
         result.putAll(incomingHeaders);
         result.putAll(outgoingHeaders);
 

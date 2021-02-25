@@ -67,11 +67,10 @@ public class UserResource implements UserResourceClient {
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 
-		servletRequest.getRequestURL(); //fullpath
-		servletRequest.getRequestURI(); //relativePath
-		servletRequest.getHeader("Authorization"); //null on empty
+		//servletRequest.getRequestURL(); //fullpath
+		//servletRequest.getRequestURI(); //relativePath
+		//servletRequest.getHeader("Authorization"); //null on empty
 		SystemUser user = (io.radien.ms.usermanagement.client.entities.User) servletRequest.getSession().getAttribute("USER");
-
 		try {
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
@@ -126,6 +125,16 @@ public class UserResource implements UserResourceClient {
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
+			/*boolean creation = user.getId() == null;
+			SystemUser requester = (io.radien.ms.usermanagement.client.entities.User) servletRequest.getSession().getAttribute("USER");
+			if(creation){
+				SystemUserSearchFilter filter = new UserSearchFilter(requester.getSub(), null,null,true,true);
+				List<? extends SystemUser> users =userBusinessService.getUsers(filter);
+				if(users.size()==1){
+					Long requesterId =users.get(0).getId();
+					//permissionRESTSeviceClient.hasPermission("create","user",tenantRESTServiceClient.getCurrentTenant(requesterId),requesterId);
+				}
+			}*/
 			userBusinessService.save(new User(user),user.isDelegatedCreation());
 		} catch (Exception e) {
 			return getResponseFromException(e);
