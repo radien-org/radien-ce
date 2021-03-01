@@ -258,8 +258,7 @@ public class PermissionResource implements PermissionResourceClient {
 	}
 
 	/**
-	 * Validates if an user has access for a specific Permission (Combination of action + resource)
-	 * under a certain tenant
+	 * Validates if an user has a specific Permission (Combination of action name + resource name)
 	 * @param action Action name
 	 * @param resource Resource name
 	 * @return system permission

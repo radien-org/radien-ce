@@ -17,13 +17,14 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.entity.Page;
 
+import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
-import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
-import io.radien.exception.NotFoundException;
+import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
@@ -31,10 +32,9 @@ import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 
-
 import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.Permission;
-import org.junit.After;
+import io.radien.ms.permissionmanagement.model.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,6 +57,7 @@ public class PermissionServiceTest {
 
     PermissionServiceAccess permissionServiceAccess;
     ActionServiceAccess actionServiceAccess;
+    ResourceServiceAccess resourceServiceAccess;
     SystemPermission pTest;
     SystemAction aTest;
 
@@ -64,6 +65,7 @@ public class PermissionServiceTest {
         final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
         permissionServiceAccess = (PermissionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");
         actionServiceAccess= (ActionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
+        resourceServiceAccess = (ResourceServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
     }
 
     @Before
@@ -498,7 +500,7 @@ public class PermissionServiceTest {
         p4.setName("perm4");
         p4.setActionId(actionId3);
         p4.setResourceId(resourceId2);
-        permissionServiceAccess.save(p4);
+        assertThrows(Exception.class, () -> permissionServiceAccess.save(p4));
 
         SystemPermissionSearchFilter filter = new PermissionSearchFilter("perm3",
                 actionId3, resourceId2, true, true);
@@ -511,7 +513,7 @@ public class PermissionServiceTest {
         filter = new PermissionSearchFilter("perm",
                 actionId3, resourceId2, false, true);
         permissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(permissions.size(), 2);
+        assertEquals(permissions.size(), 1);
 
         // Only p3 and p4 have actionId3 and resourceId2
         boolean p3AndP4 = permissions.stream().
@@ -521,11 +523,104 @@ public class PermissionServiceTest {
         filter = new PermissionSearchFilter("perm",
                 null, resourceId2, false, true);
         permissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(permissions.size(), 3);
+        assertEquals(permissions.size(), 2);
 
         // Only p3 and p4 have actionId3 and resourceId2
         boolean p2AndP3AndP4 = permissions.stream().
                 allMatch( p -> p.getId() == p2.getId() || p.getId() == p3.getId() || p.getId() == p4.getId());
         assertTrue(p2AndP3AndP4);
+    }
+
+    @Test
+    public void testExistsPermissionMethod() throws UniquenessConstraintException {
+        Permission experiment = new Permission();
+        experiment.setName("create-contract");
+
+        permissionServiceAccess.save(experiment);
+
+        boolean checkExistsById = permissionServiceAccess.exists(experiment.getId(), null);
+        assertTrue(checkExistsById);
+
+        boolean checkExistByName = permissionServiceAccess.exists(null,"create-contract");
+        assertTrue(checkExistByName);
+
+        boolean checkingWithValidIdAndInvalidName = permissionServiceAccess.exists(experiment.getId(),
+                "create-organization");
+        assertTrue(checkingWithValidIdAndInvalidName);
+
+        boolean checkWithInvalidIdAndCorrectName = permissionServiceAccess.exists(999L, "create-contract");
+        assertFalse(checkWithInvalidIdAndCorrectName);
+    }
+
+    @Test
+    public void testExistsPermissionNotFound() {
+        boolean check = permissionServiceAccess.exists(3333L, null);
+        assertFalse(check);
+
+        check = permissionServiceAccess.exists(null, "create-subtenant");
+        assertFalse(check);
+    }
+
+    @Test
+    public void testExistsPermissionWithNoArguments() {
+        boolean check = permissionServiceAccess.exists(null, null);
+        assertFalse(check);
+    }
+
+    @Test
+    public void testPermissionRetrievalByActionAndResourceNames() throws UniquenessConstraintException {
+        SystemAction a1 = new Action();
+        a1.setName("delete");
+        actionServiceAccess.save(a1);
+
+        SystemAction a2 = new Action();
+        a2.setName("create");
+        actionServiceAccess.save(a2);
+
+        SystemAction a3 = new Action();
+        a3.setName("update");
+        actionServiceAccess.save(a3);
+
+        SystemResource r1 = new Resource();
+        r1.setName("dealer");
+        resourceServiceAccess.save(r1);
+
+        SystemPermission p1 = new Permission();
+        p1.setName(a1.getName() + "-" + r1.getName());
+        p1.setResourceId(r1.getId());
+        p1.setActionId(a1.getId());
+        permissionServiceAccess.save(p1);
+
+        SystemPermission p2 = new Permission();
+        p2.setName(a2.getName() + "-" + r1.getName());
+        p2.setResourceId(r1.getId());
+        p2.setActionId(a2.getId());
+        permissionServiceAccess.save(p2);
+
+        SystemPermission p3 = permissionServiceAccess.
+                getPermissionByActionAndResourceNames(a1.getName(), r1.getName());
+
+        assertNotNull(p3);
+        assertEquals(p3.getId(), p1.getId());
+        assertEquals(p3.getResourceId(), r1.getId());
+        assertEquals(p3.getActionId(), a1.getId());
+
+        SystemPermission p4 = permissionServiceAccess.
+                getPermissionByActionAndResourceNames("test", "test");
+        assertNull(p4);
+
+        SystemPermission p5 = new Permission();
+        p5.setName(a3.getName() + "-" + r1.getName());
+        permissionServiceAccess.save(p5);
+        assertNotNull(p5.getId());
+
+        SystemPermission p6 = new Permission();
+        p6.setName("create-dealer");
+        assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(p6));
+
+        SystemPermission p7 = permissionServiceAccess.getPermissionByActionAndResourceNames("create", "dealer");
+        assertNotNull(p7);
+        assertEquals(p7.getActionId(), a2.getId());
+        assertEquals(p7.getResourceId(), r1.getId());
     }
 }

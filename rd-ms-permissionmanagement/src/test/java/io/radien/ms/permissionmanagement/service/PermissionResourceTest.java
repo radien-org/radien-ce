@@ -1,7 +1,6 @@
 package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.service.permission.PermissionServiceAccess;
-import io.radien.exception.NotFoundException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
@@ -16,6 +15,9 @@ import org.mockito.MockitoAnnotations;
 import javax.ws.rs.core.Response;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -217,23 +219,69 @@ public class PermissionResourceTest {
     }
 
     /**
-     * Tests the does record exist method
-     * @throws NotFoundException ic case of record not be found
+     * Test the  endpoint ("exists") using just Id parameter
      */
     @Test
-    public void testExists() throws NotFoundException {
-        when(permissionServiceAccess.exists(any(), null)).thenReturn(true);
+    public void testExistsUsingPermissionId() {
+        when(permissionServiceAccess.exists(anyLong(), nullable(String.class))).thenReturn(true);
         Response response = permissionResource.exists(2L, null);
         assertEquals(200,response.getStatus());
     }
 
     /**
-     * Tests the does record exist method
+     * Test the  endpoint ("exists") using just Name parameter
      */
     @Test
-    public void testExistsNotFound() {
-        Response response = permissionResource.exists(2L, null);
+    public void testExistsUsingPermissionName() {
+        when(permissionServiceAccess.exists(nullable(Long.class), anyString())).thenReturn(true);
+        Response response = permissionResource.exists(null, "add-user");
         assertEquals(200,response.getStatus());
-        assertEquals(response.getEntity().toString(), "false");
+    }
+
+    /**
+     * Test the  endpoint ("exists") using id and permission name as parameter
+     * (All possible parameters)
+     */
+    @Test
+    public void testExistsUsingPermissionIdAndName()  {
+        // case 1: Returning true
+        when(permissionServiceAccess.exists(anyLong(), anyString())).thenReturn(true);
+        Response response = permissionResource.exists(2L, "add-user");
+        assertEquals(200, response.getStatus());
+
+        // case 2: Returning false
+        when(permissionServiceAccess.exists(anyLong(), anyString())).thenReturn(false);
+        response = permissionResource.exists(2L, "add-user");
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
+
+    /**
+     * Test the  endpoint ("exists") omitting all required parameters
+     */
+    @Test
+    public void testExistsWithNoParameters() {
+        Response response = permissionResource.exists(null, null);
+        assertEquals(400,response.getStatus());
+    }
+
+    /**
+     * Test the  endpoint ("exists") for cases whether there is no permission
+     * for an informed Id
+     */
+    @Test
+    public void testWhenHasNoPermission() {
+        when(permissionServiceAccess.getPermissionByActionAndResourceNames("add", "contract")).
+                thenReturn(null);
+        Response response = permissionResource.hasPermission("add", "contract");
+        assertEquals(response.getStatusInfo().toEnum(), Response.Status.NOT_FOUND);
+    }
+
+    @Test
+    public void testingHasPermissionWhenErrorOccurs() {
+        when(permissionServiceAccess.getPermissionByActionAndResourceNames("add", "contract")).
+                thenThrow(new RuntimeException("something happen during the search process"));
+        Response response = permissionResource.hasPermission("add", "contract");
+        assertEquals(response.getStatusInfo().toEnum(), Response.Status.INTERNAL_SERVER_ERROR);
     }
 }

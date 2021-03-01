@@ -72,7 +72,7 @@ public interface PermissionResourceClient {
     public Response exists(@QueryParam("id") Long id, @QueryParam("name") String name);
 
     @GET
-    @Path("/authorized/{action}/{resource}")
+    @Path("/{action}/{resource}")
     public Response hasPermission(@NotNull @PathParam("action") String action,
                                   @NotNull @PathParam("resource") String resource);
 

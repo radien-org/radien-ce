@@ -345,4 +345,202 @@ public class PermissionRESTServiceClientTest {
         assertNotNull(se);
         assertTrue(se.getMessage().contains(ProcessingException.class.getName()));
     }
+
+    @Test
+    public void testPermissionExists() throws MalformedURLException {
+        Long permissionId = 1111L;
+        String permissionName = "add-tenant";
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                thenReturn(resourceClient);
+        when(resourceClient.exists(permissionId, permissionName)).then(i -> Response.ok().build());
+        try {
+            assertTrue(target.isPermissionExistent(permissionId, permissionName));
+        } catch (SystemException systemException) {
+            fail("unexpected exception");
+        }
+    }
+
+    @Test
+    public void testPermissionExistsFalseCase() throws MalformedURLException {
+        Long permissionId = 1111L;
+        String permissionName = "add-tenant";
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                thenReturn(resourceClient);
+
+        // Case 1: Permission not exists (Status 404)
+        when(resourceClient.exists(permissionId, permissionName)).
+                then(i -> Response.status(Response.Status.NOT_FOUND).build());
+        try {
+            assertFalse(target.isPermissionExistent(permissionId, permissionName));
+        } catch (SystemException systemException) {
+            fail("unexpected exception");
+        }
+
+        // Case 2: Error 500 happened
+        when(resourceClient.exists(permissionId, permissionName)).
+                then(i -> Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+        try {
+            assertFalse(target.isPermissionExistent(permissionId, permissionName));
+        } catch (SystemException systemException) {
+            fail("unexpected exception");
+        }
+    }
+
+    @Test
+    public void testPermissionExistsWithProcessingException() throws MalformedURLException {
+        Long permissionId = 1111L;
+        String permissionName = "add-tenant";
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                thenReturn(resourceClient);
+        when(resourceClient.exists(permissionId, permissionName)).
+                thenThrow(new ProcessingException("Error invoking endpoint"));
+        assertThrows(SystemException.class,
+                () -> target.isPermissionExistent(permissionId, permissionName));
+    }
+
+    /** Testing regarding "hasPermission(...)" possible scenarios  */
+
+    /** Testing that were missing  */
+
+    @Test
+    public void testGetAll() throws MalformedURLException {
+        List<Permission> list = new ArrayList<>();
+        list.add(PermissionFactory.create("add contract", 1L, 2L, 3L));
+        list.add(PermissionFactory.create("delete contract", 2L, 2L, 3L));
+        list.add(PermissionFactory.create("update contract", 3L, 2L, 3L));
+        Page<SystemPermission> page = new Page<>(list, 1, 3, 1);
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
+                .add("currentPage", page.getCurrentPage())
+                .add("totalResults", page.getTotalResults())
+                .add("totalPages", page.getTotalPages())
+                .add("results", PermissionModelMapper.map(list));
+
+        JsonObject jsonObject = objectBuilder.build();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
+        Response expectedResponse = Response.ok(inputStream).build();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                then(i -> resourceClient);
+        when(resourceClient.getAll(null, 1, 100, null, true)).
+                then(i -> expectedResponse);
+
+        List<? extends SystemPermission> list1 = null;
+        try {
+            list1 = target.getAll();
+        }
+        catch (Exception e) {
+            fail("should not happen here...");
+        }
+
+        assertNotNull(list1);
+        assertFalse(list1.isEmpty());
+
+    }
+
+    @Test
+    public void testGetAllWithFailure() throws MalformedURLException, SystemException {
+        List<Permission> list = new ArrayList<>();
+        list.add(PermissionFactory.create("add contract", 1L, 2L, 3L));
+        Page<SystemPermission> page = new Page<>(list, 1, 1, 1);
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
+                .add("currentPage", page.getCurrentPage())
+                .add("totalResults", page.getTotalResults())
+                .add("totalPages", page.getTotalPages())
+                .add("results", PermissionModelMapper.map(list));
+
+        JsonObject jsonObject = objectBuilder.build();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
+        Response expectedResponse = Response.ok(inputStream).build();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                thenThrow(new ProcessingException("error"));
+        when(resourceClient.getAll(null, 1, 100, null, true)).
+                then(i -> expectedResponse);
+
+        assertThrows(SystemException.class, () -> target.getAll());
+    }
+
+    @Test
+    public void testGetPermissions() throws MalformedURLException {
+        List<Permission> list = new ArrayList<>();
+        list.add(PermissionFactory.create("add contract", 1L, 2L, 3L));
+        list.add(PermissionFactory.create("delete contract", 2L, 2L, 3L));
+        list.add(PermissionFactory.create("update contract", 3L, 2L, 3L));
+        Page<SystemPermission> page = new Page<>(list, 1, 3, 1);
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
+                .add("currentPage", page.getCurrentPage())
+                .add("totalResults", page.getTotalResults())
+                .add("totalPages", page.getTotalPages())
+                .add("results", PermissionModelMapper.map(list));
+
+        JsonObject jsonObject = objectBuilder.build();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
+        Response expectedResponse = Response.ok(inputStream).build();
+
+        List<String> sortBy = new ArrayList<>();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                then(i -> resourceClient);
+        when(resourceClient.getAll("contract", 1, 100, sortBy, true)).
+                then(i -> expectedResponse);
+
+        List<? extends SystemPermission> list1 = null;
+        try {
+            list1 = target.getPermissions("contract", 1, 100, sortBy, true);
+        }
+        catch (Exception e) {
+            fail("should not happen here...");
+        }
+        assertNotNull(list1);
+        assertFalse(list1.isEmpty());
+    }
+
+    @Test
+    public void testGetPermissionsWhenFailure() throws MalformedURLException {
+        List<String> sortBy = new ArrayList<>();
+        Response errorResponse = Response.status(500).build();
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                thenThrow(new ProcessingException("error"));
+        when(resourceClient.getAll("contract", 1, 100, sortBy, true)).
+                then(i -> errorResponse);
+        assertThrows(SystemException.class, () -> target.getPermissions("contract", 1, 100, sortBy, true));
+    }
+
+    @Test
+    public void testDelete() throws MalformedURLException, SystemException {
+        Long idOK = 1L;
+        Long idNOK = 2L;
+        Response OK = Response.status(200).build();
+        Response NOK = Response.status(500).build();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                then(i -> resourceClient);
+        when(resourceClient.delete(idNOK)).then(i -> NOK);
+        when(resourceClient.delete(idOK)).then(i -> OK);
+
+        assertEquals(target.delete(idOK), true);
+        assertEquals(target.delete(idNOK), false);
+    }
+
+    @Test
+    public void testDeleteWithFailure() throws MalformedURLException, SystemException {
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                then(i -> resourceClient);
+        when(resourceClient.delete(1L)).thenThrow(new ProcessingException("error during delete process"));
+        assertThrows(SystemException.class, () -> target.delete(1L));
+    }
+
+
 }
