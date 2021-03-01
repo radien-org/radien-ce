@@ -31,6 +31,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -53,6 +54,41 @@ public class LinkedAuthorizationRESTServiceClient implements LinkedAuthorization
     private ClientServiceUtil linkedAuthorizationServiceUtil;
 
     /**
+     * Check if some LinkedAuthorizationExists for tenant, permission, role and user
+     * @param tenant tenant identifier
+     * @param permission permission identifier
+     * @param role role identifier
+     * @param userId user identifier
+     * @return true if exists some LinkedAuthorization satisfying the informed parameter
+     */
+    @Override
+    public boolean checkIfLinkedAuthorizationExists(Long tenant, Long permission, Long role, Long userId) {
+
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+
+            Response response = client.existsSpecificAssociation(tenant, permission, role, userId, true);
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            }
+            log.info("LinkedAuthorizations not found for tenant, permission, role and user. Obtained status= {}", response.getStatusInfo().getStatusCode());
+        }
+        catch (WebApplicationException e) {
+            // In case of 404 status we just want to return false
+            if (e.getResponse().getStatus() != Response.Status.NOT_FOUND.getStatusCode()) {
+                throw e;
+            }
+        }
+        catch (Exception e) {
+            log.info("Error checking if LinkedAuthorizations exists for tenant, permission, role and user");
+            throw new ProcessingException(e);
+        }
+        return false;
+    }
+
+
+    /**
      * Gets all the Linked Authorization in the DB searching for the field role id
      *
      * @param role to be looked after
@@ -64,7 +100,7 @@ public class LinkedAuthorizationRESTServiceClient implements LinkedAuthorization
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getSpecificAssociation(null, null,role,false);
+            Response response = client.getSpecificAssociation(null, null,role,null,false);
             return ListLinkedAuthorizationModelMapper.map((InputStream) response.getEntity());
         } catch (ExtensionException|ProcessingException | MalformedURLException e){
             throw new SystemException(e);

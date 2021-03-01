@@ -41,7 +41,8 @@ public interface RoleServiceAccess extends ServiceAccess {
     /**
      * Validates if a certain specified role is existent
      * @param roleId to be found
+     * @param name to be searched
      * @return true if it exists.
      */
-    public boolean checkIfRolesExist(Long roleId);
+    public boolean checkIfRolesExist(Long roleId, String name);
 }

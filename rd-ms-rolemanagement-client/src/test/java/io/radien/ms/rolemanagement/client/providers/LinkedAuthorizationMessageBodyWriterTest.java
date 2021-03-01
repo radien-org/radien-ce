@@ -52,7 +52,7 @@ public class LinkedAuthorizationMessageBodyWriterTest extends TestCase {
 
         LinkedAuthorizationMessageBodyWriter target = new LinkedAuthorizationMessageBodyWriter();
 
-        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L);
+        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(linkedAuthorization,null,null,null, null,null, baos);
 

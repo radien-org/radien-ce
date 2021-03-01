@@ -84,9 +84,19 @@ public interface PermissionServiceAccess extends ServiceAccess {
     public List<? extends SystemPermission> getPermissions(SystemPermissionSearchFilter filter);
 
     /**
-     * Validates if specific requested permission exists
-     * @param permissionId to be searched
+     * Verifies if some Permission exists for a referred Id (or alternatively for a name)
+     * @param permissionId Identifier to guide the search be searched (Primary parameter)
+     * @param permissionName Permission name, an alternative parameter that will be used ONLY
+     * if Id is omitted
      * @return response true if it exists
      */
-    public boolean exists(Long permissionId);
+    public boolean exists(Long permissionId, String permissionName);
+
+    /**
+     * Retrieves a SystemPermission taking in account Resource and Action
+     * @param action Action name
+     * @param resource Resource Name
+     * @return a SystemPermission linked with Resource and Action
+     */
+    SystemPermission getPermissionByActionAndResourceNames(String action, String resource);
 }

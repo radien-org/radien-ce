@@ -30,7 +30,7 @@ public class LinkedAuthorizationTest extends TestCase {
     Date now = new Date();
 
     public LinkedAuthorizationTest() {
-        linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L);
+        linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
         linkedAuthorization.setId(1L);
         linkedAuthorization.setCreateUser(3L);
         linkedAuthorization.setCreateDate(now);
@@ -40,7 +40,7 @@ public class LinkedAuthorizationTest extends TestCase {
 
     @Test
     public void testConstructor() {
-        LinkedAuthorization newAuthorization = new LinkedAuthorization(LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L));
+        LinkedAuthorization newAuthorization = new LinkedAuthorization(LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L, 3L));
 
         assertNull(newAuthorization.getId());
         assertEquals((Long) 3L, newAuthorization.getTenantId());

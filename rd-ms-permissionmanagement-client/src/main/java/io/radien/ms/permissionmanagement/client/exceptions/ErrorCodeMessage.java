@@ -25,6 +25,7 @@ public enum ErrorCodeMessage {
      */
     RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
     DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
+    PARAMETERS_NOT_INFORMED(102, "error.mandatory.parameters.not.informed", "Mandatory parameters not informed: %s"),
     /**
      * System Error Code Messages
      */

@@ -19,7 +19,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.exception.RoleNotFoundException;
-import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.services.RoleFactory;
@@ -93,8 +92,31 @@ public class RoleBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSave() throws RoleNotFoundException, UniquenessConstraintException {
+    public void testSave() {
         Role u = RoleFactory.create("name", "description", 4L);
-        roleBusinessService.save(u);
+        boolean success = false;
+        try{
+            roleBusinessService.save(u);
+            success = true;
+        } catch (Exception e){
+            success = false;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testExists() {
+        Role u = RoleFactory.create("name", "description", 4L);
+
+        boolean success = false;
+        try{
+            roleBusinessService.save(u);
+
+            roleBusinessService.exists(u.getId(), u.getName());
+            success = true;
+        } catch (Exception e){
+            success = false;
+        }
+        assertTrue(success);
     }
 }

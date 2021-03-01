@@ -26,7 +26,7 @@ public class LinkedAuthorizationSearchFilterTest extends TestCase {
     private final LinkedAuthorizationSearchFilter searchFilter;
 
     public LinkedAuthorizationSearchFilterTest() {
-        searchFilter = new LinkedAuthorizationSearchFilter(2L, 2L, 2L, true);
+        searchFilter = new LinkedAuthorizationSearchFilter(2L, 2L, 2L, 2L, true);
     }
 
     @Test

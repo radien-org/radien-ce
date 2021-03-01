@@ -79,5 +79,5 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @param permissionId to be found
      * @return true in case of success
      */
-    public boolean isPermissionExistent(Long permissionId) throws SystemException;
+    public boolean isPermissionExistent(Long permissionId , String permissionName) throws SystemException;
 }

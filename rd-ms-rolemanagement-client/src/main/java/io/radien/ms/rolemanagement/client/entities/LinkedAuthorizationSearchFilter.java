@@ -25,15 +25,17 @@ public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizatio
     private Long tenantId;
     private Long permissionId;
     private Long roleId;
+    private Long userId;
 
     private boolean isLogicConjunction;
 
     public LinkedAuthorizationSearchFilter() {}
 
-    public LinkedAuthorizationSearchFilter(Long tenantId, Long permissionId, Long roleId, boolean isLogicConjunction) {
+    public LinkedAuthorizationSearchFilter(Long tenantId, Long permissionId, Long roleId, Long userId, boolean isLogicConjunction) {
         this.tenantId = tenantId;
         this.permissionId = permissionId;
         this.roleId = roleId;
+        this.userId = userId;
         this.isLogicConjunction = isLogicConjunction;
     }
 
@@ -76,4 +78,10 @@ public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizatio
     public void setLogicConjunction(boolean logicConjunction) {
         isLogicConjunction=logicConjunction;
     }
+
+    @Override
+    public Long getUserId() { return userId; }
+
+    @Override
+    public void setUserId(Long userId) { this.userId = userId; }
 }

@@ -58,4 +58,10 @@ public interface RoleResourceClient {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response save(Role role);
+
+    @GET
+    @Path("/exists")
+    public Response exists(@QueryParam("id") Long id,
+                           @QueryParam("name") String name);
+
 }

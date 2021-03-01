@@ -83,7 +83,7 @@ public class LinkedAuthorizationRESTServiceClientTest {
 
         LinkedAuthorizationResourceClient linkedAuthorizationClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
 
-        when(linkedAuthorizationClient.getSpecificAssociation(null, null, role,false)).thenReturn(response);
+        when(linkedAuthorizationClient.getSpecificAssociation(null, null, role, null,false)).thenReturn(response);
 
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationClient);
 

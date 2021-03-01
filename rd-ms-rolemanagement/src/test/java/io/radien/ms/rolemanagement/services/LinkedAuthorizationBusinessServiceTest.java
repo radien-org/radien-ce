@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
+import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
@@ -83,7 +84,7 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
     @Test
     public void testGetSpecificAssociation() {
         List<? extends SystemLinkedAuthorization> list = linkedAuthorizationBusinessService.getSpecificAssociation(new LinkedAuthorizationSearchFilter
-                (2L, 2L, 2L, true));
+                (2L, 2L, 2L, 2L, true));
         assertEquals(0,list.size());
     }
 
@@ -97,7 +98,7 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
     @Test
     public void testCheckIfFieldsAreValid() throws Exception {
         LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L);
-        when(permissionRESTServiceAccess.isPermissionExistent(any())).thenReturn(true);
+        when(permissionRESTServiceAccess.isPermissionExistent(any(), null)).thenReturn(true);
         when(tenantRESTServiceAccess.isTenantExistent(any())).thenReturn(true);
         boolean success = false;
         try{
@@ -124,15 +125,15 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
 
     @Test
     public void testCheckIfRoleExists() {
-        when(roleServiceAccess.checkIfRolesExist(3L)).thenReturn(true);
-        boolean result = linkedAuthorizationBusinessService.checkIfRoleExists(3L);
+        when(roleServiceAccess.checkIfRolesExist(3L, null)).thenReturn(true);
+        boolean result = roleServiceAccess.checkIfRolesExist(3L, null);
         assertTrue(result);
     }
 
     @Test
     public void testCheckIfRoleExistsException() {
-        when(roleServiceAccess.checkIfRolesExist(any())).thenReturn(false);
-        boolean result = linkedAuthorizationBusinessService.checkIfRoleExists(3L);
+        when(roleServiceAccess.checkIfRolesExist(any(), null)).thenReturn(false);
+        boolean result = roleServiceAccess.checkIfRolesExist(3L, null);
         assertFalse(result);
     }
 
@@ -146,6 +147,19 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
             linkedAuthorizationBusinessService.deleteAssociation(u.getId());
         } catch (LinkedAuthorizationNotFoundException e){
             success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testValidateRole() {
+        boolean success = false;
+        try{
+            SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(2L, 2L, 2L, 2L, true);
+            linkedAuthorizationBusinessService.existsSpecificAssociation(filter);
+            success = true;
+        } catch (Exception e){
+            success = false;
         }
         assertTrue(success);
     }

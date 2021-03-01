@@ -23,14 +23,14 @@ import io.radien.ms.rolemanagement.client.services.LinkedAuthorizationResourceCl
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * @author Bruno Gama
  */
-@Stateless
+@RequestScoped
 public class ClientServiceUtil {
     public RoleResourceClient getRoleResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);

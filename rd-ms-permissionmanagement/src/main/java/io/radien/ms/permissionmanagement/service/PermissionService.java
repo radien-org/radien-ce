@@ -300,22 +300,49 @@ public class PermissionService implements PermissionServiceAccess {
     }
 
     /**
-     * Validates if specific requested permission exists
-     * @param permissionId to be searched
+     * Verifies if some Permission exists for a referred Id (or alternatively for a name)
+     * @param permissionId Identifier to guide the search be searched (Primary parameter)
+     * @param permissionName Permission name, an alternative parameter that will be used ONLY
+     * if Id is omitted
      * @return response true if it exists
      */
     @Override
-    public boolean exists(Long permissionId) {
+    public boolean exists(Long permissionId, String permissionName) {
+        if (permissionId == null && permissionName == null) {
+            return false;
+        }
+
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Permission> contractRoot = criteriaQuery.from(Permission.class);
+        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
 
-        criteriaQuery.select(criteriaBuilder.count(contractRoot));
-        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), permissionId));
+        criteriaQuery.select(criteriaBuilder.count(permissionRoot));
+        if (permissionId !=  null) {
+            criteriaQuery.where(criteriaBuilder.equal(permissionRoot.get("id"), permissionId));
+        }
+        else {
+            criteriaQuery.where(criteriaBuilder.equal(permissionRoot.get("name"), permissionName));
+        }
 
         Long size = em.createQuery(criteriaQuery).getSingleResult();
 
         return size != 0;
+    }
+
+    /**
+     * Retrieves a SystemPermission taking in account Resource and Action
+     * @param action Action name
+     * @param resource Resource Name
+     * @return a SystemPermission linked with Resource and Action
+     */
+    @Override
+    public SystemPermission getPermissionByActionAndResourceNames(String action, String resource) {
+        String query = "Select p From Permission p, Resource r, Action a " +
+                "Where p.actionId = a.id and p.resourceId = r.id and r.name = :rName and a.name= :aName";
+        return getEntityManager().createQuery(query, Permission.class).
+                setParameter("rName", resource).
+                setParameter("aName", action).
+                getResultStream().findFirst().orElse(null);
     }
 }

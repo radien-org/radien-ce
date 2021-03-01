@@ -31,6 +31,7 @@ import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper;
 import io.radien.ms.permissionmanagement.client.util.PermissionModelMapper;
+import io.radien.ms.permissionmanagement.client.util.PermissionPageModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,13 +66,13 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
      * @throws SystemException any issue when obtaining the records
      */
     @Override
-    public List<? extends SystemPermission> getAll() throws MalformedURLException, SystemException {
+    public List<? extends SystemPermission> getAll() throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
             Response response = client.getAll(null, 1, 100, null, true);
-            return ListPermissionModelMapper.map((InputStream) response.getEntity());
-        } catch (ExtensionException |ProcessingException | MalformedURLException e){
+            return PermissionPageModelMapper.map((InputStream) response.getEntity()).getResults();
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }
     }
@@ -88,8 +89,8 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
-            return ListPermissionModelMapper.map((InputStream) response.getEntity());
-        } catch (ExtensionException |ProcessingException | MalformedURLException e){
+            return PermissionPageModelMapper.map((InputStream) response.getEntity()).getResults();
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
             log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
@@ -217,13 +218,13 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
      * @return true in case of success
      */
     @Override
-    public boolean isPermissionExistent(Long permissionId) throws SystemException {
+    public boolean isPermissionExistent(Long permissionId, String permissionName) throws SystemException {
         PermissionResourceClient client;
         try {
             client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
                     (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
-            Response response = client.exists(permissionId);
+            Response response = client.exists(permissionId, permissionName);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }

@@ -30,4 +30,7 @@ public interface SystemLinkedAuthorization extends Model {
 
     public Long getTenantId();
     public void setTenantId(Long tenantId);
+
+    public Long getUserId();
+    public void setUserId(Long userId);
 }

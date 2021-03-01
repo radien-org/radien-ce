@@ -161,6 +161,46 @@ public class RoleResourceTest {
     }
 
     /**
+     * Tests if record exists
+     */
+    @Test
+    public void testExists() throws RoleNotFoundException {
+        when(roleBusinessService.exists(any(), any())).thenReturn(true);
+        Response response = roleResource.exists(1L, null);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests if record does not exist
+     */
+    @Test
+    public void testExistsNotExistent() throws RoleNotFoundException {
+        when(roleBusinessService.exists(any(), any())).thenReturn(false);
+        Response response = roleResource.exists(1L, null);
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
+     * Tests if record exists will return role not found exception
+     */
+    @Test
+    public void testExistsNotFoundException() throws RoleNotFoundException {
+        doThrow(new RoleNotFoundException("Not found")).when(roleBusinessService).exists(any(), any());
+        Response response = roleResource.exists(1L, null);
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
+     * Tests if record exists will return generic exception
+     */
+    @Test
+    public void testExistsGenericException() throws RoleNotFoundException {
+        doThrow(new RuntimeException()).when(roleBusinessService).exists(any(), any());
+        Response response = roleResource.exists(1L, null);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
      * Tests Runtime exception from the save method
      * @throws RoleNotFoundException in case object was not found
      */

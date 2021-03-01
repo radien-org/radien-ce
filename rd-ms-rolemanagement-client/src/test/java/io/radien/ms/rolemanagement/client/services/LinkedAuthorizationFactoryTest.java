@@ -40,7 +40,7 @@ public class LinkedAuthorizationFactoryTest extends TestCase {
     @Test
     public void testCreate() {
         LinkedAuthorizationFactory linkedAuthorizationFactory = new LinkedAuthorizationFactory();
-        LinkedAuthorization newAuthorizationConstructed = linkedAuthorizationFactory.create(2L, 2L, 2L, null);
+        LinkedAuthorization newAuthorizationConstructed = linkedAuthorizationFactory.create(2L, 2L, 2L,  2L, null);
 
         assertEquals(linkedAuthorization.getTenantId(), newAuthorizationConstructed.getTenantId());
         assertEquals(linkedAuthorization.getPermissionId(), newAuthorizationConstructed.getPermissionId());

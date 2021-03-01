@@ -222,8 +222,8 @@ public class PermissionResourceTest {
      */
     @Test
     public void testExists() throws NotFoundException {
-        when(permissionServiceAccess.exists(any())).thenReturn(true);
-        Response response = permissionResource.exists(2L);
+        when(permissionServiceAccess.exists(any(), null)).thenReturn(true);
+        Response response = permissionResource.exists(2L, null);
         assertEquals(200,response.getStatus());
     }
 
@@ -232,7 +232,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testExistsNotFound() {
-        Response response = permissionResource.exists(2L);
+        Response response = permissionResource.exists(2L, null);
         assertEquals(200,response.getStatus());
         assertEquals(response.getEntity().toString(), "false");
     }

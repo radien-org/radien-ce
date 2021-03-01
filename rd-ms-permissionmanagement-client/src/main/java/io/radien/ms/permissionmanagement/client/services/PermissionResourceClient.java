@@ -68,7 +68,12 @@ public interface PermissionResourceClient {
 	public Response dissociate(@NotNull @PathParam("permissionId") long permissionId);
 
     @GET
-    @Path("/exists/{id}")
-    public Response exists(@NotNull @PathParam("id") Long id);
+    @Path("/exists")
+    public Response exists(@QueryParam("id") Long id, @QueryParam("name") String name);
+
+    @GET
+    @Path("/authorized/{action}/{resource}")
+    public Response hasPermission(@NotNull @PathParam("action") String action,
+                                  @NotNull @PathParam("resource") String resource);
 
 }

@@ -164,6 +164,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         global = getFieldPredicate("tenantId", filter.getTenantId(), filter, criteriaBuilder, roleRoot, global);
         global = getFieldPredicate("permissionId", filter.getPermissionId(), filter, criteriaBuilder, roleRoot, global);
         global = getFieldPredicate("roleId", filter.getRoleId(), filter, criteriaBuilder, roleRoot, global);
+        global = getFieldPredicate("userId", filter.getUserId(), filter, criteriaBuilder, roleRoot, global);
 
         return global;
     }
@@ -231,13 +232,13 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
                 entityManager.persist(association);
             } else {
                 log.info("No id has been given, but there is already another record with some of the given information");
-                throw new UniquenessConstraintException(LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id and Role Id"));
+                throw new UniquenessConstraintException(LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id"));
             }
         } else {
             log.info("We are going to update");
             if(!alreadyExistentAssociation.isEmpty()) {
                 log.info("An id has been given, but there is already another record with some of the given information");
-                throw new UniquenessConstraintException(LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id and Role Id"));
+                throw new UniquenessConstraintException(LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id"));
             } else {
                 getAssociationById(association.getId());
 
@@ -262,7 +263,8 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         criteriaQuery.select(tenancyRoot);
         Predicate global = criteriaBuilder.and(criteriaBuilder.equal(tenancyRoot.get("tenantId"), association.getTenantId()),
                 criteriaBuilder.equal(tenancyRoot.get("permissionId"), association.getPermissionId()),
-                criteriaBuilder.equal(tenancyRoot.get("roleId"), association.getRoleId()));
+                criteriaBuilder.equal(tenancyRoot.get("roleId"), association.getRoleId()),
+                criteriaBuilder.equal(tenancyRoot.get("userId"), association.getUserId()));
         if(association.getId()!= null) {
             global=criteriaBuilder.and(global, criteriaBuilder.notEqual(tenancyRoot.get("id"), association.getId()));
         }
@@ -270,5 +272,36 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         TypedQuery<LinkedAuthorization> q = entityManager.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
+    }
+
+    /**
+     * Verifies if exist LinkedAuthorizations for a specific Filter
+     * @param filter contains the criteria that satisfies the search process
+     * @return true (If finds some LinkedAuthorization for the informed filter), otherwise false
+     */
+    @Override
+    public boolean exists(SystemLinkedAuthorizationSearchFilter filter) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<LinkedAuthorization> linkedAuthorizationRoot = criteriaQuery.from(LinkedAuthorization.class);
+        criteriaQuery.select(criteriaBuilder.count(linkedAuthorizationRoot));
+
+        Predicate global;
+        if(filter.isLogicConjunction()) {
+            global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        } else {
+            global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
+        }
+
+        global = getFieldPredicate("tenantId", filter.getTenantId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate("permissionId", filter.getPermissionId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate("roleId", filter.getRoleId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate("userId", filter.getUserId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+
+        criteriaQuery.where(global);
+
+        Long size = entityManager.createQuery(criteriaQuery).getSingleResult();
+
+        return size != 0;
     }
 }

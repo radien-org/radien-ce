@@ -23,7 +23,7 @@ import javax.persistence.*;
  * @author Bruno Gama
  */
 @Entity
-@Table(name = "LINKAUTH01")
+@Table(name = "LINKAUTH01", uniqueConstraints = @UniqueConstraint(columnNames = {"tenantId, roleId, permissionId, userId"}))
 public class LinkedAuthorization extends io.radien.ms.rolemanagement.client.entities.LinkedAuthorization {
 
     private static final long serialVersionUID = 3141678141603574471L;
@@ -54,10 +54,14 @@ public class LinkedAuthorization extends io.radien.ms.rolemanagement.client.enti
         return super.getTenantId();
     }
 
-    @Column(unique = true)
+    @Column
     @Override
     public Long getRoleId() {
         return super.getRoleId();
     }
+
+    @Column
+    @Override
+    public Long getUserId() { return super.getUserId(); }
 
 }

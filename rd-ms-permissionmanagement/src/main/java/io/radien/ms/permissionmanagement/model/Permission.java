@@ -25,7 +25,7 @@ import javax.persistence.*;
  * plus the JPA entity mapping
  */
 @Entity
-@Table(name = "PERM01")
+@Table(name = "PERM01", uniqueConstraints = @UniqueConstraint(columnNames = {"actionId", "resourceId"}))
 public class Permission extends io.radien.ms.permissionmanagement.client.entities.Permission {
 
 	public Permission() {}
@@ -43,7 +43,7 @@ public class Permission extends io.radien.ms.permissionmanagement.client.entitie
 	}
 
 	@Override
-	@Column(name = "NAME", nullable = false, unique = true)
+	@Column(name = "NAME", nullable = false)
 	public String getName() {
 		return super.getName();
 	}

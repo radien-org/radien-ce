@@ -83,6 +83,16 @@ public class LinkedAuthorizationBusinessService implements Serializable {
         return linkedAuthorizationServiceAccess.getSpecificAssociation(filter);
     }
 
+
+    /**
+     * Check if exists Linked authorizations for a specific filter
+     * @param filter to be searched
+     * @return a list of System Linked Authorization
+     */
+    public boolean existsSpecificAssociation(SystemLinkedAuthorizationSearchFilter filter) {
+        return linkedAuthorizationServiceAccess.exists(filter);
+    }
+
     /**
      * Saves a specific association
      * @param association information to be saved
@@ -102,8 +112,8 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public boolean checkIfFieldsAreValid(SystemLinkedAuthorization association) throws MalformedURLException, SystemException {
         boolean isTenantExistent = tenantRESTServiceAccess.isTenantExistent(association.getTenantId());
-        boolean isPermissionExistent = permissionRESTServiceAccess.isPermissionExistent(association.getPermissionId());
-        boolean isRoleExistent = checkIfRoleExists(association.getRoleId());
+        boolean isPermissionExistent = permissionRESTServiceAccess.isPermissionExistent(association.getPermissionId(), null);
+        boolean isRoleExistent = roleServiceAccess.checkIfRolesExist(association.getRoleId(), null);
 
         if(!isTenantExistent ||
                 !isPermissionExistent ||
@@ -111,18 +121,6 @@ public class LinkedAuthorizationBusinessService implements Serializable {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Validates if specific role exists
-     * @param roleId to be searched
-     * @return true if it found the role
-     */
-    public boolean checkIfRoleExists(Long roleId) {
-        if(roleServiceAccess.checkIfRolesExist(roleId)) {
-            return true;
-        }
-        return false;
     }
 
     /**

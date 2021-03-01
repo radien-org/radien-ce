@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
+import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
@@ -101,7 +102,7 @@ public class LinkedAuthorizationServiceTest {
         linkedAuthorizationServiceAccess.save(linkedAuthorizationLogicConjunction);
         linkedAuthorizationServiceAccess.save(linkedAuthorizationLogicConjunction2);
 
-        LinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(100L, 200L, null, true);
+        LinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(100L, 200L, 100L, null, true);
 
         List<? extends SystemLinkedAuthorization> list = linkedAuthorizationServiceAccess.getSpecificAssociation(filter);
 
@@ -118,7 +119,7 @@ public class LinkedAuthorizationServiceTest {
         linkedAuthorizationServiceAccess.save(linkedAuthorization8);
         linkedAuthorizationServiceAccess.save(linkedAuthorization9);
 
-        LinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(7L, 8L, null, false);
+        LinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(7L, 8L, 8L, null, false);
 
         List<? extends SystemLinkedAuthorization> list = linkedAuthorizationServiceAccess.getSpecificAssociation(filter);
 
@@ -135,10 +136,10 @@ public class LinkedAuthorizationServiceTest {
         linkedAuthorizationServiceAccess.save(testById2);
         linkedAuthorizationServiceAccess.save(testById3);
 
-        List<? extends SystemLinkedAuthorization> andConjunction = linkedAuthorizationServiceAccess.getSpecificAssociation(new LinkedAuthorizationSearchFilter(41L,21L,41L,true));
+        List<? extends SystemLinkedAuthorization> andConjunction = linkedAuthorizationServiceAccess.getSpecificAssociation(new LinkedAuthorizationSearchFilter(41L,21L,41L, 41L,true));
         assertEquals(1,andConjunction.size());
 
-        List<? extends SystemLinkedAuthorization> orConjunction = linkedAuthorizationServiceAccess.getSpecificAssociation(new LinkedAuthorizationSearchFilter(21L,31L,21L,false));
+        List<? extends SystemLinkedAuthorization> orConjunction = linkedAuthorizationServiceAccess.getSpecificAssociation(new LinkedAuthorizationSearchFilter(21L,31L,21L, 41L,false));
         assertEquals(2,orConjunction.size());
     }
 
@@ -163,12 +164,25 @@ public class LinkedAuthorizationServiceTest {
         roleServiceAccess.save(checkIfIExists);
         Long id = checkIfIExists.getId();
 
-        assertTrue(roleServiceAccess.checkIfRolesExist(id));
+        assertTrue(roleServiceAccess.checkIfRolesExist(id, null));
+    }
+
+    @Test
+    public void testCheckIfRolesExistUsingName() throws UniquenessConstraintException, RoleNotFoundException {
+        SystemRole checkIfIExists = RoleFactory.create("testCheckIfRolesExistUsingName", "description", 11L);
+        roleServiceAccess.save(checkIfIExists);
+
+        assertTrue(roleServiceAccess.checkIfRolesExist(null, "testCheckIfRolesExistUsingName"));
+    }
+
+    @Test
+    public void testCheckIfRolesExistNotFound() {
+        assertFalse(roleServiceAccess.checkIfRolesExist(null, null));
     }
 
     @Test
     public void testCheckIfRolesNotExist(){
-        assertFalse(roleServiceAccess.checkIfRolesExist(200L));
+        assertFalse(roleServiceAccess.checkIfRolesExist(200L, null));
     }
 
     @Test
@@ -205,5 +219,15 @@ public class LinkedAuthorizationServiceTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testValidateRole() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
+        systemLinkedAuthorization = LinkedAuthorizationFactory.create(400L, 400L, 400L, 400L);
+        linkedAuthorizationServiceAccess.save(systemLinkedAuthorization);
+
+
+        SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(400L, null, 400L, null, true);
+        assertTrue(linkedAuthorizationServiceAccess.exists(filter));
     }
 }

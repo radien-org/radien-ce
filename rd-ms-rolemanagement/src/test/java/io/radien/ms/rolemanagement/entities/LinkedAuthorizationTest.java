@@ -40,7 +40,7 @@ public class LinkedAuthorizationTest extends TestCase {
 
     @Test
     public void testConstructor() {
-        LinkedAuthorization newAuthorization = new LinkedAuthorization(io.radien.ms.rolemanagement.client.services.LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L));
+        LinkedAuthorization newAuthorization = new LinkedAuthorization(io.radien.ms.rolemanagement.client.services.LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L, 3L));
 
         assertNull(newAuthorization.getId());
         assertEquals((Long) 3L, newAuthorization.getTenantId());

@@ -95,4 +95,14 @@ public class RoleBusinessService implements Serializable {
     public void save(Role role) throws RoleNotFoundException, UniquenessConstraintException {
         roleServiceAccess.save(role);
     }
+
+    /**
+     * Validates if specific requested role exists by id or name
+     * @param id to be searched
+     * @param name to be searched
+     * @return true in case role does exist, false if not
+     */
+    public boolean exists(Long id, String name) throws RoleNotFoundException {
+        return roleServiceAccess.checkIfRolesExist(id, name);
+    }
 }

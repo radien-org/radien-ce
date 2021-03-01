@@ -246,9 +246,9 @@ public class RoleService implements RoleServiceAccess {
     private void validateUniquenessRecords(List<Role> alreadyExistentRecords, SystemRole newRoleInformation) throws UniquenessConstraintException {
         log.info("Validating duplicated information that must be unique");
         if(!alreadyExistentRecords.isEmpty()) {
-            boolean isSameUserEmail = alreadyExistentRecords.get(0).getName().equals(newRoleInformation.getName());
+            boolean isSameName = alreadyExistentRecords.get(0).getName().equals(newRoleInformation.getName());
 
-            if(isSameUserEmail) {
+            if(isSameName) {
                 throw new UniquenessConstraintException(RoleErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
             }
         }
@@ -298,21 +298,26 @@ public class RoleService implements RoleServiceAccess {
     /**
      * Validates if a certain specified role is existent
      * @param roleId to be found
+     * @param name to be found
      * @return true if it exists.
      */
-    public boolean checkIfRolesExist(Long roleId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Role> contractRoot = criteriaQuery.from(Role.class);
+    public boolean checkIfRolesExist(Long roleId, String name) {
+        if(roleId != null || name != null) {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+            Root<Role> contractRoot = criteriaQuery.from(Role.class);
+            criteriaQuery.select(criteriaBuilder.count(contractRoot));
 
-        criteriaQuery.select(criteriaBuilder.count(contractRoot));
-        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), roleId));
+            if (roleId != null) {
+                criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), roleId));
+            } else if (name != null) {
+                criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("name"), name));
+            }
 
-        Long size = entityManager.createQuery(criteriaQuery).getSingleResult();
+            Long size = entityManager.createQuery(criteriaQuery).getSingleResult();
 
-        if(size == 0) {
-            return false;
+            return size != 0;
         }
-        return true;
+        return false;
     }
 }

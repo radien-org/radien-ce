@@ -41,6 +41,7 @@ public interface LinkedAuthorizationResourceClient {
     public Response getSpecificAssociation(@QueryParam("tenantId") Long tenantId,
                                            @QueryParam("permissionId") Long permissionId,
                                            @QueryParam("roleId") Long roleId,
+                                           @QueryParam("userId") Long userId,
                                            @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
@@ -55,4 +56,12 @@ public interface LinkedAuthorizationResourceClient {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response saveAssociation(LinkedAuthorization association);
+
+    @GET
+    @Path("/exists")
+    Response existsSpecificAssociation(@QueryParam("tenantId") Long tenantId,
+                                        @QueryParam("permissionId") Long permissionId,
+                                        @QueryParam("roleId") Long roleId,
+                                        @QueryParam("userId") Long userId,
+                                        @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 }

@@ -28,6 +28,16 @@ import java.util.List;
 public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
 
     /**
+     * Check if a LinkedAuthorization exists for Tenant, User, Permission or Role.
+     * @param tenant Tenant identifier
+     * @param permission Permission identifier
+     * @param role Role identifier
+     * @param userId User identifier
+     * @return true (if exists some LinkedAuthorization attending the criteria), otherwise false
+     */
+    boolean checkIfLinkedAuthorizationExists(Long tenant, Long permission, Long role, Long userId);
+
+    /**
      * Requests find of linked authorization by role id
      * @param roleId to be found
      * @return a list of system linked authorizations

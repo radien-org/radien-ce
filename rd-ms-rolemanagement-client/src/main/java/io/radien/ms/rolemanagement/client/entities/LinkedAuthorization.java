@@ -30,6 +30,7 @@ public class LinkedAuthorization extends AbstractLinkedAuthorizationModel implem
     private Long tenantId;
     private Long permissionId;
     private Long roleId;
+    private Long userId;
 
     public LinkedAuthorization() {}
 
@@ -38,6 +39,7 @@ public class LinkedAuthorization extends AbstractLinkedAuthorizationModel implem
         this.tenantId=tenancyCtrl.getTenantId();
         this.permissionId=tenancyCtrl.getPermissionId();
         this.roleId = tenancyCtrl.getRoleId();
+        this.userId = tenancyCtrl.getUserId();
         this.setCreateDate(tenancyCtrl.getCreateDate());
         this.setCreateUser(tenancyCtrl.getCreateUser());
         this.setLastUpdateUser(tenancyCtrl.getLastUpdateUser());
@@ -82,5 +84,15 @@ public class LinkedAuthorization extends AbstractLinkedAuthorizationModel implem
     @Override
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
+    }
+
+    @Override
+    public Long getUserId() {
+        return userId;
+    }
+
+    @Override
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

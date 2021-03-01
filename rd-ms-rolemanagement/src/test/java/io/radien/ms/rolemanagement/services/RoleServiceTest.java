@@ -71,12 +71,19 @@ public class RoleServiceTest {
     @Test
     public void testAddDuplicatedUserEmail() {
         Role role = RoleFactory.create("name", "description", 2L);
-        Exception exception = assertThrows(UniquenessConstraintException.class, () -> roleServiceAccess.save(role));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one role with the same value for the field: Name\"}";
-        String actualMessage = exception.getMessage();
+        Role roleDuplicated = RoleFactory.create("name", "description", 2L);
 
-        assertTrue(actualMessage.contains(expectedMessage));
+        boolean success = false;
+        try{
+            roleServiceAccess.save(role);
+            roleServiceAccess.save(roleDuplicated);
+            success = false;
+        } catch (UniquenessConstraintException e){
+            success = true;
+        } catch(RoleNotFoundException e) {
+            success = false;
+        }
+        assertTrue(success);
     }
 
     @Test

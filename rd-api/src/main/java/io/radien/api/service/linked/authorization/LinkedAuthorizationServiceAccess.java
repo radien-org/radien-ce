@@ -67,4 +67,11 @@ public interface LinkedAuthorizationServiceAccess extends ServiceAccess {
      * @param association to be deleted
      */
     public void deleteAssociation(Long association) throws LinkedAuthorizationNotFoundException;
+
+    /**
+     * Verifies if exist LinkedAuthorizations for a specific Filter
+     * @param filter contains the criteria that satisfies the search process
+     * @return true (If finds some LinkedAuthorization for the informed filter), otherwise false
+     */
+    public boolean exists(SystemLinkedAuthorizationSearchFilter filter);
 }

@@ -62,7 +62,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
     }
 
     /**
-     * Retrieve all the information which has a specific tenant id, permission id or role id.
+     * Retrieve all the information which has a specific tenant id, permission id, role id or user id
      * @param tenantId to be find.
      * @param permissionId to be find.
      * @param roleId to be find.
@@ -72,9 +72,9 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
      *          if there is any error.
      */
     @Override
-    public Response getSpecificAssociation(Long tenantId, Long permissionId, Long roleId, boolean isLogicalConjunction) {
+    public Response getSpecificAssociation(Long tenantId, Long permissionId, Long roleId, Long userId, boolean isLogicalConjunction) {
         try {
-            SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId, permissionId, roleId, isLogicalConjunction);
+            SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId, permissionId, roleId, userId, isLogicalConjunction);
             return Response.ok(linkedAuthorizationBusinessService.getSpecificAssociation(filter)).build();
         } catch (Exception e) {
             return getGenericError(e);
@@ -137,6 +137,28 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             return getRoleNotFoundException();
         } catch (UniquenessConstraintException e) {
             return getInvalidRequestResponse(e);
+        } catch (Exception e) {
+            return getGenericError(e);
+        }
+    }
+
+    /**
+     * Check if exists LinkedAuthorization for a specific tenant id, permission id, role id or user id.
+     * @param tenantId to be find.
+     * @param permissionId to be find.
+     * @param roleId to be find.
+     * @param userId to be find
+     * @param isLogicalConjunction true if the value to be searched must be exactly as it is given
+     *                     or false if it must only contain such value.
+     * @return 200 code message if success, 404 if not found, 500 code message
+     *          if there is a system error.
+     */
+    @Override
+    public Response existsSpecificAssociation(Long tenantId, Long permissionId, Long roleId, Long userId, boolean isLogicalConjunction) {
+        try {
+            SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId, permissionId, roleId, userId, isLogicalConjunction);
+            boolean exist = linkedAuthorizationBusinessService.existsSpecificAssociation(filter);
+            return exist ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
             return getGenericError(e);
         }

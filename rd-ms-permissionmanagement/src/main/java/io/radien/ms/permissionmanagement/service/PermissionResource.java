@@ -18,7 +18,6 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
-import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
@@ -30,8 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -41,10 +38,7 @@ import java.util.List;
  * Controller implementation responsible for deal with CRUD
  * operations requests (CRUD) regarding Permission domain object
  */
-@Path("permission")
 @RequestScoped
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class PermissionResource implements PermissionResourceClient {
 
 	private Logger log = LoggerFactory.getLogger(PermissionResource.class);
@@ -228,12 +222,60 @@ public class PermissionResource implements PermissionResourceClient {
 	}
 
 	/**
-	 * Validates if specific requested Permission exists
-	 * @param id to be searched
-	 * @return 200 status code message if it exists or 500 in case of any issue
+	 * Returns a Bad Request response when some mandatory parameter is not present
+	 * @param parameterName
+	 * @return code 400 message describing a not informed parameter
+	 */
+	private Response getNotInformedParametersResponse(String parameterName) {
+		String message = ErrorCodeMessage.PARAMETERS_NOT_INFORMED.toString(parameterName);
+		return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
+	}
+
+	/**
+	 * Validates if Permission exists for a referred Id (or alternatively taking in account name)
+	 * @param id Identifier to guide the search be searched (Primary parameter)
+	 * @name name Permission name, an alternative parameter to be used (only if Id is omitted)
+	 * @return
+	 * <ul>
+	 *     <li>200: If Permission exists</li>
+	 *     <li>404: If Permission does not exist</li>
+	 *     <li>400 (Bad Request): None expected parameter informed</li>
+	 *     <li>500: In case of any other issue</li>
+	 * </ul>
 	 */
 	@Override
-	public Response exists(Long id) {
-		return Response.ok(permissionServiceAccess.exists(id)).build();
+	public Response exists(Long id, String name) {
+		// At least one parameter is needed
+		if (id == null && (name == null || name.trim().length() == 0)) {
+			return getNotInformedParametersResponse("Id or Name");
+		}
+
+		// Check if exists by Id (or alternatively by Name)
+		if (permissionServiceAccess.exists(id, name))
+			return Response.ok().build();
+
+		return getResourceNotFoundException();
+	}
+
+	/**
+	 * Validates if an user has access for a specific Permission (Combination of action + resource)
+	 * under a certain tenant
+	 * @param action Action name
+	 * @param resource Resource name
+	 * @return system permission
+	 */
+	@Override
+	public Response hasPermission(String action, String resource) {
+		try {
+			SystemPermission systemPermission = permissionServiceAccess.getPermissionByActionAndResourceNames(action, resource);
+
+			if (systemPermission != null) {
+				return Response.ok(systemPermission).build();
+			}
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+		catch(Exception e) {
+			return getGenericError(e);
+		}
 	}
 }

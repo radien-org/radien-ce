@@ -32,6 +32,10 @@ public interface SystemLinkedAuthorizationSearchFilter {
 
     void setRoleId(Long roleId);
 
+    Long getUserId();
+
+    void setUserId(Long userId);
+
     boolean isLogicConjunction();
 
     void setLogicConjunction(boolean logicConjunction);

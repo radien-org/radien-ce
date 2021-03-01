@@ -147,6 +147,29 @@ public class RoleResource implements RoleResourceClient {
     }
 
     /**
+     * Validates if specific requested role exists
+     * @param id to be searched
+     * @param name to be searched
+     * @return 200 status code message if it exists or 500 in case of any issue
+     */
+    @Override
+    public Response exists(Long id, String name) {
+        try {
+            log.info("There is a validation to be done! I'm going to validate if the role id {}, or role name {} exists"
+                    , id, name);
+            if(roleBusinessService.exists(id, name)) {
+                return Response.ok().build();
+            }
+            return getRoleNotFoundException();
+        } catch (RoleNotFoundException e) {
+            return getRoleNotFoundException();
+        } catch (Exception e) {
+            return getGenericError(e);
+        }
+    }
+
+
+    /**
      * Invalid Request error exception. Launches a 400 Error Code to the user.
      * @param e exception to be throw
      * @return code 400 message Generic Exception

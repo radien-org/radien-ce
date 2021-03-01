@@ -74,7 +74,7 @@ public class LinkedAuthorizationResourceTest {
      */
     @Test
     public void testGetSpecificAssociation() {
-        Response response = linkedAuthorizationResource.getSpecificAssociation(2L,2L,2L,true);
+        Response response = linkedAuthorizationResource.getSpecificAssociation(2L,2L,2L, 2L,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -84,7 +84,7 @@ public class LinkedAuthorizationResourceTest {
     @Test
     public void testGetSpecificAssociationException() {
         when(linkedAuthorizationBusinessService.getSpecificAssociation(any())).thenThrow(new RuntimeException());
-        Response response = linkedAuthorizationResource.getSpecificAssociation(2L,2L,2L,true);
+        Response response = linkedAuthorizationResource.getSpecificAssociation(2L,2L,2L, 2L,true);
         assertEquals(500,response.getStatus());
     }
 
@@ -195,5 +195,19 @@ public class LinkedAuthorizationResourceTest {
         doThrow(new LinkedAuthorizationNotFoundException()).when(linkedAuthorizationBusinessService).save(any());
         Response response = linkedAuthorizationResource.saveAssociation(new LinkedAuthorization());
         assertEquals(404,response.getStatus());
+    }
+
+    @Test
+    public void testValidateRole() {
+        when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenReturn(true);
+        Response response = linkedAuthorizationResource.existsSpecificAssociation(2L, 2L, 2L, 2L, true);
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testValidateRoleException() {
+        when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenReturn(false);
+        Response response = linkedAuthorizationResource.existsSpecificAssociation(2L, 2L, 2L, 2L, true);
+        assertEquals(401 ,response.getStatus());
     }
 }
