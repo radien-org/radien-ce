@@ -4,29 +4,17 @@
 				xmlns:f="http://xmlns.jcp.org/jsf/core"
 				xmlns:h="http://xmlns.jcp.org/jsf/html"
 				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-				xmlns:p="http://primefaces.org/ui"
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<ui:define name="content" bootsFacesDecorator="true">
 		<h:form id="usersForm">
-			<b:container>
-				<b:row>
-					<br/>
-					<br/>
-					<br/>
-					<br/>
-					<br/>
-					<br/>
-				</b:row>
-
+			<b:container style="padding-top:100px">
 				<b:row>
 					<b:dataTable value="#{userDataModel.users}"
 								 var="row"
 								 caption="Users Table"
 								 mark-search-results="true"
 								 page-length="5"
-								 page-length-menu="5,10,20,50"
-					>
-
+								 page-length-menu="5,10,20,50">
 						<b:dataTableColumn value="#{row.firstname}"
 										   order="asc"
 										   data-order="#{row.firstname}"/>
@@ -37,8 +25,7 @@
 							<b:commandButton value=" profile"
 											 iconAwesome="fa-user"
 											 iconAlign="center"
-											 onclick="ajax:userDataModel.login()"
-											 update="@none"/>
+											 onclick=""/>
 						</b:dataTableColumn>
 					</b:dataTable>
 				</b:row>

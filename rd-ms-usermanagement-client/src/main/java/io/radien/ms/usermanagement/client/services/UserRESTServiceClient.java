@@ -122,22 +122,13 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
 
     @Override
     public List<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException {
-        UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-        Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
-
-        JsonArray jsonArray = (JsonArray) Json.createReader(new StringReader(response.readEntity(String.class))).readObject().get("results");
-        List<User> listUsers = new ArrayList<>();
+        List<? extends  SystemUser> listUsers = null;
         try{
-            if(!jsonArray.isEmpty()){
-                for (int i=0; i<jsonArray.size(); i++) {
-                    String firstname = jsonArray.getJsonObject(i).getString("firstname");
-                    String lastname = jsonArray.getJsonObject(i).getString("lastname");
-                    String logon = jsonArray.getJsonObject(i).getString("logon");
-                    String userEmail = jsonArray.getJsonObject(i).getString("userEmail");
-                    listUsers.add(new User(firstname,lastname,logon,userEmail));
-                }
-            }
-        }catch (Exception e){
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            JsonArray jsonArray = (JsonArray) Json.createReader(new StringReader(response.readEntity(String.class))).readObject().get("results");
+            listUsers = UserFactory.convert(jsonArray);
+        } catch (MalformedURLException e) {
             log.error(e.getMessage(),e);
         }
         return listUsers;

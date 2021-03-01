@@ -38,8 +38,4 @@ public class UserDataModel implements Serializable {
         return users;
     }
 
-    public void login(){
-
-    }
-
 }

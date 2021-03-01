@@ -1,9 +1,6 @@
 package io.radien.ms.usermanagement.client.util;
 
-import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
-import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.services.PageFactory;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 
 import javax.json.Json;
