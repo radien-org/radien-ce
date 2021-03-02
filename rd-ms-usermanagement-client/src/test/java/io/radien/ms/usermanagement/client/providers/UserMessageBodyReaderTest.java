@@ -33,31 +33,28 @@ public class UserMessageBodyReaderTest extends TestCase {
         assertTrue(target.isReadable(User.class,null,null,null));
     }
 
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
-
-//    @Test
-//    public void testReadFrom() throws IOException {
-//        String result = "{\"" +
-//                "id\":null," +
-//                "\"logon\":\"logon\"," +
-//                "\"userEmail\":\"email@server.pt\"," +
-//                "\"createUser\":null," +
-//                "\"lastUpdateUser\":null," +
-//                "\"sub\":\"sub\"," +
-//                "\"firstname\":\"a\"," +
-//                "\"lastname\":\"b\"" +
-//                "}";
-//        UserMessageBodyReader target = new UserMessageBodyReader();
-//        InputStream in = new ByteArrayInputStream(result.getBytes());
-//        User user = target.readFrom(null,null,null,null,null, in);
-//        assertNull(user.getId());
-//        assertEquals("logon",user.getLogon());
-//        assertEquals("email@server.pt",user.getUserEmail());
-//        assertNull(user.getCreateUser());
-//        assertNull(user.getLastUpdateUser());
-//        assertEquals("sub",user.getSub());
-//        assertEquals("a",user.getFirstname());
-//        assertEquals("b",user.getLastname());
-//
-//    }
+    @Test
+    public void testReadFrom() throws IOException {
+        String result = "{\"" +
+                "id\":null," +
+                "\"logon\":\"logon\"," +
+                "\"userEmail\":\"email@server.pt\"," +
+                "\"createUser\":null," +
+                "\"lastUpdateUser\":null," +
+                "\"sub\":\"sub\"," +
+                "\"firstname\":\"a\"," +
+                "\"lastname\":\"b\"" +
+                "}";
+        UserMessageBodyReader target = new UserMessageBodyReader();
+        InputStream in = new ByteArrayInputStream(result.getBytes());
+        User user = target.readFrom(null,null,null,null,null, in);
+        assertNull(user.getId());
+        assertEquals("logon",user.getLogon());
+        assertEquals("email@server.pt",user.getUserEmail());
+        assertNull(user.getCreateUser());
+        assertNull(user.getLastUpdateUser());
+        assertEquals("sub",user.getSub());
+        assertEquals("a",user.getFirstname());
+        assertEquals("b",user.getLastname());
+    }
 }

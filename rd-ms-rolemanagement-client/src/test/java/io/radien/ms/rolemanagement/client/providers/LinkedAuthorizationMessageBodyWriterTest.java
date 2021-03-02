@@ -46,6 +46,7 @@ public class LinkedAuthorizationMessageBodyWriterTest extends TestCase {
                 "\"tenantId\":2," +
                 "\"permissionId\":2," +
                 "\"roleId\":2," +
+                "\"userId\":2," +
                 "\"createUser\":2," +
                 "\"lastUpdateUser\":null" +
                 "}";

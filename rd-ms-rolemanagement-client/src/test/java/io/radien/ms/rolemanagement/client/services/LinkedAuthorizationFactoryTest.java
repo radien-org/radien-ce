@@ -75,6 +75,7 @@ public class LinkedAuthorizationFactoryTest extends TestCase {
         builder.add("tenantId", 2L);
         builder.add("permissionId", 2L);
         builder.add("roleId", 2L);
+        builder.addNull("userId");
         builder.addNull("createUser");
         builder.addNull("lastUpdateUser");
 

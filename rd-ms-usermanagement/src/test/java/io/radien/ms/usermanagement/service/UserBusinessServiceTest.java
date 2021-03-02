@@ -43,6 +43,9 @@ public class UserBusinessServiceTest extends TestCase {
     @Mock
     UserServiceAccess userServiceAccess;
 
+    @Mock
+    KeycloakService keycloakService;
+
     @Before
     public void setUp(){
         MockitoAnnotations.initMocks(this);
@@ -78,13 +81,12 @@ public class UserBusinessServiceTest extends TestCase {
         assertEquals(listUsers,results);
     }
 
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
-
-//    @Test
-//    public void testDelete() throws UserNotFoundException, SystemException {
-//       //TODO: improve test
-//        userBusinessService.delete(1l);
-//    }
+    @Test
+    public void testDelete() throws UserNotFoundException, RemoteResourceException {
+        SystemUser user = UserFactory.create("a", "b", "l", null, "e", 1L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+        userBusinessService.delete(1l);
+    }
 
     @Test
     public void testSave() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
@@ -102,7 +104,6 @@ public class UserBusinessServiceTest extends TestCase {
     @Test
     public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = UserFactory.create("a","b","","s","e",1L);
-        //doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
         try{
             userBusinessService.save(u,false);
@@ -124,25 +125,21 @@ public class UserBusinessServiceTest extends TestCase {
         assertTrue(success);
     }
 
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
+    @Test
+    public void testSaveCreationFalse() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User user = UserFactory.create("a","b","l",null,"e",1L);
+        user.setId(2L);
+        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user2);
 
-//    @Test
-//    public void testSaveCreationTrue() throws UniquenessConstraintException, UserNotFoundException, SystemException {
-//        User u = UserFactory.create("a","b","lCreation","s","eCreation",1L);
-//
-//        //TODO: Test implementation, keycloak null, check history 16:04
-//
-//
-//        boolean success = false;
-//        try{
-//            userBusinessService.save(u);
-//        } catch (SystemException e){
-//            success = true;
-//        }
-//        assertTrue(success);
-//
-//
-//    }
+        boolean success = true;
+        try{
+            userBusinessService.save(user, false);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertTrue(success);
+    }
 
 
     @Test

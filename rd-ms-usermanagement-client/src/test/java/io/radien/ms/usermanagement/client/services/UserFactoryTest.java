@@ -43,9 +43,10 @@ public class UserFactoryTest {
         builder.add("sub","sub");
         builder.add("firstname", "testFirstName");
         builder.add("lastname", "testLastname");
+        builder.add("delegatedCreation", false);
+        builder.add("enabled", true);
 
         json = builder.build();
-
 
         user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", 2L);
     }
@@ -68,24 +69,60 @@ public class UserFactoryTest {
         assertEquals(user.getLastname(), constructedNewUser.getLastname());
     }
 
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
+    /**
+     * Test method to validate the conversion of a User using a Json
+     */
+    @Test
+    public void convert() {
+        User constructedNewUser = UserFactory.convert(json);
 
-//    /**
-//     * Test method to validate the conversion of a User using a Json
-//     */
-//    @Test
-//    public void convert() {
-//        User constructedNewUser = UserFactory.convert(json);
-//
-//        assertEquals(user.getId(), constructedNewUser.getId());
-//        assertEquals(user.getLogon(), constructedNewUser.getLogon());
-//        assertEquals(user.getUserEmail(), constructedNewUser.getUserEmail());
-//        assertEquals(user.getCreateUser(), constructedNewUser.getCreateUser());
-//        assertEquals(user.getLastUpdateUser(), constructedNewUser.getLastUpdateUser());
-//        assertEquals(user.getSub(), constructedNewUser.getSub());
-//        assertEquals(user.getFirstname(), constructedNewUser.getFirstname());
-//        assertEquals(user.getLastname(), constructedNewUser.getLastname());
-//    }
+        assertEquals(user.getId(), constructedNewUser.getId());
+        assertEquals(user.getLogon(), constructedNewUser.getLogon());
+        assertEquals(user.getUserEmail(), constructedNewUser.getUserEmail());
+        assertEquals(user.getCreateUser(), constructedNewUser.getCreateUser());
+        assertEquals(user.getLastUpdateUser(), constructedNewUser.getLastUpdateUser());
+        assertEquals(user.getSub(), constructedNewUser.getSub());
+        assertEquals(user.getFirstname(), constructedNewUser.getFirstname());
+        assertEquals(user.getLastname(), constructedNewUser.getLastname());
+    }
 
+    /**
+     * Test method to validate the conversion of a User using a Json
+     */
+    @Test
+    public void convertEnable() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("logon", "logonTest");
+        builder.add("userEmail", "emailtest@emailtest.pt");
+        builder.add("createUser", 2L);
+        builder.addNull("lastUpdateUser");
+        builder.add("sub","sub");
+        builder.add("enabled", true);
+        builder.add("delegatedCreation", true);
+        builder.add("firstname", "testFirstName");
+        builder.add("lastname", "testLastname");
 
+        JsonObject json2 = builder.build();
+
+        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", 2L);
+
+        User constructedNewUser = UserFactory.convert(json2);
+
+        assertEquals(user.getId(), constructedNewUser.getId());
+        assertEquals(user.getLogon(), constructedNewUser.getLogon());
+        assertEquals(user.getUserEmail(), constructedNewUser.getUserEmail());
+        assertEquals(user.getCreateUser(), constructedNewUser.getCreateUser());
+        assertEquals(user.getLastUpdateUser(), constructedNewUser.getLastUpdateUser());
+        assertEquals(user.getSub(), constructedNewUser.getSub());
+        assertEquals(user.getFirstname(), constructedNewUser.getFirstname());
+        assertEquals(user.getLastname(), constructedNewUser.getLastname());
+    }
+
+    @Test
+    public void convertToJson() {
+        JsonObject constructedNewUser = UserFactory.convertToJsonObject(user);
+
+        assertEquals(json, constructedNewUser);
+    }
 }

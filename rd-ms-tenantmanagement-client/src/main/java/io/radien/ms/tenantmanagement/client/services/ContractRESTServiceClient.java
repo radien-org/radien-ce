@@ -17,6 +17,7 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -153,6 +154,19 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
             throw new ProcessingException(e);
         }
         return false;
+    }
+
+    @Override
+    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException {
+        try {
+            ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+
+            Response response = client.get(null);
+            return ListContractModelMapper.map((InputStream) response.getEntity());
+        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
+            log.error(es.getMessage(),es);
+            throw es;
+        }
     }
 
     /**

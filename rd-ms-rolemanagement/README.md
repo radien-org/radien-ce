@@ -32,10 +32,32 @@
 ### - ___Get Linked authorization association by ID:___
     curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/{id}'
 #
-### - ___Get roles by Documentation:___
-    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role/find?documentation={fieldValue}' --data-raw ''
+### - ___Get roles by a specific field:___
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role/find?{fieldName}={fieldValue}' --data-raw ''
+  - Possible field names
+    - "name" String
+    - "description" String
+    - "isExact" boolean
+    - "isLogicalConjunction" boolean
+
 ### - ___Get specific Linked authorization association by searched field:___
     curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/find?{fieldName}={fieldValue}' --data-raw ''
+  - Possible field names
+    - "tenantId" Long
+    - "permissionId" Long
+    - "roleId" Long
+    - "userId" Long
+    - "isLogicalConjunction" boolean
+
+### - ___Exists specific association:___
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/exists?{fieldName}={fieldValue}' --data-raw ''
+  - Possible field names
+    - "tenantId" Long
+    - "permissionId" Long
+    - "roleId" Long
+    - "userId" Long
+    - "isLogicalConjunction" boolean
+ 
 #
 #
 * POST Data

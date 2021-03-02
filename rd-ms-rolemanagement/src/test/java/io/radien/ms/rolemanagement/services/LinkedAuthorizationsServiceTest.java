@@ -63,7 +63,7 @@ public class LinkedAuthorizationsServiceTest extends TestCase {
 
     @Test
     public void testGet() throws LinkedAuthorizationNotFoundException {
-        SystemLinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L);
+        SystemLinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
         when(linkedAuthorizationServiceAccess.getAssociationById(2L)).thenReturn(linkedAuthorization);
         SystemLinkedAuthorization result = linkedAuthorizationsService.get(2L);
         assertEquals(linkedAuthorization,result);
@@ -71,7 +71,7 @@ public class LinkedAuthorizationsServiceTest extends TestCase {
 
     @Test
     public void testDelete() throws LinkedAuthorizationNotFoundException {
-        SystemLinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L);
+        SystemLinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
         when(linkedAuthorizationServiceAccess.getAssociationById(2L)).thenReturn(linkedAuthorization);
         SystemLinkedAuthorization result = linkedAuthorizationsService.get(2L);
         assertEquals(linkedAuthorization,result);
@@ -88,7 +88,7 @@ public class LinkedAuthorizationsServiceTest extends TestCase {
 
     @Test
     public void testSave() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        LinkedAuthorization u = LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L);
+        LinkedAuthorization u = LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L, 3L);
         doThrow(new UniquenessConstraintException("")).when(linkedAuthorizationServiceAccess).save(u);
         boolean success = false;
         try{

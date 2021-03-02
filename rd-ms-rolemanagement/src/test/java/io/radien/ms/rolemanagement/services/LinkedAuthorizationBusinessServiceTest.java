@@ -67,7 +67,7 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
 
     @Test
     public void testGetAssociationById() throws LinkedAuthorizationNotFoundException {
-        SystemLinkedAuthorization systemLinkedAuthorization = LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L);
+        SystemLinkedAuthorization systemLinkedAuthorization = LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L, 3L);
         when(linkedAuthorizationServiceAccess.getAssociationById(3L)).thenReturn(systemLinkedAuthorization);
         SystemLinkedAuthorization result = linkedAuthorizationBusinessService.getAssociationById(3L);
         assertEquals(systemLinkedAuthorization,result);
@@ -90,15 +90,15 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
 
     @Test
     public void testSave() throws Exception {
-        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L);
+        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L);
         doReturn(true).when(linkedAuthorizationBusinessService).checkIfFieldsAreValid(any());
         linkedAuthorizationBusinessService.save(u);
     }
 
     @Test
     public void testCheckIfFieldsAreValid() throws Exception {
-        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L);
-        when(permissionRESTServiceAccess.isPermissionExistent(any(), null)).thenReturn(true);
+        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L);
+        when(permissionRESTServiceAccess.isPermissionExistent(any(), any())).thenReturn(true);
         when(tenantRESTServiceAccess.isTenantExistent(any())).thenReturn(true);
         boolean success = false;
         try{
@@ -112,7 +112,7 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
 
     @Test
     public void testSaveException() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L);
+        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L);
         doThrow(new LinkedAuthorizationNotFoundException("")).when(linkedAuthorizationServiceAccess).save(u);
         boolean success = false;
         try{
@@ -132,14 +132,14 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
 
     @Test
     public void testCheckIfRoleExistsException() {
-        when(roleServiceAccess.checkIfRolesExist(any(), null)).thenReturn(false);
+        when(roleServiceAccess.checkIfRolesExist(any(), any())).thenReturn(false);
         boolean result = roleServiceAccess.checkIfRolesExist(3L, null);
         assertFalse(result);
     }
 
     @Test
     public void testDeleteAssociationException() throws LinkedAuthorizationNotFoundException {
-        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L);
+        LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L);
         u.setId(10L);
         doThrow(new LinkedAuthorizationNotFoundException("")).when(linkedAuthorizationServiceAccess).deleteAssociation(u.getId());
         boolean success = false;

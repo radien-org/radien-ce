@@ -34,7 +34,7 @@ public class LinkedAuthorizationModelMapperTest extends TestCase {
 
     @Test
     public void testMapRole() {
-        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L);
+        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
 
         JsonObject jsonObject = LinkedAuthorizationModelMapper.map(linkedAuthorization);
         assertEquals(linkedAuthorization.getTenantId().toString(),jsonObject.get("tenantId").toString());
@@ -44,7 +44,7 @@ public class LinkedAuthorizationModelMapperTest extends TestCase {
 
     @Test
     public void testMapList() {
-        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L);
+        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
 
         JsonArray jsonArray = LinkedAuthorizationModelMapper.map(Collections.singletonList(linkedAuthorization));
         assertEquals(1,jsonArray.size());

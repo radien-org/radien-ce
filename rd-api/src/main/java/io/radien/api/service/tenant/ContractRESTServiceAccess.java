@@ -19,6 +19,7 @@ import io.radien.api.model.tenant.SystemContract;
 import io.radien.exception.SystemException;
 
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -33,6 +34,12 @@ public interface ContractRESTServiceAccess {
      * @throws MalformedURLException in case of URL specification
      */
     public List<? extends SystemContract> getContractByName(String name) throws Exception ;
+
+    /**
+     * Fetches all Contracts
+     * @return List of Contracts
+     */
+    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException;
 
     /**
      * Creates given contract

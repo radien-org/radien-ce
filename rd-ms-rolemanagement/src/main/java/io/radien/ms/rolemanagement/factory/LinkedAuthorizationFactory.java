@@ -41,12 +41,13 @@ public class LinkedAuthorizationFactory implements Serializable {
      * @param createdUser created user value
      * @return a LinkedAuthorization object to be used.
      */
-    public static LinkedAuthorization create(Long tenantId, Long permissionId, Long roleId, Long createdUser) {
+    public static LinkedAuthorization create(Long tenantId, Long permissionId, Long roleId, Long userId, Long createdUser) {
         LinkedAuthorization tenancyCtrl = new LinkedAuthorization();
 
         tenancyCtrl.setTenantId(tenantId);
         tenancyCtrl.setPermissionId(permissionId);
         tenancyCtrl.setRoleId(roleId);
+        tenancyCtrl.setUserId(userId);
         tenancyCtrl.setCreateUser(createdUser);
         Date now = new Date();
         tenancyCtrl.setLastUpdate(now);
@@ -65,6 +66,7 @@ public class LinkedAuthorizationFactory implements Serializable {
         Long tenantId = FactoryUtilService.getLongFromJson("tenantId", jsonRole);
         Long permissionId = FactoryUtilService.getLongFromJson("permissionId", jsonRole);
         Long roleId = FactoryUtilService.getLongFromJson("roleId", jsonRole);
+        Long userId = FactoryUtilService.getLongFromJson("userId", jsonRole);
         Long createUser = FactoryUtilService.getLongFromJson("createdUser", jsonRole);
 
         LinkedAuthorization tenancyCtrl = new LinkedAuthorization();
@@ -72,6 +74,7 @@ public class LinkedAuthorizationFactory implements Serializable {
         tenancyCtrl.setRoleId(roleId);
         tenancyCtrl.setPermissionId(permissionId);
         tenancyCtrl.setTenantId(tenantId);
+        tenancyCtrl.setUserId(userId);
         tenancyCtrl.setCreateUser(createUser);
         Date date = new Date();
         tenancyCtrl.setCreateDate(date);
@@ -93,6 +96,7 @@ public class LinkedAuthorizationFactory implements Serializable {
         FactoryUtilService.addValueLong(builder, "tenantId", systemTenancyCtrl.getTenantId());
         FactoryUtilService.addValueLong(builder, "permissionId", systemTenancyCtrl.getPermissionId());
         FactoryUtilService.addValueLong(builder, "roleId", systemTenancyCtrl.getRoleId());
+        FactoryUtilService.addValueLong(builder, "userId", systemTenancyCtrl.getUserId());
         FactoryUtilService.addValueLong(builder, "createdUser", systemTenancyCtrl.getCreateUser());
 
         return builder.build();

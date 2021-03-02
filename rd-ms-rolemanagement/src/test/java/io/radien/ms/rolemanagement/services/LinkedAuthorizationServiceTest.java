@@ -64,14 +64,14 @@ public class LinkedAuthorizationServiceTest {
         if(rolePage.getTotalResults()>0) {
             systemLinkedAuthorization = rolePage.getResults().get(0);
         } else {
-            systemLinkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L);
+            systemLinkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
             linkedAuthorizationServiceAccess.save(systemLinkedAuthorization);
         }
     }
 
     @Test
     public void testGetAssociationById() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L);
+        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L, 3L);
         linkedAuthorizationServiceAccess.save(linkedAuthorization);
         SystemLinkedAuthorization result = linkedAuthorizationServiceAccess.getAssociationById(linkedAuthorization.getId());
         assertNotNull(result);
@@ -82,9 +82,9 @@ public class LinkedAuthorizationServiceTest {
 
     @Test
     public void testGetAll() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        LinkedAuthorization linkedAuthorization4 = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L);
-        LinkedAuthorization linkedAuthorization5 = LinkedAuthorizationFactory.create(5L, 5L, 5L, 5L);
-        LinkedAuthorization linkedAuthorization6 = LinkedAuthorizationFactory.create(6L, 6L, 6L, 6L);
+        LinkedAuthorization linkedAuthorization4 = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L);
+        LinkedAuthorization linkedAuthorization5 = LinkedAuthorizationFactory.create(5L, 5L, 5L, 5L, 5L);
+        LinkedAuthorization linkedAuthorization6 = LinkedAuthorizationFactory.create(6L, 6L, 6L, 6L, 6L);
         linkedAuthorizationServiceAccess.save(linkedAuthorization4);
         linkedAuthorizationServiceAccess.save(linkedAuthorization5);
         linkedAuthorizationServiceAccess.save(linkedAuthorization6);
@@ -96,24 +96,24 @@ public class LinkedAuthorizationServiceTest {
 
     @Test
     public void getSpecificAssociationLogicConjunction() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        SystemLinkedAuthorization linkedAuthorizationLogicConjunction = LinkedAuthorizationFactory.create(100L, 200L, 100L, 100L);
-        SystemLinkedAuthorization linkedAuthorizationLogicConjunction2 = LinkedAuthorizationFactory.create(100L, 200L, 300L, 200L);
+        SystemLinkedAuthorization linkedAuthorizationLogicConjunction = LinkedAuthorizationFactory.create(100L, 200L, 100L, 100L, 100L);
+        SystemLinkedAuthorization linkedAuthorizationLogicConjunction2 = LinkedAuthorizationFactory.create(100L, 200L, 300L, 200L, 200L);
 
         linkedAuthorizationServiceAccess.save(linkedAuthorizationLogicConjunction);
         linkedAuthorizationServiceAccess.save(linkedAuthorizationLogicConjunction2);
 
-        LinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(100L, 200L, 100L, null, true);
+        LinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(100L, 200L, 100L, 100L, true);
 
         List<? extends SystemLinkedAuthorization> list = linkedAuthorizationServiceAccess.getSpecificAssociation(filter);
 
-        assertTrue(list.size() == 2);
+        assertTrue(list.size() == 1);
     }
 
     @Test
     public void getSpecificAssociationNonLogicConjunction() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        LinkedAuthorization linkedAuthorization7 = LinkedAuthorizationFactory.create(7L, 7L, 7L, 7L);
-        LinkedAuthorization linkedAuthorization8 = LinkedAuthorizationFactory.create(8L, 8L, 8L, 8L);
-        LinkedAuthorization linkedAuthorization9 = LinkedAuthorizationFactory.create(9L, 9L, 9L, 9L);
+        LinkedAuthorization linkedAuthorization7 = LinkedAuthorizationFactory.create(7L, 7L, 7L, 7L, 7L);
+        LinkedAuthorization linkedAuthorization8 = LinkedAuthorizationFactory.create(8L, 8L, 8L, 8L, 8L);
+        LinkedAuthorization linkedAuthorization9 = LinkedAuthorizationFactory.create(9L, 9L, 9L, 9L, 9L);
 
         linkedAuthorizationServiceAccess.save(linkedAuthorization7);
         linkedAuthorizationServiceAccess.save(linkedAuthorization8);
@@ -128,9 +128,9 @@ public class LinkedAuthorizationServiceTest {
 
     @Test
     public void testGetSpecificAssociation() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        SystemLinkedAuthorization testById1 = LinkedAuthorizationFactory.create(21L, 21L, 21L, 21L);
-        SystemLinkedAuthorization testById2 = LinkedAuthorizationFactory.create(31L, 31L, 31L, 31L);
-        SystemLinkedAuthorization testById3 = LinkedAuthorizationFactory.create(41L, 21L, 41L, 41L);
+        SystemLinkedAuthorization testById1 = LinkedAuthorizationFactory.create(21L, 21L, 21L, 21L, 21L);
+        SystemLinkedAuthorization testById2 = LinkedAuthorizationFactory.create(31L, 31L, 31L, 31L, 31L);
+        SystemLinkedAuthorization testById3 = LinkedAuthorizationFactory.create(41L, 21L, 41L, 41L, 41L);
 
         linkedAuthorizationServiceAccess.save(testById1);
         linkedAuthorizationServiceAccess.save(testById2);
@@ -139,7 +139,7 @@ public class LinkedAuthorizationServiceTest {
         List<? extends SystemLinkedAuthorization> andConjunction = linkedAuthorizationServiceAccess.getSpecificAssociation(new LinkedAuthorizationSearchFilter(41L,21L,41L, 41L,true));
         assertEquals(1,andConjunction.size());
 
-        List<? extends SystemLinkedAuthorization> orConjunction = linkedAuthorizationServiceAccess.getSpecificAssociation(new LinkedAuthorizationSearchFilter(21L,31L,21L, 41L,false));
+        List<? extends SystemLinkedAuthorization> orConjunction = linkedAuthorizationServiceAccess.getSpecificAssociation(new LinkedAuthorizationSearchFilter(21L,31L,21L, 21L,false));
         assertEquals(2,orConjunction.size());
     }
 
@@ -187,14 +187,14 @@ public class LinkedAuthorizationServiceTest {
 
     @Test
     public void testSaveUniquenessError() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        SystemLinkedAuthorization testSaveSuccess = LinkedAuthorizationFactory.create(30L, 30L, 30L, 30L);
+        SystemLinkedAuthorization testSaveSuccess = LinkedAuthorizationFactory.create(30L, 30L, 30L, 30L, 30L);
         linkedAuthorizationServiceAccess.save(testSaveSuccess);
         long id = testSaveSuccess.getId();
         assertEquals((Long) 30L, linkedAuthorizationServiceAccess.getAssociationById(id).getRoleId());
 
-        SystemLinkedAuthorization testSaveWithoutSuccess = LinkedAuthorizationFactory.create(30L, 30L, 30L, 30L);
+        SystemLinkedAuthorization testSaveWithoutSuccess = LinkedAuthorizationFactory.create(30L, 30L, 30L, 30L, 30L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> linkedAuthorizationServiceAccess.save(testSaveWithoutSuccess));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant Id, Permission Id and Role Id\"}";
+        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant Id, Permission Id, Role Id and User Id\"}";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -202,20 +202,20 @@ public class LinkedAuthorizationServiceTest {
 
     @Test
     public void testUpdateError() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        SystemLinkedAuthorization testSave50 = LinkedAuthorizationFactory.create(50L, 50L, 50L, 50L);
+        SystemLinkedAuthorization testSave50 = LinkedAuthorizationFactory.create(50L, 50L, 50L, 50L, 50L);
         linkedAuthorizationServiceAccess.save(testSave50);
         long id50 = testSave50.getId();
         assertEquals((Long) 50L, linkedAuthorizationServiceAccess.getAssociationById(id50).getRoleId());
 
-        SystemLinkedAuthorization testSave51 = LinkedAuthorizationFactory.create(51L, 51L, 51L, 51L);
+        SystemLinkedAuthorization testSave51 = LinkedAuthorizationFactory.create(51L, 51L, 51L, 51L, 51L);
         linkedAuthorizationServiceAccess.save(testSave51);
         long id51 = testSave51.getId();
         assertEquals((Long) 51L, linkedAuthorizationServiceAccess.getAssociationById(id51).getRoleId());
 
-        SystemLinkedAuthorization testUpdate = LinkedAuthorizationFactory.create(51L, 51L, 51L, 51L);
+        SystemLinkedAuthorization testUpdate = LinkedAuthorizationFactory.create(51L, 51L, 51L, 51L, 51L);
         testUpdate.setId(id50);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> linkedAuthorizationServiceAccess.save(testUpdate));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant Id, Permission Id and Role Id\"}";
+        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant Id, Permission Id, Role Id and User Id\"}";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -223,7 +223,7 @@ public class LinkedAuthorizationServiceTest {
 
     @Test
     public void testValidateRole() throws LinkedAuthorizationNotFoundException, UniquenessConstraintException {
-        systemLinkedAuthorization = LinkedAuthorizationFactory.create(400L, 400L, 400L, 400L);
+        systemLinkedAuthorization = LinkedAuthorizationFactory.create(400L, 400L, 400L, 400L, 400L);
         linkedAuthorizationServiceAccess.save(systemLinkedAuthorization);
 
 

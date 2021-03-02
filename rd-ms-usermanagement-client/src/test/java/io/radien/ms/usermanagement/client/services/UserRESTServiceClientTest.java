@@ -108,33 +108,32 @@ public class UserRESTServiceClientTest {
         return url;
     }
 
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
+    @Test
+    public void testGetUserBySubWithResults() throws Exception {
+        String a = "a";
+        User user = UserFactory.create(null, null, "logon", null, null, null);
+        user.setSub(a);
 
-//    @Test
-//    public void testGetUserBySubWithResults() throws Exception {
-//        String a = "a";
-//        User user = UserFactory.create(null, null, "logon", null, null, null);
-//        user.setSub(a);
-//
-//        JsonArrayBuilder builder = Json.createArrayBuilder();
-//        builder.add(UserFactory.convertToJsonObject(user));
-//
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        JsonWriter jsonWriter = Json.createWriter(baos);
-//        jsonWriter.writeArray(builder.build());
-//        jsonWriter.close();
-//
-//        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-//
-//        Response response = Response.ok(is).build();
-//
-//        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-//        when(resourceClient.getUsers(a,null,null,true,true))
-//                .thenReturn(response);
-//        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-//
-//        assertTrue(target.getUserBySub(a).isPresent());
-//    }
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(UserFactory.convertToJsonObject(user));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.getUsers(a,null,null,true,true))
+                .thenReturn(response);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        assertTrue(target.getUserBySub(a).isPresent());
+    }
+
 
     @Test
     public void testGetUserBySubNonUnique() throws Exception {

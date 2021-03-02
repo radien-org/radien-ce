@@ -208,6 +208,6 @@ public class LinkedAuthorizationResourceTest {
     public void testValidateRoleException() {
         when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenReturn(false);
         Response response = linkedAuthorizationResource.existsSpecificAssociation(2L, 2L, 2L, 2L, true);
-        assertEquals(401 ,response.getStatus());
+        assertEquals(404 ,response.getStatus());
     }
 }

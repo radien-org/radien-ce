@@ -47,10 +47,11 @@ public class LinkedAuthorizationModelMessageBodyWriterTest extends TestCase {
                 "\"tenantId\":2," +
                 "\"permissionId\":2," +
                 "\"roleId\":2," +
+                "\"userId\":2," +
                 "\"createdUser\":2" +
                 "}";
         LinkedAuthorizationModelMessageBodyWriter target = new LinkedAuthorizationModelMessageBodyWriter();
-        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L,2L,2L, 2L);
+        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L,2L,2L, 2L, 2L);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(linkedAuthorization,null,null,null, null,null, baos);
 
