@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.security;
-
+package io.radien.ms.openid.security;
 
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkException;
@@ -26,18 +25,13 @@ import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import io.radien.ms.usermanagement.client.entities.User;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.keycloak.AuthorizationContext;
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.common.util.Base64;
-import org.keycloak.representations.JsonWebToken;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -61,18 +55,15 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.interfaces.RSAKey;
+
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.X509EncodedKeySpec;
+
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
+
 import java.util.stream.Collectors;
 
 @WebFilter("/*")
@@ -94,31 +85,31 @@ public class AuthenticationFilter implements Filter {
         boolean failed = true;
         //TODO: Maybe it needs to redirect to Authorization Code Servlet when its not present/valid
         //          then Answer after authentication comes from callback
-        if(req.getHeader(HttpHeaders.AUTHORIZATION) != null){
+        if (req.getHeader(HttpHeaders.AUTHORIZATION) != null) {
             String accessToken = req.getHeader(HttpHeaders.AUTHORIZATION);
-            if(accessToken.startsWith("Bearer ")){
+            if (accessToken.startsWith("Bearer ")) {
                 accessToken = accessToken.substring(7);
-                failed = !validateToken(req.getSession(),accessToken);
-                if(!failed){
+                failed = !validateToken(req.getSession(), accessToken);
+                if (!failed) {
                     chain.doFilter(request, response);
                 }
             }
 
         }
 
-        if (failed){
+        if (failed) {
             HttpServletResponse resp = (HttpServletResponse) response;
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Failed authentication..");
         }
 
     }
 
-    private boolean validateToken(HttpSession session, String accessToken){
+    private boolean validateToken(HttpSession session, String accessToken) {
         try {
             JWSObject jwsObject = JWSObject.parse(accessToken);
 
-            String issuer= ConfigProvider.getConfig().getValue("auth.issuer",String.class);
-            String jwkUrl= ConfigProvider.getConfig().getValue("auth.jwkUrl",String.class);
+            String issuer = ConfigProvider.getConfig().getValue("auth.issuer", String.class);
+            String jwkUrl = ConfigProvider.getConfig().getValue("auth.jwkUrl", String.class);
 
             //check acr on payload when with totp
             //acr stands for Authentication Context Class
@@ -131,7 +122,7 @@ public class AuthenticationFilter implements Filter {
 
 
             JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) jwk.getPublicKey());
-            if(!jwsObject.verify(verifier)){
+            if (!jwsObject.verify(verifier)) {
                 return false;
             }
 
@@ -141,46 +132,39 @@ public class AuthenticationFilter implements Filter {
             String[] scopes = jsonObject.getString("scope").split(" ");
             //TODO: validate scopes
 
-            if(!issuer.equals(jsonObject.getString("iss"))){
+            if (!issuer.equals(jsonObject.getString("iss"))) {
                 return false;
             }
 
-            if(!jsonObject.getString("typ").equals("Bearer")){
+            if (!jsonObject.getString("typ").equals("Bearer")) {
                 return false;
             }
 
             LocalDateTime exp = LocalDateTime.ofInstant(Instant.ofEpochSecond(jsonObject.getJsonNumber("exp").longValue()), ZoneId.systemDefault());
-            if(exp.isBefore(LocalDateTime.now())){
+            if (exp.isBefore(LocalDateTime.now())) {
                 //TODO: refresh token
                 return false;
 
             }
             User principal = getUser(jsonObject);
-            session.setAttribute("USER",principal);
+            session.setAttribute("USER", principal);
 
             return true;
         } catch (ParseException | MalformedURLException | JwkException | JOSEException e) {
-            log.error("Unable to parse Access Token",e);
+            log.error("Unable to parse Access Token", e);
         }
         return false;
     }
+
     // TODO: maybe put into UserFactory
-    private User getUser(JsonObject jsonObject){
+    private User getUser(JsonObject jsonObject) {
         //String name = jsonObject.getString("name");
         String givenName = jsonObject.getString("given_name");
         String familyName = jsonObject.getString("family_name");
         String userName = jsonObject.getString("preferred_username");
         String email = jsonObject.getString("email");
         String sub = jsonObject.getString("sub");
-        return UserFactory.create(givenName,familyName,userName,sub,email,-1L);
-    }
-
-    // TODO: maybe put into Some File Utils
-    private String readFromResource(String filename, Charset charset){
-        return new BufferedReader(
-                new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(filename), charset))
-                .lines()
-                .collect(Collectors.joining("\n"));
+        return UserFactory.create(givenName, familyName, userName, sub, email, -1L);
     }
 
     @Override

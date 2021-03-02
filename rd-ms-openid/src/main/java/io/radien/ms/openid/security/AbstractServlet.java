@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.security;
+package io.radien.ms.openid.security;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;

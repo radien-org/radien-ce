@@ -93,6 +93,10 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-usermanagement-client</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-openid</artifactId>
+		</dependency>
 
 		<!-- Microprofile -->
 		<dependency>
@@ -228,18 +232,6 @@
 			<artifactId>unirest-java</artifactId>
 			<version>3.11.10</version>
 			<classifier>standalone</classifier>
-		</dependency>
-
-		<dependency>
-			<groupId>com.nimbusds</groupId>
-			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>9.6</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
-		<dependency>
-			<groupId>com.auth0</groupId>
-			<artifactId>jwks-rsa</artifactId>
-			<version>0.15.0</version>
 		</dependency>
 	</dependencies>
 </project>

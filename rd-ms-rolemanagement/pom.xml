@@ -73,7 +73,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<context>${finalName}</context>
+							<context>${project.build.finalName}</context>
 							<tomeeClassifier>microprofile</tomeeClassifier>
 							<tomeeHttpPort>8083</tomeeHttpPort>
 							<tomeeShutdownPort>8008</tomeeShutdownPort>
@@ -104,6 +104,10 @@
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-permissionmanagement-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-openid</artifactId>
 		</dependency>
 
 		<!-- Microprofile -->

@@ -85,6 +85,10 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-tenantmanagement-client</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-openid</artifactId>
+		</dependency>
 		<!-- Microprofile -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>

@@ -86,6 +86,7 @@
 		</profile>
 	</profiles>
 	<dependencies>
+
 		<!-- Microprofile -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
@@ -100,6 +101,10 @@
 			<version>${version.microprofile}</version>
 			<type>pom</type>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-openid</artifactId>
 		</dependency>
 
 		<!-- logging -->
@@ -119,5 +124,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
+
 	</dependencies>
 </project>
