@@ -46,5 +46,7 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public List<? extends SystemUser> getUsers(SystemUserSearchFilter filter);
 
+    public List<? extends SystemUser> getUserList();
+
     public BatchSummary create(List<? extends SystemUser> users);
 }

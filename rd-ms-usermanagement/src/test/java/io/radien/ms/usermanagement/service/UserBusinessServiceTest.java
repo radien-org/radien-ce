@@ -4,7 +4,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -14,11 +13,11 @@ import io.radien.ms.usermanagement.client.services.UserFactory;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +32,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 
 public class UserBusinessServiceTest extends TestCase {
@@ -154,6 +154,22 @@ public class UserBusinessServiceTest extends TestCase {
         assertEquals(batchSummary.getTotalNonProcessed(), 0);
         assertNotNull(batchSummary.getNonProcessedItems());
         assertEquals(batchSummary.getNonProcessedItems().size(), 0);
+    }
+
+    @Test
+    public void testSetInitiateResetPassword() throws Exception {
+        User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+        doNothing().when(keycloakService,"sendUpdatePasswordEmail", ArgumentMatchers.any());
+        userBusinessService.setInitiateResetPassword(user);
+    }
+
+    @Test
+    public void testGetUserList() {
+        List<? extends SystemUser> systemUsers = new ArrayList<>();
+        when(userServiceAccess.getUserList()).thenReturn(new ArrayList<>());
+        List<? extends SystemUser> result = userBusinessService.getUserList();
+        assertEquals(systemUsers,result);
     }
 
 

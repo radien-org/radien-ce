@@ -28,10 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 
-import javax.ws.rs.BadRequestException;
-
-
-
 @Stateless
 public class KeycloakService {
 
@@ -74,6 +70,11 @@ public class KeycloakService {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(newUser);
         KeycloakClient client = getKeycloakClient();
         client.updateUser(newUser.getSub(), userRepresentation);
+    }
+
+    public void sendUpdatePasswordEmail(SystemUser user) throws RemoteResourceException{
+        KeycloakClient client = getKeycloakClient();
+        client.sendUpdatePasswordEmail(user.getSub());
     }
 
     private String getProperty(SystemProperties cfg) {

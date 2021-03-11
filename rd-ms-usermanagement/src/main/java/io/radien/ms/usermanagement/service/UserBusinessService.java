@@ -107,4 +107,15 @@ public class UserBusinessService implements Serializable {
 		return summary;
 	}
 
+	public void setInitiateResetPassword(User user) throws RemoteResourceException {
+		boolean creation = user.getId() == null;
+		if(!creation){
+			keycloakService.sendUpdatePasswordEmail(user);
+		}
+	}
+
+	public List<? extends SystemUser> getUserList() {
+		return userServiceAccess.getUserList();
+	}
+
 }

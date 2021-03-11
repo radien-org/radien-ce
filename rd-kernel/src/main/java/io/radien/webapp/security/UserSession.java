@@ -48,13 +48,16 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	@Inject
 	private OAFAccess oaf;
-	
+
 	private SystemUser user;
 
 	private String accessToken;
 
 	private String refreshToken;
-	
+
+	private SystemUser selectedUser;
+	private boolean validationTrue;
+
 	@PostConstruct
 	private void init() {
 		log.info("Session initiated");
@@ -83,14 +86,12 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		return user!=null && user.isEnabled();
 	}
 
-
 	/**
 	 * @return the userIdSubject
 	 */
 	public String getUserIdSubject() {
 		return user.getSub();
 	}
-
 
 	/**
 	 * @return the email
@@ -99,7 +100,6 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		return user.getUserEmail();
 	}
 
-
 	/**
 	 * @return the preferredUserName
 	 */
@@ -107,7 +107,6 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		log.info("get preferred user Name");
 		return user.getLogon() != null ? user.getLogon() : user.getUserEmail();
 	}
-
 
 	/**
 	 * @return the userFirstName
@@ -152,5 +151,22 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+
+	public SystemUser getSelectedUser() {
+		return selectedUser;
+	}
+
+	public void setSelectedUser(SystemUser selectedUser) {
+		this.selectedUser = selectedUser;
+	}
+
+	public boolean isValidationTrue() {
+		return validationTrue;
+	}
+
+	public void setValidationTrue(boolean validationTrue) {
+		this.validationTrue = validationTrue;
 	}
 }

@@ -50,7 +50,6 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface UserResourceClient {
 
-
     @GET
     public Response getAll(//@Context HttpSession session, @Context UriInfo uriInfo,
                            @QueryParam("search") String search,
@@ -81,5 +80,13 @@ public interface UserResourceClient {
     @POST
     @Path("/multipleCreation")
     public Response create(List<User> userList);
+
+    @POST
+    @Path("/{id}/initiateResetPassword")
+    public Response setInitiateResetPassword(@NotNull @PathParam("id") long id);
+
+    @GET
+    @Path("/userList")
+    public Response getUserList();
 
 }

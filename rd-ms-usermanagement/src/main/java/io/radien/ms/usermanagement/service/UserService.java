@@ -48,7 +48,6 @@ import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
 
 import java.util.stream.IntStream;
@@ -284,6 +283,17 @@ public class UserService implements UserServiceAccess{
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
 
 		return q.getResultList();
+	}
+
+	@Override
+	public List<? extends SystemUser> getUserList() {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> userRoot = criteriaQuery.from(User.class);
+		criteriaQuery.select(userRoot);
+		TypedQuery<User> q=em.createQuery(criteriaQuery);
+		List<? extends SystemUser> systemUsers = q.getResultList();
+		return systemUsers;
 	}
 
 	private Predicate getFilteredPredicate(SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {

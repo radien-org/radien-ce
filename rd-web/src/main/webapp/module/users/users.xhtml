@@ -1,33 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:p="http://primefaces.org/ui"
 				xmlns:b="http://bootsfaces.net/ui"
 				xmlns:f="http://xmlns.jcp.org/jsf/core"
 				xmlns:h="http://xmlns.jcp.org/jsf/html"
 				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<ui:define name="content" bootsFacesDecorator="true">
-		<h:form id="usersForm">
-			<b:container style="padding-top:100px">
+		<h:form id="form">
+			<b:container style="padding-top:6em">
 				<b:row>
-					<b:dataTable value="#{userDataModel.users}"
-								 var="row"
-								 caption="Users Table"
+					<!--@elvariable id="userTableUI" type="io.radien.webapp.user.UserManager"-->
+					<b:dataTable value="#{userTableUI.userDataModel.datasource}"
+								 var="row" id="userDataTable"
+								 caption="#{msg.rd_user_table}"
 								 mark-search-results="true"
 								 page-length="5"
 								 page-length-menu="5,10,20,50">
-						<b:dataTableColumn value="#{row.firstname}"
-										   order="asc"
-										   data-order="#{row.firstname}"/>
+						<b:dataTableColumn value="#{row.firstname}"/>
 						<b:dataTableColumn value="#{row.lastname}"/>
 						<b:dataTableColumn value="#{row.logon}"/>
 						<b:dataTableColumn value="#{row.userEmail}"/>
-						<b:dataTableColumn label="Profile">
-							<b:commandButton value=" profile"
-											 iconAwesome="fa-user"
+						<b:dataTableColumn label="#{msg.profile}">
+							<b:commandButton iconAwesome="fa-user"
 											 iconAlign="center"
-											 onclick=""/>
+											 action="#{userTableUI.getProfile(row)}"/>
+						</b:dataTableColumn>
+						<b:dataTableColumn label="#{msg.edit}">
+							<p:commandButton icon="icon i-check-circle text--success"
+											 update=":form:manage-user-content"
+											 oncomplete="PF('manageUserDialog').show()"
+											 process="@this">
+								<f:setPropertyActionListener value="#{row}" target="#{userTableUI.selectedUser}"/>
+								<p:resetInput target=":form:manage-user-content"/>
+							</p:commandButton>
+						</b:dataTableColumn>
+						<b:dataTableColumn label="#{msg.delete}">
+							<b:button onclick="$('.formValidationModalClass').modal('show')"
+									  iconAwesome="trash"/>
+							<b:modal title="Delete User" styleClass="formValidationModalClass"
+									 closable="true"
+									 backdrop="false"
+									 closeOnEscape="true">
+								<b:form>
+									<p>Are you sure want to delete the user?</p>
+									<b:row style="padding-top:1em">
+										<b:column>
+											<b:button mediumScreen="half"  value="Cancel"
+													  dismiss="modal" onclick="return false;"/>
+											<b:commandButton mediumScreen="half"
+															 ajax="true"
+															 update="@form:userDataTable"
+															 autoUpdate="true"
+															 dismiss="modal"
+															 value="#{msg.delete}"
+															 look="danger"
+															 action="#{userTableUI.deleteUser(row)}"
+															 oncomplete="if(!validationTrue) { $('.formValidationModalClass').modal('hide') } "/>
+										</b:column>
+									</b:row>
+									<b:fetchBeanInfos />
+									<b:messages />
+								</b:form>
+							</b:modal>
 						</b:dataTableColumn>
 					</b:dataTable>
+					<p:dialog header="User Details" showEffect="fade" modal="true"
+							  widgetVar="manageUserDialog" responsive="true">
+						<p:outputPanel id="manage-user-content" class="ui-fluid">
+							<p:outputPanel rendered="#{not empty userTableUI.selectedUser}">
+								<div class="p-field">
+									<p:outputLabel for="firstname" value="#{msg.firstname}"/>
+									<p:inputText id="firstname" value="#{userTableUI.selectedUser.firstname}" required="true"/>
+								</div>
+
+								<div class="p-field">
+									<p:outputLabel for="lastname" value="#{msg.lastname}"/>
+									<p:inputText id="lastname" value="#{userTableUI.selectedUser.lastname}" required="true"/>
+								</div>
+							</p:outputPanel>
+						</p:outputPanel>
+						<f:facet name="footer">
+							<p:commandButton value="#{msg.update}" actionListener="#{userTableUI.updateUser}"
+											 ajax="true" update="@form:userDataTable" oncomplete="PF('manageUserDialog').hide()"/>
+							<p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageUserDialog').hide()"/>
+						</f:facet>
+					</p:dialog>
 				</b:row>
 			</b:container>
 		</h:form>

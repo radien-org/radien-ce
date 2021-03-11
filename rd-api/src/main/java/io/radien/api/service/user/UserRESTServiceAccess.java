@@ -39,4 +39,12 @@ public interface UserRESTServiceAccess extends Appframeable{
     public boolean create(SystemUser user,boolean skipKeycloak) throws SystemException;
 
     public List<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException;
+
+    public List<? extends SystemUser> getUserList();
+
+    public boolean setInitiateResetPassword(long id);
+
+    public boolean deleteUser(long id);
+
+    public boolean updateUser(SystemUser user);
 }

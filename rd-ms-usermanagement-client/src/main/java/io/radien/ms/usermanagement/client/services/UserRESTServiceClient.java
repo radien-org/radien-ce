@@ -18,7 +18,6 @@ package io.radien.ms.usermanagement.client.services;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,7 +120,7 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
     }
 
     @Override
-    public List<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException {
+    public List<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
         List<? extends  SystemUser> listUsers = null;
         try{
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
@@ -132,6 +131,71 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
             log.error(e.getMessage(),e);
         }
         return listUsers;
+    }
+
+    @Override
+    public List<? extends SystemUser> getUserList() {
+        List<? extends SystemUser> listUsers = null;
+        try{
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.getUserList();
+            JsonArray jsonArray = Json.createReader(new StringReader(response.readEntity(String.class))).readArray();
+            listUsers = UserFactory.convert(jsonArray);
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(),e);
+        }
+        return listUsers;
+    }
+
+    @Override
+    public boolean setInitiateResetPassword(long id) {
+        boolean setAdminResetPassword = false;
+        try{
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.setInitiateResetPassword(id);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                setAdminResetPassword=true;
+            } else {
+                log.error(response.readEntity(String.class));
+            }
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(),e);
+        }
+        return setAdminResetPassword;
+    }
+
+    @Override
+    public boolean deleteUser(long id) {
+        boolean deleteUser = false;
+        try{
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.delete(id);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                deleteUser=true;
+            } else {
+                log.error(response.readEntity(String.class));
+            }
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(),e);
+        }
+        return deleteUser;
+    }
+
+    @Override
+    public boolean updateUser(SystemUser user) {
+        boolean updateUser = false;
+        try{
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.save((User) user);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                updateUser=true;
+            } else {
+                log.error(response.readEntity(String.class));
+            }
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(),e);
+        }
+        return updateUser;
     }
 
     /**

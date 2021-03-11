@@ -116,7 +116,6 @@ public class UserResource implements UserResourceClient {
 		return Response.ok().build();
 	}
 
-
 	/**
 	 * Save user to the DB.
 	 *
@@ -226,5 +225,25 @@ public class UserResource implements UserResourceClient {
 			response = getGenericError(et);
 		}
 		return response;
+	}
+
+	@Override
+	public Response setInitiateResetPassword(long id){
+		try {
+			SystemUser user = userBusinessService.get(id);
+			userBusinessService.setInitiateResetPassword(new User((io.radien.ms.usermanagement.client.entities.User) user));
+			return Response.ok().build();
+		} catch(Exception e) {
+			return getResponseFromException(e);
+		}
+	}
+
+	@Override
+	public Response getUserList() {
+		try {
+			return Response.ok(userBusinessService.getUserList()).build();
+		} catch (Exception e) {
+			return getResponseFromException(e);
+		}
 	}
 }

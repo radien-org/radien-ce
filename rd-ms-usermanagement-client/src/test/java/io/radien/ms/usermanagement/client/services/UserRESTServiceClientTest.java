@@ -28,10 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
+import javax.json.*;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
@@ -41,7 +38,6 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 
-import io.radien.api.util.FactoryUtilService;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,12 +46,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import io.radien.api.Configurable;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+
 
 /**
  * @author Nuno Santana
@@ -72,9 +71,17 @@ public class UserRESTServiceClientTest {
     @Mock
     OAFAccess oafAccess;
 
+    private User dummyUser = new User();
+
     @Before
     public void before(){
         MockitoAnnotations.initMocks(this);
+        dummyUser.setId(1L);
+        dummyUser.setLastname("last");
+        dummyUser.setFirstname("first");
+        dummyUser.setEnabled(true);
+        dummyUser.setLogon("test-logon");
+        dummyUser.setDelegatedCreation(false);
     }
 
     @Test
@@ -215,8 +222,8 @@ public class UserRESTServiceClientTest {
 			success = true;
         }
         assertFalse(success);
-
     }
+
     @Test
     public void testCreateFail() throws MalformedURLException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
@@ -249,6 +256,116 @@ public class UserRESTServiceClientTest {
             }
         }
         assertTrue(success);
+    }
+
+    @Test
+    public void testGetUserListStatusResponse() throws MalformedURLException {
+        List<? extends SystemUser> list = new ArrayList<>();
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.getUserList()).thenReturn(Response.ok(list).build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Response response = resourceClient.getUserList();
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testGetUserListFailStatusResponse() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.getUserList()).thenReturn(Response.serverError().entity("test error msg").build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Response response = resourceClient.getUserList();
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testSetInitiateResetPassword() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.setInitiateResetPassword(dummyUser.getId())).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        boolean success = false;
+        try {
+            assertTrue(target.setInitiateResetPassword(dummyUser.getId()));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testSetInitiateResetPasswordFail() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.setInitiateResetPassword(dummyUser.getId())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
+
+        boolean success = false;
+        try {
+            assertFalse(target.setInitiateResetPassword(dummyUser.getId()));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testUpdateUser() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.save(dummyUser)).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        dummyUser.setFirstname("firstname-update");
+
+        boolean success = false;
+        try {
+            assertTrue(target.updateUser(dummyUser));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testUpdateUserFail() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.save(dummyUser)).thenReturn(Response.serverError().entity("test error msg").build());
+        when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
+        dummyUser.setLastname("lastname-updated");
+        boolean success = false;
+        try {
+            assertFalse(target.updateUser(dummyUser));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testDeleteUser() throws MalformedURLException {
+
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.delete(dummyUser.getId())).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        boolean success = false;
+        try {
+            assertTrue(target.deleteUser(1L));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testDeleteUserFail() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.delete(dummyUser.getId())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
+        boolean success = false;
+        try {
+            assertFalse(target.deleteUser(1L));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
     }
 
     @Test
@@ -317,6 +434,5 @@ public class UserRESTServiceClientTest {
         Optional<BatchSummary> opt = target.create(userList);
         assertFalse(opt.isPresent());
     }
-
 
 }

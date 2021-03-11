@@ -24,9 +24,9 @@
 		<pattern value="/module/users" />
 		<view-id value="/module/users/users.oaf" />
 	</url-mapping>
-	<url-mapping id="users">
-		<pattern value="/module/users" />
-		<view-id value="/module/users/users.oaf" />
+	<url-mapping id="user">
+		<pattern value="/module/users/user" />
+		<view-id value="/module/users/user.oaf" />
 	</url-mapping>
 	
 	<!-- Rolesmanagement -->
