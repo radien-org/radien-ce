@@ -28,7 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
@@ -51,9 +54,6 @@ import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
-
-import javax.json.Json;
-import javax.json.JsonArray;
 
 
 /**
