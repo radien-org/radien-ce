@@ -15,7 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
-import io.radien.ms.tenantmanagement.client.entities.Contract;
+import io.radien.api.entity.Page;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.util.FactoryUtilService;
 
@@ -26,13 +26,17 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author Bruno Gama
+ */
 public class TenantFactory {
+
     private final static String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
+
     /**
      * Create a tenant with already predefine fields.
      *
@@ -59,7 +63,6 @@ public class TenantFactory {
      * @param jsonContract the JSONObject to convert
      * @return the Contract Object
      */
-    //TODO: Complete the object conversion fields missing
     public static Tenant convert(JsonObject jsonContract) throws ParseException {
         Long id = FactoryUtilService.getLongFromJson("id", jsonContract);
         String name = FactoryUtilService.getStringFromJson("name", jsonContract);
@@ -90,7 +93,6 @@ public class TenantFactory {
      * @param tenant system user to be converted to json
      * @return json object with keys and values constructed
      */
-    //TODO: Complete the object conversion fields missing
     public static JsonObject convertToJsonObject(Tenant tenant) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
@@ -112,6 +114,27 @@ public class TenantFactory {
             list.add(convert);
         }
         return list;
+    }
+
+    /**
+     * Converts a JsonObject into a Permission Page object
+     * @param page the JsonObject to convert
+     * @return the Page encapsulating information regarding permissions
+     */
+    public static Page<Tenant> convertJsonToPage(JsonObject page) throws ParseException {
+        int currentPage = io.radien.api.util.FactoryUtilService.getIntFromJson("currentPage", page);
+        JsonArray results = io.radien.api.util.FactoryUtilService.getArrayFromJson("results", page);
+        int totalPages = io.radien.api.util.FactoryUtilService.getIntFromJson("totalPages", page);
+        int totalResults = io.radien.api.util.FactoryUtilService.getIntFromJson("totalResults", page);
+
+        ArrayList<Tenant> pageResults = new ArrayList();
+
+        if(results != null){
+            for(int i = 0;i<results.size();i++){
+                pageResults.add(convert(results.getJsonObject(i)));
+            }
+        }
+        return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 
 }

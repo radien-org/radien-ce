@@ -15,19 +15,16 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import io.radien.api.model.tenant.SystemContract;
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.api.service.tenant.TenantServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.tenantmanagement.client.services.ContractFactory;
-import io.radien.ms.tenantmanagement.entities.Contract;
 import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -185,6 +182,39 @@ public class TenantServiceTest {
         SystemTenant tenant = new Tenant(new io.radien.ms.tenantmanagement.client.entities.Tenant(null,name));
         tenantServiceAccess.create(tenant);
         return tenant;
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = tenantServiceAccess.getTotalRecordsCount();
+        assertEquals(3, result);
+    }
+
+    @Test
+    public void testGetAll() throws  UniquenessConstraintException {
+        String name = "testGetAll";
+        SystemTenant c = new Tenant(new io.radien.ms.tenantmanagement.client.entities.Tenant(100L,name));
+        tenantServiceAccess.create(c);
+        Page<SystemTenant> result = tenantServiceAccess.getAll(1, 10);
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testGet() throws  UniquenessConstraintException {
+        String name = "testGet";
+        SystemTenant c = new Tenant(new io.radien.ms.tenantmanagement.client.entities.Tenant(200L,name));
+        tenantServiceAccess.create(c);
+        List<? extends SystemTenant> result = tenantServiceAccess.get(name);
+        assertNotNull(result);
+        assertEquals((Long) 200L, result.get(0).getId());
+    }
+
+    @Test
+    public void testExists() throws UniquenessConstraintException, NotFoundException {
+        String name = "testExists";
+        SystemTenant c = new Tenant(new io.radien.ms.tenantmanagement.client.entities.Tenant(300L,name));
+        tenantServiceAccess.create(c);
+        assertTrue(tenantServiceAccess.exists(300L));
     }
 
 }

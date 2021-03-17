@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.client.util;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.services.RoleFactory;
 
@@ -59,6 +60,19 @@ public class RoleModelMapper {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
             return RoleFactory.convert(jsonObject);
+        }
+    }
+
+    /**
+     * Obtains a Permission Page from a Json input stream
+     * @param is
+     * @return
+     */
+    public static Page<Role> mapToPage(InputStream is) {
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            JsonObject jsonObject = jsonReader.readObject();
+
+            return RoleFactory.convertJsonToPage(jsonObject);
         }
     }
 }

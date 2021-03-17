@@ -75,6 +75,18 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-usermanagement-client</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-rolemanagement-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-tenantmanagement-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-permissionmanagement-client</artifactId>
+		</dependency>
 		<!-- jee -->
 		<dependency>
 			<groupId>jakarta.platform</groupId>
@@ -111,6 +123,15 @@
 		<dependency>
 			<groupId>org.ocpsoft.rewrite</groupId>
 			<artifactId>rewrite-config-prettyfaces</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.primefaces</groupId>
+			<artifactId>primefaces</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.primefaces.extensions</groupId>
+			<artifactId>primefaces-extensions</artifactId>
 		</dependency>
 	</dependencies>
 </project>

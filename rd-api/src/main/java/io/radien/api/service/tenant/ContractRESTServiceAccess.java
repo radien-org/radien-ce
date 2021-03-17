@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.tenant;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.exception.SystemException;
 
@@ -37,9 +38,13 @@ public interface ContractRESTServiceAccess {
 
     /**
      * Fetches all Contracts
-     * @return List of Contracts
+     * @param pageNo of the data to be visualized
+     * @param pageSize is the max size of pages regarding the existent data to be checked
+     * @return List of System Contracts
+     * @throws MalformedURLException in case of URL specification
+     * @throws ParseException in case of any error when returning/constructing the response
      */
-    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException;
+    public Page<? extends SystemContract> getAll(int pageNo, int pageSize) throws SystemException, MalformedURLException;
 
     /**
      * Creates given contract
@@ -70,4 +75,10 @@ public interface ContractRESTServiceAccess {
      * @return true in case of success
      */
     public boolean isContractExistent(Long contractId) throws MalformedURLException, SystemException;
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent contracts.
+     */
+    public Long getTotalRecordsCount() throws SystemException;
 }

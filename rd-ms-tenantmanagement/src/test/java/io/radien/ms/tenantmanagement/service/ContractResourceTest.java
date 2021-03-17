@@ -1,5 +1,19 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.tenantmanagement.service;
-
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,10 +24,10 @@ import static org.mockito.Mockito.when;
 
 import java.net.MalformedURLException;
 
-
 import javax.ws.rs.core.Response;
 
 import io.radien.api.service.tenant.ContractServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.ms.tenantmanagement.entities.Contract;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +38,6 @@ import org.mockito.MockitoAnnotations;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
-
 
 /**
  * @author Nuno Santana
@@ -45,11 +58,31 @@ public class ContractResourceTest {
     }
 
     /**
+     * Test the Get request which will return a success message code 200.
+     */
+    @Test
+    public void testGet() {
+        Response response = contractResource.get(null);
+        assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Test the Get request Exception which will return a generic error message code 500.
+     */
+    @Test
+    public void testGetGenericException() throws MalformedURLException {
+        when(contractResource.get(null))
+                .thenThrow(new RuntimeException());
+        Response response = contractResource.get(null);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
+    }
+
+    /**
      * Test the Get All request which will return a success message code 200.
      */
     @Test
     public void testGetAll() {
-        Response response = contractResource.get(null);
+        Response response = contractResource.getAll(0, 10);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -57,11 +90,31 @@ public class ContractResourceTest {
      * Test the Get All request Exception which will return a generic error message code 500.
      */
     @Test
-    public void testGetAllGenericException() throws MalformedURLException {
-        when(contractResource.get(null))
+    public void testGetAllGenericException() {
+        when(contractResource.getAll(0, 10))
                 .thenThrow(new RuntimeException());
-        Response response = contractResource.get(null);
+        Response response = contractResource.getAll(0, 10);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Test the Exists request which will return a success message code 200.
+     */
+    @Test
+    public void testExists() {
+        Response response = contractResource.exists(1L);
+        assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Test the Get All request Exception which will return a generic error message code 500.
+     */
+    @Test
+    public void testExistsGenericException() {
+        when(contractResource.exists(any()))
+                .thenThrow(new NotFoundException());
+        Response response = contractResource.exists(100L);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),response.getStatus());
     }
 
     /**
@@ -201,5 +254,25 @@ public class ContractResourceTest {
         doThrow(new RuntimeException()).when(contractService).update(any());
         Response response = contractResource.update(1l,new Contract());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Test the Get total records count request which will return a success message code 200.
+     */
+    @Test
+    public void testGetTotalRecordsCount() {
+        Response response = contractResource.getTotalRecordsCount();
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test the Get total records count request which will return a error message code 500.
+     */
+    @Test
+    public void testGetTotalRecordsCountException() {
+        when(contractResource.getTotalRecordsCount())
+                .thenThrow(new RuntimeException());
+        Response response = contractResource.getTotalRecordsCount();
+        assertEquals(500,response.getStatus());
     }
 }

@@ -15,7 +15,9 @@
  */
 package io.radien.ms.rolemanagement.client.services;
 
+import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -28,6 +30,7 @@ import javax.ws.rs.core.Response;
 @Path("linkedauthorization")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RegisterClientHeaders(GlobalHeaders.class)
 public interface LinkedAuthorizationResourceClient {
 
     @GET
@@ -64,4 +67,8 @@ public interface LinkedAuthorizationResourceClient {
                                         @QueryParam("roleId") Long roleId,
                                         @QueryParam("userId") Long userId,
                                         @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
+
+    @GET
+    @Path("/countRecords")
+    public Response getTotalRecordsCount();
 }

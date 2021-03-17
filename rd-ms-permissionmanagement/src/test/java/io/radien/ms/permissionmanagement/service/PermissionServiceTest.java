@@ -70,10 +70,10 @@ public class PermissionServiceTest {
 
     @Before
     public void init() throws UniquenessConstraintException {
-        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1,
+        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 0,
                 1000, null, true);
         Page<? extends SystemPermission> permissionPage = permissionServiceAccess.getAll(null,
-                1, 1000, null, true);
+                0, 1000, null, true);
 
         permissionServiceAccess.delete(permissionPage.getResults().stream().
                 map(SystemPermission::getId).collect(Collectors.toList()));
@@ -145,6 +145,12 @@ public class PermissionServiceTest {
         SystemPermission result = permissionServiceAccess.get(u.getId());
         assertNotNull(result);
         assertEquals(u.getName(), result.getName());
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = permissionServiceAccess.getTotalRecordsCount();
+        assertEquals(0, result);
     }
 
     /**
@@ -331,17 +337,17 @@ public class PermissionServiceTest {
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
 
-        Page<? extends SystemPermission> permissionPage = permissionServiceAccess.getAll(null, 1, 10, orderby, true);
+        Page<? extends SystemPermission> permissionPage = permissionServiceAccess.getAll(null, 0, 10, orderby, true);
   
         assertTrue(permissionPage.getTotalResults()>=3);
 
         assertEquals("a",permissionPage.getResults().get(0).getName());
 
-        permissionPage = permissionServiceAccess.getAll(null, 1, 10, orderby, false);
+        permissionPage = permissionServiceAccess.getAll(null, 0, 10, orderby, false);
         assertTrue(permissionPage.getTotalResults()>=3);
         assertEquals("zzz",permissionPage.getResults().get(0).getName());
 
-        Page<? extends SystemPermission> permissionPageWhere = permissionServiceAccess.getAll("a", 1, 10, null, true);
+        Page<? extends SystemPermission> permissionPageWhere = permissionServiceAccess.getAll("a", 0, 10, null, true);
         assertTrue(permissionPageWhere.getTotalResults() == 1);
 
         assertEquals("a",permissionPageWhere.getResults().get(0).getName());

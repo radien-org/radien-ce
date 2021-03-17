@@ -107,6 +107,10 @@
 		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
 		<version.junit>4.13.1</version.junit>
 
+		<!-- primeface -->
+		<version.primefaces>10.0.0</version.primefaces>
+		<version.primefaces.ext>10.0.0</version.primefaces.ext>
+
 		<!-- Props -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<timestamp>Build ${maven.build.timestamp}</timestamp>
@@ -383,6 +387,17 @@
 				<artifactId>cxf-rt-rs-mp-client</artifactId>
 				<version>${version.tomee-cxf-core}</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.primefaces</groupId>
+				<artifactId>primefaces</artifactId>
+				<version>${version.primefaces}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.primefaces.extensions</groupId>
+				<artifactId>primefaces-extensions</artifactId>
+				<version>${version.primefaces.ext}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

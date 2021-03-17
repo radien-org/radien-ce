@@ -19,7 +19,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.PermissionNotFoundException;
 
@@ -99,4 +98,10 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * @return a SystemPermission linked with Resource and Action
      */
     SystemPermission getPermissionByActionAndResourceNames(String action, String resource);
+
+    /**
+     * Count the number of all the permissions existent in the DB.
+     * @return the count of permissions
+     */
+    public long getTotalRecordsCount();
 }

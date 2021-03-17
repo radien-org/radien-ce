@@ -30,11 +30,15 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonArray;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -85,6 +89,40 @@ public class LinkedAuthorizationRESTServiceClient implements LinkedAuthorization
             throw new ProcessingException(e);
         }
         return false;
+    }
+
+    @Override
+    public List<? extends SystemLinkedAuthorization> getAll(int pageNo, int pageSize) throws MalformedURLException, ParseException {
+        List<? extends SystemLinkedAuthorization> linkedAuthorizationsList = null;
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+
+            Response response = client.getAllAssociations(pageNo, pageSize);
+
+            JsonArray jsonArray = (JsonArray) Json.createReader(new StringReader(response.readEntity(String.class))).readObject().get("results");
+            linkedAuthorizationsList = LinkedAuthorizationFactory.convert(jsonArray);
+        }   catch (ExtensionException | ProcessingException | MalformedURLException es){
+            throw es;
+        }
+        return linkedAuthorizationsList;
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent tenants.
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
     }
 
 

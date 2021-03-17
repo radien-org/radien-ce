@@ -87,9 +87,20 @@
 			<artifactId>rd-ms-usermanagement-client</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-tenantmanagement-client</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>io.radien</groupId>
+            <artifactId>rd-ms-rolemanagement-client</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-permissionmanagement-client</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
-			<version>7.0</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.Predicate;
@@ -38,12 +36,10 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
-import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 
 import io.radien.ms.permissionmanagement.model.Permission;
-
 
 /**
  * @author Newton Carvalho
@@ -54,7 +50,9 @@ public class PermissionService implements PermissionServiceAccess {
     @Inject
     private EntityManagerHolder holder;
 
-    public PermissionService() {}
+    public PermissionService() {
+        //empty
+    }
 
     /**
      * Count the number of Permissions existent in the DB.
@@ -98,9 +96,9 @@ public class PermissionService implements PermissionServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
-        Root<Permission> PermissionRoot = criteriaQuery.from(Permission.class);
-        criteriaQuery.select(PermissionRoot);
-        criteriaQuery.where(PermissionRoot.get("id").in(permissionId));
+        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        criteriaQuery.select(permissionRoot);
+        criteriaQuery.where(permissionRoot.get("id").in(permissionId));
 
         TypedQuery<Permission> q=em.createQuery(criteriaQuery);
 
@@ -144,7 +142,7 @@ public class PermissionService implements PermissionServiceAccess {
 
         TypedQuery<Permission> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo-1) * pageSize);
+        q.setFirstResult((pageNo) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemPermission> systemPermissions = q.getResultList();
@@ -167,6 +165,10 @@ public class PermissionService implements PermissionServiceAccess {
         if (!alreadyExistentRecords.isEmpty()) {
             throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
+        boolean existsForActionAndResource = existsForResourceAndAction(permission, em);
+        if (existsForActionAndResource) {
+            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Action and Resource"));
+        }
         if (permission.getId() == null) {
             em.persist(permission);
         } else {
@@ -183,11 +185,11 @@ public class PermissionService implements PermissionServiceAccess {
         List<Permission> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
-        Root<Permission> PermissionRoot = criteriaQuery.from(Permission.class);
-        criteriaQuery.select(PermissionRoot);
-        Predicate global = criteriaBuilder.equal(PermissionRoot.get("name"), permission.getName());
+        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        criteriaQuery.select(permissionRoot);
+        Predicate global = criteriaBuilder.equal(permissionRoot.get("name"), permission.getName());
         if(permission.getId()!= null) {
-            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(PermissionRoot.get("id"), permission.getId()));
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(permissionRoot.get("id"), permission.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<Permission> q = em.createQuery(criteriaQuery);
@@ -344,5 +346,40 @@ public class PermissionService implements PermissionServiceAccess {
                 setParameter("rName", resource).
                 setParameter("aName", action).
                 getResultStream().findFirst().orElse(null);
+    }
+
+    protected boolean existsForResourceAndAction(SystemPermission p, EntityManager em) {
+        if (p.getResourceId() == null || p.getActionId() == null) {
+            return false;
+        }
+
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        criteriaQuery.select(criteriaBuilder.count(permissionRoot));
+
+        Predicate global = null;
+
+        global = criteriaBuilder.equal(permissionRoot.get("resourceId"), p.getResourceId());
+        global=criteriaBuilder.and(global, criteriaBuilder.equal(permissionRoot.get("actionId"), p.getActionId()));
+
+        if(p.getId() != null) {
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(permissionRoot.get("id"), p.getId()));
+        }
+        criteriaQuery.where(global);
+
+        Long size = em.createQuery(criteriaQuery).getSingleResult();
+
+        return size != 0;
+    }
+
+    /**
+     * Count the number of all the permissions existent in the DB.
+     * @return the count of permissions
+     */
+    @Override
+    public long getTotalRecordsCount() {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Permission.class), getEntityManager());
     }
 }

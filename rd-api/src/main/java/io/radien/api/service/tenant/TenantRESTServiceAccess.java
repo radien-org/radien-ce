@@ -15,18 +15,26 @@
  */
 package io.radien.api.service.tenant;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.exception.SystemException;
 
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Santana
- *
  */
 public interface TenantRESTServiceAccess {
+
+    /**
+     * Search for a tenant with given id
+     * @param id of the tenant to be retrieved
+     * @return true if contract has been created with success or false if not
+     * @throws MalformedURLException in case of URL specification
+     */
+    public Optional<SystemTenant> getTenantById(Long id) throws Exception ;
 
     /**
      * Search for a tenant with given name
@@ -40,7 +48,7 @@ public interface TenantRESTServiceAccess {
      * Fetches all tenants
      * @return List of tenants
      */
-    public List<? extends SystemTenant> getAll() throws MalformedURLException, ParseException;
+    public Page<? extends SystemTenant> getAll(int pageNo, int pageSize) throws SystemException;
 
     /**
      * Creates given tenant
@@ -72,4 +80,10 @@ public interface TenantRESTServiceAccess {
      * @return true in case of success
      */
     public boolean isTenantExistent(Long tenantId) throws MalformedURLException, SystemException;
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent tenants.
+     */
+    public Long getTotalRecordsCount() throws SystemException;
 }

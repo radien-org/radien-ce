@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.util.FactoryUtilService;
 
@@ -30,8 +31,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author Bruno Gama
+ */
 public class ContractFactory {
+
     private final static String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
+
     /**
      * Create a Contract with already predefine fields.
      *
@@ -62,7 +68,6 @@ public class ContractFactory {
      * @param jsonContract the JSONObject to convert
      * @return the Contract Object
      */
-    //TODO: Complete the object conversion fields missing
     public static Contract convert(JsonObject jsonContract) throws ParseException {
         Long id = FactoryUtilService.getLongFromJson("id", jsonContract);
         String name = FactoryUtilService.getStringFromJson("name", jsonContract);
@@ -95,7 +100,6 @@ public class ContractFactory {
      * @param contract system user to be converted to json
      * @return json object with keys and values constructed
      */
-    //TODO: Complete the object conversion fields missing
     public static JsonObject convertToJsonObject(Contract contract) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
@@ -118,5 +122,26 @@ public class ContractFactory {
             list.add(convert);
         }
         return list;
+    }
+
+    /**
+     * Converts a JsonObject into a Permission Page object
+     * @param page the JsonObject to convert
+     * @return the Page encapsulating information regarding permissions
+     */
+    public static Page<Contract> convertJsonToPage(JsonObject page) throws ParseException {
+        int currentPage = FactoryUtilService.getIntFromJson("currentPage", page);
+        JsonArray results = FactoryUtilService.getArrayFromJson("results", page);
+        int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
+        int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
+
+        ArrayList<Contract> pageResults = new ArrayList();
+
+        if(results != null){
+            for(int i = 0;i<results.size();i++){
+                pageResults.add(convert(results.getJsonObject(i)));
+            }
+        }
+        return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 }

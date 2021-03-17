@@ -87,4 +87,17 @@ public class LinkedAuthorizationSearchFilterTest extends TestCase {
         searchFilter.setLogicConjunction(false);
         assertFalse(searchFilter.isLogicConjunction());
     }
+
+    @Test
+    public void testGetUserId() {
+        assertNotNull(searchFilter.getUserId());
+        assertEquals((Long) 2L, searchFilter.getUserId());
+    }
+
+    @Test
+    public void testSetUserId() {
+        searchFilter.setUserId(3L);
+        assertNotNull(searchFilter.getUserId());
+        assertEquals((Long) 3L, searchFilter.getUserId());
+    }
 }

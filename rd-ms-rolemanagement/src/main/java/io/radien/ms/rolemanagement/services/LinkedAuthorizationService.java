@@ -79,7 +79,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
 
         TypedQuery<LinkedAuthorization> q= entityManager.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo-1) * pageSize);
+        q.setFirstResult((pageNo) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends LinkedAuthorization> systemTenancyAssociations = q.getResultList();
@@ -303,5 +303,34 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         Long size = entityManager.createQuery(criteriaQuery).getSingleResult();
 
         return size != 0;
+    }
+
+    /**
+     * Count the number of all the contracts existent in the DB.
+     * @return the count of users
+     */
+    @Override
+    public long getTotalRecordsCount() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(LinkedAuthorization.class));
+    }
+
+    /**
+     * Count the number of tenants existent in the DB.
+     * @return the count of users
+     */
+    private long getCount(Predicate global, Root<LinkedAuthorization> userRoot) {
+
+        log.info("Going to count the existent records.");
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+        criteriaQuery.where(global);
+
+        criteriaQuery.select(criteriaBuilder.count(userRoot));
+
+        TypedQuery<Long> q= entityManager.createQuery(criteriaQuery);
+
+        return q.getSingleResult();
     }
 }

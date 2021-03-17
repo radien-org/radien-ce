@@ -19,8 +19,8 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
-import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
+import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
@@ -32,10 +32,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
+import javax.json.*;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -44,6 +41,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -228,5 +226,82 @@ public class ResourceRESTServiceClientTest {
                 thenReturn(resourceClient);
         Exception e = assertThrows(SystemException.class, ()->target.getResourceById(1L));
         assertTrue(e.getMessage().contains(ProcessingException.class.getName())) ;
+    }
+
+    @Test
+    public void testGetResources() throws MalformedURLException {
+        List<Resource> list = new ArrayList<>();
+        list.add(ResourceFactory.create("user", 1L));
+        list.add(ResourceFactory.create("contract", 2L));
+        list.add(ResourceFactory.create("organization", 3L));
+        list.add(ResourceFactory.create("partner", 3L));
+        Page<SystemResource> page = new Page<>(list, 1, 3, 1);
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
+                .add("currentPage", page.getCurrentPage())
+                .add("totalResults", page.getTotalResults())
+                .add("totalPages", page.getTotalPages())
+                .add("results", ResourceModelMapper.map(list));
+
+        JsonObject jsonObject = objectBuilder.build();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
+        Response expectedResponse = Response.ok(inputStream).build();
+
+        List<String> sortBy = new ArrayList<>();
+
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).
+                then(i -> resourceClient);
+        when(resourceClient.getAll("resource%", 1, 100, sortBy, true)).
+                then(i -> expectedResponse);
+
+        Page<? extends SystemResource> retrievedPage = null;
+        try {
+            retrievedPage = target.getAll("resource%", 1, 100, sortBy, true);
+        }
+        catch (Exception e) {
+            fail("should not happen here...");
+        }
+        assertNotNull(retrievedPage);
+        assertNotNull(retrievedPage.getResults());
+        assertFalse(retrievedPage.getResults().isEmpty());
+        assertEquals(retrievedPage.getResults().size(), 4);
+    }
+
+    @Test
+    public void testGetResourcesWhenFailure() throws MalformedURLException {
+        List<String> sortBy = new ArrayList<>();
+        Response errorResponse = Response.status(500).build();
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).
+                thenThrow(new ProcessingException("error"));
+        when(resourceClient.getAll("resource%", 1, 100, sortBy, true)).
+                then(i -> errorResponse);
+        assertThrows(SystemException.class, () -> target.getAll("action%", 1, 100, sortBy, true));
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() throws MalformedURLException {
+        Resource resource = ResourceFactory.create("test", null);
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(ResourceFactory.convertToJsonObject(resource));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+
+        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
     }
 }

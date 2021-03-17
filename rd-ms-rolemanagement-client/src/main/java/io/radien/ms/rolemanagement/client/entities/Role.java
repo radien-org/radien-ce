@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.entities;
 import io.radien.api.model.role.AbstractRoleModel;
 import io.radien.api.model.role.SystemRole;
 
+import javax.json.bind.annotation.JsonbDateFormat;
 import java.util.Date;
 
 /**
@@ -34,6 +35,7 @@ public class Role extends AbstractRoleModel implements SystemRole {
     private String name;
     private String description;
 
+    @JsonbDateFormat(value = "yyyy-MM-dd'T'HH:mm:ssZZ")
     private Date terminationDate;
 
     public Role(){}

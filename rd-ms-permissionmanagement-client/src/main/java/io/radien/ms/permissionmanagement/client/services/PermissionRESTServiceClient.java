@@ -23,18 +23,17 @@ import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper;
 import io.radien.ms.permissionmanagement.client.util.PermissionModelMapper;
-import io.radien.ms.permissionmanagement.client.util.PermissionPageModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
@@ -50,8 +49,6 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
 
     private static final long serialVersionUID = -717253137740953998L;
 
-    private static final Logger log = LoggerFactory.getLogger(PermissionRESTServiceClient.class);
-
     @Inject
     private ClientServiceUtil clientServiceUtil;
 
@@ -59,19 +56,23 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
     private OAFAccess oaf;
 
     /**
-     * Gets all permissions in the DB
-     *
-     * @return a list of system permissions in the db
-     * @throws MalformedURLException in case of malformed url
-     * @throws SystemException any issue when obtaining the records
+     * Fetches all permissions
+     * @param search value to be filtered
+     * @param pageNo of the information to be checked
+     * @param pageSize max page numbers for the necessary requested data
+     * @param sortBy list of values to sort request
+     * @param isAscending in case of true data will come ascending mode if false descending
+     * @return list of permissions
+     * @throws MalformedURLException in case of URL exception construction
+     * @throws SystemException in case of any communication error
      */
     @Override
-    public List<? extends SystemPermission> getAll() throws SystemException {
+    public Page<? extends SystemPermission> getAll(String search, int pageNo, int pageSize,
+                                                                  List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.getAll(null, 1, 100, null, true);
-            return PermissionPageModelMapper.map((InputStream) response.getEntity()).getResults();
+            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            return PermissionModelMapper.mapToPage((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }
@@ -89,9 +90,8 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
-            return PermissionPageModelMapper.map((InputStream) response.getEntity()).getResults();
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            log.error(e.getMessage(),e);
+            return PermissionModelMapper.mapToPage((InputStream) response.getEntity()).getResults();
+        } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -112,8 +112,7 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             SystemPermission permission = PermissionModelMapper.map((InputStream) response.getEntity());
             return Optional.ofNullable(permission);
 
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            log.error(e.getMessage(),e);
+        } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -133,8 +132,7 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             Response response = client.getPermissions(null, actionId, resourceId, true, true);
             return ListPermissionModelMapper.map((InputStream) response.getEntity());
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException e){
-            log.error(e.getMessage(),e);
+        catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -158,7 +156,7 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             } else {
                 return Optional.empty();
             }
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+        } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -180,8 +178,7 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch (ProcessingException | MalformedURLException e) {
-            log.error(e.getMessage(),e);
+        } catch (ProcessingException | MalformedURLException | WebApplicationException e) {
             throw new SystemException(e);
         }
         return false;
@@ -204,8 +201,7 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch (MalformedURLException | ProcessingException e) {
-            log.error(e.getMessage(),e);
+        } catch (MalformedURLException | ProcessingException | WebApplicationException e) {
             throw new SystemException(e);
         }
         return false;
@@ -228,11 +224,26 @@ public class PermissionRESTServiceClient implements PermissionRESTServiceAccess 
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch (MalformedURLException | ProcessingException e) {
-            log.error(e.getMessage(),e);
+        } catch (MalformedURLException | ProcessingException | WebApplicationException e) {
             throw new SystemException(e);
         }
         return false;
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent permissions.
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
     }
 
     @Override

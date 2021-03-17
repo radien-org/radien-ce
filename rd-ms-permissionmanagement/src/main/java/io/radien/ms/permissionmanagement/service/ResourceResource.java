@@ -31,7 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-
 /**
  * @author Newton Carvalho
  * Controller implementation responsible for deal with CRUD
@@ -137,6 +136,19 @@ public class ResourceResource implements ResourceResourceClient {
 		} catch (UniquenessConstraintException e) {
 			return getInvalidRequestResponse(e);
 		} catch (Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	/**
+	 * Will calculate how many records are existent in the db
+	 * @return the count of existent resources.
+	 */
+	@Override
+	public Response getTotalRecordsCount() {
+		try {
+			return Response.ok(resourceServiceAccess.getTotalRecordsCount()).build();
+		} catch(Exception e) {
 			return getGenericError(e);
 		}
 	}

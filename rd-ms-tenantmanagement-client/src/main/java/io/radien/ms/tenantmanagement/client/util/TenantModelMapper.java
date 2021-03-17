@@ -15,16 +15,13 @@
  */
 package io.radien.ms.tenantmanagement.client.util;
 
-import io.radien.api.model.tenant.SystemContract;
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
-import io.radien.ms.tenantmanagement.client.services.ContractFactory;
 import io.radien.ms.tenantmanagement.client.services.TenantFactory;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.InputStream;
@@ -42,27 +39,33 @@ public class TenantModelMapper {
         return TenantFactory.convertToJsonObject(model);
     }
 
-    /*public static JsonArray map(List<? extends Contract> models) {
-        final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        models.forEach(model -> {
-            JsonObject jsonObject = map(model);
-            arrayBuilder.add(jsonObject);
-        });
-        return arrayBuilder.build();
-    }
-
-    public static Contract map(InputStream is) throws ParseException {
-        try(JsonReader jsonReader = Json.createReader(is)) {
-            JsonObject jsonObject = jsonReader.readObject();
-
-            return ContractFactory.convert(jsonObject);
-        }
-    }*/
-
     public static List<? extends SystemTenant> mapList(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
             return TenantFactory.convert(jsonArray);
         }
+    }
+
+    public static SystemTenant map(InputStream is) throws ParseException {
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            return TenantFactory.convert(jsonReader.readObject());
+        }
+    }
+
+    /**
+     * Obtains a Permission Page from a Json input stream
+     * @param is
+     * @return
+     */
+    public static Page<Tenant> mapToPage(InputStream is) {
+        Page<Tenant> page = null;
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            JsonObject jsonObject = jsonReader.readObject();
+
+            page = TenantFactory.convertJsonToPage(jsonObject);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return page;
     }
 }

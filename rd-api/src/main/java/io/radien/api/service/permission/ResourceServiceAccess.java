@@ -21,6 +21,8 @@ import io.radien.api.model.permission.SystemResourceSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 
+import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,13 +47,15 @@ public interface ResourceServiceAccess extends ServiceAccess {
     public List<SystemResource> get(List<Long> resourceIds);
 
     /**
-     * Retrieves resources using pagination approach
-     * @param search
-     * @param pageNo Page number
-     * @param pageSize Page size
-     * @param sortBy Sorting fields
-     * @param isAscending Defines if ascending or descending in relation of sorting fields
-     * @return
+     * Fetches all resources
+     * @param search value to be filtered
+     * @param pageNo of the information to be checked
+     * @param pageSize max page numbers for the necessary requested data
+     * @param sortBy list of values to sort request
+     * @param isAscending in case of true data will come ascending mode if false descending
+     * @return list of resources
+     * @throws MalformedURLException in case of URL exception construction
+     * @throws ParseException in case of any issue parsing the response information
      */
     public Page<SystemResource> getAll(String search, int pageNo, int pageSize,
                               List<String> sortBy, boolean isAscending);
@@ -82,4 +86,9 @@ public interface ResourceServiceAccess extends ServiceAccess {
      */
     public List<? extends SystemResource> getResources(SystemResourceSearchFilter filter);
 
+    /**
+     * Count the number of all the resources existent in the DB.
+     * @return the count of resources
+     */
+    public long getTotalRecordsCount();
 }

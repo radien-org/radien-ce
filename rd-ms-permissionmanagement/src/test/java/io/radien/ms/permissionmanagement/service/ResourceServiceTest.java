@@ -18,7 +18,6 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceServiceAccess;
-import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.model.Resource;
@@ -47,7 +46,7 @@ public class ResourceServiceTest {
                 context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
 
         Page<? extends SystemResource> resourcePage =
-                resourceServiceAccess.getAll(null, 1, 10, null, true);
+                resourceServiceAccess.getAll(null, 0, 10, null, true);
         if (resourcePage.getTotalResults() > 0) {
             resourceTest = resourcePage.getResults().get(0);
         } else {
@@ -293,18 +292,18 @@ public class ResourceServiceTest {
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
 
-        Page<? extends SystemResource> resourcePage = resourceServiceAccess.getAll(null, 1, 10,
+        Page<? extends SystemResource> resourcePage = resourceServiceAccess.getAll(null, 0, 10,
                 orderby, true);
   
         assertTrue(resourcePage.getTotalResults()>=3);
 
         assertEquals("a",resourcePage.getResults().get(0).getName());
 
-        resourcePage = resourceServiceAccess.getAll(null, 1, 10, orderby, false);
+        resourcePage = resourceServiceAccess.getAll(null, 0, 10, orderby, false);
         assertTrue(resourcePage.getTotalResults()>=3);
         assertEquals("zzz",resourcePage.getResults().get(0).getName());
 
-        Page<? extends SystemResource> resourcePageWhere = resourceServiceAccess.getAll("a", 1, 10, null, true);
+        Page<? extends SystemResource> resourcePageWhere = resourceServiceAccess.getAll("a", 0, 10, null, true);
         assertTrue(resourcePageWhere.getTotalResults() == 1);
 
         assertEquals("a",resourcePageWhere.getResults().get(0).getName());
@@ -356,7 +355,7 @@ public class ResourceServiceTest {
                 new ResourceSearchFilter(null, false,true));
 
         // In necessary to count with the first ever inserted (variable "resourceTest")
-        assertEquals(8, resources.size());
+        assertEquals(14, resources.size());
 
         resources = resourceServiceAccess.getResources(new ResourceSearchFilter("xxx", true,true));
 
@@ -369,5 +368,11 @@ public class ResourceServiceTest {
         r.setName(name);
         r.setCreateUser(user);
         return r;
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = resourceServiceAccess.getTotalRecordsCount();
+        assertEquals(23, result);
     }
 }

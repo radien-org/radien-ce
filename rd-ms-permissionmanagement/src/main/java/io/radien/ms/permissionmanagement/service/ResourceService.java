@@ -83,9 +83,9 @@ public class ResourceService implements ResourceServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
-        Root<Resource> ResourceRoot = criteriaQuery.from(Resource.class);
-        criteriaQuery.select(ResourceRoot);
-        criteriaQuery.where(ResourceRoot.get("id").in(resourceId));
+        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
+        criteriaQuery.select(resourceRoot);
+        criteriaQuery.where(resourceRoot.get("id").in(resourceId));
 
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
@@ -131,7 +131,7 @@ public class ResourceService implements ResourceServiceAccess {
 
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo-1) * pageSize);
+        q.setFirstResult((pageNo) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemResource> systemResources = q.getResultList();
@@ -170,11 +170,11 @@ public class ResourceService implements ResourceServiceAccess {
         List<Resource> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
-        Root<Resource> ResourceRoot = criteriaQuery.from(Resource.class);
-        criteriaQuery.select(ResourceRoot);
-        Predicate global = criteriaBuilder.equal(ResourceRoot.get("name"), resource.getName());
+        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
+        criteriaQuery.select(resourceRoot);
+        Predicate global = criteriaBuilder.equal(resourceRoot.get("name"), resource.getName());
         if(resource.getId()!= null) {
-            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(ResourceRoot.get("id"), resource.getId()));
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(resourceRoot.get("id"), resource.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<Resource> q = em.createQuery(criteriaQuery);
@@ -191,9 +191,9 @@ public class ResourceService implements ResourceServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<Resource> criteriaDelete = cb.createCriteriaDelete(Resource.class);
-        Root<Resource> ResourceRoot = criteriaDelete.from(Resource.class);
+        Root<Resource> resourceRoot = criteriaDelete.from(Resource.class);
 
-        criteriaDelete.where(cb.equal(ResourceRoot.get("id"),resourceId));
+        criteriaDelete.where(cb.equal(resourceRoot.get("id"),resourceId));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -224,16 +224,26 @@ public class ResourceService implements ResourceServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
-        Root<Resource> ResourceRoot = criteriaQuery.from(Resource.class);
+        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
 
-        criteriaQuery.select(ResourceRoot);
+        criteriaQuery.select(resourceRoot);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, ResourceRoot);
+        Predicate global = getFilteredPredicate(filter, criteriaBuilder, resourceRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
+    }
+
+    /**
+     * Count the number of all the resources existent in the DB.
+     * @return the count of resources
+     */
+    @Override
+    public long getTotalRecordsCount() {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Resource.class), criteriaBuilder, getEntityManager());
     }
 
     private Predicate getFilteredPredicate(SystemResourceSearchFilter filter,
@@ -254,7 +264,7 @@ public class ResourceService implements ResourceServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, resourceRoot, global);;
+        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, resourceRoot, global);
 
         return global;
     }

@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.enterprise.context.RequestScoped;
 
@@ -27,14 +26,14 @@ import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.tenant.ContractRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
+import io.radien.ms.tenantmanagement.client.util.ContractModelMapper;
 import io.radien.ms.tenantmanagement.client.util.ListContractModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
@@ -48,8 +47,6 @@ import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 public class ContractRESTServiceClient implements ContractRESTServiceAccess {
     private static final long serialVersionUID = 7576466262027147334L;
 
-	private static final Logger log = LoggerFactory.getLogger(ContractRESTServiceClient.class);
-    
     @Inject
     private ClientServiceUtil clientServiceUtil;
 
@@ -156,16 +153,38 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
         return false;
     }
 
+    /**
+     * Retrieves all the contracts existent in the data base into a paginated mode
+     * @param pageNo of the data to be visualized
+     * @param pageSize is the max size of pages regarding the existent data to be checked
+     * @return a list of System contracts to be used
+     * @throws MalformedURLException in case of URL specification
+     * @throws ParseException in case of parsing or constructing the response
+     */
     @Override
-    public List<? extends SystemContract> getAll() throws MalformedURLException, ParseException {
+    public Page<? extends SystemContract> getAll(int pageNo, int pageSize) throws SystemException, MalformedURLException {
+        try {
+            ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.getAll(pageNo, pageSize);
+            return ContractModelMapper.mapToPage((InputStream) response.getEntity());
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent contracts.
+     */
+    public Long getTotalRecordsCount() throws SystemException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
-            Response response = client.get(null);
-            return ListContractModelMapper.map((InputStream) response.getEntity());
-        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
-            log.error(es.getMessage(),es);
-            throw es;
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
         }
     }
 
@@ -182,7 +201,6 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
             client = clientServiceUtil.
                     getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         } catch(MalformedURLException e) {
-            log.error(e.getMessage(),e);
             throw new MalformedURLException();
         }
 
@@ -192,7 +210,6 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
                 return true;
             }
         } catch(ProcessingException e) {
-            log.error(e.getMessage(),e);
             throw new ProcessingException(e);
         }
         return false;

@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.client.exception;
 
 import io.radien.exception.NotFoundException;
+import io.radien.exception.ProcessingException;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -31,11 +32,13 @@ public class RoleResponseExceptionMapperTest extends TestCase {
         RoleResponseExceptionMapper rRexceptionMapper = new RoleResponseExceptionMapper();
         boolean handlesException200 = rRexceptionMapper.handles(200, null);
         boolean handlesException400 = rRexceptionMapper.handles(400, null);
+        boolean handlesException401 = rRexceptionMapper.handles(401, null);
         boolean handlesException404 = rRexceptionMapper.handles(404, null);
         boolean handlesException500 = rRexceptionMapper.handles(500, null);
 
         assertFalse(handlesException200);
         assertTrue(handlesException400);
+        assertTrue(handlesException401);
         assertTrue(handlesException404);
         assertTrue(handlesException500);
 
@@ -52,11 +55,17 @@ public class RoleResponseExceptionMapperTest extends TestCase {
         Response responseBadRequest = Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
         Exception exceptionBadRequest = target.toThrowable(responseBadRequest);
 
+        Response responseUnathorized = Response.status(Response.Status.UNAUTHORIZED).entity(msg).build();
+        Exception exceptionUnathorized = target.toThrowable(responseUnathorized);
+
         Response responseNotFound = Response.status(Response.Status.NOT_FOUND).entity(msg).build();
         Exception exceptionNotFound = target.toThrowable(responseNotFound);
 
         Response responseInternalServerError = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         Exception exceptionInternalServerError = target.toThrowable(responseInternalServerError);
+
+        assertTrue(exceptionUnathorized instanceof ProcessingException);
+        assertEquals(msg,exceptionUnathorized.getMessage());
 
         assertTrue(exceptionBadRequest instanceof BadRequestException);
         assertEquals(msg,exceptionBadRequest.getMessage());

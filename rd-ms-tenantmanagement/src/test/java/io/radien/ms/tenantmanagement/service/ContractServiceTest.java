@@ -15,10 +15,13 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.entity.Page;
+import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.tenant.SystemContract;
 
 import io.radien.api.service.tenant.ContractServiceAccess;
 
+import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 
@@ -76,7 +79,6 @@ public class ContractServiceTest {
      * Tested methods: void save(User user)
      *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws NotFoundException in case no user was found after the save in the DB
      */
     @Test
     public void testAddUser() throws UserNotFoundException {
@@ -132,7 +134,6 @@ public class ContractServiceTest {
      * Tested methods: SystemUser get(Long userId)
      *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws NotFoundException in case no user was found after the save in the DB
      */
     @Test
     public void testGetById() throws UserNotFoundException, UniquenessConstraintException {
@@ -155,7 +156,6 @@ public class ContractServiceTest {
      * Tested methods: void delete(Long userId)
      *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws NotFoundException in case no user was found after the save in the DB
      */
     @Test
     public void testDeleteById() throws UserNotFoundException {
@@ -174,7 +174,6 @@ public class ContractServiceTest {
      * Tested methods: void delete(Long userId)
      *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws NotFoundException in case no user was found after the save in the DB
      */
     @Test
     public void testDeleteByListId() throws UserNotFoundException {
@@ -212,44 +211,37 @@ public class ContractServiceTest {
         assertEquals(name3, c1.getName());
         assertEquals(start3, c1.getStart());
         assertEquals(end3, c1.getEnd());
-
     }
 
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = contractServiceAccess.getTotalRecordsCount();
+        assertEquals(3, result);
+    }
 
-    /**
-     * Test updates the user information. Should be a failure in this test case and no information should be updated,
-     * since that we are updating user one with the information from user three, but using a duplicated email address.
-     * @throws Exception in case of user to be updated not found
-     */
-//    @Test
-//    public void testUpdateFailureDuplicatedEmail() throws Exception {
-//        String expectedMessageEmail = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-//                " one resource with the same value for the field: Email Address\"}";
-//
-//        User u1 = ContractFactory.create("testUpdateFailureDuplicatedEmailFirstName1", "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon1", "testUpdateFailureDuplicatedEmailSub1", "testUpdateFailureDuplicatedEmail1@testUpdateFailureDuplicatedEmail1.pt", 2L);
-//        contractServiceAccess.save(u1);
-//
-//        User u2 = ContractFactory.create("testUpdateFailureDuplicatedEmailFirstName2", "testUpdateFailureDuplicatedEmailLastName2", "testUpdateFailureDuplicatedEmailLogon2", "testUpdateFailureDuplicatedEmailSub2", "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
-//        contractServiceAccess.save(u2);
-//
-//        User u3 = ContractFactory.create("testUpdateFailureDuplicatedEmailFirstName1", "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon3", "testUpdateFailureDuplicatedEmailSub1", "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
-//
-//        Exception exceptionEmail = assertThrows(Exception.class, () -> contractServiceAccess.save(u3));
-//        String actualMessageEmail = exceptionEmail.getMessage();
-//        assertTrue(actualMessageEmail.contains(expectedMessageEmail));
-//
-//        User u4 = ContractFactory.create("testUpdateFailureDuplicatedEmailFirstName4", "testUpdateFailureDuplicatedEmailLastName4", "testUpdateFailureDuplicatedEmailLogon3", "testUpdateFailureDuplicatedEmailSub4", "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
-//
-//        Exception exceptionEmail2 = assertThrows(Exception.class, () -> contractServiceAccess.save(u4));
-//        String actualMessageEmail2 = exceptionEmail2.getMessage();
-//        assertTrue(actualMessageEmail2.contains(expectedMessageEmail));
-//    }
+    @Test
+    public void testGetAll() throws UniquenessConstraintException {
+        LocalDateTime start1  = LocalDateTime.now();
+        LocalDateTime end1 = LocalDateTime.now();
+        SystemContract c1 = new Contract(ContractFactory.create("getAll1",start1,end1,1L));
+        contractServiceAccess.create(c1);
+        SystemContract c2 = new Contract(ContractFactory.create("getAll2",start1,end1,1L));
+        contractServiceAccess.create(c2);
+        SystemContract c3 = new Contract(ContractFactory.create("getAll3",start1,end1,1L));
+        contractServiceAccess.create(c3);
 
+        Page<? extends SystemContract> page = contractServiceAccess.getAll(1, 10);
 
+        assertTrue(page.getTotalResults()>=3);
+    }
 
+    @Test
+    public void testExists() throws UniquenessConstraintException, NotFoundException {
+        LocalDateTime start1  = LocalDateTime.now();
+        LocalDateTime end1 = LocalDateTime.now();
+        SystemContract c1 = new Contract(ContractFactory.create("exists1",start1,end1,1L));
+        contractServiceAccess.create(c1);
 
-
-
-
-
+        assertTrue(contractServiceAccess.exists(c1.getId()));
+    }
 }

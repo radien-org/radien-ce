@@ -15,11 +15,11 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.ms.tenantmanagement.entities.Contract;
 import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +61,38 @@ public class TenantService implements TenantServiceAccess {
         return emh.getEm().find(Tenant.class, contractId);
     }
 
+    /**
+     * Gets all the tenants into a pagination mode.
+     * @param pageNo of the requested information. Where the user is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page of system tenants.
+     */
+    @Override
+    public Page<SystemTenant> getAll(int pageNo, int pageSize) {
+
+        log.info("Going to create a new pagination!");
+        EntityManager entityManager = emh.getEm();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tenant> criteriaQuery = criteriaBuilder.createQuery(Tenant.class);
+        Root<Tenant> tenantRoot = criteriaQuery.from(Tenant.class);
+
+        criteriaQuery.select(tenantRoot);
+        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+
+        TypedQuery<Tenant> q= entityManager.createQuery(criteriaQuery);
+
+        q.setFirstResult((pageNo) * pageSize);
+        q.setMaxResults(pageSize);
+
+        List<? extends SystemTenant> systemTenants = q.getResultList();
+
+        int totalRecords = Math.toIntExact(getCount(global, tenantRoot));
+        int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
+
+        log.info("New pagination ready to be showed!");
+
+        return new Page<SystemTenant>(systemTenants, pageNo, totalRecords, totalPages);
+    }
 
     /**
      * Gets all the tenants.
@@ -196,5 +228,35 @@ public class TenantService implements TenantServiceAccess {
         Long size = em.createQuery(criteriaQuery).getSingleResult();
 
         return size != 0;
+    }
+
+    /**
+     * Count the number of all the tenants existent in the DB.
+     * @return the count of tenants
+     */
+    @Override
+    public long getTotalRecordsCount() {
+        CriteriaBuilder criteriaBuilder = emh.getEm().getCriteriaBuilder();
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Tenant.class));
+    }
+
+    /**
+     * Count the number of tenants existent in the DB.
+     * @return the count of tenants
+     */
+    private long getCount(Predicate global, Root<Tenant> userRoot) {
+
+        log.info("Going to count the existent records.");
+        EntityManager em = emh.getEm();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+        criteriaQuery.where(global);
+
+        criteriaQuery.select(criteriaBuilder.count(userRoot));
+
+        TypedQuery<Long> q= em.createQuery(criteriaQuery);
+
+        return q.getSingleResult();
     }
 }

@@ -26,8 +26,6 @@ import io.radien.ms.permissionmanagement.model.Action;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.Predicate;
@@ -93,9 +91,9 @@ public class ActionService implements ActionServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
-        Root<Action> ActionRoot = criteriaQuery.from(Action.class);
-        criteriaQuery.select(ActionRoot);
-        criteriaQuery.where(ActionRoot.get("id").in(actionId));
+        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+        criteriaQuery.select(actionRoot);
+        criteriaQuery.where(actionRoot.get("id").in(actionId));
 
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
 
@@ -141,7 +139,7 @@ public class ActionService implements ActionServiceAccess {
 
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo-1) * pageSize);
+        q.setFirstResult((pageNo) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemAction> systemActions = q.getResultList();
@@ -180,11 +178,11 @@ public class ActionService implements ActionServiceAccess {
         List<Action> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
-        Root<Action> ActionRoot = criteriaQuery.from(Action.class);
-        criteriaQuery.select(ActionRoot);
-        Predicate global = criteriaBuilder.equal(ActionRoot.get("name"), action.getName());
+        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+        criteriaQuery.select(actionRoot);
+        Predicate global = criteriaBuilder.equal(actionRoot.get("name"), action.getName());
         if(action.getId()!= null) {
-            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(ActionRoot.get("id"), action.getId()));
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(actionRoot.get("id"), action.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<Action> q = em.createQuery(criteriaQuery);
@@ -201,9 +199,9 @@ public class ActionService implements ActionServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<Action> criteriaDelete = cb.createCriteriaDelete(Action.class);
-        Root<Action> ActionRoot = criteriaDelete.from(Action.class);
+        Root<Action> actionRoot = criteriaDelete.from(Action.class);
 
-        criteriaDelete.where(cb.equal(ActionRoot.get("id"),actionId));
+        criteriaDelete.where(cb.equal(actionRoot.get("id"),actionId));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -234,16 +232,26 @@ public class ActionService implements ActionServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
-        Root<Action> ActionRoot = criteriaQuery.from(Action.class);
+        Root<Action> actionRoot = criteriaQuery.from(Action.class);
 
-        criteriaQuery.select(ActionRoot);
+        criteriaQuery.select(actionRoot);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, ActionRoot);
+        Predicate global = getFilteredPredicate(filter, criteriaBuilder, actionRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
+    }
+
+    /**
+     * Count the number of all the actions existent in the DB.
+     * @return the count of existent actions
+     */
+    @Override
+    public long getTotalRecordsCount() {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Action.class), criteriaBuilder, getEntityManager());
     }
 
     private Predicate getFilteredPredicate(SystemActionSearchFilter filter,
@@ -264,7 +272,7 @@ public class ActionService implements ActionServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, actionRoot, global);;
+        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, actionRoot, global);
 
         return global;
     }

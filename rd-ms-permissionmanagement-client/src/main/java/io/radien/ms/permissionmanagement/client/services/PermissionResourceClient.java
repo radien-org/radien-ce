@@ -15,6 +15,9 @@
  */
 package io.radien.ms.permissionmanagement.client.services;
 
+import io.radien.ms.permissionmanagement.client.entities.GlobalHeaders;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
+
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -29,11 +32,12 @@ import java.util.List;
 @Path("permission")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RegisterClientHeaders(GlobalHeaders.class)
 public interface PermissionResourceClient {
 
     @GET
     public Response getAll(@QueryParam("search") String search,
-                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                           @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,
                            @DefaultValue("true") @QueryParam("asc") boolean isAscending);
@@ -76,4 +80,7 @@ public interface PermissionResourceClient {
     public Response hasPermission(@NotNull @PathParam("action") String action,
                                   @NotNull @PathParam("resource") String resource);
 
+    @GET
+    @Path("/countRecords")
+    public Response getTotalRecordsCount();
 }

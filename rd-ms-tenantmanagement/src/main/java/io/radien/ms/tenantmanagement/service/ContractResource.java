@@ -41,6 +41,36 @@ public class ContractResource implements ContractResourceClient {
 	@Inject
 	private ContractServiceAccess contractService;
 
+	/**
+	 * Gets all the contract information into a paginated mode and return those information to the user.
+	 * @param pageNo page number where the user is seeing the information.
+	 * @param pageSize number of contract to be showed in each page.
+	 * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
+	 * error.
+	 */
+	@Override
+	public Response getAll(int pageNo, int pageSize) {
+		try {
+			log.info("Will get all the role information I can find!");
+			return Response.ok(contractService.getAll(pageNo, pageSize)).build();
+		} catch(Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	/**
+	 * Will calculate how many records are existent in the db
+	 * @return the count of existent contracts.
+	 */
+	@Override
+	public Response getTotalRecordsCount() {
+		try {
+			return Response.ok(contractService.getTotalRecordsCount()).build();
+		} catch(Exception e) {
+			return getGenericError(e);
+		}
+	}
+
 	@Override
 	public Response get(String name) {
 		try {

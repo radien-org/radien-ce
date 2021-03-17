@@ -31,7 +31,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-
 /**
  * @author Newton Carvalho
  * Controller implementation responsible for deal with CRUD
@@ -137,6 +136,19 @@ public class ActionResource implements ActionResourceClient {
 		} catch (UniquenessConstraintException e) {
 			return getInvalidRequestResponse(e);
 		} catch (Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	/**
+	 * Will calculate how many records are existent in the db
+	 * @return the count of existent actions.
+	 */
+	@Override
+	public Response getTotalRecordsCount() {
+		try {
+			return Response.ok(actionServiceAccess.getTotalRecordsCount()).build();
+		} catch(Exception e) {
 			return getGenericError(e);
 		}
 	}

@@ -22,8 +22,12 @@
 
 * GET Data
   ------
-### - ___Get all roles:___
-    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role'
+### - ___Get all roles with pagination:___
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role?{fieldName}={fieldValue}' --data-raw ''
+ - Possible field names
+    - "pageNo" Long
+    - "pageSize" Long
+
 ### - ___Get all Linked authorization association:___
     curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization'
 #
@@ -49,6 +53,7 @@
     - "userId" Long
     - "isLogicalConjunction" boolean
 
+#
 ### - ___Exists specific association:___
     curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/exists?{fieldName}={fieldValue}' --data-raw ''
   - Possible field names
@@ -58,6 +63,10 @@
     - "userId" Long
     - "isLogicalConjunction" boolean
  
+#
+### - ___Get a count of all the existent records:___
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/role/countRecords'
+
 #
 #
 * POST Data

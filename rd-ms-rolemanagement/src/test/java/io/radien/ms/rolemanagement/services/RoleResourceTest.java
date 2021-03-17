@@ -185,7 +185,7 @@ public class RoleResourceTest {
      */
     @Test
     public void testExistsNotFoundException() throws RoleNotFoundException {
-        doThrow(new RoleNotFoundException("Not found")).when(roleBusinessService).exists(any(), any());
+        when(roleBusinessService.exists(any(), any())).thenReturn(false);
         Response response = roleResource.exists(1L, null);
         assertEquals(404,response.getStatus());
     }
@@ -231,5 +231,25 @@ public class RoleResourceTest {
         doThrow(new UniquenessConstraintException()).when(roleBusinessService).save(any());
         Response response = roleResource.save(new Role());
         assertEquals(400,response.getStatus());
+    }
+
+    /**
+     * Test the Get total records count request which will return a success message code 200.
+     */
+    @Test
+    public void testGetTotalRecordsCount() {
+        Response response = roleResource.getTotalRecordsCount();
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test the Get total records count request which will return a error message code 500.
+     */
+    @Test
+    public void testGetTotalRecordsCountException() {
+        when(roleResource.getTotalRecordsCount())
+                .thenThrow(new RuntimeException());
+        Response response = roleResource.getTotalRecordsCount();
+        assertEquals(500,response.getStatus());
     }
 }

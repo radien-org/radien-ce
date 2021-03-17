@@ -16,10 +16,13 @@
 package io.radien.api.service.permission;
 
 import io.radien.api.Appframeable;
+import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.exception.SystemException;
 
 import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +30,20 @@ import java.util.Optional;
  * Contract for Rest Service Client regarding Action domain object
  */
 public interface ActionRESTServiceAccess extends Appframeable {
+
+    /**
+     * Fetches all Actions
+     * @param search field value to be searched or looked up
+     * @param pageNo initial page number
+     * @param pageSize max page size
+     * @param sortBy sort by filter fields
+     * @param isAscending ascending result list or descending
+     * @return List of existent Actions
+     * @throws MalformedURLException in case of URL specification
+     * @throws ParseException in case of any issue when parsing the response
+     * @throws SystemException in any other kind of system issue
+     */
+    public Page<? extends SystemAction> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Retrieves a Action by Id
@@ -51,4 +68,10 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @throws MalformedURLException in case of URL specification
      */
     public boolean create(SystemAction action) throws SystemException;
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent actions.
+     */
+    public Long getTotalRecordsCount() throws SystemException;
 }

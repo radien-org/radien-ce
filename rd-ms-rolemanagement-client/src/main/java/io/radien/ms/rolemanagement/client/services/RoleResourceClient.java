@@ -15,7 +15,9 @@
  */
 package io.radien.ms.rolemanagement.client.services;
 
+import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.Role;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -31,16 +33,15 @@ import javax.ws.rs.core.Response;
 @Path("role")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RegisterClientHeaders(GlobalHeaders.class)
 public interface RoleResourceClient {
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
     @GET
     @Path("/find")
-    @Produces(MediaType.APPLICATION_JSON)
     public Response getSpecificRoles(@QueryParam("name") String name,
                                      @QueryParam("description") String description,
                                      @DefaultValue("true") @QueryParam("isExact") boolean isExact,
@@ -48,7 +49,6 @@ public interface RoleResourceClient {
 
     @GET
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@PathParam("id") Long id);
 
     @DELETE
@@ -56,12 +56,15 @@ public interface RoleResourceClient {
     public Response delete(@NotNull @PathParam("id") long id);
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response save(Role role);
 
     @GET
     @Path("/exists")
     public Response exists(@QueryParam("id") Long id,
                            @QueryParam("name") String name);
+
+    @GET
+    @Path("/countRecords")
+    public Response getTotalRecordsCount();
 
 }

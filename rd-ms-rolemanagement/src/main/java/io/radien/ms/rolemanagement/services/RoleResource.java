@@ -161,13 +161,23 @@ public class RoleResource implements RoleResourceClient {
                 return Response.ok().build();
             }
             return getRoleNotFoundException();
-        } catch (RoleNotFoundException e) {
-            return getRoleNotFoundException();
         } catch (Exception e) {
             return getGenericError(e);
         }
     }
 
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent roles.
+     */
+    @Override
+    public Response getTotalRecordsCount() {
+        try {
+            return Response.ok(roleBusinessService.getTotalRecordsCount()).build();
+        } catch(Exception e) {
+            return getGenericError(e);
+        }
+    }
 
     /**
      * Invalid Request error exception. Launches a 400 Error Code to the user.

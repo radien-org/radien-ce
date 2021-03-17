@@ -19,7 +19,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -83,4 +82,9 @@ public interface ActionServiceAccess extends ServiceAccess {
      */
     public List<? extends SystemAction> getActions(SystemActionSearchFilter filter);
 
+    /**
+     * Count the number of all the actions existent in the DB.
+     * @return the count of existent actions
+     */
+    public long getTotalRecordsCount();
 }

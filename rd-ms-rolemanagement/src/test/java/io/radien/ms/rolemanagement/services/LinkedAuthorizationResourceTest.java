@@ -210,4 +210,24 @@ public class LinkedAuthorizationResourceTest {
         Response response = linkedAuthorizationResource.existsSpecificAssociation(2L, 2L, 2L, 2L, true);
         assertEquals(404 ,response.getStatus());
     }
+
+    /**
+     * Test the Get total records count request which will return a success message code 200.
+     */
+    @Test
+    public void testGetTotalRecordsCount() {
+        Response response = linkedAuthorizationResource.getTotalRecordsCount();
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test the Get total records count request which will return a error message code 500.
+     */
+    @Test
+    public void testGetTotalRecordsCountException() {
+        when(linkedAuthorizationResource.getTotalRecordsCount())
+                .thenThrow(new RuntimeException());
+        Response response = linkedAuthorizationResource.getTotalRecordsCount();
+        assertEquals(500,response.getStatus());
+    }
 }

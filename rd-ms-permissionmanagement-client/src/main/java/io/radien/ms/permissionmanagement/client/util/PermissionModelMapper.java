@@ -15,6 +15,7 @@
  */
 package io.radien.ms.permissionmanagement.client.util;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.services.PermissionFactory;
 
@@ -66,6 +67,19 @@ public class PermissionModelMapper {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
             return PermissionFactory.convert(jsonObject);
+        }
+    }
+
+    /**
+     * Obtains a Permission Page from a Json input stream
+     * @param is
+     * @return
+     */
+    public static Page<Permission> mapToPage(InputStream is) {
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            JsonObject jsonObject = jsonReader.readObject();
+
+            return PermissionFactory.convertJsonToPage(jsonObject);
         }
     }
 }

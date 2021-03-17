@@ -406,7 +406,7 @@ public class PermissionRESTServiceClientTest {
     /** Testing that were missing  */
 
     @Test
-    public void testGetAll() throws MalformedURLException {
+    public void testGetAll() throws MalformedURLException, SystemException {
         List<Permission> list = new ArrayList<>();
         list.add(PermissionFactory.create("add contract", 1L, 2L, 3L));
         list.add(PermissionFactory.create("delete contract", 2L, 2L, 3L));
@@ -423,23 +423,25 @@ public class PermissionRESTServiceClientTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
         Response expectedResponse = Response.ok(inputStream).build();
 
+        List<String> sortBy = new ArrayList<>();
+        String filter = "%contract%";
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
                 then(i -> resourceClient);
-        when(resourceClient.getAll(null, 1, 100, null, true)).
+        when(resourceClient.getAll(filter, 1, 100, sortBy, true)).
                 then(i -> expectedResponse);
 
-        List<? extends SystemPermission> list1 = null;
+        Page resultPage = null;
         try {
-            list1 = target.getAll();
+            resultPage = target.getAll(filter, 1, 100, sortBy, true);
         }
         catch (Exception e) {
             fail("should not happen here...");
         }
 
-        assertNotNull(list1);
-        assertFalse(list1.isEmpty());
-
+        assertNotNull(resultPage);
+        assertFalse(page.getResults().isEmpty());
+        assertEquals(page.getResults().size(), 3);
     }
 
     @Test
@@ -464,7 +466,7 @@ public class PermissionRESTServiceClientTest {
         when(resourceClient.getAll(null, 1, 100, null, true)).
                 then(i -> expectedResponse);
 
-        assertThrows(SystemException.class, () -> target.getAll());
+        assertThrows(SystemException.class, () -> target.getAll(null, 1, 100, null, true));
     }
 
     @Test
@@ -542,5 +544,28 @@ public class PermissionRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.delete(1L));
     }
 
+    @Test
+    public void testGetTotalRecordsCount() throws MalformedURLException {
+        Permission permission = PermissionFactory.create("test", null,null, null);
 
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(PermissionFactory.convertToJsonObject(permission));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+
+        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
+
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+
+        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
+    }
 }

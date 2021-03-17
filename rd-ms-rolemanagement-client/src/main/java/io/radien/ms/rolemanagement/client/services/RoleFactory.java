@@ -15,7 +15,9 @@
  */
 package io.radien.ms.rolemanagement.client.services;
 
+import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.ProcessingException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,10 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +42,8 @@ import java.util.stream.Collectors;
 public class RoleFactory {
 
     private static final Logger log = LoggerFactory.getLogger(RoleFactory.class);
+
+    private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     /**
      * Create a role with already predefined fields.
@@ -71,17 +79,27 @@ public class RoleFactory {
         String name = FactoryUtilService.getStringFromJson("name", jsonRole);
         String description = FactoryUtilService.getStringFromJson("description", jsonRole);
         Long createUser = FactoryUtilService.getLongFromJson("createUser", jsonRole);
+        String terminationDateAsString = FactoryUtilService.getStringFromJson("terminationDate", jsonRole);
 
         Role role = new Role();
         role.setId(id);
         role.setName(name);
         role.setDescription(description);
+        if (terminationDateAsString != null) {
+            try {
+                role.setTerminationDate(format.parse(terminationDateAsString));
+            } catch (ParseException e) {
+                log.error("Error converting Json into Role object, value with invalid format for termination Date", e);
+                throw new RuntimeException("Error parsing terminationDate", e);
+            }
+        }
         role.setCreateUser(createUser);
         role.setCreateDate(new Date());
         role.setLastUpdate(new Date());
 
         log.info("Client will begin to create a new Role object with the specific values received in the json" +
-                " ID: {}, Name: {}, Description: {}, Created User: {}", id, name, description, createUser);
+                " ID: {}, Name: {}, Description: {}, Termination Date: {}, Created User: {}", id, name,
+                description, role.getTerminationDate(), createUser);
 
         return role;
     }
@@ -95,16 +113,40 @@ public class RoleFactory {
     public static JsonObject convertToJsonObject(Role role) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        FactoryUtilService.addValue(builder, "id", role.getId());
+        FactoryUtilService.addValueLong(builder, "id", role.getId());
         FactoryUtilService.addValue(builder, "name", role.getName());
         FactoryUtilService.addValue(builder, "description", role.getDescription());
         FactoryUtilService.addValueLong(builder, "createUser", role.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", role.getLastUpdateUser());
-
+        if (role.getTerminationDate() != null) {
+            FactoryUtilService.addValue(builder, "terminationDate", format.format(role.getTerminationDate()));
+        }
         log.info("Will begin to create a new json object with the specific values received in the give role" +
-                " ID: {}, Name: {}, Description: {}, Created User: {}", role.getId(), role.getName(), role.getDescription(), role.getCreateUser());
+                " ID: {}, Name: {}, Description: {}, Termination Date: {}, Created User: {}", role.getId(), role.getName(),
+                role.getDescription(), role.getTerminationDate(), role.getCreateUser());
 
         return builder.build();
+    }
+
+    /**
+     * Converts a JsonObject into a Permission Page object
+     * @param page the JsonObject to convert
+     * @return the Page encapsulating information regarding permissions
+     */
+    public static Page<Role> convertJsonToPage(JsonObject page) {
+        int currentPage = FactoryUtilService.getIntFromJson("currentPage", page);
+        JsonArray results = FactoryUtilService.getArrayFromJson("results", page);
+        int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
+        int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
+
+        ArrayList<Role> pageResults = new ArrayList();
+
+        if(results != null){
+            for(int i = 0;i<results.size();i++){
+                pageResults.add(convert(results.getJsonObject(i)));
+            }
+        }
+        return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 
     public static List<Role> convert(JsonArray jsonArray) {

@@ -17,6 +17,7 @@ package io.radien.ms.permissionmanagement.client;
 
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
+import io.radien.exception.ProcessingException;
 import io.radien.ms.permissionmanagement.client.exceptions.BadRequestException;
 import io.radien.ms.permissionmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.permissionmanagement.client.exceptions.NotFoundException;
@@ -25,6 +26,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * @author Bruno Gama
+ */
 @Provider
 public class PermissionResponseExceptionMapper implements
         ResponseExceptionMapper<Exception> {
@@ -32,6 +36,7 @@ public class PermissionResponseExceptionMapper implements
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
+                || statusCode == 401    // Not Authorized
                 || statusCode == 404    // Not Found
                 || statusCode == 500;   // Internal Server Error
     }
@@ -40,6 +45,7 @@ public class PermissionResponseExceptionMapper implements
     public Exception toThrowable(Response response) {
         switch(response.getStatus()) {
             case 400: return new BadRequestException(response.readEntity(String.class));
+            case 401: return new ProcessingException(response.readEntity(String.class));
             case 404: return new NotFoundException(response.readEntity(String.class));
             case 500: return new InternalServerErrorException(response.readEntity(String.class));
         }

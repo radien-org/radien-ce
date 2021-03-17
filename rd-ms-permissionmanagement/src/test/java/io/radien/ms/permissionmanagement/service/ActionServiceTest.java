@@ -48,7 +48,7 @@ public class ActionServiceTest {
                 context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
 
         Page<? extends SystemAction> actionPage =
-                actionServiceAccess.getAll(null, 1, 10, null, true);
+                actionServiceAccess.getAll(null, 0, 10, null, true);
         if (actionPage.getTotalResults() > 0) {
             actionTest = actionPage.getResults().get(0);
         } else {
@@ -67,15 +67,21 @@ public class ActionServiceTest {
      * @throws io.radien.ms.permissionmanagement.client.exceptions.NotFoundException in case no Action was found after the save in the DB
      */
     @Test
-    public void testAddAction() throws ActionNotFoundException {
+    public void testAddAction() {
         SystemAction result = actionServiceAccess.get(actionTest.getId());
         assertNotNull(result);
     }
 
     @Test
-    public void testGetNotExistentAction() throws ActionNotFoundException {
+    public void testGetNotExistentAction() {
         SystemAction result = actionServiceAccess.get(111111111L);
         assertNull(result);
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = actionServiceAccess.getTotalRecordsCount();
+        assertEquals(17, result);
     }
 
     /**
@@ -108,7 +114,7 @@ public class ActionServiceTest {
      * @throws ActionNotFoundException in case no Action was found after the save in the DB
      */
     @Test
-    public void testGetById() throws ActionNotFoundException, UniquenessConstraintException {
+    public void testGetById() throws UniquenessConstraintException {
         Action u = ActionFactory.create("testGetIdFirstName", 2L);
         actionServiceAccess.save(u);
         SystemAction result = actionServiceAccess.get(u.getId());
@@ -125,7 +131,7 @@ public class ActionServiceTest {
      * @throws UniquenessConstraintException in case of requested action is not well constructed
      */
     @Test
-    public void testGetByListOfIds() throws UniquenessConstraintException, ActionNotFoundException {
+    public void testGetByListOfIds() throws UniquenessConstraintException {
         Action p1 = ActionFactory.create("testGetByListOfIdsFirstName1", 2L);
         actionServiceAccess.save(p1);
 
@@ -155,7 +161,7 @@ public class ActionServiceTest {
      * @throws ActionNotFoundException in case no Action was found after the save in the DB
      */
     @Test
-    public void testDeleteById() throws ActionNotFoundException {
+    public void testDeleteById() {
         SystemAction result = actionServiceAccess.get(actionTest.getId());
         assertNotNull(result);
         assertEquals(actionTest.getName(), result.getName());
@@ -175,7 +181,7 @@ public class ActionServiceTest {
      * @throws ActionNotFoundException in case no Action was found after the save in the DB
      */
     @Test
-    public void testDeleteByListOfIds() throws ActionNotFoundException, UniquenessConstraintException {
+    public void testDeleteByListOfIds() throws UniquenessConstraintException {
         SystemAction p1 = ActionFactory.create("testDeleteByListOfIdsFirstName1", 2L);
         actionServiceAccess.save(p1);
 
@@ -280,7 +286,7 @@ public class ActionServiceTest {
     }
 
     @Test
-    public void testGetAllSort() throws UniquenessConstraintException, ActionNotFoundException {
+    public void testGetAllSort() throws UniquenessConstraintException {
         SystemAction actionA = ActionFactory.create("a", 2L);
         actionServiceAccess.save(actionA);
         SystemAction actionB = ActionFactory.create("zzz", 2L);
@@ -291,24 +297,24 @@ public class ActionServiceTest {
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
 
-        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1, 10,
+        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 0, 10,
                 orderby, true);
   
         assertTrue(actionPage.getTotalResults()>=3);
 
         assertEquals("a",actionPage.getResults().get(0).getName());
 
-        actionPage = actionServiceAccess.getAll(null, 1, 10, orderby, false);
+        actionPage = actionServiceAccess.getAll(null, 0, 10, orderby, false);
         assertTrue(actionPage.getTotalResults()>=3);
         assertEquals("zzz",actionPage.getResults().get(0).getName());
 
-        Page<? extends SystemAction> actionPageWhere = actionServiceAccess.getAll("a", 1, 10, null, true);
+        Page<? extends SystemAction> actionPageWhere = actionServiceAccess.getAll("a", 0, 10, null, true);
         assertTrue(actionPageWhere.getTotalResults() == 1);
 
         assertEquals("a",actionPageWhere.getResults().get(0).getName());
     }
     @Test
-    public void testGetByIsExactOrLogical() throws UniquenessConstraintException, ActionNotFoundException {
+    public void testGetByIsExactOrLogical() throws UniquenessConstraintException {
         SystemAction testById1 = ActionFactory.create("zz", 1L);
         SystemAction testById2 = ActionFactory.create("aa", 1L);
         SystemAction testById3 = ActionFactory.create("aabb", 1L);

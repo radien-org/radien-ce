@@ -17,8 +17,10 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
@@ -35,11 +37,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Santana
  */
-@Stateless @Default
+@Stateless
+@Default
 public class TenantRESTServiceClient implements TenantRESTServiceAccess {
 	private static final long serialVersionUID = 4007939167636938896L;
 
@@ -54,6 +58,23 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
     /**
      * Gets the contract in the DB searching for the field Name
      *
+     * @param id to be looked after
+     * @return Optional Contract
+     */
+    @Override
+    public Optional<SystemTenant> getTenantById(Long id) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
+        try {
+            TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.getById(id);
+            return Optional.of(TenantModelMapper.map((InputStream) response.getEntity()));
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
+            throw es;
+        }
+    }
+    /**
+     * Gets the contract in the DB searching for the field Name
+     *
      * @param name to be looked after
      * @return Optional Contract
      */
@@ -64,22 +85,28 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
 
             Response response = client.get(name);
             return TenantModelMapper.mapList((InputStream) response.getEntity());
-        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
-            log.error(es.getMessage(),es);
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
             throw es;
         }
     }
 
+    /**
+     * Gets all the tenants in the DB
+     * @param pageNo to be show the information
+     * @param pageSize number of max pages of information
+     * @return list of system tenants
+     * @throws MalformedURLException if URL is malformed
+     * @throws ParseException in case of any issue parsing the json response
+     */
     @Override
-    public List<? extends SystemTenant> getAll() throws MalformedURLException, ParseException {
+    public Page<? extends SystemTenant> getAll(int pageNo, int pageSize) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-
-            Response response = client.get(null);
-            return TenantModelMapper.mapList((InputStream) response.getEntity());
-        }        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
-            log.error(es.getMessage(),es);
-            throw es;
+            Response response = client.getAll(pageNo, pageSize);
+            return TenantModelMapper.mapToPage((InputStream) response.getEntity());
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
         }
     }
 
@@ -100,7 +127,6 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
             throw pe;
         }
     }
@@ -116,7 +142,6 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
             throw pe;
         }
     }
@@ -132,7 +157,6 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
             throw pe;
         }
     }
@@ -150,7 +174,6 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
             client = clientServiceUtil.
                     getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         } catch(MalformedURLException e) {
-            log.error(e.getMessage(),e);
             throw new MalformedURLException();
         }
 
@@ -160,9 +183,24 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return true;
             }
         } catch(ProcessingException e) {
-            log.error(e.getMessage(),e);
             throw new ProcessingException(e);
         }
         return false;
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent tenants.
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
     }
 }

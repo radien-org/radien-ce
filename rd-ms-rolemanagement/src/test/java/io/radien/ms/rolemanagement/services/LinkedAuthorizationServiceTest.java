@@ -60,7 +60,7 @@ public class LinkedAuthorizationServiceTest {
         linkedAuthorizationServiceAccess = (LinkedAuthorizationServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//LinkedAuthorizationService");
         roleServiceAccess = (RoleServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//RoleService");
 
-        Page<? extends SystemLinkedAuthorization> rolePage = linkedAuthorizationServiceAccess.getAll(1, 10);
+        Page<? extends SystemLinkedAuthorization> rolePage = linkedAuthorizationServiceAccess.getAll(0, 10);
         if(rolePage.getTotalResults()>0) {
             systemLinkedAuthorization = rolePage.getResults().get(0);
         } else {
@@ -106,7 +106,7 @@ public class LinkedAuthorizationServiceTest {
 
         List<? extends SystemLinkedAuthorization> list = linkedAuthorizationServiceAccess.getSpecificAssociation(filter);
 
-        assertTrue(list.size() == 1);
+        assertEquals(1, list.size());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class LinkedAuthorizationServiceTest {
 
         List<? extends SystemLinkedAuthorization> list = linkedAuthorizationServiceAccess.getSpecificAssociation(filter);
 
-        assertTrue(list.size() == 2);
+        assertEquals(2, list.size());
     }
 
     @Test
@@ -229,5 +229,11 @@ public class LinkedAuthorizationServiceTest {
 
         SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(400L, null, 400L, null, true);
         assertTrue(linkedAuthorizationServiceAccess.exists(filter));
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = linkedAuthorizationServiceAccess.getTotalRecordsCount();
+        assertEquals(9, result);
     }
 }

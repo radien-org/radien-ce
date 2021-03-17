@@ -23,15 +23,19 @@ radien Tenant Management Microservice
 
 * GET Data
   ------
+### - ___Get all tenants with pagination:___
+    curl --location --request GET 'http://localhost:8082/tenantmanagementservice/v1/contract?{fieldName}={fieldValue}' --data-raw ''
+- Possible field names
+  - "pageNo" Long
+  - "pageSize" Long
+#
 ### - ___Get contract by ID:___
     curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
-#
 ### - ___Get tenant by ID:___
     curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/tenant/{id}'
 #
 ### - ___Get list of contracts:___
     curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract'
-#
 ### - ___Get list of tenants:___
     curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/tenant'
 #
@@ -48,7 +52,6 @@ radien Tenant Management Microservice
         "createDate": null,
         "lastUpdate": null
       }' http://localhost:8082/tenantmanagementservice/v1/contract
-#
 ### - ___Create tenant:___
     curl -H "Content-Type: application/json" -X POST \
       --data-raw '{
@@ -72,7 +75,6 @@ radien Tenant Management Microservice
         "createDate": null,
         "lastUpdate": null
       }' http://localhost:8082/tenantmanagementservice/v1/contract/{id}
-#
 ### - ___Update tenant:___
     curl -H "Content-Type: application/json" -X POST \
       --data-raw '{
@@ -88,6 +90,5 @@ radien Tenant Management Microservice
   ------
 ### - ___Delete Contract by ID:___
     curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
-#
 ### - ___Delete Tenant by ID:___
     curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/tenant/{id}'

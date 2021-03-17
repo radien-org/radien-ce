@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-
 /**
  * @author Newton Carvalho
  * Controller implementation responsible for deal with CRUD
@@ -274,6 +273,19 @@ public class PermissionResource implements PermissionResourceClient {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
 		catch(Exception e) {
+			return getGenericError(e);
+		}
+	}
+
+	/**
+	 * Will calculate how many records are existent in the db
+	 * @return the count of existent permissions.
+	 */
+	@Override
+	public Response getTotalRecordsCount() {
+		try {
+			return Response.ok(permissionServiceAccess.getTotalRecordsCount()).build();
+		} catch(Exception e) {
 			return getGenericError(e);
 		}
 	}

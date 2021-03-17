@@ -53,7 +53,7 @@ public class RoleServiceTest {
 
         roleServiceAccess = (RoleServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//RoleService");
 
-        Page<? extends SystemRole> rolePage = roleServiceAccess.getAll(1, 10);
+        Page<? extends SystemRole> rolePage = roleServiceAccess.getAll(0, 10);
         if(rolePage.getTotalResults()>0) {
             systemRole = rolePage.getResults().get(0);
         } else {
@@ -150,5 +150,11 @@ public class RoleServiceTest {
 
         testUpdate2.setId(id);
         roleServiceAccess.save(testUpdate2);
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = roleServiceAccess.getTotalRecordsCount();
+        assertEquals(6, result);
     }
 }

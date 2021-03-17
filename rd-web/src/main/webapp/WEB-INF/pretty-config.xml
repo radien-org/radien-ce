@@ -39,6 +39,15 @@
 		<view-id value="/module/role/role.oaf" />
 	</url-mapping>
 	
+	<url-mapping id="linkedauthorizations">
+		<pattern value="/module/linkedauthorizations" />
+		<view-id value="/module/linkedauthorizations/linkedauthorizations.oaf" />
+	</url-mapping>
+	<url-mapping id="linkedauthorization">
+		<pattern value="/module/linkedauthorization" />
+		<view-id value="/module/linkedauthorization/linkedauthorization.oaf" />
+	</url-mapping>
+
 	<!-- Permissionsmanagement -->
 	<url-mapping id="permissions">
 		<pattern value="/module/permissions" />
@@ -49,6 +58,24 @@
 		<view-id value="/module/permission/permission.oaf" />
 	</url-mapping>
 	
+	<url-mapping id="actions">
+		<pattern value="/module/actions" />
+		<view-id value="/module/permissions/actions.oaf" />
+	</url-mapping>
+	<url-mapping id="action">
+		<pattern value="/module/action" />
+		<view-id value="/module/permission/action.oaf" />
+	</url-mapping>
+
+	<url-mapping id="resources">
+		<pattern value="/module/resources" />
+		<view-id value="/module/permissions/resources.oaf" />
+	</url-mapping>
+	<url-mapping id="resource">
+		<pattern value="/module/resource" />
+		<view-id value="/module/permission/resource.oaf" />
+	</url-mapping>
+
 	<!-- Contractsmanagement -->
 	<url-mapping id="contracts">
 		<pattern value="/module/contracts" />
@@ -57,6 +84,15 @@
 	<url-mapping id="contract">
 		<pattern value="/module/contract" />
 		<view-id value="/module/contract/contract.oaf" />
+	</url-mapping>
+
+	<url-mapping id="tenants">
+		<pattern value="/module/tenants" />
+		<view-id value="/module/tenants/tenants.oaf" />
+	</url-mapping>
+	<url-mapping id="tenant">
+		<pattern value="/module/tenant" />
+		<view-id value="/module/tenant/tenant.oaf" />
 	</url-mapping>
 
 	<url-mapping id="content_public">

@@ -32,7 +32,6 @@ import java.util.List;
 
 /**
  * @author Santana
- *
  */
 @RequestScoped
 public class TenantResource implements TenantResourceClient {
@@ -40,6 +39,24 @@ public class TenantResource implements TenantResourceClient {
 	private static final Logger log = LoggerFactory.getLogger(TenantResource.class);
 	@Inject
 	private TenantServiceAccess tenantService;
+
+
+	/**
+	 * Gets all the tenant information into a paginated mode and return those information to the user.
+	 * @param pageNo page number where the user is seeing the information.
+	 * @param pageSize number of tenants to be showed in each page.
+	 * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
+	 * error.
+	 */
+	@Override
+	public Response getAll(int pageNo, int pageSize) {
+		try {
+			log.info("Will get all the role information I can find!");
+			return Response.ok(tenantService.getAll(pageNo, pageSize)).build();
+		} catch(Exception e) {
+			return getGenericError(e);
+		}
+	}
 
 	@Override
 	public Response get(String name) {
@@ -110,6 +127,19 @@ public class TenantResource implements TenantResourceClient {
 			return Response.ok(tenantService.exists(id)).build();
 		}catch (NotFoundException e){
 			return getResourceNotFoundException();
+		}
+	}
+
+	/**
+	 * Will calculate how many records are existent in the db
+	 * @return the count of existent tenants.
+	 */
+	@Override
+	public Response getTotalRecordsCount() {
+		try {
+			return Response.ok(tenantService.getTotalRecordsCount()).build();
+		} catch(Exception e) {
+			return getGenericError(e);
 		}
 	}
 

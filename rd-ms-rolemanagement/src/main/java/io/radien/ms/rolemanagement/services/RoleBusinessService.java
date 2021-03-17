@@ -22,8 +22,6 @@ import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.Role;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -37,8 +35,6 @@ import java.util.List;
 public class RoleBusinessService implements Serializable {
 
     private static final long serialVersionUID = -8256825318630144628L;
-
-    private static final Logger log = LoggerFactory.getLogger(RoleBusinessService.class);
 
     @Inject
     private RoleServiceAccess roleServiceAccess;
@@ -102,7 +98,15 @@ public class RoleBusinessService implements Serializable {
      * @param name to be searched
      * @return true in case role does exist, false if not
      */
-    public boolean exists(Long id, String name) throws RoleNotFoundException {
+    public boolean exists(Long id, String name) {
         return roleServiceAccess.checkIfRolesExist(id, name);
+    }
+
+    /**
+     * Will count how many roles are existent in the db
+     * @return a count of all the roles
+     */
+    public long getTotalRecordsCount() {
+        return roleServiceAccess.getTotalRecordsCount();
     }
 }

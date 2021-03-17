@@ -15,7 +15,6 @@
  */
 package io.radien.ms.rolemanagement.services;
 
-import io.radien.api.OAFAccess;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
@@ -28,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -44,9 +42,6 @@ public class RoleService implements RoleServiceAccess {
 
     @PersistenceContext(unitName = "rolePersistenceUnit")
     private EntityManager entityManager;
-
-    @Inject
-    OAFAccess oaf;
 
     private static final Logger log = LoggerFactory.getLogger(RoleService.class);
 
@@ -70,7 +65,7 @@ public class RoleService implements RoleServiceAccess {
 
         TypedQuery<Role> q= entityManager.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo-1) * pageSize);
+        q.setFirstResult((pageNo) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemRole> systemRoles = q.getResultList();
@@ -184,6 +179,16 @@ public class RoleService implements RoleServiceAccess {
         TypedQuery<Long> q= entityManager.createQuery(criteriaQuery);
 
         return q.getSingleResult();
+    }
+
+    /**
+     * Count the number of all the roles existent in the DB.
+     * @return the count of roles
+     */
+    @Override
+    public long getTotalRecordsCount() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Role.class));
     }
 
     /**

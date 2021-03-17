@@ -18,6 +18,8 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemContract;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
@@ -31,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
@@ -62,6 +65,47 @@ public class RoleRESTServiceClientTest {
     @Before
     public void before(){
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGetAll() throws MalformedURLException, SystemException {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueInt(builder, "currentPage", 1);
+        FactoryUtilService.addValueInt(builder, "totalPages", 1);
+        FactoryUtilService.addValueInt(builder, "totalResults", 1);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeObject(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleResourceClient.getAll(1, 10)).thenReturn(response);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+
+        List<? extends SystemRole> list = new ArrayList<>();
+
+        List<? extends SystemRole> returnedList = target.getAll(1, 10).getResults();
+
+        assertEquals(list, returnedList);
+    }
+
+    @Test
+    public void testGetAllException() throws Exception {
+        boolean success = false;
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
+        try {
+            target.getAll(1, 10);
+        }catch (SystemException se){
+            success = true;
+        }
+        assertTrue(success);
     }
 
     @Test

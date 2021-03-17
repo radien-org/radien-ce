@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.util;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.tenantmanagement.client.services.ContractFactory;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 
@@ -53,5 +54,23 @@ public class ContractModelMapper {
 
             return ContractFactory.convert(jsonObject);
         }
+    }
+
+    /**
+     * Obtains a Permission Page from a Json input stream
+     * @param is
+     * @return
+     */
+    public static Page<Contract> mapToPage(InputStream is) {
+        Page<Contract> page = null;
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            JsonObject jsonObject = jsonReader.readObject();
+
+            page = ContractFactory.convertJsonToPage(jsonObject);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return page;
     }
 }

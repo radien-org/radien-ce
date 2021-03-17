@@ -17,6 +17,7 @@ package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.exception.SystemException;
@@ -37,6 +38,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +60,45 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
     private ClientServiceUtil clientServiceUtil;
 
     /**
+     * Fetches all resources
+     * @param search value to be filtered
+     * @param pageNo of the information to be checked
+     * @param pageSize max page numbers for the necessary requested data
+     * @param sortBy list of values to sort request
+     * @param isAscending in case of true data will come ascending mode if false descending
+     * @return list of resources
+     * @throws MalformedURLException in case of URL exception construction
+     * @throws ParseException in case of any issue parsing the response information
+     */
+    @Override
+    public Page<? extends SystemResource> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            return ResourceModelMapper.mapToPage((InputStream) response.getEntity());
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent resources.
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Gets an Resource in the DB searching for the field Id
      *
      * @param id to be looked after
@@ -74,7 +115,6 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
             return Optional.ofNullable(action);
 
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
     }
@@ -99,7 +139,6 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
     }
@@ -116,7 +155,6 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
 			client = clientServiceUtil.getResourceResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 		} catch (MalformedURLException e) {
-			log.error(e.getMessage(),e);
             throw new SystemException(e);
 		}
         try (Response response = client.save((Resource)action)) {
@@ -127,7 +165,6 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException e) {
-        	log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
     }

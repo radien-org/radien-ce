@@ -19,7 +19,6 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
-import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
@@ -41,7 +40,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -287,4 +285,81 @@ public class ActionRESTServiceClientTest {
         }
         assertTrue(success);
     }
+
+    @Test
+    public void testGetActions() throws MalformedURLException {
+        List<Action> list = new ArrayList<>();
+        list.add(ActionFactory.create("add", 1L));
+        list.add(ActionFactory.create("delete", 2L));
+        list.add(ActionFactory.create("update", 3L));
+        Page<SystemAction> page = new Page<>(list, 1, 3, 1);
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
+                .add("currentPage", page.getCurrentPage())
+                .add("totalResults", page.getTotalResults())
+                .add("totalPages", page.getTotalPages())
+                .add("results", ActionModelMapper.map(list));
+
+        JsonObject jsonObject = objectBuilder.build();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
+        Response expectedResponse = Response.ok(inputStream).build();
+
+        List<String> sortBy = new ArrayList<>();
+
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).
+                then(i -> resourceClient);
+        when(resourceClient.getAll("action%", 1, 100, sortBy, true)).
+                then(i -> expectedResponse);
+
+        Page<? extends SystemAction> retrievedPage = null;
+        try {
+            retrievedPage = target.getAll("action%", 1, 100, sortBy, true);
+        }
+        catch (Exception e) {
+            fail("should not happen here...");
+        }
+        assertNotNull(retrievedPage);
+        assertNotNull(retrievedPage.getResults());
+        assertFalse(retrievedPage.getResults().isEmpty());
+        assertEquals(retrievedPage.getResults().size(), 3);
+    }
+
+    @Test
+    public void testGetActionsWhenFailure() throws MalformedURLException {
+        List<String> sortBy = new ArrayList<>();
+        Response errorResponse = Response.status(500).build();
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).
+                thenThrow(new ProcessingException("error"));
+        when(resourceClient.getAll("action%", 1, 100, sortBy, true)).
+                then(i -> errorResponse);
+        assertThrows(SystemException.class, () -> target.getAll("action%", 1, 100, sortBy, true));
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() throws MalformedURLException {
+        Action action = ActionFactory.create("test", null);
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(ActionFactory.convertToJsonObject(action));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
+
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+
+        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
+    }
+
 }

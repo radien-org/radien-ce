@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.tenant;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.NotFoundException;
@@ -29,6 +30,20 @@ import java.util.List;
  * @author Bruno Gama
  */
 public interface ContractServiceAccess extends ServiceAccess {
+
+    /**
+     * Retrieves all the requested contracts from the db
+     * @param pageNo page that the data will be visualized
+     * @param pageSize max number of pages to be returned
+     * @return a pagination of System Contracts
+     */
+    public Page<SystemContract> getAll(int pageNo, int pageSize);
+
+    /**
+     * Count the number of all the contracts existent in the DB.
+     * @return the count of contracts
+     */
+    public long getTotalRecordsCount();
 
     /**
      * Gets the System Contract searching by the PK (id).

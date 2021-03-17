@@ -20,7 +20,6 @@ import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
-import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.List;
@@ -74,4 +73,10 @@ public interface LinkedAuthorizationServiceAccess extends ServiceAccess {
      * @return true (If finds some LinkedAuthorization for the informed filter), otherwise false
      */
     public boolean exists(SystemLinkedAuthorizationSearchFilter filter);
+
+    /**
+     * Count the number of all the contracts existent in the DB.
+     * @return the count of users
+     */
+    public long getTotalRecordsCount();
 }

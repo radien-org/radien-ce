@@ -20,12 +20,19 @@ import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.exception.SystemException;
 
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
  * @author Bruno Gama
  */
 public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
+
+    /**
+     * Fetches all Linked Authorizations
+     * @return List of Linked Authorizations
+     */
+    public List<? extends SystemLinkedAuthorization> getAll(int pageNo, int pageSize) throws MalformedURLException, ParseException;
 
     /**
      * Check if a LinkedAuthorization exists for Tenant, User, Permission or Role.
@@ -52,4 +59,10 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @throws MalformedURLException in case of URL specification
      */
     public boolean create(SystemLinkedAuthorization linkedAuthorization) throws SystemException;
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent linked authorizations.
+     */
+    public Long getTotalRecordsCount() throws SystemException;
 }

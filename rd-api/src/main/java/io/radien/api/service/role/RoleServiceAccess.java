@@ -30,6 +30,12 @@ public interface RoleServiceAccess extends ServiceAccess {
 
     public SystemRole get(Long roleId) throws RoleNotFoundException;
 
+    /**
+     * Gets all the role into a pagination mode.
+     * @param pageNo of the requested information. Where the user is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page of system roles.
+     */
     public Page<SystemRole> getAll(int pageNo, int pageSize);
 
     public List<? extends SystemRole> getSpecificRoles(SystemRoleSearchFilter filter);
@@ -45,4 +51,10 @@ public interface RoleServiceAccess extends ServiceAccess {
      * @return true if it exists.
      */
     public boolean checkIfRolesExist(Long roleId, String name);
+
+    /**
+     * Count the number of all the roles existent in the DB.
+     * @return the count of roles
+     */
+    public long getTotalRecordsCount();
 }

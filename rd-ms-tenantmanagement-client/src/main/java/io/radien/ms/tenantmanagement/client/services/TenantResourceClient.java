@@ -15,7 +15,9 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
+import io.radien.ms.tenantmanagement.client.entities.GlobalHeaders;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -27,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -36,7 +39,13 @@ import javax.ws.rs.core.Response;
 @Path("tenant")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RegisterClientHeaders(GlobalHeaders.class)
 public interface TenantResourceClient {
+
+    @GET
+    @Path("/getAll")
+    public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
     @GET
     public Response get(@QueryParam("name") String name);
@@ -60,4 +69,7 @@ public interface TenantResourceClient {
     @Path("/exists/{id}")
     public Response exists(@NotNull @PathParam("id") Long id);
 
+    @GET
+    @Path("/countRecords")
+    public Response getTotalRecordsCount();
 }

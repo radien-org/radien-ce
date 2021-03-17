@@ -18,6 +18,7 @@ package io.radien.ms.tenantmanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
@@ -40,7 +41,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -292,7 +292,51 @@ public class ContractRESTServiceClientTest {
 
     @Test
     public void testGetAll() throws Exception {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueInt(builder, "currentPage", 1);
+        FactoryUtilService.addValueInt(builder, "totalPages", 1);
+        FactoryUtilService.addValueInt(builder, "totalResults", 1);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeObject(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(resourceClient.getAll(0, 10)).thenReturn(response);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+
+        List<? extends SystemContract> list = new ArrayList<>();
+
+        List<? extends SystemContract> returnedList = target.getAll(0, 10).getResults();
+
+        assertEquals(list, returnedList);
+    }
+
+    @Test
+    public void testGetAllException() throws Exception {
+        boolean success = false;
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
+        try {
+            target.getAll(1, 100);
+        }catch (SystemException es){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testGetTotalRecordsCount() throws MalformedURLException {
+        Contract contract = ContractFactory.create("test", null,null, null);
+
         JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(ContractFactory.convertToJsonObject(contract));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonWriter jsonWriter = Json.createWriter(baos);
@@ -305,23 +349,10 @@ public class ContractRESTServiceClientTest {
 
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
 
-        when(resourceClient.get(null))
-                .thenReturn(response);
+        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
 
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
-        assertEquals(0,target.getAll().size());
-    }
-
-    @Test
-    public void testGetAllException() throws Exception {
-        boolean success = false;
-        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new ExtensionException(new Exception()));
-        try {
-            target.getAll();
-        }catch (ExtensionException es){
-            success = true;
-        }
-        assertTrue(success);
+        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
     }
 }

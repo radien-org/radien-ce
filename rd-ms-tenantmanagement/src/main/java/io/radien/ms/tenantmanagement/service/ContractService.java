@@ -15,12 +15,12 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 
 import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
-import io.radien.exception.NotFoundException;
 import io.radien.ms.tenantmanagement.entities.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +64,68 @@ public class ContractService implements ContractServiceAccess {
         return emh.getEm().find(Contract.class, contractId);
     }
 
+    /**
+     * Gets all the contracts into a pagination mode.
+     * @param pageNo of the requested information. Where the user is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page of system contracts.
+     */
+    @Override
+    public Page<SystemContract> getAll(int pageNo, int pageSize) {
+
+        log.info("Going to create a new pagination!");
+        EntityManager entityManager = emh.getEm();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Contract> criteriaQuery = criteriaBuilder.createQuery(Contract.class);
+        Root<Contract> contractRoot = criteriaQuery.from(Contract.class);
+
+        criteriaQuery.select(contractRoot);
+        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+
+        TypedQuery<Contract> q= entityManager.createQuery(criteriaQuery);
+
+        q.setFirstResult((pageNo) * pageSize);
+        q.setMaxResults(pageSize);
+
+        List<? extends SystemContract> systemContracts= q.getResultList();
+
+        int totalRecords = Math.toIntExact(getCount(global, contractRoot));
+        int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
+
+        log.info("New pagination ready to be showed!");
+
+        return new Page<SystemContract>(systemContracts, pageNo, totalRecords, totalPages);
+    }
+
+    /**
+     * Count the number of contracts existent in the DB.
+     * @return the count of contracts
+     */
+    private long getCount(Predicate global, Root<Contract> userRoot) {
+
+        log.info("Going to count the existent records.");
+        EntityManager em = emh.getEm();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+        criteriaQuery.where(global);
+
+        criteriaQuery.select(criteriaBuilder.count(userRoot));
+
+        TypedQuery<Long> q= em.createQuery(criteriaQuery);
+
+        return q.getSingleResult();
+    }
+
+    /**
+     * Count the number of all the contracts existent in the DB.
+     * @return the count of contracts
+     */
+    @Override
+    public long getTotalRecordsCount() {
+        CriteriaBuilder criteriaBuilder = emh.getEm().getCriteriaBuilder();
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Contract.class));
+    }
 
     /**
      * Gets all the contracts.

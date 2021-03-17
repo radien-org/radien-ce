@@ -15,6 +15,7 @@
  */
 package io.radien.ms.permissionmanagement.client.services;
 
+import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 
@@ -23,6 +24,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,5 +104,26 @@ public class PermissionFactory {
      */
     public static List<Permission> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
+    }
+
+    /**
+     * Converts a JsonObject into a Permission Page object
+     * @param page the JsonObject to convert
+     * @return the Page encapsulating information regarding permissions
+     */
+    public static Page<Permission> convertJsonToPage(JsonObject page) {
+        int currentPage = FactoryUtilService.getIntFromJson("currentPage", page);
+        JsonArray results = FactoryUtilService.getArrayFromJson("results", page);
+        int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
+        int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
+
+        ArrayList<Permission> pageResults = new ArrayList();
+
+        if(results != null){
+            for(int i = 0;i<results.size();i++){
+                pageResults.add(convert(results.getJsonObject(i)));
+            }
+        }
+        return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 }

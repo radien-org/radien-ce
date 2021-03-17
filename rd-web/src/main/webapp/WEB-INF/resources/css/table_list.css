@@ -1,0 +1,21 @@
+html,
+body {
+    height: 100%;
+}
+
+.tableContainer {
+    height: 100%;
+    margin-top: 6em;
+    justify-content: center;
+    align-items: center;
+}
+
+.myDialog {
+    padding: 0em !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.headerInformation {
+    padding-left: 2em !important;
+}

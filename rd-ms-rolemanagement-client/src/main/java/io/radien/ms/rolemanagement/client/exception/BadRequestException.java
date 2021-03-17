@@ -18,7 +18,7 @@ package io.radien.ms.rolemanagement.client.exception;
 /**
  * @author Bruno Gama
  */
-public class BadRequestException extends Exception {
+public class BadRequestException extends RuntimeException {
 
     private static final long serialVersionUID = 5485575161734022041L;
 

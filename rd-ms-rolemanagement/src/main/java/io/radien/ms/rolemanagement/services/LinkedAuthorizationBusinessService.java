@@ -132,4 +132,11 @@ public class LinkedAuthorizationBusinessService implements Serializable {
         linkedAuthorizationServiceAccess.deleteAssociation(associationId);
     }
 
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent tenants.
+     */
+    public long getTotalRecordsCount() {
+        return linkedAuthorizationServiceAccess.getTotalRecordsCount();
+    }
 }

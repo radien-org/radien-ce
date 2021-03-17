@@ -16,6 +16,7 @@
 package io.radien.api.service.permission;
 
 import io.radien.api.Appframeable;
+import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.exception.SystemException;
 
@@ -31,9 +32,16 @@ public interface PermissionRESTServiceAccess extends Appframeable {
 
     /**
      * Fetches all permissions
+     * @param search value to be filtered
+     * @param pageNo of the information to be checked
+     * @param pageSize max page numbers for the necessary requested data
+     * @param sortBy list of values to sort request
+     * @param isAscending in case of true data will come ascending mode if false descending
      * @return list of permissions
+     * @throws MalformedURLException in case of URL exception construction
+     * @throws SystemException in case of any communication error
      */
-    public List<? extends SystemPermission> getAll() throws MalformedURLException, SystemException;
+    public Page<? extends SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException, SystemException;
 
     /**
      * Fetches list of specific permissions
@@ -80,4 +88,10 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @return true in case of success
      */
     public boolean isPermissionExistent(Long permissionId , String permissionName) throws SystemException;
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent permissions.
+     */
+    public Long getTotalRecordsCount() throws SystemException;
 }

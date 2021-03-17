@@ -17,6 +17,7 @@ package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionRESTServiceAccess;
 import io.radien.exception.SystemException;
@@ -27,7 +28,7 @@ import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -37,6 +38,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +46,8 @@ import java.util.Optional;
  * @author Newton Carvalho
  * Implementation for Rest Service Client regarding Action domain object
  */
-@Stateless @Default
+@RequestScoped
+@Default
 public class ActionRESTServiceClient implements ActionRESTServiceAccess {
 
 	private static final long serialVersionUID = 1L;
@@ -56,6 +59,30 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    /**
+     * Fetches all Actions
+     * @param search field value to be searched or looked up
+     * @param pageNo initial page number
+     * @param pageSize max page size
+     * @param sortBy sort by filter fields
+     * @param isAscending ascending result list or descending
+     * @return a list of existent system actions
+     * @throws MalformedURLException
+     * @throws ParseException
+     */
+    @Override
+    public Page<? extends SystemAction> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
+            ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            return ActionModelMapper.mapToPage((InputStream) response.getEntity());
+        }
+
+        catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
 
     /**
      * Gets an Action in the DB searching for the field Id
@@ -73,7 +100,6 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
             return Optional.ofNullable(action);
 
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
     }
@@ -98,7 +124,6 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
     }
@@ -115,7 +140,6 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
 			client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 		} catch (MalformedURLException e) {
-			log.error(e.getMessage(),e);
             throw new SystemException(e);
 		}
         try (Response response = client.save((Action)action)) {
@@ -126,7 +150,6 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException e) {
-        	log.error(e.getMessage(),e);
             throw new SystemException(e);
         }
     }
@@ -135,6 +158,23 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
             return ActionFactory.convert(jsonArray);
+        }
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent actions.
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
         }
     }
 

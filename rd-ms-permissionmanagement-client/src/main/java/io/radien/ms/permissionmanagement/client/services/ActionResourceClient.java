@@ -15,6 +15,9 @@
  */
 package io.radien.ms.permissionmanagement.client.services;
 
+import io.radien.ms.permissionmanagement.client.entities.GlobalHeaders;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
+
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -24,6 +27,7 @@ import java.util.List;
 @Path("action")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RegisterClientHeaders(GlobalHeaders.class)
 public interface ActionResourceClient {
 
     @GET
@@ -49,5 +53,9 @@ public interface ActionResourceClient {
 
     @POST
     public Response save(io.radien.ms.permissionmanagement.client.entities.Action action);
+
+    @GET
+    @Path("/countRecords")
+    public Response getTotalRecordsCount();
 
 }

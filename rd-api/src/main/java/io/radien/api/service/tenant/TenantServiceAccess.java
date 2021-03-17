@@ -15,11 +15,11 @@
  */
 package io.radien.api.service.tenant;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-
 
 import java.util.Collection;
 import java.util.List;
@@ -28,6 +28,14 @@ import java.util.List;
  * @author Santana
  */
 public interface TenantServiceAccess extends ServiceAccess {
+
+    /**
+     * Gets all the tenants into a pagination mode.
+     * @param pageNo of the requested information. Where the user is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page of system tenants.
+     */
+    public Page<SystemTenant> getAll(int pageNo, int pageSize);
 
     public SystemTenant get(Long tenantId) ;
 
@@ -48,4 +56,9 @@ public interface TenantServiceAccess extends ServiceAccess {
      */
     public boolean exists(Long tenantId) throws NotFoundException;
 
+    /**
+     * Count the number of all the tenants existent in the DB.
+     * @return the count of tenants
+     */
+    public long getTotalRecordsCount();
 }
