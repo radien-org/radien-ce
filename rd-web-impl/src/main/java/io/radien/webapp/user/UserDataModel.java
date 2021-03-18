@@ -15,9 +15,19 @@
  */
 package io.radien.webapp.user;
 
+
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.SystemException;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
+
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -26,16 +36,41 @@ import java.util.List;
 
 public class UserDataModel extends LazyDataModel<SystemUser> {
     private List<? extends SystemUser> datasource;
+    private UserRESTServiceAccess userService;
 
-    public UserDataModel(List<? extends SystemUser> datasource) {
-        this.datasource = datasource;
+    public UserDataModel(UserRESTServiceAccess userService) {
+        this.userService = userService;
+        this.datasource = new ArrayList<>();
     }
 
-    public List<? extends SystemUser> getDatasource() {
-        return datasource;
+    @Override
+    public SystemUser getRowData(String rowKey) {
+        for (SystemUser user : datasource) {
+            if (user.getId() == Integer.parseInt(rowKey)) {
+                return user;
+            }
+        }
+        return null;
     }
 
-    public void setDatasource(List<? extends SystemUser> dataSource) {
-        this.datasource = dataSource;
+    @Override
+    public String getRowKey(SystemUser user) {
+        return String.valueOf(user.getId());
+    }
+
+    @Override
+    public List<SystemUser> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
+        Long rowCount = 0L;
+        try {
+            datasource = userService.getAll(null,(offset/pageSize),pageSize,null,true);
+
+            rowCount = userService.getTotalRecordsCount();
+        } catch (MalformedURLException | SystemException e) {
+            e.printStackTrace();
+        }
+
+        setRowCount(Math.toIntExact(rowCount));
+
+        return datasource.stream().collect(Collectors.toList());
     }
 }

@@ -47,4 +47,6 @@ public interface UserRESTServiceAccess extends Appframeable{
     public boolean deleteUser(long id);
 
     public boolean updateUser(SystemUser user);
+
+    public Long getTotalRecordsCount() throws SystemException;
 }

@@ -17,20 +17,23 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserRESTServiceAccess;
-import io.radien.webapp.security.UserSession;
 
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import java.io.Serializable;
-import java.util.List;
+
 
 /**
  *
@@ -38,87 +41,34 @@ import java.util.List;
  */
 
 @Named("userTableUI")
-@ViewScoped
+@SessionScoped
 public class UserManager implements Serializable {
     private static final long serialVersionUID = -4406564138942194059L;
     private static final Logger log = LoggerFactory.getLogger(UserManager.class);
 
-    @Inject
-    private UserRESTServiceAccess userService;
+    private LazyDataModel<? extends SystemUser> lazyModel;
 
-    @Inject
-    private UserSession userSession;
-
-    private UserDataModel userDataModel;
-    private List<? extends SystemUser> datasource;
     private SystemUser selectedUser;
-    private boolean validationTrue;
+
+    @Inject
+    private UserRESTServiceAccess service;
 
     @PostConstruct
     public void init() {
-        validationTrue = false;
-        initModel();
+        lazyModel = new UserDataModel(service);
     }
 
-    public void initModel() {
-        datasource = userService.getUserList();
-        log.info("loading user dataModel");
-        userDataModel = new UserDataModel(datasource);
-        log.info("loaded user dataModel");
+    public void onload() {
+        init();
     }
 
-    public UserDataModel getUserDataModel() {
-        return userDataModel;
+    public LazyDataModel<? extends SystemUser> getLazyModel() {
+        return lazyModel;
     }
 
-    public void setUserDataModel(UserDataModel userDataModel) {
-        this.userDataModel = userDataModel;
+    public void setLazyModel(LazyDataModel<? extends SystemUser> lazyModel) {
+        this.lazyModel = lazyModel;
     }
-
-
-    public String getProfile(SystemUser row) {
-        userSession.setSelectedUser(row);
-        return "pretty:user";
-    }
-
-    public void updateUser() {
-        if (selectedUser != null) {
-            userService.updateUser(selectedUser);
-        }
-    }
-
-    public String initiateResetPassword() {
-        if (userSession.getSelectedUser() != null) {
-            validationTrue = userService.setInitiateResetPassword(userSession.getSelectedUser().getId());
-            userSession.setValidationTrue(validationTrue);
-        }
-        return null;
-    }
-
-    public String backToDatatable() {
-        setValidationTrue(false);
-        userSession.setValidationTrue(validationTrue);
-        return "pretty:users";
-    }
-
-    public String deleteUser(SystemUser user) {
-        if (user != null) {
-            validationTrue = userService.deleteUser(user.getId());
-            if (validationTrue) {
-                initModel();
-            }
-        }
-        return "pretty:users";
-    }
-
-    public boolean isValidationTrue() {
-        return validationTrue;
-    }
-
-    public void setValidationTrue(boolean validationTrue) {
-        this.validationTrue = validationTrue;
-    }
-
 
     public SystemUser getSelectedUser() {
         return selectedUser;
@@ -126,6 +76,19 @@ public class UserManager implements Serializable {
 
     public void setSelectedUser(SystemUser selectedUser) {
         this.selectedUser = selectedUser;
+    }
+
+    public UserRESTServiceAccess getService() {
+        return service;
+    }
+
+    public void setService(UserRESTServiceAccess service) {
+        this.service = service;
+    }
+
+    public void onRowSelect(SelectEvent<SystemUser> event) {
+        FacesMessage msg = new FacesMessage("User Selected", String.valueOf(event.getObject().getId()));
+        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }
 
