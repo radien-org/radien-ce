@@ -246,4 +246,13 @@ public class UserResource implements UserResourceClient {
 			return getResponseFromException(e);
 		}
 	}
+
+	@Override
+	public Response getTotalRecordsCount() {
+		try {
+			return Response.ok(userBusinessService.getTotalRecordsCount()).build();
+		} catch(Exception e) {
+			return getGenericError(e);
+		}
+	}
 }

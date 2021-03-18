@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
@@ -31,7 +32,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,6 +120,10 @@ public class UserBusinessService implements Serializable {
 
 	public List<? extends SystemUser> getUserList() {
 		return userServiceAccess.getUserList();
+	}
+
+	public Long getTotalRecordsCount() throws SystemException {
+		return userServiceAccess.getTotalRecordsCount();
 	}
 
 }

@@ -227,6 +227,18 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
         }
     }
 
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
 	@Override
 	public OAFAccess getOAF() {
 		return oaf;
