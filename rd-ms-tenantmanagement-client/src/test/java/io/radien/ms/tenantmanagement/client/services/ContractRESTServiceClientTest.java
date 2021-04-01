@@ -192,7 +192,18 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
         assertTrue(target.create(new Contract()));
+    }
 
+    @Test
+    public void testCreateMalformedException() throws MalformedURLException {
+        boolean success = false;
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
+        try {
+            target.create(new Contract());
+        }catch (MalformedURLException se){
+            success = true;
+        }
+        assertTrue(success);
     }
 
     @Test
@@ -202,7 +213,6 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
         assertFalse(target.create(new Contract()));
-
     }
 
     @Test
@@ -226,6 +236,18 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
         assertTrue(target.delete(1L));
+    }
+
+    @Test
+    public void testDeleteMalformedException() throws MalformedURLException {
+        boolean success = false;
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
+        try {
+            target.delete(2L);
+        }catch (MalformedURLException se){
+            success = true;
+        }
+        assertTrue(success);
     }
 
     @Test
@@ -260,7 +282,21 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
         assertTrue(target.update(1L, contract));
+    }
 
+    @Test
+    public void testUpdateMalformedException() throws MalformedURLException {
+        boolean success = false;
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
+        try {
+            Contract contract = new Contract();
+            contract.setId(1L);
+
+            target.update(2L, contract);
+        }catch (MalformedURLException se){
+            success = true;
+        }
+        assertTrue(success);
     }
 
     @Test
@@ -354,5 +390,50 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
         assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
+    }
+
+    @Test
+    public void testIsContractExistent() throws MalformedURLException {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+        when(resourceClient.exists(any())).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+
+        assertTrue(target.isContractExistent(2L));
+    }
+
+
+    @Test
+    public void testIsContractExistentMalformedException() throws MalformedURLException {
+        boolean success = false;
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
+        try {
+            target.isContractExistent(2L);
+        }catch (MalformedURLException se){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testIsContractExistentFail() throws MalformedURLException {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+        when(resourceClient.exists(any())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+
+        assertFalse(target.isContractExistent(2L));
+    }
+
+    @Test
+    public void testIsContractExistentProcessingException() throws MalformedURLException {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+        when(resourceClient.exists(any())).thenThrow(new ProcessingException(""));
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        boolean success = false;
+        try {
+            target.isContractExistent(2L);
+        }catch (ProcessingException es){
+            success = true;
+        }
+        assertTrue(success);
     }
 }

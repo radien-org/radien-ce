@@ -17,8 +17,12 @@ package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
+import io.radien.exception.TenantException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.slf4j.Logger;
@@ -53,12 +57,12 @@ public class TenantService implements TenantServiceAccess {
     /**
      * Gets the System Contract searching by the PK (id).
      *
-     * @param contractId to be searched.
+     * @param tenantId to be searched.
      * @return the system contract requested to be found.
      */
     @Override
-    public SystemTenant get(Long contractId) {
-        return emh.getEm().find(Tenant.class, contractId);
+    public SystemTenant get(Long tenantId) {
+        return emh.getEm().find(Tenant.class, tenantId);
     }
 
     /**
@@ -95,14 +99,12 @@ public class TenantService implements TenantServiceAccess {
     }
 
     /**
-     * Gets all the tenants.
-     * Can be filtered by name
-     *
-     * @param name specific logon or user email
-     * @return a List of system contracts.
+     * Gets all the tenants matching the given filte information
+     * @param filter information to search
+     * @return a list o found system tenants
      */
     @Override
-    public List<? extends SystemTenant> get(String name) {
+    public List<? extends SystemTenant> get(SystemTenantSearchFilter filter) {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Tenant> criteriaQuery = criteriaBuilder.createQuery(Tenant.class);
@@ -110,15 +112,69 @@ public class TenantService implements TenantServiceAccess {
 
         criteriaQuery.select(root);
 
-        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        if (name != null) {
-            global = criteriaBuilder.and(global,
-                    criteriaBuilder.equal(root.get("name"), name));
-            criteriaQuery.where(global);
+        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+
+        criteriaQuery.where(global);
+        TypedQuery<Tenant> q = em.createQuery(criteriaQuery);
+
+        return q.getResultList();
+
+    }
+
+    /**
+     * Is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
+     * the predicate is build with the logic (start,operator,newPredicate)
+     * where start represents the already joined predicates
+     * operator is "and" or "or"
+     * depending on the operator the start may need to be true or false
+     * true and predicate1 and predicate2
+     * false or predicate1 or predicate2
+     * @param filter information to be search
+     * @param criteriaBuilder to be used
+     * @param tenantRoot table to be search
+     * @return a filtered predicate
+     */
+    private Predicate getFilteredPredicate(SystemTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot) {
+        Predicate global;
+        if(filter.isLogicConjunction()) {
+            global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        } else {
+            global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        TypedQuery<Tenant> q = em.createQuery(criteriaQuery);
-        return q.getResultList();
+        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, tenantRoot, global);
+        global = getFieldPredicate("type", filter.getType(), filter, criteriaBuilder, tenantRoot, global);
+
+        return global;
+    }
+
+    /**
+     * Puts the requested fields into a predicate line
+     * @param name of the field
+     * @param value of the field
+     * @param filter complete filter
+     * @param criteriaBuilder to be used
+     * @param tenantRoot table to be used
+     * @param global predicate to be added
+     * @return a constructed predicate
+     */
+    private Predicate getFieldPredicate(String name, Object value, SystemTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot, Predicate global) {
+        if(value != null) {
+            Predicate subPredicate;
+            if (value instanceof String && !filter.isExact()) {
+                subPredicate = criteriaBuilder.like(tenantRoot.get(name),"%"+value+"%");
+            }
+            else {
+                subPredicate = criteriaBuilder.equal(tenantRoot.get(name), value);
+            }
+
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, subPredicate);
+            } else {
+                global = criteriaBuilder.or(global, subPredicate);
+            }
+        }
+        return global;
     }
 
     /**
@@ -128,7 +184,8 @@ public class TenantService implements TenantServiceAccess {
      * @throws UniquenessConstraintException in case of duplicated email/duplicated logon
      */
     @Override
-    public void create(SystemTenant tenant) throws UniquenessConstraintException {
+    public void create(SystemTenant tenant) throws UniquenessConstraintException, TenantException {
+        validateTenant(tenant);
         List<Tenant> alreadyExistentRecords = searchDuplicatedFields(tenant);
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(tenant);
@@ -144,12 +201,125 @@ public class TenantService implements TenantServiceAccess {
      * @throws UniquenessConstraintException in case of duplicated name
      */
     @Override
-    public void update(SystemTenant tenant) throws UniquenessConstraintException {
+    public void update(SystemTenant tenant) throws UniquenessConstraintException, TenantException {
+        validateTenant(tenant);
         List<Tenant> alreadyExistentRecords = searchDuplicatedFields(tenant);
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(tenant);
         } else {
             throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+        }
+    }
+
+    /**
+     * The purpose for this method is to validate a tenant before it being inserted or updated
+     * @param tenant Tenant to be checked
+     * @throws TenantException in case of any coherence on the data
+     */
+    private void validateTenant(SystemTenant tenant) throws TenantException {
+        if (validateIfFieldsAreEmpty(tenant.getName())) {
+            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("name"));
+        }
+
+        if (validateIfFieldsAreEmpty(tenant.getKey())) {
+            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("key"));
+        }
+
+        if (tenant.getType() == null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("type"));
+        }
+
+        if ((tenant.getEnd() != null && tenant.getStart() != null) && tenant.getEnd().compareTo(tenant.getStart()) <= 0) {
+            throw new TenantException(ErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString());
+        }
+
+        if (tenant.getType() == TenantType.ROOT_TENANT) {
+            validateRootTenant(tenant);
+        }
+
+        if(tenant.getType() == TenantType.CLIENT_TENANT) {
+            validateClientTenant(tenant);
+        }
+
+        if(tenant.getType() == TenantType.SUB_TENANT) {
+            validateSubTenant(tenant);
+        }
+    }
+
+    /**
+     * Will validate if given fields are empty or null
+     * @param field to be validated
+     * @return true in case that given field is null or empty ("")
+     */
+    private boolean validateIfFieldsAreEmpty(String field) {
+        if(field != null && !field.trim().isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates rules for the root tenants
+     * @param tenant to be validated
+     * @throws TenantException in case of any issue in the rules
+     */
+    private void validateRootTenant(SystemTenant tenant) throws TenantException {
+        if (tenant.getParentId() != null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_ROOT_WITH_PARENT.toString());
+        }
+
+        if(tenant.getClientId() != null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_ROOT_WITH_CLIENT.toString());
+        }
+
+        // There must only exist one Root Tenant
+        List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getName(), false, false));
+        if (!list.isEmpty()) {
+            if (tenant.getId() == null || list.size() > 1 || !list.get(0).getId().equals(tenant.getId())) {
+                throw new TenantException(ErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString());
+            }
+        }
+    }
+
+    /**
+     * Validates rules for the client tenants
+     * @param tenant to be validated
+     * @throws TenantException in case of any issue in the rules
+     */
+    private void validateClientTenant(SystemTenant tenant) throws TenantException {
+        if(tenant.getParentId() == null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString());
+        }
+
+        if(get(tenant.getParentId()) == null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
+        }
+
+        if(get(tenant.getParentId()).getType() == TenantType.SUB_TENANT) {
+            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString());
+        }
+    }
+
+    /**
+     * Validates rules for the sub tenants
+     * @param tenant to be validated
+     * @throws TenantException in case of any issue in the rules
+     */
+    private void validateSubTenant(SystemTenant tenant) throws TenantException {
+        if(tenant.getParentId() == null){
+            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString());
+        }
+
+        if(tenant.getClientId() == null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_CLIENT_NOT_INFORMED.toString());
+        }
+
+        if(get(tenant.getParentId()) == null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
+        }
+
+        if(get(tenant.getClientId()) == null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_CLIENT_NOT_FOUND.toString());
         }
     }
 

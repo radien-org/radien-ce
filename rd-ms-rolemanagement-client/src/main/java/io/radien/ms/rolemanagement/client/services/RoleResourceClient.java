@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
 public interface RoleResourceClient {
 
     @GET
-    public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+    public Response getAll(@DefaultValue("0")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
     @GET

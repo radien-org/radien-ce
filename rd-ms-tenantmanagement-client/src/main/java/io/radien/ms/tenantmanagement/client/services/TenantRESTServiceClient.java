@@ -28,7 +28,7 @@ import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
@@ -42,7 +42,7 @@ import java.util.Optional;
 /**
  * @author Santana
  */
-@Stateless
+@RequestScoped
 @Default
 public class TenantRESTServiceClient implements TenantRESTServiceAccess {
 	private static final long serialVersionUID = 4007939167636938896L;
@@ -68,7 +68,7 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
             Response response = client.getById(id);
             return Optional.of(TenantModelMapper.map((InputStream) response.getEntity()));
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
+        catch (ExtensionException | ProcessingException | MalformedURLException es){
             throw es;
         }
     }
@@ -83,7 +83,7 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
-            Response response = client.get(name);
+            Response response = client.get(name, null, true, true);
             return TenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){

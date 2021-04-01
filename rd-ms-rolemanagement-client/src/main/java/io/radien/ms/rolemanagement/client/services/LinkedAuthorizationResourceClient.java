@@ -35,7 +35,7 @@ public interface LinkedAuthorizationResourceClient {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllAssociations(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+    public Response getAllAssociations(@DefaultValue("0")  @QueryParam("pageNo") int pageNo,
                                        @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
     @GET

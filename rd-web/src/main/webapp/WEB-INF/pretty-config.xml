@@ -94,6 +94,10 @@
 		<pattern value="/module/tenant" />
 		<view-id value="/module/tenant/tenant.oaf" />
 	</url-mapping>
+	<url-mapping id="tenantDetails">
+		<pattern value="/module/tenantDetails" />
+		<view-id value="/module/tenant/tenantDetails.oaf" />
+	</url-mapping>
 
 	<url-mapping id="content_public">
 		<pattern

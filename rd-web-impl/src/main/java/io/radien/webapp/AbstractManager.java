@@ -20,13 +20,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import java.io.Serializable;
 import java.text.MessageFormat;
 
 /**
  * @author Newton Carvalho
  * Base class for all JSF Manager Beans
  */
-public abstract class AbstractManager {
+public abstract class AbstractManager implements Serializable {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 

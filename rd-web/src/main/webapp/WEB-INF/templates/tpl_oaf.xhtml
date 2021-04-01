@@ -80,11 +80,7 @@
 							</b:navCommandLink>
 						</b:dropMenu>
 
-						<b:dropMenu value="#{msg.rd_contracts_menu}" rendered="#{userSession.active}">
-		                    <b:navCommandLink value="#{msg.rd_contracts}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
-		                        <f:param name="navigationNode" value="contracts" />
-		                        <f:attribute name="navigationNode" value="contracts" />
-		                    </b:navCommandLink>
+						<b:dropMenu value="#{msg.rd_tenants_menu}" rendered="#{userSession.active}">
 							<b:navCommandLink value="#{msg.rd_tenants}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
 								<f:param name="navigationNode" value="tenants" />
 								<f:attribute name="navigationNode" value="tenants" />

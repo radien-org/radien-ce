@@ -5,17 +5,17 @@ body {
 
 .tableContainer {
     height: 100%;
-    margin-top: 6em;
-    justify-content: center;
-    align-items: center;
-}
-
-.myDialog {
-    padding: 0em !important;
+    margin-top: 5em;
     justify-content: center;
     align-items: center;
 }
 
 .headerInformation {
     padding-left: 2em !important;
+}
+
+.panel-default > .panel-heading {
+    background-image: none;
+    background-color: #474747;
+    color: white;
 }

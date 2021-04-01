@@ -17,8 +17,10 @@ package io.radien.api.service.tenant;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.NotFoundException;
+import io.radien.exception.TenantException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -37,16 +39,47 @@ public interface TenantServiceAccess extends ServiceAccess {
      */
     public Page<SystemTenant> getAll(int pageNo, int pageSize);
 
+    /**
+     * Gets specific tenant by the id
+     * @param tenantId to be searched for
+     * @return the requested system tenant
+     */
     public SystemTenant get(Long tenantId) ;
 
-    public List<? extends SystemTenant> get(String name);
+    /**
+     * Gest a list of system tenants requested by a search filter
+     * @param filter information to search
+     * @return a list of system tenants
+     */
+    public List<? extends SystemTenant> get(SystemTenantSearchFilter filter);
 
-    public void create(SystemTenant tenant) throws UniquenessConstraintException;
+    /**
+     * Creates a system tenant based on the given informations
+     * @param tenant information to be created
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws TenantException in case of any data issues
+     */
+    public void create(SystemTenant tenant) throws UniquenessConstraintException, TenantException;
 
-    public void update(SystemTenant tenant) throws UniquenessConstraintException;
+    /**
+     * Updates a required tenant based on the given information
+     * @param tenant information to update
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws TenantException in case of any data issues
+     */
+    public void update(SystemTenant tenant) throws UniquenessConstraintException, TenantException;
 
+    /**
+     * Deletes a requested tenant
+     * @param tenantId to be deleted
+     * @return true in case of succes false in case of any error
+     */
     public boolean delete(Long tenantId);
 
+    /**
+     * Deletes a collection of tenants
+     * @param tenantIds to be deleted
+     */
     public void delete(Collection<Long> tenantIds);
 
     /**

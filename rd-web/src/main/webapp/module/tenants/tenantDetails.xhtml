@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="tenantManagementTableDiv" styleClass="tableContainer">
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_tenants} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+
+            <b:panel title="Tenant Information" collapsible="false">
+                <b:inputText id="tenantId" value="#{tenantDataModel.selectedTenant.id}"
+                             label="#{msg.id}" disabled="true" span="6"/>
+                <b:inputText id="tenantName" value="#{tenantDataModel.selectedTenant.name}"
+                             required="true" requiredMessage="#{msg.rd_tenant_name_is_mandatory}"
+                             label="#{msg.nameUpperCase}" span="6"/>
+                <b:inputText id="tenantKey" value="#{tenantDataModel.selectedTenant.key}"
+                             required="true" requiredMessage="#{msg.rd_tenant_key_is_mandatory}"
+                             label="#{msg.key}" span="6"/>
+                <b:inputText id="tenantType" value="#{tenantDataModel.selectedTenant.type}"
+                             required="true" requiredMessage="#{msg.rd_tenant_type_is_mandatory}"
+                             label="#{msg.type}" span="6"/>
+                <b:datepicker id="tenantStartDate" value="#{tenantDataModel.selectedTenant.start}"
+                              required="true" requiredMessage="#{msg.rd_contract_start_date_is_mandatory}"
+                              converter="radienLocalDateTimeConverter" label="#{msg.start_date}" span="6"/>
+                <b:datepicker id="tenantEndDate" value="#{tenantDataModel.selectedTenant.end}"
+                              converter="radienLocalDateTimeConverter" label="#{msg.end_date}" span="6"/>
+            </b:panel>
+            <b:panel title="Client Information" collapsible="false" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}">
+                <b:inputText id="tenantClientAddress" value="#{tenantDataModel.selectedTenant.clientAddress}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_address_is_mandatory}"
+                             label="#{msg.address}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}"/>
+                <b:inputText id="tenantClientZipCode" value="#{tenantDataModel.selectedTenant.clientZipCode}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_zip_code_is_mandatory}"
+                             label="#{msg.zipCode}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}" span="6"/>
+                <b:inputText id="tenantClientCity" value="#{tenantDataModel.selectedTenant.clientCity}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_city_is_mandatory}"
+                             label="#{msg.city}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}" span="6"/>
+                <b:inputText id="tenantClientCountry" value="#{tenantDataModel.selectedTenant.clientCountry}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_country_is_mandatory}"
+                             label="#{msg.country}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}"/>
+                <b:inputText id="tenantClientPhoneNumber" value="#{tenantDataModel.selectedTenant.clientPhoneNumber}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_phone_is_mandatory}"
+                             label="#{msg.phoneNumber}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}"/>
+                <b:inputText id="tenantClientEmail" value="#{tenantDataModel.selectedTenant.clientEmail}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_email_is_mandatory}"
+                             label="#{msg.email}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}"/>
+            </b:panel>
+            <b:panel title="Technical Information" collapsible="false" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT' || tenantDataModel.selectedTenant.type.name == 'SUB'}">
+                <b:inputText id="tenantParentId" value="#{tenantDataModel.selectedTenant.parentId}"
+                             required="true" requiredMessage="#{msg.rd_tenant_parent_is_mandatory}"
+                             label="#{msg.rd_tenant_parent}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT' || tenantDataModel.selectedTenant.type.name == 'SUB'}" span="6"/>
+                <b:inputText id="tenantClientId" value="#{tenantDataModel.selectedTenant.clientId}"
+                             label="#{msg.rd_tenant_client}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT' || tenantDataModel.selectedTenant.type.name == 'SUB'}" span="6"/>
+            </b:panel>
+            <b:commandButton value="#{msg.save}"
+                             tooltip="Save changes!"
+                             iconAwesome="fa-save"
+                             action="#{tenantDataModel.edit(tenantDataModel.selectedTenant)}"/>
+            <b:commandButton value="#{msg.rd_home_page}"
+                             tooltip="Return to tenant List!"
+                             iconAwesome="fa-home"
+                             action="#{tenantDataModel.returnHome}"/>
+        </h:form>
+    </ui:define>
+</ui:composition>

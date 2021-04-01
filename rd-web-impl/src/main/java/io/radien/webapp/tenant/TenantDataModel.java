@@ -17,32 +17,41 @@
 package io.radien.webapp.tenant;
 
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenant.SystemTenantType;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.webapp.AbstractManager;
+import io.radien.webapp.JSFUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.util.List;
 
 /**
  * @author Bruno Gama
  */
 @Model
-@SessionScoped
-public class TenantDataModel implements Serializable {
+@ApplicationScoped
+public class TenantDataModel extends AbstractManager implements Serializable {
 
+    @Inject
+    private TenantRESTServiceAccess service;
 
     private LazyDataModel<? extends SystemTenant> lazyModel;
 
     private SystemTenant selectedTenant;
 
-    @Inject
-    private TenantRESTServiceAccess service;
+    private SystemTenant tenant = new Tenant();
 
     @PostConstruct
     public void init() {
@@ -51,6 +60,92 @@ public class TenantDataModel implements Serializable {
 
     public void onload() {
         init();
+    }
+
+    public String save(SystemTenant r) {
+        try {
+            validateMandatoryFields(r);
+
+            if (r.getId() == null) {
+                this.service.create(r);
+            } else {
+                this.service.update(r);
+            }
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
+                    JSFUtil.getMessage("rd_tenant"));
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_tenant"));
+            return null;
+        }
+        tenant = new Tenant();
+        return "tenants";
+    }
+
+    public String editRecords() {
+        if(selectedTenant != null) {
+            return "tenantDetails";
+        }
+        return "tenants";
+    }
+
+    public String returnHome() {
+        tenant = new Tenant();
+        selectedTenant=null;
+        return "tenants";
+    }
+
+    private void validateMandatoryFields(SystemTenant r) throws Exception {
+        if(r != null && r.getType().equals(TenantType.CLIENT_TENANT)) {
+            if(r.getClientAddress() == null || r.getClientAddress().equals("")) {
+                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_address_is_mandatory"));
+            }
+
+            if(r.getClientZipCode() == null || r.getClientZipCode().equals("")) {
+                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_zip_code_is_mandatory"));
+            }
+
+            if(r.getClientCity() == null || r.getClientCity().equals("")) {
+                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_city_is_mandatory"));
+            }
+
+            if(r.getClientCountry() == null || r.getClientCountry().equals("")) {
+                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_country_is_mandatory"));
+            }
+
+            if(r.getClientPhoneNumber() == null || r.getClientPhoneNumber().equals("")) {
+                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_phone_is_mandatory"));
+            }
+
+            if(r.getClientEmail() == null || r.getClientEmail().equals("")) {
+                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_email_is_mandatory"));
+            }
+        }
+    }
+
+    private void sendErrorMessage(String message) throws Exception {
+        handleMessage(FacesMessage.SEVERITY_ERROR, message, JSFUtil.getMessage("rd_tenant"));
+        throw new Exception();
+    }
+
+    public String edit(SystemTenant t) throws MalformedURLException {
+        this.service.update(t);
+        return "tenants";
+    }
+
+    public SystemTenant getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(SystemTenant tenant) {
+        this.tenant = tenant;
+    }
+
+    public SystemTenantType[] getTenantTypes() {
+        return TenantType.values();
+    }
+
+    public List<? extends SystemTenant> getParents() throws SystemException {
+        return service.getAll(0, 3).getResults();
     }
 
     public LazyDataModel<? extends SystemTenant> getLazyModel() {
@@ -78,6 +173,7 @@ public class TenantDataModel implements Serializable {
     }
 
     public void onRowSelect(SelectEvent<SystemTenant> event) {
+        this.selectedTenant= event.getObject();
         FacesMessage msg = new FacesMessage("Customer Selected", String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }

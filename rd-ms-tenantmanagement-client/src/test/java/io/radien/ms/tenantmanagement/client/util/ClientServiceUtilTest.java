@@ -24,6 +24,9 @@ import java.net.MalformedURLException;
 
 import static org.junit.Assert.*;
 
+/**
+ * @author Bruno Gama
+ */
 public class ClientServiceUtilTest {
 
     @InjectMocks
@@ -35,10 +38,21 @@ public class ClientServiceUtilTest {
     }
 
     @Test
-    public void testGetUserResourceClient() {
+    public void testGetContractResourceClient() {
         boolean valid = true;
         try {
             clientServiceUtil.getContractResourceClient("http://url.test.pt") ;
+        } catch (MalformedURLException e) {
+            valid = false;
+        }
+        assertTrue(valid);
+    }
+
+    @Test
+    public void testGetTenantResourceClient() {
+        boolean valid = true;
+        try {
+            clientServiceUtil.getTenantResourceClient("http://url.test.pt") ;
         } catch (MalformedURLException e) {
             valid = false;
         }

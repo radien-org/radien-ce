@@ -44,11 +44,13 @@ public interface TenantResourceClient {
 
     @GET
     @Path("/getAll")
-    public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+    public Response getAll(@DefaultValue("0")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
     @GET
-    public Response get(@QueryParam("name") String name);
+    public Response get(@QueryParam("name") String name, @QueryParam("type") String type,
+                        @DefaultValue("false") @QueryParam("isExact") boolean isExact,
+                        @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
     @Path("/{id}")

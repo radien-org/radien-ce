@@ -34,52 +34,76 @@
 
 				<p:ajax event="rowSelect" listener="#{tenantDataModel.onRowSelect}" update="@form:tenantManagementTableDiv"
 						oncomplete="$('.formValidationModalClass').modal('show')"/>
-				<p:column headerText="Id" sortBy="#{tenant.id}">
+				<p:column headerText="#{msg.id}" sortBy="#{tenant.id}">
 					<h:outputText value="#{tenant.id}"/>
 				</p:column>
 
-				<p:column headerText="Name">
+				<p:column headerText="#{msg.nameUpperCase}">
 					<h:outputText value="#{tenant.name}"/>
 				</p:column>
-				<p:column headerText="#{msg.editUpper}">
-					<b:commandButton value="#{msg.edit}"
-									 iconAwesome="fa-function"
-									 iconAlign="center"
-									 action="#{tenantManager.edit(tenant)}"/>
+
+				<p:column headerText="#{msg.key}">
+					<h:outputText value="#{tenant.key}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.type}">
+					<h:outputText value="#{tenant.type.name}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.start_date}">
+					<h:outputText value="#{tenant.start}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.end_date}">
+					<h:outputText value="#{tenant.end}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.address}">
+					<h:outputText value="#{tenant.clientAddress}"/>
+				</p:column>
+				<p:column headerText="#{msg.zipCode}">
+					<h:outputText value="#{tenant.clientZipCode}"/>
+				</p:column>
+				<p:column headerText="#{msg.city}">
+					<h:outputText value="#{tenant.clientCity}"/>
+				</p:column>
+				<p:column headerText="#{msg.country}">
+					<h:outputText value="#{tenant.clientCountry}"/>
+				</p:column>
+				<p:column headerText="#{msg.phoneNumber}">
+					<h:outputText value="#{tenant.clientPhoneNumber}"/>
+				</p:column>
+				<p:column headerText="#{msg.email}">
+					<h:outputText value="#{tenant.clientEmail}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_tenant_parent}">
+					<h:outputText value="#{tenant.parentId}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_tenant_client}">
+					<h:outputText value="#{tenant.clientId}"/>
 				</p:column>
 			</p:dataTable>
-
-			<b:modal title="Selected Tenant Details" styleClass="formValidationModalClass"
-					 closable="false" closeOnEscape="true" rendered="#{not empty tenantDataModel.selectedTenant}" auto-update="true">
-				<b:dataTable value="#{tenantDataModel.selectedTenant}"
-							 var="selectedTenant"
-							 widgetVar="tableWidgetVar"
-							 responsive="true"
-							 paginated="false"
-							 searching="false"
-							 scroll-horizontally="true">
-					<b:dataTableColumn value="#{selectedTenant.id}" />
-					<b:dataTableColumn value="#{selectedTenant.name}" />
-				</b:dataTable>
-				<f:facet name="footer">
-					<b:button value="Close" dismiss="modal" />
-				</f:facet>
-			</b:modal>
 		</h:form>
 
 		<h:form id="tenantManagementButtons">
+			<b:commandButton value="#{msg.edit}"
+							 tooltip="Edit existent tenant information!"
+							 iconAwesome="fa-edit"
+							 action="#{tenantDataModel.editRecords}"/>
 			<b:commandButton id="refresh" value="Refresh Values"
 							 ajax="false"
 							 iconAwesome="fa-refresh"
 							 icon-spin="true"
-							 iconAlign="right"
 							 tooltip="Refresh existent Tenant data table!"
 							 actionListener="#{tenantDataModel.onload}"
 							 immediate="true" update="@form:tenantManagementTableDiv"
 							 auto-update="true"/>
 			<b:commandButton value="#{msg.rd_add_tenant}"
 							 action="tenant"
-							 iconAwesome="fa-user"
+							 iconAwesome="fa-cube"
+							 tooltip="Create a new tenant!"
 							 iconAlign="center"/>
 		</h:form>
 	</ui:define>

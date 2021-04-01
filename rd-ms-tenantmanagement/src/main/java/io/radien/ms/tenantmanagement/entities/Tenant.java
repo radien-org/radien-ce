@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.entities;
 
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,8 +23,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import java.time.LocalDateTime;
-
+import javax.persistence.Convert;
+import java.time.LocalDate;
 
 /**
  * JPA entity representing a Tenant
@@ -56,5 +57,76 @@ public class Tenant extends io.radien.ms.tenantmanagement.client.entities.Tenant
 		return super.getName();
 	}
 
+	@Column
+	@Override
+	public String getKey() {
+		return super.getKey();
+	}
 
+	@Column
+	@Override
+	@Convert(converter = TenantTypeConverter.class)
+	public TenantType getType() {
+		return super.getType();
+	}
+
+	@Column
+	@Override
+	public LocalDate getStart() {
+		return super.getStart();
+	}
+
+	@Column
+	@Override
+	public LocalDate getEnd() {
+		return super.getEnd();
+	}
+
+	@Column
+	@Override
+	public String getClientAddress() {
+		return super.getClientAddress();
+	}
+
+	@Column
+	@Override
+	public String getClientZipCode() {
+		return super.getClientZipCode();
+	}
+
+	@Column
+	@Override
+	public String getClientCity() {
+		return super.getClientCity();
+	}
+
+	@Column
+	@Override
+	public String getClientCountry() {
+		return super.getClientCountry();
+	}
+
+	@Column
+	@Override
+	public Long getClientPhoneNumber() {
+		return super.getClientPhoneNumber();
+	}
+
+	@Column
+	@Override
+	public String getClientEmail() {
+		return super.getClientEmail();
+	}
+
+	@Column
+	@Override
+	public Long getParentId() {
+		return super.getParentId();
+	}
+
+	@Column
+	@Override
+	public Long getClientId() {
+		return super.getClientId();
+	}
 }

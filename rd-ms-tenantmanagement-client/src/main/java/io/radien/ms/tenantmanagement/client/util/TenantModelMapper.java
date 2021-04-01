@@ -16,7 +16,6 @@
 package io.radien.ms.tenantmanagement.client.util;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.services.TenantFactory;
 
@@ -39,14 +38,14 @@ public class TenantModelMapper {
         return TenantFactory.convertToJsonObject(model);
     }
 
-    public static List<? extends SystemTenant> mapList(InputStream is) throws ParseException {
+    public static List<? extends Tenant> mapList(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
             return TenantFactory.convert(jsonArray);
         }
     }
 
-    public static SystemTenant map(InputStream is) throws ParseException {
+    public static Tenant map(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             return TenantFactory.convert(jsonReader.readObject());
         }

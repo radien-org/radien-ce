@@ -16,10 +16,13 @@
 package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.NotFoundException;
+import io.radien.exception.TenantException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import org.slf4j.Logger;
@@ -58,17 +61,30 @@ public class TenantResource implements TenantResourceClient {
 		}
 	}
 
+	/**
+	 * Gets a list of requested tenants based on some filtered information
+	 * @param name to be searched for
+	 * @param type of the tenant to be searched
+	 * @param isExact should the values be exact to the given ones
+	 * @param isLogicalConjunction in case of true query will use an and in case of false query will use a or
+	 * @return 200 response code in case of success or 500 in case of any issue
+	 */
 	@Override
-	public Response get(String name) {
+	public Response get(String name, String type, boolean isExact, boolean isLogicalConjunction) {
 		try {
-			List<? extends SystemTenant> list= tenantService.get(name);
+			SystemTenantSearchFilter filter = new TenantSearchFilter(name, type, isExact, isLogicalConjunction);
+			List<? extends SystemTenant> list= tenantService.get(filter);
 			return Response.ok(list).build();
 		}catch (Exception e){
 			return getGenericError(e);
 		}
 	}
 
-
+	/**
+	 * Gets tenant based on the given id
+	 * @param id to be searched for
+	 * @return 200 code message in case of success or 500 in case of any error
+	 */
 	@Override
 	public Response getById(Long id) {
 		try {
@@ -96,8 +112,8 @@ public class TenantResource implements TenantResourceClient {
 		try {
             tenantService.create(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
 			return Response.ok(tenant.getId()).build();
-		} catch (UniquenessConstraintException u){
-			return getInvalidRequestResponse(u);
+		} catch (TenantException | UniquenessConstraintException u){
+			return getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){
 			return getGenericError(e);
 		}
@@ -109,8 +125,8 @@ public class TenantResource implements TenantResourceClient {
 			tenant.setId(id);
             tenantService.update(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
 			return Response.ok().build();
-		}catch (UniquenessConstraintException u){
-			return getInvalidRequestResponse(u);
+		}catch (TenantException | UniquenessConstraintException u){
+			return getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){
 			return getGenericError(e);
 		}
@@ -156,12 +172,13 @@ public class TenantResource implements TenantResourceClient {
 
 	/**
 	 * Invalid Request error exception. Launches a 400 Error Code to the user.
-	 * @param e exception to be throw
+	 * @param errorMessage exception message to be throw
 	 * @return code 400 message Generic Exception
 	 */
-	private Response getInvalidRequestResponse(UniquenessConstraintException e) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+	private Response getInvalidRequestResponse(String errorMessage) {
+		return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
 	}
+
 
 	/**
 	 * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.

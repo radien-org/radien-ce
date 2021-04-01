@@ -15,11 +15,9 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
-import io.radien.exception.NotFoundException;
-import io.radien.exception.SystemException;
-import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
+import io.radien.exception.*;
 import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +26,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +54,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testGet() {
-        Response response = tenantResource.get(null);
+        Response response = tenantResource.get(null, null, true, true);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -67,9 +63,8 @@ public class TenantResourceTest {
      */
     @Test
     public void testGetGenericException() {
-        when(tenantResource.get(null))
-                .thenThrow(new RuntimeException());
-        Response response = tenantResource.get(null);
+        doThrow(new RuntimeException()).when(tenantServiceAccess).get((SystemTenantSearchFilter) any());
+        Response response = tenantResource.get(null, null, true, true);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 
@@ -86,7 +81,7 @@ public class TenantResourceTest {
      * Test the Get All request Exception which will return a generic error message code 500.
      */
     @Test
-    public void testGetAllGenericException() throws MalformedURLException {
+    public void testGetAllGenericException() {
         when(tenantResource.getAll(1, 10))
                 .thenThrow(new RuntimeException());
         Response response = tenantResource.getAll(1, 10);
@@ -104,10 +99,9 @@ public class TenantResourceTest {
 
     /**
      * Get by ID with success should return a 200 code message
-     * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testGetById() throws UserNotFoundException {
+    public void testGetById() {
         when(tenantServiceAccess.get(1L)).thenReturn(new Tenant());
         Response response = tenantResource.getById(1L);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
@@ -115,10 +109,9 @@ public class TenantResourceTest {
 
     /**
      * Test Get by ID exception which will return a 500 error code message
-     * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testGetByIdGenericException() throws UserNotFoundException {
+    public void testGetByIdGenericException() {
         when(tenantServiceAccess.get(1L)).thenThrow(new RuntimeException());
         Response response = tenantResource.getById(1L);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
@@ -129,13 +122,13 @@ public class TenantResourceTest {
      */
     @Test
     public void testGetContractByName() {
-        Response response = tenantResource.get("subj");
+        Response response = tenantResource.get("subj", null, true, true);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
 
     @Test
-    public void testGetContractById() throws UserNotFoundException {
+    public void testGetContractById() {
         when(tenantServiceAccess.get(anyLong())).thenReturn(new Tenant());
         Response response = tenantResource.getById(1L);
 
@@ -155,7 +148,7 @@ public class TenantResourceTest {
      * Deletion of the record with error, should return a generic 500 error code message
      */
     @Test
-    public void testDeleteGenericError() throws UserNotFoundException, SystemException {
+    public void testDeleteGenericError() {
         doThrow(new RuntimeException()).when(tenantServiceAccess).delete(1L);
         Response response = tenantResource.delete(1L);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
@@ -174,10 +167,9 @@ public class TenantResourceTest {
      * Creation with error of a record. Should return a 400 code message Invalid Requested Exception
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
-     * @throws UserNotFoundException in case of contract not found
      */
     @Test
-    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testCreateInvalid() throws UniquenessConstraintException, TenantException {
         doThrow(new UniquenessConstraintException()).when(tenantServiceAccess).create(any());
         Response response = tenantResource.create(new Tenant());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
@@ -187,10 +179,9 @@ public class TenantResourceTest {
      * Creation of a record with error. Should return a generic error message 500
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
-     * @throws UserNotFoundException in case of contact not found
      */
     @Test
-    public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testCreateGenericError() throws UniquenessConstraintException, TenantException {
         doThrow(new RuntimeException()).when(tenantServiceAccess).create(any());
         Response response = tenantResource.create(new Tenant());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
@@ -210,10 +201,9 @@ public class TenantResourceTest {
      * Creation with error of a record. Should return a 400 code message Invalid Requested Exception
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
-     * @throws UserNotFoundException in case of contract not found
      */
     @Test
-    public void testUpdateInvalid() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testUpdateInvalid() throws UniquenessConstraintException, TenantException {
         doThrow(new UniquenessConstraintException()).when(tenantServiceAccess).update(any());
         Response response = tenantResource.update(1l,new Tenant());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
@@ -223,10 +213,9 @@ public class TenantResourceTest {
      * Creation of a record with error. Should return a generic error message 500
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
-     * @throws UserNotFoundException in case of contact not found
      */
     @Test
-    public void testUpdateGenericError() throws UniquenessConstraintException, UserNotFoundException, SystemException {
+    public void testUpdateGenericError() throws UniquenessConstraintException, TenantException {
         doThrow(new RuntimeException()).when(tenantServiceAccess).update(any());
         Response response = tenantResource.update(1l,new Tenant());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());

@@ -19,7 +19,7 @@ package io.radien.api.model.tenant;
 
 import io.radien.api.Model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * Class that represents an tenant
@@ -28,8 +28,42 @@ import java.time.LocalDateTime;
  */
 public interface SystemTenant extends Model {
 
+	public String getKey();
+	public void setKey(String key);
+
 	public String getName();
 	public void setName(String name);
 
+	public LocalDate getStart();
+	public void setStart(LocalDate start);
 
+	public LocalDate getEnd();
+	public void setEnd(LocalDate end);
+
+	public SystemTenantType getType();
+	public void setType(SystemTenantType type);
+
+	public String getClientAddress();
+	public void setClientAddress(String clientAddress);
+
+	public String getClientZipCode();
+	public void setClientZipCode(String clientZipCode);
+
+	public String getClientCity();
+	public void setClientCity(String clientCity);
+
+	public String getClientCountry();
+	public void setClientCountry(String clientCountry);
+
+	public Long getClientPhoneNumber();
+	public void setClientPhoneNumber(Long clientPhoneNumber);
+
+	public String getClientEmail();
+	public void setClientEmail(String clientEmail);
+
+	public Long getParentId();
+	public void setParentId(Long parentId);
+
+	public Long getClientId();
+	public void setClientId(Long clientId);
 }

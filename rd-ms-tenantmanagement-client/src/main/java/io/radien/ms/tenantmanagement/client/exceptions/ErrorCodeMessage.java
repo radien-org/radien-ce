@@ -22,6 +22,23 @@ public enum ErrorCodeMessage {
      */
     RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
     DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
+
+    TENANT_FIELD_NOT_INFORMED(102, "error.tenant.field.not.informed", "Tenant %s was not informed."),
+
+    TENANT_PARENT_NOT_INFORMED(103, "error.tenant.parent.not.informed", "Parent information not informed."),
+    TENANT_CLIENT_NOT_INFORMED(104, "error.tenant.client.not.informed", "Client information not informed."),
+
+    TENANT_PARENT_NOT_FOUND(105, "error.tenant.parent.not.found", "Parent registry not found."),
+    TENANT_CLIENT_NOT_FOUND(106, "error.tenant.client.not.found", "Client registry not found."),
+
+    TENANT_PARENT_TYPE_IS_INVALID(107, "error.tenant.parent.type.invalid", "Parent type is invalid."),
+
+    TENANT_END_DATE_IS_IS_INVALID(108, "error.tenant.end.date.invalid", "End date is invalid."),
+
+    TENANT_ROOT_ALREADY_INSERTED(109, "error.tenant.root.already.inserted", "There must be only one Root Tenant."),
+    TENANT_ROOT_WITH_PARENT(110, "error.tenant.root.with.parent", "Tenant root cannot have parent associated."),
+    TENANT_ROOT_WITH_CLIENT(111, "error.tenant.root.with.client", "Tenant root cannot have client associated."),
+
     /**
      * System Error Code Messages
      */
