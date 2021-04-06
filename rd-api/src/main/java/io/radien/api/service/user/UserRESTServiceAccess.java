@@ -20,15 +20,17 @@ import java.util.List;
 import java.util.Optional;
 
 import io.radien.api.Appframeable;
+import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
 
 /**
  * @author Marco Weiland <m.weiland@radien.io>
  *
  */
 public interface UserRESTServiceAccess extends Appframeable{
-	public Optional<SystemUser> getUserBySub(String sub) throws SystemException ;
+	public Optional<SystemUser> getUserBySub(String sub) throws SystemException;
 
     /**
      * Creates given user
@@ -38,15 +40,13 @@ public interface UserRESTServiceAccess extends Appframeable{
      */
     public boolean create(SystemUser user,boolean skipKeycloak) throws SystemException;
 
-    public List<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException;
+    public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException;
 
-    public List<? extends SystemUser> getUserList();
-
-    public boolean setInitiateResetPassword(long id);
+    public boolean sendUpdatePasswordEmail(long id);
 
     public boolean deleteUser(long id);
 
     public boolean updateUser(SystemUser user);
 
-    public Long getTotalRecordsCount() throws SystemException;
+    public boolean refreshToken() throws SystemException;
 }

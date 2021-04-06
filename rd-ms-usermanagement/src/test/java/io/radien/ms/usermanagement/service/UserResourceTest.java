@@ -27,8 +27,6 @@ import org.mockito.MockitoAnnotations;
 
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
-import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -291,39 +289,22 @@ public class UserResourceTest {
     @Test
     public void testSetAdminResetPassword() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenReturn(new User());
-        Response response = userResource.setInitiateResetPassword(1L);
+        Response response = userResource.sendUpdatePasswordEmail(1L);
         assertEquals(200,response.getStatus());
     }
 
     @Test
     public void testSetAdminResetPasswordGenericError() throws UserNotFoundException {
         doThrow(new RuntimeException()).when(userBusinessService).get(1L);
-        Response response = userResource.setInitiateResetPassword(1L);
+        Response response = userResource.sendUpdatePasswordEmail(1L);
         assertEquals(500,response.getStatus());
     }
 
     @Test
     public void testSetAdminResetPassword404() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
-        Response response = userResource.setInitiateResetPassword(1L);
+        Response response = userResource.sendUpdatePasswordEmail(1L);
         assertEquals(404,response.getStatus());
     }
 
-    @Test
-    public void testGetUserList() {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-        Response response = userResource.getUserList();
-        assertEquals(200,response.getStatus());
-    }
-
-    @Test
-    public void testGetUserListGenericException() {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-        when(userBusinessService.getUserList())
-                .thenThrow(new RuntimeException());
-        Response response = userResource.getUserList();
-        assertEquals(500,response.getStatus());
-    }
 }

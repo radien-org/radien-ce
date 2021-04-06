@@ -85,6 +85,7 @@ public class AuthenticationFilter implements Filter {
         boolean failed = true;
         //TODO: Maybe it needs to redirect to Authorization Code Servlet when its not present/valid
         //          then Answer after authentication comes from callback
+
         if (req.getHeader(HttpHeaders.AUTHORIZATION) != null) {
             String accessToken = req.getHeader(HttpHeaders.AUTHORIZATION);
             if (accessToken.startsWith("Bearer ")) {
@@ -97,9 +98,16 @@ public class AuthenticationFilter implements Filter {
 
         }
 
-        if (failed) {
+        //public
+        if(req.getRequestURI().endsWith("v1/user/refresh") ){
+            chain.doFilter(request, response);
+
+        } else if (failed) {
             HttpServletResponse resp = (HttpServletResponse) response;
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Failed authentication..");
+            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("Failed authentication..");
+            resp.setContentType("application/json; charset=UTF-8");
+            //resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Failed authentication..");
         }
 
     }

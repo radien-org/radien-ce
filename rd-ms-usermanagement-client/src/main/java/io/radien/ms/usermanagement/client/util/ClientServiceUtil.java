@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.util;
 
+import io.radien.exception.TokenExpiredException;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
 import io.radien.ms.usermanagement.client.entities.GlobalHeaders;
 import io.radien.ms.usermanagement.client.providers.UserMessageBodyWriter;
@@ -27,7 +28,7 @@ import java.net.URL;
 
 @Stateless
 public class ClientServiceUtil {
-    public UserResourceClient getUserResourceClient(String urlStr) throws MalformedURLException {
+    public UserResourceClient getUserResourceClient(String urlStr) throws MalformedURLException , TokenExpiredException {
         URL url = new URL(urlStr);
         return RestClientBuilder.
                  newBuilder()

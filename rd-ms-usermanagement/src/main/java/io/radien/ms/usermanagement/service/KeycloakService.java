@@ -39,9 +39,12 @@ public class KeycloakService {
                 .username(getProperty(KeycloakConfigs.ADMIN_USER))
                 .password(getProperty(KeycloakConfigs.ADMIN_PASSWORD))
                 //TODO : ADD missing configurations
-                .idpUrl("https://idp-int.radien.io")
-                .tokenPath("/auth/realms/master/protocol/openid-connect/token")
-                .userPath("/auth/admin/realms/radien/users");
+                .idpUrl(getProperty(KeycloakConfigs.IDP_URL))
+                .tokenPath(getProperty(KeycloakConfigs.TOKEN_PATH))
+                .userPath(getProperty(KeycloakConfigs.USER_PATH))
+                .radienClientId(getProperty(KeycloakConfigs.RADIEN_CLIENT_ID))
+                .radienSecret(getProperty(KeycloakConfigs.RADIEN_SECRET))
+                .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH));
         client.login();
         return client;
     }
@@ -75,6 +78,11 @@ public class KeycloakService {
     public void sendUpdatePasswordEmail(SystemUser user) throws RemoteResourceException{
         KeycloakClient client = getKeycloakClient();
         client.sendUpdatePasswordEmail(user.getSub());
+    }
+
+    public String refeshToken(String refreshToken) throws RemoteResourceException {
+        KeycloakClient client = getKeycloakClient();
+        return client.refreshToken(refreshToken);
     }
 
     private String getProperty(SystemProperties cfg) {
