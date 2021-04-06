@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.util;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 
@@ -51,6 +52,14 @@ public class UserModelMapper {
             JsonObject jsonObject = jsonReader.readObject();
 
             return UserFactory.convert(jsonObject);
+        }
+    }
+
+    public static Page<User> mapToPage(InputStream is) {
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            JsonObject jsonObject = jsonReader.readObject();
+
+            return UserFactory.convertJsonToPage(jsonObject);
         }
     }
 }

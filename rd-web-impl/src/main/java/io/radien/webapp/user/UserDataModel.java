@@ -16,6 +16,7 @@
 package io.radien.webapp.user;
 
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
@@ -23,6 +24,7 @@ import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 
+import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 public class UserDataModel extends LazyDataModel<SystemUser> {
     private List<? extends SystemUser> datasource;
     private UserRESTServiceAccess userService;
+    private String errorMsg;
 
     public UserDataModel(UserRESTServiceAccess userService) {
         this.userService = userService;
@@ -62,11 +65,14 @@ public class UserDataModel extends LazyDataModel<SystemUser> {
     public List<SystemUser> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            datasource = userService.getAll(null,(offset/pageSize),pageSize,null,true);
+            Page<? extends SystemUser> page = userService.getAll(null,(offset/pageSize)+1,pageSize,null,true);
+            datasource = page.getResults();
 
-            rowCount = userService.getTotalRecordsCount();
-        } catch (MalformedURLException | SystemException e) {
+            rowCount = (long)page.getTotalResults();
+        } catch (MalformedURLException  e) {
             e.printStackTrace();
+        } catch (WebApplicationException e){
+            errorMsg = e.getMessage();
         }
 
         setRowCount(Math.toIntExact(rowCount));
