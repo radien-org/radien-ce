@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonArray;
+import javax.json.*;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -39,7 +38,10 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Bruno Gama
@@ -166,6 +168,36 @@ public class LinkedAuthorizationRESTServiceClient implements LinkedAuthorization
                 return false;
             }
         } catch (ProcessingException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    @Override
+    public List<String> getRoles(Long userId, Long tenantId) throws SystemException {
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getRoles(userId, tenantId);
+            List<String> rolesNames = new ArrayList<>();
+            try(JsonReader jsonReader = Json.createReader((InputStream) response.getEntity())) {
+                JsonArray jsonArray = jsonReader.readArray();
+                rolesNames.addAll(jsonArray.getValuesAs(JsonString.class).stream().
+                        map(JsonString::getString).collect(Collectors.toList()));
+            }
+            return Collections.unmodifiableList(rolesNames);
+        } catch (ExtensionException|ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    @Override
+    public Boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) throws SystemException {
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.isRoleExistentForUser(userId, roleName, tenantId);
+            return response.readEntity(Boolean.class);
+        } catch (ExtensionException|ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }
     }

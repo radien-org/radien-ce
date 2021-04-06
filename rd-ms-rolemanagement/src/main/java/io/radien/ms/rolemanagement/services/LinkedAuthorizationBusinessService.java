@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
@@ -138,5 +139,26 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public long getTotalRecordsCount() {
         return linkedAuthorizationServiceAccess.getTotalRecordsCount();
+    }
+
+    /**
+     * Retrieves All roles that exist for an User (Optionally for a specific tenant)
+     * @param userId User Identifier
+     * @param tenantId Tenant Identifier (Optioal Parameter)
+     * @return
+     */
+    public List<? extends SystemRole> getRolesByUserAndTenant(Long userId, Long tenantId) {
+        return linkedAuthorizationServiceAccess.getRolesByUserAndTenant(userId, tenantId);
+    }
+
+    /**
+     * Verifies if a Role exists for a User (Under a specific tenant - optional)
+     * @param userId User Identifier
+     * @param tenantId Tenant Identifier (Optional parameter)
+     * @param roleName Role name
+     * @return
+     */
+    public boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) {
+        return linkedAuthorizationServiceAccess.isRoleExistentForUser(userId, tenantId, roleName);
     }
 }

@@ -18,11 +18,13 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
+import io.radien.ms.rolemanagement.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -303,6 +306,47 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         Long size = entityManager.createQuery(criteriaQuery).getSingleResult();
 
         return size != 0;
+    }
+
+    @Override
+    public boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User Id is mandatory");
+        }
+        if (roleName == null) {
+            throw new IllegalArgumentException("Role Name is mandatory");
+        }
+        String query = "Select count(lka) From LinkedAuthorization lka, Role r " +
+                "where lka.userId = :pUserId and lka.roleId = r.id " +
+                "and upper(r.name) = :pRoleName";
+        if (tenantId != null) {
+            query += " and lka.tenantId = :pTenantId";
+        }
+        TypedQuery<Long> typedQuery = entityManager.createQuery(query, Long.class);
+        typedQuery.setParameter("pUserId", userId);
+        typedQuery.setParameter("pRoleName", roleName.toUpperCase());
+        if (tenantId != null) {
+            typedQuery.setParameter("pTenantId", tenantId);
+        }
+        return typedQuery.getSingleResult() > 0;
+    }
+
+    @Override
+    public List<? extends SystemRole> getRolesByUserAndTenant(Long userId, Long tenantId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId is mandatory");
+        }
+        String query = "Select distinct r From LinkedAuthorization lka, Role r " +
+                "where lka.userId = :pUserId and lka.roleId = r.id";
+        if (tenantId != null) {
+            query += " and lka.tenantId = :pTenantId";
+        }
+        TypedQuery<Role> typedQuery = entityManager.createQuery(query, Role.class);
+        typedQuery.setParameter("pUserId", userId);
+        if (tenantId != null) {
+            typedQuery.setParameter("pTenantId", tenantId);
+        }
+        return typedQuery.getResultList();
     }
 
     /**

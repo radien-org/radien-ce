@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.openid.security;
 
 import io.radien.api.model.user.SystemUser;
@@ -5,12 +20,10 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.openid.entities.Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Stateless;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -53,29 +66,38 @@ public abstract class AuthorizationChecker implements TokensPlaceHolder, Seriali
         return hasGrant(null, roleName);
     }
 
-    public boolean hasGrant(Long permissionId, Long roleId, Long tenantId) throws SystemException {
+    public boolean isSelfOnboard(SystemUser user) {
+        SystemUser invoker = getInvokerUser();
+        return user != null && user.getId() == null && invoker != null &&
+                invoker.getSub().equals(user.getSub());
+    }
+
+    public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
             this.preProcess();
             return authorizationRESTServiceAccess.checkIfLinkedAuthorizationExists(tenantId,
-                    permissionId, roleId, getCurrentUserId());
+                    permissionId, null, getCurrentUserId());
         } catch (Exception e) {
             this.log.error("Error checking authorization", e);
             throw new SystemException(e);
         }
     }
 
-    protected Long getCurrentUserId() throws SystemException {
-        SystemUser user = (io.radien.ms.usermanagement.client.entities.User)
-                servletRequest.getSession().getAttribute("USER");
-        if (user == null) {
-            throw new SystemException("No current user available");
-        }
-        return getCurrentUserIdBySub(user.getSub());
+    protected SystemUser getInvokerUser() {
+        return (Principal) servletRequest.getSession().getAttribute("USER");
     }
 
     protected Long getCurrentUserIdBySub(String sub) throws SystemException {
         Optional<SystemUser> optional = this.userRESTServiceAccess.getUserBySub(sub);
         return optional.orElseThrow(() -> new SystemException("No user available for " + sub)).getId();
+    }
+
+    protected Long getCurrentUserId() throws SystemException {
+        SystemUser user = getInvokerUser();
+        if (user == null) {
+            throw new SystemException("No current user available");
+        }
+        return getCurrentUserIdBySub(user.getSub());
     }
 
     protected void preProcess() {
