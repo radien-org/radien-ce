@@ -85,11 +85,6 @@ public interface UserResourceClient {
     @Path("/{id}/sendUpdatePasswordEmail")
     public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
 
-
-    //@GET
-    //@Path("/countRecords")
-    //public Response getTotalRecordsCount();
-
     @POST
     @Path("/refresh")
     public Response refreshToken(String refreshToken);
