@@ -327,32 +327,6 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
         }
     }
 
-   /* public Long getTotalRecordsCount() throws SystemException {
-        try {
-            return countUsers();
-        } catch (TokenExpiredException e) {
-            try {
-                refreshToken();
-                return countUsers();
-            } catch (TokenExpiredException tokenExpiredException) {
-                log.error(tokenExpiredException.getMessage(), tokenExpiredException);
-                throw new SystemException(tokenExpiredException.getMessage());
-            }
-        }
-    }
-
-    private long countUsers() throws TokenExpiredException, SystemException {
-        try {
-            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-
-            Response response = client.getTotalRecordsCount();
-            return Long.parseLong(response.readEntity(String.class));
-
-        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            throw new SystemException(e);
-        }
-    }*/
-
     public boolean refreshToken() throws SystemException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
