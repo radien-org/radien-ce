@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.security.TokensPropagator;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
@@ -37,7 +38,7 @@ import javax.ws.rs.core.Response;
 
 @Path("linkedauthorization")
 @RequestScoped
-public class LinkedAuthorizationResource implements LinkedAuthorizationResourceClient {
+public class LinkedAuthorizationResource extends TokensPropagator implements LinkedAuthorizationResourceClient {
 
     @Inject
     private LinkedAuthorizationBusinessService linkedAuthorizationBusinessService;
@@ -131,6 +132,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
     public Response saveAssociation(LinkedAuthorization association) {
         try {
             log.info("New association to be created/updated it's on it's way!");
+            this.preProcess();
             linkedAuthorizationBusinessService.save(new io.radien.ms.rolemanagement.entities.LinkedAuthorization(association));
             return Response.ok().build();
         } catch (LinkedAuthorizationNotFoundException e) {

@@ -33,10 +33,11 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * TokenPlaceHolder implementation to be extend by any
- * Service that requires AccessToken
+ * This abstract class maybe extended by any component that needs to propagate
+ * access token information, retrieve information regarding the current logged user and
+ * assess authorization (Role, permission, etc)
  */
-public abstract class AuthorizationChecker implements TokensPlaceHolder, Serializable {
+public abstract class AuthorizationChecker extends TokensPropagator {
 
     private String accessToken;
     private String refreshToken;
@@ -66,12 +67,6 @@ public abstract class AuthorizationChecker implements TokensPlaceHolder, Seriali
         return hasGrant(null, roleName);
     }
 
-    public boolean isSelfOnboard(SystemUser user) {
-        SystemUser invoker = getInvokerUser();
-        return user != null && user.getId() == null && invoker != null &&
-                invoker.getSub().equals(user.getSub());
-    }
-
     public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
             this.preProcess();
@@ -81,10 +76,6 @@ public abstract class AuthorizationChecker implements TokensPlaceHolder, Seriali
             this.log.error("Error checking authorization", e);
             throw new SystemException(e);
         }
-    }
-
-    protected SystemUser getInvokerUser() {
-        return (Principal) servletRequest.getSession().getAttribute("USER");
     }
 
     protected Long getCurrentUserIdBySub(String sub) throws SystemException {
@@ -100,41 +91,11 @@ public abstract class AuthorizationChecker implements TokensPlaceHolder, Seriali
         return getCurrentUserIdBySub(user.getSub());
     }
 
-    protected void preProcess() {
-        HttpSession httpSession = this.servletRequest.getSession(false);
-        if (httpSession.getAttribute("accessToken") != null &&
-                httpSession.getAttribute("refreshToken") != null) {
-            this.accessToken = httpSession.getAttribute("accessToken").toString();
-            this.refreshToken = httpSession.getAttribute("refreshToken").toString();
-        }
-        else {
-            // Lets obtain (at least) accessToken from Header
-            String token = this.servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-            if (token != null && token.startsWith("Bearer ")) {
-                this.accessToken = token.substring(7);
-            }
-        }
+    public LinkedAuthorizationRESTServiceAccess getAuthorizationRESTServiceAccess() {
+        return authorizationRESTServiceAccess;
     }
 
-    @Override
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    @Override
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public HttpServletRequest getServletRequest() {
-        return servletRequest;
+    public UserRESTServiceAccess getUserRESTServiceAccess() {
+        return userRESTServiceAccess;
     }
 }

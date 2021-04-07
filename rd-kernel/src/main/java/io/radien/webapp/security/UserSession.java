@@ -20,9 +20,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.security.TokensPlaceHolder;
-import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +30,6 @@ import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 
-import java.util.List;
 import java.util.Optional;
 
 
@@ -50,9 +47,6 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	private UserRESTServiceAccess userClientService;
 
 	@Inject
-	private LinkedAuthorizationRESTServiceAccess authorizationRESTServiceAccess;
-
-	@Inject
 	private OAFAccess oaf;
 
 	private SystemUser user;
@@ -63,9 +57,6 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	private SystemUser selectedUser;
 	private boolean validationTrue;
-
-	private SystemTenant currentTenant;
-	private List<String> roles;
 
 	@PostConstruct
 	private void init() {
@@ -177,53 +168,5 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	public void setValidationTrue(boolean validationTrue) {
 		this.validationTrue = validationTrue;
-	}
-
-	public SystemTenant getCurrentTenant() {
-		return currentTenant;
-	}
-
-	public void setCurrentTenant(SystemTenant currentTenant) {
-		this.currentTenant = currentTenant;
-	}
-
-	public String getCurrentTenantDescription() {
-		StringBuilder sb = new StringBuilder();
-		if (currentTenant != null) {
-			sb.append(currentTenant.getName());
-			sb.append(" - ");
-			sb.append(currentTenant.getKey());
-			sb.append(" - ");
-			sb.append(currentTenant.getType().getName());
-		}
-		return sb.toString();
-	}
-
-	public List<String> getRoles() {
-		return this.roles;
-	}
-
-	public boolean hasRole(SystemTenant tenant, String roleName) {
-		Long tenantId = tenant != null ? tenant.getId() : null;
-		try {
-			return this.authorizationRESTServiceAccess.isRoleExistentForUser(this.user.getId(), tenantId, roleName);
-		} catch (Exception e) {
-			log.error("Error during role checking", e);
-			return false;
-		}
-	}
-
-	public boolean hasRole(String roleName) {
-		return hasRole(getCurrentTenant(), roleName);
-	}
-
-	public boolean hasGrant(Long roleId, Long permissionId, Long tenantId) {
-		try {
-			return this.authorizationRESTServiceAccess.checkIfLinkedAuthorizationExists(tenantId,
-					permissionId, roleId, this.user.getId());
-		} catch (Exception e) {
-			log.error("Error during granting checking", e);
-			return false;
-		}
 	}
 }

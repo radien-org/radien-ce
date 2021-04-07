@@ -128,6 +128,17 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		return Response.ok().build();
 	}
 
+	/**
+	 * Check if the the current logged user is trying to register
+	 * himself into the radien repository
+	 * @param user user to be register into radien repository
+	 * @return true  or false
+	 */
+	public boolean isSelfOnboard(SystemUser user) {
+		SystemUser invoker = getInvokerUser();
+		return invoker != null && invoker.getSub().equals(user.getSub());
+	}
+
 	@Override
 	protected Long getCurrentUserIdBySub(String sub) throws SystemException {
 		SystemUserSearchFilter filter = new UserSearchFilter(sub,null,null,
