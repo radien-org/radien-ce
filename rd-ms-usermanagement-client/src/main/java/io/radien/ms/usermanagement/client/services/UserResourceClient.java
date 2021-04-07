@@ -82,7 +82,7 @@ public interface UserResourceClient {
     public Response create(List<User> userList);
 
     @POST
-    @Path("/{id}/initiateResetPassword")
+    @Path("/{id}/sendUpdatePasswordEmail")
     public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
 
 
