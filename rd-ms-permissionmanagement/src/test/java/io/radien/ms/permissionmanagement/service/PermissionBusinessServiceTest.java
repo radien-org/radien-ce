@@ -55,7 +55,10 @@ public class PermissionBusinessServiceTest {
     SystemResource resource;
 
     public PermissionBusinessServiceTest() throws NamingException {
-        final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
+        Properties p = new Properties();
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        final Context context = EJBContainer.createEJBContainer(p).getContext();
 
         permissionServiceAccess = (PermissionServiceAccess)
                 context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");

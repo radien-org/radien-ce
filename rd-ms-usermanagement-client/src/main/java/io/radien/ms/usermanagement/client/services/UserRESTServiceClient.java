@@ -255,7 +255,7 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
     @Override
     public boolean updateUser(SystemUser user) {
         try {
-            updateUser((User) user);
+            return updateUser((User) user);
         } catch (TokenExpiredException e) {
             try {
                 refreshToken();

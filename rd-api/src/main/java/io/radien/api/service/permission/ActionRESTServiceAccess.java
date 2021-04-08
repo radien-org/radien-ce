@@ -69,9 +69,4 @@ public interface ActionRESTServiceAccess extends Appframeable {
      */
     public boolean create(SystemAction action) throws SystemException;
 
-    /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent actions.
-     */
-    public Long getTotalRecordsCount() throws SystemException;
 }

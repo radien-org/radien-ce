@@ -54,7 +54,4 @@ public interface ResourceResourceClient {
     @POST
     public Response save(io.radien.ms.permissionmanagement.client.entities.Resource resource);
 
-    @GET
-    @Path("/countRecords")
-    public Response getTotalRecordsCount();
 }

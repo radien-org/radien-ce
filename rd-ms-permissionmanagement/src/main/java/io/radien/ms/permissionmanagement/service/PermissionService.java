@@ -142,7 +142,7 @@ public class PermissionService implements PermissionServiceAccess {
 
         TypedQuery<Permission> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemPermission> systemPermissions = q.getResultList();

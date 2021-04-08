@@ -85,7 +85,7 @@ public class TenantService implements TenantServiceAccess {
 
         TypedQuery<Tenant> q= entityManager.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemTenant> systemTenants = q.getResultList();
@@ -399,17 +399,6 @@ public class TenantService implements TenantServiceAccess {
 
         return size != 0;
     }
-
-    /**
-     * Count the number of all the tenants existent in the DB.
-     * @return the count of tenants
-     */
-    @Override
-    public long getTotalRecordsCount() {
-        CriteriaBuilder criteriaBuilder = emh.getEm().getCriteriaBuilder();
-        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Tenant.class));
-    }
-
     /**
      * Count the number of tenants existent in the DB.
      * @return the count of tenants

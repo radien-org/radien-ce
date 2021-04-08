@@ -139,7 +139,7 @@ public class ActionService implements ActionServiceAccess {
 
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemAction> systemActions = q.getResultList();
@@ -242,16 +242,6 @@ public class ActionService implements ActionServiceAccess {
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
-    }
-
-    /**
-     * Count the number of all the actions existent in the DB.
-     * @return the count of existent actions
-     */
-    @Override
-    public long getTotalRecordsCount() {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Action.class), criteriaBuilder, getEntityManager());
     }
 
     private Predicate getFilteredPredicate(SystemActionSearchFilter filter,

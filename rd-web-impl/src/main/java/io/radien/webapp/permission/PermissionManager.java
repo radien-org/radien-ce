@@ -94,14 +94,14 @@ public class PermissionManager extends AbstractManager {
         List<? extends SystemResource> page = null;
         if (filter.trim().length() == 0) {
             page = this.resourceRESTServiceAccess.getAll(
-                    null, 0, 5, Arrays.asList("name"), true).getResults();
+                    null, 1, 5, Arrays.asList("name"), true).getResults();
         }
         else {
             if (!filter.endsWith("%")) {
                 filter += "%";
             }
             page = this.resourceRESTServiceAccess.getAll(
-                    filter, 0, 5, Arrays.asList("name"), true).getResults();
+                    filter, 1, 5, Arrays.asList("name"), true).getResults();
         }
         return page;
     }
@@ -110,14 +110,14 @@ public class PermissionManager extends AbstractManager {
         List<? extends SystemAction> list = null;
         if (filter.trim().length() == 0) {
             list = this.actionRESTServiceAccess.getAll(
-                    null, 0, 10, Arrays.asList("name"), true).getResults();
+                    null, 1, 10, Arrays.asList("name"), true).getResults();
         }
         else {
             if (!filter.endsWith("%")) {
                 filter += "%";
             }
             list = this.actionRESTServiceAccess.getAll(
-                    filter, 0, 10, Arrays.asList("name"), true).getResults();
+                    filter, 1, 10, Arrays.asList("name"), true).getResults();
         }
         return list;
     }

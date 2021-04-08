@@ -20,10 +20,10 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
-import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 
@@ -48,6 +48,7 @@ public class UserServiceTest {
     Properties p;
     UserServiceAccess userServiceAccess;
     SystemUser uTest;
+    EJBContainer ejbContainer;
 
     public UserServiceTest() throws Exception {
         p = new Properties();
@@ -56,8 +57,11 @@ public class UserServiceTest {
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
 
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        ejbContainer = EJBContainer.createEJBContainer(p);
+        final Context context = ejbContainer.getContext();
 
         userServiceAccess = (UserServiceAccess) context.lookup("java:global/rd-ms-usermanagement//UserService");
 
@@ -438,6 +442,7 @@ public class UserServiceTest {
 
         List<? extends SystemUser> usersNotExact = userServiceAccess.getUsers(new UserSearchFilter("aa","aa","aa",false,true));
         assertEquals(2,usersNotExact.size());
+        ejbContainer.close();
     }
 
 

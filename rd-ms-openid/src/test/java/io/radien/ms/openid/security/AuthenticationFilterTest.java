@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,9 +41,12 @@ public class AuthenticationFilterTest {
         HttpServletResponse resp = (HttpServletResponse) response;
         FilterChain chain = Mockito.mock(FilterChain.class);
         when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer "+accessToken);
+        when(req.getRequestURI()).thenReturn("a");
+        PrintWriter printWriter = Mockito.mock(PrintWriter.class);
+        when(resp.getWriter()).thenReturn(printWriter);
         target.doFilter(request,response,chain);
         //Mockito.verify(chain).doFilter(request, response);
-        Mockito.verify(resp).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Failed authentication..");
+        Mockito.verify(printWriter).write("Failed authentication..");
         target.destroy();
     }
 

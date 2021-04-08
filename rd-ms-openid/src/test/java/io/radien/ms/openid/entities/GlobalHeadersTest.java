@@ -22,14 +22,14 @@ public class GlobalHeadersTest {
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
 
-  //  @Before
-  //  public void setUp(){
-  //      MockitoAnnotations.initMocks(this);
-  //  }
+      @Before
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void testUpdate() {
-      //  tokensPlaceHolder = mock(tokensPlaceHolder.getClass());
+        //tokensPlaceHolder = mock(tokensPlaceHolder.getClass());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("Batata");
         MultivaluedMap<String, String> incomingHeaders = new MultivaluedHashMap<>();
         MultivaluedMap<String, String> outgoingHeaders = new MultivaluedHashMap<>();
