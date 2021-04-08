@@ -80,26 +80,6 @@ public class ActionResourceTest {
     }
 
     /**
-     * Test the Get total records count request which will return a success message code 200.
-     */
-    @Test
-    public void testGetTotalRecordsCount() {
-        Response response = actionResource.getTotalRecordsCount();
-        assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Test the Get total records count request which will return a error message code 500.
-     */
-    @Test
-    public void testGetTotalRecordsCountException() {
-        when(actionResource.getTotalRecordsCount())
-                .thenThrow(new RuntimeException());
-        Response response = actionResource.getTotalRecordsCount();
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Get by ID with success should return a 200 code message
      * @throws ActionNotFoundException in case of action not found
      */

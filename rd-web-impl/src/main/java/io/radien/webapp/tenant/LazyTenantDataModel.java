@@ -63,7 +63,7 @@ public class LazyTenantDataModel extends LazyDataModel<SystemTenant> {
 
             datasource = pagedInformation.getResults();
 
-            rowCount = service.getTotalRecordsCount();
+            rowCount = (long)pagedInformation.getTotalResults();
         } catch (SystemException e) {
             e.printStackTrace();
         }

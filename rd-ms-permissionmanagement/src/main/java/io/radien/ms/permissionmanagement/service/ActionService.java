@@ -244,16 +244,6 @@ public class ActionService implements ActionServiceAccess {
         return q.getResultList();
     }
 
-    /**
-     * Count the number of all the actions existent in the DB.
-     * @return the count of existent actions
-     */
-    @Override
-    public long getTotalRecordsCount() {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Action.class), criteriaBuilder, getEntityManager());
-    }
-
     private Predicate getFilteredPredicate(SystemActionSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder,
                                            Root<Action> actionRoot) {

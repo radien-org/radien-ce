@@ -55,6 +55,9 @@ public class TenantServiceTest {
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radienTest");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+
 
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 
@@ -216,15 +219,6 @@ public class TenantServiceTest {
         tenant.setKey(RandomStringUtils.randomAlphabetic(4));
         tenantServiceAccess.create(tenant);
         return tenant;
-    }
-
-    /**
-     * Test of get count of total of tenants
-     */
-    @Test
-    public void testGetTotalRecordsCount() {
-        long result = tenantServiceAccess.getTotalRecordsCount();
-        assertEquals(7, result);
     }
 
     /**
@@ -503,7 +497,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenant);
 
         // Page size = 100 -> Overkill!!
-        Page<SystemTenant> page = tenantServiceAccess.getAll(0, 100);
+        Page<SystemTenant> page = tenantServiceAccess.getAll(1, 100);
     }
 
     /**

@@ -66,7 +66,7 @@ public class LazyResourcesDataModel extends LazyDataModel<SystemResource> {
 
             datasource = pagedInformation.getResults();
 
-            rowCount = service.getTotalRecordsCount();
+            rowCount = (long) pagedInformation.getTotalResults();
         } catch (SystemException e) {
             e.printStackTrace();
         }

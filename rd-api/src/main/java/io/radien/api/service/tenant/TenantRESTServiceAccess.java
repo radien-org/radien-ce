@@ -81,9 +81,4 @@ public interface TenantRESTServiceAccess {
      */
     public boolean isTenantExistent(Long tenantId) throws MalformedURLException, SystemException;
 
-    /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent tenants.
-     */
-    public Long getTotalRecordsCount() throws SystemException;
 }
