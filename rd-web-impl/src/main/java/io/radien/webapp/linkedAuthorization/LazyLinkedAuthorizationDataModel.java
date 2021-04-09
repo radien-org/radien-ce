@@ -63,7 +63,7 @@ public class LazyLinkedAuthorizationDataModel extends LazyDataModel<SystemLinked
     public List<SystemLinkedAuthorization> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            datasource = service.getAll((offset/pageSize), pageSize);
+            datasource = service.getAll((offset/pageSize)+1, pageSize);
 
             rowCount = service.getTotalRecordsCount();
         } catch (MalformedURLException | SystemException | ParseException e) {

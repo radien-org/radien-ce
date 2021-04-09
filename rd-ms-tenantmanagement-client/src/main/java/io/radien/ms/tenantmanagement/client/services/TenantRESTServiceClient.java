@@ -44,7 +44,6 @@ import java.util.Optional;
  * @author Santana
  */
 @Stateless
-@Default
 public class TenantRESTServiceClient implements TenantRESTServiceAccess {
 	private static final long serialVersionUID = 4007939167636938896L;
 
@@ -189,19 +188,4 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
         return false;
     }
 
-    /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent tenants.
-     */
-    public Long getTotalRecordsCount() throws SystemException {
-        try {
-            TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-
-            Response response = client.getTotalRecordsCount();
-            return Long.parseLong(response.readEntity(String.class));
-
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
-        }
-    }
 }

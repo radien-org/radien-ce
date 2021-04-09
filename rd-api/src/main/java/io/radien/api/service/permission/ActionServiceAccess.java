@@ -82,9 +82,4 @@ public interface ActionServiceAccess extends ServiceAccess {
      */
     public List<? extends SystemAction> getActions(SystemActionSearchFilter filter);
 
-    /**
-     * Count the number of all the actions existent in the DB.
-     * @return the count of existent actions
-     */
-    public long getTotalRecordsCount();
 }

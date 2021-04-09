@@ -84,7 +84,7 @@ public class ContractService implements ContractServiceAccess {
 
         TypedQuery<Contract> q= entityManager.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemContract> systemContracts= q.getResultList();

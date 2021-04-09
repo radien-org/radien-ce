@@ -3,10 +3,13 @@ package io.radien.ms.usermanagement.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
-import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
-import io.radien.api.model.user.SystemUser;
-import io.radien.api.model.user.SystemUserSearchFilter;
-import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.ms.openid.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.entities.Principal;
-import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,13 +31,10 @@ import org.mockito.MockitoAnnotations;
 
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
-import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
-import org.mockito.stubbing.Answer;
 
 /**
  * @author Nuno Santana
@@ -56,9 +53,6 @@ public class UserResourceTest {
 
     @Mock
     LinkedAuthorizationClient linkedAuthorizationClient;
-
-//    @Mock
-//    LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
 
     @Before
     public void before(){
@@ -377,39 +371,22 @@ public class UserResourceTest {
     @Test
     public void testSetAdminResetPassword() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenReturn(new User());
-        Response response = userResource.setInitiateResetPassword(1L);
+        Response response = userResource.sendUpdatePasswordEmail(1L);
         assertEquals(200,response.getStatus());
     }
 
     @Test
     public void testSetAdminResetPasswordGenericError() throws UserNotFoundException {
         doThrow(new RuntimeException()).when(userBusinessService).get(1L);
-        Response response = userResource.setInitiateResetPassword(1L);
+        Response response = userResource.sendUpdatePasswordEmail(1L);
         assertEquals(500,response.getStatus());
     }
 
     @Test
     public void testSetAdminResetPassword404() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
-        Response response = userResource.setInitiateResetPassword(1L);
+        Response response = userResource.sendUpdatePasswordEmail(1L);
         assertEquals(404,response.getStatus());
     }
 
-    @Test
-    public void testGetUserList() {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-        Response response = userResource.getUserList();
-        assertEquals(200,response.getStatus());
-    }
-
-    @Test
-    public void testGetUserListGenericException() {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-        when(userBusinessService.getUserList())
-                .thenThrow(new RuntimeException());
-        Response response = userResource.getUserList();
-        assertEquals(500,response.getStatus());
-    }
 }

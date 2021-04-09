@@ -24,11 +24,10 @@ phases:
 
 artifacts:
   files:
-    - rd-ms-usermanagement/target/usermanagement.war
+    - rd-ms-usermanagement/target/usermanagementservice.war
     - rd-ms-ecm/target/rd-ms-ecm.war
-    - rd-ms-ecm/Dockerfile
     - rd-web/target/web.war
-    - rd-web/Dockerfile
+    - Dockerfile
 
 cache:
   paths:

@@ -15,9 +15,9 @@
  */
 package io.radien.ms.usermanagement.client;
 
+import io.radien.exception.NotFoundException;
 import io.radien.ms.usermanagement.client.exceptions.BadRequestException;
 import io.radien.ms.usermanagement.client.exceptions.InternalServerErrorException;
-import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;

@@ -141,19 +141,6 @@ public class ResourceResource implements ResourceResourceClient {
 	}
 
 	/**
-	 * Will calculate how many records are existent in the db
-	 * @return the count of existent resources.
-	 */
-	@Override
-	public Response getTotalRecordsCount() {
-		try {
-			return Response.ok(resourceServiceAccess.getTotalRecordsCount()).build();
-		} catch(Exception e) {
-			return getGenericError(e);
-		}
-	}
-
-	/**
 	 * Invalid Request error exception. Launches a 400 Error Code to the user.
 	 * @param e exception to be throw
 	 * @return code 400 message Generic Exception

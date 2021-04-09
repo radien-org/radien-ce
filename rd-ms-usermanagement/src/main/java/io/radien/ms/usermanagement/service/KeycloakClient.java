@@ -46,6 +46,9 @@ public class KeycloakClient {
     private String password;
     private String tokenPath;
     private String userPath;
+    private String radienClientId;
+    private String radienSecret;
+    private String radienTokenPath;
 
     public KeycloakClient() {
     }
@@ -77,6 +80,20 @@ public class KeycloakClient {
 
     public KeycloakClient userPath(String userPath) {
         this.userPath = userPath;
+        return this;
+    }
+
+    public KeycloakClient radienClientId(String radienClientId) {
+        this.radienClientId = radienClientId;
+        return this;
+    }
+
+    public KeycloakClient radienSecret(String radienSecret) {
+        this.radienSecret = radienSecret;
+        return this;
+    }
+    public KeycloakClient radienTokenPath(String radienTokenPath) {
+        this.radienTokenPath = radienTokenPath;
         return this;
     }
 
@@ -171,6 +188,27 @@ public class KeycloakClient {
             result = response.getBody();
         } else {
             //TODO: improve Error handling
+            throw new RemoteResourceException("Unable to refresh token");
+        }
+    }
+
+    public String refreshToken(String refreshToken) throws RemoteResourceException {
+        HttpResponse<HashMap> response = Unirest.post(idpUrl + radienTokenPath)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
+                .field("client_id", radienClientId)
+                .field("client_secret", radienSecret)
+                .field("grant_type", "refresh_token")
+                .field("refresh_token", refreshToken)
+                .asObject(HashMap.class);
+        if (response.isSuccess()) {
+            result = response.getBody();
+            return result.get("access_token");
+        } else {
+            //TODO: improve Error handling
+            // {error_description=Token is not active, error=invalid_grant}
+            if(response.getBody()!= null) {
+                log.error(response.getBody().toString());
+            }
             throw new RemoteResourceException("Unable to refresh token");
         }
     }

@@ -131,7 +131,7 @@ public class ResourceService implements ResourceServiceAccess {
 
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo - 1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemResource> systemResources = q.getResultList();
@@ -234,16 +234,6 @@ public class ResourceService implements ResourceServiceAccess {
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
-    }
-
-    /**
-     * Count the number of all the resources existent in the DB.
-     * @return the count of resources
-     */
-    @Override
-    public long getTotalRecordsCount() {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Resource.class), criteriaBuilder, getEntityManager());
     }
 
     private Predicate getFilteredPredicate(SystemResourceSearchFilter filter,

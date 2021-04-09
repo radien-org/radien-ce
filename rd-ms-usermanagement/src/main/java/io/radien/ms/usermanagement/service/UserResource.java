@@ -248,10 +248,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	}
 
 	@Override
-	public Response setInitiateResetPassword(long id){
+	public Response sendUpdatePasswordEmail(long id){
 		try {
 			SystemUser user = userBusinessService.get(id);
-			userBusinessService.setInitiateResetPassword(new User((io.radien.ms.usermanagement.client.entities.User) user));
+			userBusinessService.sendUpdatePasswordEmail(new User((io.radien.ms.usermanagement.client.entities.User) user));
 			return Response.ok().build();
 		} catch(Exception e) {
 			return getResponseFromException(e);
@@ -259,18 +259,9 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	}
 
 	@Override
-	public Response getUserList() {
+	public Response refreshToken(String refreshToken) {
 		try {
-			return Response.ok(userBusinessService.getUserList()).build();
-		} catch (Exception e) {
-			return getResponseFromException(e);
-		}
-	}
-
-	@Override
-	public Response getTotalRecordsCount() {
-		try {
-			return Response.ok(userBusinessService.getTotalRecordsCount()).build();
+			return Response.ok(userBusinessService.refreshToken(refreshToken)).build();
 		} catch(Exception e) {
 			return getGenericError(e);
 		}

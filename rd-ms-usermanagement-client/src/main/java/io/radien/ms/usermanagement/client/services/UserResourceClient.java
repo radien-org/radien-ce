@@ -86,15 +86,11 @@ public interface UserResourceClient {
     public Response create(List<User> userList);
 
     @POST
-    @Path("/{id}/initiateResetPassword")
-    public Response setInitiateResetPassword(@NotNull @PathParam("id") long id);
+    @Path("/{id}/sendUpdatePasswordEmail")
+    public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
 
-    @GET
-    @Path("/userList")
-    public Response getUserList();
-
-    @GET
-    @Path("/countRecords")
-    public Response getTotalRecordsCount();
+    @POST
+    @Path("/refresh")
+    public Response refreshToken(String refreshToken);
 
 }

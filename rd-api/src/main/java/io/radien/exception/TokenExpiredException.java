@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client.exceptions;
+package io.radien.exception;
 
-import junit.framework.TestCase;
-import org.junit.Test;
+/**
+ * @author Santana
+ */
+public class TokenExpiredException extends RuntimeException {
 
-import static org.junit.Assert.*;
-
-public class NotFoundExceptionTest extends TestCase {
-
-    @Test
-    public void testNotFoundException(){
-        NotFoundException exception = new NotFoundException();
-        assertNotNull(exception);
-        NotFoundException exception2 = new NotFoundException("message");
-        assertEquals("message",exception2.getMessage());
+    public TokenExpiredException() {
+        super();
     }
 
+    public TokenExpiredException(String message) {
+        super(message);
+    }
 }

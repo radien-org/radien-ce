@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.util;
 
+import io.radien.exception.TokenExpiredException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -39,7 +40,7 @@ public class ClientServiceUtilTest {
         boolean valid = true;
         try {
             clientServiceUtil.getUserResourceClient("http://url.test.pt") ;
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException| TokenExpiredException e) {
             valid = false;
         }
         assertTrue(valid);

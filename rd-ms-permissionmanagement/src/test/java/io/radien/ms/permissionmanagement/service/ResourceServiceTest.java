@@ -40,13 +40,16 @@ public class ResourceServiceTest {
     SystemResource resourceTest;
 
     public ResourceServiceTest() throws Exception {
-        final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
+        Properties p = new Properties();
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        final Context context = EJBContainer.createEJBContainer(p).getContext();
 
         resourceServiceAccess = (ResourceServiceAccess) 
                 context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
 
         Page<? extends SystemResource> resourcePage =
-                resourceServiceAccess.getAll(null, 0, 10, null, true);
+                resourceServiceAccess.getAll(null, 1, 10, null, true);
         if (resourcePage.getTotalResults() > 0) {
             resourceTest = resourcePage.getResults().get(0);
         } else {
@@ -292,18 +295,18 @@ public class ResourceServiceTest {
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
 
-        Page<? extends SystemResource> resourcePage = resourceServiceAccess.getAll(null, 0, 10,
+        Page<? extends SystemResource> resourcePage = resourceServiceAccess.getAll(null, 1, 10,
                 orderby, true);
   
         assertTrue(resourcePage.getTotalResults()>=3);
 
         assertEquals("a",resourcePage.getResults().get(0).getName());
 
-        resourcePage = resourceServiceAccess.getAll(null, 0, 10, orderby, false);
+        resourcePage = resourceServiceAccess.getAll(null, 1, 10, orderby, false);
         assertTrue(resourcePage.getTotalResults()>=3);
         assertEquals("zzz",resourcePage.getResults().get(0).getName());
 
-        Page<? extends SystemResource> resourcePageWhere = resourceServiceAccess.getAll("a", 0, 10, null, true);
+        Page<? extends SystemResource> resourcePageWhere = resourceServiceAccess.getAll("a", 1, 10, null, true);
         assertTrue(resourcePageWhere.getTotalResults() == 1);
 
         assertEquals("a",resourcePageWhere.getResults().get(0).getName());
@@ -354,8 +357,7 @@ public class ResourceServiceTest {
         resources = resourceServiceAccess.getResources(
                 new ResourceSearchFilter(null, false,true));
 
-        // In necessary to count with the first ever inserted (variable "resourceTest")
-        assertEquals(14, resources.size());
+        assertEquals(8, resources.size());
 
         resources = resourceServiceAccess.getResources(new ResourceSearchFilter("xxx", true,true));
 
@@ -370,9 +372,4 @@ public class ResourceServiceTest {
         return r;
     }
 
-    @Test
-    public void testGetTotalRecordsCount() {
-        long result = resourceServiceAccess.getTotalRecordsCount();
-        assertEquals(23, result);
-    }
 }

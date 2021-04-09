@@ -281,28 +281,6 @@ public class TenantRESTServiceClientTest {
         assertTrue(success);
     }
 
-    @Test
-    public void testGetTotalRecordsCount() throws MalformedURLException {
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        builder.add(TenantFactory.convertToJsonObject(dummyTenant));
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeArray(builder.build());
-        jsonWriter.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
-        Response response = Response.ok(is).build();
-
-        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
-
-        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
-
-        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
-
-        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
-    }
 
     @Test
     public void testIsTenantExistent() throws MalformedURLException {
