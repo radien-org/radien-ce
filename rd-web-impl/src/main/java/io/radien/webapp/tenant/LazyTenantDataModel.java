@@ -59,7 +59,7 @@ public class LazyTenantDataModel extends LazyDataModel<SystemTenant> {
     public List<SystemTenant> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            Page<? extends SystemTenant> pagedInformation = service.getAll((offset/pageSize), pageSize);
+            Page<? extends SystemTenant> pagedInformation = service.getAll((offset/pageSize) + 1, pageSize);
 
             datasource = pagedInformation.getResults();
 

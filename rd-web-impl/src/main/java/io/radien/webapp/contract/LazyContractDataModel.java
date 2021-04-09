@@ -63,7 +63,7 @@ public class LazyContractDataModel extends LazyDataModel<SystemContract> {
     public List<SystemContract> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            Page<? extends SystemContract> pagedInformation = service.getAll((offset/pageSize), pageSize);
+            Page<? extends SystemContract> pagedInformation = service.getAll((offset/pageSize)+1, pageSize);
 
             datasource = pagedInformation.getResults();
 
