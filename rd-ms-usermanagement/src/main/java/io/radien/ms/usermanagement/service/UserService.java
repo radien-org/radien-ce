@@ -139,7 +139,7 @@ public class UserService implements UserServiceAccess{
 
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
 
-		q.setFirstResult((pageNo) * pageSize);
+		q.setFirstResult((pageNo-1) * pageSize);
 		q.setMaxResults(pageSize);
 
 		List<? extends SystemUser> systemUsers = q.getResultList();

@@ -48,7 +48,7 @@ public class ActionServiceTest {
                 context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
 
         Page<? extends SystemAction> actionPage =
-                actionServiceAccess.getAll(null, 0, 10, null, true);
+                actionServiceAccess.getAll(null, 1, 10, null, true);
         if (actionPage.getTotalResults() > 0) {
             actionTest = actionPage.getResults().get(0);
         } else {
@@ -297,18 +297,18 @@ public class ActionServiceTest {
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
 
-        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 0, 10,
+        Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1, 10,
                 orderby, true);
   
         assertTrue(actionPage.getTotalResults()>=3);
 
         assertEquals("a",actionPage.getResults().get(0).getName());
 
-        actionPage = actionServiceAccess.getAll(null, 0, 10, orderby, false);
+        actionPage = actionServiceAccess.getAll(null, 1, 10, orderby, false);
         assertTrue(actionPage.getTotalResults()>=3);
         assertEquals("zzz",actionPage.getResults().get(0).getName());
 
-        Page<? extends SystemAction> actionPageWhere = actionServiceAccess.getAll("a", 0, 10, null, true);
+        Page<? extends SystemAction> actionPageWhere = actionServiceAccess.getAll("a", 1, 10, null, true);
         assertTrue(actionPageWhere.getTotalResults() == 1);
 
         assertEquals("a",actionPageWhere.getResults().get(0).getName());

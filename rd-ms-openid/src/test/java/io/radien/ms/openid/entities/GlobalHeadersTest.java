@@ -22,10 +22,10 @@ public class GlobalHeadersTest {
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
 
-  //  @Before
-  //  public void setUp(){
-  //      MockitoAnnotations.initMocks(this);
-  //  }
+    @Before
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void testUpdate() {

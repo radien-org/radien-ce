@@ -131,7 +131,7 @@ public class ResourceService implements ResourceServiceAccess {
 
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo - 1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemResource> systemResources = q.getResultList();

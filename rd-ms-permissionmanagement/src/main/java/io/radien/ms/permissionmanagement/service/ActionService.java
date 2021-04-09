@@ -139,7 +139,7 @@ public class ActionService implements ActionServiceAccess {
 
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemAction> systemActions = q.getResultList();
