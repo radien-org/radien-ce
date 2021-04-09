@@ -28,6 +28,7 @@ import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -42,8 +43,7 @@ import java.util.Optional;
 /**
  * @author Santana
  */
-@RequestScoped
-@Default
+@Stateless
 public class TenantRESTServiceClient implements TenantRESTServiceAccess {
 	private static final long serialVersionUID = 4007939167636938896L;
 
