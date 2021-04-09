@@ -40,9 +40,9 @@ public class ResourceServiceTest {
     SystemResource resourceTest;
 
     public ResourceServiceTest() throws Exception {
-        //Properties p = new Properties();
-        //p.put("openejb.deployments.classpath.include",".*");
-        //p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        Properties p = new Properties();
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 
         resourceServiceAccess = (ResourceServiceAccess) 
