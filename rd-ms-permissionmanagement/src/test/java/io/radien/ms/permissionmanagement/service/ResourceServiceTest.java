@@ -40,7 +40,10 @@ public class ResourceServiceTest {
     SystemResource resourceTest;
 
     public ResourceServiceTest() throws Exception {
-        final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
+        Properties p = new Properties();
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        final Context context = EJBContainer.createEJBContainer(p).getContext();
 
         resourceServiceAccess = (ResourceServiceAccess) 
                 context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
@@ -369,9 +372,4 @@ public class ResourceServiceTest {
         return r;
     }
 
-    @Test
-    public void testGetTotalRecordsCount() {
-        long result = resourceServiceAccess.getTotalRecordsCount();
-        assertEquals(17, result);
-    }
 }

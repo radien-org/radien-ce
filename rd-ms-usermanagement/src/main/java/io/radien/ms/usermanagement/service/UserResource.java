@@ -19,13 +19,11 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import com.google.gson.JsonObject;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
@@ -228,10 +226,10 @@ public class UserResource implements UserResourceClient {
 	}
 
 	@Override
-	public Response setInitiateResetPassword(long id){
+	public Response sendUpdatePasswordEmail(long id){
 		try {
 			SystemUser user = userBusinessService.get(id);
-			userBusinessService.setInitiateResetPassword(new User((io.radien.ms.usermanagement.client.entities.User) user));
+			userBusinessService.sendUpdatePasswordEmail(new User((io.radien.ms.usermanagement.client.entities.User) user));
 			return Response.ok().build();
 		} catch(Exception e) {
 			return getResponseFromException(e);
@@ -239,18 +237,9 @@ public class UserResource implements UserResourceClient {
 	}
 
 	@Override
-	public Response getUserList() {
+	public Response refreshToken(String refreshToken) {
 		try {
-			return Response.ok(userBusinessService.getUserList()).build();
-		} catch (Exception e) {
-			return getResponseFromException(e);
-		}
-	}
-
-	@Override
-	public Response getTotalRecordsCount() {
-		try {
-			return Response.ok(userBusinessService.getTotalRecordsCount()).build();
+			return Response.ok(userBusinessService.refreshToken(refreshToken)).build();
 		} catch(Exception e) {
 			return getGenericError(e);
 		}

@@ -66,7 +66,7 @@ public class LazyActionsDataModel extends LazyDataModel<SystemAction> {
 
             datasource = pagedInformation.getResults();
 
-            rowCount = service.getTotalRecordsCount();
+            rowCount = (long)pagedInformation.getTotalResults();
         } catch (SystemException e) {
             e.printStackTrace();
         }

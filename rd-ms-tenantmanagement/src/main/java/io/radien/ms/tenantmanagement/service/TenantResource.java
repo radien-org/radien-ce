@@ -147,19 +147,6 @@ public class TenantResource implements TenantResourceClient {
 	}
 
 	/**
-	 * Will calculate how many records are existent in the db
-	 * @return the count of existent tenants.
-	 */
-	@Override
-	public Response getTotalRecordsCount() {
-		try {
-			return Response.ok(tenantService.getTotalRecordsCount()).build();
-		} catch(Exception e) {
-			return getGenericError(e);
-		}
-	}
-
-	/**
 	 * Generic error exception. Launches a 500 Error Code to the user.
 	 * @param e exception to be throw
 	 * @return code 500 message Generic Exception

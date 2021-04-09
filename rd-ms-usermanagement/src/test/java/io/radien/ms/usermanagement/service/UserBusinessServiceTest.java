@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -161,15 +159,7 @@ public class UserBusinessServiceTest extends TestCase {
         User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
         doNothing().when(keycloakService,"sendUpdatePasswordEmail", ArgumentMatchers.any());
-        userBusinessService.setInitiateResetPassword(user);
-    }
-
-    @Test
-    public void testGetUserList() {
-        List<? extends SystemUser> systemUsers = new ArrayList<>();
-        when(userServiceAccess.getUserList()).thenReturn(new ArrayList<>());
-        List<? extends SystemUser> result = userBusinessService.getUserList();
-        assertEquals(systemUsers,result);
+        userBusinessService.sendUpdatePasswordEmail(user);
     }
 
 

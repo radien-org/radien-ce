@@ -50,5 +50,4 @@ public interface UserServiceAccess extends ServiceAccess {
 
     public BatchSummary create(List<? extends SystemUser> users);
 
-    public long getTotalRecordsCount();
 }

@@ -71,7 +71,4 @@ public interface TenantResourceClient {
     @Path("/exists/{id}")
     public Response exists(@NotNull @PathParam("id") Long id);
 
-    @GET
-    @Path("/countRecords")
-    public Response getTotalRecordsCount();
 }

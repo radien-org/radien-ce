@@ -42,7 +42,10 @@ public class ActionServiceTest {
     SystemAction actionTest;
 
     public ActionServiceTest() throws Exception {
-        final Context context = EJBContainer.createEJBContainer(new Properties()).getContext();
+        Properties p = new Properties();
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        final Context context = EJBContainer.createEJBContainer(p).getContext();
 
         actionServiceAccess = (ActionServiceAccess) 
                 context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
@@ -78,11 +81,6 @@ public class ActionServiceTest {
         assertNull(result);
     }
 
-    @Test
-    public void testGetTotalRecordsCount() {
-        long result = actionServiceAccess.getTotalRecordsCount();
-        assertEquals(17, result);
-    }
 
     /**
      * Add Action test with duplicated Name.

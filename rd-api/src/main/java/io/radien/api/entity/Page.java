@@ -17,6 +17,7 @@
 package io.radien.api.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,12 @@ public class Page<T extends Serializable> implements Serializable {
     private int totalResults;
     private int totalPages;
 
+    public Page() {
+        this.results = new ArrayList<>();
+        this.currentPage = 0;
+        this.totalResults = 0;
+        this.totalPages = 0;
+    }
     public Page(List<? extends T> results, int currentPage, int totalResults, int totalPages) {
         this.results = results;
         this.currentPage = currentPage;

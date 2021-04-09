@@ -82,23 +82,6 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
     }
 
     /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent resources.
-     */
-    public Long getTotalRecordsCount() throws SystemException {
-        try {
-            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.getTotalRecordsCount();
-            return Long.parseLong(response.readEntity(String.class));
-
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
-        }
-    }
-
-    /**
      * Gets an Resource in the DB searching for the field Id
      *
      * @param id to be looked after

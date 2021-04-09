@@ -437,21 +437,4 @@ public class UserService implements UserServiceAccess{
 		}
 	}
 
-	@Override
-	public long getTotalRecordsCount() {
-		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(User.class), criteriaBuilder, em);
-	}
-
-	private long getCount(Predicate global, Root<User> resourceRoot, CriteriaBuilder cb, EntityManager em) {
-		CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
-
-		criteriaQuery.where(global);
-
-		criteriaQuery.select(cb.count(resourceRoot));
-
-		TypedQuery<Long> q=em.createQuery(criteriaQuery);
-		return q.getSingleResult();
-	}
-
 }

@@ -68,9 +68,4 @@ public interface ResourceRESTServiceAccess extends Appframeable {
      */
     public boolean create(SystemResource resource) throws SystemException;
 
-    /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent resources.
-     */
-    public Long getTotalRecordsCount() throws SystemException;
 }

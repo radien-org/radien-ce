@@ -54,6 +54,8 @@ public class LinkedAuthorizationServiceTest {
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
+        p.put("openejb.deployments.classpath.include",".*");
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
 
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 

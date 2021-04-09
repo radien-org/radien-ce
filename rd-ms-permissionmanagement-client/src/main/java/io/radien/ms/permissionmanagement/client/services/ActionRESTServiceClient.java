@@ -161,23 +161,6 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
         }
     }
 
-    /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent actions.
-     */
-    public Long getTotalRecordsCount() throws SystemException {
-        try {
-            ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.getTotalRecordsCount();
-            return Long.parseLong(response.readEntity(String.class));
-
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
-        }
-    }
-
     @Override
     public OAFAccess getOAF() {
         return oaf;

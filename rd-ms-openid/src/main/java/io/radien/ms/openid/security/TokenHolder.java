@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client.exceptions;
+package io.radien.ms.openid.security;
 
-public class NotFoundException extends Exception{
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Default;
 
-    public NotFoundException() {
-        super();
-    }
-
-    public NotFoundException(String message) {
-        super(message);
-    }
+@SessionScoped
+@Default
+public class TokenHolder extends AuthorizationChecker{
 }

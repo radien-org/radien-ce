@@ -337,29 +337,4 @@ public class ActionRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getAll("action%", 1, 100, sortBy, true));
     }
 
-    @Test
-    public void testGetTotalRecordsCount() throws MalformedURLException {
-        Action action = ActionFactory.create("test", null);
-
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        builder.add(ActionFactory.convertToJsonObject(action));
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeArray(builder.build());
-        jsonWriter.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
-        Response response = Response.ok(is).build();
-
-        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-
-        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
-
-        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-
-        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
-    }
-
 }

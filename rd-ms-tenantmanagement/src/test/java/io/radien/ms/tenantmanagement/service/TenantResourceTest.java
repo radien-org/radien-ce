@@ -222,26 +222,6 @@ public class TenantResourceTest {
     }
 
     /**
-     * Test the Get total records count request which will return a success message code 200.
-     */
-    @Test
-    public void testGetTotalRecordsCount() {
-        Response response = tenantResource.getTotalRecordsCount();
-        assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Test the Get total records count request which will return a error message code 500.
-     */
-    @Test
-    public void testGetTotalRecordsCountException() {
-        when(tenantResource.getTotalRecordsCount())
-                .thenThrow(new RuntimeException());
-        Response response = tenantResource.getTotalRecordsCount();
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Test the exists request which will return a success message code 200.
      */
     @Test

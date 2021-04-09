@@ -86,9 +86,4 @@ public interface ResourceServiceAccess extends ServiceAccess {
      */
     public List<? extends SystemResource> getResources(SystemResourceSearchFilter filter);
 
-    /**
-     * Count the number of all the resources existent in the DB.
-     * @return the count of resources
-     */
-    public long getTotalRecordsCount();
 }

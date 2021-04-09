@@ -89,9 +89,4 @@ public interface TenantServiceAccess extends ServiceAccess {
      */
     public boolean exists(Long tenantId) throws NotFoundException;
 
-    /**
-     * Count the number of all the tenants existent in the DB.
-     * @return the count of tenants
-     */
-    public long getTotalRecordsCount();
 }
