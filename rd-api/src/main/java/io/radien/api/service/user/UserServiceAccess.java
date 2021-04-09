@@ -32,6 +32,8 @@ import io.radien.exception.UserNotFoundException;
  */
 public interface UserServiceAccess extends ServiceAccess {
 
+    Long getUserId(String userSub);
+
     public SystemUser get(Long userId) throws UserNotFoundException;
 
     public List<SystemUser> get(List<Long> userId);

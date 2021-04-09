@@ -17,19 +17,26 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
+import io.radien.ms.openid.client.LinkedAuthorizationClient;
+import io.radien.ms.openid.client.UserClient;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.NotFoundException;
 import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import javax.ejb.embeddable.EJBContainer;
+import javax.enterprise.inject.spi.CDI;
 import javax.naming.Context;
 import java.util.List;
 import java.util.ArrayList;
@@ -56,6 +63,10 @@ public class UserServiceTest {
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
+        p.put("openejb.deployments.classpath.include",".*"); //.*
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*"); //.*TokensPlaceHolder.* //.*/UserRESTServiceClient.*
+        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*"); //.*TokensPlaceHolder.* //.*/UserRESTServiceClient.*
+
 
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 
@@ -63,7 +74,7 @@ public class UserServiceTest {
 
         String sub = "270e0461-416d-4faf-af9f-d6b45619ed62";
 
-        Page<? extends SystemUser> userPage = userServiceAccess.getAll(null, 1, 10, null, true);
+        Page<? extends SystemUser> userPage = userServiceAccess.getAll(null, 0, 10, null, true);
         if(userPage.getTotalResults()>0) {
             uTest = userPage.getResults().get(0);
         } else {
@@ -400,17 +411,17 @@ public class UserServiceTest {
         List<String> orderby = new ArrayList<>();
         orderby.add("firstname");
 
-        Page<? extends SystemUser> userPage = userServiceAccess.getAll(null, 1, 10, orderby, true);
+        Page<? extends SystemUser> userPage = userServiceAccess.getAll(null, 0, 10, orderby, true);
   
         assertTrue(userPage.getTotalResults()>=2);
 
         assertEquals("a",userPage.getResults().get(0).getFirstname());
 
-        userPage = userServiceAccess.getAll(null, 1, 10, orderby, false);
+        userPage = userServiceAccess.getAll(null, 0, 10, orderby, false);
         assertTrue(userPage.getTotalResults()>=2);
         assertEquals("zzz",userPage.getResults().get(0).getFirstname());
 
-        Page<? extends SystemUser> userPageWhere = userServiceAccess.getAll("aGetAllSort@email.pt", 1, 10, null, true);
+        Page<? extends SystemUser> userPageWhere = userServiceAccess.getAll("aGetAllSort@email.pt", 0, 10, null, true);
         assertTrue(userPageWhere.getTotalResults() == 1);
 
         assertEquals("a",userPageWhere.getResults().get(0).getFirstname());

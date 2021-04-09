@@ -3,12 +3,10 @@ package io.radien.ms.usermanagement.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.model.user.SystemUserSearchFilter;
+import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
+import io.radien.ms.openid.client.LinkedAuthorizationClient;
+import io.radien.ms.openid.entities.Principal;
+import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +37,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
+import org.mockito.stubbing.Answer;
 
 /**
  * @author Nuno Santana
@@ -48,6 +53,12 @@ public class UserResourceTest {
 
     @Mock
     HttpServletRequest servletRequest;
+
+    @Mock
+    LinkedAuthorizationClient linkedAuthorizationClient;
+
+//    @Mock
+//    LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
 
     @Before
     public void before(){
@@ -153,8 +164,70 @@ public class UserResourceTest {
      * Creation with success of a record. Should return a 200 code message
      */
     @Test
-    public void testSave() {
+    public void testSave() throws SystemException {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, "tenant-administrator", null);
+
         Response response = userResource.save(new User());
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     *
+     * @throws SystemException
+     */
+    @Test
+    public void testSaveWithAuthorizationDenied() throws SystemException {
+        Principal loggedUser = new Principal();
+        loggedUser.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        User userToBeCreated = new User();
+        userToBeCreated.setSub("xxx-yyy-zzz-www");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(loggedUser);
+        when(this.userBusinessService.getUserId(loggedUser.getSub())).thenReturn(1001L);
+
+        Response notAuthorizedResponse = Response.ok().entity(Boolean.FALSE).build();
+
+        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, "tenant-administrator", null);
+
+        Response response = userResource.save(new User());
+        assertEquals(403,response.getStatus());
+    }
+
+    /**
+     * User is accessing radien for the very fist time.
+     * His profile were created on KeyCloak and now he is going to
+     * register himself on the radien database
+     */
+    @Test
+    public void testSaveSelfRegisterScenario() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        User userToBeRegistered = new User();
+        userToBeRegistered.setSub(principal.getSub());
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        Response response = userResource.save(userToBeRegistered);
         assertEquals(200,response.getStatus());
     }
 
@@ -165,7 +238,20 @@ public class UserResourceTest {
      * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException, SystemException {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        when(this.userBusinessService.getUserId(principal.getSub())).thenReturn(1001L);
+
+        Response granted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn(granted).when(linkedAuthorizationClient).isRoleExistentForUser(1001L,
+                "tenant-administrator", null);
+
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
         Response response = userResource.save(new User());
         assertEquals(400,response.getStatus());

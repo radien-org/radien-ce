@@ -38,22 +38,30 @@ public abstract class TokensPropagator implements TokensPlaceHolder, Serializabl
     @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * Retrieves the reference for current logged user
+     * @return
+     */
     protected SystemUser getInvokerUser() {
         return (Principal) servletRequest.getSession().getAttribute("USER");
     }
 
+    /**
+     * This method retrieves the tokens (access and refresh), and store them
+     * to be transferred through GlobalHeaders
+     */
     protected void preProcess() {
         HttpSession httpSession = this.servletRequest.getSession(false);
         if (httpSession.getAttribute("accessToken") != null &&
                 httpSession.getAttribute("refreshToken") != null) {
-            this.accessToken = httpSession.getAttribute("accessToken").toString();
-            this.refreshToken = httpSession.getAttribute("refreshToken").toString();
+            this.setAccessToken(httpSession.getAttribute("accessToken").toString());
+            this.setRefreshToken(httpSession.getAttribute("refreshToken").toString());
         }
         else {
             // Lets obtain (at least) accessToken from Header
             String token = this.servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
             if (token != null && token.startsWith("Bearer ")) {
-                this.accessToken = token.substring(7);
+                this.setAccessToken(token.substring(7));
             }
         }
     }

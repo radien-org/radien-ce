@@ -20,6 +20,9 @@ import io.radien.ms.openid.entities.Principal;
 import javax.json.JsonObject;
 import java.util.Date;
 
+/**
+ * An utilitarian class to create instance of Principal class
+ */
 public class PrincipalFactory {
 
     /**

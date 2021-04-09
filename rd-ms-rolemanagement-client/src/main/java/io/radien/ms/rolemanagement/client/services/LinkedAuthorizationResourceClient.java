@@ -19,12 +19,10 @@ import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
-import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Optional;
 
 /**
  * @author Bruno Gama

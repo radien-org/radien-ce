@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
@@ -24,30 +25,29 @@ import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
+import org.junit.AfterClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
 
 /**
- * @author Bruno Gama
+ * @author Newton Carvalho
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LinkedAuthorizationServiceIntegratedTest {
     Properties p;
-    LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
-    RoleServiceAccess roleServiceAccess;
-    SystemLinkedAuthorization systemLinkedAuthorization;
+    static LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
+    static RoleServiceAccess roleServiceAccess;
 
     public LinkedAuthorizationServiceIntegratedTest() throws Exception {
         p = new Properties();
-        p.put("appframeDatabase", "new://Resource?type=DataSource");
-        p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
-        p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
-        p.put("appframeDatabase.userName", "sa");
-        p.put("appframeDatabase.password", "");
 
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 
@@ -122,4 +122,46 @@ public class LinkedAuthorizationServiceIntegratedTest {
         assertTrue(exists);
     }
 
+    @Test
+    public void testInvokingWithWrongParameters() {
+        assertThrows(Exception.class, () -> linkedAuthorizationServiceAccess.
+            getRolesByUserAndTenant(null, null));
+        assertThrows(Exception.class, () -> linkedAuthorizationServiceAccess.
+                isRoleExistentForUser(null, null, "role-test"));
+        assertThrows(Exception.class, () -> linkedAuthorizationServiceAccess.
+                isRoleExistentForUser(1l, null, null));
+    }
+
+    @Test
+    public void testRetrieveRolesPerUser() {
+        Long idUser1 = 222L;
+        List<? extends  SystemRole> roles = linkedAuthorizationServiceAccess.
+                getRolesByUserAndTenant(idUser1, null);
+        assertEquals(roles.size(), 2);
+
+        Long tenantId = 1111L;
+        roles = linkedAuthorizationServiceAccess.getRolesByUserAndTenant(idUser1, tenantId);
+        assertEquals(roles.size(), 1);
+
+        tenantId = 9999L;
+        roles = linkedAuthorizationServiceAccess.getRolesByUserAndTenant(idUser1, tenantId);
+        assertEquals(roles.size(), 0);
+    }
+
+
+    /**
+     * The idea for this method is to do a "clean up" process, for do not
+     * interfere in other tests cases ahead that use LinkedAuthorization
+     */
+    @AfterClass
+    public static void cleanUp() throws LinkedAuthorizationNotFoundException, RoleNotFoundException {
+        Page<SystemRole> allRoles = roleServiceAccess.getAll(0, 100);
+        for (SystemRole sr: allRoles.getResults()) {
+            roleServiceAccess.delete(sr.getId());
+        }
+        Page<SystemLinkedAuthorization> allLinkedAuths = linkedAuthorizationServiceAccess.getAll(0, 100);
+        for (SystemLinkedAuthorization sl: allLinkedAuths.getResults()) {
+            linkedAuthorizationServiceAccess.deleteAssociation(sl.getId());
+        }
+    }
 }

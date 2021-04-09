@@ -62,6 +62,19 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
 	@Override
+	public Response getUserIdBySub(String sub) {
+		try {
+			Long id = userBusinessService.getUserId(sub);
+			if (id == null) {
+				return getResourceNotFoundException();
+			}
+			return Response.ok(id).build();
+		} catch (Exception e) {
+			return getResponseFromException(e);
+		}
+	}
+
+	@Override
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 		try {
@@ -141,13 +154,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 
 	@Override
 	protected Long getCurrentUserIdBySub(String sub) throws SystemException {
-		SystemUserSearchFilter filter = new UserSearchFilter(sub,null,null,
-				true,true);
-		List<? extends SystemUser> list = this.userBusinessService.getUsers(filter);
-		if (list.isEmpty()) {
+		Long userId = this.userBusinessService.getUserId(sub);
+		if (userId == null) {
 			new SystemException("No user available for sub " + sub);
 		}
-		return list.get(0).getId();
+		return userId;
 	}
 
 	/**

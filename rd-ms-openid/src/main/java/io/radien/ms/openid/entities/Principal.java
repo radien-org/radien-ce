@@ -20,7 +20,7 @@ import io.radien.api.model.user.SystemUser;
 import java.util.Date;
 
 /**
- * Pojo that represents the user currently logged into the application
+ * This pojo/bean represents the user that is currently logged into the application
  * @author Newton Carvalho
  */
 public class Principal implements SystemUser {
