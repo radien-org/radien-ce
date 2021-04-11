@@ -79,10 +79,10 @@
 		<version.microprofile>3.3</version.microprofile>
 
 		<!-- CXF Core -->
-		<version.tomee-cxf-core>3.3.7</version.tomee-cxf-core>
+		<version.cxf-rt-rs-mp-client>3.3.7</version.cxf-rt-rs-mp-client>
 
 		<!-- Microprofile Rest API -->
-		<version.tomee-microprofile-rest-client-api>1.3.3</version.tomee-microprofile-rest-client-api>
+		<version.microprofile-rest-client-api>1.3.3</version.microprofile-rest-client-api>
 
 		<!-- Logging -->
 		<version.slf4j-api>1.7.30</version.slf4j-api>
@@ -379,13 +379,13 @@
 			<dependency>
 				<groupId>org.eclipse.microprofile.rest.client</groupId>
 				<artifactId>microprofile-rest-client-api</artifactId>
-				<version>${version.tomee-microprofile-rest-client-api}</version>
+				<version>${version.microprofile-rest-client-api}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-rs-mp-client</artifactId>
-				<version>${version.tomee-cxf-core}</version>
+				<version>${version.cxf-rt-rs-mp-client}</version>
 				<scope>provided</scope>
 			</dependency>
 
