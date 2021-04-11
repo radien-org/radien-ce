@@ -1,14 +1,59 @@
-#navigation {
-    background-color: rgba(72, 8, 111, 0.4);
-    border: 0 none;
-    margin: 0;
+html {
+	background: #b2b2b2;
+	background-color: #b2b2b2;
+}
+
+.rd-red{
+	color: #e7411d; 
+}
+
+.rd-fox{
+	color: #e6215b; 
+}
+
+.rd-grey{
+	color: #b2b2b2; 
+}
+
+.rd-orange{
+	color: #e8611b; 
+}
+
+.rd-lightblue{
+	color: #3daee3; 
+}
+
+.rd-blue{
+	color: #1d71b8; 
+}
+
+.rd-green{
+	color: #00a19a; 
+}
+
+a, .navbar-default .navbar-nav > li > a {
+  color: #1d71b8;
+  padding: 1em 1em;
+  text-decoration: none;
+}
+
+a:hover, .navbar-default .navbar-nav > li > a:hover {
+  color: #3daee3;
+}
+
+a:active, .navbar-default .navbar-nav > li > a:active {
+  color: #00a19a;
+}
+
+a:visited, .navbar-default .navbar-nav > li > a:visited {
+  color: #1d71b8;
 }
 
 .navbar-brand img {
-    padding: 0;
-    width: 6em;
+	padding: 0;
+	width: 6em;
 }
 
 .logo {
-    margin: 0;
+	margin: 0;
 }
