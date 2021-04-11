@@ -1,0 +1,14 @@
+#navigation {
+    background-color: rgba(72, 8, 111, 0.4);
+    border: 0 none;
+    margin: 0;
+}
+
+.navbar-brand img {
+    padding: 0;
+    width: 6em;
+}
+
+.logo {
+    margin: 0;
+}

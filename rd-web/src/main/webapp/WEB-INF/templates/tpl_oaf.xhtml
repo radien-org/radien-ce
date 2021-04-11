@@ -12,6 +12,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link rel="shortcut icon" type="image/x-icon" href="#{resource['gfx/favicon.ico']}"/>
+		
+		<link type="text/css" rel="stylesheet" href="#{resource['css:default.css']}" />
+
 	</h:head>
 	<h:body id="app-root">
 		<script>
@@ -24,7 +27,7 @@
 		</script>
 		<b:container>
 			<h:form>
-				<b:navBar brand-img="#{resource['gfx:logos/radien.svg']}" brand-img-style="width:50%" brandHref="#" position="top" sticky="true" inverse="true">
+				<b:navBar brand-img="#{resource['gfx:logos/trademark.svg']}" brandHref="#" position="top" sticky="true">
 					<b:navbarLinks>
 						<b:navCommandLink value="#{msg.rd_home_page}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
 	                        <f:param name="navigationNode" value="index" />

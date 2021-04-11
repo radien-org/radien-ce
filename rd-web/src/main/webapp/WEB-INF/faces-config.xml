@@ -10,10 +10,10 @@
 		creating @Named managed beans. -->
 	<application>
 		<resource-bundle>
-        <base-name>io.radien.i18n.Language</base-name>
-        <var>msg</var>
-       </resource-bundle>
-
+			<base-name>io.radien.i18n.Language</base-name>
+			<var>msg</var>
+		</resource-bundle>
+		<resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>
 
 
 		<!-- <resource-handler>org.omnifaces.resourcehandler.CombinedResourceHandler</resource-handler> 

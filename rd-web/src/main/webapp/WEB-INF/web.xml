@@ -4,7 +4,6 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
 	version="4.0">
 
-
 	<listener>
 		<listener-class>io.radien.kernel.listener.OAFInitListener</listener-class>
 	</listener>
@@ -33,14 +32,6 @@
 		<param-value>true</param-value> </context-param> <context-param> <param-name>net.bootsfaces.get_bootstrap_from_cdn</param-name> 
 		<param-value>true</param-value> </context-param> -->
 
-
-
-
-
-
-
-
-
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -49,6 +40,7 @@
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.oaf</url-pattern>
+		<url-pattern>/javax.faces.resource/*</url-pattern>
 	</servlet-mapping>
 
 
