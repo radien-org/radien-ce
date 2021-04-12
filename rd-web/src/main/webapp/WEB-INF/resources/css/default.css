@@ -1,8 +1,36 @@
 html {
-	background: #b2b2b2;
-	background-color: #b2b2b2;
+	margin: 0;
+	padding: 0;
+
 }
 
+body {
+	background: #F8F8F8;
+	background-color: #F8F8F8;
+	font-family: Avant Garde, Avantgarde, Century Gothic, CenturyGothic, AppleGothic;
+}
+
+#content {
+
+	
+}
+#footer{
+	background: #F0F0F0;
+	background-color: #F0F0F0;
+	position:fixed;
+	height:50px;
+	border:1px solid #e7e7e7;
+	width:100%;
+	bottom:0;
+}
+
+.logo {
+	margin: 0;
+}
+
+/**
+*NAVBAR
+*/
 .rd-red{
 	color: #e7411d; 
 }
@@ -31,6 +59,15 @@ html {
 	color: #00a19a; 
 }
 
+/**
+*NAVBAR
+*/
+.navbar-default{
+	background: #F0F0F0;
+	background-color: #F0F0F0;
+}
+
+
 a, .navbar-default .navbar-nav > li > a {
   color: #1d71b8;
   padding: 1em 1em;
@@ -54,6 +91,3 @@ a:visited, .navbar-default .navbar-nav > li > a:visited {
 	width: 6em;
 }
 
-.logo {
-	margin: 0;
-}
