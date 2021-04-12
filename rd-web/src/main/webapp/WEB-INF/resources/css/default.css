@@ -1,13 +1,13 @@
 html {
 	margin: 0;
 	padding: 0;
-
+	font-family: Avant Garde, Avantgarde, Century Gothic, CenturyGothic, AppleGothic;
 }
 
 body {
 	background: #F8F8F8;
 	background-color: #F8F8F8;
-	font-family: Avant Garde, Avantgarde, Century Gothic, CenturyGothic, AppleGothic;
+	
 }
 
 #content {
