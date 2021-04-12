@@ -1,9 +1,9 @@
 FROM scratch as builder
-COPY target/*.war /web.war
+COPY target/*.war /
 
 FROM radien/base:latest 
 WORKDIR /
 
-COPY --from=builder /web.war /usr/local/tomee/webapps/web.war
+COPY --from=builder /*.war /usr/local/tomee/webapps/
 
 CMD ["catalina.sh", "run"]
