@@ -21,16 +21,13 @@
                              required="true" requiredMessage="#{msg.rd_tenant_name_is_mandatory}"
                              label="#{msg.nameUpperCase}" span="6"/>
                 <b:inputText id="tenantKey" value="#{tenantDataModel.selectedTenant.key}"
-                             required="true" requiredMessage="#{msg.rd_tenant_key_is_mandatory}"
-                             label="#{msg.key}" span="6"/>
+                             label="#{msg.key}" disabled="true" span="6"/>
                 <b:inputText id="tenantType" value="#{tenantDataModel.selectedTenant.type}"
-                             required="true" requiredMessage="#{msg.rd_tenant_type_is_mandatory}"
-                             label="#{msg.type}" span="6"/>
+                             label="#{msg.type}" disabled="true" span="6"/>
                 <b:datepicker id="tenantStartDate" value="#{tenantDataModel.selectedTenant.start}"
-                              required="true" requiredMessage="#{msg.rd_contract_start_date_is_mandatory}"
-                              converter="radienLocalDateTimeConverter" label="#{msg.start_date}" span="6"/>
+                              converter="radienLocalDateTimeConverter" disabled="true" label="#{msg.start_date}" span="6"/>
                 <b:datepicker id="tenantEndDate" value="#{tenantDataModel.selectedTenant.end}"
-                              converter="radienLocalDateTimeConverter" label="#{msg.end_date}" span="6"/>
+                              converter="radienLocalDateTimeConverter" disabled="true" label="#{msg.end_date}" span="6"/>
             </b:panel>
             <b:panel title="Client Information" collapsible="false" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT'}">
                 <b:inputText id="tenantClientAddress" value="#{tenantDataModel.selectedTenant.clientAddress}"
@@ -54,9 +51,9 @@
             </b:panel>
             <b:panel title="Technical Information" collapsible="false" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT' || tenantDataModel.selectedTenant.type.name == 'SUB'}">
                 <b:inputText id="tenantParentId" value="#{tenantDataModel.selectedTenant.parentId}"
-                             required="true" requiredMessage="#{msg.rd_tenant_parent_is_mandatory}"
+                             disabled="true"
                              label="#{msg.rd_tenant_parent}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT' || tenantDataModel.selectedTenant.type.name == 'SUB'}" span="6"/>
-                <b:inputText id="tenantClientId" value="#{tenantDataModel.selectedTenant.clientId}"
+                <b:inputText id="tenantClientId" value="#{tenantDataModel.selectedTenant.clientId}" disabled="true"
                              label="#{msg.rd_tenant_client}" rendered="#{tenantDataModel.selectedTenant.type.name == 'CLIENT' || tenantDataModel.selectedTenant.type.name == 'SUB'}" span="6"/>
             </b:panel>
             <b:commandButton value="#{msg.save}"
