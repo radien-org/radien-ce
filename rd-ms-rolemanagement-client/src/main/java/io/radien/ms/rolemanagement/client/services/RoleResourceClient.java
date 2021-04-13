@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Role cUrls
@@ -37,8 +38,11 @@ import javax.ws.rs.core.Response;
 public interface RoleResourceClient {
 
     @GET
-    public Response getAll(@DefaultValue("0")  @QueryParam("pageNo") int pageNo,
-                           @DefaultValue("10") @QueryParam("pageSize") int pageSize);
+    public Response getAll(@QueryParam("search") String search,
+                           @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize,
+                           @QueryParam("sortBy") List<String> sortBy,
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     @GET
     @Path("/find")

@@ -31,6 +31,8 @@ import io.radien.exception.TokenExpiredException;
  */
 public interface UserRESTServiceAccess extends Appframeable{
 	public Optional<SystemUser> getUserBySub(String sub) throws SystemException;
+	public Optional<SystemUser> getUserByLogon(String logon) throws SystemException;
+	public Optional<SystemUser> getUserById(Long id) throws SystemException;
 
     /**
      * Creates given user

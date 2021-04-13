@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<ui:define name="content">
+		<b:form>
+			<b:container>
+				<b:row>
+					<h:panelGroup layout="block">
+						<h1><h:outputText value="#{msg.rd_tenant_association_select_tenant_for_current_user} "/></h1>
+						<hr />
+					</h:panelGroup>
+				</b:row>
+				<b:row>
+					<b:column span="3">
+						<h:outputText value="#{msg.firstname}" />
+
+					</b:column>
+					<b:column span="9">
+						<h:outputText value="#{userSession.userFirstName}" />
+
+					</b:column>
+				</b:row>
+				<b:row>
+					<b:column span="3">
+						<h:outputText value="#{msg.lastname}" />
+
+					</b:column>
+					<b:column span="9">
+						<h:outputText value="#{userSession.userLastName}" />
+
+					</b:column>
+				</b:row>
+				<b:row>
+					<b:column span="3">
+
+						<h:outputText value="#{msg.email}" />
+
+					</b:column>
+					<b:column span="9">
+
+						<h:outputText value="#{userSession.email}" />
+
+					</b:column>
+				</b:row>
+				<b:row>
+					<b:column span="3">
+
+						<h:outputText value="#{msg.rd_user}" />
+
+					</b:column>
+					<b:column span="9">
+
+						<h:outputText value="#{userSession.preferredUserName}" />
+
+					</b:column>
+				</b:row>
+				<b:row>
+					<b:column span="3">
+						<h:outputText value="#{msg.rd_tenant_association_selected_tenant}" />
+					</b:column>
+					<b:column span="9">
+						<b:selectOneMenu id="tenantToBeAssociated"
+										 value="#{userTenantManager.selectedTenant}"
+										 select2="true">
+							<f:selectItem value="#{null}" itemLabel="#{msg.rd_tenant_remind_select_client}"/>
+							<f:selectItems value="#{userTenantManager.allAvailableTenantsForUser}"
+										   var="tenant"
+										   itemValue="#{tenant}"
+										   itemLabel="#{tenant.name} - #{tenant.key} - #{tenant.type.name}"/>
+						</b:selectOneMenu>
+					</b:column>
+				</b:row>
+				<b:row>
+					<b:column offsetXs="2" colXs="8">
+						<b:buttonGroup>
+							<b:commandButton value="#{msg.rd_tenant_association_load_tenant}"
+											 action="#{userTenantManager.loadSelectedTenant}"
+											 iconAwesome="fa-function"
+											 iconAlign="center"/>
+						</b:buttonGroup>
+					</b:column>
+				</b:row>
+			</b:container>
+		</b:form>
+
+	</ui:define>
+</ui:composition>

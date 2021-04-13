@@ -30,13 +30,18 @@ import java.util.Optional;
 public interface RoleRESTServiceAccess extends Appframeable{
 
     /**
-     * Requests all existent roles
-     * @param pageNo to be show the information
-     * @param pageSize number of max pages of information
-     * @return list of system roles
-     * @throws SystemException in case of any error
+     * Retrieves a page object containing roles that matches search parameter.
+     * In case of omitted (empty) search parameter retrieves ALL roles
+     * @param search search parameter for matching roles (optional).
+     * @param pageNo page number where the user is seeing the information.
+     * @param pageSize number of roles to be showed in each page.
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
+     * @return page containing system roles
+     * @throws SystemException
      */
-    public Page<? extends SystemRole> getAll(int pageNo, int pageSize) throws SystemException;
+    public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize,
+                                             List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Search for a role with given id
@@ -45,6 +50,13 @@ public interface RoleRESTServiceAccess extends Appframeable{
      * @throws Exception in case of any trouble during the retrieving process
      */
     public Optional<SystemRole> getRoleById(Long id) throws Exception ;
+    /**
+     * Search for a role with given name
+     * @param name of the role to be retrieved
+     * @return Optional containing (or not) one role
+     * @throws Exception in case of any trouble during the retrieving process
+     */
+    public Optional<SystemRole> getRoleByName(String name) throws Exception ;
 
     /**
      * Requests find of role by role description

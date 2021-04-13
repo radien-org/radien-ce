@@ -165,13 +165,13 @@ public class TenantRESTServiceClientTest {
 
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
 
-        when(tenantResourceClient.getAll(1, 10)).thenReturn(response);
+        when(tenantResourceClient.getAll(null,1, 10, null, false)).thenReturn(response);
 
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
 
         List<? extends SystemTenant> list = new ArrayList<>();
 
-        List<? extends SystemTenant> returnedList = target.getAll(1, 10).getResults();
+        List<? extends SystemTenant> returnedList = target.getAll(null,1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);
     }
@@ -181,7 +181,7 @@ public class TenantRESTServiceClientTest {
         boolean success = false;
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenThrow(new MalformedURLException());
         try {
-            target.getAll(1, 10);
+            target.getAll(null,1, 10, null, false);
         }catch (SystemException se){
             success = true;
         }

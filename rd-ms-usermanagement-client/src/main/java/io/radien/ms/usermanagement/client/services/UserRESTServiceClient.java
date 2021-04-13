@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.Response;
 import io.radien.api.entity.Page;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
@@ -93,11 +95,82 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
         }
     }
 
+    /**
+     * Retrieves an user by its respective Id
+     * @param id user identifier
+     * @return Optional containing user
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     */
+    public Optional<SystemUser> getUserById(Long id) throws SystemException {
+        try {
+            return getSystemUser(id);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return getSystemUser(id);
+            } catch (TokenExpiredException expiredException) {
+                log.error(expiredException.getMessage(), expiredException);
+                throw new SystemException(expiredException);
+            }
+        }
+    }
+
+    /**
+     * Retrieves an user by its respective logon
+     * @param logon user logon
+     * @return Optional containing user
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     */
+    public Optional<SystemUser> getUserByLogon(String logon) throws SystemException {
+        try {
+            return getSystemUserByLogon(logon);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return getSystemUserByLogon(logon);
+            } catch (TokenExpiredException expiredException) {
+                log.error(expiredException.getMessage(), expiredException);
+                throw new SystemException(expiredException);
+            }
+        }
+    }
+
+    private Optional<SystemUser> getSystemUser(Long id) throws SystemException, TokenExpiredException {
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            return Optional.of(UserModelMapper.map((InputStream) client.getById(id).getEntity()));
+        }
+        catch (NotFoundException n) {
+            return Optional.empty();
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            log.error(e.getMessage(), e);
+            throw new SystemException(e);
+        }
+    }
+
     private Optional<SystemUser> getSystemUser(String sub) throws SystemException, TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
             Response response = client.getUsers(sub, null, null, true, true);
+            List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
+            if (list.size() == 1) {
+                return Optional.ofNullable(list.get(0));
+            } else {
+                return Optional.empty();
+            }
+        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            log.error(e.getMessage(), e);
+            throw new SystemException(e);
+        }
+    }
+
+    private Optional<SystemUser> getSystemUserByLogon(String logon) throws SystemException, TokenExpiredException {
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+
+            Response response = client.getUsers(null, null, logon, true, true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));

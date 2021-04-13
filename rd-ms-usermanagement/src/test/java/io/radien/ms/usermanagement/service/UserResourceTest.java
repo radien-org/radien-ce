@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
 import io.radien.ms.openid.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.entities.Principal;
@@ -54,6 +55,9 @@ public class UserResourceTest {
     @Mock
     LinkedAuthorizationClient linkedAuthorizationClient;
 
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
+
     @Before
     public void before(){
        MockitoAnnotations.initMocks(this);
@@ -66,6 +70,20 @@ public class UserResourceTest {
     public void testGetAll() {
         HttpSession session = Mockito.mock(HttpSession.class);
         when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, "admin", null);
+
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(200,response.getStatus());
     }
@@ -169,6 +187,7 @@ public class UserResourceTest {
         doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
         doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
                 1001L, "tenant-administrator", null);
 
@@ -195,7 +214,7 @@ public class UserResourceTest {
         when(this.userBusinessService.getUserId(loggedUser.getSub())).thenReturn(1001L);
 
         Response notAuthorizedResponse = Response.ok().entity(Boolean.FALSE).build();
-
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
         doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).isRoleExistentForUser(
                 1001L, "tenant-administrator", null);
 

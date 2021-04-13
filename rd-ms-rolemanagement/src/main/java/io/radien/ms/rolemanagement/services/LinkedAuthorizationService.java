@@ -82,7 +82,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
 
         TypedQuery<LinkedAuthorization> q= entityManager.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends LinkedAuthorization> systemTenancyAssociations = q.getResultList();

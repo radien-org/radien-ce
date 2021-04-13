@@ -155,11 +155,11 @@ public class LinkedAuthorizationServiceIntegratedTest {
      */
     @AfterClass
     public static void cleanUp() throws LinkedAuthorizationNotFoundException, RoleNotFoundException {
-        Page<SystemRole> allRoles = roleServiceAccess.getAll(0, 100);
+        Page<SystemRole> allRoles = roleServiceAccess.getAll(null,1, 100, null, false);
         for (SystemRole sr: allRoles.getResults()) {
             roleServiceAccess.delete(sr.getId());
         }
-        Page<SystemLinkedAuthorization> allLinkedAuths = linkedAuthorizationServiceAccess.getAll(0, 100);
+        Page<SystemLinkedAuthorization> allLinkedAuths = linkedAuthorizationServiceAccess.getAll(1, 100);
         for (SystemLinkedAuthorization sl: allLinkedAuths.getResults()) {
             linkedAuthorizationServiceAccess.deleteAssociation(sl.getId());
         }

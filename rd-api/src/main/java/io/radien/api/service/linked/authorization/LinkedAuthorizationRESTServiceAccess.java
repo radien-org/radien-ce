@@ -68,13 +68,12 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
     public Long getTotalRecordsCount() throws SystemException;
 
     /**
-     * Retrieve all roles related to a specific user.
-     * Optionally tenant identifier may be informed to
-     * improve the filtering process.
-     * @param userId User identifier
-     * @param tenantId Tenant Identifier
+     * Check if the informed user has a role (Optionally - under a specific tenant)
+     * @param userId corresponds to the user identifier
+     * @param tenantId corresponds to a tenant identifier (Optional parameter)
+     * @param roleName corresponds to the role name
+     * @return
+     * @throws SystemException
      */
-    public List<String> getRoles(Long userId, Long tenantId) throws SystemException;
-
     Boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) throws SystemException;
 }

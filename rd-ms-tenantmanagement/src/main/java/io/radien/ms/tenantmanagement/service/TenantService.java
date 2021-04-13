@@ -32,13 +32,10 @@ import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Nuno Santana
@@ -67,12 +64,15 @@ public class TenantService implements TenantServiceAccess {
 
     /**
      * Gets all the tenants into a pagination mode.
-     * @param pageNo of the requested information. Where the user is.
+     * @param search name description for some tenant
+     * @param pageNo of the requested information. Where the tenant is.
      * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.
      * @return a page of system tenants.
      */
     @Override
-    public Page<SystemTenant> getAll(int pageNo, int pageSize) {
+    public Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 
         log.info("Going to create a new pagination!");
         EntityManager entityManager = emh.getEm();
@@ -82,7 +82,19 @@ public class TenantService implements TenantServiceAccess {
 
         criteriaQuery.select(tenantRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-
+        if(search!= null) {
+            global = criteriaBuilder.and(criteriaBuilder.like(tenantRoot.get("name"), search));
+            criteriaQuery.where(global);
+        }
+        if(sortBy != null && !sortBy.isEmpty()){
+            List<Order> orders;
+            if(isAscending){
+                orders = sortBy.stream().map(i->criteriaBuilder.asc(tenantRoot.get(i))).collect(Collectors.toList());
+            } else {
+                orders = sortBy.stream().map(i->criteriaBuilder.desc(tenantRoot.get(i))).collect(Collectors.toList());
+            }
+            criteriaQuery.orderBy(orders);
+        }
         TypedQuery<Tenant> q= entityManager.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);

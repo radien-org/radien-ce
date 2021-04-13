@@ -85,13 +85,13 @@ public class RoleRESTServiceClientTest {
 
         RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
 
-        when(roleResourceClient.getAll(1, 10)).thenReturn(response);
+        when(roleResourceClient.getAll(null,1, 10,  null, false)).thenReturn(response);
 
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
 
         List<? extends SystemRole> list = new ArrayList<>();
 
-        List<? extends SystemRole> returnedList = target.getAll(1, 10).getResults();
+        List<? extends SystemRole> returnedList = target.getAll(null, 1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);
     }
@@ -101,7 +101,7 @@ public class RoleRESTServiceClientTest {
         boolean success = false;
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
         try {
-            target.getAll(1, 10);
+            target.getAll(null,1, 10, null, false);
         }catch (SystemException se){
             success = true;
         }

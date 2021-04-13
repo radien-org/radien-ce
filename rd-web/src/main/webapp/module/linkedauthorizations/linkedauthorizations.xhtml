@@ -14,6 +14,12 @@
     <ui:define name="content" bootsFacesDecorator="true">
         <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
         <h:form id="linkedAuthorizationManagementTableDiv" styleClass="tableContainer">
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_linkedauthorizations} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
             <p:dataTable id="dataTable" value="#{linkedAuthorizationDataModel.lazyModel}"
                          var="linkedAuthorization"
                          paginator="true" rows="10"
@@ -33,19 +39,25 @@
                 </p:column>
 
                 <p:column headerText="Tenant">
-                    <h:outputText value="#{linkedAuthorization.tenant}"/>
+                    <h:outputText value="#{linkedAuthorization.tenantId}"/>
                 </p:column>
 
                 <p:column headerText="Permission">
-                    <h:outputText value="#{linkedAuthorization.permission}"/>
+                    <h:outputText value="#{linkedAuthorization.permissionId}"/>
                 </p:column>
 
                 <p:column headerText="Role">
-                    <h:outputText value="#{linkedAuthorization.role}"/>
+                    <h:outputText value="#{linkedAuthorization.roleId}"/>
                 </p:column>
 
                 <p:column headerText="User">
-                    <h:outputText value="#{linkedAuthorization.user}"/>
+                    <h:outputText value="#{linkedAuthorization.userId}"/>
+                </p:column>
+                <p:column headerText="#{msg.editUpper}">
+                    <b:commandButton value="#{msg.edit}"
+                                     iconAwesome="fa-function"
+                                     iconAlign="center"
+                                     action="#{linkedAuthorizationManager.edit(linkedAuthorization)}"/>
                 </p:column>
             </p:dataTable>
 
@@ -59,9 +71,9 @@
                              searching="false"
                              scroll-horizontally="true">
                     <b:dataTableColumn value="#{selectedLinkedAuthorization.id}" />
-                    <b:dataTableColumn value="#{selectedLinkedAuthorization.permission}" />
-                    <b:dataTableColumn value="#{selectedLinkedAuthorization.role}" />
-                    <b:dataTableColumn value="#{selectedLinkedAuthorization.user}" />
+                    <b:dataTableColumn value="#{selectedLinkedAuthorization.permissionId}" />
+                    <b:dataTableColumn value="#{selectedLinkedAuthorization.roleId}" />
+                    <b:dataTableColumn value="#{selectedLinkedAuthorization.userId}" />
                 </b:dataTable>
                 <f:facet name="footer">
                     <b:button value="Close" dismiss="modal" />
@@ -79,6 +91,12 @@
                              actionListener="#{linkedAuthorizationDataModel.onload}"
                              immediate="true" update="@form:linkedAuthorizationManagementTableDiv"
                              auto-update="true"/>
+
+            <b:commandButton value="#{msg.rd_add_linked_authorization}"
+                             action="linkedauthorization"
+                             iconAwesome="fa-user"
+                             iconAlign="center"/>
         </h:form>
+
     </ui:define>
 </ui:composition>

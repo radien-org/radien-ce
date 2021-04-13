@@ -69,6 +69,14 @@ public interface PermissionRESTServiceAccess extends Appframeable {
     public Optional<SystemPermission> getPermissionById(Long id) throws SystemException ;
 
     /**
+     * Retrieves a Permission by its name
+     * @param name to be searched
+     * @return Optional of permissions
+     * @throws SystemException in case of not being able to find the record
+     */
+    public Optional<SystemPermission> getPermissionByName(String name) throws SystemException ;
+
+    /**
      * Deletes given permission
      * @param permissionId id of the permissions to be deleted
      * @return true in case of success

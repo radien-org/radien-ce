@@ -25,8 +25,6 @@ import java.util.Date;
  */
 public class Principal implements SystemUser {
 
-    private static final long serialVersionUID = -3532886874455311100L;
-
     private Long id;
 
     private String logon;

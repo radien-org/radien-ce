@@ -92,18 +92,24 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
     }
 
     /**
-     * Gets all the tenants in the DB
-     * @param pageNo to be show the information
-     * @param pageSize number of max pages of information
-     * @return list of system tenants
-     * @throws MalformedURLException if URL is malformed
-     * @throws ParseException in case of any issue parsing the json response
+     * Gets all the tenants into a pagination mode.
+     * @param search name description for some tenant (optional)
+     * @param pageNo of the requested information. Where the tenant is.
+     * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.
+     * @return a page of system tenants.
+     * @throws SystemException in case of any issue
      */
     @Override
-    public Page<? extends SystemTenant> getAll(int pageNo, int pageSize) throws SystemException {
+    public Page<? extends SystemTenant> getAll(String search,
+                                               int pageNo,
+                                               int pageSize,
+                                               List<String> sortBy,
+                                               boolean isAscending) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.getAll(pageNo, pageSize);
+            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
             return TenantModelMapper.mapToPage((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);

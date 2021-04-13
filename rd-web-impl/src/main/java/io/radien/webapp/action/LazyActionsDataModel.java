@@ -62,7 +62,7 @@ public class LazyActionsDataModel extends LazyDataModel<SystemAction> {
     public List<SystemAction> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            Page<? extends SystemAction> pagedInformation = service.getAll(null, (offset/pageSize), pageSize, null, true);
+            Page<? extends SystemAction> pagedInformation = service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
 
             datasource = pagedInformation.getResults();
 

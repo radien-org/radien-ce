@@ -33,11 +33,14 @@ public interface TenantServiceAccess extends ServiceAccess {
 
     /**
      * Gets all the tenants into a pagination mode.
-     * @param pageNo of the requested information. Where the user is.
+     * @param search name description for some tenant
+     * @param pageNo of the requested information. Where the tenant is.
      * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.
      * @return a page of system tenants.
      */
-    public Page<SystemTenant> getAll(int pageNo, int pageSize);
+    public Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
      * Gets specific tenant by the id

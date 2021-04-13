@@ -41,13 +41,15 @@ public class RoleBusinessService implements Serializable {
 
     /**
      * Gets all the role information into a paginated mode and return those information to the user.
+     * In case of omitted (empty) search parameter retrieves ALL roles
+     * @param search search parameter for matching roles (optional).
      * @param pageNo page number where the user is seeing the information.
      * @param pageSize number of roles to be showed in each page.
-     * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
-     * error.
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
      */
-    public Page<? extends SystemRole> getAll(int pageNo, int pageSize) {
-        return roleServiceAccess.getAll(pageNo, pageSize);
+    public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+        return roleServiceAccess.getAll(search, pageNo, pageSize, sortBy, isAscending);
     }
 
     /**

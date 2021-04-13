@@ -55,8 +55,8 @@ public class RoleBusinessServiceTest extends TestCase {
     @Test
     public void testGetAll() {
         Page<SystemRole> p = new Page<>(new ArrayList<>(),-1,0,0);
-        when(roleServiceAccess.getAll(1, 10)).thenReturn(p);
-        Page<? extends SystemRole> result = roleBusinessService.getAll(1,10);
+        when(roleServiceAccess.getAll(null, 1, 10, null, false)).thenReturn(p);
+        Page<? extends SystemRole> result = roleBusinessService.getAll(null, 1,10, null, false);
         assertEquals(p,result);
     }
 

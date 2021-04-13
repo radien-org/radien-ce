@@ -55,7 +55,7 @@ public class RoleServiceTest {
 
         roleServiceAccess = (RoleServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//RoleService");
 
-        Page<? extends SystemRole> rolePage = roleServiceAccess.getAll(0, 10);
+        Page<? extends SystemRole> rolePage = roleServiceAccess.getAll(null,1, 10, null, false);
         if(rolePage.getTotalResults()>0) {
             systemRole = rolePage.getResults().get(0);
         } else {

@@ -48,7 +48,11 @@ public interface TenantRESTServiceAccess {
      * Fetches all tenants
      * @return List of tenants
      */
-    public Page<? extends SystemTenant> getAll(int pageNo, int pageSize) throws SystemException;
+    public Page<? extends SystemTenant> getAll(String search,
+                                               int pageNo,
+                                               int pageSize,
+                                               List<String> sortBy,
+                                               boolean isAscending) throws SystemException;
 
     /**
      * Creates given tenant

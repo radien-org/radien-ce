@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
@@ -171,24 +172,6 @@ public class LinkedAuthorizationRESTServiceClient implements LinkedAuthorization
                 return false;
             }
         } catch (ProcessingException e) {
-            throw new SystemException(e);
-        }
-    }
-
-    @Override
-    public List<String> getRoles(Long userId, Long tenantId) throws SystemException {
-        try {
-            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getRoles(userId, tenantId);
-            List<String> rolesNames = new ArrayList<>();
-            try(JsonReader jsonReader = Json.createReader((InputStream) response.getEntity())) {
-                JsonArray jsonArray = jsonReader.readArray();
-                rolesNames.addAll(jsonArray.getValuesAs(JsonString.class).stream().
-                        map(JsonString::getString).collect(Collectors.toList()));
-            }
-            return Collections.unmodifiableList(rolesNames);
-        } catch (ExtensionException|ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }
     }

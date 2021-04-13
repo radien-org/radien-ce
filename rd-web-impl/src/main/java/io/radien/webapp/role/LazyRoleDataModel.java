@@ -59,7 +59,7 @@ public class LazyRoleDataModel extends LazyDataModel<SystemRole> {
     public List<SystemRole> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            Page<? extends SystemRole> pagedInformation = service.getAll((offset/pageSize)+1, pageSize);
+            Page<? extends SystemRole> pagedInformation = service.getAll(null,(offset/pageSize)+1, pageSize, null, false);
 
             datasource = pagedInformation.getResults();
 

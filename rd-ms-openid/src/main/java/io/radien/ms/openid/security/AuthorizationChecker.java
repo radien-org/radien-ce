@@ -16,47 +16,42 @@
 package io.radien.ms.openid.security;
 
 import io.radien.api.model.user.SystemUser;
-import io.radien.exception.ProcessingException;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
 import io.radien.ms.openid.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.client.UserClient;
 import io.radien.ms.openid.client.exception.NotFoundException;
+import io.radien.ms.openid.entities.Principal;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import javax.enterprise.inject.spi.CDI;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.ClientBuilder;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.io.Serializable;
 import java.net.URL;
 
 /**
- * This abstract class maybe extended by any component that needs to propagate
- * access token information, retrieve information regarding the current logged user and
- * assess authorization (Role, permission, etc)
+ * This abstract class maybe extended by any component that needs to
+ * evaluate authorization (Role, permission, etc)
  */
-public abstract class AuthorizationChecker extends TokensPropagator {
-
-    private String accessToken;
-    private String refreshToken;
+public abstract class AuthorizationChecker implements Serializable {
 
     @Context
     private HttpServletRequest servletRequest;
 
-//    @Inject
-//    @RestClient
     private UserClient userClient;
 
-//    @Inject
-//    @RestClient
     private LinkedAuthorizationClient linkedAuthorizationClient;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private TokensPlaceHolder tokensPlaceHolder;
 
     /**
      * Check if the current logged user has (grant to) some role (under a specific tenant - optionally)
@@ -97,7 +92,7 @@ public abstract class AuthorizationChecker extends TokensPropagator {
     public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
             this.preProcess();
-            Response response = getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
+            getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
                     permissionId, null, getCurrentUserId(), true);
             return true;
         }
@@ -142,6 +137,34 @@ public abstract class AuthorizationChecker extends TokensPropagator {
             throw new SystemException("No current user available");
         }
         return getCurrentUserIdBySub(user.getSub());
+    }
+
+    /**
+     * Retrieves the reference for current logged user
+     * @return
+     */
+    protected SystemUser getInvokerUser() {
+        return (Principal) servletRequest.getSession().getAttribute("USER");
+    }
+
+    /**
+     * This method retrieves the tokens (access and refresh), and store them
+     * to be transferred through GlobalHeaders
+     */
+    public void preProcess() {
+        HttpSession httpSession = this.servletRequest.getSession(false);
+        if (this.getTokensPlaceHolder().getAccessToken() == null) {
+            if (httpSession.getAttribute("accessToken") != null) {
+                this.getTokensPlaceHolder().setAccessToken(httpSession.getAttribute("accessToken").toString());
+            }
+            else {
+                // Lets obtain (at least) accessToken from Header
+                String token = this.servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+                if (token != null && token.startsWith("Bearer ")) {
+                    this.getTokensPlaceHolder().setAccessToken(token.substring(7));
+                }
+            }
+        }
     }
 
     /**
@@ -204,5 +227,13 @@ public abstract class AuthorizationChecker extends TokensPropagator {
 
     public void setUserClient(UserClient userClient) {
         this.userClient = userClient;
+    }
+
+    public TokensPlaceHolder getTokensPlaceHolder() {
+        //TODO: Understand why standard injection is not working on EJB Unit Tests (UserServiceTest)
+        if (tokensPlaceHolder == null) {
+            tokensPlaceHolder =  CDI.current().select(TokensPlaceHolder.class).get();
+        }
+        return tokensPlaceHolder;
     }
 }

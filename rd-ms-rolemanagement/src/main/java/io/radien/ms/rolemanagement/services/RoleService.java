@@ -32,6 +32,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Bruno Gama
@@ -47,12 +48,15 @@ public class RoleService implements RoleServiceAccess {
 
     /**
      * Gets all the role into a pagination mode.
-     * @param pageNo of the requested information. Where the user is.
+     * @param search name description for some role
+     * @param pageNo of the requested information. Where the role is.
      * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.
      * @return a page of system roles.
      */
     @Override
-    public Page<SystemRole> getAll(int pageNo, int pageSize) {
+    public Page<SystemRole> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 
         log.info("Going to create a new pagination!");
 
@@ -62,10 +66,23 @@ public class RoleService implements RoleServiceAccess {
 
         criteriaQuery.select(roleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        if(search!= null) {
+            global = criteriaBuilder.and(criteriaBuilder.like(roleRoot.get("name"), search));
+            criteriaQuery.where(global);
+        }
+        if(sortBy != null && !sortBy.isEmpty()){
+            List<Order> orders;
+            if(isAscending){
+                orders = sortBy.stream().map(i->criteriaBuilder.asc(roleRoot.get(i))).collect(Collectors.toList());
+            } else {
+                orders = sortBy.stream().map(i->criteriaBuilder.desc(roleRoot.get(i))).collect(Collectors.toList());
+            }
+            criteriaQuery.orderBy(orders);
+        }
 
         TypedQuery<Role> q= entityManager.createQuery(criteriaQuery);
 
-        q.setFirstResult((pageNo) * pageSize);
+        q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemRole> systemRoles = q.getResultList();

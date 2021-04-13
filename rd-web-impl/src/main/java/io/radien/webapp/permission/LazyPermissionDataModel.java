@@ -63,7 +63,7 @@ public class LazyPermissionDataModel extends LazyDataModel<SystemPermission> {
     public List<SystemPermission> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            Page<? extends SystemPermission> pagedInformation = service.getAll(null, (offset/pageSize), pageSize, null, true);
+            Page<? extends SystemPermission> pagedInformation = service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
 
             datasource = pagedInformation.getResults();
 

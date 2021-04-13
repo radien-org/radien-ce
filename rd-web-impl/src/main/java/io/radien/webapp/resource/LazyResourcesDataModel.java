@@ -62,7 +62,7 @@ public class LazyResourcesDataModel extends LazyDataModel<SystemResource> {
     public List<SystemResource> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            Page<? extends SystemResource> pagedInformation = service.getAll(null, (offset/pageSize), pageSize, null, true);
+            Page<? extends SystemResource> pagedInformation = service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
 
             datasource = pagedInformation.getResults();
 

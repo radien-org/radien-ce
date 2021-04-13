@@ -16,15 +16,15 @@
 package io.radien.ms.usermanagement.service;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
+
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.exception.SystemException;
@@ -56,8 +56,6 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 
 	@Inject
 	private UserBusinessService userBusinessService;
-	@Context
-	private HttpServletRequest servletRequest;
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
@@ -156,7 +154,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	protected Long getCurrentUserIdBySub(String sub) throws SystemException {
 		Long userId = this.userBusinessService.getUserId(sub);
 		if (userId == null) {
-			new SystemException("No user available for sub " + sub);
+			throw new SystemException("No user available for sub " + sub);
 		}
 		return userId;
 	}

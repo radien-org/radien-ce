@@ -62,7 +62,7 @@ public class LinkedAuthorizationServiceTest {
         linkedAuthorizationServiceAccess = (LinkedAuthorizationServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//LinkedAuthorizationService");
         roleServiceAccess = (RoleServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//RoleService");
 
-        Page<? extends SystemLinkedAuthorization> rolePage = linkedAuthorizationServiceAccess.getAll(0, 10);
+        Page<? extends SystemLinkedAuthorization> rolePage = linkedAuthorizationServiceAccess.getAll(1, 10);
         if(rolePage.getTotalResults()>0) {
             systemLinkedAuthorization = rolePage.getResults().get(0);
         } else {
