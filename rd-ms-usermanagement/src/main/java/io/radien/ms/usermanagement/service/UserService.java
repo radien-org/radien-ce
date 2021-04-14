@@ -62,7 +62,7 @@ public class UserService implements UserServiceAccess{
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-	@PersistenceContext(unitName = "userPersistenceUnit", type = PersistenceContextType.EXTENDED)
+	@PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
 	private EntityManager em;
 
 	/**

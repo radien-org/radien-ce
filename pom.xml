@@ -378,14 +378,7 @@
 				<artifactId>hsqldb</artifactId>
 				<version>${version.hsqldb}</version>
 			</dependency>
-<!-- 
-			<dependency>
-				<groupId>org.eclipse.microprofile.rest.client</groupId>
-				<artifactId>microprofile-rest-client-api</artifactId>
-				<version>${version.microprofile-rest-client-api}</version>
-				<scope>provided</scope>
-			</dependency>
-	 -->		
+
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-rs-mp-client</artifactId>
@@ -406,6 +399,66 @@
 		</dependencies>
 	</dependencyManagement>
 	<profiles>
+		<profile>
+			<id>int</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.2.0</version>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<!-- here the phase you need -->
+								<phase>validate</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>rd-openid/src/main/resources/</outputDirectory>
+									<resources>
+										<resource>
+											<directory>openid/int</directory>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.2.0</version>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<!-- here the phase you need -->
+								<phase>validate</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>rd-openid/src/main/resources/</outputDirectory>
+									<resources>
+										<resource>
+											<directory>openid/dev</directory>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>local</id>
 			<repositories>

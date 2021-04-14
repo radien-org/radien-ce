@@ -8,9 +8,9 @@
 
     <!-- BEGIN DEFAULT PERSISTENCE UNIT -->
 
-    <persistence-unit name="userPersistenceUnit" transaction-type="JTA">
+    <persistence-unit name="persistenceUnit" transaction-type="JTA">
     	<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>java:/comp/env/jdbc/AppFrameUserDS</jta-data-source>
+        <jta-data-source>java:/comp/env/jdbc/AppFrameDS</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
 
@@ -27,13 +27,5 @@
             <property name="eclipselink.jdbc.cache-statements" value="true"/>
         </properties>
     </persistence-unit>
- 
-<!--    <persistence-unit name="userPersistenceUnitLocalMySQL" transaction-type="JTA">-->
-<!--        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
-<!--        <jta-data-source>java:/comp/env/jdbc/UserDSMySQL</jta-data-source>-->
-<!--        <non-jta-data-source>java:/comp/env/jdbc/AppFrameDSNonJta</non-jta-data-source>-->
-<!--        <exclude-unlisted-classes>false</exclude-unlisted-classes>-->
-<!--        <shared-cache-mode>ALL</shared-cache-mode>-->
-<!--    </persistence-unit>-->
 </persistence>
 
