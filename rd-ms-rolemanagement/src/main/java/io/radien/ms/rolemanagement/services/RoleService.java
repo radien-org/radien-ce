@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public class RoleService implements RoleServiceAccess {
     private static final long serialVersionUID = 1L;
 
-    @PersistenceContext(unitName = "rolePersistenceUnit")
+    @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;
 
     private static final Logger log = LoggerFactory.getLogger(RoleService.class);

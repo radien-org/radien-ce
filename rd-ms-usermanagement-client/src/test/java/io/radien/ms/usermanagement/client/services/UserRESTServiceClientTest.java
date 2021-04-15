@@ -18,7 +18,7 @@ package io.radien.ms.usermanagement.client.services;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,11 +37,14 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.OAFAccess;
 
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 
 import io.radien.exception.TokenExpiredException;
+import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +71,9 @@ public class UserRESTServiceClientTest {
 
     @Mock
     ClientServiceUtil clientServiceUtil;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
 
     @Mock
     OAFAccess oafAccess;
@@ -142,7 +148,6 @@ public class UserRESTServiceClientTest {
         assertTrue(target.getUserBySub(a).isPresent());
     }
 
-
     @Test
     public void testGetUserBySubNonUnique() throws Exception {
         String a = "a";
@@ -209,6 +214,134 @@ public class UserRESTServiceClientTest {
         }
         assertTrue(success);
     }
+
+    private void mockRefreshToken(UserResourceClient client) {
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
+        Response response = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
+        when(client.refreshToken(any())).thenReturn(response);
+    }
+
+    @Test
+    public void testGetUserByIdWithFirstTokenExpiredException() throws Exception {
+        Long id = 1L;
+        User u = new User();
+        u.setId(id);
+        u.setFirstname("test");
+        u.setLastname("test");
+        u.setUserEmail("test");
+        u.setSub("sub");
+        u.setLogon("test");
+
+        ByteArrayOutputStream i = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(i);
+        jsonWriter.writeObject(UserModelMapper.map(u));
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(i.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+
+        when(resourceClient.getById(id)).
+                thenThrow(new TokenExpiredException()).
+                thenReturn(response);
+
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        mockRefreshToken(resourceClient);
+        assertEquals(Optional.of(u).get().getId(), target.getUserById(id).get().getId());
+    }
+
+    @Test
+    public void testGetUserByIdWithSecondTokenExpiredException() throws Exception {
+        Long id = 1L;
+
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+
+        when(resourceClient.getById(id)).
+                thenThrow(new TokenExpiredException()).
+                thenThrow(new TokenExpiredException());
+
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        mockRefreshToken(resourceClient);
+
+        assertThrows(SystemException.class, () -> target.getUserById(id));
+    }
+
+    @Test
+    public void testGetUserByLogonWithFirstTokenExpiredException() throws Exception {
+        Long id = 1L;
+        User u = new User();
+        u.setId(id);
+        u.setFirstname("test");
+        u.setLastname("test");
+        u.setUserEmail("test");
+        u.setSub("sub");
+        u.setLogon("test-logon");
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(UserFactory.convertToJsonObject(u));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        UserResourceClient rc = Mockito.mock(UserResourceClient.class);
+
+        doReturn(rc).when(clientServiceUtil).getUserResourceClient(any());
+
+        when(rc.getUsers(null, null, "test-logon", true, true)).
+            thenThrow(new TokenExpiredException()).thenReturn(response);
+
+        mockRefreshToken(rc);
+        assertEquals(Optional.of(u).get().getId(),
+                target.getUserByLogon(u.getLogon()).get().getId());
+    }
+
+    @Test
+    public void testGetUserByLogonWithNoResults() throws Exception {
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        UserResourceClient rc = Mockito.mock(UserResourceClient.class);
+
+        doReturn(rc).when(clientServiceUtil).getUserResourceClient(any());
+
+        when(rc.getUsers(null, null, "test-logon", true, true)).
+                thenReturn(response);
+
+        assertEquals(target.getUserByLogon("test-logon"), Optional.empty());
+    }
+
+    @Test
+    public void testGetUserByLogonWithSecondTokenExpiredException() throws Exception {
+        Long id = 1L;
+
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+
+        when(resourceClient.getUsers(null, null, "test-logon", true, true)).
+                thenThrow(new TokenExpiredException()).
+                thenThrow(new TokenExpiredException());
+
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        mockRefreshToken(resourceClient);
+
+        assertThrows(SystemException.class, () -> target.getUserByLogon("test-logon"));
+    }
+
     @Test
     public void testCreate() throws MalformedURLException, SystemException, TokenExpiredException {
         User u = new User();

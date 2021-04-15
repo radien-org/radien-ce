@@ -16,7 +16,6 @@
 package io.radien.ms.usermanagement.service;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
 
@@ -24,7 +23,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.exception.SystemException;
@@ -76,6 +74,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 		try {
+			if (!hasGrant("admin")) {
+				return Response.status(HttpStatus.SC_FORBIDDEN).
+						entity("No Role available to perform this task").build();
+			}
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
 			return getResponseFromException(e);

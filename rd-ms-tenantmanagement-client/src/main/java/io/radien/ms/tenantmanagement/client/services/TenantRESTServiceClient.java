@@ -56,7 +56,7 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
     private OAFAccess oafAccess;
     
     /**
-     * Gets the contract in the DB searching for the field Name
+     * Gets the contract in the DB searching for the field Id
      *
      * @param id to be looked after
      * @return Optional Contract

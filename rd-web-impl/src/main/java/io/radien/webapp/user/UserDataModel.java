@@ -19,13 +19,15 @@ package io.radien.webapp.user;
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserRESTServiceAccess;
-import io.radien.exception.SystemException;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.WebApplicationException;
-import java.net.MalformedURLException;
+import javax.ejb.EJBException;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,8 @@ public class UserDataModel extends LazyDataModel<SystemUser> {
     private List<? extends SystemUser> datasource;
     private UserRESTServiceAccess userService;
     private String errorMsg;
+
+    private static Logger log = LoggerFactory.getLogger(UserDataModel.class);
 
     public UserDataModel(UserRESTServiceAccess userService) {
         this.userService = userService;
@@ -69,14 +73,23 @@ public class UserDataModel extends LazyDataModel<SystemUser> {
             datasource = page.getResults();
 
             rowCount = (long)page.getTotalResults();
-        } catch (MalformedURLException  e) {
-            e.printStackTrace();
-        } catch (WebApplicationException e){
-            errorMsg = e.getMessage();
+        }
+        catch (Exception e){
+            log.error("Error trying to load users", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error retrieving users",
+                            extractErrorMessage(e)));
         }
 
         setRowCount(Math.toIntExact(rowCount));
 
         return datasource.stream().collect(Collectors.toList());
+    }
+
+    protected String extractErrorMessage(Exception exception) {
+        String errorMsg = (exception instanceof EJBException) ?
+                exception.getCause().getMessage() : exception.getMessage();
+        // Bootsfaces growl has issues to handle special characters
+        return errorMsg.replace("\n\t", "");
     }
 }

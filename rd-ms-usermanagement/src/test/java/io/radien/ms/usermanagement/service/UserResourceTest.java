@@ -1,8 +1,7 @@
 package io.radien.ms.usermanagement.service;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -63,6 +62,29 @@ public class UserResourceTest {
        MockitoAnnotations.initMocks(this);
     }
 
+    @Test
+    public void testGetUserIdBySub() {
+        when(userBusinessService.getUserId("login1")).thenReturn(1L);
+        Response response = userResource.getUserIdBySub("login1");
+        assertEquals(200, response.getStatus());
+        assertTrue(1L == response.readEntity(Long.class));
+    }
+
+    @Test
+    public void testGetUserIdBySubNotFoundCase() {
+        when(userBusinessService.getUserId("login1")).thenReturn(null);
+        Response response = userResource.getUserIdBySub("login1");
+        assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    public void testGetUserIdBySubExceptionCase() {
+        when(userBusinessService.getUserId("login1")).
+                thenThrow(new RuntimeException("Error retrieving id"));
+        Response response = userResource.getUserIdBySub("login1");
+        assertEquals(500, response.getStatus());
+    }
+
     /**
      * Test the Get All request which will return a success message code 200.
      */
@@ -86,6 +108,31 @@ public class UserResourceTest {
 
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test the Get All for cases in which the current logged user do not have Authorization.
+     */
+    @Test
+    public void testGetAllWithNoAuthorization() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, "admin", null);
+
+        Response response = userResource.getAll(null,1,10,null,true);
+        assertEquals(403,response.getStatus());
     }
 
     /**

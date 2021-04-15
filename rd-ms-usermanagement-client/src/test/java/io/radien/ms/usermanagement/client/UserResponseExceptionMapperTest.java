@@ -17,6 +17,7 @@ package io.radien.ms.usermanagement.client;
 
 import io.radien.exception.NotFoundException;
 import io.radien.ms.usermanagement.client.exceptions.BadRequestException;
+import io.radien.ms.usermanagement.client.exceptions.ForbiddenException;
 import io.radien.ms.usermanagement.client.exceptions.InternalServerErrorException;
 import org.junit.Test;
 
@@ -32,11 +33,13 @@ public class UserResponseExceptionMapperTest {
         UserResponseExceptionMapper uRexceptionMapper = new UserResponseExceptionMapper();
         boolean handlesException200 = uRexceptionMapper.handles(200, null);
         boolean handlesException400 = uRexceptionMapper.handles(400, null);
+        boolean handlesException403 = uRexceptionMapper.handles(403, null);
         boolean handlesException404 = uRexceptionMapper.handles(404, null);
         boolean handlesException500 = uRexceptionMapper.handles(500, null);
 
         assertFalse(handlesException200);
         assertTrue(handlesException400);
+        assertTrue(handlesException403);
         assertTrue(handlesException404);
         assertTrue(handlesException500);
     }
@@ -53,6 +56,9 @@ public class UserResponseExceptionMapperTest {
         Response responseBadRequest = Response.status(Status.BAD_REQUEST).entity(msg).build();
         Exception exceptionBadRequest = target.toThrowable(responseBadRequest);
 
+        Response responseForbidden = Response.status(Status.FORBIDDEN).entity(msg).build();
+        Exception exceptionForbidden = target.toThrowable(responseForbidden);
+
         Response responseNotFound = Response.status(Status.NOT_FOUND).entity(msg).build();
         Exception exceptionNotFound = target.toThrowable(responseNotFound);
 
@@ -61,6 +67,9 @@ public class UserResponseExceptionMapperTest {
 
         assertTrue(exceptionBadRequest instanceof BadRequestException);
         assertEquals(msg,exceptionBadRequest.getMessage());
+
+        assertTrue(exceptionForbidden instanceof ForbiddenException);
+        assertEquals(msg,exceptionForbidden.getMessage());
 
         assertTrue(exceptionNotFound instanceof NotFoundException);
         assertEquals(msg,exceptionNotFound.getMessage());

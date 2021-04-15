@@ -44,7 +44,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(LinkedAuthorizationService.class);
 
-    @PersistenceContext(unitName = "rolePersistenceUnit")
+    @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;
 
     /**

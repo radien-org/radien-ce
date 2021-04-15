@@ -77,6 +77,17 @@ public class UserServiceTest {
         }
     }
 
+    @Test
+    public void testGetUserIdBySub() {
+        Long id = userServiceAccess.getUserId(uTest.getSub());
+        assertNotNull(id);
+        assertEquals(id, uTest.getId());
+
+        id = userServiceAccess.getUserId("non-existent-sub");
+        assertNull(id);
+    }
+
+
     /**
      * Add user test.
      * Will create and save the user.
