@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
 			<artifactId>javaee-api</artifactId>
-			<version>${version.tomee-javaee-api}</version>
+			<version>${version.javaee-api}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -153,11 +153,7 @@
 			<artifactId>eclipselink</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.microprofile.rest.client</groupId>
-			<artifactId>microprofile-rest-client-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
+
 
 		<!-- Testing -->
 		<dependency>

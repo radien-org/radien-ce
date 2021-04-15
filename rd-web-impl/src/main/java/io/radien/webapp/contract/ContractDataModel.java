@@ -37,7 +37,12 @@ import java.io.Serializable;
 public class ContractDataModel implements Serializable {
 
 
-    private LazyDataModel<? extends SystemContract> lazyModel;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4809846160847227798L;
+
+	private LazyDataModel<? extends SystemContract> lazyModel;
 
     private SystemContract selectedContract;
 

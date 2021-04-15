@@ -1,0 +1,93 @@
+html {
+	margin: 0;
+	padding: 0;
+	font-family: Avant Garde, Avantgarde, Century Gothic, CenturyGothic, AppleGothic;
+}
+
+body {
+	background: #F8F8F8;
+	background-color: #F8F8F8;
+	
+}
+
+#content {
+
+	
+}
+#footer{
+	background: #F0F0F0;
+	background-color: #F0F0F0;
+	position:fixed;
+	height:50px;
+	border:1px solid #e7e7e7;
+	width:100%;
+	bottom:0;
+}
+
+.logo {
+	margin: 0;
+}
+
+/**
+*NAVBAR
+*/
+.rd-red{
+	color: #e7411d; 
+}
+
+.rd-fox{
+	color: #e6215b; 
+}
+
+.rd-grey{
+	color: #b2b2b2; 
+}
+
+.rd-orange{
+	color: #e8611b; 
+}
+
+.rd-lightblue{
+	color: #3daee3; 
+}
+
+.rd-blue{
+	color: #1d71b8; 
+}
+
+.rd-green{
+	color: #00a19a; 
+}
+
+/**
+*NAVBAR
+*/
+.navbar-default{
+	background: #F0F0F0;
+	background-color: #F0F0F0;
+}
+
+
+a, .navbar-default .navbar-nav > li > a {
+  color: #1d71b8;
+  padding: 1em 1em;
+  text-decoration: none;
+}
+
+a:hover, .navbar-default .navbar-nav > li > a:hover {
+  color: #3daee3;
+}
+
+a:active, .navbar-default .navbar-nav > li > a:active {
+  color: #00a19a;
+}
+
+a:visited, .navbar-default .navbar-nav > li > a:visited {
+  color: #1d71b8;
+}
+
+.navbar-brand img {
+	padding: 0;
+	width: 6em;
+}
+

@@ -97,11 +97,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.eclipse.microprofile.rest.client</groupId>
-			<artifactId>microprofile-rest-client-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-mp-client</artifactId>

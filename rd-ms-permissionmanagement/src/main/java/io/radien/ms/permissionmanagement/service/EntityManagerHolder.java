@@ -8,7 +8,7 @@ import javax.persistence.PersistenceContextType;
 @Stateful
 public class EntityManagerHolder {
 
-    @PersistenceContext(unitName = "permissionPersistenceUnit", type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
     private EntityManager entityManager;
 
     public EntityManager getEntityManager() {
