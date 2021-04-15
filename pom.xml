@@ -485,18 +485,6 @@
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
-					<id>releases</id>
-					<url>http://localhost:8081/nexus/content/repositories/releases</url>
-				</pluginRepository>
-				<pluginRepository>
-					<id>snapshots</id>
-					<url>http://localhost:8081/nexus/content/repositories/snapshots</url>
-				</pluginRepository>
-				<pluginRepository>
-					<id>thirdparty</id>
-					<url>http://localhost:8081/nexus/content/repositories/thirdparty</url>
-				</pluginRepository>
-				<pluginRepository>
 					<id>jboss-public-repository</id>
 					<name>JBoss Repository</name>
 					<url>https://repository.jboss.org/nexus/content/groups/public</url>
@@ -509,16 +497,6 @@
 					</snapshots>
 				</pluginRepository>
 			</pluginRepositories>
-			<distributionManagement>
-				<repository>
-					<id>releases</id>
-					<url>http://localhost:8081/nexus/content/repositories/releases</url>
-				</repository>
-				<snapshotRepository>
-					<id>snapshots</id>
-					<url>http://localhost:8081/nexus/content/repositories/snapshots</url>
-				</snapshotRepository>
-			</distributionManagement>
 		</profile>
 		<profile>
 			<id>radien--radien-artifactory</id>
