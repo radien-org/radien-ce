@@ -147,6 +147,21 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
     }
 
     @Override
+    public boolean deleteTenantHierarchy(long id) throws MalformedURLException{
+        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        try (Response response = client.deleteTenantHierarchy(id)) {
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                log.error(response.readEntity(String.class));
+                return false;
+            }
+        } catch (ProcessingException pe) {
+            throw pe;
+        }
+    }
+
+    @Override
     public boolean update(SystemTenant tenant) throws MalformedURLException {
         TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         try (Response response = client.update(tenant.getId(),(Tenant) tenant)) {

@@ -67,6 +67,14 @@ public interface TenantRESTServiceAccess {
     public boolean delete(long tenantId) throws MalformedURLException;
 
     /**
+     * deletes given tenant hierarchy/tenant
+     * @param tenantId id of the tenant and if exists under the parent tenants to be deleted
+     * @return true if tenant has been deleted with success or false if not
+     * @throws MalformedURLException in case of URL specification
+     */
+    public boolean deleteTenantHierarchy(long tenantId) throws MalformedURLException;
+
+    /**
      * updates given tenant
      * @param contract to be updated
      * @return true if tenant has been updated with success or false if not

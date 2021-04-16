@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -102,6 +103,15 @@ public class TenantResource implements TenantResourceClient {
 	public Response delete(long id) {
 		try {
 			return Response.ok(tenantService.delete(id)).build();
+		}catch (Exception e){
+			return getGenericError(e);
+		}
+	}
+
+	@Override
+	public Response deleteTenantHierarchy(long id) {
+		try {
+			return Response.ok(tenantService.deleteTenantHierarchy(id)).build();
 		}catch (Exception e){
 			return getGenericError(e);
 		}

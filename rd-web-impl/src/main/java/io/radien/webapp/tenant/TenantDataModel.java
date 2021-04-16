@@ -24,6 +24,7 @@ import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -86,6 +87,18 @@ public class TenantDataModel extends AbstractManager implements Serializable {
             return "tenantDetails";
         }
         return "tenants";
+    }
+
+    public void deleteTenantHierarchy(){
+        try {
+            if (selectedTenant != null) {
+                service.deleteTenantHierarchy(selectedTenant.getId());
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_delete_success"),
+                        JSFUtil.getMessage("rd_user"));
+            }
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_delete_error"), JSFUtil.getMessage("rd_user"));
+        }
     }
 
     public String returnHome() {
@@ -174,7 +187,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
 
     public void onRowSelect(SelectEvent<SystemTenant> event) {
         this.selectedTenant= event.getObject();
-        FacesMessage msg = new FacesMessage("Customer Selected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage("Tenant Selected", String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }

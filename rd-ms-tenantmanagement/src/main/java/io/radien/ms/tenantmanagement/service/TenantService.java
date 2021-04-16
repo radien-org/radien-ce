@@ -355,13 +355,7 @@ public class TenantService implements TenantServiceAccess {
     @Override
     public boolean delete(Long tenantId) {
         EntityManager em = emh.getEm();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Tenant> criteriaDelete = cb.createCriteriaDelete(Tenant.class);
-        Root<Tenant> userRoot = criteriaDelete.from(Tenant.class);
-
-        criteriaDelete.where(cb.equal(userRoot.get("id"), tenantId));
-        int ret = em.createQuery(criteriaDelete).executeUpdate();
-        return ret > 0;
+        return delete(tenantId, em);
     }
 
     /**
@@ -417,5 +411,38 @@ public class TenantService implements TenantServiceAccess {
         TypedQuery<Long> q= em.createQuery(criteriaQuery);
 
         return q.getSingleResult();
+    }
+
+    protected List<Long> getChildren(Long tenantId, EntityManager em) {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Tenant> tenantRoot = criteriaQuery.from(Tenant.class);
+        Predicate predicate = criteriaBuilder.equal(tenantRoot.get("parentId"), tenantId);
+        criteriaQuery.select(tenantRoot.get("id")).where(predicate);
+        TypedQuery<Long> q= em.createQuery(criteriaQuery);
+        return q.getResultList();
+    }
+    protected boolean deleteChildren(Long tenantId, EntityManager entityManager) {
+        List<Long> children = getChildren(tenantId, entityManager);
+
+        if (!children.isEmpty()) {
+            for (Long child: children) {
+                deleteChildren(child, entityManager);
+            }
+        }
+
+        return delete(tenantId, entityManager);
+    }
+    protected boolean delete(Long tenantId, EntityManager entityManager) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Tenant> criteriaDelete = cb.createCriteriaDelete(Tenant.class);
+        Root<Tenant> userRoot = criteriaDelete.from(Tenant.class);
+        criteriaDelete.where(cb.equal(userRoot.get("id"), tenantId));
+        int ret = entityManager.createQuery(criteriaDelete).executeUpdate();
+        return ret > 0;
+    }
+    public boolean deleteTenantHierarchy(Long id) {
+        EntityManager em = emh.getEm();
+        return deleteChildren(id, em);
     }
 }

@@ -76,6 +76,8 @@ public interface TenantServiceAccess extends ServiceAccess {
      */
     public boolean delete(Long tenantId);
 
+    public boolean deleteTenantHierarchy(Long tenantId);
+
     /**
      * Deletes a collection of tenants
      * @param tenantIds to be deleted

@@ -20,6 +20,7 @@
 					<hr />
 				</h:panelGroup>
 			</b:row>
+
 			<p:dataTable id="dataTable" value="#{tenantDataModel.lazyModel}"
 						 var="tenant"
 						 paginator="true" rows="10"
@@ -85,9 +86,30 @@
 					<h:outputText value="#{tenant.clientId}"/>
 				</p:column>
 			</p:dataTable>
-		</h:form>
 
-		<h:form id="tenantManagementButtons">
+			<!--@elvariable id="tenantDataModel" type="io.radien.webapp.tenant.TenantDataModel"-->
+			<b:button id="delete-tenant-button"
+					  onclick="$('.formValidationModalClassDelete').modal('show')"
+					  value="#{msg.delete}"
+					  icon="trash"
+					  update=":tenantManagementTableDiv">
+			</b:button>
+
+			<b:modal id="modal"
+					 title="Confirmation"
+					 styleClass="formValidationModalClassDelete"
+					 closable="false"
+					 close-on-escape="false" backdrop="false"
+					 rendered="#{not empty tenantDataModel.selectedTenant}">
+				<p>Are you sure confirm to delete the selected tenant?</p>
+				<f:facet name="footer">
+					<b:commandButton value="No" dismiss="modal"/>
+					<b:commandButton value="Yes" look="warning"
+									 actionListener="#{tenantDataModel.deleteTenantHierarchy}"
+									 oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
+				</f:facet>
+			</b:modal>
+
 			<b:commandButton value="#{msg.edit}"
 							 tooltip="Edit existent tenant information!"
 							 iconAwesome="fa-edit"

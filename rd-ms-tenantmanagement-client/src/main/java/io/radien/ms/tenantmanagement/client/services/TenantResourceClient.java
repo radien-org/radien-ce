@@ -60,6 +60,10 @@ public interface TenantResourceClient {
     @Path("/{id}")
     public Response delete(@NotNull @PathParam("id") long id);
 
+    @DELETE
+    @Path("/deleteTenantHierarchy/{id}")
+    public Response deleteTenantHierarchy(@NotNull @PathParam("id") long id);
+
     @POST
     public Response create(Tenant tenant);
 

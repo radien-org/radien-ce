@@ -155,6 +155,25 @@ public class TenantResourceTest {
     }
 
     /**
+     * Deletion of the record(s) with success, should return a 200 code message
+     */
+    @Test
+    public void testDeleteTenantHierarchy() {
+        Response response = tenantResource.deleteTenantHierarchy(1L);
+        assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Deletion of the record with error, should return a generic 500 error code message
+     */
+    @Test
+    public void testDeleteTenantHierarchyGenericError() {
+        doThrow(new RuntimeException()).when(tenantServiceAccess).deleteTenantHierarchy(1L);
+        Response response = tenantResource.deleteTenantHierarchy(1L);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
+    }
+
+    /**
      * Creation with success of a record. Should return a 200 code message
      */
     @Test
