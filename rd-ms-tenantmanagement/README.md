@@ -92,3 +92,5 @@ radien Tenant Management Microservice
     curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
 ### - ___Delete Tenant by ID:___
     curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/tenant/{id}'
+### - ___Delete Tenant by ID:___
+    curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/tenant/deleteTenantHierarchy/{id}'

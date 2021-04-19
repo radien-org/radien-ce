@@ -6,104 +6,44 @@
 				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<ui:define name="content" bootsFacesDecorator="true">
-		<h:form id="userProfile">
-			<b:container style="padding-top:6em">
-				<b:panel title="User Profile" look="primary">
-
-					<!--@elvariable id="userSession" type="io.radien.webapp.user.UserManager"-->
-					<!--Firstname -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.firstname}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.firstname}" />
-						</b:column>
-					</b:row>
-					<!-- Lastname -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.lastname}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.lastname}" />
-						</b:column>
-					</b:row>
-					<!-- Logon -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.logon}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.logon}" />
-						</b:column>
-					</b:row>
-					<!-- User Email -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.email}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.userEmail}" />
-						</b:column>
-					</b:row>
-					<!-- User Sub -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.rd_identity_id}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.sub}" />
-						</b:column>
-					</b:row>
-					<!-- User Enabled -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.enabled}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.enabled}" />
-						</b:column>
-					</b:row>
-					<!-- User Created Date -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.createDate}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.createDate}" />
-						</b:column>
-					</b:row>
-					<!-- User Last Updated -->
-					<b:row>
-						<b:column medium-screen="2">
-							<h:outputText value="#{msg.lastUpdate}" />
-						</b:column>
-						<b:column medium-screen="4">
-							<h:outputText value="#{userSession.selectedUser.lastUpdate}" />
-						</b:column>
-					</b:row>
-				</b:panel>
-
-				<b:row style="padding-top:1em">
-					<!--@elvariable id="userTableUI" type="io.radien.webapp.user.UserManager"-->
-					<b:column span="2" offset="2">
-						<b:commandButton value="#{msg.back}"
-										 look="primary"
-										 action="#{userTableUI.backToDatatable()}"/>
-					</b:column>
-					<!-- User Initiate Reset Password -->
-					<b:column span="2">
-						<b:commandButton value="#{msg.reset_password}"
-										 iconAwesome="key"
-										 look="warning"
-										 iconAlign="center"
-										 action="#{userTableUI.initiateResetPassword()}"/>
-						<!--@elvariable id="userSession" type="java"-->
-						<b:alert rendered="#{userSession.validationTrue}" severity="success" closable="true"><strong>"#{msg.reset_password}"</strong> Email sent link sent to update user password!!!</b:alert>
-					</b:column>
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="userManagementTableDiv" styleClass="tableContainer">
+			<b:container>
+				<b:row>
+					<h:panelGroup layout="block" styleClass="headerInformation">
+						<h1><h:outputText value="#{msg.rd_user} "/></h1>
+						<hr />
+					</h:panelGroup>
 				</b:row>
+				<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
+				<b:panelGrid colSpans="2,10">
+					<h:outputLabel value="#{msg.id}"/>
+					<b:inputText id="userId" value="#{userDataModel.selectedUser.id}" disabled="true" span="6"/>
 
+					<h:outputLabel value="#{msg.firstname}"/>
+					<b:inputText id="userFirstName" value="#{userDataModel.selectedUser.firstname}" required="true" span="6"/>
+
+					<h:outputLabel value="#{msg.lastname}"/>
+					<b:inputText id="userLastName" value="#{userDataModel.selectedUser.lastname}" required="true" span="6"/>
+
+					<h:outputLabel value="#{msg.logon}"/>
+					<b:inputText id="userLogon" value="#{userDataModel.selectedUser.logon}" disabled="true" span="6"/>
+
+					<h:outputLabel value="#{msg.email}"/>
+					<b:inputText id="userEmail" value="#{userDataModel.selectedUser.userEmail}" disabled="true" span="6"/>
+
+					<h:outputLabel value="#{msg.sub}"/>
+					<b:inputText id="userSub" value="#{userDataModel.selectedUser.sub}" disabled="true" span="6"/>
+				</b:panelGrid>
+				<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
+				<b:commandButton value="#{msg.save}"
+								 tooltip="Save changes!"
+								 iconAwesome="fa-save"
+								 action="#{userDataModel.updateUser(userDataModel.selectedUser)}"/>
+				<b:commandButton value="#{msg.rd_home_page}"
+								 tooltip="Return to user List!"
+								 iconAwesome="fa-home"
+								 action="#{userDataModel.returnHome}"/>
 			</b:container>
 		</h:form>
 	</ui:define>

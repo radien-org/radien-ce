@@ -190,6 +190,25 @@ public class TenantServiceTest {
     }
 
     /**
+     * Deletes inserted tenant using the PK (id) and if exists the under the parent of tenants.
+     * Will create a new tenant, save it into the DB and delete it after using the specific ID.
+     * Expected result: will return null when retrieving the tenant and under sub tenants.
+     * Tested methods: void deleteTenantHierarchy(Long tenantId)
+     *
+     * @throws UniquenessConstraintException in case of requested action is not well constructed
+     */
+    @Test
+    public void testDeleteTenantHierarchyById() throws UniquenessConstraintException, TenantException {
+        SystemTenant tenant = createTenant("testDeleteById");
+        SystemTenant result = tenantServiceAccess.get(tenant.getId());
+        assertNotNull(result);
+        assertEquals(tenant.getName(), result.getName());
+        tenantServiceAccess.deleteTenantHierarchy(tenant.getId());
+        result = tenantServiceAccess.get(tenant.getId());
+        assertNull(result);
+    }
+
+    /**
      * Test updates the tenant information.
      * @throws Exception in case of tenant to be updated not found
      */

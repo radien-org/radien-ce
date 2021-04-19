@@ -249,6 +249,44 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
+    public void testDeleteTenantHierarchy() throws MalformedURLException {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantResourceClient.deleteTenantHierarchy(dummyTenant.getId())).thenReturn(Response.ok().build());
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+
+        boolean success = false;
+        try {
+            assertTrue(target.deleteTenantHierarchy(2L));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testDeleteTenantHierarchyReturnFalse() throws MalformedURLException {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantResourceClient.deleteTenantHierarchy(3L)).thenReturn(Response.serverError().entity("teste").build());
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+
+        assertFalse(target.deleteTenantHierarchy(3L));
+    }
+
+    @Test
+    public void testDeleteTenantHierarchyException() throws Exception {
+        boolean success = false;
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantResourceClient.deleteTenantHierarchy(dummyTenant.getId())).thenThrow(new ProcessingException("teste"));
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        try {
+            target.deleteTenantHierarchy(2L);
+        }catch (ProcessingException se){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
     public void testUpdate() throws MalformedURLException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.update(2L, dummyTenant)).thenReturn(Response.ok().build());
