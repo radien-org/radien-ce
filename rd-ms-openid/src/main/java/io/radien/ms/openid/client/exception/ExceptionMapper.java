@@ -15,11 +15,15 @@
  */
 package io.radien.ms.openid.client.exception;
 
+import io.radien.exception.TokenExpiredException;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 @Provider
 public class ExceptionMapper implements
@@ -27,14 +31,19 @@ public class ExceptionMapper implements
 
     @Override
     public Exception toThrowable(Response response) {
-        if (response.getStatus() == 404) {
-            return new NotFoundException(response.readEntity(String.class));
+        Response.Status status = Response.Status.fromStatusCode(response.getStatus());
+        switch (status) {
+            case UNAUTHORIZED:
+                return new TokenExpiredException(response.readEntity(String.class));
+            case NOT_FOUND:
+                return new NotFoundException(response.readEntity(String.class));
         }
         return null;
     }
 
     @Override
     public boolean handles(int status, MultivaluedMap<String, Object> headers) {
-        return status == 404; // Not Found
+        return status == UNAUTHORIZED.getStatusCode()  ||
+               status == NOT_FOUND.getStatusCode(); // Not Found
     }
 }

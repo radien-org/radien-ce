@@ -37,7 +37,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -57,6 +56,26 @@ public abstract class AuthorizationChecker implements Serializable {
 
     private TokensPlaceHolder tokensPlaceHolder;
 
+    private RestClientBuilder restClientBuilder;
+
+
+    public boolean refreshToken() throws SystemException {
+        try {
+            UserClient client = getUserClient();
+
+            Response response = client.refreshToken(tokensPlaceHolder.getRefreshToken());
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                tokensPlaceHolder.setAccessToken(response.readEntity(String.class));
+                return true;
+            }
+            return false;
+
+        } catch (IllegalStateException | ProcessingException | TokenExpiredException e) {
+            throw new SystemException(e);
+        }
+    }
+
+
     /**
      * Check if the current logged user has (grant to) some role (under a specific tenant - optionally)
      * @param tenantId Tenant identifier (Optional parameter)
@@ -68,7 +87,10 @@ public abstract class AuthorizationChecker implements Serializable {
         try {
             this.preProcess();
             Response response = getLinkedAuthorizationClient().isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
-            return response.readEntity(Boolean.class);
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
+            return false;
         } catch (Exception e) {
             this.log.error("Error checking authorization", e);
             throw new SystemException(e);
@@ -113,8 +135,7 @@ public abstract class AuthorizationChecker implements Serializable {
             return true;
         }
         catch (NotFoundException e) {
-            // In case of 404 status we just want to return false
-            return false;
+           return false;
         }
         catch (Exception e) {
             this.log.error("Error checking authorization", e);
@@ -184,55 +205,46 @@ public abstract class AuthorizationChecker implements Serializable {
     }
 
     /**
-     * Build method that produces an UserClient instance.
-     * Is being adopted (instead of direct injection) due some EJB container issues
-     * encountered on Unit Tests
+     * Internal method to retrieve config property
+     * @param configProperty
      * @return
+     * @throws SystemException
      */
-    protected UserClient buildUserClient() {
+    protected String getConfigValue(String configProperty) throws SystemException {
         try {
-            String urlStr = ConfigProvider.getConfig().
-                    getValue("system.ms.endpoint.usermanagement",
-                            String.class);
-            return RestClientBuilder.newBuilder()
-                    .baseUrl(new URL(urlStr)).build(UserClient.class);
+            return ConfigProvider.getConfig().getValue(configProperty, String.class);
         }
-        catch (Exception e) {
-            log.error("Error build UserClient", e);
-            throw new IllegalStateException(e);
+        catch(Exception e) {
+            throw new SystemException("Error retrieving config property " + configProperty, e);
         }
     }
 
     /**
-     * Build method that produces an LinkedAuthorizationClient instance.
+     * Build method that produces an Rest client instance (i.e UserClient or LinkedAuthorizationClient).
      * Is being adopted (instead of direct injection) due some EJB container issues
      * encountered on Unit Tests
      * @return
      */
-    protected LinkedAuthorizationClient buildLinkedClient() {
+    protected <T> T buildClient(String url, Class<T> clazz) throws SystemException {
         try {
-            String urlStr = ConfigProvider.getConfig().
-                    getValue("system.ms.endpoint.rolemanagement",
-                            String.class);
-            return RestClientBuilder.newBuilder()
-                    .baseUrl(new URL(urlStr)).build(LinkedAuthorizationClient.class);
-        }
-        catch (Exception e) {
-            log.error("Error build LinkedAuthorizationClient", e);
-            throw new IllegalStateException(e);
+            return getRestClientBuilder().baseUrl(new URL(url)).build(clazz);
+        } catch (Exception e) {
+            throw new SystemException(e);
         }
     }
 
-    public UserClient getUserClient() {
+    public UserClient getUserClient() throws SystemException {
         if (userClient == null) {
-            userClient = buildUserClient();
+            userClient = buildClient(getConfigValue("system.ms.endpoint.usermanagement"),
+                    UserClient.class);
         }
         return userClient;
     }
 
-    public LinkedAuthorizationClient getLinkedAuthorizationClient() {
+    public LinkedAuthorizationClient getLinkedAuthorizationClient() throws SystemException{
         if (linkedAuthorizationClient == null) {
-            linkedAuthorizationClient = buildLinkedClient();
+            linkedAuthorizationClient = buildClient(getConfigValue("system.ms.endpoint.rolemanagement"),
+                    LinkedAuthorizationClient.class);
         }
         return linkedAuthorizationClient;
     }
@@ -253,20 +265,11 @@ public abstract class AuthorizationChecker implements Serializable {
         return tokensPlaceHolder;
     }
 
-    public boolean refreshToken() throws SystemException {
-        try {
-            UserClient client = getUserClient();
-
-            Response response = client.refreshToken(tokensPlaceHolder.getRefreshToken());
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                tokensPlaceHolder.setAccessToken(response.readEntity(String.class));
-                return true;
-            }
-            return false;
-
-        } catch (IllegalStateException | ProcessingException | TokenExpiredException e) {
-            throw new SystemException(e);
+    public RestClientBuilder getRestClientBuilder() {
+        if (restClientBuilder == null) {
+            restClientBuilder = RestClientBuilder.newBuilder();
         }
+        return restClientBuilder;
     }
 }
 

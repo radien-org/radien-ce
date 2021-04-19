@@ -6,6 +6,7 @@ import io.radien.ms.openid.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.client.UserClient;
 import io.radien.ms.openid.client.exception.NotFoundException;
 import io.radien.ms.openid.entities.Principal;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,10 +17,13 @@ import static org.mockito.Mockito.*;
 
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import javax.enterprise.inject.spi.CDI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.net.MalformedURLException;
 
 public class AuthorizationCheckerTest {
 
@@ -340,5 +344,42 @@ public class AuthorizationCheckerTest {
         } catch (SystemException systemException) {
             fail("unexpected failure");
         }
+    }
+
+    @Test
+    public void testGetUserClientWithError() throws SystemException {
+        AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
+        assertThrows(SystemException.class, () -> spied.getUserClient());
+
+        RestClientBuilder builder = mock(RestClientBuilder.class);
+        doThrow(new RuntimeException()).when(builder).build(UserClient.class);
+        doReturn(builder).when(spied).getRestClientBuilder();
+
+        doReturn("http://localhost:8080").when(spied).getConfigValue("system.ms.endpoint.usermanagement");
+
+        assertThrows(SystemException.class, () -> spied.getUserClient());
+    }
+
+    @Test
+    public void testGetLinkedAuthorizationClientWithError() throws SystemException {
+        AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
+        assertThrows(SystemException.class, () -> spied.getUserClient());
+
+        RestClientBuilder builder = mock(RestClientBuilder.class);
+        doThrow(new RuntimeException()).when(builder).build(LinkedAuthorizationClient.class);
+        doReturn(builder).when(spied).getRestClientBuilder();
+
+        doReturn("http://localhost:8080").when(spied).getConfigValue("system.ms.endpoint.rolemanagement");
+
+        assertThrows(SystemException.class, () -> spied.getLinkedAuthorizationClient());
+    }
+
+    @Test
+    public void testGetRestClientBuilder() throws SystemException {
+        AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
+        assertThrows(SystemException.class, () -> spied.getUserClient());
+
+        RestClientBuilder rcb = spied.getRestClientBuilder();
+        assertNotNull(rcb);
     }
 }
