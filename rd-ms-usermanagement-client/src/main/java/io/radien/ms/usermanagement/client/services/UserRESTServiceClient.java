@@ -194,11 +194,11 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
     public boolean sendUpdatePasswordEmail(long id) {
         boolean setAdminResetPassword = false;
         try {
-            return updatePasswordEmail(id);
+            setAdminResetPassword = updatePasswordEmail(id);
         } catch (TokenExpiredException e) {
             try {
                 refreshToken();
-                return updatePasswordEmail(id);
+                setAdminResetPassword = updatePasswordEmail(id);
             } catch (SystemException | TokenExpiredException tokenExpiredException) {
                 log.error(tokenExpiredException.getMessage(), tokenExpiredException);
             }

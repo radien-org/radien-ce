@@ -155,7 +155,7 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSetInitiateResetPassword() throws Exception {
+    public void testSendUpdatePasswordEmail() throws Exception {
         User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
         doNothing().when(keycloakService,"sendUpdatePasswordEmail", ArgumentMatchers.any());

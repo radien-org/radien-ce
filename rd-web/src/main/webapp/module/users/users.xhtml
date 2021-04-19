@@ -7,57 +7,94 @@
 				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<f:metadata>
-		<f:viewAction action="#{userTableUI.onload}"/>
+		<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
+		<f:viewAction action="#{userDataModel.onload}"/>
 	</f:metadata>
 
 	<ui:define name="content" bootsFacesDecorator="true">
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
-		<h:form id="userManagementDiv">
+		<h:form id="userManagementTableDiv" styleClass="tableContainer">
 			<b:row>
-			<h:panelGroup layout="block" styleClass="headerInformation">
-				<h1><h:outputText value="#{msg.rd_user_table} "/></h1>
-				<hr />
-			</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_users} "/></h1>
+					<hr />
+				</h:panelGroup>
 			</b:row>
-				<b:row>
-					<!--@elvariable id="userTableUI" type="io.radien.webapp.user.UserManager"-->
-					<p:dataTable id="dataTable" value="#{userTableUI.lazyModel}"
-								 var="user"
-								 lazy="true"
-								 paginator="true" rows="10"
-								 paginatorPosition="bottom"
-								 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
-								 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
-								 rowsPerPageTemplate="5,10,20,50"
-								 styleClass = "tableDesign"
-								 selectionMode="single"
-								 selection="#{userTableUI.selectedUser}">
+			<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
+			<!--@elvariable id="user" type="io.radien.api.model.user.SystemUser"-->
+			<p:dataTable id="dataTable" value="#{userDataModel.lazyUserDataModel}"
+						 var="user"
+						 widgetVar="userDataTable"
+						 lazy="true"
+						 paginator="true" rows="10"
+						 paginatorPosition="bottom"
+						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+						 rowsPerPageTemplate="5,10,20,50"
+						 styleClass = "tableDesign"
+						 selectionMode="single"
+						 selection="#{userDataModel.selectedUser}">
 
+				<p:ajax event="rowSelect" listener="#{userDataModel.onRowSelect}" update="@form:userManagementTableDiv"
+						oncomplete="$('.formValidationModalClass').modal('show')"/>
 
+				<p:column headerText="#{msg.logon}" sortBy="#{user.logon}">
+					<h:outputText value="#{user.logon}"/>
+				</p:column>
 
-						<p:column headerText="#{msg.firstname}" sortBy="#{user.firstname}">
-							<h:outputText value="#{user.firstname}"/>
-						</p:column>
+				<p:column headerText="#{msg.firstname}" sortBy="#{user.firstname}">
+					<h:outputText value="#{user.firstname}"/>
+				</p:column>
 
-						<p:column headerText="#{msg.lastname}" sortBy="#{user.lastname}">
-							<h:outputText value="#{user.lastname}"/>
-						</p:column>
+				<p:column headerText="#{msg.lastname}" sortBy="#{user.lastname}">
+					<h:outputText value="#{user.lastname}"/>
+				</p:column>
 
-						<p:column headerText="#{msg.logon}" sortBy="#{user.logon}">
-							<h:outputText value="#{user.logon}"/>
-						</p:column>
+				<p:column headerText="#{msg.email}" sortBy="#{user.userEmail}">
+					<h:outputText value="#{user.userEmail}"/>
+				</p:column>
+			</p:dataTable>
 
-						<p:column headerText="#{msg.email}" sortBy="#{user.userEmail}">
-							<h:outputText value="#{user.userEmail}"/>
-						</p:column>
+			<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
+			<b:button id="delete-user-button"
+					  onclick="$('.formValidationModalUserDelete').modal('show')"
+					  value="#{msg.delete}"
+					  icon="trash"
+					  update="@form:userManagementTableDiv"/>
+			<b:modal id="model"
+					 title="Confirmation"
+					 styleClass="formValidationModalUserDelete"
+					 closable="false"
+					 close-on-escape="false" backdrop="false"
+					 rendered="#{not empty userDataModel.selectedUser}">
+				<p>Are you sure confirm to delete the selected user?</p>
+				<f:facet name="footer">
+					<b:commandButton value="No"
+									 onclick="{ $('.formValidationModalUserDelete').modal('hide') } "/>
+					<b:commandButton value="Yes" look="warning"
+									 actionListener="#{userDataModel.deleteUser}"
+									 oncomplete="{ $('.formValidationModalUserDelete').modal('hide') } "/>
+				</f:facet>
+			</b:modal>
 
+			<b:commandButton value="#{msg.edit}"
+							 tooltip="Edit existent user information!"
+							 iconAwesome="fa-edit"
+							 action="#{userDataModel.editRecord}"/>
 
-					</p:dataTable>
+			<b:commandButton value="#{msg.profile}"
+							 tooltip="Profile of existent user!"
+							 iconAwesome="fa-user-plus"
+							 action="#{userDataModel.userProfile}"/>
 
-
-
-
-				</b:row>
+			<b:commandButton id="refresh" value="Refresh Values"
+							 ajax="false"
+							 iconAwesome="fa-refresh"
+							 icon-spin="true"
+							 tooltip="Refresh existent User data table!"
+							 actionListener="#{userDataModel.onload}"
+							 immediate="true" update="@form:userManagementTableDiv"
+							 auto-update="true"/>
 		</h:form>
 	</ui:define>
 </ui:composition>

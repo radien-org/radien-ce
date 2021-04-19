@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="userManagementTableDiv" styleClass="tableContainer">
+            <b:container>
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_user_profile} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+
+            <b:panelGrid colSpans="2,10">
+                <h:outputLabel value="#{msg.id}"/>
+                <b:inputText id="userId" value="#{userDataModel.selectedUser.id}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.firstname}"/>
+                <b:inputText id="userFirstName" value="#{userDataModel.selectedUser.firstname}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.lastname}"/>
+                <b:inputText id="userLastName" value="#{userDataModel.selectedUser.lastname}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.logon}"/>
+                <b:inputText id="userLogon" value="#{userDataModel.selectedUser.logon}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.email}"/>
+                <b:inputText id="userEmail" value="#{userDataModel.selectedUser.userEmail}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.sub}"/>
+                <b:inputText id="userSub" value="#{userDataModel.selectedUser.sub}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.enabled}"/>
+                <b:inputText id="userEnabled" value="#{userDataModel.selectedUser.enabled}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.createDate}"/>
+                <b:inputText id="userCreatedDate" value="#{userDataModel.selectedUser.createDate}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.lastUpdate}"/>
+                <b:inputText id="userLastUpdate" value="#{userDataModel.selectedUser.lastUpdate}" disabled="true" span="6"/>
+            </b:panelGrid>
+
+
+            <!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
+            <b:commandButton value="#{msg.reset_password}"
+                             tooltip="Send email to update password!"
+                             iconAwesome="fa-save"
+                             action="#{userDataModel.sendUpdatePasswordEmail}"/>
+            <b:commandButton value="#{msg.rd_home_page}"
+                             tooltip="Return to user List!"
+                             iconAwesome="fa-home"
+                             action="#{userDataModel.returnHome}"/>
+            </b:container>
+        </h:form>
+    </ui:define>
+</ui:composition>
