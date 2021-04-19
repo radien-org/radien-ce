@@ -15,9 +15,11 @@
  */
 package io.radien.ms.openid.security;
 
+import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
 import io.radien.ms.openid.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.client.UserClient;
 import io.radien.ms.openid.client.exception.NotFoundException;
@@ -30,10 +32,12 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.inject.spi.CDI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -92,8 +96,20 @@ public abstract class AuthorizationChecker implements Serializable {
     public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
             this.preProcess();
-            getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
-                    permissionId, null, getCurrentUserId(), true);
+            try {
+                getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
+                        permissionId, null, getCurrentUserId(), true);
+            } catch (TokenExpiredException e) {
+                try{
+                    refreshToken();
+                    getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
+                            permissionId, null, getCurrentUserId(), true);
+                } catch (TokenExpiredException tokenExpiredException){
+
+                    log.error(tokenExpiredException.getMessage(), tokenExpiredException);
+                    throw new SystemException(tokenExpiredException);
+                }
+            }
             return true;
         }
         catch (NotFoundException e) {
@@ -236,4 +252,21 @@ public abstract class AuthorizationChecker implements Serializable {
         }
         return tokensPlaceHolder;
     }
+
+    public boolean refreshToken() throws SystemException {
+        try {
+            UserClient client = getUserClient();
+
+            Response response = client.refreshToken(tokensPlaceHolder.getRefreshToken());
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                tokensPlaceHolder.setAccessToken(response.readEntity(String.class));
+                return true;
+            }
+            return false;
+
+        } catch (IllegalStateException | ProcessingException | TokenExpiredException e) {
+            throw new SystemException(e);
+        }
+    }
 }
+
