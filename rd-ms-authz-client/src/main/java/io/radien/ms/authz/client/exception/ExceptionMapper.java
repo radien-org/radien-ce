@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.openid.client.exception;
+package io.radien.ms.authz.client.exception;
 
 import io.radien.exception.TokenExpiredException;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;

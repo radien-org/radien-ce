@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.openid.security;
+package io.radien.ms.authz.security;
 
-import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
-import io.radien.ms.openid.client.LinkedAuthorizationClient;
-import io.radien.ms.openid.client.UserClient;
-import io.radien.ms.openid.client.exception.NotFoundException;
+import io.radien.ms.authz.client.LinkedAuthorizationClient;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.client.exception.NotFoundException;
 import io.radien.ms.openid.entities.Principal;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;

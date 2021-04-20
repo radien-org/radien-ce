@@ -1,5 +1,6 @@
-package io.radien.ms.openid.client.exception;
+package io.radien.ms.authz.client.exception;
 
+import io.radien.ms.authz.client.exception.NotFoundException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;

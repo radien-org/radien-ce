@@ -28,7 +28,7 @@ import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
-import io.radien.ms.openid.security.AuthorizationChecker;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.usermanagement.batch.BatchResponse;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
