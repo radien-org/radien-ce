@@ -15,10 +15,39 @@
  */
 package io.radien.ms.openid.security;
 
+import io.radien.api.security.TokensPlaceHolder;
+
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Default;
+import java.io.Serializable;
 
+/**
+ * TokenPlaceHolder implementation to be used by any
+ * service/module that needs to propagate the access token to consume
+ * secured services
+ */
 @SessionScoped
 @Default
-public class TokenHolder extends AuthorizationChecker{
+public class TokenHolder implements TokensPlaceHolder, Serializable {
+
+    private String accessToken;
+    private String refreshToken;
+
+    @Override
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

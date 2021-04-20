@@ -25,8 +25,8 @@ import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
-import io.radien.ms.usermanagement.client.services.UserFactory;
-import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.openid.entities.Principal;
+import io.radien.ms.openid.service.PrincipalFactory;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import org.slf4j.Logger;
@@ -154,7 +154,7 @@ public class AuthenticationFilter implements Filter {
                 return false;
 
             }
-            User principal = getUser(jsonObject);
+            Principal principal = PrincipalFactory.convert(jsonObject);
             session.setAttribute("USER", principal);
 
             return true;
@@ -162,17 +162,6 @@ public class AuthenticationFilter implements Filter {
             log.error("Unable to parse Access Token", e);
         }
         return false;
-    }
-
-    // TODO: maybe put into UserFactory
-    private User getUser(JsonObject jsonObject) {
-        //String name = jsonObject.getString("name");
-        String givenName = jsonObject.getString("given_name");
-        String familyName = jsonObject.getString("family_name");
-        String userName = jsonObject.getString("preferred_username");
-        String email = jsonObject.getString("email");
-        String sub = jsonObject.getString("sub");
-        return UserFactory.create(givenName, familyName, userName, sub, email, -1L);
     }
 
     @Override

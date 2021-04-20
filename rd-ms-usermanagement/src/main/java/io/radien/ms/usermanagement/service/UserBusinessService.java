@@ -55,6 +55,10 @@ public class UserBusinessService implements Serializable {
 	@Inject
 	private KeycloakService keycloakService;
 
+	public Long getUserId(String sub) {
+		return userServiceAccess.getUserId(sub);
+	}
+
 	public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending){
 		return userServiceAccess.getAll(search,pageNo,pageSize,sortBy,isAscending);
 	}

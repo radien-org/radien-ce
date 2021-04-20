@@ -90,7 +90,7 @@ public class LinkedAuthorizationFactory {
     public static JsonObject convertToJsonObject(LinkedAuthorization tenancyCtrl) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        FactoryUtilService.addValue(builder, "id", tenancyCtrl.getId());
+        FactoryUtilService.addValueLong(builder, "id", tenancyCtrl.getId());
         FactoryUtilService.addValueLong(builder, "tenantId", tenancyCtrl.getTenantId());
         FactoryUtilService.addValueLong(builder, "permissionId", tenancyCtrl.getPermissionId());
         FactoryUtilService.addValueLong(builder, "roleId", tenancyCtrl.getRoleId());

@@ -255,7 +255,7 @@ public class TenantServiceTest {
         c.setParentId(rootTenant.getId());
         c.setKey(RandomStringUtils.randomAlphabetic(4));
         tenantServiceAccess.create(c);
-        Page<SystemTenant> result = tenantServiceAccess.getAll(1, 10);
+        Page<SystemTenant> result = tenantServiceAccess.getAll(null,1,10,null,false);
         assertNotNull(result);
     }
 
@@ -516,7 +516,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenant);
 
         // Page size = 100 -> Overkill!!
-        Page<SystemTenant> page = tenantServiceAccess.getAll(1, 100);
+        Page<SystemTenant> page = tenantServiceAccess.getAll(null,1,100,null,false);
     }
 
     /**

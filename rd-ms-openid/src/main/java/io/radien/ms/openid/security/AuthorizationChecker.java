@@ -15,62 +15,81 @@
  */
 package io.radien.ms.openid.security;
 
+import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
-//import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
-import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.openid.client.LinkedAuthorizationClient;
+import io.radien.ms.openid.client.UserClient;
+import io.radien.ms.openid.client.exception.NotFoundException;
+import io.radien.ms.openid.entities.Principal;
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import javax.enterprise.inject.spi.CDI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import java.io.Serializable;
-import java.util.Optional;
+import java.net.URL;
 
 /**
- * TokenPlaceHolder implementation to be extend by any
- * Service that requires AccessToken
+ * This abstract class maybe extended by any component that needs to
+ * evaluate authorization (Role, permission, etc)
  */
-public abstract class AuthorizationChecker implements TokensPlaceHolder, Serializable {
-
-    private String accessToken;
-    private String refreshToken;
+public abstract class AuthorizationChecker implements Serializable {
 
     @Context
     private HttpServletRequest servletRequest;
 
-    @Inject
-    private UserRESTServiceAccess userRESTServiceAccess;
+    private UserClient userClient;
 
-    //@Inject
-    //private LinkedAuthorizationRESTServiceAccess authorizationRESTServiceAccess;
+    private LinkedAuthorizationClient linkedAuthorizationClient;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public boolean hasGrant(Long tenantId, String roleName) throws SystemException{
+    private TokensPlaceHolder tokensPlaceHolder;
+
+    private RestClientBuilder restClientBuilder;
+
+
+    public boolean refreshToken() throws SystemException {
         try {
-            this.preProcess();
-            return false;//authorizationRESTServiceAccess.isRoleExistentForUser(
-                    //getCurrentUserId(), tenantId, roleName);
-        } catch (Exception e) {
-            this.log.error("Error checking authorization", e);
+            UserClient client = getUserClient();
+
+            Response response = client.refreshToken(tokensPlaceHolder.getRefreshToken());
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                tokensPlaceHolder.setAccessToken(response.readEntity(String.class));
+                return true;
+            }
+            return false;
+
+        } catch (IllegalStateException | ProcessingException | TokenExpiredException e) {
             throw new SystemException(e);
         }
     }
 
-    public boolean hasGrant(String roleName) throws SystemException{
-        return hasGrant(null, roleName);
-    }
 
-    public boolean hasGrant(Long permissionId, Long roleId, Long tenantId) throws SystemException {
+    /**
+     * Check if the current logged user has (grant to) some role (under a specific tenant - optionally)
+     * @param tenantId Tenant identifier (Optional parameter)
+     * @param roleName this parameter corresponds to the role name
+     * @return
+     * @throws SystemException
+     */
+    public boolean hasGrant(Long tenantId, String roleName) throws SystemException{
         try {
             this.preProcess();
-            //return authorizationRESTServiceAccess.checkIfLinkedAuthorizationExists(tenantId,
-            //        permissionId, roleId, getCurrentUserId());
+            Response response = getLinkedAuthorizationClient().isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
             return false;
         } catch (Exception e) {
             this.log.error("Error checking authorization", e);
@@ -78,55 +97,179 @@ public abstract class AuthorizationChecker implements TokensPlaceHolder, Seriali
         }
     }
 
+    /**
+     * Check if the current logged user has (grant to) some role
+     * @param roleName
+     * @return
+     * @throws SystemException
+     */
+    public boolean hasGrant(String roleName) throws SystemException{
+        return hasGrant(null, roleName);
+    }
+
+    /**
+     * Check if the current logged user has (has grant to) some permission regarding (or not)
+     * some tenant
+     * @param permissionId Permission identifier
+     * @param tenantId Tenant identifier (not mandatory)
+     * @return
+     * @throws SystemException
+     */
+    public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
+        try {
+            this.preProcess();
+            try {
+                getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
+                        permissionId, null, getCurrentUserId(), true);
+            } catch (TokenExpiredException e) {
+                try{
+                    refreshToken();
+                    getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
+                            permissionId, null, getCurrentUserId(), true);
+                } catch (TokenExpiredException tokenExpiredException){
+
+                    log.error(tokenExpiredException.getMessage(), tokenExpiredException);
+                    throw new SystemException(tokenExpiredException);
+                }
+            }
+            return true;
+        }
+        catch (NotFoundException e) {
+           return false;
+        }
+        catch (Exception e) {
+            this.log.error("Error checking authorization", e);
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Retrieves the User Id using sub as parameter
+     * @param sub sub from the current logged logged user
+     * @return
+     * @throws SystemException
+     */
+    protected Long getCurrentUserIdBySub(String sub) throws SystemException {
+        try {
+            Response response = getUserClient().getUserIdBySub(sub);
+            return response.readEntity(Long.class);
+        }
+        catch (NotFoundException e) {
+            throw new SystemException("Could Not find User id for sub=" + sub);
+        }
+        catch(Exception e) {
+            log.error("Error trying to obtain user id", e);
+            throw new SystemException("Error trying to obtain user id", e);
+        }
+    }
+
+    /**
+     * Retrieves the ID that belongs to the current logged user
+     * @return
+     * @throws SystemException
+     */
     protected Long getCurrentUserId() throws SystemException {
-        SystemUser user = (io.radien.ms.usermanagement.client.entities.User)
-                servletRequest.getSession().getAttribute("USER");
+        SystemUser user = getInvokerUser();
         if (user == null) {
             throw new SystemException("No current user available");
         }
         return getCurrentUserIdBySub(user.getSub());
     }
 
-    protected Long getCurrentUserIdBySub(String sub) throws SystemException {
-        Optional<SystemUser> optional = this.userRESTServiceAccess.getUserBySub(sub);
-        return optional.orElseThrow(() -> new SystemException("No user available for " + sub)).getId();
+    /**
+     * Retrieves the reference for current logged user
+     * @return
+     */
+    protected SystemUser getInvokerUser() {
+        return (Principal) servletRequest.getSession().getAttribute("USER");
     }
 
-    protected void preProcess() {
+    /**
+     * This method retrieves the tokens (access and refresh), and store them
+     * to be transferred through GlobalHeaders
+     */
+    public void preProcess() {
         HttpSession httpSession = this.servletRequest.getSession(false);
-        if (httpSession.getAttribute("accessToken") != null &&
-                httpSession.getAttribute("refreshToken") != null) {
-            this.accessToken = httpSession.getAttribute("accessToken").toString();
-            this.refreshToken = httpSession.getAttribute("refreshToken").toString();
-        }
-        else {
-            // Lets obtain (at least) accessToken from Header
-            String token = this.servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-            if (token != null && token.startsWith("Bearer ")) {
-                this.accessToken = token.substring(7);
+        if (this.getTokensPlaceHolder().getAccessToken() == null) {
+            if (httpSession.getAttribute("accessToken") != null) {
+                this.getTokensPlaceHolder().setAccessToken(httpSession.getAttribute("accessToken").toString());
+            }
+            else {
+                // Lets obtain (at least) accessToken from Header
+                String token = this.servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+                if (token != null && token.startsWith("Bearer ")) {
+                    this.getTokensPlaceHolder().setAccessToken(token.substring(7));
+                }
             }
         }
     }
 
-    @Override
-    public String getAccessToken() {
-        return accessToken;
+    /**
+     * Internal method to retrieve config property
+     * @param configProperty
+     * @return
+     * @throws SystemException
+     */
+    protected String getConfigValue(String configProperty) throws SystemException {
+        try {
+            return ConfigProvider.getConfig().getValue(configProperty, String.class);
+        }
+        catch(Exception e) {
+            throw new SystemException("Error retrieving config property " + configProperty, e);
+        }
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    /**
+     * Build method that produces an Rest client instance (i.e UserClient or LinkedAuthorizationClient).
+     * Is being adopted (instead of direct injection) due some EJB container issues
+     * encountered on Unit Tests
+     * @return
+     */
+    protected <T> T buildClient(String url, Class<T> clazz) throws SystemException {
+        try {
+            return getRestClientBuilder().baseUrl(new URL(url)).build(clazz);
+        } catch (Exception e) {
+            throw new SystemException(e);
+        }
     }
 
-    @Override
-    public String getRefreshToken() {
-        return refreshToken;
+    public UserClient getUserClient() throws SystemException {
+        if (userClient == null) {
+            userClient = buildClient(getConfigValue("system.ms.endpoint.usermanagement"),
+                    UserClient.class);
+        }
+        return userClient;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public LinkedAuthorizationClient getLinkedAuthorizationClient() throws SystemException{
+        if (linkedAuthorizationClient == null) {
+            linkedAuthorizationClient = buildClient(getConfigValue("system.ms.endpoint.rolemanagement"),
+                    LinkedAuthorizationClient.class);
+        }
+        return linkedAuthorizationClient;
     }
 
-    public HttpServletRequest getServletRequest() {
-        return servletRequest;
+    public void setLinkedAuthorizationClient(LinkedAuthorizationClient linkedAuthorizationClient) {
+        this.linkedAuthorizationClient = linkedAuthorizationClient;
+    }
+
+    public void setUserClient(UserClient userClient) {
+        this.userClient = userClient;
+    }
+
+    public TokensPlaceHolder getTokensPlaceHolder() {
+        //TODO: Understand why standard injection is not working on EJB Unit Tests (UserServiceTest)
+        if (tokensPlaceHolder == null) {
+            tokensPlaceHolder =  CDI.current().select(TokensPlaceHolder.class).get();
+        }
+        return tokensPlaceHolder;
+    }
+
+    public RestClientBuilder getRestClientBuilder() {
+        if (restClientBuilder == null) {
+            restClientBuilder = RestClientBuilder.newBuilder();
+        }
+        return restClientBuilder;
     }
 }
+

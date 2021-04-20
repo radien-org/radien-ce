@@ -178,6 +178,41 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
     }
 
     /**
+     * Retrieve all roles related to a specific user.
+     * Optionally tenant identifier may be informed to
+     * improve the filtering process.
+     * @param userId User identifier
+     * @param tenantId Tenant Identifier (Optional parameter)
+     */
+    @Override
+    public Response getRoles(Long userId, Long tenantId) {
+        try {
+            return Response.ok(linkedAuthorizationBusinessService.getRolesByUserAndTenant(
+                    userId, tenantId)).build();
+        } catch(Exception e) {
+            return getGenericError(e);
+        }
+    }
+
+    /**
+     * Check if a user has a specific Role (Optionally, under a specific tenant)
+     * @param userId User Identifier
+     * @param roleName Role Name
+     * @param tenantId Tenant Identifier
+     * @return Http status OK (200) containing boolean value, otherwise Http status 500
+     */
+    @Override
+    public Response isRoleExistentForUser(Long userId, String roleName, Long tenantId) {
+        try {
+            return Response.ok(linkedAuthorizationBusinessService.isRoleExistentForUser(
+                    userId, tenantId, roleName)).build();
+        }
+        catch (Exception e) {
+            return getGenericError(e);
+        }
+    }
+
+    /**
      * Generic error exception. Launches a 500 Error Code to the user.
      * @param e exception to be throw
      * @return code 500 message Generic Exception

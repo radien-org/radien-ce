@@ -27,6 +27,9 @@ import org.primefaces.model.SortMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJBException;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
 
@@ -83,15 +86,25 @@ public class LazyUserDataModel extends LazyDataModel<SystemUser> {
             datasource = page.getResults();
 
             rowCount = (long)page.getTotalResults();
-        } catch (MalformedURLException  e) {
-            e.printStackTrace();
-        } catch (WebApplicationException e){
+        } catch (Exception e){
             errorMsg = e.getMessage();
+            log.error("Error trying to load users", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error retrieving users",
+                            extractErrorMessage(e)));
         }
 
         setRowCount(Math.toIntExact(rowCount));
 
         return datasource.stream().collect(Collectors.toList());
     }
+
+    protected String extractErrorMessage(Exception exception) {
+        String errorMsg = (exception instanceof EJBException) ?
+                exception.getCause().getMessage() : exception.getMessage();
+        // Bootsfaces growl has issues to handle special characters
+        return errorMsg.replace("\n\t", "");
+    }
+
 
 }

@@ -25,10 +25,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
@@ -64,6 +61,28 @@ public class UserService implements UserServiceAccess{
 
 	@PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
 	private EntityManager em;
+
+	/**
+	 * Retrieves strictly the user id basing on user sub
+	 * @param userSub
+	 * @return
+	 */
+	@Override
+	public Long getUserId(String userSub) {
+		if (userSub == null || userSub.trim().length() == 0) {
+			throw new IllegalArgumentException("User sub cannot be empty");
+		}
+		String query = "Select u.id From User u where u.sub = :pUserSub";
+		TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
+		typedQuery.setParameter("pUserSub", userSub);
+		try {
+			return typedQuery.getSingleResult();
+		}
+		catch (NoResultException e) {
+			log.error("No user (id) found for sub {}", userSub);
+			return null;
+		}
+	}
 
 	/**
 	 * Gets the System User searching by the PK (id).

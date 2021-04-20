@@ -18,17 +18,17 @@ package io.radien.ms.usermanagement.service;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
+
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
+import io.radien.ms.openid.security.AuthorizationChecker;
 import io.radien.ms.usermanagement.batch.BatchResponse;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
@@ -36,6 +36,7 @@ import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
 
 import io.radien.ms.usermanagement.entities.User;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,27 +50,34 @@ import java.util.stream.Collectors;
  */
 @Path("user")
 @RequestScoped
-public class UserResource implements UserResourceClient {
+public class UserResource extends AuthorizationChecker implements UserResourceClient {
 
 	@Inject
 	private UserBusinessService userBusinessService;
-	@Context
-	private HttpServletRequest servletRequest;
-	//@Context private HttpServletContext servletContext;
-	//@Inject
-	//private UserSession session;
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
 	@Override
+	public Response getUserIdBySub(String sub) {
+		try {
+			Long id = userBusinessService.getUserId(sub);
+			if (id == null) {
+				return getResourceNotFoundException();
+			}
+			return Response.ok(id).build();
+		} catch (Exception e) {
+			return getResponseFromException(e);
+		}
+	}
+
+	@Override
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
-
-		//servletRequest.getRequestURL(); //fullpath
-		//servletRequest.getRequestURI(); //relativePath
-		//servletRequest.getHeader("Authorization"); //null on empty
-		SystemUser user = (io.radien.ms.usermanagement.client.entities.User) servletRequest.getSession().getAttribute("USER");
 		try {
+			if (!hasGrant("admin")) {
+				return Response.status(HttpStatus.SC_FORBIDDEN).
+						entity("No Role available to perform this task").build();
+			}
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
 			return getResponseFromException(e);
@@ -122,21 +130,35 @@ public class UserResource implements UserResourceClient {
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			/*boolean creation = user.getId() == null;
-			SystemUser requester = (io.radien.ms.usermanagement.client.entities.User) servletRequest.getSession().getAttribute("USER");
-			if(creation){
-				SystemUserSearchFilter filter = new UserSearchFilter(requester.getSub(), null,null,true,true);
-				List<? extends SystemUser> users =userBusinessService.getUsers(filter);
-				if(users.size()==1){
-					Long requesterId =users.get(0).getId();
-					//permissionRESTSeviceClient.hasPermission("create","user",tenantRESTServiceClient.getCurrentTenant(requesterId),requesterId);
-				}
-			}*/
+			if (!isSelfOnboard(user) && !hasGrant("tenant-administrator")) {
+				return Response.status(HttpStatus.SC_FORBIDDEN).
+						entity("No Role available to perform this task").build();
+			}
 			userBusinessService.save(new User(user),user.isDelegatedCreation());
 		} catch (Exception e) {
 			return getResponseFromException(e);
 		}
 		return Response.ok().build();
+	}
+
+	/**
+	 * Check if the the current logged user is trying to register
+	 * himself into the radien repository
+	 * @param user user to be register into radien repository
+	 * @return true  or false
+	 */
+	public boolean isSelfOnboard(SystemUser user) {
+		SystemUser invoker = getInvokerUser();
+		return invoker != null && invoker.getSub().equals(user.getSub());
+	}
+
+	@Override
+	protected Long getCurrentUserIdBySub(String sub) throws SystemException {
+		Long userId = this.userBusinessService.getUserId(sub);
+		if (userId == null) {
+			throw new SystemException("No user available for sub " + sub);
+		}
+		return userId;
 	}
 
 	/**

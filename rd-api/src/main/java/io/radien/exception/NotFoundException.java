@@ -18,7 +18,7 @@ package io.radien.exception;
 /**
  * @author Bruno Gama
  */
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException {
 
     public NotFoundException() {
         super();

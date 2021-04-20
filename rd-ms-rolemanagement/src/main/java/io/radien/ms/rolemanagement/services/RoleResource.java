@@ -30,6 +30,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * @author Bruno Gama
@@ -45,17 +46,26 @@ public class RoleResource implements RoleResourceClient {
     private static final Logger log = LoggerFactory.getLogger(RoleResource.class);
 
     /**
-     * Gets all the role information into a paginated mode and return those information to the user.
+     * Retrieves a page object containing roles that matches search parameter.
+     * In case of omitted (empty) search parameter retrieves ALL roles
+     * @param search search parameter for matching roles (optional).
      * @param pageNo page number where the user is seeing the information.
      * @param pageSize number of roles to be showed in each page.
-     * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
-     * error.
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
+     * @return In case of successful operation returns OK (http status 200)
+     * and the page object (filled or not).<br>
+     * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @Override
-    public Response getAll(int pageNo, int pageSize) {
+    public Response getAll(String search,
+                           int pageNo,
+                           int pageSize,
+                           List<String> sortBy,
+                           boolean isAscending) {
         try {
             log.info("Will get all the role information I can find!");
-            return Response.ok(roleBusinessService.getAll(pageNo, pageSize)).build();
+            return Response.ok(roleBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
         } catch(Exception e) {
             return getGenericError(e);
         }

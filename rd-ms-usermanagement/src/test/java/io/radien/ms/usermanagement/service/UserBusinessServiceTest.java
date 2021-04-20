@@ -22,10 +22,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
 
 import static org.mockito.Mockito.doThrow;
@@ -47,6 +46,20 @@ public class UserBusinessServiceTest extends TestCase {
     @Before
     public void setUp(){
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGetUserIdBySub() {
+
+        when(userServiceAccess.getUserId("sub1")).thenReturn(1L);
+        when(userServiceAccess.getUserId("sub2")).thenReturn(null);
+
+        Long id = userBusinessService.getUserId("sub1");
+        assertNotNull(id);
+        assertTrue(id == 1L);
+
+        id = userBusinessService.getUserId("sub2");
+        assertNull(id);
     }
 
     @Test

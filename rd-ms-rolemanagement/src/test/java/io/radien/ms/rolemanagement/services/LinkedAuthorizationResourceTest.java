@@ -15,15 +15,21 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 
@@ -43,6 +49,8 @@ public class LinkedAuthorizationResourceTest {
     LinkedAuthorizationService linkedAuthorizationsService;
     @Mock
     LinkedAuthorizationBusinessService linkedAuthorizationBusinessService;
+    @Mock
+    HttpServletRequest servletRequest;
 
     @Before
     public void before(){
@@ -157,6 +165,9 @@ public class LinkedAuthorizationResourceTest {
      */
     @Test
     public void testSaveAssociation() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
         Response response = linkedAuthorizationResource.saveAssociation(new LinkedAuthorization());
         assertEquals(200,response.getStatus());
     }
@@ -168,6 +179,9 @@ public class LinkedAuthorizationResourceTest {
      */
     @Test
     public void testCreateInvalid() throws Exception {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
         doThrow(new UniquenessConstraintException()).when(linkedAuthorizationBusinessService).save(any());
         Response response = linkedAuthorizationResource.saveAssociation(new LinkedAuthorization());
         assertEquals(400,response.getStatus());
@@ -192,6 +206,9 @@ public class LinkedAuthorizationResourceTest {
      */
     @Test
     public void testCreateNotFoundError() throws Exception {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
         doThrow(new LinkedAuthorizationNotFoundException()).when(linkedAuthorizationBusinessService).save(any());
         Response response = linkedAuthorizationResource.saveAssociation(new LinkedAuthorization());
         assertEquals(404,response.getStatus());

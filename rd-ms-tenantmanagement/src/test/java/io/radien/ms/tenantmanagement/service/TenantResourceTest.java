@@ -73,7 +73,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testGetAll() {
-        Response response = tenantResource.getAll(1, 10);
+        Response response = tenantResource.getAll(null, 1, 10, null, false);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -82,9 +82,9 @@ public class TenantResourceTest {
      */
     @Test
     public void testGetAllGenericException() {
-        when(tenantResource.getAll(1, 10))
+        when(tenantResource.getAll(null,1, 10, null, false))
                 .thenThrow(new RuntimeException());
-        Response response = tenantResource.getAll(1, 10);
+        Response response = tenantResource.getAll(null,1, 10, null, false);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 

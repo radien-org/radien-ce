@@ -67,6 +67,10 @@ public interface UserResourceClient {
                              @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
+    @Path("/sub/{sub}")
+    public Response getUserIdBySub(@PathParam("sub") String sub);
+
+    @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") Long id);
 

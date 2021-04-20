@@ -32,6 +32,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * @author Santana
@@ -44,8 +45,11 @@ public interface TenantResourceClient {
 
     @GET
     @Path("/getAll")
-    public Response getAll(@DefaultValue("0")  @QueryParam("pageNo") int pageNo,
-                           @DefaultValue("10") @QueryParam("pageSize") int pageSize);
+    public Response getAll(@QueryParam("search") String search,
+                           @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize,
+                           @QueryParam("sortBy") List<String> sortBy,
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     @GET
     public Response get(@QueryParam("name") String name, @QueryParam("type") String type,

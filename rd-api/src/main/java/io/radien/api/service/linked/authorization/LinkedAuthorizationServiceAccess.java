@@ -18,6 +18,7 @@ package io.radien.api.service.linked.authorization;
 import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -79,4 +80,8 @@ public interface LinkedAuthorizationServiceAccess extends ServiceAccess {
      * @return the count of users
      */
     public long getTotalRecordsCount();
+
+    boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName);
+
+    List<? extends SystemRole> getRolesByUserAndTenant(Long userId, Long tenantId);
 }

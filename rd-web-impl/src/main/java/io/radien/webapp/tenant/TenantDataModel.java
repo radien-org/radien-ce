@@ -158,7 +158,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     }
 
     public List<? extends SystemTenant> getParents() throws SystemException {
-        return service.getAll(0, 3).getResults();
+        return service.getAll(null, 1, 3, null, false).getResults();
     }
 
     public LazyDataModel<? extends SystemTenant> getLazyModel() {

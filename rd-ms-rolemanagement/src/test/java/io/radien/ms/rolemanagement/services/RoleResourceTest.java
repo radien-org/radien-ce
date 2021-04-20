@@ -53,7 +53,7 @@ public class RoleResourceTest {
      */
     @Test
     public void testGetAll() {
-        Response response = roleResource.getAll(1,10);
+        Response response = roleResource.getAll(null,1,10,null,false);
         assertEquals(200,response.getStatus());
     }
 
@@ -62,9 +62,9 @@ public class RoleResourceTest {
      */
     @Test
     public void testGetAllGenericException() {
-        when(roleResource.getAll(1,10))
+        when(roleResource.getAll(null,1,10, null, false))
                 .thenThrow(new RuntimeException());
-        Response response = roleResource.getAll(1,10);
+        Response response = roleResource.getAll(null,1,10, null, false);
         assertEquals(500,response.getStatus());
     }
 

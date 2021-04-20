@@ -47,16 +47,20 @@ public class TenantResource implements TenantResourceClient {
 
 	/**
 	 * Gets all the tenant information into a paginated mode and return those information to the user.
-	 * @param pageNo page number where the user is seeing the information.
-	 * @param pageSize number of tenants to be showed in each page.
+	 * @param search name description for some tenant
+	 * @param pageNo of the requested information. Where the tenant is.
+	 * @param pageSize total number of pages returned in the request.
+	 * @param sortBy sort filter criteria.
+	 * @param isAscending ascending filter criteria.	 *
 	 * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
 	 * error.
 	 */
 	@Override
-	public Response getAll(int pageNo, int pageSize) {
+	public Response getAll(String search, int pageNo, int pageSize,
+						   List<String> sortBy, boolean isAscending) {
 		try {
 			log.info("Will get all the role information I can find!");
-			return Response.ok(tenantService.getAll(pageNo, pageSize)).build();
+			return Response.ok(tenantService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch(Exception e) {
 			return getGenericError(e);
 		}

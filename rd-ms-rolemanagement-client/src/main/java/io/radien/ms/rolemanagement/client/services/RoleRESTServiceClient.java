@@ -56,17 +56,22 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
     private ClientServiceUtil clientServiceUtil;
 
     /**
-     * Gets all the roles in the DB
-     * @param pageNo to be show the information
-     * @param pageSize number of max pages of information
-     * @return list of system roles
-     * @throws MalformedURLException if URL is malformed
+     * Retrieves a page object containing roles that matches search parameter.
+     * In case of omitted (empty) search parameter retrieves ALL roles
+     * @param search search parameter for matching roles (optional).
+     * @param pageNo page number where the user is seeing the information.
+     * @param pageSize number of roles to be showed in each page.
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
+     * @return page containing system roles
+     * @throws SystemException
      */
     @Override
-    public Page<? extends SystemRole> getAll(int pageNo, int pageSize) throws SystemException {
+    public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize,
+                                             List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getAll(pageNo, pageSize);
+            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
             return RoleModelMapper.mapToPage((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
@@ -84,6 +89,27 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getById(id);
             return Optional.of(RoleModelMapper.map((InputStream) response.getEntity()));
+        } catch (ExtensionException|ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Gets a role from the DB searching  by its Name
+     * @param name of the role to be retrieved
+     * @return Optional containing (or not) one role
+     * @throws Exception in case of any trouble during the retrieving process
+     */
+    public Optional<SystemRole> getRoleByName(String name) throws SystemException {
+        try {
+            RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getSpecificRoles(name, null, true, true);
+            List<? extends SystemRole> list = ListRoleModelMapper.map((InputStream) response.getEntity());
+            if (list.size() == 1) {
+                return Optional.ofNullable(list.get(0));
+            } else {
+                return Optional.empty();
+            }
         } catch (ExtensionException|ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }

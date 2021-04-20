@@ -19,6 +19,7 @@ import io.radien.api.Appframeable;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.exception.SystemException;
 
+import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
@@ -65,4 +66,14 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @return the count of existent linked authorizations.
      */
     public Long getTotalRecordsCount() throws SystemException;
+
+    /**
+     * Check if the informed user has a role (Optionally - under a specific tenant)
+     * @param userId corresponds to the user identifier
+     * @param tenantId corresponds to a tenant identifier (Optional parameter)
+     * @param roleName corresponds to the role name
+     * @return
+     * @throws SystemException
+     */
+    Boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) throws SystemException;
 }

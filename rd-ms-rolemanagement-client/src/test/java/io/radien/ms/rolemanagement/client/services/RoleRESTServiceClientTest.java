@@ -23,6 +23,7 @@ import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
+import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +44,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -85,13 +87,13 @@ public class RoleRESTServiceClientTest {
 
         RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
 
-        when(roleResourceClient.getAll(1, 10)).thenReturn(response);
+        when(roleResourceClient.getAll(null,1, 10,  null, false)).thenReturn(response);
 
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
 
         List<? extends SystemRole> list = new ArrayList<>();
 
-        List<? extends SystemRole> returnedList = target.getAll(1, 10).getResults();
+        List<? extends SystemRole> returnedList = target.getAll(null, 1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);
     }
@@ -101,7 +103,7 @@ public class RoleRESTServiceClientTest {
         boolean success = false;
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
         try {
-            target.getAll(1, 10);
+            target.getAll(null,1, 10, null, false);
         }catch (SystemException se){
             success = true;
         }
@@ -147,6 +149,101 @@ public class RoleRESTServiceClientTest {
         }
         assertTrue(success);
     }
+
+    @Test
+    public void testGetRolesByName() throws MalformedURLException, SystemException {
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("admin-test");
+        role.setDescription("test");
+
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        arrayBuilder.add(RoleModelMapper.map(role));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(outputStream);
+        jsonWriter.writeArray(arrayBuilder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleResourceClient.getSpecificRoles(role.getName(), null, true, true)).
+                thenReturn(response);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+
+        assertEquals(target.getRoleByName(role.getName()).get().getId(), role.getId());
+    }
+
+    @Test
+    public void testGetRolesByNameFoundNothing() throws MalformedURLException, SystemException {
+        String roleName = "admin-test";
+
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(outputStream);
+        jsonWriter.writeArray(arrayBuilder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
+        Response response = Response.ok(is).build();
+
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleResourceClient.getSpecificRoles(roleName, null, true, true)).
+                thenReturn(response);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+
+        assertEquals(target.getRoleByName(roleName), Optional.empty());
+    }
+
+    @Test
+    public void testGetRolesByNameException() throws Exception {
+        String roleName = "admin-test";
+        boolean success = false;
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).
+                thenThrow(new MalformedURLException("error")).
+                thenReturn(roleResourceClient).
+                thenReturn(roleResourceClient);
+        when(roleResourceClient.getSpecificRoles(roleName, null, true, true)).
+                thenThrow(new ExtensionException(new Exception("test"))).
+                thenThrow(new ProcessingException(new Exception("test")));
+        try {
+            target.getRoleByName(roleName);
+        }catch (SystemException se){
+            if (se.getMessage().contains(MalformedURLException.class.getName())) {
+                success = true;
+            }
+        }
+        assertTrue(success);
+
+        success = false;
+        try {
+            target.getRoleByName(roleName);
+        }catch (SystemException se){
+            if (se.getMessage().contains(ExtensionException.class.getName())) {
+                success = true;
+            }
+        }
+        assertTrue(success);
+
+        success = false;
+        try {
+            target.getRoleByName(roleName);
+        }catch (SystemException se){
+            if (se.getMessage().contains(ProcessingException.class.getName())) {
+                success = true;
+            }
+        }
+        assertTrue(success);
+    }
+
 
     private String getPermissionManagementUrl(){
         String url = "";

@@ -4,15 +4,115 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
     <ui:define name="content">
         <b:container>
             <b:row>
-                <h:panelGroup layout="block" styleClass="headerInformation">
-                    <h1><h:outputText value="#{msg.rd_contract} "/></h1>
-                    <hr />
-                </h:panelGroup>
+                <b:column offsetXs="2" colXs="8">
+                    <h:panelGroup layout="block" styleClass="headerInformation">
+                        <h1><h:outputText value="#{msg.rd_linkedauthorization} "/></h1>
+                        <hr />
+                    </h:panelGroup>
+                </b:column>
             </b:row>
+
+            <h:form>
+                <h:inputHidden id="id" value="#{linkedAuthorizationManager.linkedAuthorization.id}"/>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:outputLabel value="#{msg.rd_user_logon}"
+                                       for="userLogin"/>
+                    </b:column>
+                </b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:inputText id="userLogin" value="#{linkedAuthorizationManager.selectedUser.logon}"
+                                     required="true"
+                                     requiredMessage="#{msg.rd_user_is_mandatory}"
+                                     label="#{msg.rd_user_logon}"/>
+                    </b:column>
+                </b:row>
+                <b:row><b:column offsetXs="2" colXs="8"></b:column></b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:outputLabel value="#{msg.rd_tenant}"
+                                       for="autoCompleteForTenants"/>
+                    </b:column>
+                </b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:autoComplete id="autoCompleteForTenants"
+                                        value="#{linkedAuthorizationManager.selectedTenant}"
+                                        var="selectedTenant" itemValue="${selectedTenant}"
+                                        itemLabel="${selectedTenant.name}"
+                                        converter="#{tenantConverter}"
+                                        completeMethod="#{linkedAuthorizationManager.filterTenantsByName}"
+                                        label="#{msg.rd_tenant}"
+                                        emptyMessage="#{rd_tenants_not_found}"
+                                        size="50" placeholder="#{msg.rd_linked_authorization_tenant_placeholder}"
+                                        required="true" requiredMessage="#{msg.rd_tenant_is_mandatory}"/>
+                    </b:column>
+                </b:row>
+                <b:row><b:column offsetXs="2" colXs="8"></b:column></b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:outputLabel value="#{msg.rd_role}"
+                                       for="autoCompleteForRoles"/>
+                    </b:column>
+                </b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:autoComplete id="autoCompleteForRoles"
+                                        value="#{linkedAuthorizationManager.selectedRole}"
+                                        var="selectedRole" itemValue="${selectedRole}"
+                                        itemLabel="${selectedRole.name}"
+                                        converter="#{roleConverter}"
+                                        completeMethod="#{linkedAuthorizationManager.filterRolesByName}"
+                                        label="#{msg.rd_role}"
+                                        emptyMessage="#{rd_roles_not_found}"
+                                        size="50" placeholder="#{msg.rd_linked_authorization_role_placeholder}"
+                                        required="true" requiredMessage="#{msg.rd_role_is_mandatory}"/>
+                    </b:column>
+                </b:row>
+                <b:row><b:column offsetXs="2" colXs="8"></b:column></b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:outputLabel value="#{msg.rd_permission}"
+                                       for="autoCompleteForPermissions"/>
+                    </b:column>
+                </b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <p:autoComplete id="autoCompleteForPermissions"
+                                        value="#{linkedAuthorizationManager.selectedPermission}"
+                                        var="selectedPermission" itemValue="${selectedPermission}"
+                                        itemLabel="${selectedPermission.name}"
+                                        converter="#{permissionConverter}"
+                                        completeMethod="#{linkedAuthorizationManager.filterPermissionsByName}"
+                                        label="#{msg.rd_permission}"
+                                        emptyMessage="#{rd_permissions_not_found}"
+                                        size="50" placeholder="#{msg.rd_linked_authorization_permission_placeholder}"
+                                        required="true" requiredMessage="#{msg.rd_permission_is_mandatory}"/>
+                    </b:column>
+                </b:row>
+                <b:row><b:column offsetXs="2" colXs="8"></b:column></b:row>
+                <b:row>
+                    <b:column offsetXs="2" colXs="8">
+                        <b:buttonGroup>
+                            <b:commandButton value="#{msg.save}"
+                                             action="#{linkedAuthorizationManager.save(linkedAuthorizationManager.linkedAuthorization)}"
+                                             iconAwesome="fa-function"
+                                             iconAlign="center"/>
+                            <b:commandButton value="#{msg.returnButton}"
+                                             action="linkedauthorizations"
+                                             iconAwesome="fa-arrow-circle-left"
+                                             immediate="true"
+                                             iconAlign="center"/>
+                        </b:buttonGroup>
+                    </b:column>
+                </b:row>
+            </h:form>
         </b:container>
     </ui:define>
 </ui:composition>
