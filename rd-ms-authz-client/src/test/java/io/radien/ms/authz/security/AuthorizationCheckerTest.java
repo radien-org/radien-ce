@@ -2,10 +2,10 @@ package io.radien.ms.authz.security;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
-import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.entities.Principal;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.Before;
@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
@@ -44,6 +45,37 @@ public class AuthorizationCheckerTest {
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testRefreshToken() {
+        String refreshToken = "11122334445566";
+        String newAccessToken = "33333333333";
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn(refreshToken).
+                thenReturn(refreshToken).
+                thenReturn(refreshToken);
+
+        when(this.userClient.refreshToken(refreshToken)).
+                thenReturn(Response.ok().entity(newAccessToken).build()).
+                thenReturn(Response.status(Response.Status.NOT_FOUND).build()).
+                thenThrow(new javax.ws.rs.ProcessingException("error"));
+
+        try {
+            assertTrue(authorizationChecker.refreshToken());
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+
+        try {
+            assertFalse(authorizationChecker.refreshToken());
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+
+        SystemException se = assertThrows(SystemException.class, () ->
+                authorizationChecker.refreshToken());
+        assertTrue(se.getMessage().contains(ProcessingException.class.getName()));
     }
 
     @Test
@@ -102,6 +134,72 @@ public class AuthorizationCheckerTest {
         } catch (SystemException systemException) {
             fail("unexpected failure");
         }
+    }
+
+    protected void prepareMockParamForRefreshToken(TokensPlaceHolder holder, UserClient uc) {
+        String refreshToken = "11122334445566";
+        String newAccessToken = "33333333333";
+
+        when(holder.getRefreshToken()).thenReturn(refreshToken).
+                thenReturn(refreshToken).
+                thenReturn(refreshToken);
+
+        when(uc.refreshToken(refreshToken)).
+                thenReturn(Response.ok().entity(newAccessToken).build()).
+                thenReturn(Response.ok().entity(newAccessToken).build()).
+                thenReturn(Response.ok().entity(newAccessToken).build());
+    }
+
+    @Test
+    public void testHasGrantForRoleWithTenantWhenTokenExpires() throws SystemException {
+        Long userId = 1001L;
+        Long tenantId = 1111L;
+        String roleName = "admin";
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session).
+                thenReturn(session).thenReturn(session).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).
+                thenReturn(session).
+                thenReturn(session);
+
+        when(servletRequest.getSession(false)).
+                thenReturn(session).
+                thenReturn(session);
+
+        when(session.getAttribute("USER")).
+                thenReturn(principal).
+                thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build()).
+                thenReturn(Response.ok().entity(userId).build());
+
+        prepareMockParamForRefreshToken(tokensPlaceHolder, userClient);
+
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
+                thenReturn("token-yyz");
+
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, tenantId)).
+                thenThrow(new TokenExpiredException()).
+                thenReturn(Response.ok().entity(Boolean.TRUE).build()).
+                thenThrow(new TokenExpiredException()).
+                thenThrow(new TokenExpiredException());
+
+        try {
+            assertTrue(authorizationChecker.hasGrant(tenantId, roleName));
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+
+        SystemException se = assertThrows(SystemException.class,
+                () -> authorizationChecker.hasGrant(tenantId, roleName));
+
+        assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
     }
 
     @Test
@@ -163,6 +261,35 @@ public class AuthorizationCheckerTest {
     }
 
     @Test
+    public void testHasGrantForRoleWithTenantParamReturnFalse2() {
+        Long userId = 1001L;
+        Long tenantId = 1111L;
+        String roleName = "admin";
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build());
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, tenantId)).
+                thenReturn(Response.status(300).build());
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
+
+        try {
+            assertFalse(authorizationChecker.hasGrant(tenantId, roleName));
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+    }
+
+    @Test
     public void testFailureWhenRetrievingUserId() {
         Long userId = 1001L;
         Long tenantId = 1111L;
@@ -185,6 +312,45 @@ public class AuthorizationCheckerTest {
 
         assertThrows(SystemException.class, () -> authorizationChecker.hasGrant(tenantId, roleName));
         assertThrows(SystemException.class, () -> authorizationChecker.hasGrant(tenantId, roleName));
+    }
+
+    @Test
+    public void testTokenExpiredWhenRetrievingUserId() throws SystemException {
+        Long userId = 1001L;
+        String roleName = "admin";
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session).
+                thenReturn(session).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session).
+                thenReturn(session).thenReturn(session);
+
+        when(servletRequest.getSession(false)).thenReturn(session).
+                thenReturn(session).thenReturn(session);
+
+        when(session.getAttribute("USER")).thenReturn(principal).
+                thenReturn(principal).thenReturn(principal);
+
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
+                thenReturn("token-yyz").thenReturn("token-yyz");
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenThrow(TokenExpiredException.class).
+                thenReturn(Response.ok().entity(userId).build()).
+                thenThrow(TokenExpiredException.class);
+
+        this.prepareMockParamForRefreshToken(tokensPlaceHolder, this.userClient);
+
+        assertEquals(userId, authorizationChecker.getCurrentUserIdBySub(principal.getSub()));
+
+        SystemException se = assertThrows(SystemException.class,
+                () -> authorizationChecker.getCurrentUserIdBySub(principal.getSub()));
+
+        assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
     }
 
     @Test
@@ -285,6 +451,55 @@ public class AuthorizationCheckerTest {
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
         assertThrows(SystemException.class, () -> authorizationChecker.hasGrant(permissionId, tenantId));
+    }
+
+    @Test
+    public void testTokenExpiredExceptionWhenCheckingGrantForPermission() {
+        Long userId = 1001L;
+        Long tenantId = 22L;
+        Long permissionId = 1L;
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).
+                thenReturn(session).
+                thenReturn(session);
+
+        when(servletRequest.getSession(false)).
+                thenReturn(session).
+                thenReturn(session);
+
+        when(session.getAttribute("USER")).thenReturn(principal).
+                thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build()).
+                thenReturn(Response.ok().entity(userId).build());
+
+        when(this.linkedAuthorizationClient.existsSpecificAssociation(tenantId,
+                permissionId, null, userId, true)).
+                thenThrow(TokenExpiredException.class).
+                thenReturn(Response.ok().build()).
+                thenThrow(TokenExpiredException.class).
+                thenThrow(TokenExpiredException.class);
+
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
+                thenReturn("token-yyz");
+
+        this.prepareMockParamForRefreshToken(tokensPlaceHolder, userClient);
+
+        try {
+            assertTrue(authorizationChecker.hasGrant(permissionId, tenantId));
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+        SystemException se = assertThrows(SystemException.class,
+                () -> authorizationChecker.hasGrant(permissionId, tenantId));
+        assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
     }
 
     @Test

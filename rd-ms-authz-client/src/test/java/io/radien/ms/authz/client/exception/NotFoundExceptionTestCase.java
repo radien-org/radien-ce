@@ -12,5 +12,11 @@ public class NotFoundExceptionTestCase {
         NotFoundException exception = new NotFoundException("message");
         assertNotNull(exception);
         assertEquals("message", exception.getMessage());
+
+        NotFoundException exception2 = new NotFoundException("message",
+                new RuntimeException("test"));
+        assertNotNull(exception2);
+        assertEquals("message", exception2.getMessage());
+        assertNotNull(exception2.getCause());
     }
 }
