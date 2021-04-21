@@ -1,5 +1,7 @@
 package io.radien.ms.authz.security;
 
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
@@ -41,6 +43,9 @@ public class AuthorizationCheckerTest {
 
     @Mock
     private TokensPlaceHolder tokensPlaceHolder;
+
+    @Mock
+    OAFAccess oafAccess;
 
     @Before
     public void before() {
@@ -563,13 +568,15 @@ public class AuthorizationCheckerTest {
     @Test
     public void testGetUserClientWithError() throws SystemException {
         AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
-        assertThrows(SystemException.class, () -> spied.getUserClient());
 
         RestClientBuilder builder = mock(RestClientBuilder.class);
         doThrow(new RuntimeException()).when(builder).build(UserClient.class);
         doReturn(builder).when(spied).getRestClientBuilder();
 
-        doReturn("http://localhost:8080").when(spied).getConfigValue("system.ms.endpoint.usermanagement");
+        OAFAccess oaf = mock(OAFAccess.class);
+        doReturn("http://localhost:8080").when(oaf).
+                getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT);
+        doReturn(oaf).when(spied).getOafAccess();
 
         assertThrows(SystemException.class, () -> spied.getUserClient());
     }
@@ -577,13 +584,15 @@ public class AuthorizationCheckerTest {
     @Test
     public void testGetLinkedAuthorizationClientWithError() throws SystemException {
         AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
-        assertThrows(SystemException.class, () -> spied.getUserClient());
 
         RestClientBuilder builder = mock(RestClientBuilder.class);
         doThrow(new RuntimeException()).when(builder).build(LinkedAuthorizationClient.class);
         doReturn(builder).when(spied).getRestClientBuilder();
 
-        doReturn("http://localhost:8080").when(spied).getConfigValue("system.ms.endpoint.rolemanagement");
+        OAFAccess oaf = mock(OAFAccess.class);
+        doReturn("http://localhost:8080").when(oaf).
+                getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT);
+        doReturn(oaf).when(spied).getOafAccess();
 
         assertThrows(SystemException.class, () -> spied.getLinkedAuthorizationClient());
     }
@@ -591,8 +600,6 @@ public class AuthorizationCheckerTest {
     @Test
     public void testGetRestClientBuilder() throws SystemException {
         AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
-        assertThrows(SystemException.class, () -> spied.getUserClient());
-
         RestClientBuilder rcb = spied.getRestClientBuilder();
         assertNotNull(rcb);
     }

@@ -16,6 +16,7 @@
 package io.radien.ms.authz.security;
 
 import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
@@ -221,21 +222,6 @@ public abstract class AuthorizationChecker implements Serializable {
     }
 
     /**
-     * Internal method to retrieve config property
-     * @param configProperty
-     * @return
-     * @throws SystemException
-     */
-    protected String getConfigValue(String configProperty) throws SystemException {
-        try {
-            return this.oafAccess.getProperty(() -> configProperty);
-        }
-        catch(Exception e) {
-            throw new SystemException("Error retrieving config property " + configProperty, e);
-        }
-    }
-
-    /**
      * Build method that produces an Rest client instance (i.e UserClient or LinkedAuthorizationClient).
      * Is being adopted (instead of direct injection) due some EJB container issues
      * encountered on Unit Tests
@@ -251,7 +237,7 @@ public abstract class AuthorizationChecker implements Serializable {
 
     public UserClient getUserClient() throws SystemException {
         if (userClient == null) {
-            userClient = buildClient(getConfigValue("system.ms.endpoint.usermanagement"),
+            userClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT),
                     UserClient.class);
         }
         return userClient;
@@ -259,7 +245,7 @@ public abstract class AuthorizationChecker implements Serializable {
 
     public LinkedAuthorizationClient getLinkedAuthorizationClient() throws SystemException{
         if (linkedAuthorizationClient == null) {
-            linkedAuthorizationClient = buildClient(getConfigValue("system.ms.endpoint.rolemanagement"),
+            linkedAuthorizationClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
                     LinkedAuthorizationClient.class);
         }
         return linkedAuthorizationClient;
@@ -290,6 +276,10 @@ public abstract class AuthorizationChecker implements Serializable {
 
     public HttpServletRequest getServletRequest() {
         return servletRequest;
+    }
+
+    public OAFAccess getOafAccess() {
+        return oafAccess;
     }
 }
 
