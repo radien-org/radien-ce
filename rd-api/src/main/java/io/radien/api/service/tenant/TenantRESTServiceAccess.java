@@ -34,7 +34,7 @@ public interface TenantRESTServiceAccess {
      * @return true if contract has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public Optional<SystemTenant> getTenantById(Long id) throws Exception ;
+    public Optional<SystemTenant> getTenantById(Long id) throws SystemException ;
 
     /**
      * Search for a tenant with given name
@@ -42,7 +42,7 @@ public interface TenantRESTServiceAccess {
      * @return true if contract has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public List<? extends SystemTenant> getTenantByName(String name) throws Exception ;
+    public List<? extends SystemTenant> getTenantByName(String name) throws SystemException ;
 
     /**
      * Fetches all tenants
@@ -60,7 +60,7 @@ public interface TenantRESTServiceAccess {
      * @return true if tenant has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean create(SystemTenant contract) throws MalformedURLException;
+    public boolean create(SystemTenant contract) throws SystemException;
 
     /**
      * deletes given tenant
@@ -68,7 +68,7 @@ public interface TenantRESTServiceAccess {
      * @return true if tenant has been deleted with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean delete(long tenantId) throws MalformedURLException;
+    public boolean delete(long tenantId) throws SystemException;
 
     /**
      * deletes given tenant hierarchy/tenant
@@ -76,7 +76,7 @@ public interface TenantRESTServiceAccess {
      * @return true if tenant has been deleted with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-    public boolean deleteTenantHierarchy(long tenantId) throws MalformedURLException;
+    public boolean deleteTenantHierarchy(long tenantId) throws SystemException;
 
     /**
      * updates given tenant
@@ -84,13 +84,13 @@ public interface TenantRESTServiceAccess {
      * @return true if tenant has been updated with success or false if not
      * @throws MalformedURLException in case of URL specification
      */
-     public boolean update(SystemTenant contract) throws MalformedURLException;
+     public boolean update(SystemTenant contract) throws SystemException;
 
     /**
      * Checks if tenant is existent in the db
      * @param tenantId to be found
      * @return true in case of success
      */
-    public boolean isTenantExistent(Long tenantId) throws MalformedURLException, SystemException;
+    public boolean isTenantExistent(Long tenantId) throws  SystemException;
 
 }

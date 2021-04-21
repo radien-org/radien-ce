@@ -140,8 +140,12 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         throw new Exception();
     }
 
-    public String edit(SystemTenant t) throws MalformedURLException {
-        this.service.update(t);
+    public String edit(SystemTenant t) {
+        try {
+            this.service.update(t);
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_user"));
+        }
         return "tenants";
     }
 

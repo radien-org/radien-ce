@@ -15,7 +15,6 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -33,6 +32,7 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
@@ -60,7 +60,7 @@ import static java.util.stream.Collectors.toList;
 @Stateless
 @Default
 @RegisterProvider(UserResponseExceptionMapper.class)
-public class UserRESTServiceClient implements UserRESTServiceAccess {
+public class UserRESTServiceClient extends AuthorizationChecker implements UserRESTServiceAccess {
     private static final long serialVersionUID = 1L;
 
     private static final Logger log = LoggerFactory.getLogger(UserRESTServiceClient.class);
@@ -400,7 +400,7 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
         }
     }
 
-    public boolean refreshToken() throws SystemException {
+    /*public boolean refreshToken() throws SystemException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
@@ -414,7 +414,7 @@ public class UserRESTServiceClient implements UserRESTServiceAccess {
         } catch (ExtensionException | ProcessingException | MalformedURLException | TokenExpiredException e) {
             throw new SystemException(e);
         }
-    }
+    }*/
 
     @Override
     public OAFAccess getOAF() {
