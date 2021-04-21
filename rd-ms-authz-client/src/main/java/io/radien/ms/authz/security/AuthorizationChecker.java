@@ -15,6 +15,7 @@
  */
 package io.radien.ms.authz.security;
 
+import io.radien.api.OAFAccess;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
@@ -22,13 +23,12 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
-import io.radien.ms.openid.entities.Principal;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.ProcessingException;
@@ -46,6 +46,9 @@ public abstract class AuthorizationChecker implements Serializable {
 
     @Context
     private HttpServletRequest servletRequest;
+
+    @Inject
+    private OAFAccess oafAccess;
 
     private UserClient userClient;
 
@@ -85,7 +88,15 @@ public abstract class AuthorizationChecker implements Serializable {
     public boolean hasGrant(Long tenantId, String roleName) throws SystemException{
         try {
             this.preProcess();
-            Response response = getLinkedAuthorizationClient().isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+            Response response = null;
+            try {
+                response = getLinkedAuthorizationClient().
+                        isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+            } catch (TokenExpiredException tee) {
+                refreshToken();
+                response = getLinkedAuthorizationClient().
+                        isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+            }
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return response.readEntity(Boolean.class);
             }
@@ -150,7 +161,13 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     protected Long getCurrentUserIdBySub(String sub) throws SystemException {
         try {
-            Response response = getUserClient().getUserIdBySub(sub);
+            Response response = null;
+            try {
+                response = getUserClient().getUserIdBySub(sub);
+            } catch (TokenExpiredException tee) {
+                refreshToken();
+                response = getUserClient().getUserIdBySub(sub);
+            }
             return response.readEntity(Long.class);
         }
         catch (NotFoundException e) {
@@ -180,7 +197,7 @@ public abstract class AuthorizationChecker implements Serializable {
      * @return
      */
     protected SystemUser getInvokerUser() {
-        return (Principal) servletRequest.getSession().getAttribute("USER");
+        return (SystemUser) getServletRequest().getSession().getAttribute("USER");
     }
 
     /**
@@ -188,14 +205,14 @@ public abstract class AuthorizationChecker implements Serializable {
      * to be transferred through GlobalHeaders
      */
     public void preProcess() {
-        HttpSession httpSession = this.servletRequest.getSession(false);
+        HttpSession httpSession = this.getServletRequest().getSession(false);
         if (this.getTokensPlaceHolder().getAccessToken() == null) {
             if (httpSession.getAttribute("accessToken") != null) {
                 this.getTokensPlaceHolder().setAccessToken(httpSession.getAttribute("accessToken").toString());
             }
             else {
                 // Lets obtain (at least) accessToken from Header
-                String token = this.servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+                String token = this.getServletRequest().getHeader(HttpHeaders.AUTHORIZATION);
                 if (token != null && token.startsWith("Bearer ")) {
                     this.getTokensPlaceHolder().setAccessToken(token.substring(7));
                 }
@@ -211,7 +228,7 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     protected String getConfigValue(String configProperty) throws SystemException {
         try {
-            return ConfigProvider.getConfig().getValue(configProperty, String.class);
+            return this.oafAccess.getProperty(() -> configProperty);
         }
         catch(Exception e) {
             throw new SystemException("Error retrieving config property " + configProperty, e);
@@ -269,6 +286,10 @@ public abstract class AuthorizationChecker implements Serializable {
             restClientBuilder = RestClientBuilder.newBuilder();
         }
         return restClientBuilder;
+    }
+
+    public HttpServletRequest getServletRequest() {
+        return servletRequest;
     }
 }
 
