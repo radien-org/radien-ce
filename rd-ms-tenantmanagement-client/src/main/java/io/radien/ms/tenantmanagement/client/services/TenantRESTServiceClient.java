@@ -21,6 +21,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
@@ -29,8 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
@@ -44,7 +44,7 @@ import java.util.Optional;
  * @author Santana
  */
 @Stateless
-public class TenantRESTServiceClient implements TenantRESTServiceAccess {
+public class TenantRESTServiceClient extends AuthorizationChecker implements TenantRESTServiceAccess {
 	private static final long serialVersionUID = 4007939167636938896L;
 
 	private static final Logger log = LoggerFactory.getLogger(TenantRESTServiceClient.class);
@@ -62,16 +62,30 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
      * @return Optional Contract
      */
     @Override
-    public Optional<SystemTenant> getTenantById(Long id) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
+    public Optional<SystemTenant> getTenantById(Long id) throws SystemException {
+        try {
+            return getSystemTenant(id);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getSystemTenant(id);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+
+    }
+
+    private Optional<SystemTenant> getSystemTenant(Long id) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
             Response response = client.getById(id);
             return Optional.of(TenantModelMapper.map((InputStream) response.getEntity()));
-        }
-        catch (ExtensionException | ProcessingException | MalformedURLException es){
-            throw es;
+        }  catch (ExtensionException | ProcessingException | MalformedURLException| ParseException es){
+            throw new SystemException(es.getMessage());
         }
     }
+
     /**
      * Gets the contract in the DB searching for the field Name
      *
@@ -79,15 +93,27 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
      * @return Optional Contract
      */
     @Override
-    public List<? extends SystemTenant> getTenantByName(String name) throws MalformedURLException, ParseException, ProcessingException, ExtensionException {
+    public List<? extends SystemTenant> getTenantByName(String name) throws SystemException {
+        try {
+            return getTenantsByName(name);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getTenantsByName(name);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    private List<? extends Tenant> getTenantsByName(String name) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-
             Response response = client.get(name, null, true, true);
             return TenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
-            throw es;
+            throw new SystemException(es.getMessage());
         }
     }
 
@@ -108,6 +134,19 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                                                List<String> sortBy,
                                                boolean isAscending) throws SystemException {
         try {
+            return getTenantPage(search, pageNo, pageSize, sortBy, isAscending);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getTenantPage(search, pageNo, pageSize, sortBy, isAscending);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    private Page<Tenant> getTenantPage(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
             return TenantModelMapper.mapToPage((InputStream) response.getEntity());
@@ -123,9 +162,18 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
      * @throws MalformedURLException in case of URL specification
      */
     @Override
-    public boolean create(SystemTenant tenant) throws MalformedURLException {
-        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        try (Response response = client.create((Tenant) tenant)) {
+    public boolean create(SystemTenant tenant) throws SystemException {
+        return createTenant((Tenant) tenant);
+    }
+
+    private boolean createTenant(Tenant tenant) throws SystemException {
+        TenantResourceClient client;
+        try {
+            client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch (MalformedURLException malformedURLException){
+            throw new SystemException(malformedURLException.getMessage());
+        }
+        try (Response response = client.create(tenant)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -133,13 +181,18 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException pe) {
-            throw pe;
+            throw new SystemException(pe.getMessage());
         }
     }
 
     @Override
-    public boolean delete(long contractId) throws MalformedURLException {
-        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+    public boolean delete(long contractId) throws SystemException {
+        TenantResourceClient client;
+        try {
+            client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch (MalformedURLException malformedURLException){
+            throw new SystemException(malformedURLException.getMessage());
+        }
         try (Response response = client.delete(contractId)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -148,13 +201,31 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException pe) {
-            throw pe;
+            throw new SystemException(pe.getMessage());
         }
     }
 
     @Override
-    public boolean deleteTenantHierarchy(long id) throws MalformedURLException{
-        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+    public boolean deleteTenantHierarchy(long id) throws SystemException {
+        try {
+            return delTenantHierarchy(id);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return delTenantHierarchy(id);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    private boolean delTenantHierarchy(long id) throws SystemException {
+        TenantResourceClient client;
+        try {
+            client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch (MalformedURLException malformedURLException){
+            throw new SystemException(malformedURLException.getMessage());
+        }
         try (Response response = client.deleteTenantHierarchy(id)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -163,13 +234,31 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException pe) {
-            throw pe;
+            throw new SystemException(pe.getMessage());
         }
     }
 
     @Override
-    public boolean update(SystemTenant tenant) throws MalformedURLException {
-        TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+    public boolean update(SystemTenant tenant) throws SystemException {
+        try {
+            return updateTenant(tenant);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return updateTenant(tenant);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    private boolean updateTenant(SystemTenant tenant) throws SystemException {
+        TenantResourceClient client;
+        try {
+            client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch (MalformedURLException malformedURLException){
+            throw new SystemException(malformedURLException.getMessage());
+        }
         try (Response response = client.update(tenant.getId(),(Tenant) tenant)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -178,7 +267,7 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return false;
             }
         } catch (ProcessingException pe) {
-            throw pe;
+            throw new SystemException(pe.getMessage());
         }
     }
 
@@ -189,13 +278,13 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
      * @throws MalformedURLException in case of any error in the specified url
      */
     @Override
-    public boolean isTenantExistent(Long tenantId) throws MalformedURLException {
+    public boolean isTenantExistent(Long tenantId) throws SystemException {
         TenantResourceClient client;
         try {
             client = clientServiceUtil.
                     getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         } catch(MalformedURLException e) {
-            throw new MalformedURLException();
+            throw new SystemException(e.getMessage());
         }
 
         try {
@@ -204,7 +293,7 @@ public class TenantRESTServiceClient implements TenantRESTServiceAccess {
                 return true;
             }
         } catch(ProcessingException e) {
-            throw new ProcessingException(e);
+            throw new SystemException(e.getMessage());
         }
         return false;
     }

@@ -117,7 +117,7 @@ public class UserRESTServiceClientTest {
     }
 
     private String getUserManagementUrl(){
-        String url = "";
+        String url = "http://a";
         when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn(url);
         return url;
     }
@@ -247,6 +247,7 @@ public class UserRESTServiceClientTest {
                 thenThrow(new TokenExpiredException()).
                 thenReturn(response);
 
+        when(oafAccess.getProperty(() -> OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT.propKey())).thenReturn("http://ab");
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         mockRefreshToken(resourceClient);
         assertEquals(Optional.of(u).get().getId(), target.getUserById(id).get().getId());
