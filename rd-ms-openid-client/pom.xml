@@ -8,9 +8,9 @@
 	  <version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>rd-ms-openid</artifactId>
+	<artifactId>rd-ms-openid-client</artifactId>
 	<packaging>jar</packaging>
-	<name>MS OpenId - ${project.version}</name>
+	<name>MS OpenId Client- ${project.version}</name>
 	<url>http://www.radien.io</url>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -53,10 +53,6 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-ms-openid-client</artifactId>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
 		<dependency>
 			<groupId>org.eclipse.microprofile</groupId>
@@ -69,22 +65,6 @@
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.openejb</groupId>
-			<artifactId>mbean-annotation-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.nimbusds</groupId>
-			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>9.6</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
-		<dependency>
-			<groupId>com.auth0</groupId>
-			<artifactId>jwks-rsa</artifactId>
-			<version>0.15.0</version>
-		</dependency>
 
 		<!-- logging -->
 		<dependency>
@@ -92,21 +72,10 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
-		<!-- test -->
-		<dependency>
-			<groupId>org.apache.tomee</groupId>
-			<artifactId>arquillian-openejb-embedded</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.openjson</groupId>
-			<artifactId>openjson</artifactId>
-			<version>1.0.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.johnzon</groupId>
@@ -121,16 +90,10 @@
 			<version>8.0.6</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-mp-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.config</groupId>
-			<artifactId>geronimo-config-impl</artifactId>
-			<version>1.2.1</version>
-			<scope>provided</scope>
-		</dependency>
-    </dependencies>
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.cxf</groupId>-->
+		<!--			<artifactId>cxf-rt-rs-mp-client</artifactId>-->
+		<!--			<scope>test</scope>-->
+		<!--		</dependency>-->
+	</dependencies>
 </project>

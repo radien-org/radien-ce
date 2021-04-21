@@ -1,5 +1,7 @@
-package io.radien.ms.openid.client.exception;
+package io.radien.ms.authz.client.exception;
 
+import io.radien.ms.authz.client.exception.ExceptionMapper;
+import io.radien.ms.authz.client.exception.NotFoundException;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;

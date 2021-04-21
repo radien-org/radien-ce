@@ -13,37 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.openid.client;
+package io.radien.ms.authz.client;
 
+import io.radien.ms.authz.client.exception.ExceptionMapper;
 import io.radien.ms.openid.entities.GlobalHeaders;
-import io.radien.ms.openid.client.exception.ExceptionMapper;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.GET;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /**
  * REST client created to decouple the current subproject
- * in relation of user management (client module)
+ * in relation of role management (client module)
  *
  * @author Newton Carvalho
  */
 @RegisterRestClient
-@RegisterProvider(ExceptionMapper.class)
 @RegisterClientHeaders(GlobalHeaders.class)
-@Path("/user")
-public interface UserClient {
+@RegisterProvider(ExceptionMapper.class)
+@Path("/linkedauthorization")
+public interface LinkedAuthorizationClient {
 
     @GET
-    @Path("/sub/{sub}")
-    public Response getUserIdBySub(@PathParam("sub") String sub);
+    @Path("/exists")
+    Response existsSpecificAssociation(@QueryParam("tenantId") Long tenantId,
+                                       @QueryParam("permissionId") Long permissionId,
+                                       @QueryParam("roleId") Long roleId,
+                                       @QueryParam("userId") Long userId,
+                                       @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
-    @POST
-    @Path("/refresh")
-    public Response refreshToken(String refreshToken);
+    @GET
+    @Path("/exists/user/{userId}/role/{roleName}")
+    Response isRoleExistentForUser(@PathParam("userId") Long userId,
+                                   @PathParam("roleName") String roleName,
+                                   @QueryParam("tenantId") Long tenantId);
 }

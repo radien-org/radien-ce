@@ -101,6 +101,10 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-openid</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-authz-client</artifactId>
+		</dependency>
 
 		<!-- Microprofile -->
 		<dependency>

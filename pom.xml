@@ -18,7 +18,9 @@
 		<module>rd-web-impl</module>
 		<module>rd-web</module>
 		<module>rd-ms-template</module>
+		<module>rd-ms-openid-client</module>
 		<module>rd-ms-openid</module>
+		<module>rd-ms-authz-client</module>
 		<module>rd-ms-ecm</module>
 		<module>rd-ms-ecm-client</module>
 		<module>rd-ms-usermanagement</module>
@@ -152,7 +154,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-openid-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-openid</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-authz-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>

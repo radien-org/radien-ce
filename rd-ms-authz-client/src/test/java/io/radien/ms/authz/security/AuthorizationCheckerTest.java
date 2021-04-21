@@ -1,10 +1,11 @@
-package io.radien.ms.openid.security;
+package io.radien.ms.authz.security;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
-import io.radien.ms.openid.client.LinkedAuthorizationClient;
-import io.radien.ms.openid.client.UserClient;
-import io.radien.ms.openid.client.exception.NotFoundException;
+import io.radien.ms.authz.client.LinkedAuthorizationClient;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.client.exception.NotFoundException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.entities.Principal;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.Before;
@@ -18,12 +19,10 @@ import static org.mockito.Mockito.*;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.enterprise.inject.spi.CDI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
 
 public class AuthorizationCheckerTest {
 

@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
-import io.radien.ms.openid.client.LinkedAuthorizationClient;
+import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.junit.Before;
