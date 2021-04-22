@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
@@ -455,4 +456,16 @@ public class UserResourceTest {
         assertEquals(404,response.getStatus());
     }
 
+    @Test
+    public void testRefreshToken() {
+        Response response = userResource.refreshToken("test");
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testRefreshTokenException() throws RemoteResourceException {
+        doThrow(new RuntimeException()).when(userBusinessService).refreshToken(anyString());
+        Response response = userResource.refreshToken("any");
+        assertEquals(500,response.getStatus());
+    }
 }
