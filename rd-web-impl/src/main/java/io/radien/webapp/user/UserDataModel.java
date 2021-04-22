@@ -80,6 +80,10 @@ public class UserDataModel extends AbstractManager implements Serializable {
         this.selectedUser = selectedUser;
     }
 
+    public SystemUser getUser() { return user; }
+
+    public void setUser(SystemUser user) { this.user = user; }
+
     public UserRESTServiceAccess getService() {
         return service;
     }
@@ -92,10 +96,13 @@ public class UserDataModel extends AbstractManager implements Serializable {
         try{
             if(updateUser != null){
                 service.updateUser(updateUser);
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_edit_success"), JSFUtil.getMessage("rd_user"));
+                handleMessage(FacesMessage.SEVERITY_INFO,
+                        updateUser.getId() == null ? JSFUtil.getMessage("rd_save_success") :
+                        JSFUtil.getMessage("rd_edit_success"), JSFUtil.getMessage("rd_user"));
             }
         }catch (Exception e){
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_user"));
+            handleError(e, updateUser.getId() == null ? JSFUtil.getMessage("rd_save_error") :
+                    JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_user"));
         }
     }
 
@@ -127,6 +134,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
             return "pretty:user";
         }
         return "pretty:users";
+    }
+
+    public String createRecord() {
+        user = new User();
+        user.setEnabled(true);
+        return "pretty:user";
     }
 
     public String userProfile() {
