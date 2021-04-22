@@ -44,6 +44,7 @@ import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 
 import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
@@ -77,6 +78,9 @@ public class UserRESTServiceClientTest {
 
     @Mock
     OAFAccess oafAccess;
+
+    @Mock
+    UserClient userClient;
 
     private User dummyUser = new User();
 
@@ -117,7 +121,7 @@ public class UserRESTServiceClientTest {
     }
 
     private String getUserManagementUrl(){
-        String url = "http://a";
+        String url = "http://localhost";
         when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn(url);
         return url;
     }
@@ -246,10 +250,13 @@ public class UserRESTServiceClientTest {
         when(resourceClient.getById(id)).
                 thenThrow(new TokenExpiredException()).
                 thenReturn(response);
-
-        when(oafAccess.getProperty(() -> OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT.propKey())).thenReturn("http://ab");
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        mockRefreshToken(resourceClient);
+
+
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
+        Response response2 = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
+        when(userClient.refreshToken(any())).thenReturn(response2);
+
         assertEquals(Optional.of(u).get().getId(), target.getUserById(id).get().getId());
     }
 
@@ -264,7 +271,10 @@ public class UserRESTServiceClientTest {
                 thenThrow(new TokenExpiredException());
 
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        mockRefreshToken(resourceClient);
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
+        Response response = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
+        when(userClient.refreshToken(any())).thenReturn(response);
+
 
         assertThrows(SystemException.class, () -> target.getUserById(id));
     }
@@ -299,7 +309,10 @@ public class UserRESTServiceClientTest {
         when(rc.getUsers(null, null, "test-logon", true, true)).
             thenThrow(new TokenExpiredException()).thenReturn(response);
 
-        mockRefreshToken(rc);
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
+        Response response2 = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
+        when(userClient.refreshToken(any())).thenReturn(response2);
+
         assertEquals(Optional.of(u).get().getId(),
                 target.getUserByLogon(u.getLogon()).get().getId());
     }
@@ -338,7 +351,9 @@ public class UserRESTServiceClientTest {
                 thenThrow(new TokenExpiredException());
 
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        mockRefreshToken(resourceClient);
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
+        Response response2 = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
+        when(userClient.refreshToken(any())).thenReturn(response2);
 
         assertThrows(SystemException.class, () -> target.getUserByLogon("test-logon"));
     }

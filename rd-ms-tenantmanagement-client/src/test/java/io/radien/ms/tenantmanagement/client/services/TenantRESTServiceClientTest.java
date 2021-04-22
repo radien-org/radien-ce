@@ -204,7 +204,7 @@ public class TenantRESTServiceClientTest {
         when(tenantResourceClient.create(any())).thenThrow(new ProcessingException("teste"));
         try {
             target.create(new Tenant());
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -242,7 +242,7 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         try {
             target.delete(2L);
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -280,7 +280,7 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         try {
             target.deleteTenantHierarchy(2L);
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -313,7 +313,7 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         try {
             target.update(dummyTenant);
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
