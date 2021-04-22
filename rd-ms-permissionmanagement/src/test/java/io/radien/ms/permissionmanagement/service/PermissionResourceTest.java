@@ -15,6 +15,7 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -298,6 +299,16 @@ public class PermissionResourceTest {
     public void testExistsWithNoParameters() {
         Response response = permissionResource.exists(null, null);
         assertEquals(400,response.getStatus());
+    }
+
+    @Test
+    public void testHasPermission() {
+        SystemPermission systemPermission = new Permission();
+        when(permissionServiceAccess.getPermissionByActionAndResourceNames(any(), any())).
+                thenReturn(systemPermission);
+        Response response = permissionResource.hasPermission("add", "contract");
+
+        assertEquals(200,response.getStatus());
     }
 
     /**

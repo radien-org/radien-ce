@@ -53,6 +53,11 @@ public class ActionTest {
         assertEquals("action-test2", action.getName());
     }
 
+    @Test
+    public void testToString() {
+        action.setName("action-test3");
+        assertEquals("action-test3", action.toString());
+    }
 
     @Test
     public void testConstructor() {
