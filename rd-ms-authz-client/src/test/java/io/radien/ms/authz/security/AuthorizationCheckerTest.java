@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.authz.security;
 
 import io.radien.api.OAFAccess;
@@ -602,5 +617,59 @@ public class AuthorizationCheckerTest {
         AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
         RestClientBuilder rcb = spied.getRestClientBuilder();
         assertNotNull(rcb);
+    }
+
+    @Test
+    public void testGrantForPermissionTokenExpiration() {
+        Long userId = 1001L;
+        Long tenantId = 22L;
+        Long permissionId = 1L;
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build());
+        when(this.linkedAuthorizationClient.existsSpecificAssociation(tenantId, permissionId, null, userId, true)).
+                thenThrow(new TokenExpiredException());
+
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("test").build());
+
+        boolean success =false;
+        try {
+            authorizationChecker.hasGrant(permissionId, tenantId);
+        } catch (SystemException systemException) {
+            success = true;
+        }
+
+        assertTrue(success);
+    }
+
+    @Test
+    public void testRefreshTokenFalseResponse() throws SystemException {
+        when(userClient.refreshToken(any())).thenReturn(Response.notModified().entity("test").build());
+
+        assertFalse(authorizationChecker.refreshToken());
+    }
+
+    @Test
+    public void testRefreshTokenException() throws SystemException {
+        when(userClient.refreshToken(any())).thenThrow(new TokenExpiredException());
+
+        boolean success =false;
+        try {
+            authorizationChecker.refreshToken();
+        } catch (SystemException systemException) {
+            success = true;
+        }
+
+        assertTrue(success);
     }
 }
