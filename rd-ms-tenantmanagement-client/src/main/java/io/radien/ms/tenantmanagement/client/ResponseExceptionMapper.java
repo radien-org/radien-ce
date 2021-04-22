@@ -16,6 +16,7 @@
 package io.radien.ms.tenantmanagement.client;
 
 import io.radien.exception.NotFoundException;
+import io.radien.exception.TokenExpiredException;
 import io.radien.ms.tenantmanagement.client.exceptions.BadRequestException;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 
@@ -30,6 +31,7 @@ public class ResponseExceptionMapper implements
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
+                || statusCode == 401    // Unauthorized
                 || statusCode == 404    // Not Found
                 || statusCode == 500;   // Internal Server Error
     }
@@ -38,6 +40,7 @@ public class ResponseExceptionMapper implements
     public Exception toThrowable(Response response) {
         switch(response.getStatus()) {
             case 400: return new BadRequestException(response.readEntity(String.class));
+            case 401: return new TokenExpiredException(response.readEntity(String.class));
             case 404: return new NotFoundException(response.readEntity(String.class));
             case 500: return new InternalServerErrorException(response.readEntity(String.class));
         }
