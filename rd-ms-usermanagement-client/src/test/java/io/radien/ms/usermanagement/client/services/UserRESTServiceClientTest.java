@@ -219,10 +219,10 @@ public class UserRESTServiceClientTest {
         assertTrue(success);
     }
 
-    private void mockRefreshToken(UserResourceClient client) {
+    private void mockRefreshToken() {
         when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
         Response response = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
-        when(client.refreshToken(any())).thenReturn(response);
+        when(userClient.refreshToken(any())).thenReturn(response);
     }
 
     @Test
@@ -253,9 +253,7 @@ public class UserRESTServiceClientTest {
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
 
-        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
-        Response response2 = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
-        when(userClient.refreshToken(any())).thenReturn(response2);
+        mockRefreshToken();
 
         assertEquals(Optional.of(u).get().getId(), target.getUserById(id).get().getId());
     }
@@ -271,9 +269,7 @@ public class UserRESTServiceClientTest {
                 thenThrow(new TokenExpiredException());
 
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
-        Response response = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
-        when(userClient.refreshToken(any())).thenReturn(response);
+        mockRefreshToken();
 
 
         assertThrows(SystemException.class, () -> target.getUserById(id));
@@ -309,9 +305,7 @@ public class UserRESTServiceClientTest {
         when(rc.getUsers(null, null, "test-logon", true, true)).
             thenThrow(new TokenExpiredException()).thenReturn(response);
 
-        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
-        Response response2 = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
-        when(userClient.refreshToken(any())).thenReturn(response2);
+        mockRefreshToken();
 
         assertEquals(Optional.of(u).get().getId(),
                 target.getUserByLogon(u.getLogon()).get().getId());
@@ -351,9 +345,7 @@ public class UserRESTServiceClientTest {
                 thenThrow(new TokenExpiredException());
 
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(tokensPlaceHolder.getAccessToken()).thenReturn("aaaaa-aaaaaa");
-        Response response2 = Response.ok().entity("bbbb-bbb-bbb-bbb-bbb").build();
-        when(userClient.refreshToken(any())).thenReturn(response2);
+        mockRefreshToken();
 
         assertThrows(SystemException.class, () -> target.getUserByLogon("test-logon"));
     }
