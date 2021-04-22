@@ -38,8 +38,8 @@ public class RoleFactoryTest extends TestCase {
         role.setName("nameValue");
         role.setDescription("descriptionValue");
         role.setCreateUser(2L);
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
-        role.setTerminationDate(format.parse("2021-04-30T12:00:00+0100"));
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        role.setTerminationDate(format.parse("2021-04-30T12:00:00"));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class RoleFactoryTest extends TestCase {
         builder.add("description", "descriptionValue");
         builder.add("createUser", 2L);
         builder.addNull("lastUpdateUser");
-        builder.add("terminationDate", "2021-04-30T12:00:00+0100");
+        builder.add("terminationDate", "2021-04-30T12:00:00");
 
         json = builder.build();
 

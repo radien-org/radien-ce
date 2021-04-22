@@ -43,7 +43,7 @@ public class RoleFactory {
 
     private static final Logger log = LoggerFactory.getLogger(RoleFactory.class);
 
-    private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+    private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
      * Create a role with already predefined fields.
