@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.openid.entities;
 
 import org.junit.Test;
@@ -11,6 +26,7 @@ public class PrincipalTest {
 
     private Principal principal = new Principal();
     private Date terminationDate = new Date();
+    private Date date = new Date();
 
     public PrincipalTest() {
         principal.setId(2L);
@@ -21,6 +37,25 @@ public class PrincipalTest {
         principal.setSub("42a64cb0-4600-11eb-b378-0242ac130002");
         principal.setTerminationDate(terminationDate);
         principal.setEnabled(true);
+        principal.setDelegatedCreation(false);
+        principal.setCreateDate(date);
+        principal.setLastUpdate(date);
+        principal.setCreateUser(2L);
+        principal.setLastUpdateUser(2L);
+    }
+
+    @Test
+    public void PrincipalConstructor() {
+        Principal p = new Principal(principal);
+
+        assertEquals(p.getId(), principal.getId());
+        assertEquals(p.getLogon(), principal.getLogon());
+        assertEquals(p.getUserEmail(), principal.getUserEmail());
+        assertEquals(p.getFirstname(), principal.getFirstname());
+        assertEquals(p.getLastname(), principal.getLastname());
+        assertEquals(p.getSub(), principal.getSub());
+        assertEquals(p.getTerminationDate(), principal.getTerminationDate());
+        assertEquals(p.isEnabled(), principal.isEnabled());
     }
 
     @Test
@@ -110,5 +145,62 @@ public class PrincipalTest {
     public void setSub() {
         principal.setSub("329a6251-f891-475a-a655-1cf59dc52b25");
         assertEquals("329a6251-f891-475a-a655-1cf59dc52b25", principal.getSub());
+    }
+
+    @Test
+    public void getDelegatedCreation() {
+        assertEquals(false, principal.isDelegatedCreation());
+    }
+
+    @Test
+    public void setDelegatedCreation() {
+        principal.setDelegatedCreation(true);
+        assertEquals(true, principal.isDelegatedCreation());
+    }
+
+    @Test
+    public void getCreateDate() {
+        assertEquals(date, principal.getCreateDate());
+    }
+
+    @Test
+    public void setCreateDate() {
+        Date newDate = new Date();
+        principal.setCreateDate(newDate);
+        assertEquals(newDate, principal.getCreateDate());
+    }
+
+    @Test
+    public void getLastUpdate() {
+        assertEquals(date, principal.getLastUpdate());
+    }
+
+    @Test
+    public void setLastUpdate() {
+        Date newDate = new Date();
+        principal.setLastUpdate(newDate);
+        assertEquals(newDate, principal.getLastUpdate());
+    }
+
+    @Test
+    public void getCreateUser() {
+        assertEquals((Long) 2L, principal.getCreateUser());
+    }
+
+    @Test
+    public void setCreateUser() {
+        principal.setCreateUser(3L);
+        assertEquals((Long) 3L, principal.getCreateUser());
+    }
+
+    @Test
+    public void getLastUpdateUser() {
+        assertEquals((Long) 2L, principal.getLastUpdateUser());
+    }
+
+    @Test
+    public void setLastUpdateUser() {
+        principal.setLastUpdateUser(3L);
+        assertEquals((Long) 3L, principal.getLastUpdateUser());
     }
 }
