@@ -16,7 +16,7 @@
 					</h:panelGroup>
 				</b:row>
 				<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
-				<b:panelGrid colSpans="2,10">
+				<b:panelGrid colSpans="2,10" rendered="#{userDataModel.selectedUser != null}">
 					<h:outputLabel value="#{msg.id}"/>
 					<b:inputText id="userId" value="#{userDataModel.selectedUser.id}" disabled="true" span="6"/>
 
@@ -35,14 +35,38 @@
 					<h:outputLabel value="#{msg.sub}"/>
 					<b:inputText id="userSub" value="#{userDataModel.selectedUser.sub}" disabled="true" span="6"/>
 				</b:panelGrid>
+
+				<b:panelGrid colSpans="2,10" rendered="#{userDataModel.selectedUser == null}">
+					<h:outputLabel value="#{msg.firstname}"/>
+					<b:inputText id="firstName" value="#{userDataModel.user.firstname}" required="true" span="6"/>
+
+					<h:outputLabel value="#{msg.lastname}"/>
+					<b:inputText id="lastName" value="#{userDataModel.user.lastname}" required="true" span="6"/>
+
+					<h:outputLabel value="#{msg.logon}"/>
+					<b:inputText id="logon" value="#{userDataModel.user.logon}" required="true" span="6"/>
+
+					<h:outputLabel value="#{msg.email}"/>
+					<b:inputText id="mail" value="#{userDataModel.user.userEmail}" required="true" span="6"/>
+
+					<h:inputHidden value="#{userDataModel.user.enabled}"/>
+				</b:panelGrid>
+
 				<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
 				<b:commandButton value="#{msg.save}"
 								 tooltip="Save changes!"
 								 iconAwesome="fa-save"
+								 rendered="#{userDataModel.selectedUser != null}"
 								 action="#{userDataModel.updateUser(userDataModel.selectedUser)}"/>
+				<b:commandButton value="#{msg.save}"
+								 tooltip="Save changes!"
+								 iconAwesome="fa-save"
+								 rendered="#{userDataModel.selectedUser == null}"
+								 action="#{userDataModel.updateUser(userDataModel.user)}"/>
 				<b:commandButton value="#{msg.rd_home_page}"
 								 tooltip="Return to user List!"
 								 iconAwesome="fa-home"
+								 immediate="true"
 								 action="#{userDataModel.returnHome}"/>
 			</b:container>
 		</h:form>

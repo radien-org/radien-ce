@@ -82,6 +82,12 @@
 							 iconAwesome="fa-edit"
 							 action="#{userDataModel.editRecord}"/>
 
+			<b:commandButton value="#{msg.create}"
+							 tooltip="Create a new user!"
+							 iconAwesome="fa-cube"
+							 rendered="#{authzChecker.hasGrant('tenant-administrator')}"
+							 action="#{userDataModel.createRecord}"/>
+
 			<b:commandButton value="#{msg.profile}"
 							 tooltip="Profile of existent user!"
 							 iconAwesome="fa-user-plus"
