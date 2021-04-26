@@ -1,1 +1,1 @@
-java -jar target/${package}.ms.${entityResourceName.toLowerCase()}management.service-exec.jar
+java -jar target/${package}.ms.service-exec.jar

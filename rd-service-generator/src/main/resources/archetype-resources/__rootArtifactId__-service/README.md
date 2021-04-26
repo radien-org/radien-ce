@@ -1,50 +1,43 @@
-radien User Management Microservice
+radien ${entityResourceName}  Management Microservice
 ======
 
 #
 # - Pre requirements:
 
-### - ___Package:___
-    mvn -P tomee package
-
-### - ___Run:___ 
-    java -jar target/rd-ms-usermanagement-service.jar
-
-### - ___Local TomEE Configuration:___
-    URL: https://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user
-    HTTP Port: 8081
-    HTTPS Port: 8444
-    JMX Port: 1100
-    Deployment: rd-ms-usermanagement:war exploded
-    Application Context: /rd-ms-usermanagement
+    URL: https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}
+    HTTP Port: 9081
+    HTTPS Port: 9444
+    JMX Port: 1200
+    Deployment: ${rootArtifactId}-service:war exploded
+    Application Context: /${entityResourceName.toLowerCase()}managementservice
 
 #
 # - cUrls
 
-* GET Data
-  ------
-### - ___Get user by ID:___
-    curl -H -X GET 'http://localhost:8081/usermanagementservice/v1/user'
-    curl -X GET 'http://localhost:8081/usermanagementservice/v1/user/{id}'
 #
 * POST Data
   ------
-### - ___Save/Create user:___
 
     curl -H "Content-Type: application/json" -X POST \
       --data-raw '{
-        "logon": "AZ",
-        "userEmail": "user@radien.io",
-        "firstName": "user",
-        "lastName": "name",
-        "createUser": 1,
-        "lastUpdateUser": 1,
-        "createDate": null,
-        "lastUpdate": null
-      }' http://localhost:8081/usermanagementservice/v1/user/{id}
+        "name": "name-1",
+      }' https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}
 
+#
+* UPDATE Data
+  ------
+
+    curl -H "Content-Type: application/json" -X POST \
+      --data-raw '{
+        "name": "name-1-update",
+      }' https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}/{id}
+
+
+* GET Data
+  ------
+    curl -H -X GET 'https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}'
+    
 #
 * DELETE Data
   ------
-### - ___Delete user by ID:___
-    curl --location --request DELETE 'http://localhost:9080/rd-ms-usermanagement/usermanagement/v1/user/{id}'
+    curl --location --request DELETE 'https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}/{id}'

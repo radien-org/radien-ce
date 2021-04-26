@@ -7,7 +7,7 @@
 				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<f:metadata>
-		<f:viewAction action="#${entityResourceName-variable.toLowerCase()}DataModel.onload}"/>
+		<f:viewAction action="#{${entityResourceName.toLowerCase()}DataModel.onload}"/>
 	</f:metadata>
 
 	<ui:define name="content" bootsFacesDecorator="true">
@@ -20,7 +20,7 @@
 				</h:panelGroup>
 			</b:row>
 
-			<p:dataTable id="dataTable" value="#${entityResourceName-variable.toLowerCase()}DataModel.lazy${entityResourceName}DataModel}"
+			<p:dataTable id="dataTable" value="#{${entityResourceName.toLowerCase()}DataModel.lazy${entityResourceName}DataModel}"
 						 var="${entityResourceName.toLowerCase()}"
 						 widgetVar="${entityResourceName.toLowerCase()}DataTable"
 						 lazy="true"
@@ -32,24 +32,24 @@
 						 rowsPerPageTemplate="5,10,20,50"
 						 styleClass = "tableDesign"
 						 selectionMode="single"
-						 selection="#${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}}">
+						 selection="#{${entityResourceName.toLowerCase()}DataModel.selected${entityResourceName}}">
 
-				<p:ajax event="rowSelect" listener="#${entityResourceName-variable.toLowerCase()}DataModel.onRowSelect}" update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"
+				<p:ajax event="rowSelect" listener="#{${entityResourceName.toLowerCase()}DataModel.onRowSelect}" update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"
 						oncomplete="$('.formValidationModalClass').modal('show')"/>
 
-				<p:column headerText="#{msg.id}" sortBy="#${entityResourceName-variable.toLowerCase()}.id}">
-					<h:outputText value="#${entityResourceName-variable.toLowerCase()}.id}"/>
+				<p:column headerText="#{msg.id}" sortBy="#{${entityResourceName.toLowerCase()}.id}">
+					<h:outputText value="#{${entityResourceName.toLowerCase()}.id}"/>
 				</p:column>
 
-				<p:column headerText="#{msg.name}" sortBy="#${entityResourceName-variable.toLowerCase()}.name}">
-					<h:outputText value="#${entityResourceName-variable.toLowerCase()}.name}"/>
+				<p:column headerText="#{msg.name}" sortBy="#{${entityResourceName.toLowerCase()}.name}">
+					<h:outputText value="#{${entityResourceName.toLowerCase()}.name}"/>
 				</p:column>
 
 			</p:dataTable>
 
 			<!--@elvariable id="${entityResourceName.toLowerCase()}DataModel" type="io.radien.webapp.${entityResourceName.toLowerCase()}.${entityResourceName}DataModel"-->
 			<b:commandButton value="#{msg.rd_add_entity}"
-							 action="#${entityResourceName-variable.toLowerCase()}DataModel.create${entityResourceName}}"
+							 action="#{${entityResourceName.toLowerCase()}DataModel.create${entityResourceName}}"
 							 iconAwesome="fa-cube"
 							 tooltip="Create a new entity!"
 							 iconAlign="center"/>
@@ -57,7 +57,7 @@
 			<b:commandButton value="#{msg.edit}"
 							 tooltip="Edit existent entity information!"
 							 iconAwesome="fa-edit"
-							 action="#${entityResourceName-variable.toLowerCase()}DataModel.edit${entityResourceName}}"/>
+							 action="#{${entityResourceName.toLowerCase()}DataModel.edit${entityResourceName}}"/>
 
 			<b:button id="delete-${entityResourceName.toLowerCase()}-button"
 					  onclick="$('.formValidationModal${entityResourceName}Delete').modal('show')"
@@ -75,7 +75,7 @@
 					<b:commandButton value="No"
 									 onclick="{ $('.formValidationModal${entityResourceName}Delete').modal('hide') } "/>
 					<b:commandButton value="Yes" look="warning"
-									 actionListener="#${entityResourceName-variable.toLowerCase()}DataModel.delete${entityResourceName}}"
+									 actionListener="#{${entityResourceName.toLowerCase()}DataModel.delete${entityResourceName}}"
 									 oncomplete="{ $('.formValidationModal${entityResourceName}Delete').modal('hide') } "/>
 				</f:facet>
 			</b:modal>
@@ -85,7 +85,7 @@
 							 iconAwesome="fa-refresh"
 							 icon-spin="true"
 							 tooltip="Refresh existent entity data table!"
-							 actionListener="#${entityResourceName-variable.toLowerCase()}DataModel.onload}"
+							 actionListener="#{${entityResourceName.toLowerCase()}DataModel.onload}"
 							 immediate="true" update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"
 							 auto-update="true"/>
 		</h:form>

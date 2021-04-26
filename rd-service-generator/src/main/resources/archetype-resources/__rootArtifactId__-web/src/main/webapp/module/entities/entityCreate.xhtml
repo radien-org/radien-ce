@@ -7,16 +7,16 @@
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
     <ui:define name="content" bootsFacesDecorator="true">
         <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
-        <h:form id="${entityResourceName-variable.toLowerCase()}ManagementTableDiv" styleClass="tableContainer">
+        <h:form id="${entityResourceName.toLowerCase()}ManagementTableDiv" styleClass="tableContainer">
                 <b:row>
                     <h:panelGroup layout="block" styleClass="headerInformation">
                         <h1><h:outputText value="#{msg.rd_create_entity} "/></h1>
                         <hr />
                     </h:panelGroup>
                 </b:row>
-                <!--@elvariable id="${entityResourceName-variable.toLowerCase()}DataModel" type="io.radien.webapp.${entityResourceName-variable.toLowerCase()}.${entityResourceName}DataModel"-->
+                <!--@elvariable id="${entityResourceName.toLowerCase()}DataModel" type="io.radien.webapp.${entityResourceName.toLowerCase()}.${entityResourceName}DataModel"-->
                 <b:column offsetXs="2" colXs="8">
-                    <b:inputText id="name" value="#{${entityResourceName-variable.toLowerCase()}DataModel.${entityResourceName-variable.toLowerCase()}.name}"
+                    <b:inputText id="name" value="#{${entityResourceName.toLowerCase()}DataModel.${entityResourceName.toLowerCase()}.name}"
                                  required="true" requiredMessage="#{msg.rd_entity_name_is_mandatory}"
                                  label="#{msg.name}"/>
 
@@ -25,11 +25,11 @@
                         <b:commandButton value="#{msg.save}"
                                          tooltip="Save changes!"
                                          iconAwesome="fa-save"
-                                         actionListener="#{${entityResourceName-variable.toLowerCase()}DataModel.create${entityResourceName}(${entityResourceName-variable.toLowerCase()}DataModel.${entityResourceName-variable.toLowerCase()})}"/>
+                                         actionListener="#{${entityResourceName.toLowerCase()}DataModel.create${entityResourceName}(${entityResourceName.toLowerCase()}DataModel.${entityResourceName.toLowerCase()})}"/>
                         <b:commandButton value="#{msg.rd_home_page}"
                                          tooltip="Return to entity List!"
                                          iconAwesome="fa-home"
-                                         action="#{${entityResourceName-variable.toLowerCase()}DataModel.returnHome}"/>
+                                         action="#{${entityResourceName.toLowerCase()}DataModel.returnHome}"/>
                     </b:buttonGroup>
                 </b:column>
         </h:form>
