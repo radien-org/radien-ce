@@ -21,6 +21,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.util.ActionModelMapper;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
@@ -38,7 +40,6 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +49,7 @@ import java.util.Optional;
  */
 @RequestScoped
 @Default
-public class ActionRESTServiceClient implements ActionRESTServiceAccess {
+public class ActionRESTServiceClient extends AuthorizationChecker implements ActionRESTServiceAccess {
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,6 +62,30 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
     private ClientServiceUtil clientServiceUtil;
 
     /**
+     * Requests all Actions if not able then will try to refresh access token and retry
+     * @param search field value to be searched or looked up
+     * @param pageNo initial page number
+     * @param pageSize max page size
+     * @param sortBy sort by filter fields
+     * @param isAscending ascending result list or descending
+     * @return a list of existent system actions
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public Page<? extends SystemAction> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
+            return getAllRequest(search, pageNo, pageSize, sortBy, isAscending);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getAllRequest(search, pageNo, pageSize, sortBy, isAscending);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Fetches all Actions
      * @param search field value to be searched or looked up
      * @param pageNo initial page number
@@ -68,11 +93,9 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
      * @param sortBy sort by filter fields
      * @param isAscending ascending result list or descending
      * @return a list of existent system actions
-     * @throws MalformedURLException
-     * @throws ParseException
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    @Override
-    public Page<? extends SystemAction> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    public Page<? extends SystemAction> getAllRequest(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
@@ -80,7 +103,26 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
         }
 
         catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Calls the get Action in the DB searching for the field Id if he cannot will refresh the access token
+     * @param id to be looked after
+     * @return Optional List of Actions
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Optional<SystemAction> getActionById(Long id) throws SystemException {
+        try {
+            return getActionByIdRequest(id);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getActionByIdRequest(id);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
         }
     }
 
@@ -90,7 +132,7 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
      * @return Optional List of Actions
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemAction> getActionById(Long id) throws SystemException {
+    public Optional<SystemAction> getActionByIdRequest(Long id) throws SystemException {
         try {
             ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -100,7 +142,27 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
             return Optional.ofNullable(action);
 
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Calls the requester to get all the actions in the DB searching for the field Name
+     * if he cannot will refresh the access token
+     * @param name to be looked after
+     * @return Optional List of Actions
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Optional<SystemAction> getActionByName(String name) throws SystemException {
+        try {
+            return getActionByNameRequest(name);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getActionByNameRequest(name);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
         }
     }
 
@@ -109,9 +171,9 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
      *
      * @param name to be looked after
      * @return Optional List of Actions
-     * @throws Exception in case it founds multiple actions or if URL is malformed
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemAction> getActionByName(String name) throws SystemException {
+    public Optional<SystemAction> getActionByNameRequest(String name) throws SystemException {
         try {
             ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -124,7 +186,26 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Requests to create a given action
+     * @param action to be created
+     * @return true if action has been created with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean create(SystemAction action) throws SystemException {
+        try {
+            return createRequest(action);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return createRequest(action);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
         }
     }
 
@@ -132,25 +213,23 @@ public class ActionRESTServiceClient implements ActionRESTServiceAccess {
      * Creates given action
      * @param action to be created
      * @return true if action has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean create(SystemAction action) throws SystemException {
-    	ActionResourceClient client;
-		try {
-			client = clientServiceUtil.getActionResourceClient(oaf.
+    public boolean createRequest(SystemAction action) throws SystemException{
+        ActionResourceClient client;
+        try {
+            client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-		} catch (MalformedURLException e) {
-            throw new SystemException(e);
-		}
-        try (Response response = client.save((Action)action)) {
+
+            Response response = client.save((Action)action);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
                 log.error(response.readEntity(String.class));
                 return false;
             }
-        } catch (ProcessingException e) {
-            throw new SystemException(e);
+        } catch (ProcessingException | MalformedURLException e) {
+            throw new SystemException(e.getMessage());
         }
     }
 

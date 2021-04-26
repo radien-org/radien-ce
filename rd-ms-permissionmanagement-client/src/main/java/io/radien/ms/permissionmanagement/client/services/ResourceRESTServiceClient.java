@@ -21,6 +21,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
@@ -38,7 +40,6 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ import java.util.Optional;
  * Implementation for Rest Service Client regarding Resource domain object
  */
 @Stateless @Default
-public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
+public class ResourceRESTServiceClient extends AuthorizationChecker implements ResourceRESTServiceAccess {
 
 	private static final long serialVersionUID = 1L;
 
@@ -60,6 +61,31 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
     private ClientServiceUtil clientServiceUtil;
 
     /**
+     * Calls the requester to fetch all resources if not possible will reload the access token and retry
+     * @param search value to be filtered
+     * @param pageNo of the information to be checked
+     * @param pageSize max page numbers for the necessary requested data
+     * @param sortBy list of values to sort request
+     * @param isAscending in case of true data will come ascending mode if false descending
+     * @return list of resources
+     * @throws SystemException in case of any communication error
+     */
+    @Override
+    public Page<? extends SystemResource> getAll(String search, int pageNo, int pageSize,
+                                                 List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
+            return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Fetches all resources
      * @param search value to be filtered
      * @param pageNo of the information to be checked
@@ -67,11 +93,10 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
      * @param sortBy list of values to sort request
      * @param isAscending in case of true data will come ascending mode if false descending
      * @return list of resources
-     * @throws MalformedURLException in case of URL exception construction
-     * @throws ParseException in case of any issue parsing the response information
+     * @throws SystemException in case of any communication error
      */
-    @Override
-    public Page<? extends SystemResource> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    public Page<? extends SystemResource> getAllRequester(String search, int pageNo, int pageSize,
+                                                          List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
@@ -82,13 +107,33 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
     }
 
     /**
+     * Calls the requester to get an Resource in the DB searching for the field Id
+     * if not possible will reload the access token and retry
+     * @param id to be looked after
+     * @return Optional List of Resources
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Optional<SystemResource> getResourceById(Long id) throws SystemException {
+        try {
+            return getResourceByIdRequester(id);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getResourceByIdRequester(id);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Gets an Resource in the DB searching for the field Id
      *
      * @param id to be looked after
      * @return Optional List of Resources
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemResource> getResourceById(Long id) throws SystemException {
+    public Optional<SystemResource> getResourceByIdRequester(Long id) throws SystemException {
         try {
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -103,13 +148,33 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
     }
 
     /**
+     * Calls the requester all the actions in the DB searching for the field Name
+     * if not possible will reload the access token and retry
+     * @param name to be looked after
+     * @return Optional List of Resources
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Optional<SystemResource> getResourceByName(String name) throws SystemException {
+        try {
+            return getResourceByNameRequester(name);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getResourceByNameRequester(name);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Gets all the actions in the DB searching for the field Name
      *
      * @param name to be looked after
      * @return Optional List of Resources
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemResource> getResourceByName(String name) throws SystemException {
+    public Optional<SystemResource> getResourceByNameRequester(String name) throws SystemException {
         try {
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -127,27 +192,43 @@ public class ResourceRESTServiceClient implements ResourceRESTServiceAccess {
     }
 
     /**
+     * Calls the requester to create a given action if not possible will reload the access token and retry again
+     * @param action to be created
+     * @return true if action has been created with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean create(SystemResource action) throws SystemException {
+        try {
+            return createRequester(action);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return createRequester(action);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Creates given action
      * @param action to be created
      * @return true if action has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean create(SystemResource action) throws SystemException {
-    	ResourceResourceClient client;
-		try {
-			client = clientServiceUtil.getResourceResourceClient(oaf.
+    public boolean createRequester(SystemResource action) throws SystemException {
+        ResourceResourceClient client;
+        try {
+            client = clientServiceUtil.getResourceResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-		} catch (MalformedURLException e) {
-            throw new SystemException(e);
-		}
-        try (Response response = client.save((Resource)action)) {
+            Response response = client.save((Resource)action);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
                 log.error(response.readEntity(String.class));
                 return false;
             }
-        } catch (ProcessingException e) {
+        } catch (ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
         }
     }
