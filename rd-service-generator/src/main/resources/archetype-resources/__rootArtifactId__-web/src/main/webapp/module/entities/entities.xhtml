@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<f:metadata>
+		<f:viewAction action="#${entityResourceName-variable.toLowerCase()}DataModel.onload}"/>
+	</f:metadata>
+
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="${entityResourceName.toLowerCase()}ManagementTableDiv" styleClass="tableContainer">
+			<b:row>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_entities} "/></h1>
+					<hr />
+				</h:panelGroup>
+			</b:row>
+
+			<p:dataTable id="dataTable" value="#${entityResourceName-variable.toLowerCase()}DataModel.lazy${entityResourceName}DataModel}"
+						 var="${entityResourceName.toLowerCase()}"
+						 widgetVar="${entityResourceName.toLowerCase()}DataTable"
+						 lazy="true"
+						 emptyMessage="No entities exists!"
+						 paginator="true" rows="10"
+						 paginatorPosition="bottom"
+						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+						 rowsPerPageTemplate="5,10,20,50"
+						 styleClass = "tableDesign"
+						 selectionMode="single"
+						 selection="#${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}}">
+
+				<p:ajax event="rowSelect" listener="#${entityResourceName-variable.toLowerCase()}DataModel.onRowSelect}" update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"
+						oncomplete="$('.formValidationModalClass').modal('show')"/>
+
+				<p:column headerText="#{msg.id}" sortBy="#${entityResourceName-variable.toLowerCase()}.id}">
+					<h:outputText value="#${entityResourceName-variable.toLowerCase()}.id}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.name}" sortBy="#${entityResourceName-variable.toLowerCase()}.name}">
+					<h:outputText value="#${entityResourceName-variable.toLowerCase()}.name}"/>
+				</p:column>
+
+			</p:dataTable>
+
+			<!--@elvariable id="${entityResourceName.toLowerCase()}DataModel" type="io.radien.webapp.${entityResourceName.toLowerCase()}.${entityResourceName}DataModel"-->
+			<b:commandButton value="#{msg.rd_add_entity}"
+							 action="#${entityResourceName-variable.toLowerCase()}DataModel.create${entityResourceName}}"
+							 iconAwesome="fa-cube"
+							 tooltip="Create a new entity!"
+							 iconAlign="center"/>
+
+			<b:commandButton value="#{msg.edit}"
+							 tooltip="Edit existent entity information!"
+							 iconAwesome="fa-edit"
+							 action="#${entityResourceName-variable.toLowerCase()}DataModel.edit${entityResourceName}}"/>
+
+			<b:button id="delete-${entityResourceName.toLowerCase()}-button"
+					  onclick="$('.formValidationModal${entityResourceName}Delete').modal('show')"
+					  value="#{msg.delete}"
+					  icon="trash"
+					  update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"/>
+			<b:modal id="model"
+					 title="Confirmation"
+					 styleClass="formValidationModal${entityResourceName}Delete"
+					 closable="false"
+					 close-on-escape="false" backdrop="false"
+					 rendered="#{not empty ${entityResourceName.toLowerCase()}DataModel.selected${entityResourceName}}">
+				<p>Are you sure delete the selected entity?</p>
+				<f:facet name="footer">
+					<b:commandButton value="No"
+									 onclick="{ $('.formValidationModal${entityResourceName}Delete').modal('hide') } "/>
+					<b:commandButton value="Yes" look="warning"
+									 actionListener="#${entityResourceName-variable.toLowerCase()}DataModel.delete${entityResourceName}}"
+									 oncomplete="{ $('.formValidationModal${entityResourceName}Delete').modal('hide') } "/>
+				</f:facet>
+			</b:modal>
+
+			<b:commandButton id="refresh" value="Refresh Values"
+							 ajax="false"
+							 iconAwesome="fa-refresh"
+							 icon-spin="true"
+							 tooltip="Refresh existent entity data table!"
+							 actionListener="#${entityResourceName-variable.toLowerCase()}DataModel.onload}"
+							 immediate="true" update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"
+							 auto-update="true"/>
+		</h:form>
+	</ui:define>
+</ui:composition>

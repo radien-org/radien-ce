@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="${entityResourceName-variable.toLowerCase()}ManagementTableDiv" styleClass="tableContainer">
+            <b:container>
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_entity_profile_profile} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+
+            <b:panelGrid colSpans="2,10">
+                <h:outputLabel value="#{msg.id}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}Id" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.id}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.firstname}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}FirstName" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.firstname}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.lastname}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}LastName" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.lastname}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.logon}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}Logon" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.logon}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.email}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}Email" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.${entityResourceName-variable.toLowerCase()}Email}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.sub}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}Sub" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.sub}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.enabled}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}Enabled" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.enabled}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.createDate}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}CreatedDate" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.createDate}" disabled="true" span="6"/>
+
+                <h:outputLabel value="#{msg.lastUpdate}"/>
+                <b:inputText id="${entityResourceName-variable.toLowerCase()}LastUpdate" value="#{${entityResourceName-variable.toLowerCase()}DataModel.selected${entityResourceName}.lastUpdate}" disabled="true" span="6"/>
+            </b:panelGrid>
+
+
+            <!--@elvariable id="${entityResourceName-variable.toLowerCase()}DataModel" type="io.radien.webapp.${entityResourceName-variable.toLowerCase()}.${entityResourceName}DataModel"-->
+            <b:commandButton value="#{msg.reset_password}"
+                             tooltip="Send email to update password!"
+                             iconAwesome="fa-save"
+                             action="#{${entityResourceName-variable.toLowerCase()}DataModel.sendUpdatePasswordEmail}"/>
+            <b:commandButton value="#{msg.rd_home_page}"
+                             tooltip="Return to entity List!"
+                             iconAwesome="fa-home"
+                             action="#{${entityResourceName-variable.toLowerCase()}DataModel.returnHome}"/>
+            </b:container>
+        </h:form>
+    </ui:define>
+</ui:composition>
