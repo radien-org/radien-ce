@@ -39,19 +39,19 @@
                 </p:column>
 
                 <p:column headerText="Tenant">
-                    <h:outputText value="#{linkedAuthorization.tenantId}"/>
+                    <h:outputText value="#{linkedAuthorizationManager.getTenantName(linkedAuthorization.tenantId)}"/>
                 </p:column>
 
                 <p:column headerText="Permission">
-                    <h:outputText value="#{linkedAuthorization.permissionId}"/>
+                    <h:outputText value="#{linkedAuthorizationManager.getPermissionName(linkedAuthorization.permissionId)}"/>
                 </p:column>
 
                 <p:column headerText="Role">
-                    <h:outputText value="#{linkedAuthorization.roleId}"/>
+                    <h:outputText value="#{linkedAuthorizationManager.getRoleName(linkedAuthorization.roleId)}"/>
                 </p:column>
 
                 <p:column headerText="User">
-                    <h:outputText value="#{linkedAuthorization.userId}"/>
+                    <h:outputText value="#{linkedAuthorizationManager.getLogon(linkedAuthorization.userId)}"/>
                 </p:column>
                 <p:column headerText="#{msg.editUpper}">
                     <b:commandButton value="#{msg.edit}"
@@ -96,6 +96,8 @@
                              action="linkedauthorization"
                              iconAwesome="fa-user"
                              iconAlign="center"/>
+
+            <b:growl showDetail="true" allowDismiss="true" delay="0"/>
         </h:form>
 
     </ui:define>

@@ -18,6 +18,7 @@ package io.radien.webapp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
@@ -34,7 +35,7 @@ public abstract class AbstractManager implements Serializable {
     protected void handleError(Exception e, String pattern, Object ... params) {
         String msg = MessageFormat.format(pattern, params);
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                FacesMessage.SEVERITY_ERROR, msg, e.getMessage()));
+                FacesMessage.SEVERITY_ERROR, msg, extractErrorMessage(e)));
         log.error(msg, e);
     }
 
@@ -42,6 +43,13 @@ public abstract class AbstractManager implements Serializable {
         String msg = MessageFormat.format(pattern, params);
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, msg, null));
         log.info(msg);
+    }
+
+    protected String extractErrorMessage(Exception exception) {
+        String errorMsg = (exception instanceof EJBException) ?
+                exception.getCause().getMessage() : exception.getMessage();
+        // Bootsfaces growl has issues to handle special characters
+        return errorMsg.replace("\n\t", "");
     }
 
     public Logger getLog() {
