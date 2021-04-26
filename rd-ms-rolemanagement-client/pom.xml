@@ -108,5 +108,9 @@
 			<artifactId>openjson</artifactId>
 			<version>1.0.12</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>io.radien</groupId>
+            <artifactId>rd-ms-authz-client</artifactId>
+        </dependency>
+    </dependencies>
 </project>
