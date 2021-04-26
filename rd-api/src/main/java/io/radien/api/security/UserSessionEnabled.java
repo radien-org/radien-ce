@@ -37,4 +37,6 @@ public interface UserSessionEnabled extends Appframeable {
 
 	public String getUserLastName();
 
+	public Long getUserId();
+
 }

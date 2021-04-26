@@ -106,5 +106,29 @@
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
 		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-core</artifactId>
+			<version>1.2.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-mockito</artifactId>
+			<version>8.0.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-mp-client</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

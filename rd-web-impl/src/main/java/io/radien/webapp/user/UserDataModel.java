@@ -16,6 +16,7 @@
 package io.radien.webapp.user;
 
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.ms.usermanagement.client.entities.User;
@@ -50,6 +51,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
     @Inject
     private UserRESTServiceAccess service;
+
+    @Inject
+    private UserSessionEnabled userSessionEnabled;
 
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
     private SystemUser selectedUser;
@@ -95,6 +99,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public void updateUser(SystemUser updateUser){
         try{
             if(updateUser != null){
+                if (updateUser.getId() == null) {
+                    updateUser.setCreateUser(userSessionEnabled.getUserId());
+                } else {
+                    updateUser.setLastUpdateUser(userSessionEnabled.getUserId());
+                }
                 service.updateUser(updateUser);
                 handleMessage(FacesMessage.SEVERITY_INFO,
                         updateUser.getId() == null ? JSFUtil.getMessage("rd_save_success") :

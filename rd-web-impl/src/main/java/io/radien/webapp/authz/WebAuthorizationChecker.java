@@ -15,13 +15,14 @@
  */
 package io.radien.webapp.authz;
 
-import io.radien.api.OAFAccess;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.openid.service.PrincipalFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -42,11 +43,30 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
         return this.servletRequest;
     }
 
+    private Logger log = LoggerFactory.getLogger(WebAuthorizationChecker.class);
+
+    @Override
+    protected Long getCurrentUserId() throws SystemException {
+        Long id = userSession.getUserId();
+        return id == null ? super.getCurrentUserId() : id;
+    }
+
     @Override
     protected SystemUser getInvokerUser() {
         SystemUser user = PrincipalFactory.create(userSession.getUserFirstName(),
                 userSession.getUserLastName(), userSession.getPreferredUserName(),
                 userSession.getUserIdSubject(), userSession.getEmail(), null);
         return user;
+    }
+
+    @Override
+    public boolean hasGrant(Long tenantId, String roleName) {
+        try {
+            return super.hasGrant(tenantId, roleName);
+        }
+        catch (Exception e) {
+            log.error("Error checking authorization", e);
+            return false;
+        }
     }
 }

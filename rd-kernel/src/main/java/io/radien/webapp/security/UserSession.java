@@ -81,7 +81,12 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		this.user = user;
 
 	}
-	
+
+	/**
+	 * @return the user id
+	 */
+	public Long getUserId() { return user != null ? user.getId() : null; }
+
 	public boolean isActive() {
 		return user!=null && user.isEnabled();
 	}
