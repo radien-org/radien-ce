@@ -620,39 +620,6 @@ public class AuthorizationCheckerTest {
     }
 
     @Test
-    public void testGrantForPermissionTokenExpiration() {
-        Long userId = 1001L;
-        Long tenantId = 22L;
-        Long permissionId = 1L;
-
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-
-        when(this.userClient.getUserIdBySub(principal.getSub())).
-                thenReturn(Response.ok().entity(userId).build());
-        when(this.linkedAuthorizationClient.existsSpecificAssociation(tenantId, permissionId, null, userId, true)).
-                thenThrow(new TokenExpiredException());
-
-        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("test").build());
-
-        boolean success =false;
-        try {
-            authorizationChecker.hasGrant(permissionId, tenantId);
-        } catch (SystemException systemException) {
-            success = true;
-        }
-
-        assertTrue(success);
-    }
-
-    @Test
     public void testRefreshTokenFalseResponse() throws SystemException {
         when(userClient.refreshToken(any())).thenReturn(Response.notModified().entity("test").build());
 
