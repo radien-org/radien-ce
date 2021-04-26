@@ -68,7 +68,7 @@ public class LazyContractDataModel extends LazyDataModel<SystemContract> {
             datasource = pagedInformation.getResults();
 
             rowCount = service.getTotalRecordsCount();
-        } catch (SystemException | MalformedURLException e) {
+        } catch (SystemException e) {
             e.printStackTrace();
         }
 

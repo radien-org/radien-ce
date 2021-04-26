@@ -19,8 +19,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.exception.SystemException;
 
-import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -32,53 +30,56 @@ public interface ContractRESTServiceAccess {
      * Search for a contract with given name
      * @param name of the contract to be retrieved
      * @return true if contract has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public List<? extends SystemContract> getContractByName(String name) throws Exception ;
+    public List<? extends SystemContract> getContractByName(String name) throws SystemException ;
 
     /**
      * Fetches all Contracts
      * @param pageNo of the data to be visualized
      * @param pageSize is the max size of pages regarding the existent data to be checked
      * @return List of System Contracts
-     * @throws MalformedURLException in case of URL specification
-     * @throws ParseException in case of any error when returning/constructing the response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Page<? extends SystemContract> getAll(int pageNo, int pageSize) throws SystemException, MalformedURLException;
+    public Page<? extends SystemContract> getAll(int pageNo, int pageSize) throws SystemException;
 
     /**
      * Creates given contract
      * @param contract to be created
      * @return true in case of success
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean create(SystemContract contract) throws MalformedURLException;
+    public boolean create(SystemContract contract) throws SystemException;
 
     /**
      * Deletes given contract
      * @param contractId id of the contract to be deleted
      * @return true in case of success
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean delete(long contractId) throws MalformedURLException;
+    public boolean delete(Long contractId) throws SystemException;
 
     /**
      * Updates given contract
      * @param contractId to be updated
      * @param contract information to update
      * @return true in case of success
-     * @throws MalformedURLException
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean update(Long contractId, SystemContract contract) throws MalformedURLException;
+    public boolean update(Long contractId, SystemContract contract) throws SystemException;
 
     /**
      * Checks if contract is existent in the db
      * @param contractId to be found
      * @return true in case of success
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean isContractExistent(Long contractId) throws MalformedURLException, SystemException;
+    public boolean isContractExistent(Long contractId) throws SystemException;
 
     /**
      * Will calculate how many records are existent in the db
      * @return the count of existent contracts.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public Long getTotalRecordsCount() throws SystemException;
 }

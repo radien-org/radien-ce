@@ -31,7 +31,7 @@ public class ResponseExceptionMapper implements
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
-                || statusCode == 401    // Unauthorized
+                || statusCode == 401    // Token Expiration
                 || statusCode == 404    // Not Found
                 || statusCode == 500;   // Internal Server Error
     }

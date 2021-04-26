@@ -157,7 +157,7 @@ public class ContractRESTServiceClientTest {
     }
 
     @Test
-    public void testGetUserBySubExtensionException() throws Exception {
+    public void testGetUserBySubExtensionException() throws MalformedURLException {
         boolean success = false;
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new ExtensionException(new Exception()));
         try {
@@ -169,7 +169,7 @@ public class ContractRESTServiceClientTest {
     }
 
     @Test
-    public void testGetContractByNameProcessingException() throws Exception {
+    public void testGetContractByNameProcessingException() throws MalformedURLException {
         boolean success = false;
         String a = "a";
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
@@ -186,7 +186,7 @@ public class ContractRESTServiceClientTest {
     }
 
     @Test
-    public void testCreate() throws MalformedURLException {
+    public void testCreate() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.create(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
@@ -195,19 +195,19 @@ public class ContractRESTServiceClientTest {
     }
 
     @Test
-    public void testCreateMalformedException() throws MalformedURLException {
+    public void testCreateMalformedException() throws MalformedURLException, SystemException {
         boolean success = false;
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
         try {
             target.create(new Contract());
-        }catch (MalformedURLException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testCreateFail() throws MalformedURLException {
+    public void testCreateFail() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.create(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
@@ -223,14 +223,14 @@ public class ContractRESTServiceClientTest {
         boolean success = false;
         try {
             target.create(new Contract());
-        }catch (ProcessingException es){
+        }catch (SystemException es){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testDelete() throws MalformedURLException {
+    public void testDelete() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.delete(1L)).thenReturn(Response.ok().build());
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
@@ -244,14 +244,14 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
         try {
             target.delete(2L);
-        }catch (MalformedURLException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testDeleteFail() throws MalformedURLException {
+    public void testDeleteFail() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.delete(1L)).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
@@ -267,14 +267,14 @@ public class ContractRESTServiceClientTest {
         boolean success = false;
         try {
             target.delete(1L);
-        }catch (ProcessingException es){
+        }catch (SystemException es){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testUpdate() throws MalformedURLException {
+    public void testUpdate() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         Contract contract = new Contract();
         contract.setId(1L);
@@ -293,14 +293,14 @@ public class ContractRESTServiceClientTest {
             contract.setId(1L);
 
             target.update(2L, contract);
-        }catch (MalformedURLException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testUpdateFail() throws MalformedURLException {
+    public void testUpdateFail() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         Contract contract = new Contract();
         contract.setId(1L);
@@ -320,7 +320,7 @@ public class ContractRESTServiceClientTest {
         boolean success = false;
         try {
             target.update(1L, contract);
-        }catch (ProcessingException es){
+        }catch (SystemException es){
             success = true;
         }
         assertTrue(success);
@@ -393,7 +393,7 @@ public class ContractRESTServiceClientTest {
     }
 
     @Test
-    public void testIsContractExistent() throws MalformedURLException {
+    public void testIsContractExistent() throws SystemException, MalformedURLException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.exists(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
@@ -403,19 +403,19 @@ public class ContractRESTServiceClientTest {
 
 
     @Test
-    public void testIsContractExistentMalformedException() throws MalformedURLException {
+    public void testIsContractExistentMalformedException() throws MalformedURLException, SystemException {
         boolean success = false;
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
         try {
             target.isContractExistent(2L);
-        }catch (MalformedURLException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testIsContractExistentFail() throws MalformedURLException {
+    public void testIsContractExistentFail() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.exists(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
@@ -424,7 +424,7 @@ public class ContractRESTServiceClientTest {
     }
 
     @Test
-    public void testIsContractExistentProcessingException() throws MalformedURLException {
+    public void testIsContractExistentProcessingException() throws MalformedURLException, SystemException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.exists(any())).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);

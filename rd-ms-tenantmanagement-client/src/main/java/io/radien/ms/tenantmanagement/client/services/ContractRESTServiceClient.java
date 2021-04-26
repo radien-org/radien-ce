@@ -30,6 +30,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.tenant.ContractRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.util.ContractModelMapper;
 import io.radien.ms.tenantmanagement.client.util.ListContractModelMapper;
@@ -44,7 +46,7 @@ import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
  * @author Santana
  */
 @RequestScoped
-public class ContractRESTServiceClient implements ContractRESTServiceAccess {
+public class ContractRESTServiceClient extends AuthorizationChecker implements ContractRESTServiceAccess {
     private static final long serialVersionUID = 7576466262027147334L;
 
     @Inject
@@ -54,75 +56,109 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
     private OAFAccess oafAccess;
 
     /**
+     * Calls the requester to the contract client requesting all the contracts with a specific name
+     * if not able will refresh the access token and retry
+     * @param name of the contract to be retrieved
+     * @return true in case of success response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public List<? extends SystemContract> getContractByName(String name) throws SystemException {
+        try {
+            return getContractByNameRequest(name);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getContractByNameRequest(name);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Send a request to the contract client requesting all the contracts with a specific name
      * @param name of the contract to be retrieved
      * @return true in case of success response
-     * @throws Exception in case of any issue
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    @Override
-    public List<? extends SystemContract> getContractByName(String name) throws Exception {
+    public List<? extends SystemContract> getContractByNameRequest(String name) throws SystemException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
             Response response = client.get(name);
             return ListContractModelMapper.map((InputStream) response.getEntity());
-        } catch (ExtensionException |ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
+        } catch (ExtensionException | ProcessingException | MalformedURLException | ParseException e){
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Calls the requester to make a creation request to the contract client if not possible will refresh the
+     * access token and retry
+     * @param systemContract to be created
+     * @return true in case of success response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public boolean create(SystemContract systemContract) throws SystemException {
+        try {
+            return createRequester(systemContract);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return createRequester(systemContract);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
         }
     }
 
     /**
      * Sends a creation request to the contract client
-     * @param systemContract to be created
+     * @param contract to be created
      * @return true in case of success response
-     * @throws MalformedURLException in case of any error in the specified url
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    @Override
-    public boolean create(SystemContract systemContract) throws MalformedURLException {
+    public boolean createRequester(SystemContract contract) throws SystemException {
         ContractResourceClient client;
         try {
             client = clientServiceUtil.
                     getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         } catch(MalformedURLException e) {
-            throw new MalformedURLException();
+            throw new SystemException(e.getMessage());
         }
 
         try {
-            Response response = client.create((Contract) systemContract);
+            Response response = client.create((Contract) contract);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
         } catch(ProcessingException e) {
-            throw new ProcessingException(e);
+            throw new SystemException(e.getMessage());
         }
         return false;
     }
 
     /**
-     * Sends a request to the contract client to delete a specific record
-     * @param contractId id of the contract to be deleted
+     * Calls requester to the contract client an update if not possible will refresh token and retry
+     * @param contractId to be updated
+     * @param systemContract with the information to be update
      * @return true in case of success response
-     * @throws MalformedURLException in case of any error in the specified url
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public boolean delete(long contractId) throws MalformedURLException {
-        ContractResourceClient client;
+    public boolean update(Long contractId, SystemContract systemContract) throws SystemException {
         try {
-            client = clientServiceUtil.
-                    getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        } catch(MalformedURLException e) {
-            throw new MalformedURLException();
-        }
-
-        try {
-            Response response = client.delete(contractId);
-            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return true;
+            return updateRequester(contractId, systemContract);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return updateRequester(contractId, systemContract);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
             }
-        } catch(ProcessingException e) {
-            throw new ProcessingException(e);
         }
-        return false;
     }
 
     /**
@@ -130,16 +166,15 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
      * @param contractId to be updated
      * @param systemContract with the information to be update
      * @return true in case of success response
-     * @throws MalformedURLException in case of any error in the specified url
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    @Override
-    public boolean update(Long contractId, SystemContract systemContract) throws MalformedURLException {
+    public boolean updateRequester(Long contractId, SystemContract systemContract) throws SystemException {
         ContractResourceClient client;
         try {
             client = clientServiceUtil.
                     getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         } catch(MalformedURLException e) {
-            throw new MalformedURLException();
+            throw new SystemException(e.getMessage());
         }
 
         try {
@@ -148,9 +183,31 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
                 return true;
             }
         } catch(ProcessingException e) {
-            throw new ProcessingException(e);
+            throw new SystemException(e.getMessage());
         }
         return false;
+    }
+
+    /**
+     * Calls the requester to get all the contracts existent in the data base into a paginated mode
+     * if not possible will refresh the access token and retry
+     * @param pageNo of the data to be visualized
+     * @param pageSize is the max size of pages regarding the existent data to be checked
+     * @return a list of System contracts to be used
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public Page<? extends SystemContract> getAll(int pageNo, int pageSize) throws SystemException {
+        try {
+            return getAlRequester(pageNo, pageSize);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getAlRequester(pageNo, pageSize);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
     }
 
     /**
@@ -158,25 +215,43 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
      * @param pageNo of the data to be visualized
      * @param pageSize is the max size of pages regarding the existent data to be checked
      * @return a list of System contracts to be used
-     * @throws MalformedURLException in case of URL specification
-     * @throws ParseException in case of parsing or constructing the response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    @Override
-    public Page<? extends SystemContract> getAll(int pageNo, int pageSize) throws SystemException, MalformedURLException {
+    public Page<? extends SystemContract> getAlRequester(int pageNo, int pageSize) throws SystemException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
             Response response = client.getAll(pageNo, pageSize);
             return ContractModelMapper.mapToPage((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Calls the requester to calculate how many records are existent in the db if not possible will refresh the
+     * access token and retry
+     * @return the count of existent contracts.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            return getTotalRecordsCountRequester();
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getTotalRecordsCountRequester();
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
         }
     }
 
     /**
      * Will calculate how many records are existent in the db
      * @return the count of existent contracts.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Long getTotalRecordsCount() throws SystemException {
+    public Long getTotalRecordsCountRequester() throws SystemException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
@@ -189,29 +264,86 @@ public class ContractRESTServiceClient implements ContractRESTServiceAccess {
     }
 
     /**
-     * Sends a request to the contract client to validdate if a specific contract exists
+     * Will call the requester to request to the contract client to validate if a specific contract exists
+     * if not possible will refresh the access token and retry
      * @param contractId to be found
      * @return true in case of success response
-     * @throws MalformedURLException in case of any error in the specified url
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public boolean isContractExistent(Long contractId) throws MalformedURLException {
+    public boolean isContractExistent(Long contractId) throws SystemException {
+        try {
+            return isContractExistentRequester(contractId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return isContractExistentRequester(contractId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Sends a request to the contract client to validate if a specific contract exists
+     * @param contractId to be found
+     * @return true in case of success response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean isContractExistentRequester(Long contractId) throws SystemException {
         ContractResourceClient client;
         try {
             client = clientServiceUtil.
                     getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        } catch(MalformedURLException e) {
-            throw new MalformedURLException();
-        }
-
-        try {
             Response response = client.exists(contractId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch(ProcessingException e) {
-            throw new ProcessingException(e);
+        } catch(ProcessingException | MalformedURLException e) {
+            throw new SystemException(e.getMessage());
         }
         return false;
     }
+
+    /**
+     * Will call the requester to delete a specific contract if not possible will refresh the access token and retry
+     * @param contractId to be found
+     * @return true in case of success response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public boolean delete(Long contractId) throws SystemException {
+        try {
+            return deleteRequest(contractId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteRequest(contractId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Sends a request to delete a specific contract if not possible will refresh the access token and retry
+     * @param contractId to be found
+     * @return true in case of success response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean deleteRequest(Long contractId) throws SystemException {
+        ContractResourceClient client;
+        try {
+            client = clientServiceUtil.
+                    getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.delete(contractId);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            }
+        } catch(ProcessingException | MalformedURLException e) {
+            throw new SystemException(e.getMessage());
+        }
+        return false;
+    }
+
 }
