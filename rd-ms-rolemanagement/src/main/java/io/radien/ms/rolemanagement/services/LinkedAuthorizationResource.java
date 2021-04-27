@@ -186,6 +186,8 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
      */
     @Override
     public Response getRoles(Long userId, Long tenantId) {
+        if (userId == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
         try {
             return Response.ok(linkedAuthorizationBusinessService.getRolesByUserAndTenant(
                     userId, tenantId)).build();
@@ -203,6 +205,8 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
      */
     @Override
     public Response isRoleExistentForUser(Long userId, String roleName, Long tenantId) {
+        if (userId == null || roleName == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
         try {
             return Response.ok(linkedAuthorizationBusinessService.isRoleExistentForUser(
                     userId, tenantId, roleName)).build();

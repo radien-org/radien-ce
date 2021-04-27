@@ -69,7 +69,7 @@
 
 #
 ### - Checks if a Role exists for a User (Optionally under a certain Tenant)
-    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/exists/user/{userId}/role/{roleName}?tenantId={tenantId}'
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/exists/role?userId={userId}&roleName={roleName}&tenantId={tenantId}'
   - Where:
     - userId: Long value that corresponds to the user identifier (ID)
     - roleName: String value corresponding to the Role Name
@@ -77,7 +77,7 @@
     
 #
 ### - Retrieve Roles for a User (Optionally under a certain Tenant)
-    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/roles/{userId}?tenantId=2'
+    curl --location --request GET 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization/roles?userId={userId}&tenantId={tenantId}'
   - Where:
     - userId: Long value that corresponds to the user identifier (ID)
     - tenantId: Optional param that referees a tenant identifier (ID)
