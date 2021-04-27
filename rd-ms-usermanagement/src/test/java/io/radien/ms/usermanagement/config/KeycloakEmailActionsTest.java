@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.authz.client.exception;
+package io.radien.ms.usermanagement.config;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
-public class NotFoundExceptionTestCase {
+import static org.junit.Assert.*;
+
+/**
+ * @author Bruno Gama
+ **/
+public class KeycloakEmailActionsTest {
 
     @Test
-    public void testBadRequestException(){
-        NotFoundException exception = new NotFoundException("message");
-        assertNotNull(exception);
-        assertEquals("message", exception.getMessage());
-
-        NotFoundException exception2 = new NotFoundException("message",
-                new RuntimeException("test"));
-        assertNotNull(exception2);
-        assertEquals("message", exception2.getMessage());
-        assertNotNull(exception2.getCause());
+    public void testKeyCloakEmailActions() {
+        assertEquals("CONFIGURE_TOTP", KeycloakEmailActions.TOTP.propKey());
+        assertEquals("TERMS_AND_CONDITIONS", KeycloakEmailActions.TERMS.propKey());
     }
 }

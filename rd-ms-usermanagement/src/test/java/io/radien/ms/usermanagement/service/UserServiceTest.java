@@ -139,6 +139,15 @@ public class UserServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    @Test
+    public void testGetUserList() throws UserNotFoundException, UniquenessConstraintException {
+        User u = UserFactory.create("testGetIdFirstName2", "testGetIdLastName2", "testGetIdLogon2",
+                null, "testGetIdEmail2@testGetIdEmail2.pt", 2L);
+        userServiceAccess.save(u);
+        List<? extends SystemUser> result = userServiceAccess.getUserList();
+        assertNotNull(result);
+    }
+
     /**
      * Gets user using the PK (id).
      * Will create a new user, save it into the DB and retrieve the specific user using the ID.
@@ -416,7 +425,7 @@ public class UserServiceTest {
         orderby.add("firstname");
 
         Page<? extends SystemUser> userPage = userServiceAccess.getAll(null, 1, 10, orderby, true);
-  
+
         assertTrue(userPage.getTotalResults()>=2);
 
         assertEquals("a",userPage.getResults().get(0).getFirstname());

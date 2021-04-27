@@ -40,4 +40,13 @@ public class TenantTypeConverterTest {
 
         assertEquals(TenantType.CLIENT_TENANT, type);
     }
+
+    @Test
+    public void testToString() {
+        TenantTypeConverter converter = new TenantTypeConverter();
+        TenantType type = converter.convertToEntityAttribute(2L);
+        String toString = type.toString();
+
+        assertEquals(toString, "{\"id\":" + type.getId() + ", \"name\":\"" + type.getName() + "\"}");
+    }
 }

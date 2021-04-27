@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.util;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.services.ContractFactory;
 import junit.framework.TestCase;
@@ -69,5 +70,46 @@ public class ContractModelMapperTest extends TestCase {
         assertEquals(contract.getName(),jsonObject.getString("name"));
         assertEquals(contract.getStart().toString(),jsonObject.getString("start"));
         assertEquals(contract.getEnd().toString(),jsonObject.getString("end"));
+    }
+
+    @Test
+    public void testMapInputStreamToPage() {
+        String example = "{\n" +
+                "\"currentPage\": 0,\n" +
+                "\"results\": [\n" +
+                "{\n" +
+                "\"name\": \"a\",\n" +
+                "\"start\": \"2021-01-29T13:10:19.396\",\n" +
+                "\"end\": \"2021-01-29T13:10:20.396\"\n" +
+                "}\n" +
+                "],\n" +
+                "\"totalPages\": 1,\n" +
+                "\"totalResults\": 4\n" +
+                "}";
+        InputStream in = new ByteArrayInputStream(example.getBytes());
+        Page<Contract> contract = ContractModelMapper.mapToPage(in);
+        assertEquals(0, contract.getCurrentPage());
+        assertEquals(1, contract.getTotalPages());
+        assertEquals(4, contract.getTotalResults());
+    }
+
+    @Test
+    public void testMapInputStreamToPageParseException() {
+        String example = "{\n" +
+                "\"currentPage\": 0,\n" +
+                "\"results\": [\n" +
+                "{\n" +
+                "\"name\": \"a\",\n" +
+                "\"createDate\": \"a\",\n" +
+                "\"start\": \"2021-01-29T13:10:19.396\",\n" +
+                "\"end\": \"2021-01-29T13:10:20.396\"\n" +
+                "}\n" +
+                "],\n" +
+                "\"totalPages\": 1,\n" +
+                "\"totalResults\": 4\n" +
+                "}";
+        InputStream in = new ByteArrayInputStream(example.getBytes());
+        Page<Contract> contract = ContractModelMapper.mapToPage(in);
+        assertNull(contract);
     }
 }

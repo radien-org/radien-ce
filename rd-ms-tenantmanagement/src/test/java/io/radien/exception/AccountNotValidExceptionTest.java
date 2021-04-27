@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.authz.client.exception;
+package io.radien.exception;
 
+import junit.framework.TestCase;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
-public class NotFoundExceptionTestCase {
+/**
+ * @author Bruno Gama
+ **/
+public class AccountNotValidExceptionTest extends TestCase {
 
     @Test
-    public void testBadRequestException(){
-        NotFoundException exception = new NotFoundException("message");
+    public void testAccountNotValidException(){
+        AccountNotValidException exception = new AccountNotValidException();
         assertNotNull(exception);
-        assertEquals("message", exception.getMessage());
-
-        NotFoundException exception2 = new NotFoundException("message",
-                new RuntimeException("test"));
+        AccountNotValidException exception2 = new AccountNotValidException(exception);
         assertNotNull(exception2);
-        assertEquals("message", exception2.getMessage());
-        assertNotNull(exception2.getCause());
+        AccountNotValidException exception3 = new AccountNotValidException("message");
+        assertEquals("Message(s): message",exception3.getMessage());
     }
+
 }

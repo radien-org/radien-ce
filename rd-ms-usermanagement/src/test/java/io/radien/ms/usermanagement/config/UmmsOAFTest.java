@@ -13,24 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.authz.client.exception;
+package io.radien.ms.usermanagement.config;
 
+import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 
-public class NotFoundExceptionTestCase {
+/**
+ * @author Bruno Gama
+ **/
+public class UmmsOAFTest extends TestCase {
+
+    @InjectMocks
+    UmmsOAF oaf;
+
+    @Before
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
-    public void testBadRequestException(){
-        NotFoundException exception = new NotFoundException("message");
-        assertNotNull(exception);
-        assertEquals("message", exception.getMessage());
+    public void testGetVersion() {
+        assertNull(oaf.getVersion());
+    }
 
-        NotFoundException exception2 = new NotFoundException("message",
-                new RuntimeException("test"));
-        assertNotNull(exception2);
-        assertEquals("message", exception2.getMessage());
-        assertNotNull(exception2.getCause());
+    @Test
+    public void testGetSystemAdminUserId() {
+        assertEquals((Long) 0L, oaf.getSystemAdminUserId());
     }
 }

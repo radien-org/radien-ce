@@ -16,6 +16,7 @@
 package io.radien.ms.usermanagement.client;
 
 import io.radien.exception.NotFoundException;
+import io.radien.exception.TokenExpiredException;
 import io.radien.ms.usermanagement.client.exceptions.BadRequestException;
 import io.radien.ms.usermanagement.client.exceptions.ForbiddenException;
 import io.radien.ms.usermanagement.client.exceptions.InternalServerErrorException;
@@ -33,12 +34,14 @@ public class UserResponseExceptionMapperTest {
         UserResponseExceptionMapper uRexceptionMapper = new UserResponseExceptionMapper();
         boolean handlesException200 = uRexceptionMapper.handles(200, null);
         boolean handlesException400 = uRexceptionMapper.handles(400, null);
+        boolean handlesException401 = uRexceptionMapper.handles(401, null);
         boolean handlesException403 = uRexceptionMapper.handles(403, null);
         boolean handlesException404 = uRexceptionMapper.handles(404, null);
         boolean handlesException500 = uRexceptionMapper.handles(500, null);
 
         assertFalse(handlesException200);
         assertTrue(handlesException400);
+        assertTrue(handlesException401);
         assertTrue(handlesException403);
         assertTrue(handlesException404);
         assertTrue(handlesException500);
@@ -56,6 +59,9 @@ public class UserResponseExceptionMapperTest {
         Response responseBadRequest = Response.status(Status.BAD_REQUEST).entity(msg).build();
         Exception exceptionBadRequest = target.toThrowable(responseBadRequest);
 
+        Response responseTokenExpired = Response.status(Status.UNAUTHORIZED).entity(msg).build();
+        Exception exceptionTokenExpired = target.toThrowable(responseTokenExpired);
+
         Response responseForbidden = Response.status(Status.FORBIDDEN).entity(msg).build();
         Exception exceptionForbidden = target.toThrowable(responseForbidden);
 
@@ -70,6 +76,9 @@ public class UserResponseExceptionMapperTest {
 
         assertTrue(exceptionForbidden instanceof ForbiddenException);
         assertEquals(msg,exceptionForbidden.getMessage());
+
+        assertTrue(exceptionTokenExpired instanceof TokenExpiredException);
+        assertEquals(msg,exceptionTokenExpired.getMessage());
 
         assertTrue(exceptionNotFound instanceof NotFoundException);
         assertEquals(msg,exceptionNotFound.getMessage());

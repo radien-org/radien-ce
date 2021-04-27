@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.util;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import junit.framework.TestCase;
@@ -81,5 +82,26 @@ public class UserModelMapperTest extends TestCase {
         assertEquals(user.getLogon(),jsonObject.getString("logon"));
         assertEquals(user.getSub(),jsonObject.getString("sub"));
         assertEquals(user.getUserEmail(),jsonObject.getString("userEmail"));
+    }
+
+    @Test
+    public void testMapInputStreamToPage() {
+        String example = "{\n" +
+                "\"currentPage\": 0,\n" +
+                "\"results\": [\n" +
+                "{\n" +
+                "\"name\": \"a\",\n" +
+                "\"start\": \"2021-01-29T13:10:19.396\",\n" +
+                "\"end\": \"2021-01-29T13:10:20.396\"\n" +
+                "}\n" +
+                "],\n" +
+                "\"totalPages\": 1,\n" +
+                "\"totalResults\": 4\n" +
+                "}";
+        InputStream in = new ByteArrayInputStream(example.getBytes());
+        Page<User> user = UserModelMapper.mapToPage(in);
+        assertEquals(0, user.getCurrentPage());
+        assertEquals(1, user.getTotalPages());
+        assertEquals(4, user.getTotalResults());
     }
 }
