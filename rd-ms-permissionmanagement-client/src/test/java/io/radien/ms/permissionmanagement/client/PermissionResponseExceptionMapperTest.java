@@ -15,7 +15,7 @@
  */
 package io.radien.ms.permissionmanagement.client;
 
-import io.radien.exception.ProcessingException;
+import io.radien.exception.TokenExpiredException;
 import org.junit.Test;
 
 import io.radien.ms.permissionmanagement.client.exceptions.BadRequestException;
@@ -71,7 +71,7 @@ public class PermissionResponseExceptionMapperTest {
         assertTrue(exceptionBadRequest instanceof BadRequestException);
         assertEquals(msg,exceptionBadRequest.getMessage());
 
-        assertTrue(exceptionUnauthorized instanceof ProcessingException);
+        assertTrue(exceptionUnauthorized instanceof TokenExpiredException);
         assertEquals(msg,exceptionUnauthorized.getMessage());
 
         assertTrue(exceptionNotFound instanceof NotFoundException);

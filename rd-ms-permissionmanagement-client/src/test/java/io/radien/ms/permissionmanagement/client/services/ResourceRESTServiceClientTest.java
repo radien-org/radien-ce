@@ -19,8 +19,11 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
-import io.radien.ms.permissionmanagement.client.entities.Action;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
@@ -36,7 +39,6 @@ import javax.json.*;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -47,6 +49,10 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 /**
@@ -62,6 +68,15 @@ public class ResourceRESTServiceClientTest {
 
     @Mock
     OAFAccess oafAccess;
+
+    @Mock
+    AuthorizationChecker authorizationChecker;
+
+    @Mock
+    UserClient userClient;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
 
     @Before
     public void before(){
@@ -280,4 +295,61 @@ public class ResourceRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getAll("action%", 1, 100, sortBy, true));
     }
 
+    @Test(expected = SystemException.class)
+    public void testGetAllTokenExpiration() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getAll(anyString(), anyInt(), anyInt(), anyList(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        List<String> sortBy = new ArrayList<>();
+        target.getAll("search", 1, 10, sortBy, true);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetResourceByIdTokenExpiration() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getById(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getResourceById(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetResourceByNameTokenExpiration() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getResources(anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getResourceByName("name");
+    }
+
+    @Test(expected = SystemException.class)
+    public void testCreateTokenExpiration() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        SystemResource systemResource = ResourceFactory.create("name", 2L);
+        target.create(systemResource);
+    }
 }
