@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.usermanagement.service;
 
 import io.radien.api.entity.Page;
@@ -94,9 +109,16 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testDelete() throws UserNotFoundException, RemoteResourceException {
-        SystemUser user = UserFactory.create("a", "b", "l", null, "e", 1L);
+        SystemUser user = UserFactory.create("a", "b", "l", "subTest", "e", 1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
-        userBusinessService.delete(1l);
+
+        boolean success = false;
+        try{
+            userBusinessService.delete(1l);
+        } catch (Exception e){
+            success = true;
+        }
+        assertFalse(success);
     }
 
     @Test
@@ -113,23 +135,88 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User u = UserFactory.create("a","b","","s","e",1L);
-        boolean success = false;
+    public void testSaveSkipKeycloak() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User user = UserFactory.create("a","b","l",null,"e",1L);
+        user.setId(2L);
+        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user2);
+
+        boolean success = true;
         try{
-            userBusinessService.save(u,false);
+            userBusinessService.save(user2, false);
         } catch (RemoteResourceException e){
-            success = true;
+            success = false;
         }
         assertTrue(success);
     }
 
     @Test
+    public void testSaveSkipKeycloakWithCreationRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user2);
+        doThrow(new RemoteResourceException()).when(keycloakService).createUser(any());
+        boolean success = true;
+        try{
+            userBusinessService.save(user2, false);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testSaveEmptyLogon() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User user = UserFactory.create("a","b","",null,"e",1L);
+        user.setId(2L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+
+        boolean success = true;
+        try{
+            userBusinessService.save(user, false);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertFalse(success);
+    }
+
+    @Test
     public void testSaveEmptyEmail() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User u = UserFactory.create("a","b","l","s","",1L);
+        User user = UserFactory.create("a","b","logon",null,"",1L);
+        user.setId(2L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+
+        boolean success = true;
+        try{
+            userBusinessService.save(user, false);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testSaveSkipKeycloakRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User user = UserFactory.create("a","b","l",null,"e",1L);
+        user.setId(2L);
+        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user2);
+        doThrow(new RemoteResourceException()).when(keycloakService).updateUser(any());
+
+        boolean success = true;
+        try{
+            userBusinessService.save(user, false);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User u = UserFactory.create("a","b","","s","e",1L);
         boolean success = false;
         try{
-            userBusinessService.save(u,true);
+            userBusinessService.save(u,false);
         } catch (RemoteResourceException e){
             success = true;
         }
@@ -173,6 +260,48 @@ public class UserBusinessServiceTest extends TestCase {
         when(userServiceAccess.get((Long) any())).thenReturn(user);
         doNothing().when(keycloakService,"sendUpdatePasswordEmail", ArgumentMatchers.any());
         userBusinessService.sendUpdatePasswordEmail(user);
+    }
+
+    @Test
+    public void testCreate() {
+        SystemUser user = UserFactory.create("a","b","l",null,"e",1L);
+        user.setId(2L);
+
+        List<SystemUser> listOfUsers = new ArrayList<>();
+        listOfUsers.add(user);
+
+        boolean success = true;
+        try{
+            userBusinessService.create(listOfUsers);
+        } catch (Exception e){
+            success = false;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testSendPasswordEmail() throws RemoteResourceException {
+        User user = UserFactory.create("a","b","l",null,"e",1L);
+        user.setId(2L);
+
+        boolean success = true;
+        try{
+            userBusinessService.sendUpdatePasswordEmail(user);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testRefreshToken() {
+        boolean success = true;
+        try{
+            userBusinessService.refreshToken("test");
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertTrue(success);
     }
 
 

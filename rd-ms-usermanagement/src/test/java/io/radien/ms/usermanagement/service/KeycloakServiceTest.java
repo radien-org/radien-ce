@@ -15,6 +15,10 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import static org.mockito.ArgumentMatchers.*;
+
+import io.radien.api.model.user.SystemUser;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 import junit.framework.TestCase;
@@ -25,8 +29,6 @@ import org.mockito.ArgumentMatchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.HashMap;
 
 import static org.powermock.api.mockito.PowerMockito.*;
 
@@ -43,73 +45,106 @@ public class KeycloakServiceTest extends TestCase {
         client = spy(new KeycloakClient());
     }
 
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
+    @Test
+    public void testCreateUser() throws Exception {
+        String createResponse = PowerMockito.mock(String.class);
+        doReturn(client).when(target,"getKeycloakClient");
+        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
 
-//    @Test
-//    public void testCreateUser() throws Exception {
-//        String createResponse = PowerMockito.mock(String.class);
-//        doReturn(client).when(target,"getKeycloakClient");
-//        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
-//
-//        String firstName = "a";
-//        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
-//        String sub = target.createUser(u);
-//
-//        assertEquals("", sub);
-//    }
+        doNothing().when(client).refreshToken();
+        doNothing().when(client).sendUpdatePasswordEmail(any());
 
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
+        String firstName = "a";
+        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
+        String sub = target.createUser(u);
 
-//    @Test
-//    public void testGetKeycloakClient() throws Exception {
-//        String createResponse = PowerMockito.mock(String.class);
-//        HashMap result = PowerMockito.mock(HashMap.class);
-////        HttpResponse<HashMap> httpResponse = PowerMockito.mock(HttpResponse.class);
-//        doReturn(result).when(client,"login");
-////        doReturn(httpResponse).when(unirest, "asObject", ArgumentMatchers.any());
-//        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
-//
-//        String firstName = "a";
-//        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
-//        target.createUser(u);
-//    }
+        assertEquals("", sub);
+    }
+
+    @Test
+    public void testCreateUserException() throws Exception {
+        String createResponse = PowerMockito.mock(String.class);
+        doReturn(client).when(target,"getKeycloakClient");
+        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
+
+        doNothing().when(client).refreshToken();
+        doThrow(new RemoteResourceException()).when(client).sendUpdatePasswordEmail(any());
+        doNothing().when(client).deleteUser(any());
+
+        String firstName = "a";
+        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
+
+        boolean success = false;
+
+        try{
+            target.createUser(u);
+        }catch (Exception e) {
+            success = true;
+        }
+
+        assertTrue(success);
+    }
+
+    @Test
+    public void testUpdateUser() throws Exception {
+        String createResponse = PowerMockito.mock(String.class);
+        doReturn(client).when(target,"getKeycloakClient");
+        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
+
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
+
+        doNothing().when(client).updateUser(any(), any());
+        boolean success = true;
+
+        try{
+            target.updateUser(u);
+        }catch (Exception e) {
+            success = false;
+        }
+
+        assertTrue(success);
+    }
+
+    @Test
+    public void testSendUpdatePasswordEmail() throws Exception {
+        String createResponse = PowerMockito.mock(String.class);
+        doReturn(client).when(target,"getKeycloakClient");
+        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
+
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
+
+        doNothing().when(client).sendUpdatePasswordEmail(any());
+        boolean success = true;
+
+        try{
+            target.sendUpdatePasswordEmail(u);
+        }catch (Exception e) {
+            success = false;
+        }
+
+        assertTrue(success);
+    }
+
+    @Test
+    public void testRefreshToken() throws Exception {
+        String createResponse = PowerMockito.mock(String.class);
+        doReturn(client).when(target,"getKeycloakClient");
+        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
+
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
+
+        doReturn("teste").when(client).refreshToken(any());
+
+        String refreshToken = target.refeshToken("test");
+
+        assertEquals("teste", refreshToken);
+    }
 
     @Test
     public void testDeleteUser() throws Exception {
         doReturn(client).when(target,"getKeycloakClient");
         doNothing().when(client,"deleteUser", ArgumentMatchers.any());
 
-
         target.deleteUser("");
     }
-
-    //TODO: Test was failing and usermanagement had to be pause, resume when possible - Bruno Gama
-
-//    @Test
-//    public void testDeleteUser() throws SystemException {
-//        String firstName = "a";
-//        User u = UserFactory.create(firstName, "", "a4", "", "a@b.pt", 0L);
-//        target.createUser(u);
-//
-//        target.deleteUser(u.getSub());
-//    }
-/*
-    public void testCreateUserHostNotSpecified() throws SystemException {
-        boolean success = false;
-        try {
-            when(configService.getProperty(KeycloakConfigs.ADMIN_URL)).thenReturn("");
-            String firstName = "a";
-            User u = UserFactory.create(firstName, "", "", "", "", 0L);
-            keycloakService.createUser(u);
-        } catch (SystemException s) {
-            success = true;
-        }
-        assertTrue(success);
-    }
-
-    @Test
-    public void testSendTOTPEmail() {
-    }
-
- */
 }
