@@ -49,8 +49,8 @@ public interface LinkedAuthorizationClient {
                                        @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     @GET
-    @Path("/exists/user/{userId}/role/{roleName}")
-    Response isRoleExistentForUser(@PathParam("userId") Long userId,
-                                   @PathParam("roleName") String roleName,
+    @Path("/exists/role")
+    Response isRoleExistentForUser(@QueryParam("userId") Long userId,
+                                   @QueryParam("roleName") String roleName,
                                    @QueryParam("tenantId") Long tenantId);
 }

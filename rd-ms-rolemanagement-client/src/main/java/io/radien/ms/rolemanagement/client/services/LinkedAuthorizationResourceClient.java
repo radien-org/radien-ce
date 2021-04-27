@@ -73,13 +73,13 @@ public interface LinkedAuthorizationResourceClient {
     public Response getTotalRecordsCount();
 
     @GET
-    @Path("/roles/{userId}")
-    Response getRoles(@PathParam("userId") Long userId,
+    @Path("/roles")
+    Response getRoles(@QueryParam("userId") @NotNull Long userId,
                       @QueryParam("tenantId") Long tenantId);
 
     @GET
-    @Path("/exists/user/{userId}/role/{roleName}")
-    Response isRoleExistentForUser(@PathParam("userId") Long userId,
-                                   @PathParam("roleName") String roleName,
+    @Path("/exists/role")
+    Response isRoleExistentForUser(@NotNull @QueryParam("userId") Long userId,
+                                   @NotNull @QueryParam("roleName") String roleName,
                                    @QueryParam("tenantId") Long tenantId);
 }

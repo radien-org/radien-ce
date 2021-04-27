@@ -166,4 +166,48 @@ public class LinkedAuthorizationManager extends AbstractManager {
     public void setSelectedUser(SystemUser selectedUser) {
         this.selectedUser = selectedUser;
     }
+
+    public String getLogon(Long userId) {
+        try {
+            return this.userRESTServiceAccess.getUserById(userId).get().getLogon();
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("rd_user"));
+            return null;
+        }
+    }
+
+    public String getTenantName(Long tenantId) {
+        try {
+            return this.tenantRESTServiceAccess.getTenantById(tenantId).get().getName();
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("rd_tenant"));
+            return null;
+        }
+    }
+
+    public String getRoleName(Long roleId) {
+        try {
+            return this.roleRESTServiceAccess.getRoleById(roleId).get().getName();
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("rd_role"));
+            return null;
+        }
+    }
+
+    public String getPermissionName(Long permissionId) {
+        try {
+            return this.permissionRESTServiceAccess.getPermissionById(permissionId).get().getName();
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("rd_permission"));
+            return null;
+        }
+    }
 }

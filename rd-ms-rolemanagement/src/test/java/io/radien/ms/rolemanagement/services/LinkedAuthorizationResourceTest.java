@@ -15,12 +15,10 @@
  */
 package io.radien.ms.rolemanagement.services;
 
-import io.radien.api.model.user.SystemUser;
-import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
+import io.radien.ms.rolemanagement.entities.Role;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -222,10 +222,17 @@ public class LinkedAuthorizationResourceTest {
     }
 
     @Test
-    public void testValidateRoleException() {
+    public void testValidateRoleNotFoundCase() {
         when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenReturn(false);
         Response response = linkedAuthorizationResource.existsSpecificAssociation(2L, 2L, 2L, 2L, true);
         assertEquals(404 ,response.getStatus());
+    }
+
+    @Test
+    public void testValidateRoleException() {
+        when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenThrow(new RuntimeException());
+        Response response = linkedAuthorizationResource.existsSpecificAssociation(2L, 2L, 2L, 2L, true);
+        assertEquals(500 ,response.getStatus());
     }
 
     /**
@@ -245,6 +252,75 @@ public class LinkedAuthorizationResourceTest {
         when(linkedAuthorizationResource.getTotalRecordsCount())
                 .thenThrow(new RuntimeException());
         Response response = linkedAuthorizationResource.getTotalRecordsCount();
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testGetRolesByUserAndTenant() {
+        Long userId = 1L;
+        Long tenantId = 2L;
+
+        List<Role> roleList = new java.util.ArrayList<>();
+
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("admin");
+        role.setDescription("admin");
+        roleList.add(role);
+
+        when(linkedAuthorizationBusinessService.getRolesByUserAndTenant(userId, tenantId)).
+                then(i -> roleList);
+
+        Response response = linkedAuthorizationResource.getRoles(userId, tenantId);
+        assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        assertEquals(response.getEntity(), roleList);
+    }
+
+    @Test
+    public void testGetRolesByUserAndTenant404Case() {
+        Response response = linkedAuthorizationResource.getRoles(null, null);
+        assertEquals(404,response.getStatus());
+    }
+
+    @Test
+    public void testGetRolesByUserAndTenantWithException() {
+        Long userId = 1L;
+        Long tenantId = 2L;
+        when(linkedAuthorizationResource.getRoles(userId, tenantId))
+                .thenThrow(new RuntimeException());
+        Response response = linkedAuthorizationResource.getRoles(userId, tenantId);
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testCheckIfRoleExistForUserTenant() {
+        Long userId = 1L;
+        Long tenantId = 2L;
+        String roleName = "test";
+        when(linkedAuthorizationBusinessService.isRoleExistentForUser(userId, null, roleName))
+                .thenReturn(Boolean.TRUE);
+        when(linkedAuthorizationBusinessService.isRoleExistentForUser(userId, tenantId, roleName))
+                .thenReturn(Boolean.FALSE);
+        Response r = linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, null);
+        assertEquals(r.getEntity(), Boolean.TRUE);
+        r = linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, tenantId);
+        assertEquals(r.getEntity(), Boolean.FALSE);
+    }
+
+    @Test
+    public void testCheckIfRoleExistForUserTenant404Case() {
+        Response response = linkedAuthorizationResource.isRoleExistentForUser(null, null, null);
+        assertEquals(404,response.getStatus());
+    }
+
+    @Test
+    public void testCheckIfRoleExistForUserTenantWithException() {
+        Long userId = 1L;
+        Long tenantId = 2L;
+        String roleName = "test";
+        when(linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, tenantId))
+                .thenThrow(new RuntimeException());
+        Response response = linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, tenantId);
         assertEquals(500,response.getStatus());
     }
 }
