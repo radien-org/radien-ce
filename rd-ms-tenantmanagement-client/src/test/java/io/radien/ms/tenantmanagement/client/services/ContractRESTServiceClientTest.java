@@ -18,9 +18,12 @@ package io.radien.ms.tenantmanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
-import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemContract;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.tenantmanagement.client.util.FactoryUtilService;
@@ -44,6 +47,9 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 /**
@@ -60,6 +66,15 @@ public class ContractRESTServiceClientTest {
 
     @Mock
     OAFAccess oafAccess;
+
+    @Mock
+    AuthorizationChecker authorizationChecker;
+
+    @Mock
+    UserClient userClient;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
 
     @Before
     public void before(){
@@ -91,6 +106,20 @@ public class ContractRESTServiceClientTest {
         List<? extends SystemContract> emptyList = new ArrayList<>();
 
         assertEquals(emptyList,target.getContractByName(a));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetContractByNameTokenExpiration() throws Exception {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.get(anyString())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getContractByName("a");
     }
 
     private String getContractManagementUrl(){
@@ -194,6 +223,21 @@ public class ContractRESTServiceClientTest {
         assertTrue(target.create(new Contract()));
     }
 
+    @Test(expected = SystemException.class)
+    public void testCreateTokenExpiration() throws Exception {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.create(any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        SystemContract contract = ContractFactory.create("name", null, null, 2L);
+        target.create(contract);
+    }
+
     @Test
     public void testCreateMalformedException() throws MalformedURLException, SystemException {
         boolean success = false;
@@ -236,6 +280,20 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
         assertTrue(target.delete(1L));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteTokenExpiration() throws Exception {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.delete(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.delete(2L);
     }
 
     @Test
@@ -282,6 +340,21 @@ public class ContractRESTServiceClientTest {
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
 
         assertTrue(target.update(1L, contract));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testUpdateTokenExpiration() throws Exception {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.update(anyLong(), any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        SystemContract contract = ContractFactory.create("name", null, null, 2L);
+        target.update(2L, contract);
     }
 
     @Test
@@ -355,6 +428,20 @@ public class ContractRESTServiceClientTest {
         assertEquals(list, returnedList);
     }
 
+    @Test(expected = SystemException.class)
+    public void testGetAllTokenExpiration() throws Exception {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getAll(anyInt(), anyInt())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getAll(1, 10);
+    }
+
     @Test
     public void testGetAllException() throws Exception {
         boolean success = false;
@@ -392,6 +479,20 @@ public class ContractRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
     }
 
+    @Test(expected = SystemException.class)
+    public void testGetTotalRecordsCountTokenExpiration() throws Exception {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getTotalRecordsCount()).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTotalRecordsCount();
+    }
+
     @Test
     public void testIsContractExistent() throws SystemException, MalformedURLException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
@@ -401,9 +502,22 @@ public class ContractRESTServiceClientTest {
         assertTrue(target.isContractExistent(2L));
     }
 
+    @Test(expected = SystemException.class)
+    public void testIsContractExistentTokenExpiration() throws Exception {
+        ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
+
+        when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.exists(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.isContractExistent(2L);
+    }
 
     @Test
-    public void testIsContractExistentMalformedException() throws MalformedURLException, SystemException {
+    public void testIsContractExistentMalformedException() throws MalformedURLException {
         boolean success = false;
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenThrow(new MalformedURLException());
         try {
@@ -424,14 +538,14 @@ public class ContractRESTServiceClientTest {
     }
 
     @Test
-    public void testIsContractExistentProcessingException() throws MalformedURLException, SystemException {
+    public void testIsContractExistentProcessingException() throws MalformedURLException {
         ContractResourceClient resourceClient = Mockito.mock(ContractResourceClient.class);
         when(resourceClient.exists(any())).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getContractResourceClient(getContractManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {
             target.isContractExistent(2L);
-        }catch (ProcessingException es){
+        }catch (SystemException es){
             success = true;
         }
         assertTrue(success);
