@@ -65,6 +65,7 @@ public abstract class AuthorizationChecker implements Serializable {
     public boolean refreshToken() throws SystemException {
         try {
             getUserClient();
+            getTokensPlaceHolder();
 
             Response response = userClient.refreshToken(tokensPlaceHolder.getRefreshToken());
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {

@@ -163,7 +163,16 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      */
     @Override
     public boolean create(SystemTenant tenant) throws SystemException {
-        return createTenant((Tenant) tenant);
+        try {
+            return createTenant((Tenant) tenant);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return createTenant((Tenant) tenant);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
     }
 
     private boolean createTenant(Tenant tenant) throws SystemException {
@@ -187,6 +196,19 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
 
     @Override
     public boolean delete(long contractId) throws SystemException {
+        try {
+            return deleteRequester(contractId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteRequester(contractId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    private boolean deleteRequester(long contractId) throws SystemException {
         TenantResourceClient client;
         try {
             client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
@@ -279,6 +301,19 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      */
     @Override
     public boolean isTenantExistent(Long tenantId) throws SystemException {
+        try {
+            return isTenantExistentRequester(tenantId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return isTenantExistentRequester(tenantId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    private boolean isTenantExistentRequester(Long tenantId) throws SystemException {
         TenantResourceClient client;
         try {
             client = clientServiceUtil.
