@@ -18,7 +18,11 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import org.apache.cxf.bus.extension.ExtensionException;
@@ -40,11 +44,15 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -60,6 +68,15 @@ public class LinkedAuthorizationRESTServiceClientTest {
 
     @Mock
     OAFAccess oafAccess;
+
+    @Mock
+    AuthorizationChecker authorizationChecker;
+
+    @Mock
+    UserClient userClient;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
 
     @Before
     public void before(){
@@ -99,9 +116,7 @@ public class LinkedAuthorizationRESTServiceClientTest {
         try {
             target.getLinkedAuthorizationByRoleId(2L);
         }catch (SystemException se){
-            if (se.getMessage().contains(ExtensionException.class.getName())) {
-                success = true;
-            }
+            success = true;
         }
         assertTrue(success);
     }
@@ -166,5 +181,93 @@ public class LinkedAuthorizationRESTServiceClientTest {
         }
         assertTrue(success);
 
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetAllTokenExpiration() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.getAllAssociations(anyInt(), anyInt())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getAll(1, 10);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetTotalRecordsCountTokenExpiration() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.getTotalRecordsCount()).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTotalRecordsCount();
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetLinkedAuthorizationByRoleIdTokenExpiration() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.getSpecificAssociation(any(), any(), anyLong(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getLinkedAuthorizationByRoleId(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testCreateTokenExpiration() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.saveAssociation(any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        SystemLinkedAuthorization linkedAuthorization = new LinkedAuthorization();
+        linkedAuthorization.setTenantId(2L);
+        linkedAuthorization.setPermissionId(2L);
+        linkedAuthorization.setRoleId(2L);
+        target.create(linkedAuthorization);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testIsRoleExistentForUserTokenExpiration() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.isRoleExistentForUser(anyLong(), anyString(), anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.isRoleExistentForUser(2L, 2L, "roleName");
+    }
+
+    @Test(expected = SystemException.class)
+    public void testIfLinkedAuthorizationsExistsTokenExpiration() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.existsSpecificAssociation(anyLong(), anyLong(), anyLong(), anyLong(), eq(true))).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.checkIfLinkedAuthorizationExists(2L,2L,2L,2L);
     }
 }

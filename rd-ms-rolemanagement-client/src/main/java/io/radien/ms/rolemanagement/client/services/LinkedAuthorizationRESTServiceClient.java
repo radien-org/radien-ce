@@ -108,9 +108,9 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
                 throw e;
             }
         }
-        catch (Exception e) {
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
             log.info("Error checking if LinkedAuthorizations exists for tenant, permission, role and user");
-            throw new SystemException(e.getMessage());
+            throw new SystemException(e);
         }
         return false;
     }
