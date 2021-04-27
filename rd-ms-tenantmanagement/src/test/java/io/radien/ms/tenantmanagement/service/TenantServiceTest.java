@@ -17,7 +17,6 @@ package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TenantException;
@@ -32,6 +31,7 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -89,6 +89,25 @@ public class TenantServiceTest {
     public void testCreate() throws UniquenessConstraintException, TenantException {
         SystemTenant result = createTenant("testCreate");
         assertNotNull(result);
+    }
+
+
+    /**
+     * Add second root tenant. Should throw exception.
+     */
+    @Test
+    public void testCreateDoubleRootException() {
+        SystemTenant tenant = new Tenant();
+        tenant.setName("nameCreation");
+        tenant.setType(TenantType.ROOT_TENANT);
+        tenant.setStart(LocalDate.now());
+        tenant.setKey(RandomStringUtils.randomAlphabetic(4));
+        Exception exception = assertThrows(TenantException.class, () -> tenantServiceAccess.create(tenant));
+        String expectedMessage = "{\"code\":109, \"key\":\"error.tenant.root.already.inserted\"," +
+                " \"message\":\"There must be only one Root Tenant.\"}";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     /**
@@ -259,6 +278,27 @@ public class TenantServiceTest {
         assertNotNull(result);
     }
 
+    @Test
+    public void testGetAllSearchNotNullSort() throws UniquenessConstraintException, TenantException {
+        String name = "testGetAll2";
+        SystemTenant c = new Tenant();
+        c.setId(102L);
+        c.setName(name);
+        c.setType(TenantType.CLIENT_TENANT);
+        c.setParentId(rootTenant.getId());
+        c.setKey(RandomStringUtils.randomAlphabetic(4));
+        tenantServiceAccess.create(c);
+
+        List<String> sortBy = new ArrayList<>();
+        sortBy.add("name");
+
+        Page<SystemTenant> result = tenantServiceAccess.getAll("testGetAll2",1,10,sortBy,false);
+        assertNotNull(result);
+
+        Page<SystemTenant> result2 = tenantServiceAccess.getAll("testGetAll2",1,10,sortBy,true);
+        assertNotNull(result2);
+    }
+
     /**
      * Test of get specific tenant method
      * @throws UniquenessConstraintException in case of duplicates
@@ -276,6 +316,25 @@ public class TenantServiceTest {
         List<? extends SystemTenant> result = tenantServiceAccess.get(filter);
         assertNotNull(result);
         assertEquals((Long) 200L, result.get(0).getId());
+    }
+
+    /**
+     * Test of get specific tenant method with logical conjunction
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws TenantException in case of any issue in the data
+     */
+    @Test
+    public void testGetIsLogicConjunction() throws UniquenessConstraintException, TenantException {
+        String name = "testGetIsLogicalConjunction";
+        SystemTenant c = new Tenant(new io.radien.ms.tenantmanagement.client.entities.Tenant(
+                923L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT, null, null,
+                null, null, null,null, null,
+                null, rootTenant.getId(), null));
+        tenantServiceAccess.create(c);
+        TenantSearchFilter filter = new TenantSearchFilter(name, null, false, true);
+        List<? extends SystemTenant> result = tenantServiceAccess.get(filter);
+        assertNotNull(result);
+        assertEquals((Long) 923L, result.get(0).getId());
     }
 
     /**

@@ -17,13 +17,16 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Bruno Gama
@@ -81,6 +84,87 @@ public class TenantFactoryTest extends TestCase {
     }
 
     @Test
+    public void testConvertIllegalArgumentException() throws ParseException {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("name", "nameValue");
+        builder.add("key", "key");
+        builder.add("type", "TEST");
+        builder.addNull("start");
+        builder.addNull("end");
+        builder.addNull("clientAddress");
+        builder.addNull("clientZipCode");
+        builder.addNull("clientCity");
+        builder.addNull("clientCountry");
+        builder.addNull("clientPhoneNumber");
+        builder.addNull("clientEmail");
+        builder.addNull("parentId");
+        builder.addNull("clientId");
+        builder.addNull("lastUpdateUser");
+        builder.addNull("createDate");
+        builder.addNull("lastUpdate");
+        builder.add("createUser", 2L);
+
+        json = builder.build();
+        boolean success = false;
+        try{
+            TenantFactory.convert(json);
+        } catch (IllegalStateException e) {
+            success=true;
+        }
+
+        assertTrue(success);
+    }
+
+    @Test
+    public void testConvertNonNullDates() throws ParseException {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("name", "nameValue");
+        builder.add("key", "key");
+        builder.add("type", TenantType.ROOT_TENANT.getName());
+        builder.add("start", "2020-03-03");
+        builder.add("end", "2021-03-03");
+        builder.addNull("clientAddress");
+        builder.addNull("clientZipCode");
+        builder.addNull("clientCity");
+        builder.addNull("clientCountry");
+        builder.addNull("clientPhoneNumber");
+        builder.addNull("clientEmail");
+        builder.addNull("parentId");
+        builder.addNull("clientId");
+        builder.addNull("lastUpdateUser");
+        builder.add("createDate", "03-03-2020 10:10:10");
+        builder.add("lastUpdate", "03-03-2020 10:10:10");
+        builder.add("createUser", 2L);
+
+        json = builder.build();
+        Tenant newJsonRole = TenantFactory.convert(json);
+
+        assertEquals(tenant.getName(), newJsonRole.getName());
+        assertEquals(tenant.getCreateUser(), newJsonRole.getCreateUser());
+    }
+
+    @Test
+    public void testConvertList() throws ParseException {
+        List<Tenant> listOfCreatedTenants = new ArrayList<>();
+
+        Tenant tenant = TenantFactory.create("name", "key", TenantType.ROOT_TENANT,
+                null, null, null, null, null, null, null,
+                null, null, null, null);
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(TenantFactory.convertToJsonObject(tenant));
+
+        JsonArray array = builder.build();
+
+        List<Tenant> listOfTenant = new ArrayList<>();
+        listOfTenant.add(tenant);
+
+        assertEquals(listOfTenant.size(), TenantFactory.convert(array).size());
+    }
+
+    @Test
     public void testConvertToJsonObject() {
         JsonObject constructedNewJson = TenantFactory.convertToJsonObject(tenant);
 
@@ -107,5 +191,32 @@ public class TenantFactoryTest extends TestCase {
         json = builder.build();
 
         assertEquals(json.toString(), constructedNewJson.toString());
+    }
+
+    @Test
+    public void testConvertEmptyType() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("name", "nameValue");
+        builder.add("key", "key");
+
+        json = builder.build();
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> TenantFactory.convert(json));
+        assertEquals(exception.getMessage(), "Field type is mandatory");
+    }
+
+    @Test
+    public void testConvertNullType() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("name", "nameValue");
+        builder.add("key", "key");
+        builder.add("type", "test");
+
+        json = builder.build();
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> TenantFactory.convert(json));
+        assertEquals(exception.getMessage(), "No tenant type could be found");
     }
 }

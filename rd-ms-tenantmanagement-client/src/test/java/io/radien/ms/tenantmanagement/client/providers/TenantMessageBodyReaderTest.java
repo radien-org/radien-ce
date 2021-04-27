@@ -54,4 +54,22 @@ public class TenantMessageBodyReaderTest extends TestCase {
         assertNull(tenant.getLastUpdateUser());
         assertEquals(TenantType.ROOT_TENANT,tenant.getType());
     }
+
+    @Test
+    public void testReadFromException() {
+        String result = "{\"" +
+                "id\":null," +
+                "\"name\":\"name\"," +
+                "\"key\":\"key\"," +
+                "\"createDate\": \"a\",\n" +
+                "\"createUser\":null," +
+                "\"lastUpdateUser\":null," +
+                "\"type\":\"root\"" +
+                "}";
+        TenantMessageBodyReader target = new TenantMessageBodyReader();
+        InputStream in = new ByteArrayInputStream(result.getBytes());
+
+        Tenant tenant = target.readFrom(null,null,null,null,null, in);
+        assertNull(tenant);
+    }
 }
