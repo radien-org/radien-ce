@@ -27,8 +27,4 @@
 		<pattern value="/module/entities/editEntity" />
 		<view-id value="/module/entities/entityEdit.oaf" />
 	</url-mapping>
-	<url-mapping id="deleteEntity">
-		<pattern value="/module/entities/deleteEntity" />
-		<view-id value="/module/entities/entityDelete.oaf" />
-	</url-mapping>
 </pretty-config>
