@@ -65,7 +65,7 @@ public class ${entityResourceName}RESTServiceClient implements ${entityResourceN
 	@Override
 	public boolean save(System${entityResourceName} ${entityResourceName.toLowerCase()}) {
 		try {
-			${entityResourceName}ResourceClient client = clientServiceUtil.get${entityResourceName}ResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ENTITYMANAGEMENT));
+			${entityResourceName}ResourceClient client = clientServiceUtil.get${entityResourceName}ResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_${entityResourceName.toUpperCase()}MANAGEMENT));
 			Response response = client.save((${entityResourceName}) ${entityResourceName.toLowerCase()});
 			if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
 				return true;
@@ -93,7 +93,7 @@ public class ${entityResourceName}RESTServiceClient implements ${entityResourceN
 	private Page<${entityResourceName}> getPage${entityResourceName}s(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		Page<${entityResourceName}> page = new Page<>();
 		try {
-			${entityResourceName}ResourceClient client = clientServiceUtil.get${entityResourceName}ResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ENTITYMANAGEMENT));
+			${entityResourceName}ResourceClient client = clientServiceUtil.get${entityResourceName}ResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_${entityResourceName.toUpperCase()}MANAGEMENT));
 			Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
 			page = ${entityResourceName}ModelMapper.mapToPage((InputStream) response.getEntity());
 
@@ -107,7 +107,7 @@ public class ${entityResourceName}RESTServiceClient implements ${entityResourceN
 	public boolean delete${entityResourceName}(long id) {
 		boolean delete${entityResourceName} = false;
 		try {
-			${entityResourceName}ResourceClient client = clientServiceUtil.get${entityResourceName}ResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ENTITYMANAGEMENT));
+			${entityResourceName}ResourceClient client = clientServiceUtil.get${entityResourceName}ResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_${entityResourceName.toUpperCase()}MANAGEMENT));
 			Response response = client.delete(id);
 			if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
 				delete${entityResourceName} = true;

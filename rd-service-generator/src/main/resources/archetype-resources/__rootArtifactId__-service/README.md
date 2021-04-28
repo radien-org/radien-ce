@@ -4,7 +4,7 @@ radien ${entityResourceName} Management Microservice
 #
 # - Pre requirements:
 
-    URL: https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}
+    URL: http://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}
     HTTP Port: 9081
     HTTPS Port: 9444
     JMX Port: 1200
@@ -21,7 +21,7 @@ radien ${entityResourceName} Management Microservice
     curl -H "Content-Type: application/json" -X POST \
       --data-raw '{
         "name": "name-1",
-      }' https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}
+      }' http://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}
 
 #
 * UPDATE Data
@@ -30,14 +30,14 @@ radien ${entityResourceName} Management Microservice
     curl -H "Content-Type: application/json" -X POST \
       --data-raw '{
         "name": "name-1-update",
-      }' https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}/{id}
+      }' http://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}/{id}
 
 
 * GET Data
   ------
-    curl -H -X GET 'https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}'
+    curl -H -X GET 'http://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}'
     
 #
 * DELETE Data
   ------
-    curl --location --request DELETE 'https://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}/{id}'
+    curl --location --request DELETE 'http://localhost:9081/${entityResourceName.toLowerCase()}managementservice/v1/${entityResourceName.toLowerCase()}/{id}'

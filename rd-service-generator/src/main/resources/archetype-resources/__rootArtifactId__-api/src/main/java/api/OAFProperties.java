@@ -42,7 +42,7 @@ public enum OAFProperties implements SystemProperties{
     SYS_DB_DATA_AUTOLOAD("system.database.data.autoload"),
     SYS_PERSISTENCE_UNIT("system.persistence.unit"),
 
-    SYSTEM_MS_ENDPOINT_ENTITYMANAGEMENT("system.ms.endpoint.entitymanagement");
+    SYSTEM_MS_ENDPOINT_${entityResourceName.toUpperCase()}MANAGEMENT("system.ms.endpoint.${entityResourceName.toLowerCase()}managementservice");
 
     private String propKey;
 
