@@ -1,4 +1,4 @@
-radien ${entityResourceName}  Management Microservice
+radien ${entityResourceName} Management Microservice
 ======
 
 #

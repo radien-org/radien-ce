@@ -88,7 +88,7 @@ public class ${entityResourceName}Resource implements ${entityResourceName}Resou
 	}
 
 	@Override
-	public Response save(io.radien.ms.client.entities.${entityResourceName} ${entityResourceName.toLowerCase()}) {
+	public Response save(${package}.ms.client.entities.${entityResourceName} ${entityResourceName.toLowerCase()}) {
 		try {
 			${entityResourceName.toLowerCase()}BusinessService.save(new ${entityResourceName}(${entityResourceName.toLowerCase()}));
 		} catch (Exception e) {
