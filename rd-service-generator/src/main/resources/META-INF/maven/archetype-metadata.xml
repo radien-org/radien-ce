@@ -9,6 +9,15 @@
         </requiredProperty>
     </requiredProperties>
 
+    <fileSets>
+        <fileSet filtered="true" encoding="UTF-8">
+            <directory></directory>
+            <includes>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
     <modules>
         <module id="${rootArtifactId}-api" dir="__rootArtifactId__-api" name="${rootArtifactId}-api">
             <fileSets>
@@ -60,6 +69,13 @@
                 </fileSet>
                 <fileSet filtered="true" encoding="UTF-8">
                     <directory>src/main/webapp</directory>
+                </fileSet>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>
+                    </directory>
+                    <includes>
+                        <include>README.md</include>
+                    </includes>
                 </fileSet>
             </fileSets>
         </module>
