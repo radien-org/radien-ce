@@ -83,7 +83,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testGetTenantById() throws MalformedURLException, ParseException {
+    public void testGetTenantById() throws MalformedURLException, ParseException, SystemException {
         InputStream is = new ByteArrayInputStream(TenantModelMapper.map(dummyTenant).toString().getBytes());
         Response response = Response.ok(is).build();
         TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
@@ -102,14 +102,14 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenThrow(new MalformedURLException());
         try {
             target.getTenantById(3L);
-        }catch (MalformedURLException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testGetTenantByName() throws MalformedURLException, ParseException {
+    public void testGetTenantByName() throws SystemException, MalformedURLException {
         String a = "name";
 
         JsonArrayBuilder builder = Json.createArrayBuilder();
@@ -141,7 +141,7 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenThrow(new MalformedURLException());
         try {
             target.getTenantByName("testException");
-        }catch (MalformedURLException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -189,7 +189,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testCreate() throws MalformedURLException {
+    public void testCreate() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.create(any())).thenReturn(Response.ok().build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -213,7 +213,7 @@ public class TenantRESTServiceClientTest {
         when(tenantResourceClient.create(any())).thenThrow(new ProcessingException("teste"));
         try {
             target.create(new Tenant());
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -235,7 +235,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testDeleteReturnFalse() throws MalformedURLException {
+    public void testDeleteReturnFalse() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.delete(2L)).thenReturn(Response.serverError().entity("teste").build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -251,7 +251,7 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         try {
             target.delete(2L);
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -273,7 +273,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testDeleteTenantHierarchyReturnFalse() throws MalformedURLException {
+    public void testDeleteTenantHierarchyReturnFalse() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.deleteTenantHierarchy(3L)).thenReturn(Response.serverError().entity("teste").build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -289,14 +289,14 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         try {
             target.deleteTenantHierarchy(2L);
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
     }
 
     @Test
-    public void testUpdate() throws MalformedURLException {
+    public void testUpdate() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.update(2L, dummyTenant)).thenReturn(Response.ok().build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -306,7 +306,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testUpdateReturnFalse() throws MalformedURLException {
+    public void testUpdateReturnFalse() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.update(2L, dummyTenant)).thenReturn(Response.serverError().entity("teste").build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -322,7 +322,7 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         try {
             target.update(dummyTenant);
-        }catch (ProcessingException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -330,7 +330,7 @@ public class TenantRESTServiceClientTest {
 
 
     @Test
-    public void testIsTenantExistent() throws MalformedURLException {
+    public void testIsTenantExistent() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.exists(any())).thenReturn(Response.ok().build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -340,7 +340,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testIsTenantExistentReturnFalseResponse() throws MalformedURLException {
+    public void testIsTenantExistentReturnFalseResponse() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantResourceClient.exists(any())).thenReturn(Response.serverError().build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -355,7 +355,7 @@ public class TenantRESTServiceClientTest {
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenThrow(new MalformedURLException());
         try {
             target.isTenantExistent(500L);
-        }catch (MalformedURLException se){
+        }catch (SystemException se){
             success = true;
         }
         assertTrue(success);
@@ -369,7 +369,7 @@ public class TenantRESTServiceClientTest {
         when(tenantResourceClient.exists(any())).thenThrow(new ProcessingException("test"));
         try {
             target.isTenantExistent(500L);
-        }catch (ProcessingException se){
+        }catch ( SystemException se){
             success = true;
         }
         assertTrue(success);

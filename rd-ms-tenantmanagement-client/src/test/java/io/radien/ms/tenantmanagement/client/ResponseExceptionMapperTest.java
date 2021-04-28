@@ -16,6 +16,7 @@
 package io.radien.ms.tenantmanagement.client;
 
 import io.radien.exception.NotFoundException;
+import io.radien.exception.TokenExpiredException;
 import io.radien.ms.tenantmanagement.client.exceptions.BadRequestException;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import org.junit.Test;
@@ -25,6 +26,9 @@ import javax.ws.rs.core.Response.Status;
 
 import static org.junit.Assert.*;
 
+/**
+ * @author Bruno Gama
+ */
 public class ResponseExceptionMapperTest {
 
     @Test
@@ -32,11 +36,13 @@ public class ResponseExceptionMapperTest {
         ResponseExceptionMapper uRexceptionMapper = new ResponseExceptionMapper();
         boolean handlesException200 = uRexceptionMapper.handles(200, null);
         boolean handlesException400 = uRexceptionMapper.handles(400, null);
+        boolean handlesException401 = uRexceptionMapper.handles(401, null);
         boolean handlesException404 = uRexceptionMapper.handles(404, null);
         boolean handlesException500 = uRexceptionMapper.handles(500, null);
 
         assertFalse(handlesException200);
         assertTrue(handlesException400);
+        assertTrue(handlesException401);
         assertTrue(handlesException404);
         assertTrue(handlesException500);
     }
@@ -53,6 +59,9 @@ public class ResponseExceptionMapperTest {
         Response responseBadRequest = Response.status(Status.BAD_REQUEST).entity(msg).build();
         Exception exceptionBadRequest = target.toThrowable(responseBadRequest);
 
+        Response responseUnauthorized = Response.status(Status.UNAUTHORIZED).entity(msg).build();
+        Exception exceptionUnauthorized = target.toThrowable(responseUnauthorized);
+
         Response responseNotFound = Response.status(Status.NOT_FOUND).entity(msg).build();
         Exception exceptionNotFound = target.toThrowable(responseNotFound);
 
@@ -61,6 +70,9 @@ public class ResponseExceptionMapperTest {
 
         assertTrue(exceptionBadRequest instanceof BadRequestException);
         assertEquals(msg,exceptionBadRequest.getMessage());
+
+        assertTrue(exceptionUnauthorized instanceof TokenExpiredException);
+        assertEquals(msg,exceptionUnauthorized.getMessage());
 
         assertTrue(exceptionNotFound instanceof NotFoundException);
         assertEquals(msg,exceptionNotFound.getMessage());

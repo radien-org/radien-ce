@@ -21,6 +21,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.util.ListRoleModelMapper;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
@@ -44,7 +46,7 @@ import java.util.Optional;
  */
 @RequestScoped
 @Default
-public class RoleRESTServiceClient implements RoleRESTServiceAccess {
+public class RoleRESTServiceClient extends AuthorizationChecker implements RoleRESTServiceAccess {
 	private static final long serialVersionUID = 2781374814532388090L;
 
 	private static final Logger log = LoggerFactory.getLogger(RoleRESTServiceClient.class);
@@ -56,6 +58,33 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
     private ClientServiceUtil clientServiceUtil;
 
     /**
+     * Calls the requester to retrieve a page object containing roles that matches search parameter.
+     * In case of omitted (empty) search parameter retrieves ALL roles. If not possible it will reload the
+     * access token and retry.
+     * @param search search parameter for matching roles (optional).
+     * @param pageNo page number where the user is seeing the information.
+     * @param pageSize number of roles to be showed in each page.
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
+     * @return page containing system roles
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize,
+                                             List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
+            return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Retrieves a page object containing roles that matches search parameter.
      * In case of omitted (empty) search parameter retrieves ALL roles
      * @param search search parameter for matching roles (optional).
@@ -64,11 +93,10 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
      * @param sortBy Sorting fields
      * @param isAscending Defines if ascending or descending in relation of sorting fields
      * @return page containing system roles
-     * @throws SystemException
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    @Override
-    public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize,
-                                             List<String> sortBy, boolean isAscending) throws SystemException {
+    public Page<? extends SystemRole> getAllRequester(String search, int pageNo, int pageSize,
+                                                      List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
@@ -79,12 +107,32 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
     }
 
     /**
+     * Calls the requester to get a role from the DB searching  by its Id if not possible will refresh the access token
+     * and retry
+     * @param id of the role to be retrieved
+     * @return Optional containing (or not) one role
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Optional<SystemRole> getRoleById(Long id) throws SystemException {
+        try {
+            return getRoleByIdRequester(id);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getRoleByIdRequester(id);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Gets a role from the DB searching  by its Id
      * @param id of the role to be retrieved
      * @return Optional containing (or not) one role
-     * @throws Exception in case of any trouble during the retrieving process
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemRole> getRoleById(Long id) throws SystemException {
+    public Optional<SystemRole> getRoleByIdRequester(Long id) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getById(id);
@@ -95,12 +143,32 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
     }
 
     /**
+     * Calls the requester to get a role from the DB searching  by its Name if not possible will refresh the access
+     * token and retry
+     * @param name of the role to be retrieved
+     * @return Optional containing (or not) one role
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Optional<SystemRole> getRoleByName(String name) throws SystemException {
+        try {
+            return getRoleByNameRequester(name);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getRoleByNameRequester(name);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
      * Gets a role from the DB searching  by its Name
      * @param name of the role to be retrieved
      * @return Optional containing (or not) one role
-     * @throws Exception in case of any trouble during the retrieving process
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemRole> getRoleByName(String name) throws SystemException {
+    public Optional<SystemRole> getRoleByNameRequester(String name) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getSpecificRoles(name, null, true, true);
@@ -116,20 +184,58 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
     }
 
     /**
-     * Gets all the roles in the DB searching for the field description
-     *
+     * Calls the requester to get all the roles in the DB searching for the field description if not possible will
+     * reload the access token and retry
      * @param description to be looked after
      * @return list of roles
-     * @throws SystemException in case it founds multiple roles or if URL is malformed
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public List<? extends SystemRole> getRolesByDescription(String description) throws SystemException {
+        try {
+            return getRolesByDescriptionRequester(description);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getRolesByDescriptionRequester(description);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Gets all the roles in the DB searching for the field description
+     * @param description to be looked after
+     * @return list of roles
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public List<? extends SystemRole> getRolesByDescriptionRequester(String description) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
 
             Response response = client.getSpecificRoles(null, description,false,false);
             return ListRoleModelMapper.map((InputStream) response.getEntity());
-        } catch (ExtensionException|ProcessingException | MalformedURLException e){
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Calls the requester to create given role if not possible will reload the access token and retry
+     * @param role to be created
+     * @return true if user has been created with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean create(SystemRole role) throws SystemException {
+        try {
+            return createRequester(role);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return createRequester(role);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
         }
     }
 
@@ -137,15 +243,15 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
      * Creates given role
      * @param role to be created
      * @return true if user has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean create(SystemRole role) throws SystemException {
-    	RoleResourceClient client;
-		try {
-			client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-		} catch (MalformedURLException e) {
+    public boolean createRequester(SystemRole role) throws SystemException {
+        RoleResourceClient client;
+        try {
+            client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
             throw new SystemException(e);
-		}
+        }
         try (Response response = client.save((Role)role)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
@@ -159,10 +265,30 @@ public class RoleRESTServiceClient implements RoleRESTServiceAccess {
     }
 
     /**
-     * Will calculate how many records are existent in the db
+     * Calls the requester to calculate how many records are existent in the db if not possible will reload
+     * the access token and retry
      * @return the count of existent roles.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public Long getTotalRecordsCount() throws SystemException {
+        try {
+            return getTotalRecordsCountRequester();
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getTotalRecordsCountRequester();
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent roles.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Long getTotalRecordsCountRequester() throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
 

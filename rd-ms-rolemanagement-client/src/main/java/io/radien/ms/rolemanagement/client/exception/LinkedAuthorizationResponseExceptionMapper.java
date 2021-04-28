@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.client.exception;
 
 import io.radien.exception.LinkedAuthorizationNotFoundException;
+import io.radien.exception.TokenExpiredException;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -30,6 +31,7 @@ public class LinkedAuthorizationResponseExceptionMapper implements
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
+                || statusCode == 401    // Token Expiration
                 || statusCode == 404    // Not Found
                 || statusCode == 500;   // Internal Server Error
     }
@@ -39,6 +41,8 @@ public class LinkedAuthorizationResponseExceptionMapper implements
         switch (response.getStatus()) {
             case 400:
                 return new BadRequestException(response.readEntity(String.class));
+            case 401:
+                return new TokenExpiredException(response.readEntity(String.class));
             case 404:
                 return new LinkedAuthorizationNotFoundException(response.readEntity(String.class));
             case 500:

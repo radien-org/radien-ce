@@ -66,7 +66,7 @@ public class LazyLinkedAuthorizationDataModel extends LazyDataModel<SystemLinked
             datasource = service.getAll((offset/pageSize)+1, pageSize);
 
             rowCount = service.getTotalRecordsCount();
-        } catch (MalformedURLException | SystemException | ParseException e) {
+        } catch (SystemException e) {
             e.printStackTrace();
         }
 

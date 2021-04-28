@@ -16,7 +16,7 @@
 package io.radien.ms.rolemanagement.client.exception;
 
 import io.radien.exception.NotFoundException;
-import io.radien.exception.ProcessingException;
+import io.radien.exception.TokenExpiredException;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ public class RoleResponseExceptionMapperTest extends TestCase {
         Response responseInternalServerError = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         Exception exceptionInternalServerError = target.toThrowable(responseInternalServerError);
 
-        assertTrue(exceptionUnathorized instanceof ProcessingException);
+        assertTrue(exceptionUnathorized instanceof TokenExpiredException);
         assertEquals(msg,exceptionUnathorized.getMessage());
 
         assertTrue(exceptionBadRequest instanceof BadRequestException);

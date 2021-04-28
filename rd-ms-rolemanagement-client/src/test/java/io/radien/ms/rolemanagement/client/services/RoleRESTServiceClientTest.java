@@ -18,9 +18,12 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.role.SystemRole;
-import io.radien.api.model.tenant.SystemContract;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
@@ -47,7 +50,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 /**
@@ -63,6 +71,15 @@ public class RoleRESTServiceClientTest {
 
     @Mock
     OAFAccess oafAccess;
+
+    @Mock
+    AuthorizationChecker authorizationChecker;
+
+    @Mock
+    UserClient userClient;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
 
     @Before
     public void before(){
@@ -96,6 +113,21 @@ public class RoleRESTServiceClientTest {
         List<? extends SystemRole> returnedList = target.getAll(null, 1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetContractByNameTokenExpiration() throws Exception {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.getAll(anyString(), anyInt(), anyInt(), anyList(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        List<String> sortBy = new ArrayList<>();
+        target.getAll("a", 1, 10, sortBy, false);
     }
 
     @Test
@@ -304,5 +336,76 @@ public class RoleRESTServiceClientTest {
         }
         assertTrue(success);
 
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetRoleByIdTokenExpiration() throws Exception {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.getById(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getRoleById(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetRoleByNameTokenExpiration() throws Exception {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.getSpecificRoles(anyString(), any(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getRoleByName("name");
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetRoleByDescriptionTokenExpiration() throws Exception {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.getSpecificRoles(any(), anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getRolesByDescription("description");
+    }
+
+    @Test(expected = SystemException.class)
+    public void testCreateTokenExpiration() throws Exception {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.save(any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        SystemRole role = RoleFactory.create("name", "description", 2L);
+        target.create(role);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetTotalRecordsCountTokenExpiration() throws Exception {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.getTotalRecordsCount()).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTotalRecordsCount();
     }
 }

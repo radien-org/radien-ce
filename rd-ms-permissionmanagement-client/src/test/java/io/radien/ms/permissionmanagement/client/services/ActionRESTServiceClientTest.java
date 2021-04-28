@@ -19,9 +19,12 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Action;
-import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.util.ActionModelMapper;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 import org.apache.cxf.bus.extension.ExtensionException;
@@ -46,6 +49,10 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 /**
@@ -62,6 +69,15 @@ public class ActionRESTServiceClientTest {
 
     @Mock
     OAFAccess oafAccess;
+
+    @Mock
+    AuthorizationChecker authorizationChecker;
+
+    @Mock
+    UserClient userClient;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
 
     @Before
     public void before(){
@@ -166,9 +182,7 @@ public class ActionRESTServiceClientTest {
         try {
             target.getActionByName("a");
         }catch (SystemException se){
-        	if (se.getMessage().contains(ExtensionException.class.getName())) {
-        		success = true;
-        	}
+            success = true;
         }
         assertTrue(success);
     }
@@ -186,9 +200,7 @@ public class ActionRESTServiceClientTest {
             target.getActionByName(a);
         }
         catch (SystemException se){
-        	if (se.getMessage().contains(ProcessingException.class.getName())) {
-        		success = true;
-        	}
+            success = true;
         }
         assertTrue(success);
     }
@@ -260,9 +272,7 @@ public class ActionRESTServiceClientTest {
         try {
             target.getActionById(1L);
         }catch (SystemException se){
-            if (se.getMessage().contains(ExtensionException.class.getName())) {
-                success = true;
-            }
+            success = true;
         }
         assertTrue(success);
     }
@@ -279,9 +289,7 @@ public class ActionRESTServiceClientTest {
             target.getActionById(1L);
         }
         catch (SystemException se){
-            if (se.getMessage().contains(ProcessingException.class.getName())) {
-                success = true;
-            }
+            success = true;
         }
         assertTrue(success);
     }
@@ -335,6 +343,67 @@ public class ActionRESTServiceClientTest {
         when(resourceClient.getAll("action%", 1, 100, sortBy, true)).
                 then(i -> errorResponse);
         assertThrows(SystemException.class, () -> target.getAll("action%", 1, 100, sortBy, true));
+    }
+
+
+    @Test(expected = SystemException.class)
+    public void testGetAllTokenExpiration() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getAll(anyString(), anyInt(), anyInt(), anyList(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        List<String> sortBy = new ArrayList<>();
+        target.getAll("search", 1, 10, sortBy, false);
+    }
+
+
+    @Test(expected = SystemException.class)
+    public void testGetActionByIdTokenExpiration() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getById(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getActionById(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetActionByNameTokenExpiration() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getActions(anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getActionByName("name");
+    }
+
+    @Test(expected = SystemException.class)
+    public void testCreateTokenExpiration() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+
+        SystemAction systemAction = ActionFactory.create("name", 2L);
+        target.create(systemAction);
     }
 
 }
