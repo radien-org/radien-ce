@@ -22,14 +22,14 @@
 				<b:inputText id="tenantKey" value="#{tenantDataModel.tenant.key}"
 							 required="true" requiredMessage="#{msg.rd_tenant_key_is_mandatory}"
 							 label="#{msg.key}"/>
-				<b:datepicker validatorMessage="#{msg.rd_tenant_start_date_invalid}"
+				<b:dateTimePicker validatorMessage="#{msg.rd_tenant_start_date_invalid}"
 							  converter="radienLocalDateTimeConverter"
-							  value="#{tenantDataModel.tenant.start}"
-							  required="true" requiredMessage="#{msg.rd_tenant_start_date_is_mandatory}"
-							  label="#{msg.start}"/>
-				<b:datepicker validatorMessage="#{msg.rd_tenant_end_date_invalid}"
+							  value="#{tenantDataModel.tenant.start}" showTime="false" format="DD-MM-YYYY"
+								  required="true" requiredMessage="#{msg.rd_tenant_start_date_is_mandatory}"
+							label="#{msg.start}"/>
+				<b:dateTimePicker validatorMessage="#{msg.rd_tenant_end_date_invalid}"
 							  converter="radienLocalDateTimeConverter"
-							  value="#{tenantDataModel.tenant.end}"
+							  value="#{tenantDataModel.tenant.end}" showTime="false" format="DD-MM-YYYY"
 							  required="false"
 							  label="#{msg.end}"/>
 				<b:selectOneMenu id="tenantType" value="#{tenantDataModel.tenant.type}"
