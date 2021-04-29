@@ -197,7 +197,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testCreateFalse() throws MalformedURLException {
+    public void testCreateFalse() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         when(tenantResourceClient.create(any())).thenReturn(Response.notModified().entity("teste").build());
