@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
@@ -162,5 +163,31 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
             success = false;
         }
         assertTrue(success);
+    }
+
+    @Test
+    public void testCheckIfFieldsAreValidFalse() throws Exception {
+        SystemLinkedAuthorization systemLinkedAuthorization = LinkedAuthorizationFactory.create(4L,4L,4L,4L, 4L);
+        doReturn(true).when(tenantRESTServiceAccess).isTenantExistent(any());
+        doReturn(true).when(permissionRESTServiceAccess).isPermissionExistent(any(), any());
+        doReturn(true).when(roleServiceAccess).checkIfRolesExist(any(), any());
+
+        assertTrue(linkedAuthorizationBusinessService.checkIfFieldsAreValid(systemLinkedAuthorization));
+    }
+
+    @Test
+    public void testTotalRecordsCount() {
+        assertEquals(0L, linkedAuthorizationBusinessService.getTotalRecordsCount());
+    }
+
+    @Test
+    public void testGetRolesByUserAndTenant() {
+        List<SystemRole> list = new ArrayList<>();
+        assertEquals(list, linkedAuthorizationBusinessService.getRolesByUserAndTenant(2L, 2L));
+    }
+
+    @Test
+    public void testIsRoleExistentForUser() {
+        assertFalse(linkedAuthorizationBusinessService.isRoleExistentForUser(2L, 2L, "test"));
     }
 }

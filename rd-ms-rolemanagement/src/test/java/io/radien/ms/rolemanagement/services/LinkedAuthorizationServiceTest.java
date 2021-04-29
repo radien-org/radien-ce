@@ -231,11 +231,36 @@ public class LinkedAuthorizationServiceTest {
 
         SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(400L, null, 400L, null, true);
         assertTrue(linkedAuthorizationServiceAccess.exists(filter));
+
+        SystemLinkedAuthorizationSearchFilter filter2 = new LinkedAuthorizationSearchFilter(400L, null, 400L, null, false);
+        assertTrue(linkedAuthorizationServiceAccess.exists(filter2));
     }
 
     @Test
     public void testGetTotalRecordsCount() {
         long result = linkedAuthorizationServiceAccess.getTotalRecordsCount();
         assertEquals(9, result);
+    }
+
+    @Test
+    public void testGetIsRoleExistentForUserNullUserId() {
+        boolean success = false;
+        try{
+            linkedAuthorizationServiceAccess.isRoleExistentForUser(null, null, null);
+        } catch (Exception e) {
+            success=true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testGetIsRoleExistentForUserNullRoleName() {
+        boolean success = false;
+        try{
+            linkedAuthorizationServiceAccess.isRoleExistentForUser(2L, null, null);
+        } catch (Exception e) {
+            success=true;
+        }
+        assertTrue(success);
     }
 }

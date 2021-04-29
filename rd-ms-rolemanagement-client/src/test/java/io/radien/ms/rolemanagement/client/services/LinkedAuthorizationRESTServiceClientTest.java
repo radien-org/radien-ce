@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
@@ -25,6 +26,7 @@ import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
+import io.radien.ms.rolemanagement.client.util.LinkedAuthorizationModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,10 +35,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonWriter;
+import javax.json.*;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -269,5 +270,129 @@ public class LinkedAuthorizationRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.checkIfLinkedAuthorizationExists(2L,2L,2L,2L);
+    }
+
+    @Test
+    public void testIsLinkedAuthorizationExistent() throws MalformedURLException, SystemException {
+        LinkedAuthorizationResourceClient linkedAuthorizationClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        Response response = Response.ok().build();
+
+        when(linkedAuthorizationClient.existsSpecificAssociation(anyLong(), anyLong(), anyLong(), anyLong(), anyBoolean())).thenReturn(response);
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationClient);
+
+        assertTrue(target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L));
+    }
+
+    @Test
+    public void testIsLinkedAuthorizationExistentReturnFalse() throws MalformedURLException, SystemException {
+        LinkedAuthorizationResourceClient linkedAuthorizationClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        Response response = Response.notModified().build();
+
+        when(linkedAuthorizationClient.existsSpecificAssociation(anyLong(), anyLong(), anyLong(), anyLong(), anyBoolean())).thenReturn(response);
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationClient);
+
+        assertFalse(target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L));
+    }
+
+    @Test
+    public void testIsLinkedAuthorizationExistentWebApplicationException() throws Exception {
+        boolean success = false;
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new WebApplicationException());
+        try {
+            target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
+        }catch (WebApplicationException se){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testIsLinkedAuthorizationExistentException() throws Exception {
+        boolean success = false;
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ProcessingException("teste"));
+        try {
+            target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
+        }catch (Exception se){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testGetAll() throws MalformedURLException {
+        List<LinkedAuthorization> list = new ArrayList<>();
+        list.add(LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L));
+        list.add(LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L, 3L));
+        list.add(LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L));
+        Page<SystemLinkedAuthorization> page = new Page<>(list, 1, 3, 1);
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
+                .add("currentPage", page.getCurrentPage())
+                .add("totalResults", page.getTotalResults())
+                .add("totalPages", page.getTotalPages())
+                .add("results", LinkedAuthorizationModelMapper.map(list));
+
+        JsonObject jsonObject = objectBuilder.build();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
+        Response expectedResponse = Response.ok(inputStream).build();
+
+        LinkedAuthorizationResourceClient linkedAuthorizationClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).
+                then(i -> linkedAuthorizationClient);
+        when(linkedAuthorizationClient.getAllAssociations(1, 100)).
+                then(i -> expectedResponse);
+
+        assertThrows(Exception.class, () -> target.getAll(1, 100));
+    }
+
+    @Test
+    public void testGetTotalRecordsCountException() throws MalformedURLException, SystemException {
+        LinkedAuthorization linkedAuthorization = LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L);
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(LinkedAuthorizationFactory.convertToJsonObject(linkedAuthorization));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).entity(1L).build();
+
+        LinkedAuthorizationResourceClient linkedAuthorizationClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationClient.getTotalRecordsCount()).thenReturn(response);
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationClient);
+
+        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
+    }
+
+    @Test
+    public void isRoleExistentForUser() throws MalformedURLException, SystemException {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+
+        when(linkedAuthorizationResourceClient.isRoleExistentForUser(anyLong(), anyString(), anyLong())).thenReturn(Response.ok().entity(true).build());
+
+        boolean value = target.isRoleExistentForUser(2L, 2L, "role");
+
+        assertTrue(value);
+    }
+
+    @Test
+    public void isRoleExistentForUserException() throws MalformedURLException, SystemException {
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
+
+        boolean success=false;
+        try {
+            target.isRoleExistentForUser(2L, 2L, "role");
+        }catch (Exception e) {
+            success=true;
+        }
+        assertTrue(success);
     }
 }

@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -155,8 +156,23 @@ public class RoleServiceTest {
     }
 
     @Test
+    public void testGetAllSearchNotNullSort() throws UniquenessConstraintException, RoleNotFoundException {
+        SystemRole testById1 = RoleFactory.create("name12", "description12", 2L);
+        roleServiceAccess.save(testById1);
+
+        List<String> sortBy = new ArrayList<>();
+        sortBy.add("name");
+
+        Page<SystemRole> result = roleServiceAccess.getAll("testGetAll2",1,10,sortBy,false);
+        assertNotNull(result);
+
+        Page<SystemRole> result2 = roleServiceAccess.getAll("testGetAll2",1,10,sortBy,true);
+        assertNotNull(result2);
+    }
+
+    @Test
     public void testGetTotalRecordsCount() {
         long result = roleServiceAccess.getTotalRecordsCount();
-        assertEquals(5, result);
+        assertEquals(6, result);
     }
 }
