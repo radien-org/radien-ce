@@ -130,7 +130,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.getUsers(a,null,null,true,true)).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         boolean success = false;
         try {
@@ -150,7 +150,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.save(any())).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         boolean success = false;
         try {
@@ -168,7 +168,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.sendUpdatePasswordEmail(anyLong())).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         assertFalse(target.sendUpdatePasswordEmail(2L));
     }
@@ -180,7 +180,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.delete(anyLong())).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         assertFalse(target.deleteUser(2L));
     }
@@ -199,7 +199,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.create(anyList())).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         Optional<BatchSummary> optional = target.create(listUsers);
 
@@ -291,7 +291,7 @@ public class UserRESTServiceClientTest {
                 .thenThrow(new TokenExpiredException());
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         assertNull(target.getAll(null, 1, 10, null, false));
     }
@@ -304,7 +304,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.save(any())).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         assertFalse(target.updateUser(user));
     }
@@ -332,7 +332,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.getUsers(a,null,null,true,true)).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenReturn(Response.notModified().entity("refreshToken").build());
+        when(userClient.refreshToken(any())).thenReturn(Response.notModified().entity("refreshToken").build());
 
         boolean success = false;
         try {
@@ -351,7 +351,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.getUsers(a,null,null,true,true)).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
-        when(resourceClient.refreshToken(any())).thenThrow(new TokenExpiredException("teste"));
+        when(userClient.refreshToken(any())).thenThrow(new TokenExpiredException("teste"));
 
         boolean success = false;
         try {
