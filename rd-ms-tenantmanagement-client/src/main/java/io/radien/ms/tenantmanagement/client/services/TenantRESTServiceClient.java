@@ -56,10 +56,11 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     private OAFAccess oafAccess;
     
     /**
-     * Gets the contract in the DB searching for the field Id
+     * Gets requester to get the contract in the DB searching for the field Id
      *
      * @param id to be looked after
      * @return Optional Contract
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
     public Optional<SystemTenant> getTenantById(Long id) throws SystemException {
@@ -76,6 +77,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
 
     }
 
+    /**
+     * Gets the contract in the DB searching for the field Id
+     * @param id to be looked after
+     * @return Optional Contract
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private Optional<SystemTenant> getSystemTenant(Long id) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
@@ -87,10 +94,10 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     }
 
     /**
-     * Gets the contract in the DB searching for the field Name
-     *
+     * Gets the requester to get the contract in the DB searching for the field Name
      * @param name to be looked after
      * @return Optional Contract
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
     public List<? extends SystemTenant> getTenantByName(String name) throws SystemException {
@@ -106,6 +113,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Gets the contract in the DB searching for the field Name
+     * @param name to be looked after
+     * @return Optional Contract
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private List<? extends Tenant> getTenantsByName(String name) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
@@ -118,14 +131,14 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     }
 
     /**
-     * Gets all the tenants into a pagination mode.
+     * Gets the requester to get all the tenants into a pagination mode.
      * @param search name description for some tenant (optional)
      * @param pageNo of the requested information. Where the tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
      * @param isAscending ascending filter criteria.
      * @return a page of system tenants.
-     * @throws SystemException in case of any issue
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
     public Page<? extends SystemTenant> getAll(String search,
@@ -145,6 +158,16 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Get all the tenants into a pagination mode.
+     * @param search name description for some tenant (optional)
+     * @param pageNo of the requested information. Where the tenant is.
+     * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.
+     * @return a page of system tenants.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private Page<Tenant> getTenantPage(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
@@ -156,10 +179,10 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     }
 
     /**
-     * Creates given Tenant
+     * Asks the requester to creat a given Tenant
      * @param tenant to be created
      * @return true if user has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
     public boolean create(SystemTenant tenant) throws SystemException {
@@ -175,6 +198,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Creates given Tenant
+     * @param tenant to be created
+     * @return true if user has been created with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private boolean createTenant(Tenant tenant) throws SystemException {
         TenantResourceClient client;
         try {
@@ -194,6 +223,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Asks the requester to delete a given tenant
+     * @param contractId to be deleted
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     @Override
     public boolean delete(long contractId) throws SystemException {
         try {
@@ -208,6 +243,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Deletes a requester tenant
+     * @param contractId to be deleted
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private boolean deleteRequester(long contractId) throws SystemException {
         TenantResourceClient client;
         try {
@@ -227,6 +268,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Asks the requester to delete a given tenant and all the hierarchy tenants
+     * @param id to be deleted
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     @Override
     public boolean deleteTenantHierarchy(long id) throws SystemException {
         try {
@@ -241,6 +288,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Deletes a requester tenant and all the hierarchy tenants
+     * @param id to be deleted
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private boolean delTenantHierarchy(long id) throws SystemException {
         TenantResourceClient client;
         try {
@@ -260,6 +313,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Asks the requester update a given tenant
+     * @param tenant to be updated
+     * @return true if user has been updated with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     @Override
     public boolean update(SystemTenant tenant) throws SystemException {
         try {
@@ -274,6 +333,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Updates a given tenant
+     * @param tenant to be updated
+     * @return true if user has been updated with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private boolean updateTenant(SystemTenant tenant) throws SystemException {
         TenantResourceClient client;
         try {
@@ -294,10 +359,10 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     }
 
     /**
-     * Sends a request to the tenant client to validate if a specific tenant exists
+     * Gets the requester to see if a specific tenant exists
      * @param tenantId to be found
      * @return true in case of success response
-     * @throws MalformedURLException in case of any error in the specified url
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
     public boolean isTenantExistent(Long tenantId) throws SystemException {
@@ -313,6 +378,12 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         }
     }
 
+    /**
+     * Sends a request to the tenant client to validate if a specific tenant exists
+     * @param tenantId to be found
+     * @return true in case of success response
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
     private boolean isTenantExistentRequester(Long tenantId) throws SystemException {
         TenantResourceClient client;
         try {

@@ -92,7 +92,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return list of permissions
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Page<?extends SystemPermission> getAllRequester(String search, int pageNo, int pageSize,
+    private Page<?extends SystemPermission> getAllRequester(String search, int pageNo, int pageSize,
                                                            List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -128,7 +128,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return list of system permissions in the db
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public List<? extends SystemPermission> getPermissionRequester(String search, int pageNo, int pageSize,
+    private List<? extends SystemPermission> getPermissionRequester(String search, int pageNo, int pageSize,
                                                                    List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(
@@ -167,7 +167,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return Optional List of Actions
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemPermission> getPermissionByIdRequester(Long id) throws SystemException {
+    private Optional<SystemPermission> getPermissionByIdRequester(Long id) throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -210,7 +210,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return a list of permissions found using the action and the resource id
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public List<? extends SystemPermission> getPermissionByActionAndResourceRequester(Long actionId, Long resourceId) throws SystemException {
+    private List<? extends SystemPermission> getPermissionByActionAndResourceRequester(Long actionId, Long resourceId) throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -248,7 +248,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return Optional List of Permissions
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
-    public Optional<SystemPermission> getPermissionByNameRequester(String name) throws SystemException {
+    private Optional<SystemPermission> getPermissionByNameRequester(String name) throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -291,7 +291,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return true in case of success
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
-    public boolean deleteRequester(long permissionId) throws SystemException{
+    private boolean deleteRequester(long permissionId) throws SystemException{
         PermissionResourceClient client;
         try {
             client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
@@ -333,7 +333,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return true in case of success
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
-    public boolean createRequester(SystemPermission permission) throws SystemException {
+    private boolean createRequester(SystemPermission permission) throws SystemException {
         PermissionResourceClient client;
         try {
             client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
@@ -376,7 +376,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return true in case of success
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
-    public boolean isPermissionExistentRequester(Long permissionId, String permissionName) throws  SystemException {
+    private boolean isPermissionExistentRequester(Long permissionId, String permissionName) throws  SystemException {
         PermissionResourceClient client;
         try {
             client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
@@ -416,7 +416,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @return the count of existent permissions.
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
-    public Long getTotalRecordsCountRequester() throws SystemException {
+    private Long getTotalRecordsCountRequester() throws SystemException {
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
                     (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
