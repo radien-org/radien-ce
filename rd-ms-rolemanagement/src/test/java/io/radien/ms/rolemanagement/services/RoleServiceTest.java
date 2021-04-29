@@ -157,6 +157,6 @@ public class RoleServiceTest {
     @Test
     public void testGetTotalRecordsCount() {
         long result = roleServiceAccess.getTotalRecordsCount();
-        assertEquals(6, result);
+        assertEquals(5, result);
     }
 }
