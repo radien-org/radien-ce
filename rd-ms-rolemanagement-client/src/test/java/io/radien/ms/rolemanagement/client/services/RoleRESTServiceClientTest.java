@@ -408,4 +408,59 @@ public class RoleRESTServiceClientTest {
 
         target.getTotalRecordsCount();
     }
+
+    @Test
+    public void testGetTenantById() throws MalformedURLException, SystemException {
+        Role dummyRole = new Role();
+        dummyRole.setId(3L);
+        dummyRole.setName("name");
+        dummyRole.setDescription("description");
+
+        InputStream is = new ByteArrayInputStream(RoleModelMapper.map(dummyRole).toString().getBytes());
+        Response response = Response.ok(is).build();
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.getById(anyLong())).thenReturn(response);
+
+        Optional<SystemRole> opt = target.getRoleById(dummyRole.getId());
+        assertNotNull(opt);
+        assertTrue(opt.isPresent());
+        assertEquals(opt.get().getId(), dummyRole.getId());
+    }
+
+    @Test
+    public void testGetRoleByIdException() throws Exception {
+        boolean success = false;
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
+        try {
+            target.getRoleById(3L);
+        }catch (Exception se){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testGetTotalRecordsCountException() throws MalformedURLException, SystemException {
+        Role role = RoleFactory.create("test", null,2L);
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(RoleFactory.convertToJsonObject(role));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).entity(1L).build();
+
+        RoleResourceClient resourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+
+        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
+    }
 }

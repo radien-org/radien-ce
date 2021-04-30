@@ -35,6 +35,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -321,6 +323,34 @@ public class LinkedAuthorizationResourceTest {
         when(linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, tenantId))
                 .thenThrow(new RuntimeException());
         Response response = linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, tenantId);
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testGetRoles() {
+        Response response = linkedAuthorizationResource.getRoles(2L, 2L);
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testGetRolesException() {
+        when(linkedAuthorizationResource.getRoles(anyLong(), anyLong()))
+                .thenThrow(new RuntimeException());
+        Response response = linkedAuthorizationResource.getRoles(2L, 2L);
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testIsRoleExistentForUser() {
+        Response response = linkedAuthorizationResource.isRoleExistentForUser(2L, "test", 2L);
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testIsRoleExistentForUserException() {
+        when(linkedAuthorizationBusinessService.isRoleExistentForUser(anyLong(), anyLong(), anyString()))
+                .thenThrow(new RuntimeException());
+        Response response = linkedAuthorizationResource.isRoleExistentForUser(2L, "test", 2L);
         assertEquals(500,response.getStatus());
     }
 }

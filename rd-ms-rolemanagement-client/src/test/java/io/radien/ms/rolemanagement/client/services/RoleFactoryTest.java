@@ -15,13 +15,17 @@
  */
 package io.radien.ms.rolemanagement.client.services;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.rolemanagement.client.entities.Role;
+import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -104,5 +108,25 @@ public class RoleFactoryTest extends TestCase {
             foundException = true;
         }
         assertTrue(foundException);
+    }
+
+    @Test
+    public void testMapInputStreamToPage() {
+        String example = "{\n" +
+                "\"currentPage\": 0,\n" +
+                "\"results\": [\n" +
+                "{\n" +
+                "\"name\": \"a\",\n" +
+                "\"description\": \"test\"\n" +
+                "}\n" +
+                "],\n" +
+                "\"totalPages\": 1,\n" +
+                "\"totalResults\": 4\n" +
+                "}";
+        InputStream in = new ByteArrayInputStream(example.getBytes());
+        Page<Role> role = RoleModelMapper.mapToPage(in);
+        assertEquals(0, role.getCurrentPage());
+        assertEquals(1, role.getTotalPages());
+        assertEquals(4, role.getTotalResults());
     }
 }
