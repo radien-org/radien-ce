@@ -21,14 +21,9 @@ ACCESS_TOKEN=$(curl -L -X POST 'https://idp-int.radien.io/auth/realms/radien/pro
 --data-urlencode 'username=n.santana-username' \
 --data-urlencode 'password=batata' | jq -r '.access_token')
 
-curl -L -X GET 'http://localhost:8081/usermanagementservice/v1/user' -H "Authorization:Bearer "$ACCESS_TOKEN
+curl -L -X POST 'http://localhost:8081/usermanagementservice/v1/user' --data-raw '{ "firstname": "Nuno", "lastname": "Santana", "logon": "n.santana-username", "userEmail": "n.santana@radien.io", "enabled": true, "sub":"ec4416b3-9f7a-4ae1-89f5-dfd09a44ee8d", "delegatedCreation": true}' -H 'Content-Type: application/json' -H "Authorization:Bearer "$ACCESS_TOKEN
 
-curl -L -X POST 'http://localhost:8081/usermanagementservice/v1/user' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' \
---data-raw '{
-"firstname": "xomar ",
-"lastname": null,
-"logon": "xomar22",
-"userEmail": "jinowo98772@tigasu.com",
-"enabled": true,
-"delegatedCreation": false
-}'
+
+curl -L -X POST 'http://localhost:8081/usermanagementservice/v1/user' -H 'Content-Type: application/json' --data-raw '{"firstname": "xomar ","lastname": null,"logon": "xomar22","userEmail": "jinowo98772@tigasu.com","enabled": true,"delegatedCreation": true}' -H 'Authorization: Bearer '$ACCESS_TOKEN
+
+curl -L -X GET 'http://localhost:8081/usermanagementservice/v1/user' -H "Authorization:Bearer "$ACCESS_TOKEN
