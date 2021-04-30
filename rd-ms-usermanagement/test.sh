@@ -23,3 +23,12 @@ ACCESS_TOKEN=$(curl -L -X POST 'https://idp-int.radien.io/auth/realms/radien/pro
 
 curl -L -X GET 'http://localhost:8081/usermanagementservice/v1/user' -H "Authorization:Bearer "$ACCESS_TOKEN
 
+curl -L -X POST 'http://localhost:8081/usermanagementservice/v1/user' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' \
+--data-raw '{
+"firstname": "xomar ",
+"lastname": null,
+"logon": "xomar22",
+"userEmail": "jinowo98772@tigasu.com",
+"enabled": true,
+"delegatedCreation": false
+}'
