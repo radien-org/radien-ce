@@ -56,10 +56,10 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     private OAFAccess oafAccess;
     
     /**
-     * Gets requester to get the contract in the DB searching for the field Id
+     * Gets requester to get the tenant in the DB searching for the field Id
      *
      * @param id to be looked after
-     * @return Optional Contract
+     * @return Optional list of tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
@@ -78,9 +78,9 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     }
 
     /**
-     * Gets the contract in the DB searching for the field Id
+     * Gets the tenant in the DB searching for the field Id
      * @param id to be looked after
-     * @return Optional Contract
+     * @return Optional list of tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     private Optional<SystemTenant> getSystemTenant(Long id) throws SystemException {
@@ -94,9 +94,9 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     }
 
     /**
-     * Gets the requester to get the contract in the DB searching for the field Name
+     * Gets the requester to get the tenant in the DB searching for the field Name
      * @param name to be looked after
-     * @return Optional Contract
+     * @return Optional list of tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
@@ -114,9 +114,9 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     }
 
     /**
-     * Gets the contract in the DB searching for the field Name
+     * Gets the tenant in the DB searching for the field Name
      * @param name to be looked after
-     * @return Optional Contract
+     * @return Optional list of tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     private List<? extends Tenant> getTenantsByName(String name) throws SystemException {
@@ -225,18 +225,18 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
 
     /**
      * Asks the requester to delete a given tenant
-     * @param contractId to be deleted
+     * @param tenantId to be deleted
      * @return true if user has been deleted with success or false if not
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public boolean delete(long contractId) throws SystemException {
+    public boolean delete(long tenantId) throws SystemException {
         try {
-            return deleteRequester(contractId);
+            return deleteRequester(tenantId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return deleteRequester(contractId);
+                return deleteRequester(tenantId);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException("Unable to recover expiredToken");
             }
@@ -245,18 +245,18 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
 
     /**
      * Deletes a requester tenant
-     * @param contractId to be deleted
+     * @param tenantId to be deleted
      * @return true if user has been deleted with success or false if not
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private boolean deleteRequester(long contractId) throws SystemException {
+    private boolean deleteRequester(long tenantId) throws SystemException {
         TenantResourceClient client;
         try {
             client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
         } catch (MalformedURLException malformedURLException){
             throw new SystemException(malformedURLException.getMessage());
         }
-        try (Response response = client.delete(contractId)) {
+        try (Response response = client.delete(tenantId)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
