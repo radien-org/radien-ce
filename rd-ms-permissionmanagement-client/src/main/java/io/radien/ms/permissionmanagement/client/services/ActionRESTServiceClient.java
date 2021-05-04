@@ -95,7 +95,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * @return a list of existent system actions
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Page<? extends SystemAction> getAllRequest(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    private Page<? extends SystemAction> getAllRequest(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
@@ -132,7 +132,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * @return Optional List of Actions
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemAction> getActionByIdRequest(Long id) throws SystemException {
+    private Optional<SystemAction> getActionByIdRequest(Long id) throws SystemException {
         try {
             ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -173,7 +173,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * @return Optional List of Actions
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemAction> getActionByNameRequest(String name) throws SystemException {
+    private Optional<SystemAction> getActionByNameRequest(String name) throws SystemException {
         try {
             ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -215,7 +215,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * @return true if action has been created with success or false if not
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean createRequest(SystemAction action) throws SystemException{
+    private boolean createRequest(SystemAction action) throws SystemException{
         ActionResourceClient client;
         try {
             client = clientServiceUtil.getActionResourceClient(oaf.
