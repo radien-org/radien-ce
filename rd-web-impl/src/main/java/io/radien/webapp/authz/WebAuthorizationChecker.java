@@ -17,17 +17,22 @@ package io.radien.webapp.authz;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
-import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.openid.service.PrincipalFactory;
+import io.radien.webapp.JSFUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJBException;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import java.text.MessageFormat;
 
 @SessionScoped
 @Named("authzChecker")
@@ -45,12 +50,21 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
 
     private Logger log = LoggerFactory.getLogger(WebAuthorizationChecker.class);
 
+    /**
+     * Will get the active user id
+     * @return user id
+     * @throws SystemException in case it founds any issue
+     */
     @Override
     protected Long getCurrentUserId() throws SystemException {
         Long id = userSession.getUserId();
         return id == null ? super.getCurrentUserId() : id;
     }
 
+    /**
+     * Returns the information of the active user
+     * @return the active user
+     */
     @Override
     protected SystemUser getInvokerUser() {
         SystemUser user = PrincipalFactory.create(userSession.getUserFirstName(),
@@ -59,6 +73,12 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
         return user;
     }
 
+    /**
+     * Validates if the active user has specific roles
+     * @param tenantId Tenant identifier (Optional parameter)
+     * @param roleName this parameter corresponds to the role name
+     * @return true in case of the requested role exists in the user
+     */
     @Override
     public boolean hasGrant(Long tenantId, String roleName) {
         try {
@@ -68,5 +88,14 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
             log.error("Error checking authorization", e);
             return false;
         }
+    }
+
+    /**
+     * Checks if the active user has System Administrator role or User Administrator role
+     * @return true if they exist in the active user
+     */
+    public boolean hasUserAdministratorRoleAccess() throws SystemException {
+        return super.hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) ||
+                super.hasGrant(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
     }
 }

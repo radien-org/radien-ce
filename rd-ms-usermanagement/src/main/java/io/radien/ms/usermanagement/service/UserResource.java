@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -57,6 +58,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 
 	private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
+	/**
+	 * Will create request that by a given user sub will try to retrieve the user id
+	 * @param sub that identifies the user
+	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
+	 */
 	@Override
 	public Response getUserIdBySub(String sub) {
 		try {
@@ -70,13 +76,22 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		}
 	}
 
+	/**
+	 * Will request the service to retrieve all the users into a paginated response.
+	 *
+	 * @param search criteria to be found, can be used to multiple fields
+	 * @param pageNo page number to show the first records
+	 * @param pageSize max number of pages of results
+	 * @param sortBy criteria field to be sorted
+	 * @param isAscending boolean value to show the values ascending or descending way
+	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
+	 */
 	@Override
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 		try {
-			if (!hasGrant("admin")) {
-				return Response.status(HttpStatus.SC_FORBIDDEN).
-						entity("No Role available to perform this task").build();
+			if (checkUserRoles()) {
+				return getForbiddenResponse();
 			}
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
@@ -84,6 +99,15 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		}
 	}
 
+	/**
+	 * Retrieves multiple users into a response in base of a search filter criteria
+	 * @param sub to be found
+	 * @param email to be found
+	 * @param logon to be found
+	 * @param isExact should the search fields be exact or not as given
+	 * @param isLogicalConjunction should the query use a and or a or criteria
+	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
+	 */
 	@Override
 	public Response getUsers(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction) {
 		try {
@@ -101,6 +125,9 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response getById(Long id) {
 		try {
+			if (checkUserRoles()) {
+				return getForbiddenResponse();
+			}
 			SystemUser systemUser = userBusinessService.get(id);
 			return Response.ok(systemUser).build();
 		} catch(Exception e) {
@@ -115,6 +142,9 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response delete(long id)  {
 		try {
+			if (checkUserRoles()) {
+				return getForbiddenResponse();
+			}
 			userBusinessService.delete(id);
 		}  catch (Exception e){
 			return getResponseFromException(e);
@@ -130,9 +160,8 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			if (!isSelfOnboard(user) && !hasGrant("tenant-administrator")) {
-				return Response.status(HttpStatus.SC_FORBIDDEN).
-						entity("No Role available to perform this task").build();
+			if (!isSelfOnboard(user) && checkUserRoles()) {
+				return getForbiddenResponse();
 			}
 			userBusinessService.save(new User(user),user.isDelegatedCreation());
 		} catch (Exception e) {
@@ -152,6 +181,12 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		return invoker != null && invoker.getSub().equals(user.getSub());
 	}
 
+	/**
+	 *
+	 * @param sub sub from the current logged logged user
+	 * @return
+	 * @throws SystemException
+	 */
 	@Override
 	protected Long getCurrentUserIdBySub(String sub) throws SystemException {
 		Long userId = this.userBusinessService.getUserId(sub);
@@ -179,6 +214,26 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
 		log.error(message, e);
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
+	}
+
+	/**
+	 * Returns Forbidden response type in case of missing certain user roles
+	 * @return code 403 message Forbidden response
+	 */
+	private Response getForbiddenResponse() {
+		return Response.status(HttpStatus.SC_FORBIDDEN).
+				entity("No Role available to perform this task").build();
+	}
+
+	/**
+	 * Validates if the requester user has one of the specific roles either
+	 * System Administrator or User Administrator
+	 * @return true in case of neither of the roles are matching the user ones
+	 * @throws SystemException throw exception in case of any issue validating the roles
+	 */
+	public boolean checkUserRoles() throws SystemException {
+		return !hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName())
+				|| !hasGrant(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 	}
 
 	/**
@@ -230,6 +285,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		}
 	}
 
+	/**
+	 * Will validate the given generic exception into a specific one and specific message to be throw or show to the user
+	 * @param e exception to be validated
+	 * @return Ok message if it has success. Returns error 500 Code to the user in case of any issue.
+	 */
 	private Response getResponseFromException(Exception e){
 		Response response;
 		try{
@@ -247,6 +307,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		return response;
 	}
 
+	/**
+	 * Will send the updated password via email to the user in case of success will return a 200 code message
+	 * @param id of the user that should the email be sent to
+	 * @return
+	 */
 	@Override
 	public Response sendUpdatePasswordEmail(long id){
 		try {
@@ -258,6 +323,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		}
 	}
 
+	/**
+	 * Will update the refresh token, to update the access of the specific user
+	 * @param refreshToken to be used
+	 * @return Ok message if it has success. Returns error 500 Code to the user in case of any issue.
+	 */
 	@Override
 	public Response refreshToken(String refreshToken) {
 		try {
