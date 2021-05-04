@@ -1,0 +1,66 @@
+package io.radien.ms.tenantmanagement.client.entities;
+
+import io.radien.ms.tenantmanagement.client.services.TenantRoleFactory;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class TenantRoleTest {
+
+    private TenantRole tenantRole;
+    private Long tenantId = 11L;
+    private Long roleId = 22L;
+
+    public TenantRoleTest() {
+        tenantRole = TenantRoleFactory.create(11L, 22L, 3L);
+        tenantRole.setId(2L);
+    }
+
+    @Test
+    public void testConstructor() {
+        TenantRole newTenantRole = new TenantRole(tenantRole);
+        assertEquals((Long) 2L, newTenantRole.getId());
+        assertEquals(roleId, newTenantRole.getRoleId());
+        assertEquals(tenantId, newTenantRole.getTenantId());
+    }
+
+    @Test
+    public void testGetId() {
+        assertNotNull(tenantRole.getId());
+        assertEquals((Long) 2L, tenantRole.getId());
+    }
+
+    @Test
+    public void testSetId() {
+        tenantRole.setId(3L);
+        assertNotNull(tenantRole.getId());
+        assertEquals((Long) 3L, tenantRole.getId());
+    }
+
+    @Test
+    public void testRoleId() {
+        assertNotNull(tenantRole.getRoleId());
+        assertEquals(roleId, tenantRole.getRoleId());
+    }
+
+    @Test
+    public void testSetRoleId() {
+        Long newRoleId = 9999L;
+        tenantRole.setRoleId(newRoleId);
+        assertNotNull(tenantRole.getRoleId());
+        assertEquals(newRoleId, tenantRole.getRoleId());
+    }
+
+    @Test
+    public void testGetTenantId() {
+        assertNotNull(tenantRole.getTenantId());
+        assertEquals(tenantId, tenantRole.getTenantId());
+    }
+
+    @Test
+    public void testSetTenantId() {
+        Long newTenantId = 8888L;
+        tenantRole.setTenantId(newTenantId);
+        assertNotNull(tenantRole.getTenantId());
+        assertEquals(newTenantId, tenantRole.getTenantId());
+    }
+}
