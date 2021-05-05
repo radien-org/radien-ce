@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.tenantrole;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
@@ -28,6 +29,14 @@ import java.util.List;
  * @author Newton Carvalho
  */
 public interface TenantRoleUserServiceAccess extends ServiceAccess {
+
+    /**
+     * Gets all the tenant role user associations into a pagination mode.
+     * @param pageNo of the requested information. Where the tenant is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page containing system tenant role user associations.
+     */
+    Page<SystemTenantRoleUser> getAll(int pageNo, int pageSize);
 
     /**
      * Gets specific tenant role user association by the id
@@ -55,5 +64,13 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param tenantRoleUserId tenant role user to be deleted
      * @return true in case of success false in case of any error
      */
-    boolean delete(Long tenantRoleUserId);    
+    boolean delete(Long tenantRoleUserId);
+
+    /**
+     * Check if an user is already assigned/associated with a tenant role
+     * @param userId User identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @return true if already exists, otherwise returns false
+     */
+    boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId);
 }
