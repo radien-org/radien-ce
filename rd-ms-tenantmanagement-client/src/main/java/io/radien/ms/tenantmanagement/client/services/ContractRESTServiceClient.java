@@ -82,7 +82,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public List<? extends SystemContract> getContractByNameRequest(String name) throws SystemException {
+    private List<? extends SystemContract> getContractByNameRequest(String name) throws SystemException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
@@ -120,7 +120,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean createRequester(SystemContract contract) throws SystemException {
+    private boolean createRequester(SystemContract contract) throws SystemException {
         ContractResourceClient client;
         try {
             client = clientServiceUtil.
@@ -168,7 +168,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean updateRequester(Long contractId, SystemContract systemContract) throws SystemException {
+    private boolean updateRequester(Long contractId, SystemContract systemContract) throws SystemException {
         ContractResourceClient client;
         try {
             client = clientServiceUtil.
@@ -217,7 +217,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
      * @return a list of System contracts to be used
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Page<? extends SystemContract> getAlRequester(int pageNo, int pageSize) throws SystemException {
+    private Page<? extends SystemContract> getAlRequester(int pageNo, int pageSize) throws SystemException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
             Response response = client.getAll(pageNo, pageSize);
@@ -251,7 +251,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
      * @return the count of existent contracts.
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Long getTotalRecordsCountRequester() throws SystemException {
+    private Long getTotalRecordsCountRequester() throws SystemException {
         try {
             ContractResourceClient client = clientServiceUtil.getContractResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
 
@@ -290,7 +290,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean isContractExistentRequester(Long contractId) throws SystemException {
+    private boolean isContractExistentRequester(Long contractId) throws SystemException {
         ContractResourceClient client;
         try {
             client = clientServiceUtil.
@@ -331,7 +331,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean deleteRequest(Long contractId) throws SystemException {
+    private boolean deleteRequest(Long contractId) throws SystemException {
         ContractResourceClient client;
         try {
             client = clientServiceUtil.
