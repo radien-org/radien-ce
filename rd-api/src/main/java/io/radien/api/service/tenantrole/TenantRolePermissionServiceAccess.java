@@ -56,4 +56,12 @@ public interface TenantRolePermissionServiceAccess extends ServiceAccess {
      * @return true in case of success false in case of any error
      */
     boolean delete(Long tenantRolePermissionId);
+
+    /**
+     * Check if a permission is already assigned/associated with a tenant role
+     * @param permissionId Permission identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @return true if already exists, otherwise returns false
+     */
+    boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId);
 }
