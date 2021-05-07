@@ -73,4 +73,12 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @return true if already exists, otherwise returns false
      */
     boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId);
+
+    /**
+     * Retrieves strictly the TenantRoleUser id basing on tenantRole and user
+     * @param tenantRole tenant identifier
+     * @param user identifier
+     * @return TenantRoleUser id
+     */
+    Long getTenantRoleUserId(Long tenantRole, Long user);
 }

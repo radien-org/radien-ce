@@ -281,4 +281,25 @@ public class TenantRoleUserServiceTest {
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
     }
+
+    /**
+     * Test for method getTenantRoleUserId(Long tenantRoleId, Long userId)
+     */
+    @Test
+    @Order(15)
+    public void testGetTenantRoleUserId() {
+        SystemTenantRoleUser sru = new TenantRoleUser();
+        sru.setTenantRoleId(101010L);
+        sru.setUserId(101L);
+        Assertions.assertDoesNotThrow(() -> this.tenantRoleUserServiceAccess.create(sru));
+
+        Long expectedId = sru.getId();
+        Assertions.assertNotNull(expectedId);
+
+        Long id = this.tenantRoleUserServiceAccess.getTenantRoleUserId(101010L, 101L);
+        Assertions.assertEquals(expectedId, id);
+
+        id = this.tenantRoleUserServiceAccess.getTenantRoleUserId(101010L, 202L);
+        Assertions.assertNull(id);
+    }
 }

@@ -29,8 +29,10 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -306,5 +308,170 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         typedQuery.setParameter("pTenantRoleId", tenantRoleId);
 
         return typedQuery.getSingleResult() > 0;
+    }
+
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return permission ids
+     */
+    @Override
+    public List<Long> getPermissions(Long tenantId, Long roleId, Long userId) {
+        if (tenantId == null) {
+            throw new IllegalArgumentException("Tenant is mandatory");
+        }
+
+        if (roleId == null) {
+            throw new IllegalArgumentException("Role is mandatory");
+        }
+
+        String query =
+                "Select trp.permissionId " +
+                "From TenantRole tr, " +
+                "     TenantRolePermission trp " +
+                "where tr.tenantId = :pTenantId and " +
+                "      tr.roleId = :pRoleId and tr.id = trp.tenantRoleId";
+
+        if (userId != null) {
+            query = "Select trp.permissionId " +
+                    "From TenantRole tr, " +
+                    "     TenantRolePermission trp, " +
+                    "     TenantRoleUser tru " +
+                    "where tr.tenantId = :pTenantId and " +
+                    "      tr.roleId = :pRoleId and tr.id = trp.tenantRoleId and " +
+                    "      tru.userId = :pUserId and tru.tenantRoleId = tr.id";
+        }
+
+        EntityManager em = emh.getEm();
+        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
+        typedQuery.setParameter("pTenantId", tenantId);
+        typedQuery.setParameter("pRoleId", roleId);
+
+        if (userId != null) {
+            typedQuery.setParameter("pUserId", userId);
+        }
+
+        return typedQuery.getResultList();
+    }
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return List containing tenant ids
+     */
+    @Override
+    public List<Long> getTenants(Long userId, Long roleId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User id is mandatory");
+        }
+
+        String query = "Select tr.tenantId " +
+                       "From TenantRole tr, " +
+                       "     TenantRoleUser tru " +
+                       "where tru.userId = :pUserId and tru.tenantRoleId = tr.id";
+
+        if (roleId != null) {
+            query += " and tr.roleId = :pRoleId";
+        }
+
+        EntityManager em = emh.getEm();
+        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
+        typedQuery.setParameter("pUserId", userId);
+
+        if (roleId != null) {
+            typedQuery.setParameter("pRoleId", roleId);
+        }
+
+        return typedQuery.getResultList();
+    }
+
+    /**
+     * Check if a User has some Role (Optionally for a specific Tenant)
+     * @param userId User identifier
+     * @param roleNames Role name identifier
+     * @param tenantId Tenant identifier (Optional)
+     * @return true if has some of the informed roles, otherwise fase
+     */
+    @Override
+    public boolean hasAnyRole(Long userId, List<String> roleNames, Long tenantId) {
+
+        String query =
+                "select count(tr) " +
+                "from TenantRole tr, TenantRoleUser tru, Role r " +
+                "where r.name in :pRoleNames and r.id = tr.roleId and" +
+                " tr.id = tru.tenantRoleId and" +
+                " tru.userId = :pUserId and" +
+                " tru.tenantRoleId = tr.id";
+
+        if (tenantId != null) {
+            query += " and tr.tenantId = :pTenantId";
+        }
+
+        EntityManager em = emh.getEm();
+        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
+        typedQuery.setParameter("pRoleNames", roleNames);
+        typedQuery.setParameter("pUserId", userId);
+        if (tenantId != null) {
+            typedQuery.setParameter("pTenantId", tenantId);
+        }
+
+        return typedQuery.getSingleResult() > 0;
+    }
+
+    /**
+     * Check if a User has a Permission (Optionally for a specific Tenant)
+     * @param userId User identifier
+     * @param permissionId Permission identifier
+     * @param tenantId Tenant identifier (Optional)
+     * @return true if has some of the informed roles, otherwise fase
+     */
+    @Override
+    public boolean hasPermission(Long userId, Long permissionId, Long tenantId) {
+        String query =
+                "select count(tr) " +
+                        "from TenantRole tr, TenantRoleUser tru, TenantRolePermission trp " +
+                        "where trp.permissionId = :pPermissionId and trp.tenantRoleId = tr.id and" +
+                        " tru.userId = :pUserId and tru.tenantRoleId = tr.id";
+
+        if (tenantId != null) {
+            query += "  and tr.tenantId = :pTenantId";
+        }
+
+        EntityManager em = emh.getEm();
+        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
+        typedQuery.setParameter("pPermissionId", permissionId);
+        typedQuery.setParameter("pUserId", userId);
+        if (tenantId != null) {
+            typedQuery.setParameter("pTenantId", tenantId);
+        }
+
+        return typedQuery.getSingleResult() > 0;
+    }
+
+    /**
+     * Retrieves strictly the TenantRole id basing on tenant and role
+     * @param tenant tenant identifier
+     * @param  role role identifier
+     * @return TenantRole id
+     */
+    @Override
+    public Long getTenantRoleId(Long tenant, Long role) {
+        if (tenant == null || role == null) {
+            throw new IllegalArgumentException("Role and Tenant are mandatory");
+        }
+        String query = "Select tr.id From TenantRole tr where tr.tenantId = :pTenantId and tr.roleId = :pRoleId";
+        TypedQuery<Long> typedQuery = emh.getEm().createQuery(query, Long.class);
+        typedQuery.setParameter("pTenantId", tenant);
+        typedQuery.setParameter("pRoleId", role);
+        try {
+            return typedQuery.getSingleResult();
+        }
+        catch (NoResultException e) {
+            log.error("No TenantRole existent tenant {} and role {}", tenant, role);
+            return null;
+        }
     }
 }

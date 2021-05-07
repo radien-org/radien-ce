@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
@@ -257,5 +258,29 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         Root<TenantRoleUser> tenantRoleUserRoot = criteriaDelete.from(TenantRoleUser.class);
         criteriaDelete.where(cb.equal(tenantRoleUserRoot.get("id"),tenantRoleUserId));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
+    }
+
+    /**
+     * Retrieves strictly the TenantRoleUser id basing on tenantRole and user
+     * @param tenantRole tenant identifier
+     * @param user identifier
+     * @return TenantRoleUser id
+     */
+    @Override
+    public Long getTenantRoleUserId(Long tenantRole, Long user) {
+        if (tenantRole == null || user == null) {
+            throw new IllegalArgumentException("TenantRole and user are mandatory");
+        }
+        String query = "Select tru.id From TenantRoleUser tru where tru.tenantRoleId = :pTenantRoleId and tru.userId = :pUserId";
+        TypedQuery<Long> typedQuery = emh.getEm().createQuery(query, Long.class);
+        typedQuery.setParameter("pTenantRoleId", tenantRole);
+        typedQuery.setParameter("pUserId", user);
+        try {
+            return typedQuery.getSingleResult();
+        }
+        catch (NoResultException e) {
+            log.error("No TenantRoleUser existent tenantRole {} and user {}", tenantRole, user);
+            return null;
+        }
     }
 }

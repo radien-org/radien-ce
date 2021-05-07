@@ -78,4 +78,47 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @throws TenantRoleException in case of any inconsistency found
      */
     boolean delete(Long tenantRoleId) throws TenantRoleException;
+
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return permission ids
+     */
+    List<Long> getPermissions(Long tenantId, Long roleId, Long userId);
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return List containing tenant ids
+     */
+    List<Long> getTenants(Long userId, Long roleId);
+
+    /**
+     * Check if a User has some Role (Optionally for a specific Tenant)
+     * @param userId User identifier
+     * @param roleNames Role name identifier
+     * @param tenantId Tenant identifier
+     * @return true if has some of the informed roles, otherwise fase
+     */
+    boolean hasAnyRole(Long userId, List<String> roleNames, Long tenantId);
+
+    /**
+     * Check if a User has a Permission (Optionally for a specific Tenant)
+     * @param userId User identifier
+     * @param permissionId Permission identifier
+     * @param tenantId Tenant identifier (Optional)
+     * @return true if has some of the informed roles, otherwise fase
+     */
+    boolean hasPermission(Long userId, Long permissionId, Long tenantId);
+
+    /**
+     * Retrieves strictly the TenantRole id basing on tenant and role
+     * @param tenant tenant identifier
+     * @param  role role identifier
+     * @return TenantRole id
+     */
+    Long getTenantRoleId(Long tenant, Long role);
 }
