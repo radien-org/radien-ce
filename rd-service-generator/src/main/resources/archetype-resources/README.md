@@ -17,10 +17,10 @@ mvn archetype:generate \
 -DarchetypeVersion=rd-0.0.2-SNAPSHOT \
 -DinteractiveMode=false \
 -DgroupId=io.radien \
--DartifactId={artifactId} \
--Dversion=rd-0.0.2-SNAPSHOT \
--Dpackage={package} \
--DentityResourceName={EntityClassName} 
+-DartifactId=${rootArtifactId} \
+-Dversion=${version} \
+-Dpackage=${package} \
+-DentityResourceName=${entityResourceName} 
 
 # For example
 ==================

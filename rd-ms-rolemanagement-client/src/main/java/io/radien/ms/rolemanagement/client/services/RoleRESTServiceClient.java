@@ -95,7 +95,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @return page containing system roles
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Page<? extends SystemRole> getAllRequester(String search, int pageNo, int pageSize,
+    private Page<? extends SystemRole> getAllRequester(String search, int pageNo, int pageSize,
                                                       List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -132,7 +132,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @return Optional containing (or not) one role
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemRole> getRoleByIdRequester(Long id) throws SystemException {
+    private Optional<SystemRole> getRoleByIdRequester(Long id) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getById(id);
@@ -168,7 +168,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @return Optional containing (or not) one role
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemRole> getRoleByNameRequester(String name) throws SystemException {
+    private Optional<SystemRole> getRoleByNameRequester(String name) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getSpecificRoles(name, null, true, true);
@@ -209,7 +209,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @return list of roles
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public List<? extends SystemRole> getRolesByDescriptionRequester(String description) throws SystemException {
+    private List<? extends SystemRole> getRolesByDescriptionRequester(String description) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
 
@@ -245,7 +245,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @return true if user has been created with success or false if not
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean createRequester(SystemRole role) throws SystemException {
+    private boolean createRequester(SystemRole role) throws SystemException {
         RoleResourceClient client;
         try {
             client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -288,7 +288,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @return the count of existent roles.
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Long getTotalRecordsCountRequester() throws SystemException {
+    private Long getTotalRecordsCountRequester() throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
 

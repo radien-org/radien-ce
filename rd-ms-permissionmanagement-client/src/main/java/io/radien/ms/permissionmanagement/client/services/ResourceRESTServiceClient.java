@@ -95,7 +95,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * @return list of resources
      * @throws SystemException in case of any communication error
      */
-    public Page<? extends SystemResource> getAllRequester(String search, int pageNo, int pageSize,
+    private Page<? extends SystemResource> getAllRequester(String search, int pageNo, int pageSize,
                                                           List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -133,7 +133,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * @return Optional List of Resources
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemResource> getResourceByIdRequester(Long id) throws SystemException {
+    private Optional<SystemResource> getResourceByIdRequester(Long id) throws SystemException {
         try {
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -174,7 +174,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * @return Optional List of Resources
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Optional<SystemResource> getResourceByNameRequester(String name) throws SystemException {
+    private Optional<SystemResource> getResourceByNameRequester(String name) throws SystemException {
         try {
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
@@ -216,7 +216,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * @return true if action has been created with success or false if not
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean createRequester(SystemResource action) throws SystemException {
+    private boolean createRequester(SystemResource action) throws SystemException {
         ResourceResourceClient client;
         try {
             client = clientServiceUtil.getResourceResourceClient(oaf.

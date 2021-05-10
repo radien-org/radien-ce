@@ -91,7 +91,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
      * @return true if exists some LinkedAuthorization satisfying the informed parameter
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean checkIfLinkedAuthorizationExistsRequester(Long tenant, Long permission, Long role, Long userId) throws SystemException {
+    private boolean checkIfLinkedAuthorizationExistsRequester(Long tenant, Long permission, Long role, Long userId) throws SystemException {
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -144,7 +144,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
      * @return a list of System Linked Authorizations
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public List<? extends SystemLinkedAuthorization> getAllRequester(int pageNo, int pageSize) throws SystemException {
+    private List<? extends SystemLinkedAuthorization> getAllRequester(int pageNo, int pageSize) throws SystemException {
         List<? extends SystemLinkedAuthorization> linkedAuthorizationsList = null;
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
@@ -183,7 +183,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
      * @return the count of existent tenants.
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Long getTotalRecordsCountRequester() throws SystemException {
+    private Long getTotalRecordsCountRequester() throws SystemException {
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -224,7 +224,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
      * @return list of linked authorizations
      * @throws SystemException in case it founds multiple linked authorizations or if URL is malformed
      */
-    public List<? extends SystemLinkedAuthorization> getLInkedAuthorizationRoleIdRequester(Long role) throws SystemException {
+    private List<? extends SystemLinkedAuthorization> getLInkedAuthorizationRoleIdRequester(Long role) throws SystemException {
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -260,7 +260,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
      * @return true if linked authorization has been created with success or false if not
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public boolean createRequester(SystemLinkedAuthorization linkedAuthorization) throws SystemException {
+    private boolean createRequester(SystemLinkedAuthorization linkedAuthorization) throws SystemException {
         LinkedAuthorizationResourceClient client;
         try {
             client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -307,7 +307,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
      * @return true if record has been found
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    public Boolean isRoleExistentForUserRequester(Long userId, Long tenantId, String roleName) throws SystemException {
+    private Boolean isRoleExistentForUserRequester(Long userId, Long tenantId, String roleName) throws SystemException {
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
