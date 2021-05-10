@@ -41,6 +41,7 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,7 +91,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	public Response getAll(String search, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 		try {
-			if (checkUserRoles()) {
+			if (!checkUserRoles()) {
 				return getForbiddenResponse();
 			}
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
@@ -125,7 +126,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response getById(Long id) {
 		try {
-			if (checkUserRoles()) {
+			if (!checkUserRoles()) {
 				return getForbiddenResponse();
 			}
 			SystemUser systemUser = userBusinessService.get(id);
@@ -142,7 +143,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response delete(long id)  {
 		try {
-			if (checkUserRoles()) {
+			if (!checkUserRoles()) {
 				return getForbiddenResponse();
 			}
 			userBusinessService.delete(id);
@@ -160,7 +161,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			if (!isSelfOnboard(user) && checkUserRoles()) {
+			if (!isSelfOnboard(user) && !checkUserRoles()) {
 				return getForbiddenResponse();
 			}
 			userBusinessService.save(new User(user),user.isDelegatedCreation());
@@ -182,10 +183,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	}
 
 	/**
-	 *
+	 * Gets the correct user id based on the given subject
 	 * @param sub sub from the current logged logged user
-	 * @return
-	 * @throws SystemException
+	 * @return user id
+	 * @throws SystemException SystemException is thrown by the common language runtime when errors occur
+	 * that are nonfatal and recoverable by user programs.
 	 */
 	@Override
 	protected Long getCurrentUserIdBySub(String sub) throws SystemException {
@@ -232,8 +234,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @throws SystemException throw exception in case of any issue validating the roles
 	 */
 	public boolean checkUserRoles() throws SystemException {
-		return !hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName())
-				|| !hasGrant(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+		List<String> roleNames = new ArrayList<>();
+		roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+		roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+		return hasGrantMultipleRoles(roleNames);
 	}
 
 	/**

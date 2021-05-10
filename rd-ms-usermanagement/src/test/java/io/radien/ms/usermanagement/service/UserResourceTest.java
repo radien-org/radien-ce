@@ -118,10 +118,12 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(200,response.getStatus());
@@ -136,10 +138,12 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(403,response.getStatus());
@@ -167,10 +171,12 @@ public class UserResourceTest {
         preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
 
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
@@ -186,10 +192,12 @@ public class UserResourceTest {
         preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
 
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
@@ -206,10 +214,12 @@ public class UserResourceTest {
         preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
 
         when(userBusinessService.get(1L)).thenReturn(new User());
@@ -255,10 +265,12 @@ public class UserResourceTest {
         preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.delete(1l);
         assertEquals(200,response.getStatus());
@@ -272,10 +284,12 @@ public class UserResourceTest {
         preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.delete(1l);
         assertEquals(403,response.getStatus());
@@ -307,10 +321,12 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.save(new User());
         assertEquals(200,response.getStatus());
@@ -335,10 +351,12 @@ public class UserResourceTest {
 
         Response notAuthorizedResponse = Response.ok().entity(Boolean.FALSE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.save(new User());
         assertEquals(403,response.getStatus());
@@ -415,10 +433,12 @@ public class UserResourceTest {
         when(this.userBusinessService.getUserId(principal.getSub())).thenReturn(1001L);
 
         Response notAuthorizedResponse = Response.ok().entity(Boolean.TRUE).build();
-        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).checkPermissions(
+                1001L, roleList, null);
 
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
         Response response = userResource.save(new User());

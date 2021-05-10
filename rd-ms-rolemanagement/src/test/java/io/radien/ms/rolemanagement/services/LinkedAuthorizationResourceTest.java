@@ -31,12 +31,11 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -352,5 +351,28 @@ public class LinkedAuthorizationResourceTest {
                 .thenThrow(new RuntimeException());
         Response response = linkedAuthorizationResource.isRoleExistentForUser(2L, "test", 2L);
         assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testCheckPermissions() {
+        List<String> roleList = new ArrayList<>();
+        Response response = linkedAuthorizationResource.checkPermissions(2L, roleList, 2L);
+        assertEquals(200,response.getStatus());
+    }
+
+    @Test
+    public void testCheckPermissionsException() {
+        when(linkedAuthorizationBusinessService.checkPermissions(anyLong(), anyLong(), anyList()))
+                .thenThrow(new RuntimeException());
+        List<String> roleList = new ArrayList<>();
+        Response response = linkedAuthorizationResource.checkPermissions(2L, roleList, 2L);
+        assertEquals(500,response.getStatus());
+    }
+
+    @Test
+    public void testCheckPermissionsNotFound() {
+        List<String> roleList = new ArrayList<>();
+        Response response = linkedAuthorizationResource.checkPermissions(null, roleList, null);
+        assertEquals(404,response.getStatus());
     }
 }

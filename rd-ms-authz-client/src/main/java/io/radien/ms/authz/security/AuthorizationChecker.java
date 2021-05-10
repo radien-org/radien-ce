@@ -38,6 +38,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.List;
 
 /**
  * This abstract class maybe extended by any component that needs to
@@ -61,7 +62,11 @@ public abstract class AuthorizationChecker implements Serializable {
 
     private RestClientBuilder restClientBuilder;
 
-
+    /**
+     * By the active user this method will update the refresh token, so that he can continue to use the application
+     * @return true in case of success of updating the refresh token
+     * @throws SystemException in case of any issue while getting the current user or getting the token information
+     */
     public boolean refreshToken() throws SystemException {
         try {
             getUserClient();
@@ -84,8 +89,9 @@ public abstract class AuthorizationChecker implements Serializable {
      * Check if the current logged user has (grant to) some role (under a specific tenant - optionally)
      * @param tenantId Tenant identifier (Optional parameter)
      * @param roleName this parameter corresponds to the role name
-     * @return
-     * @throws SystemException
+     * @return true if user has the correct access
+     * @throws SystemException in case of any issue while getting the current user or getting correct access
+     * information
      */
     public boolean hasGrant(Long tenantId, String roleName) throws SystemException{
         try {
@@ -111,9 +117,10 @@ public abstract class AuthorizationChecker implements Serializable {
 
     /**
      * Check if the current logged user has (grant to) some role
-     * @param roleName
-     * @return
-     * @throws SystemException
+     * @param roleName role to be validated
+     * @return true in case of user has access
+     * @throws SystemException in case of any issue while getting the current user or getting correct access
+     * information
      */
     public boolean hasGrant(String roleName) throws SystemException{
         return hasGrant(null, roleName);
@@ -124,8 +131,9 @@ public abstract class AuthorizationChecker implements Serializable {
      * some tenant
      * @param permissionId Permission identifier
      * @param tenantId Tenant identifier (not mandatory)
-     * @return
-     * @throws SystemException
+     * @return true in case user has access with correct role and permissions
+     * @throws SystemException in case of any issue while getting the current user or getting correct access
+     * information
      */
     public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
@@ -156,10 +164,50 @@ public abstract class AuthorizationChecker implements Serializable {
     }
 
     /**
+     * Check if the current logged user has (grant to) one of the specific given roles in a list
+     * (under a specific tenant - optionally)
+     * @param tenantId Tenant identifier (Optional parameter)
+     * @param roleNames this parameter corresponds to the role names inside a list
+     * @return true in case the roles exist for the user
+     * @throws SystemException in case of any issue while communicating with the client
+     */
+    public boolean hasGrantMultipleRoles(Long tenantId, List<String> roleNames) throws SystemException{
+        try {
+            this.preProcess();
+            Response response = null;
+            try {
+                response = getLinkedAuthorizationClient().
+                        checkPermissions(getCurrentUserId(), roleNames, tenantId);
+            } catch (TokenExpiredException tee) {
+                refreshToken();
+                response = getLinkedAuthorizationClient().
+                        checkPermissions(getCurrentUserId(), roleNames, tenantId);
+            }
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
+            return false;
+        } catch (Exception e) {
+            this.log.error("Error checking authorization", e);
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Check if the current logged user has (grant to) one of the specific given roles in a given list
+     * @param roleNames to be validated
+     * @return true in case they exist
+     * @throws SystemException in case of issue while communicating with the client
+     */
+    public boolean hasGrantMultipleRoles(List<String> roleNames) throws SystemException{
+        return hasGrantMultipleRoles(null, roleNames);
+    }
+
+    /**
      * Retrieves the User Id using sub as parameter
      * @param sub sub from the current logged logged user
-     * @return
-     * @throws SystemException
+     * @return user id in case of user has been found
+     * @throws SystemException in case of any error or issue while trying to obtain user information
      */
     protected Long getCurrentUserIdBySub(String sub) throws SystemException {
         try {
@@ -183,8 +231,8 @@ public abstract class AuthorizationChecker implements Serializable {
 
     /**
      * Retrieves the ID that belongs to the current logged user
-     * @return
-     * @throws SystemException
+     * @return the current user id
+     * @throws SystemException in case of current user is null
      */
     protected Long getCurrentUserId() throws SystemException {
         SystemUser user = getInvokerUser();
@@ -196,7 +244,7 @@ public abstract class AuthorizationChecker implements Serializable {
 
     /**
      * Retrieves the reference for current logged user
-     * @return
+     * @return the reference for current logged user
      */
     protected SystemUser getInvokerUser() {
         return (SystemUser) getServletRequest().getSession().getAttribute("USER");
@@ -226,7 +274,7 @@ public abstract class AuthorizationChecker implements Serializable {
      * Build method that produces an Rest client instance (i.e UserClient or LinkedAuthorizationClient).
      * Is being adopted (instead of direct injection) due some EJB container issues
      * encountered on Unit Tests
-     * @return
+     * @return rest build client requested
      */
     protected <T> T buildClient(String url, Class<T> clazz) throws SystemException {
         try {
@@ -236,6 +284,11 @@ public abstract class AuthorizationChecker implements Serializable {
         }
     }
 
+    /**
+     * Gets user management client instance
+     * @return user client for user management instance
+     * @throws SystemException in case of any issue while retrieving the communication user client instance
+     */
     public UserClient getUserClient() throws SystemException {
         if (userClient == null) {
             userClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT),
@@ -244,6 +297,12 @@ public abstract class AuthorizationChecker implements Serializable {
         return userClient;
     }
 
+    /**
+     * Gets linked authorization management client instance
+     * @return linked authorization client for user management instance
+     * @throws SystemException in case of any issue while retrieving the communication linked
+     * authorization client instance
+     */
     public LinkedAuthorizationClient getLinkedAuthorizationClient() throws SystemException{
         if (linkedAuthorizationClient == null) {
             linkedAuthorizationClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
@@ -252,14 +311,26 @@ public abstract class AuthorizationChecker implements Serializable {
         return linkedAuthorizationClient;
     }
 
+    /**
+     * Sets the linked authorization client as the given one
+     * @param linkedAuthorizationClient given linked authorization instance to be set
+     */
     public void setLinkedAuthorizationClient(LinkedAuthorizationClient linkedAuthorizationClient) {
         this.linkedAuthorizationClient = linkedAuthorizationClient;
     }
 
+    /**
+     * Sets the user management client instance as the given one
+     * @param userClient given user client instance to be set
+     */
     public void setUserClient(UserClient userClient) {
         this.userClient = userClient;
     }
 
+    /**
+     * Gets the active token place holder
+     * @return the active token place holder
+     */
     public TokensPlaceHolder getTokensPlaceHolder() {
         //TODO: Understand why standard injection is not working on EJB Unit Tests (UserServiceTest)
         if (tokensPlaceHolder == null) {
@@ -268,6 +339,10 @@ public abstract class AuthorizationChecker implements Serializable {
         return tokensPlaceHolder;
     }
 
+    /**
+     * Gets the Rest Client builder obbject
+     * @return the rest client builder
+     */
     public RestClientBuilder getRestClientBuilder() {
         if (restClientBuilder == null) {
             restClientBuilder = RestClientBuilder.newBuilder();
@@ -275,10 +350,18 @@ public abstract class AuthorizationChecker implements Serializable {
         return restClientBuilder;
     }
 
+    /**
+     * Gets the current servlet request
+     * @return the current http servlet request
+     */
     public HttpServletRequest getServletRequest() {
         return servletRequest;
     }
 
+    /**
+     * Gets the current OAF access
+     * @return the oaf object
+     */
     public OAFAccess getOafAccess() {
         return oafAccess;
     }

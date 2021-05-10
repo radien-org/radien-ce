@@ -21,18 +21,15 @@ import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.service.PrincipalFactory;
-import io.radien.webapp.JSFUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJBException;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @SessionScoped
 @Named("authzChecker")
@@ -74,10 +71,10 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     }
 
     /**
-     * Validates if the active user has specific roles
+     * Validates if current active user for a given tenant has a specific given role
      * @param tenantId Tenant identifier (Optional parameter)
      * @param roleName this parameter corresponds to the role name
-     * @return true in case of the requested role exists in the user
+     * @return true in case of user has role
      */
     @Override
     public boolean hasGrant(Long tenantId, String roleName) {
@@ -91,11 +88,20 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     }
 
     /**
-     * Checks if the active user has System Administrator role or User Administrator role
-     * @return true if they exist in the active user
+     * Validates if the current user has any of the multiple correct roles given
+     * System Administrator or User Administrator
+     * @return true if user has one of those
      */
-    public boolean hasUserAdministratorRoleAccess() throws SystemException {
-        return super.hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) ||
-                super.hasGrant(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+    public boolean hasUserAdministratorRoleAccess() {
+        try {
+            List<String> roleNames = new ArrayList<>();
+            roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+            roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+            return super.hasGrantMultipleRoles(roleNames);
+        }
+        catch (Exception e) {
+            log.error("Error checking authorization", e);
+            return false;
+        }
     }
 }
