@@ -1,1 +1,1 @@
-java -jar target/${package}.ms.service-exec.jar
+java -jar target/${rootArtifactId}-service-exec.jar
