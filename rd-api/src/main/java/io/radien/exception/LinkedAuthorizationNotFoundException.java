@@ -16,16 +16,25 @@
 package io.radien.exception;
 
 /**
+ * Exception to be thrown when no linked authorization has been found
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorizationNotFoundException extends Exception{
 
-    private static final long serialVersionUID = 4865108199427159028L;
+    private static final long serialVersionUID = 6857546626930960120L;
 
+    /**
+     * Linked Authorization Not Found Exception empty constructor
+     */
     public LinkedAuthorizationNotFoundException() {
         super();
     }
 
+    /**
+     * Linked Authorization Not Found Exception message constructor
+     * @param message to be added into the linked authorization not found exception
+     */
     public LinkedAuthorizationNotFoundException(String message) {
         super(message);
     }

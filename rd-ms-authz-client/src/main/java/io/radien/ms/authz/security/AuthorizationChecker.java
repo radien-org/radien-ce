@@ -43,6 +43,8 @@ import java.util.List;
 /**
  * This abstract class maybe extended by any component that needs to
  * evaluate authorization (Role, permission, etc)
+ *
+ * @author Newton Carvalho
  */
 public abstract class AuthorizationChecker implements Serializable {
 
@@ -97,18 +99,18 @@ public abstract class AuthorizationChecker implements Serializable {
         try {
             this.preProcess();
             Response response = null;
-            try {
-                response = getLinkedAuthorizationClient().
-                        isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
-            } catch (TokenExpiredException tee) {
-                refreshToken();
-                response = getLinkedAuthorizationClient().
-                        isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
-            }
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return response.readEntity(Boolean.class);
-            }
-            return false;
+                try {
+                    response = getLinkedAuthorizationClient().
+                            isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+                } catch (TokenExpiredException tee) {
+                    refreshToken();
+                    response = getLinkedAuthorizationClient().
+                            isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+                }
+                if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    return response.readEntity(Boolean.class);
+                }
+                return false;
         } catch (Exception e) {
             this.log.error("Error checking authorization", e);
             throw new SystemException(e);
@@ -138,20 +140,18 @@ public abstract class AuthorizationChecker implements Serializable {
     public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
             this.preProcess();
-            try {
-                getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
-                        permissionId, null, getCurrentUserId(), true);
-            } catch (TokenExpiredException e) {
-                try{
-                    refreshToken();
+                try {
                     getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
                             permissionId, null, getCurrentUserId(), true);
-                } catch (TokenExpiredException tokenExpiredException){
-
-                    log.error(tokenExpiredException.getMessage(), tokenExpiredException);
-                    throw new SystemException(tokenExpiredException);
+                } catch (TokenExpiredException e) {
+                    try{
+                        refreshToken();
+                        getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
+                                permissionId, null, getCurrentUserId(), true);
+                    } catch (TokenExpiredException tokenExpiredException){
+                        throw new SystemException(tokenExpiredException);
+                    }
                 }
-            }
             return true;
         }
         catch (NotFoundException e) {
@@ -188,7 +188,6 @@ public abstract class AuthorizationChecker implements Serializable {
             }
             return false;
         } catch (Exception e) {
-            this.log.error("Error checking authorization", e);
             throw new SystemException(e);
         }
     }
@@ -340,7 +339,7 @@ public abstract class AuthorizationChecker implements Serializable {
     }
 
     /**
-     * Gets the Rest Client builder obbject
+     * Gets the Rest Client builder object
      * @return the rest client builder
      */
     public RestClientBuilder getRestClientBuilder() {

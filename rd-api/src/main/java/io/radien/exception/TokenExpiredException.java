@@ -16,14 +16,23 @@
 package io.radien.exception;
 
 /**
- * @author Santana
+ * Exception to be throw in case of user access token has expired
+ *
+ * @author Nuno Santana
  */
 public class TokenExpiredException extends RuntimeException {
 
+    /**
+     * Token Expired exception empty constructor
+     */
     public TokenExpiredException() {
         super();
     }
 
+    /**
+     * Token expiration exception constructor by a given message
+     * @param message to create the token expiration exception with
+     */
     public TokenExpiredException(String message) {
         super(message);
     }

@@ -15,11 +15,26 @@
  */
 package io.radien.ms.authz.client.exception;
 
+/**
+ * Specific Authorization Not Found Exception to be throw when no Authorization can be found
+ *
+ * @author Newton Carvalho
+ */
 public class NotFoundException extends RuntimeException {
+
+    /**
+     * Authorization Not Found Exception message constructor
+     * @param message to be added into the authorization not found exception
+     */
     public NotFoundException(String message) {
         super(message);
     }
 
+    /**
+     * Authorization Not Found Exception message and cause constructor
+     * @param message to be added into the authorization not found exception
+     * @param cause to be added into the authorization not found exception
+     */
     public NotFoundException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -16,12 +16,17 @@
 package io.radien.exception;
 
 /**
- * @author Newton Carvalho
  * To be describe situations whereas an expected Action could not be found
+ *
+ * @author Newton Carvalho
  */
 public class ActionNotFoundException extends Exception {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3704724727395906936L;
 
+	/**
+	 * Action Not Found exception constructor by a given message
+	 * @param message to create the action not found exception with
+	 */
 	public ActionNotFoundException(String message) {
 		super(message);
 	}

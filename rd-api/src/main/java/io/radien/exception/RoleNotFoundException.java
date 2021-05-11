@@ -16,12 +16,17 @@
 package io.radien.exception;
 
 /**
- * @author Bruno Gama
+ * To be describe situations whereas an expected Role could not be found
  *
+ * @author Bruno Gama
  */
 public class RoleNotFoundException extends Exception {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7722810065917141193L;
 
+	/**
+	 * Role Not Found exception constructor by a given message
+	 * @param message to create the role not found exception with
+	 */
 	public RoleNotFoundException(String message) {
 		super(message);
 	}

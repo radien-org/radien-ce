@@ -16,21 +16,32 @@
 package io.radien.exception;
 
 /**
- * @author Marco Weiland
+ * Custom exception to be thrown when the use session is invalid
  *
- *         Custom exception to be thrown when the use session is invalid
+ * @author Marco Weiland
  */
 public class SessionNotValidException extends SystemException {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 8594021107704520414L;
 
+	/**
+	 * Session Not Valid Exception empty constructor
+	 */
 	public SessionNotValidException() {
 		super();
 	}
 
+	/**
+	 * Session Not Valid Exception exception constructor
+	 * @param e exception to be added into the session not valid exception
+	 */
 	public SessionNotValidException(Exception e) {
 		super(e);
 	}
 
+	/**
+	 * Session Not Valid Exception message constructor
+	 * @param message to be added into the session not valid exception
+	 */
 	public SessionNotValidException(String message) {
 		super(message);
 	}
