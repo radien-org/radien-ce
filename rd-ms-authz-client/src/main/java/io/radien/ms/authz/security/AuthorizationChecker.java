@@ -64,7 +64,11 @@ public abstract class AuthorizationChecker implements Serializable {
 
     private RestClientBuilder restClientBuilder;
 
-
+    /**
+     * By the active user this method will update the refresh token, so that he can continue to use the application
+     * @return true in case of success of updating the refresh token
+     * @throws SystemException in case of any issue while getting the current user or getting the token information
+     */
     public boolean refreshToken() throws SystemException {
         try {
             getUserClient();

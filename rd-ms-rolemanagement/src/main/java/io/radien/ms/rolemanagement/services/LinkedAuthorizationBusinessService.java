@@ -111,7 +111,7 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @param association to be saved
      * @return true if everything is ok to be saved
      */
-    public boolean checkIfFieldsAreValid(SystemLinkedAuthorization association) throws MalformedURLException, SystemException {
+    public boolean checkIfFieldsAreValid(SystemLinkedAuthorization association) throws SystemException {
         boolean isTenantExistent = tenantRESTServiceAccess.isTenantExistent(association.getTenantId());
         boolean isPermissionExistent = permissionRESTServiceAccess.isPermissionExistent(association.getPermissionId(), null);
         boolean isRoleExistent = roleServiceAccess.checkIfRolesExist(association.getRoleId(), null);
@@ -144,8 +144,8 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     /**
      * Retrieves All roles that exist for an User (Optionally for a specific tenant)
      * @param userId User Identifier
-     * @param tenantId Tenant Identifier (Optioal Parameter)
-     * @return
+     * @param tenantId Tenant Identifier (Optional Parameter)
+     * @return a list of system roles based by the user and tenant
      */
     public List<? extends SystemRole> getRolesByUserAndTenant(Long userId, Long tenantId) {
         return linkedAuthorizationServiceAccess.getRolesByUserAndTenant(userId, tenantId);
@@ -156,9 +156,21 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @param userId User Identifier
      * @param tenantId Tenant Identifier (Optional parameter)
      * @param roleName Role name
-     * @return
+     * @return true in case it exists
      */
     public boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) {
         return linkedAuthorizationServiceAccess.isRoleExistentForUser(userId, tenantId, roleName);
+    }
+
+    /**
+     * Verifies if any given Role inside the given role list exists for a User
+     * (Under a specific tenant - optional)
+     * @param userId User Identifier
+     * @param tenantId Tenant Identifier (Optional parameter)
+     * @param roleNames Role name list
+     * @return true in case it exists
+     */
+    public boolean checkPermissions(Long userId, Long tenantId, List<String> roleNames) {
+        return linkedAuthorizationServiceAccess.checkPermissions(userId, tenantId, roleNames);
     }
 }

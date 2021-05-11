@@ -22,6 +22,7 @@ import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
@@ -33,7 +34,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -308,6 +308,13 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         return size != 0;
     }
 
+    /**
+     * Checks if a given role name exists for a specific user and tenant
+     * @param userId of the current user
+     * @param tenantId where the action is requesting validation
+     * @param roleName needed fo active permission access
+     * @return true in case of existence
+     */
     @Override
     public boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) {
         if (userId == null) {
@@ -331,6 +338,48 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         return typedQuery.getSingleResult() > 0;
     }
 
+    /**
+     * Checks if a given role name in multiple ones exists for a specific user and tenant
+     * @param userId of the current user
+     * @param tenantId where the action is requesting validation
+     * @param roleNames needed fo active permission access
+     * @return true in case of existence
+     */
+    @Override
+    public boolean checkPermissions(Long userId, Long tenantId, List<String> roleNames) {
+        CriteriaBuilder criteriaBuilderRole = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Role> criteriaQueryRole = criteriaBuilderRole.createQuery(Role.class);
+        Root<Role> roleRoot = criteriaQueryRole.from(Role.class);
+
+        criteriaQueryRole.select(roleRoot);
+        Predicate globalRole = criteriaBuilderRole.isFalse(criteriaBuilderRole.literal(true));
+
+        for(String s : roleNames) {
+            globalRole = criteriaBuilderRole.or(globalRole, criteriaBuilderRole.equal(roleRoot.get("name"), s));
+        }
+
+        criteriaQueryRole.where(globalRole);
+
+        TypedQuery<Role> q= entityManager.createQuery(criteriaQueryRole);
+        List<? extends SystemRole> listOfRoles = q.getResultList();
+
+        for(SystemRole sRole : listOfRoles) {
+            SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId, null, sRole.getId(), userId, true);
+
+            if(exists(filter)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Retrieves all the roles based on the user id and tenant id
+     * @param userId of the current requested user
+     * @param tenantId of the current requested tenant
+     * @return a list of system roles
+     */
     @Override
     public List<? extends SystemRole> getRolesByUserAndTenant(Long userId, Long tenantId) {
         if (userId == null) {

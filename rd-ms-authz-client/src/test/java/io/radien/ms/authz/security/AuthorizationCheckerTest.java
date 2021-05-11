@@ -18,6 +18,7 @@ package io.radien.ms.authz.security;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
@@ -41,6 +42,8 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuthorizationCheckerTest {
 
@@ -638,5 +641,124 @@ public class AuthorizationCheckerTest {
         }
 
         assertTrue(success);
+    }
+
+    @Test
+    public void testHasGrantMultipleRolesReturnTrue() {
+        Long userId = 1001L;
+
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build());
+        when(this.linkedAuthorizationClient.checkPermissions(userId, roleList, null)).
+                thenReturn(Response.ok().entity(Boolean.TRUE).build());
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
+
+
+        try {
+            assertTrue(authorizationChecker.hasGrantMultipleRoles(roleList));
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+    }
+
+    @Test
+    public void testHasGrantMultipleRolesReturnFalse() {
+        Long userId = 1001L;
+
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build());
+        when(this.linkedAuthorizationClient.checkPermissions(userId, roleList, null)).
+                thenReturn(Response.ok().entity(Boolean.FALSE).build());
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
+
+
+        try {
+            assertFalse(authorizationChecker.hasGrantMultipleRoles(roleList));
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+    }
+
+    @Test
+    public void testHasGrantMultipleRoleWithTenantWhenTokenExpires() {
+        Long userId = 1001L;
+        Long tenantId = 1111L;
+
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session).
+                thenReturn(session).thenReturn(session).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).
+                thenReturn(session).
+                thenReturn(session);
+
+        when(servletRequest.getSession(false)).
+                thenReturn(session).
+                thenReturn(session);
+
+        when(session.getAttribute("USER")).
+                thenReturn(principal).
+                thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build()).
+                thenReturn(Response.ok().entity(userId).build());
+
+        prepareMockParamForRefreshToken(tokensPlaceHolder, userClient);
+
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
+                thenReturn("token-yyz");
+
+        when(this.linkedAuthorizationClient.checkPermissions(userId, roleList, tenantId)).
+                thenThrow(new TokenExpiredException()).
+                thenReturn(Response.ok().entity(Boolean.TRUE).build()).
+                thenThrow(new TokenExpiredException()).
+                thenThrow(new TokenExpiredException());
+
+        try {
+            assertTrue(authorizationChecker.hasGrantMultipleRoles(tenantId, roleList));
+        } catch (SystemException systemException) {
+            fail("unexpected failure");
+        }
+
+        SystemException se = assertThrows(SystemException.class,
+                () -> authorizationChecker.hasGrantMultipleRoles(tenantId, roleList));
+
+        assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
     }
 }
