@@ -396,7 +396,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         try {
             Response response = client.exists(tenantId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return true;
+                return response.readEntity(Boolean.class);
             }
         } catch(ProcessingException e) {
             throw new SystemException(e.getMessage());

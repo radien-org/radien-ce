@@ -41,7 +41,9 @@ public interface TenantRoleResourceClient {
      * @return
      */
     @GET
-    public Response getAll(@DefaultValue("0")  @QueryParam("pageNo") int pageNo,
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
     /**
@@ -65,6 +67,7 @@ public interface TenantRoleResourceClient {
      */
     @GET
     @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@PathParam("id") Long id);
 
     /**
@@ -74,7 +77,7 @@ public interface TenantRoleResourceClient {
      */
     @DELETE
     @Path("/{id}")
-    public Response delete(@NotNull @PathParam("id") long id);
+    public Response delete(@PathParam("id") long id);
 
     /**
      * Create a Tenant Role association
@@ -82,23 +85,13 @@ public interface TenantRoleResourceClient {
      * @return
      */
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response save(TenantRole tenantRole);
 
     @GET
-    @Path("/exists/{tenantId}/{roleId}")
-    Response exists(@QueryParam("tenantId") Long tenantId,
-                    @QueryParam("roleId") Long roleId);
-
-//    /**
-//     * Retrieves the Role that exists for User (optionally for a specific Tenant)
-//     * @param userId User identifier (Mandatory)
-//     * @param tenantId Tenant identifier (Optional parameter)
-//     * @return
-//     */
-//    @GET
-//    @Path("/roles/user/{userId}")
-//    Response getRoles(@PathParam("userId") Long userId,
-//                      @QueryParam("tenantId") Long tenantId);
+    @Path("/exists/tenant/{tenantId}/role/{roleId}")
+    Response exists(@PathParam("tenantId") Long tenantId,
+                    @PathParam("roleId") Long roleId);
 
     /**
      * Retrieves the Permissions that exists for Tenant
@@ -147,8 +140,8 @@ public interface TenantRoleResourceClient {
      */
     @GET
     @Path("/exists/permission")
-    Response isPermissionExistentForUser(@NotNull @QueryParam("userId") Long userId,
-                                         @NotNull @QueryParam("permissionId") Long permissionId,
+    Response isPermissionExistentForUser(@QueryParam("userId") Long userId,
+                                         @QueryParam("permissionId") Long permissionId,
                                          @QueryParam("tenantId") Long tenantId);
 
     /**
@@ -159,8 +152,10 @@ public interface TenantRoleResourceClient {
      * @return
      */
     @POST
-    @Path("/tenant/{tenantId}/role/{roleId}/user/{userId}")
-    Response assignUser(Long tenantId, Long roleId, Long userId);
+    @Path("/assign/user/{userId}/tenant/{tenantId}/role/{roleId}")
+    Response assignUser(@PathParam("tenantId") Long tenantId,
+                        @PathParam("roleId") Long roleId,
+                        @PathParam("userId") Long userId);
 
     /**
      * Unassign a User for a Tenant under a specific Role
@@ -170,6 +165,39 @@ public interface TenantRoleResourceClient {
      * @return
      */
     @DELETE
-    @Path("/tenant/{tenantId}/role/{roleId}/user/{userId}")
-    Response unassignUser(Long tenantId, Long roleId, Long userId);
+    @Path("/unassign/user/{userId}/tenant/{tenantId}/role/{roleId}")
+    Response unassignUser(@PathParam("tenantId") Long tenantId,
+                          @PathParam("roleId") Long roleId,
+                          @PathParam("userId") Long userId);
+
+    /**
+     * Assign/associate/add permission to a Tenant (TenantRole domain)
+     * The association will always be under a specific role
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param permissionId Permission identifier (Mandatory)
+     * @return Response OK if operation concludes with success.
+     * Response status 400 in case of association already existing or other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @POST
+    @Path("/assign/permission/{permissionId}/tenant/{tenantId}/role/{roleId}")
+    Response assignPermission(@PathParam("tenantId") Long tenantId,
+                              @PathParam("roleId") Long roleId,
+                              @PathParam("permissionId") Long permissionId);
+
+    /**
+     * (Un)Assign/Dissociate/remove permission from a Tenant (TenantRole domain)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param permissionId Permission identifier (Mandatory)
+     * @return Response OK if operation concludes with success.
+     * Response status 400 in case of association already existing or other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @DELETE
+    @Path("/unassign/permission/{permissionId}/tenant/{tenantId}/role/{roleId}")
+    Response unassignPermission(@PathParam("tenantId") Long tenantId,
+                                @PathParam("roleId") Long roleId,
+                                @PathParam("permissionId") Long permissionId);
 }

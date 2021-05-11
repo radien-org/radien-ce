@@ -37,20 +37,37 @@ import javax.ws.rs.core.Response;
 @RegisterRestClient
 @RegisterClientHeaders(GlobalHeaders.class)
 @RegisterProvider(ExceptionMapper.class)
-@Path("/linkedauthorization")
-public interface LinkedAuthorizationClient {
+@Path("/tenantrole")
+public interface TenantRoleClient {
 
-    @GET
-    @Path("/exists")
-    Response existsSpecificAssociation(@QueryParam("tenantId") Long tenantId,
-                                       @QueryParam("permissionId") Long permissionId,
-                                       @QueryParam("roleId") Long roleId,
-                                       @QueryParam("userId") Long userId,
-                                       @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
-
+    /**
+     * Check if Role exists for a User (Optionally under a Tenant)
+     * @param userId User identifier
+     * @param roleName Role name identifier
+     * @param tenantId Tenant identifier (Optional)
+     * @return Response OK containing a boolean value (true if role is associated to an User, otherwise false).
+     * Response 404 in case of absence of parameter like user identifier or role name.
+     * Response 500 in case of any error
+     */
     @GET
     @Path("/exists/role")
     Response isRoleExistentForUser(@QueryParam("userId") Long userId,
                                    @QueryParam("roleName") String roleName,
                                    @QueryParam("tenantId") Long tenantId);
+
+    /**
+     * Check if Permission exists for a User (Optionally under a Tenant)
+     * @param userId User identifier
+     * @param permissionId Permission identifier
+     * @param tenantId Tenant identifier (Optional)
+     * @return Response OK containing a boolean value (true if permission is associated to an User, otherwise false).
+     * Response 404 in case of absence of parameter like user identifier or permission identifier.
+     * Response 500 in case of any error
+     */
+    @GET
+    @Path("/exists/permission")
+    Response isPermissionExistentForUser(@QueryParam("userId") Long userId,
+                                         @QueryParam("permissionId") Long permissionId,
+                                         @QueryParam("tenantId") Long tenantId);
+
 }

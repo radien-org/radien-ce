@@ -26,7 +26,6 @@ import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
-import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
@@ -67,15 +66,26 @@ public class TenantRoleBusinessService implements Serializable {
     @Inject
     private RoleServiceAccess roleServiceAccess;
 
-//    @Inject
-//    private UserRESTServiceAccess userRESTServiceAccess;
-
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * Retrieves TenantRole association using pagination approach
+     * @param pageNumber page number
+     * @param pageSize page size
+     * @return Page containing TenantRole associations (Chunk/Portion compatible
+     * with parameter Page number and Page size)
+     */
     public Page<SystemTenantRole> getAll(int pageNumber, int pageSize) {
         return this.tenantRoleServiceAccess.getAll(pageNumber, pageSize);
     }
 
+    /**
+     * Retrieves TenantRole associations that met the following parameter
+     * @param tenantId Tenant identifier
+     * @param roleId Role identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return Collection containing TenantRole associations.
+     */
     public List<? extends SystemTenantRole> getSpecific(Long tenantId,
                                                         Long roleId,
                                                         boolean isLogicalConjunction) {
@@ -84,11 +94,32 @@ public class TenantRoleBusinessService implements Serializable {
         return this.tenantRoleServiceAccess.get(filter);
     }
 
-    public SystemTenantRole getById(Long id) {
-        return this.tenantRoleServiceAccess.get(id);
+    /**
+     * Gets the System Tenant Role association searched by the PK (id).
+     * @param id to be searched.
+     * @return the system Tenant Role Association requested to be found.
+     * @throws TenantRoleException if Tenant Role association could not be found
+     */
+    public SystemTenantRole getById(Long id) throws TenantRoleException {
+        SystemTenantRole systemTenantRole = this.tenantRoleServiceAccess.get(id);
+        if (systemTenantRole == null) {
+            throwInformingInconsistencyFound("No Tenant Role found for id %d", id);
+        }
+        return systemTenantRole;
     }
 
+    /**
+     * Deletes a Tenant Role association
+     * @param id Tenant Role association Identifier
+     * @return If the association was found and the delete process was successfully performed
+     * @throws TenantRoleException If the Tenant Role association is linked
+     * with other Entities like Tenant Role Permission or Tenant Role User
+     */
     public boolean delete(Long id) throws TenantRoleException {
+        SystemTenantRole systemTenantRole = this.tenantRoleServiceAccess.get(id);
+        if (systemTenantRole == null) {
+            throwInformingInconsistencyFound("No Tenant Role found for id %d", id);
+        }
         return this.tenantRoleServiceAccess.delete(id);
     }
 
@@ -101,7 +132,7 @@ public class TenantRoleBusinessService implements Serializable {
      */
     public void save(SystemTenantRole systemTenantRole) throws UniquenessConstraintException, TenantRoleException, SystemException {
         checkIfMandatoryParametersWereInformed(systemTenantRole);
-        checkIfParamsExists(systemTenantRole.getTenantId(), systemTenantRole.getRoleId(), null, null);
+        checkIfParamsExists(systemTenantRole.getTenantId(), systemTenantRole.getRoleId(), null);
         this.tenantRoleServiceAccess.save(systemTenantRole);
     }
 
@@ -112,6 +143,7 @@ public class TenantRoleBusinessService implements Serializable {
      * @return true if exists, otherwise false
      */
     public boolean existsAssociation(Long tenantId, Long roleId) {
+        checkIfMandatoryParametersWereInformed(tenantId, roleId);
         return this.tenantRoleServiceAccess.isAssociationAlreadyExistent(roleId, tenantId);
     }
 
@@ -126,7 +158,6 @@ public class TenantRoleBusinessService implements Serializable {
         checkIfMandatoryParametersWereInformed(tenantId, roleId);
         List<SystemPermission> list = new ArrayList<>();
         List<Long> ids = this.tenantRoleServiceAccess.getPermissions(tenantId, roleId, userId);
-        // TODO: Necessary to improve this retrieval process (informing one array of Ids)
         for (Long id:ids) {
             Optional<SystemPermission> opt = this.permissionRESTServiceAccess.getPermissionById(id);
             if (opt.isPresent()) {
@@ -146,7 +177,6 @@ public class TenantRoleBusinessService implements Serializable {
         checkIfMandatoryParametersWereInformed(userId);
         List<SystemTenant> list = new ArrayList<>();
         List<Long> ids = this.tenantRoleServiceAccess.getTenants(userId, roleId);
-        // TODO: Necessary to improve this retrieval process (informing one array of Ids)
         for (Long id:ids) {
             Optional<SystemTenant> opt = this.tenantRESTServiceAccess.getTenantById(id);
             if (opt.isPresent()) {
@@ -193,7 +223,6 @@ public class TenantRoleBusinessService implements Serializable {
     public void assignUser(Long tenant, Long role, Long user) throws TenantRoleException,
             UniquenessConstraintException, SystemException {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
-        checkIfParamsExists(null, null, null, user);
         Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
         if (tenantRoleId == null) {
             throwInformingInconsistencyFound("There is no association between tenant %d and role %d", tenant, role);
@@ -242,13 +271,13 @@ public class TenantRoleBusinessService implements Serializable {
             UniquenessConstraintException, SystemException {
 
         checkIfMandatoryParametersWereInformed(tenant, role, permission);
-        checkIfParamsExists(null, null, permission, null);
+        checkIfParamsExists(null, null, permission);
         Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
         if (tenantRoleId == null) {
             throwInformingInconsistencyFound("There is no association between tenant %d and role %d", tenant, role);
         }
         if (this.tenantRolePermissionService.isAssociationAlreadyExistent(permission, tenantRoleId)) {
-            throwInformingInconsistencyFound("User is already associated with tenant %d and role %d", tenant, role);
+            throwInformingInconsistencyFound("Permission is already associated with tenant %d and role %d", tenant, role);
         }
         TenantRolePermission trp = new TenantRolePermission();
         trp.setTenantRoleId(tenantRoleId);
@@ -270,11 +299,11 @@ public class TenantRoleBusinessService implements Serializable {
         if (tenantRoleId == null) {
             throwInformingInconsistencyFound("There is no association between tenant %d and role %d", tenant, role);
         }
-        Long tenantRoleUserId = this.tenantRolePermissionService.getTenantRolePermissionId(tenantRoleId, permission);
-        if (tenantRoleUserId == null) {
-            throwInformingInconsistencyFound("No association found for user %d", permission);
+        Long tenantRolePermissionId = this.tenantRolePermissionService.getTenantRolePermissionId(tenantRoleId, permission);
+        if (tenantRolePermissionId == null) {
+            throwInformingInconsistencyFound("No association found for permission %d", permission);
         }
-        this.tenantRoleUserServiceAccess.delete(tenantRoleUserId);
+        this.tenantRolePermissionService.delete(tenantRolePermissionId);
     }
 
     /**
@@ -282,11 +311,10 @@ public class TenantRoleBusinessService implements Serializable {
      * @param tenantId Tenant Identifier
      * @param roleId Role identifier
      * @param permissionId Permission identifier
-     * @param userId User identifier
      * @throws SystemException in case of error during communication process using REST Clients
-     * @throws TenantRoleException in case of insconsistency found
+     * @throws TenantRoleException in case of inconsistency found
      */
-    protected void checkIfParamsExists(Long tenantId, Long roleId, Long permissionId, Long userId)
+    protected void checkIfParamsExists(Long tenantId, Long roleId, Long permissionId)
             throws SystemException, TenantRoleException {
         String standardMsgError = "Param %s not found for id %d";
         if (tenantId != null) {
@@ -301,10 +329,11 @@ public class TenantRoleBusinessService implements Serializable {
         }
         if (permissionId != null) {
             try {
-                if (!permissionRESTServiceAccess.isPermissionExistent(permissionId, null)) {
+                permissionRESTServiceAccess.isPermissionExistent(permissionId, null);
+            } catch (SystemException systemException) {
+                if (systemException.getMessage().contains("HTTP 404 Not Found")) {
                     throwInformingInconsistencyFound(standardMsgError, "Permission", permissionId);
                 }
-            } catch (SystemException systemException) {
                 log.error("Error checking permission existence", systemException);
                 throw systemException;
             }
@@ -312,16 +341,6 @@ public class TenantRoleBusinessService implements Serializable {
         if (roleId != null && !this.roleServiceAccess.checkIfRolesExist(roleId, null) ) {
             throwInformingInconsistencyFound(standardMsgError, "Role", roleId);
         }
-//        if (userId != null) {
-//            try {
-//                if (!this.userRESTServiceAccess.getUserById(userId).isPresent()) {
-//                    throwInformingInconsistencyFound(standardMsgError, "User", userId);
-//                }
-//            } catch(SystemException systemException) {
-//                log.error("Error checking user existence", systemException);
-//                throw systemException;
-//            }
-//        }
     }
 
     /**
@@ -347,30 +366,6 @@ public class TenantRoleBusinessService implements Serializable {
         throw new TenantRoleException(formattedMsg);
     }
 
-    public TenantRoleServiceAccess getTenantRoleServiceAccess() {
-        return tenantRoleServiceAccess;
-    }
-
-    public void setTenantRoleServiceAccess(TenantRoleServiceAccess tenantRoleServiceAccess) {
-        this.tenantRoleServiceAccess = tenantRoleServiceAccess;
-    }
-
-    public TenantRoleUserServiceAccess getTenantRoleUserServiceAccess() {
-        return tenantRoleUserServiceAccess;
-    }
-
-    public void setTenantRoleUserServiceAccess(TenantRoleUserServiceAccess tenantRoleUserServiceAccess) {
-        this.tenantRoleUserServiceAccess = tenantRoleUserServiceAccess;
-    }
-
-    public TenantRolePermissionServiceAccess getTenantRolePermissionService() {
-        return tenantRolePermissionService;
-    }
-
-    public void setTenantRolePermissionService(TenantRolePermissionServiceAccess tenantRolePermissionService) {
-        this.tenantRolePermissionService = tenantRolePermissionService;
-    }
-
     public TenantRESTServiceAccess getTenantRESTServiceAccess() {
         return tenantRESTServiceAccess;
     }
@@ -386,12 +381,4 @@ public class TenantRoleBusinessService implements Serializable {
     public void setPermissionRESTServiceAccess(PermissionRESTServiceAccess permissionRESTServiceAccess) {
         this.permissionRESTServiceAccess = permissionRESTServiceAccess;
     }
-
-//    public UserRESTServiceAccess getUserRESTServiceAccess() {
-//        return userRESTServiceAccess;
-//    }
-//
-//    public void setUserRESTServiceAccess(UserRESTServiceAccess userRESTServiceAccess) {
-//        this.userRESTServiceAccess = userRESTServiceAccess;
-//    }
 }

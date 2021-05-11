@@ -332,7 +332,7 @@ public class TenantRESTServiceClientTest {
     @Test
     public void testIsTenantExistent() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
-        when(tenantResourceClient.exists(any())).thenReturn(Response.ok().build());
+        when(tenantResourceClient.exists(any())).thenReturn(Response.ok(Boolean.TRUE).build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         dummyTenant.setName("name-update");
 
@@ -342,7 +342,7 @@ public class TenantRESTServiceClientTest {
     @Test
     public void testIsTenantExistentReturnFalseResponse() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
-        when(tenantResourceClient.exists(any())).thenReturn(Response.serverError().build());
+        when(tenantResourceClient.exists(any())).thenReturn(Response.ok().entity(Boolean.FALSE).build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         dummyTenant.setName("name-update");
 

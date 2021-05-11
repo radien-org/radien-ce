@@ -30,6 +30,7 @@ import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
@@ -42,8 +43,8 @@ import java.util.List;
 @Stateful
 public class TenantRoleService implements TenantRoleServiceAccess {
 
-    @Inject
-    private EntityManagerHolder emh;
+    @PersistenceContext(unitName = "persistenceUnit")
+    private EntityManager entityManager;
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleService.class);
 
@@ -54,7 +55,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      */
     @Override
     public SystemTenantRole get(Long tenantRoleId) {
-        return emh.getEm().find(TenantRole.class, tenantRoleId);
+        return getEntityManager().find(TenantRole.class, tenantRoleId);
     }
 
     /**
@@ -66,7 +67,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     @Override
     public Page<SystemTenantRole> getAll(int pageNo, int pageSize) {
         log.info("Retrieving tenant role associations using pagination mode");
-        EntityManager entityManager = emh.getEm();
+        EntityManager entityManager = getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TenantRole> criteriaQuery = criteriaBuilder.createQuery(TenantRole.class);
         Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
@@ -111,7 +112,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @return a list o found system tenant role associations
      */
     public List<? extends SystemTenantRole> get(SystemTenantRoleSearchFilter filter) {
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<TenantRole> criteriaQuery = criteriaBuilder.createQuery(TenantRole.class);
         Root<TenantRole> root = criteriaQuery.from(TenantRole.class);
@@ -187,7 +188,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      */
     @Override
     public void save(SystemTenantRole tenantRole) throws UniquenessConstraintException {
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRole.getRoleId(),
                 tenantRole.getTenantId(), tenantRole.getId(), em);
         if (alreadyExistentRecords) {
@@ -208,7 +209,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      */
     @Override
     public boolean isAssociationAlreadyExistent(Long roleId, Long tenantId) {
-        return isAssociationAlreadyExistent(roleId, tenantId, null, emh.getEm());
+        return isAssociationAlreadyExistent(roleId, tenantId, null, getEntityManager());
     }
 
     /**
@@ -259,7 +260,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             throw new IllegalArgumentException("Tenant Role Id is mandatory");
         }
 
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
 
         // Check if we have some user associated
         if (hasUsersAssociated(tenantRoleId, em)) {
@@ -344,7 +345,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
                     "      tru.userId = :pUserId and tru.tenantRoleId = tr.id";
         }
 
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
         typedQuery.setParameter("pTenantId", tenantId);
         typedQuery.setParameter("pRoleId", roleId);
@@ -368,7 +369,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             throw new IllegalArgumentException("User id is mandatory");
         }
 
-        String query = "Select tr.tenantId " +
+        String query = "Select distinct tr.tenantId " +
                        "From TenantRole tr, " +
                        "     TenantRoleUser tru " +
                        "where tru.userId = :pUserId and tru.tenantRoleId = tr.id";
@@ -377,7 +378,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             query += " and tr.roleId = :pRoleId";
         }
 
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
         typedQuery.setParameter("pUserId", userId);
 
@@ -410,7 +411,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             query += " and tr.tenantId = :pTenantId";
         }
 
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
         typedQuery.setParameter("pRoleNames", roleNames);
         typedQuery.setParameter("pUserId", userId);
@@ -440,7 +441,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             query += "  and tr.tenantId = :pTenantId";
         }
 
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
         typedQuery.setParameter("pPermissionId", permissionId);
         typedQuery.setParameter("pUserId", userId);
@@ -463,7 +464,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             throw new IllegalArgumentException("Role and Tenant are mandatory");
         }
         String query = "Select tr.id From TenantRole tr where tr.tenantId = :pTenantId and tr.roleId = :pRoleId";
-        TypedQuery<Long> typedQuery = emh.getEm().createQuery(query, Long.class);
+        TypedQuery<Long> typedQuery = getEntityManager().createQuery(query, Long.class);
         typedQuery.setParameter("pTenantId", tenant);
         typedQuery.setParameter("pRoleId", role);
         try {
@@ -473,5 +474,9 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             log.error("No TenantRole existent tenant {} and role {}", tenant, role);
             return null;
         }
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

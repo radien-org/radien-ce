@@ -21,7 +21,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
-import io.radien.ms.authz.client.LinkedAuthorizationClient;
+import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -53,7 +53,7 @@ public abstract class AuthorizationChecker implements Serializable {
 
     private UserClient userClient;
 
-    private LinkedAuthorizationClient linkedAuthorizationClient;
+    private TenantRoleClient tenantRoleClient;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -92,11 +92,11 @@ public abstract class AuthorizationChecker implements Serializable {
             this.preProcess();
             Response response = null;
             try {
-                response = getLinkedAuthorizationClient().
+                response = getTenantRoleClient().
                         isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
             } catch (TokenExpiredException tee) {
                 refreshToken();
-                response = getLinkedAuthorizationClient().
+                response = getTenantRoleClient().
                         isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
             }
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
@@ -130,24 +130,25 @@ public abstract class AuthorizationChecker implements Serializable {
     public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
             this.preProcess();
+            Response response = null;
             try {
-                getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
-                        permissionId, null, getCurrentUserId(), true);
+                response = getTenantRoleClient().isPermissionExistentForUser(getCurrentUserId(),
+                        permissionId, tenantId);
             } catch (TokenExpiredException e) {
                 try{
                     refreshToken();
-                    getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
-                            permissionId, null, getCurrentUserId(), true);
+                    response = getTenantRoleClient().isPermissionExistentForUser(getCurrentUserId(),
+                            permissionId, tenantId);
                 } catch (TokenExpiredException tokenExpiredException){
 
                     log.error(tokenExpiredException.getMessage(), tokenExpiredException);
                     throw new SystemException(tokenExpiredException);
                 }
             }
-            return true;
-        }
-        catch (NotFoundException e) {
-           return false;
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
+            return false;
         }
         catch (Exception e) {
             this.log.error("Error checking authorization", e);
@@ -244,16 +245,16 @@ public abstract class AuthorizationChecker implements Serializable {
         return userClient;
     }
 
-    public LinkedAuthorizationClient getLinkedAuthorizationClient() throws SystemException{
-        if (linkedAuthorizationClient == null) {
-            linkedAuthorizationClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
-                    LinkedAuthorizationClient.class);
+    public TenantRoleClient getTenantRoleClient() throws SystemException{
+        if (tenantRoleClient == null) {
+            tenantRoleClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
+                    TenantRoleClient.class);
         }
-        return linkedAuthorizationClient;
+        return tenantRoleClient;
     }
 
-    public void setLinkedAuthorizationClient(LinkedAuthorizationClient linkedAuthorizationClient) {
-        this.linkedAuthorizationClient = linkedAuthorizationClient;
+    public void setTenantRoleClientt(TenantRoleClient tenantRoleClient) {
+        this.tenantRoleClient = tenantRoleClient;
     }
 
     public void setUserClient(UserClient userClient) {

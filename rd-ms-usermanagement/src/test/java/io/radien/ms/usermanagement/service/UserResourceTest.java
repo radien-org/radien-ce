@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
-import io.radien.ms.authz.client.LinkedAuthorizationClient;
+import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public class UserResourceTest {
     HttpServletRequest servletRequest;
 
     @Mock
-    LinkedAuthorizationClient linkedAuthorizationClient;
+    TenantRoleClient tenantRoleClient;
 
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
@@ -104,7 +104,7 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, "admin", null);
 
         Response response = userResource.getAll(null,1,10,null,true);
@@ -129,7 +129,7 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, "admin", null);
 
         Response response = userResource.getAll(null,1,10,null,true);
@@ -236,7 +236,7 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, "tenant-administrator", null);
 
         Response response = userResource.save(new User());
@@ -263,7 +263,7 @@ public class UserResourceTest {
 
         Response notAuthorizedResponse = Response.ok().entity(Boolean.FALSE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(notAuthorizedResponse).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, "tenant-administrator", null);
 
         Response response = userResource.save(new User());
@@ -310,7 +310,7 @@ public class UserResourceTest {
         when(this.userBusinessService.getUserId(principal.getSub())).thenReturn(1001L);
 
         Response granted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn(granted).when(linkedAuthorizationClient).isRoleExistentForUser(1001L,
+        doReturn(granted).when(tenantRoleClient).isRoleExistentForUser(1001L,
                 "tenant-administrator", null);
 
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
