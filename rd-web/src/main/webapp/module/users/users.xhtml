@@ -58,6 +58,7 @@
 			<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
 			<b:button id="delete-user-button"
 					  onclick="$('.formValidationModalUserDelete').modal('show')"
+					  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
 					  value="#{msg.delete}"
 					  icon="trash"
 					  update="@form:userManagementTableDiv"/>
@@ -80,12 +81,13 @@
 			<b:commandButton value="#{msg.edit}"
 							 tooltip="Edit existent user information!"
 							 iconAwesome="fa-edit"
+							 rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
 							 action="#{userDataModel.editRecord}"/>
 
 			<b:commandButton value="#{msg.create}"
 							 tooltip="Create a new user!"
 							 iconAwesome="fa-cube"
-							 rendered="#{authzChecker.hasGrant('tenant-administrator')}"
+							 rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
 							 action="#{userDataModel.createRecord}"/>
 
 			<b:commandButton value="#{msg.profile}"

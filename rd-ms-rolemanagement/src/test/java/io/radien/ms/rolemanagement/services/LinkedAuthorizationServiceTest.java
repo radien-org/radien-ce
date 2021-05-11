@@ -21,6 +21,7 @@ import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchF
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -32,6 +33,7 @@ import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -258,6 +260,26 @@ public class LinkedAuthorizationServiceTest {
         boolean success = false;
         try{
             linkedAuthorizationServiceAccess.isRoleExistentForUser(2L, null, null);
+        } catch (Exception e) {
+            success=true;
+        }
+        assertTrue(success);
+    }
+
+    @Test
+    public void testCheckPermissions() {
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        assertFalse(linkedAuthorizationServiceAccess.checkPermissions(2L, 2L, roleList));
+    }
+
+    @Test
+    public void testCheckPermissionsNullInputValues() {
+        boolean success = false;
+        try{
+            linkedAuthorizationServiceAccess.checkPermissions(null, null, null);
         } catch (Exception e) {
             success=true;
         }

@@ -25,8 +25,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * REST client created to decouple the current subproject
@@ -52,5 +52,11 @@ public interface LinkedAuthorizationClient {
     @Path("/exists/role")
     Response isRoleExistentForUser(@QueryParam("userId") Long userId,
                                    @QueryParam("roleName") String roleName,
+                                   @QueryParam("tenantId") Long tenantId);
+
+    @GET
+    @Path("/exists/checkPermissions")
+    Response checkPermissions(@QueryParam("userId") Long userId,
+                                   @QueryParam("roleName") List<String> roleName,
                                    @QueryParam("tenantId") Long tenantId);
 }

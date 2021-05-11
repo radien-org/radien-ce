@@ -18,21 +18,28 @@ package io.radien.webapp.authz;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.openid.entities.Principal;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
+/**
+ * @author Newton Carvalho
+ */
 public class WebAuthorizationCheckerTest {
 
     @InjectMocks
@@ -58,8 +65,11 @@ public class WebAuthorizationCheckerTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Test for getting current user id should be a success
+     */
     @Test
-    public void testGetCurrentUserId() throws SystemException {
+    public void testGetCurrentUserId() {
         Long userId = 22L;
         when(this.userSession.getUserId()).thenReturn(userId);
         try {
@@ -70,6 +80,11 @@ public class WebAuthorizationCheckerTest {
         }
     }
 
+    /**
+     * Test to retrieve current user id searching by the subject of him
+     * This test should be a success
+     * @throws SystemException in case of any issue while retrieving any of the user information
+     */
     @Test
     public void testGetCurrentUserIdRetrievingViaSub() throws SystemException {
         String sub = "a-b-c-d";
@@ -88,6 +103,9 @@ public class WebAuthorizationCheckerTest {
         }
     }
 
+    /**
+     * Tests the returned user information
+     */
     @Test
     public void testGetInvokerUser() {
         when(userSession.getUserFirstName()).thenReturn("name");
@@ -98,13 +116,16 @@ public class WebAuthorizationCheckerTest {
 
         SystemUser u = this.webAuthorizationChecker.getInvokerUser();
 
-        assertEquals(u.getFirstname(), "name");
-        assertEquals(u.getLastname(), "last-name");
-        assertEquals(u.getLogon(), "user.name");
-        assertEquals(u.getSub(), "sub-1");
-        assertEquals(u.getUserEmail(), "user.name@gmail.com");
+        assertEquals("name", u.getFirstname());
+        assertEquals("last-name", u.getLastname());
+        assertEquals("user.name", u.getLogon());
+        assertEquals("sub-1", u.getSub());
+        assertEquals("user.name@gmail.com", u.getUserEmail());
     }
 
+    /**
+     * Tests if the current user has a specific role and grant access
+     */
     @Test
     public void testHasGrant() {
         Long userId = 22L;
@@ -125,5 +146,32 @@ public class WebAuthorizationCheckerTest {
         assertTrue(this.webAuthorizationChecker.hasGrant(tenantId, role1));
         assertFalse(this.webAuthorizationChecker.hasGrant(tenantId, role1));
         assertFalse(this.webAuthorizationChecker.hasGrant(tenantId, role2));
+    }
+
+    /**
+     * Test to validate if a specific current user has the correct role access for
+     * system administrator or user administrator
+     * @throws SystemException in case of any issue while validating the roles
+     */
+    @Test
+    public void testHasUserAdministratorRoleAccess() throws SystemException {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+
+        assertFalse(webAuthorizationChecker.hasUserAdministratorRoleAccess());
     }
 }

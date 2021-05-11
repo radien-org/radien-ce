@@ -81,6 +81,8 @@ public class RoleServiceTest {
             roleServiceAccess.save(role);
             roleServiceAccess.save(roleDuplicated);
             success = false;
+            roleServiceAccess.delete(role.getId());
+            roleServiceAccess.delete(roleDuplicated.getId());
         } catch (UniquenessConstraintException e){
             success = true;
         } catch(RoleNotFoundException e) {
@@ -97,6 +99,8 @@ public class RoleServiceTest {
         assertNotNull(result);
         assertEquals(role.getName(), result.getName());
         assertEquals(role.getDescription(), result.getDescription());
+
+        roleServiceAccess.delete(role.getId());
     }
 
     @Test
@@ -141,6 +145,10 @@ public class RoleServiceTest {
 
         List<? extends SystemRole> rolesNotExact = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("Find","Find",false,true));
         assertEquals(2,rolesNotExact.size());
+
+        roleServiceAccess.delete(testById1.getId());
+        roleServiceAccess.delete(testById2.getId());
+        roleServiceAccess.delete(testById3.getId());
     }
 
     @Test
@@ -153,6 +161,9 @@ public class RoleServiceTest {
 
         testUpdate2.setId(id);
         roleServiceAccess.save(testUpdate2);
+
+        roleServiceAccess.delete(testUpdate1.getId());
+        roleServiceAccess.delete(testUpdate2.getId());
     }
 
     @Test
@@ -168,11 +179,13 @@ public class RoleServiceTest {
 
         Page<SystemRole> result2 = roleServiceAccess.getAll("testGetAll2",1,10,sortBy,true);
         assertNotNull(result2);
+
+        roleServiceAccess.delete(testById1.getId());
     }
 
     @Test
     public void testGetTotalRecordsCount() {
         long result = roleServiceAccess.getTotalRecordsCount();
-        assertEquals(5, result);
+        assertEquals(1, result);
     }
 }
