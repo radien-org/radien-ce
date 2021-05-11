@@ -16,14 +16,23 @@
 package io.radien.exception;
 
 /**
+ * Exception to be throw when no record has been found
+ *
  * @author Bruno Gama
  */
 public class NotFoundException extends RuntimeException {
 
+    /**
+     * Not Found exception empty constructor
+     */
     public NotFoundException() {
         super();
     }
 
+    /**
+     * Not found exception constructor by a given message
+     * @param message to create the not found exception with
+     */
     public NotFoundException(String message) {
         super(message);
     }

@@ -16,11 +16,16 @@
 package io.radien.exception;
 
 /**
- * Exception to express inconsistencies regarding
- * Tenant domain object
+ * Exception to express inconsistencies regarding Tenant domain object
+ *
+ * @author Bruno Gama
  */
 public class TenantException extends Exception{
 
+    /**
+     * Tenant exception constructor by a given message
+     * @param message to create the tenant exception with
+     */
     public TenantException(String message) {
         super(message);
     }
