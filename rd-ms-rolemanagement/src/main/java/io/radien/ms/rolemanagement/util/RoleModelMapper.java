@@ -23,9 +23,15 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
+ * Mapper from a given information into a JSON or a Role
+ *
  * @author Bruno Gama
  */
 public class RoleModelMapper {
+
+    private RoleModelMapper() {
+        // empty constructor
+    }
 
     /**
      * Maps into a Json Object a Role
@@ -39,7 +45,7 @@ public class RoleModelMapper {
     /**
      * Maps into a Json Object array based on a role array list
      * @param models role that have the information to be converted
-     * @returna json array created based on the multiple roles
+     * @return a json array created based on the multiple roles
      */
     public static JsonArray map(List<Role> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();

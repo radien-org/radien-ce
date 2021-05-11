@@ -16,16 +16,26 @@
 package io.radien.ms.rolemanagement.client.exception;
 
 /**
+ * Linked Authorization and Role specific Bad request exception
+ * this exception is to be thrown when the user requests something that will have wrong requested data
+ *
  * @author Bruno Gama
  */
 public class BadRequestException extends RuntimeException {
 
-    private static final long serialVersionUID = 5485575161734022041L;
+    private static final long serialVersionUID = 5459519139664318313L;
 
+    /**
+     * Bad Request exception empty constructor
+     */
     public BadRequestException() {
         super();
     }
 
+    /**
+     * Bad Request exception message constructor
+     * @param message to be added into the bad request exception
+     */
     public BadRequestException(String message) {
         super(message);
     }

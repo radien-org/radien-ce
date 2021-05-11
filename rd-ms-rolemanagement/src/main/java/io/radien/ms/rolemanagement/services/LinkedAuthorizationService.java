@@ -22,7 +22,6 @@ import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
@@ -37,6 +36,8 @@ import javax.persistence.criteria.*;
 import java.util.List;
 
 /**
+ * The Linked Authorization Service will perform the necessary requests and validations for each request in the db
+ *
  * @author Bruno Gama
  */
 @Stateful
@@ -309,11 +310,11 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
     }
 
     /**
-     * Checks if a given role name exists for a specific user and tenant
-     * @param userId of the current user
-     * @param tenantId where the action is requesting validation
-     * @param roleName needed fo active permission access
-     * @return true in case of existence
+     * Validates if the given role exists for the given user
+     * @param userId to be validated
+     * @param tenantId to be checked
+     * @param roleName to see if it exists
+     * @return true in case the correct user in the specific tenant has the required role
      */
     @Override
     public boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) {

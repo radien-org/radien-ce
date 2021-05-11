@@ -23,9 +23,15 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
+ * Mapper from a given information into a JSON or a Linked Authorization
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorizationModelMapper {
+
+    private LinkedAuthorizationModelMapper() {
+        // empty constructor
+    }
 
     /**
      * Maps into a Json Object a Linked Authorization
@@ -39,7 +45,7 @@ public class LinkedAuthorizationModelMapper {
     /**
      * Maps into a Json Object array based on a Linked Authorization array list
      * @param models linked authorizations that have the information to be converted
-     * @returna json array created based on the multiple linked authorization
+     * @return a json array created based on the multiple linked authorization
      */
     public static JsonArray map(List<LinkedAuthorization> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();

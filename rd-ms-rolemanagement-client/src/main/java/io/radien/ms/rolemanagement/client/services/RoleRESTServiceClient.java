@@ -42,6 +42,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Role REST Service Client
+ *
+ * It means that the server will have a RESTful web service which would provide the required
+ * functionality to the client. The client send's a request to the web service on the server.
+ * The server would either reject the request or comply and provide an adequate response to the
+ * client.
+ *
  * @author Bruno Gama
  */
 @RequestScoped

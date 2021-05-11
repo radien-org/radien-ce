@@ -29,17 +29,40 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
+ * Linked Authorization JSON reader into object
+ * Reads the given JSON object and converts it into a Linked authorization
+ *
  * @author Bruno Gama
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class LinkedAuthorizationMessageBodyReader implements MessageBodyReader<LinkedAuthorization> {
 
+    /**
+     * Checks if the given JSON object can be read into a linked authorization one
+     * @param type of the received object
+     * @param genericType for multiple conversion purposes
+     * @param annotations
+     * @param mediaType
+     * @return true in case received JSON can be read into a tenant role user
+     */
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.equals(LinkedAuthorization.class);
     }
 
+    /**
+     * Converts the given JSON object into a linked authorization one
+     * @param type for the final object (linked authorization)
+     * @param genericType for multiple conversion purposes
+     * @param annotations
+     * @param mediaType
+     * @param httpHeaders
+     * @param entityStream
+     * @return a System Linked Authorization that has been gather the information from the given JSON
+     * @throws WebApplicationException in case of any issue while parsing the JSON fields into system linked
+     * authorization ones
+     */
     @Override
     public LinkedAuthorization readFrom(Class<LinkedAuthorization> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
         return LinkedAuthorizationModelMapper.map(entityStream);

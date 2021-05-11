@@ -24,9 +24,15 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
+ * Mapper from a given information into a JSON or a Role
+ *
  * @author Bruno Gama
  */
 public class RoleModelMapper {
+
+    private RoleModelMapper() {
+        // empty constructor
+    }
 
     /**
      * Maps into a Json Object a Role
@@ -65,8 +71,8 @@ public class RoleModelMapper {
 
     /**
      * Obtains a Permission Page from a Json input stream
-     * @param is
-     * @return
+     * @param is inputted information to be converted into the object
+     * @return a page of roles with the requested information
      */
     public static Page<Role> mapToPage(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {

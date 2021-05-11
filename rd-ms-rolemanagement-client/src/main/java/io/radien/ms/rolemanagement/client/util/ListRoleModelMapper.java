@@ -25,9 +25,21 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
+ * Mapper utility class that allows to convert a JSON message into a list of system role
+ *
  * @author Bruno Gama
  */
 public class ListRoleModelMapper {
+
+    private ListRoleModelMapper() {
+        // empty constructor
+    }
+
+    /**
+     * Converts the received JSON message into a list of roles
+     * @param is inputted information to be converted into the object
+     * @return a list of system role
+     */
     public static List<? extends SystemRole> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();

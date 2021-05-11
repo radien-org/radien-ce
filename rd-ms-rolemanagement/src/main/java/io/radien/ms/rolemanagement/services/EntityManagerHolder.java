@@ -5,6 +5,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
+/**
+ * The Entity Manager will retrieve the correct entity properties for each service
+ *
+ * @author Newton Carvalho
+ */
 @Stateful
 public class EntityManagerHolder {
 

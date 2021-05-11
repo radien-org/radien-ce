@@ -17,7 +17,6 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
-import io.radien.exception.ProcessingException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,8 @@ import java.util.stream.Collectors;
 /**
  * Client Role Factory conversions
  *
+ * Factory that will create based on given fields the role or convert the role into a json object
+ *
  * @author Bruno Gama
  */
 public class RoleFactory {
@@ -44,6 +45,10 @@ public class RoleFactory {
     private static final Logger log = LoggerFactory.getLogger(RoleFactory.class);
 
     private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+    private RoleFactory() {
+        // empty constructor
+    }
 
     /**
      * Create a role with already predefined fields.
@@ -89,7 +94,6 @@ public class RoleFactory {
             try {
                 role.setTerminationDate(format.parse(terminationDateAsString));
             } catch (ParseException e) {
-                log.error("Error converting Json into Role object, value with invalid format for termination Date", e);
                 throw new RuntimeException("Error parsing terminationDate", e);
             }
         }

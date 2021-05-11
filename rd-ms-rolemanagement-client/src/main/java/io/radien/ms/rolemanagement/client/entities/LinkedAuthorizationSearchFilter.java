@@ -18,6 +18,8 @@ package io.radien.ms.rolemanagement.client.entities;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 
 /**
+ * Linked Authorization Search filter object for searching criteria
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizationSearchFilter {
@@ -29,8 +31,19 @@ public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizatio
 
     private boolean isLogicConjunction;
 
+    /**
+     * Linked Authorization search filter empty constructor
+     */
     public LinkedAuthorizationSearchFilter() {}
 
+    /**
+     * Linked Authorization search filter constructor with specified fields
+     * @param tenantId to be search
+     * @param permissionId to be search
+     * @param roleId to be search
+     * @param userId to be search
+     * @param isLogicConjunction true in case search option is and conjunction
+     */
     public LinkedAuthorizationSearchFilter(Long tenantId, Long permissionId, Long roleId, Long userId, boolean isLogicConjunction) {
         this.tenantId = tenantId;
         this.permissionId = permissionId;
@@ -39,49 +52,89 @@ public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizatio
         this.isLogicConjunction = isLogicConjunction;
     }
 
+    /**
+     * Linked Authorization search filter get tenant id
+     * @return tenant id for search filter
+     */
     @Override
     public Long getTenantId() {
         return tenantId;
     }
 
+    /**
+     * Linked Authorization tenant id set
+     * @param tenantId to be set and replace
+     */
     @Override
     public void setTenantId(Long tenantId) {
         this.tenantId=tenantId;
     }
 
+    /**
+     * Linked Authorization search filter get permission id
+     * @return permission id for search filter
+     */
     @Override
     public Long getPermissionId() {
         return permissionId;
     }
 
+    /**
+     * Linked Authorization permission id set
+     * @param permissionId to be set and replace
+     */
     @Override
     public void setPermissionId(Long permissionId) {
         this.permissionId=permissionId;
     }
 
+    /**
+     * Linked Authorization search filter get role id
+     * @return role id for search filter
+     */
     @Override
     public Long getRoleId() {
         return roleId;
     }
 
+    /**
+     * Linked Authorization role id set
+     * @param roleId to be set and replace
+     */
     @Override
     public void setRoleId(Long roleId) {
         this.roleId=roleId;
     }
 
+    /**
+     * Linked Authorization search filter get is logical conjunction
+     * @return true or false value
+     */
     @Override
     public boolean isLogicConjunction() {
         return isLogicConjunction;
     }
 
+    /**
+     * Linked Authorization is logical conjunction set
+     * @param logicConjunction to be set and replace
+     */
     @Override
     public void setLogicConjunction(boolean logicConjunction) {
         isLogicConjunction=logicConjunction;
     }
 
+    /**
+     * Linked Authorization search filter get user id
+     * @return user id for search filter
+     */
     @Override
     public Long getUserId() { return userId; }
 
+    /**
+     * Linked Authorization user id set
+     * @param userId to be set and replace
+     */
     @Override
     public void setUserId(Long userId) { this.userId = userId; }
 }
