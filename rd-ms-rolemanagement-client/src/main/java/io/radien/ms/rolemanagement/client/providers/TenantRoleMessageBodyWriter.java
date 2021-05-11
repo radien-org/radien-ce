@@ -33,19 +33,35 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
+ * Tenant Role JSON message writer, converts a tenant role into a json object
+ *
  * @author Newton Carvalho
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class TenantRoleMessageBodyWriter implements MessageBodyWriter<TenantRole> {
 
+    /**
+     * Validates if the given received type is a tenant role object
+     * @param type of the received object
+     * @param genericType for multiple conversions
+     * @param annotations
+     * @param mediaType
+     * @return true if received object is in fact a tenant role one
+     */
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.equals(TenantRole.class);
     }
 
-    /*
-    Deprecated in JAX RS 2.0
+    /**
+     * Gets the number of received objects and counts it
+     * @param model received
+     * @param type of the received object
+     * @param genericType for multiple conversions
+     * @param annotations
+     * @param mediaType
+     * @return the number of received objects
      */
     @Override
     public long getSize(TenantRole model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -53,17 +69,16 @@ public class TenantRoleMessageBodyWriter implements MessageBodyWriter<TenantRole
     }
 
     /**
-     * Marshal User to OutputStream
-     *
-     * @param model
-     * @param type
-     * @param genericType
+     * Writes the received tenant role object into a json message
+     * @param model received to be written
+     * @param type of the received object
+     * @param genericType for multiple conversions
      * @param annotations
      * @param mediaType
      * @param httpHeaders
      * @param entityStream
-     * @throws IOException
-     * @throws WebApplicationException
+     * @throws WebApplicationException in case of error while converting any object field into a json
+     * @throws IOException in case of error while receiving or sending the message from or to the user
      */
     @Override
     public void writeTo(TenantRole model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {

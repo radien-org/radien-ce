@@ -24,8 +24,6 @@ import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -34,14 +32,15 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 /**
+ * Linked Authorization Business Service will communicate with the service to perform the requests in the db
+ * and all the necessary validations
+ *
  * @author Bruno Gama
  */
 @RequestScoped
 public class LinkedAuthorizationBusinessService implements Serializable {
 
     private static final long serialVersionUID = 9136267725285788804L;
-
-    private static final Logger log = LoggerFactory.getLogger(LinkedAuthorizationBusinessService.class);
 
     @Inject
     private LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;

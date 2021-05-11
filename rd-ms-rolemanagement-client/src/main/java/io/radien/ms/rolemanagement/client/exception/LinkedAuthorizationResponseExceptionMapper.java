@@ -23,11 +23,18 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 /**
+ * Linked authorization mapper for the exceptions
+ *
  * @author Bruno Gama
  */
-public class LinkedAuthorizationResponseExceptionMapper implements
-        ResponseExceptionMapper<Exception> {
+public class LinkedAuthorizationResponseExceptionMapper implements ResponseExceptionMapper<Exception> {
 
+    /**
+     * Validates if by a given status code the error message can be handle by the following mapper
+     * @param statusCode to be validated
+     * @param headers
+     * @return true in case handler can handle exception
+     */
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
@@ -36,6 +43,11 @@ public class LinkedAuthorizationResponseExceptionMapper implements
                 || statusCode == 500;   // Internal Server Error
     }
 
+    /**
+     * Throws the correct Linked Authorization Exception by the given response
+     * @param response message to be validated
+     * @return a exception
+     */
     @Override
     public Exception toThrowable(Response response) {
         switch (response.getStatus()) {

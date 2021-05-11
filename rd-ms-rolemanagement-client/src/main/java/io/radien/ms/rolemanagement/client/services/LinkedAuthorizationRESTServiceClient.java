@@ -43,9 +43,17 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 /**
+ * Linked Authorization REST Service Client
+ *
+ * It means that the server will have a RESTful web service which would provide the required
+ * functionality to the client. The client send's a request to the web service on the server.
+ * The server would either reject the request or comply and provide an adequate response to the
+ * client.
+ *
  * @author Bruno Gama
  */
-@Stateless @Default
+@Stateless
+@Default
 public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker implements LinkedAuthorizationRESTServiceAccess {
 
     private static final long serialVersionUID = -7001657359045981674L;
@@ -91,7 +99,8 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
      * @return true if exists some LinkedAuthorization satisfying the informed parameter
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private boolean checkIfLinkedAuthorizationExistsRequester(Long tenant, Long permission, Long role, Long userId) throws SystemException {
+    private boolean checkIfLinkedAuthorizationExistsRequester(Long tenant, Long permission, Long role, Long userId)
+            throws SystemException {
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -100,7 +109,8 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-            log.info("LinkedAuthorizations not found for tenant, permission, role and user. Obtained status= {}", response.getStatusInfo().getStatusCode());
+            log.info("LinkedAuthorizations not found for tenant, permission, role and user. Obtained status= {}",
+                    response.getStatusInfo().getStatusCode());
         }
         catch (WebApplicationException e) {
             // In case of 404 status we just want to return false
@@ -109,7 +119,6 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             }
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            log.info("Error checking if LinkedAuthorizations exists for tenant, permission, role and user");
             throw new SystemException(e);
         }
         return false;
@@ -117,7 +126,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
 
     /**
      * Calls the requester expecting to receive all the existent linked authorizations,
-     * if not possible will refreh the access token and retry
+     * if not possible will refresh the access token and retry
      * @param pageNo of the information to be seen
      * @param pageSize number of records to be showed
      * @return a list of System Linked Authorizations
@@ -268,7 +277,8 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String responseMessage = response.readEntity(String.class);
+                log.error(responseMessage);
                 return false;
             }
         } catch (ProcessingException | MalformedURLException e) {

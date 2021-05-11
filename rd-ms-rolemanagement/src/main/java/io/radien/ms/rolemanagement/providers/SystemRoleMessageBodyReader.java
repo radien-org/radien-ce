@@ -30,19 +30,43 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
+ * Role JSON reader into object
+ * Reads the given JSON object and converts it into a Role
+ *
  * @author Bruno Gama
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class SystemRoleMessageBodyReader implements MessageBodyReader<SystemRole> {
 
+    /**
+     * Checks if the given JSON object can be read into a Role one
+     * @param type of the received object
+     * @param genericType for multiple conversion purposes
+     * @param annotations
+     * @param mediaType
+     * @return true in case received JSON can be read into a role
+     */
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.equals(Role.class);
     }
 
+    /**
+     * Converts the given JSON object into a role one
+     * @param type for the final object (role)
+     * @param genericType for multiple conversion purposes
+     * @param annotations
+     * @param mediaType
+     * @param httpHeaders
+     * @param entityStream
+     * @return a System Role that has been gather the information from the given JSON
+     * @throws WebApplicationException in case of any issue while parsing the JSON fields into system role
+     */
     @Override
-    public SystemRole readFrom(Class<SystemRole> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
+    public SystemRole readFrom(Class<SystemRole> type, Type genericType, Annotation[] annotations,
+                               MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
+                               InputStream entityStream) throws WebApplicationException {
         return RoleModelMapper.map(entityStream);
     }
 }

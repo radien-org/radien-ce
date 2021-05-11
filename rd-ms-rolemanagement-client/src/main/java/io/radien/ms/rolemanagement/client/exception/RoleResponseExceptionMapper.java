@@ -16,7 +16,6 @@
 package io.radien.ms.rolemanagement.client.exception;
 
 import io.radien.exception.NotFoundException;
-import io.radien.exception.ProcessingException;
 import io.radien.exception.TokenExpiredException;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
@@ -24,11 +23,19 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 /**
+ * Role mapper for the exceptions
+ *
  * @author Bruno Gama
  */
 public class RoleResponseExceptionMapper implements
         ResponseExceptionMapper<Exception> {
 
+    /**
+     * Validates if by a given status code the error message can be handle by the following mapper
+     * @param statusCode to be validated
+     * @param headers
+     * @return true in case handler can handle exception
+     */
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
@@ -37,6 +44,11 @@ public class RoleResponseExceptionMapper implements
                 || statusCode == 500;   // Internal Server Error
     }
 
+    /**
+     * Throws the correct Role Exception by the given response
+     * @param response message to be validated
+     * @return a exception
+     */
     @Override
     public Exception toThrowable(Response response) {
         switch (response.getStatus()) {

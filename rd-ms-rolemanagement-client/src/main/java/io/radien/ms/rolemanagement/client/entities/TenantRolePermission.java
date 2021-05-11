@@ -28,11 +28,14 @@ public class TenantRolePermission extends AbstractModel implements SystemTenantR
     private Long tenantRoleId;
     private Long permissionId;
 
+    /**
+     * Tenant Role Permission empty constructor
+     */
     public TenantRolePermission(){
     }
 
     /**
-     * Tenant role constructor
+     * Tenant role permission constructor
      * @param tenantRolePermission information to be created
      */
     public TenantRolePermission(TenantRolePermission tenantRolePermission) {
@@ -41,31 +44,55 @@ public class TenantRolePermission extends AbstractModel implements SystemTenantR
         this.permissionId = tenantRolePermission.permissionId;
     }
 
+    /**
+     * Tenant role permission id getter
+     * @return tenant role permission id
+     */
     @Override
     public Long getId() {
         return id;
     }
 
+    /**
+     * Tenant role permission id setter
+     * @param id to be set and updated
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Tenant role permission tenant role id getter
+     * @return tenant role permission tenant role id
+     */
     @Override
     public Long getTenantRoleId() {
         return tenantRoleId;
     }
 
+    /**
+     * Tenant role permission tenant role id setter
+     * @param tenantRoleId to be set or updated
+     */
     @Override
     public void setTenantRoleId(Long tenantRoleId) {
         this.tenantRoleId = tenantRoleId;
     }
 
+    /**
+     * Tenant role permission permission id getter
+     * @return tenant role permission permission id
+     */
     @Override
     public Long getPermissionId() {
         return permissionId;
     }
 
+    /**
+     * Tenant role permission permission id setter
+     * @param permissionId to be set or updated
+     */
     @Override
     public void setPermissionId(Long permissionId) {
         this.permissionId = permissionId;

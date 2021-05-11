@@ -15,7 +15,6 @@
  */
 package io.radien.ms.rolemanagement.client.providers;
 
-
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 
@@ -30,20 +29,44 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author Bruno Gama
+ * Role JSON reader into object
+ * Reads the given JSON object and converts it into a role
  *
+ * @author Bruno Gama
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class RoleMessageBodyReader implements MessageBodyReader<Role> {
 
+    /**
+     * Checks if the given JSON object can be read into a role one
+     * @param type of the received object
+     * @param genericType for multiple conversion purposes
+     * @param annotations
+     * @param mediaType
+     * @return true in case received JSON can be read into a role
+     */
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.equals(Role.class);
     }
 
+    /**
+     * Converts the given JSON object into a role one
+     * @param type for the final object (role)
+     * @param genericType for multiple conversion purposes
+     * @param annotations
+     * @param mediaType
+     * @param httpHeaders
+     * @param entityStream
+     * @return a System Linked Authorization that has been gather the information from the given JSON
+     * @throws WebApplicationException in case of any issue while parsing the JSON fields into system linked
+     * authorization ones
+     */
     @Override
-    public Role readFrom(Class<Role> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
+    public Role readFrom(Class<Role> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                         MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws WebApplicationException {
         return RoleModelMapper.map(entityStream);
     }
 }

@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Role conversions factory
+ * Role Factory where we can construct a role object by a given set of elements
  *
  * @author Bruno Gama
  */

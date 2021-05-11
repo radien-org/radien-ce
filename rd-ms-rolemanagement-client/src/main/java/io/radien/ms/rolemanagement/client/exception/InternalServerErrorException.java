@@ -16,16 +16,27 @@
 package io.radien.ms.rolemanagement.client.exception;
 
 /**
+ * Linked Authorization and Role specific Internal server error exception
+ * this exception is to be thrown when the user requests something and the server was not able to
+ * process it
+ *
  * @author Bruno Gama
  */
 public class InternalServerErrorException extends Exception {
 
-    private static final long serialVersionUID = 858909633422934639L;
+    private static final long serialVersionUID = 8676945014432052159L;
 
+    /**
+     * Internal server error exception empty constructor
+     */
     public InternalServerErrorException() {
         super();
     }
 
+    /**
+     * Internal server error exception message constructor
+     * @param message to be added into the Internal server error exception
+     */
     public InternalServerErrorException(String message) {
         super(message);
     }

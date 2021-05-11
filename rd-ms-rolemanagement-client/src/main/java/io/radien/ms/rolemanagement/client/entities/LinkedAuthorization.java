@@ -19,6 +19,8 @@ import io.radien.api.model.linked.authorization.AbstractLinkedAuthorizationModel
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 
 /**
+ * Linked Authorization Object
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorization extends AbstractLinkedAuthorizationModel implements SystemLinkedAuthorization {
@@ -32,8 +34,15 @@ public class LinkedAuthorization extends AbstractLinkedAuthorizationModel implem
     private Long roleId;
     private Long userId;
 
+    /**
+     * Linked Authorization empty constructor
+     */
     public LinkedAuthorization() {}
 
+    /**
+     * Linked Authorization constructor
+     * @param tenancyCtrl fields to create a new Linked authorization object
+     */
     public LinkedAuthorization(LinkedAuthorization tenancyCtrl) {
         this.id=tenancyCtrl.getId();
         this.tenantId=tenancyCtrl.getTenantId();
@@ -46,51 +55,86 @@ public class LinkedAuthorization extends AbstractLinkedAuthorizationModel implem
         this.setLastUpdate(tenancyCtrl.getLastUpdate());
     }
 
+    /**
+     * Linked authorization id getter
+     * @return linked authorization id
+     */
     @Override
     public Long getId() {
         return id;
     }
 
+    /**
+     * Linked authorization id setter
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Linked authorization tenant id getter
+     * @return linked authorization tenant id
+     */
     @Override
     public Long getTenantId() {
         return tenantId;
     }
 
+    /**
+     * Linked authorization tenant id setter
+     */
     @Override
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
+    /**
+     * Linked authorization permission id getter
+     * @return linked authorization permission id
+     */
     @Override
     public Long getPermissionId() {
         return permissionId;
     }
 
+    /**
+     * Linked authorization permission id setter
+     */
     @Override
     public void setPermissionId(Long permissionId) {
         this.permissionId = permissionId;
     }
 
+    /**
+     * Linked authorization role id getter
+     * @return linked authorization role id
+     */
     @Override
     public Long getRoleId() {
         return roleId;
     }
 
+    /**
+     * Linked authorization role id setter
+     */
     @Override
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 
+    /**
+     * Linked authorization user id getter
+     * @return linked authorization user id
+     */
     @Override
     public Long getUserId() {
         return userId;
     }
 
+    /**
+     * Linked authorization user id setter
+     */
     @Override
     public void setUserId(Long userId) {
         this.userId = userId;

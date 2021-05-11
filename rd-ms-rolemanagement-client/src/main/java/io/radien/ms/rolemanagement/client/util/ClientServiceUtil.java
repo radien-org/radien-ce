@@ -28,10 +28,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
+ * Constructor for communication with the linked authorization and role clients
+ *
  * @author Bruno Gama
  */
 @RequestScoped
 public class ClientServiceUtil {
+
+    /**
+     * Communication requester constructor for the role side
+     * @param urlStr role resource client URL
+     * @return a Role Resource Client that can perform multiple requests and with the correct exceptions, mappers and
+     * message writers
+     * @throws MalformedURLException in case of error in the given URL or communication cannot be performed
+     */
     public RoleResourceClient getRoleResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         return RestClientBuilder.
@@ -42,6 +52,13 @@ public class ClientServiceUtil {
                 .build(RoleResourceClient.class);
     }
 
+    /**
+     * Communication requester constructor for the linked authorization side
+     * @param urlStr linked authorization resource client URL
+     * @return a Linked Authorization Resource Client that can perform multiple requests and
+     * with the correct exceptions, mappers an message writers
+     * @throws MalformedURLException in case of error in the given URL or communication cannot be performed
+     */
     public LinkedAuthorizationResourceClient getLinkedAuthorizationResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         return RestClientBuilder.

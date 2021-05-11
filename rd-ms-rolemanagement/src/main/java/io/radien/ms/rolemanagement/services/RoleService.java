@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Role Service class that will access and request all the information and logics from
+ * the db
+ *
  * @author Bruno Gama
  */
 @Stateful
