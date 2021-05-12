@@ -29,8 +29,18 @@ public class TenantRoleUserSearchFilter implements SystemTenantRoleUserSearchFil
     private boolean isExact;
     private boolean isLogicConjunction;
 
+    /**
+     * Tenant Role User Search Filter empty constructor
+     */
     public TenantRoleUserSearchFilter(){}
 
+    /**
+     * Tenant Role User Search Filter constructor with fields
+     * @param tenantRoleId to be search for
+     * @param userId to be search for
+     * @param isExact true in case search option should be exact
+     * @param isLogicalConjunction true in case search option is and conjunction
+     */
     public TenantRoleUserSearchFilter(Long tenantRoleId, Long userId, boolean isExact, boolean isLogicalConjunction) {
         this.tenantRoleId = tenantRoleId;
         this.userId = userId;
@@ -38,41 +48,73 @@ public class TenantRoleUserSearchFilter implements SystemTenantRoleUserSearchFil
         this.isLogicConjunction = isLogicalConjunction;
     }
 
+    /**
+     * Tenant Role User Search Filter tenant role get id
+     * @return tenant role id value
+     */
     @Override
     public Long getTenantRoleId() {
         return tenantRoleId;
     }
 
+    /**
+     * Tenant Role User Search Filter getter of role id
+     * @param tenantRoleId to be set and update
+     */
     @Override
     public void setTenantRoleId(Long tenantRoleId) {
         this.tenantRoleId = tenantRoleId;
     }
 
+    /**
+     * Tenant Role User Search Filter user get id
+     * @return user id value
+     */
     @Override
     public Long getUserId() {
         return userId;
     }
 
+    /**
+     * Tenant Role User Search Filter user id setter
+     * @param userId to be set and update
+     */
     @Override
     public void setUserId(Long userId) {
         this.userId = userId;
     }
 
+    /**
+     * Tenant Role User Search Filter get is exact
+     * @return true or false
+     */
     @Override
     public boolean isExact() {
         return isExact;
     }
 
+    /**
+     * Tenant Role User Search Filter is exact setter
+     * @param exact to be set and replace
+     */
     @Override
     public void setExact(boolean exact) {
         isExact = exact;
     }
 
+    /**
+     * Tenant Role User Search Filter get is logical conjunction
+     * @return true or false
+     */
     @Override
     public boolean isLogicConjunction() {
         return isLogicConjunction;
     }
 
+    /**
+     * Tenant Role User Search Filter is logicConjunction setter
+     * @param logicConjunction to be set and replace
+     */
     @Override
     public void setLogicConjunction(boolean logicConjunction) {
         isLogicConjunction = logicConjunction;

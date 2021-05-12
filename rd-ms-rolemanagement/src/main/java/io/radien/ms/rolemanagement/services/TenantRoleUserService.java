@@ -194,7 +194,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     /**
      * CREATE a Tenant Role User association
      * @param tenantRoleUser role association information to be created
-     * @throws UniquenessConstraintException
+     * @throws UniquenessConstraintException in case of duplicated fields or records
      */
     @Override
     public void create(SystemTenantRoleUser tenantRoleUser) throws UniquenessConstraintException {
@@ -224,7 +224,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * @param userId Role identifier
      * @param tenantRoleId Tenant Identifier
      * @param em already created entity manager (reuse)
-     * @return
+     * @return true in case the association exists in the db
      */
     protected boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, EntityManager em) {
         if (userId == null) {

@@ -184,7 +184,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     /**
      * Save or update a Tenant Role association
      * @param tenantRole role association information to be created
-     * @throws UniquenessConstraintException
+     * @throws UniquenessConstraintException to be throw in case of duplication of fields or records
      */
     @Override
     public void save(SystemTenantRole tenantRole) throws UniquenessConstraintException {
@@ -220,7 +220,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      *                            and In case of an update operation this helps to make sure
      *                            that a possible new combination (role+tenant) do not exist for other ids
      * @param em already created entity manager (reuse)
-     * @return
+     * @return true in case association exists in the db
      */
     protected boolean isAssociationAlreadyExistent(Long roleId, Long tenantId,
                                                    Long currentTenantRoleId, EntityManager em) {

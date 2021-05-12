@@ -16,12 +16,17 @@
 package io.radien.exception;
 
 /**
- * @author Newton Carvalho
  * To be describe situations whereas an expected Resource could not be found
+ *
+ * @author Newton Carvalho
  */
 public class ResourceNotFoundException extends Exception {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6987260100195762158L;
 
+	/**
+	 * Resource Not Found exception constructor by a given message
+	 * @param message to create the resource not found exception with
+	 */
 	public ResourceNotFoundException(String message) {
 		super(message);
 	}

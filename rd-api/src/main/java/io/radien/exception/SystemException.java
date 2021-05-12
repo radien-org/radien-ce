@@ -33,39 +33,72 @@ public class SystemException extends Exception {
 
 	private final Set<String> messages = new HashSet<>();
 
+	/**
+	 * System Exception empty constructor
+	 */
 	public SystemException() {
 		super();
 	}
 
+	/**
+	 * System Exception constructor by a given exception
+	 * @param e to be retrieved message
+	 */
 	public SystemException(Exception e) {
 		super();
 		messages.add(getMessage(e));
 	}
 
-	private String getMessage(Exception e) {
-
-		return "wrapped exception: " + e.getClass().getCanonicalName() + " with message: " + e.getLocalizedMessage();
-	}
-
+	/**
+	 * System Exception constructor by a given message
+	 * @param message to create the system exception with
+	 */
 	public SystemException(String message) {
 		super();
 		messages.add(message);
 	}
 
+	/**
+	 * System Exception Constructor by a given message and exception
+	 * @param message to be added into the system exception
+	 * @param e exception to be retrieved the message to be added into the system exception
+	 */
 	public SystemException(String message, Exception e) {
 		super();
 		messages.add(message);
 		messages.add(getMessage(e));
 	}
 
+	/**
+	 * Retrieves the message from the given exception
+	 * @param e to be get the message
+	 * @return a string message
+	 */
+	private String getMessage(Exception e) {
+
+		return "wrapped exception: " + e.getClass().getCanonicalName() + " with message: " + e.getLocalizedMessage();
+	}
+
+	/**
+	 * Gets multiple messages into a list of messages
+	 * @return gathers all the messages and stores it into a list of messages
+	 */
 	public List<String> getMessages() {
 		return new ArrayList<>(this.messages);
 	}
 
+	/**
+	 * Adds a new string value into the message
+	 * @param message to be added
+	 */
 	public void addMessage(String message) {
 		messages.add(message);
 	}
 
+	/**
+	 * Retrieves the messages from the system exception
+	 * @return a string with all the existent messages
+	 */
 	@Override
 	public String getMessage() {
 		StringBuilder messageString = new StringBuilder("Message(s): ");

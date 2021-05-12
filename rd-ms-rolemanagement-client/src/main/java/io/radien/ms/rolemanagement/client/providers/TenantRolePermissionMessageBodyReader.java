@@ -29,18 +29,44 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
+ * Tenant Role Permission JSON reader into object
+ * Reads the given JSON object and converts it into a Tenant Role Permission
+ *
  * @author Newton Carvalho
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class TenantRolePermissionMessageBodyReader implements MessageBodyReader<TenantRolePermission> {
+
+	/**
+	 * Checks if the given JSON object can be read into a Tenant Role Permission one
+	 * @param type of the received object
+	 * @param genericType for multiple conversion purposes
+	 * @param annotations
+	 * @param mediaType
+	 * @return true in case received JSON can be read into a tenant role permission
+	 */
 	@Override
 	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return type.equals(TenantRolePermission.class);
 	}
 
+	/**
+	 * Converts the given JSON object into a tenant role permission one
+	 * @param type for the final object (tenant role permission)
+	 * @param genericType for multiple conversion purposes
+	 * @param annotations
+	 * @param mediaType
+	 * @param httpHeaders
+	 * @param entityStream
+	 * @return a System Linked Authorization that has been gather the information from the given JSON
+	 * @throws WebApplicationException in case of any issue while parsing the JSON fields into system linked
+	 * authorization ones
+	 */
 	@Override
-	public TenantRolePermission readFrom(Class<TenantRolePermission> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
+	public TenantRolePermission readFrom(Class<TenantRolePermission> type, Type genericType, Annotation[] annotations,
+										 MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
+										 InputStream entityStream) throws WebApplicationException {
 		try {
 			return TenantRolePermissionModelMapper.map(entityStream);
 		} catch (Exception e) {

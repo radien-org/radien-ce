@@ -16,12 +16,17 @@
 package io.radien.exception;
 
 /**
- * @author Marco Weiland <m.weiland@radien.io>
+ * Exception to be throw when the user record cannot be found
  *
+ * @author Marco Weiland <m.weiland@radien.io>
  */
 public class UserNotFoundException extends Exception {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4736023328369994193L;
 
+	/**
+	 * User Not Found exception constructor by a given message
+	 * @param message to create the user not found exception with
+	 */
 	public UserNotFoundException(String message) {
 		super(message);
 	}

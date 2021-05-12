@@ -30,8 +30,18 @@ public class RoleSearchFilter implements SystemRoleSearchFilter {
     private boolean isExact;
     private boolean isLogicConjunction;
 
+    /**
+     * Role search filter empty constructor
+     */
     public RoleSearchFilter() {}
 
+    /**
+     * Role search filter constructor with specified fields
+     * @param name to be search
+     * @param description to be search
+     * @param isExact to be search
+     * @param isLogicConjunction true in case search option is and conjunction
+     */
     public RoleSearchFilter(String name, String description, boolean isExact, boolean isLogicConjunction) {
         this.name = name;
         this.description = description;
@@ -39,41 +49,73 @@ public class RoleSearchFilter implements SystemRoleSearchFilter {
         this.isLogicConjunction = isLogicConjunction;
     }
 
+    /**
+     * Role search filter get name
+     * @return name for search filter
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * Role search filter name setter
+     * @param name to be set and replace
+     */
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Role search filter get description
+     * @return name for search filter
+     */
     @Override
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Role search filter description setter
+     * @param description to be set and replace
+     */
     @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Role search filter get is exact
+     * @return true or false
+     */
     @Override
     public boolean isExact() {
         return isExact;
     }
 
+    /**
+     * Role search filter is exact setter
+     * @param exact to be set and replace
+     */
     @Override
     public void setExact(boolean exact) {
         isExact = exact;
     }
 
+    /**
+     * Role search filter get is logical conjunction
+     * @return true or false
+     */
     @Override
     public boolean isLogicConjunction() {
         return isLogicConjunction;
     }
 
+    /**
+     * Role search filter is logicConjunction setter
+     * @param logicConjunction to be set and replace
+     */
     @Override
     public void setLogicConjunction(boolean logicConjunction) {
         isLogicConjunction = logicConjunction;

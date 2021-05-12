@@ -25,9 +25,17 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
+ * Mapper utility class that allows to convert a JSON message into a list of system linked authorizations
+ *
  * @author Bruno Gama
  */
 public class ListLinkedAuthorizationModelMapper {
+
+    /**
+     * Converts the received JSON message into a list of linked authorizations
+     * @param is inputted information to be converted into the object
+     * @return a list of system linked authorization
+     */
     public static List<? extends SystemLinkedAuthorization> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();

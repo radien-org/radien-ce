@@ -17,7 +17,6 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 
 import javax.json.Json;
@@ -31,6 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class for creating Tenant Role Permission associations (and read from/convert to json)
+ *
  * @author Newton Carvalho
  */
 public class TenantRolePermissionFactory {

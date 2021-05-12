@@ -28,6 +28,9 @@ public class TenantRoleUser extends AbstractModel implements SystemTenantRoleUse
     private Long tenantRoleId;
     private Long userId;
 
+    /**
+     * Tenant Role user empty constructor
+     */
     public TenantRoleUser(){
     }
 
@@ -41,31 +44,55 @@ public class TenantRoleUser extends AbstractModel implements SystemTenantRoleUse
         this.userId = tenantRoleUser.userId;
     }
 
+    /**
+     * Tenant role user id getter
+     * @return the tenant role user id
+     */
     @Override
     public Long getId() {
         return id;
     }
 
+    /**
+     * Tenant role user id setter
+     * @param id to be set or updated
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Tenant role user tenant role id getter
+     * @return the tenant role user role id
+     */
     @Override
     public Long getTenantRoleId() {
         return tenantRoleId;
     }
 
+    /**
+     * Tenant role user Tenant Role Id setter
+     * @param tenantRoleId to be set or updated
+     */
     @Override
     public void setTenantRoleId(Long tenantRoleId) {
         this.tenantRoleId = tenantRoleId;
     }
 
+    /**
+     * Tenant role user user id getter
+     * @return the tenant role user user id
+     */
     @Override
     public Long getUserId() {
         return userId;
     }
 
+    /**
+     * Tenant role user user id setter
+     * @param userId to be set or updated
+     */
     @Override
     public void setUserId(Long userId) {
         this.userId = userId;

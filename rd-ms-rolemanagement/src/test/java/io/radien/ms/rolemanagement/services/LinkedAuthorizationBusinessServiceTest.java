@@ -190,4 +190,10 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
     public void testIsRoleExistentForUser() {
         assertFalse(linkedAuthorizationBusinessService.isRoleExistentForUser(2L, 2L, "test"));
     }
+
+    @Test
+    public void testCheckPermissions() {
+        List<String> roleList = new ArrayList<>();
+        assertFalse(linkedAuthorizationBusinessService.checkPermissions(2L, 2L, roleList));
+    }
 }

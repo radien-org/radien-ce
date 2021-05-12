@@ -142,6 +142,8 @@ public interface TenantRoleResourceClient {
      * Response 404 in case of absence of parameter like user identifier or role name.
      * Response 500 in case of any error
      */
+    @GET
+    @Path("/exists/roles")
     Response isAnyRoleExistentForUser(@QueryParam("userId") Long userId,
                                       @QueryParam("roleNames") List<String> roleNames,
                                       @QueryParam("tenantId") Long tenantId);

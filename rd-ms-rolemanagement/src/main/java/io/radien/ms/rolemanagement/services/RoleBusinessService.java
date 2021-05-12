@@ -29,6 +29,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * Role Business Service will request the service to validate the actions on the db
+ *
  * @author Bruno Gama
  */
 @RequestScoped

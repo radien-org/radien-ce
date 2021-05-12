@@ -142,7 +142,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
     /**
      * CREATE a Tenant Role Permission association
      * @param tenantRolePermission role association information to be created
-     * @throws UniquenessConstraintException
+     * @throws UniquenessConstraintException in case of duplicated fields or records
      */
     @Override
     public void create(SystemTenantRolePermission tenantRolePermission) throws UniquenessConstraintException {
@@ -172,7 +172,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @param permissionId Role identifier
      * @param tenantRoleId Tenant Identifier
      * @param em already created entity manager (reuse)
-     * @return
+     * @return true in case the association exists in the db
      */
     protected boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId, EntityManager em) {
         if (permissionId == null) {

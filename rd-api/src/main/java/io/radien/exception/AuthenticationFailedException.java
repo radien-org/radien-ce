@@ -16,19 +16,32 @@
 package io.radien.exception;
 
 /**
+ * Exception to be throw when the user authentication failed
+ *
  * @author Marco Weiland
  */
 public class AuthenticationFailedException extends SystemException {
 	private static final long serialVersionUID = 4184028146041086749L;
 
+	/**
+	 * Authentication Failed Exception empty constructor
+	 */
 	public AuthenticationFailedException() {
 		super();
 	}
 
+	/**
+	 * Authentication Failed Exception exception constructor
+	 * @param e exception to be added into the authentication failed exception
+	 */
 	public AuthenticationFailedException(Exception e) {
 		super(e);
 	}
 
+	/**
+	 * Authentication Failed Exception message constructor
+	 * @param message to be added into the authentication failed exception
+	 */
 	public AuthenticationFailedException(String message) {
 		super(message);
 	}

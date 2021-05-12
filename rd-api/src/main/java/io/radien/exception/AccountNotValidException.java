@@ -17,25 +17,34 @@ package io.radien.exception;
 
 /**
  * Exception to be thrown when a given system account is not valid, this can be
- * bexause:
- * <p>
+ * because:
  * 1. The current account is not present, or null 2. The user has the account
  * disabled 3. The account is missing required information for it to be valid
- * </p>
  *
  * @author Marco Weiland
  */
 public class AccountNotValidException extends SystemException {
-	private static final long serialVersionUID = 4184028146041086749L;
+	private static final long serialVersionUID = -5606582863415224694L;
 
+	/**
+	 * Account Not Valid Exception empty constructor
+	 */
 	public AccountNotValidException() {
 		super();
 	}
 
+	/**
+	 * Account Not Valid Exception exception constructor
+	 * @param e exception to be added into the account not valid exception
+	 */
 	public AccountNotValidException(Exception e) {
 		super(e);
 	}
 
+	/**
+	 * Account Not Valid Exception message constructor
+	 * @param message to be added into the account not valid exception
+	 */
 	public AccountNotValidException(String message) {
 		super(message);
 	}

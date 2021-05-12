@@ -25,8 +25,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * REST client created to decouple the current subproject
@@ -70,4 +70,19 @@ public interface TenantRoleClient {
                                          @QueryParam("permissionId") Long permissionId,
                                          @QueryParam("tenantId") Long tenantId);
 
+    /**
+     * Check if some Role exists for a User (Optionally under a Tenant)
+     * @param userId User identifier
+     * @param roleNames Role names identifiers
+     * @param tenantId Tenant identifier (Optional)
+     * @return Response OK containing a boolean value (true if there is some role is associated to the User,
+     * otherwise false).
+     * Response 404 in case of absence of parameter like user identifier or role name.
+     * Response 500 in case of any error
+     */
+    @GET
+    @Path("/exists/roles")
+    Response checkPermissions(@QueryParam("userId") Long userId,
+                                   @QueryParam("roleNames") List<String> roleNames,
+                                   @QueryParam("tenantId") Long tenantId);
 }

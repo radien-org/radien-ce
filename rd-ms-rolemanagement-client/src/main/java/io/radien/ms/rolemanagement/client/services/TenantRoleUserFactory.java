@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class for creating Tenant Role User associations (and read from/convert to json)
+ *
  * @author Newton Carvalho
  */
 public class TenantRoleUserFactory {

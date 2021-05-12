@@ -18,6 +18,8 @@ package io.radien.ms.rolemanagement.factory;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -26,14 +28,19 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * Linked Authorization Factory where we can construct a linked authorization object
+ * by a given set of elements
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorizationFactory implements Serializable {
 
-    private static final long serialVersionUID = -4078040120809206776L;
+    private static final long serialVersionUID = 2027649289777530394L;
+
+    private static final Logger log = LoggerFactory.getLogger(LinkedAuthorizationFactory.class);
 
     /**
-     *  Create a association with already predefined fields.
+     * Create a association with already predefined fields.
      *
      * @param tenantId tenant id value
      * @param permissionId permission id value
@@ -52,6 +59,10 @@ public class LinkedAuthorizationFactory implements Serializable {
         Date now = new Date();
         tenancyCtrl.setLastUpdate(now);
         tenancyCtrl.setCreateDate(now);
+
+        log.info("Will begin to create a new Linked Authorization object with the specific values" +
+                " Tenant Id: {}, Permission Id: {}, Role Id: {}" +
+                " User Id: {}" + tenantId, permissionId, roleId, userId);
 
         return tenancyCtrl;
     }
@@ -79,6 +90,10 @@ public class LinkedAuthorizationFactory implements Serializable {
         Date date = new Date();
         tenancyCtrl.setCreateDate(date);
         tenancyCtrl.setLastUpdate(date);
+
+        log.info("Will begin to create a new Linked Authorization object with the specific values" +
+                " Id: {}, Tenant Id {}, Permission Id: {}, Role Id: {}" +
+                " User Id: {}" + id, tenantId, permissionId, roleId, userId);
 
         return tenancyCtrl;
     }

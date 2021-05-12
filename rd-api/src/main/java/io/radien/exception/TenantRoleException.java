@@ -16,10 +16,16 @@
 package io.radien.exception;
 
 /**
- * Exception to express inconsistencies regarding
- * Tenant Role domain object
+ * Exception to express inconsistencies regarding Tenant Role domain object
+ *
+ * @author Newton Carvalho
  */
 public class TenantRoleException extends Exception {
+
+    /**
+     * Tenant Role exception constructor by a given message
+     * @param message to create the tenant role exception with
+     */
     public TenantRoleException(String message) {
         super(message);
     }

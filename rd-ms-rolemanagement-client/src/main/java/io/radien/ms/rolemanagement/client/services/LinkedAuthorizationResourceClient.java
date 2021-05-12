@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * @author Bruno Gama
@@ -82,4 +83,10 @@ public interface LinkedAuthorizationResourceClient {
     Response isRoleExistentForUser(@NotNull @QueryParam("userId") Long userId,
                                    @NotNull @QueryParam("roleName") String roleName,
                                    @QueryParam("tenantId") Long tenantId);
+
+    @GET
+    @Path("/exists/checkPermissions")
+    Response checkPermissions(@QueryParam("userId") Long userId,
+                              @QueryParam("roleName") List<String> roleName,
+                              @QueryParam("tenantId") Long tenantId);
 }

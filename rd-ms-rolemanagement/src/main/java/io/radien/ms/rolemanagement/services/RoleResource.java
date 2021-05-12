@@ -33,9 +33,11 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
+ * Role resource that will request the service to validate the actions on
+ * the db
+ *
  * @author Bruno Gama
  */
-
 @Path("role")
 @RequestScoped
 public class RoleResource implements RoleResourceClient {

@@ -30,11 +30,14 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
+ * Linked Authorization resource that will request the service to validate the actions on
+ * the db
+ *
  * @author Bruno Gama
  */
-
 @Path("linkedauthorization")
 @RequestScoped
 public class LinkedAuthorizationResource implements LinkedAuthorizationResourceClient {
@@ -209,6 +212,26 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             return Response.status(Response.Status.NOT_FOUND).build();
         try {
             return Response.ok(linkedAuthorizationBusinessService.isRoleExistentForUser(
+                    userId, tenantId, roleName)).build();
+        }
+        catch (Exception e) {
+            return getGenericError(e);
+        }
+    }
+
+    /**
+     * Check if a user has a specific Role (Optionally, under a specific tenant)
+     * @param userId User Identifier
+     * @param roleName Role Name list
+     * @param tenantId Tenant Identifier
+     * @return Http status OK (200) containing boolean value, otherwise Http status 500
+     */
+    @Override
+    public Response checkPermissions(Long userId, List<String> roleName, Long tenantId) {
+        if (userId == null || roleName == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            return Response.ok(linkedAuthorizationBusinessService.checkPermissions(
                     userId, tenantId, roleName)).build();
         }
         catch (Exception e) {

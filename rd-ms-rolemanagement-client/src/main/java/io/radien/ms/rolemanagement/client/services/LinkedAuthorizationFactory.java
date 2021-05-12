@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Linked Authorization Factory will create linked authorizations based on given single fields,
+ * or construct json objects based on the given linked authorization ones
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorizationFactory {

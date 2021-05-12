@@ -30,22 +30,55 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
+ * Linked Authorization Message body Writer from object to JSON
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorizationModelMessageBodyWriter implements MessageBodyWriter<LinkedAuthorization> {
 
+    /**
+     * Validates if the given received type is a linked authorization object
+     * @param type of the received object
+     * @param genericType for multiple conversions
+     * @param annotations
+     * @param mediaType
+     * @return true if received object is in fact a Linked Authorization one
+     */
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.equals(LinkedAuthorization.class);
     }
 
+    /**
+     * Gets the number of received objects and counts it
+     * @param linkedAuthorization received
+     * @param type of the received object
+     * @param genericType for multiple conversions
+     * @param annotations
+     * @param mediaType
+     * @return the number of received objects
+     */
     @Override
-    public long getSize(LinkedAuthorization linkedAuthorization, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(LinkedAuthorization linkedAuthorization, Class<?> type, Type genericType,
+                        Annotation[] annotations, MediaType mediaType) {
         return 0;
     }
 
+    /**
+     * Writes the received linked authorization object into a json message
+     * @param linkedAuthorization received to be written
+     * @param type of the received object
+     * @param genericType for multiple conversions
+     * @param annotations
+     * @param mediaType
+     * @param httpHeaders
+     * @param entityStream
+     * @throws WebApplicationException in case of error while converting any object field into a json
+     */
     @Override
-    public void writeTo(LinkedAuthorization linkedAuthorization, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws WebApplicationException {
+    public void writeTo(LinkedAuthorization linkedAuthorization, Class<?> type, Type genericType,
+                        Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                        OutputStream entityStream) throws WebApplicationException {
         JsonWriter jsonWriter = Json.createWriter(entityStream);
         JsonObject jsonObject = LinkedAuthorizationModelMapper.map(linkedAuthorization);
         jsonWriter.writeObject(jsonObject);

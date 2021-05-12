@@ -21,16 +21,27 @@ package io.radien.exception;
  * @author Marco Weiland
  */
 public class AccountExpiredException extends SystemException {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1297670284728759226L;
 
+	/**
+	 * Account Expired Exception empty constructor
+	 */
 	public AccountExpiredException() {
 		super();
 	}
 
+	/**
+	 * Account Expired Exception exception constructor
+	 * @param e exception to be added into the account expired exception
+	 */
 	public AccountExpiredException(Exception e) {
 		super(e);
 	}
 
+	/**
+	 * Account Expired Exception message constructor
+	 * @param message to be added into the account expired exception
+	 */
 	public AccountExpiredException(String message) {
 		super(message);
 	}

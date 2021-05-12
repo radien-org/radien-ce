@@ -81,7 +81,29 @@ public interface LinkedAuthorizationServiceAccess extends ServiceAccess {
      */
     public long getTotalRecordsCount();
 
+    /**
+     * Checks if a given role name exists for a correct given tenant and user
+     * @param userId current user
+     * @param tenantId active tenant to be validated
+     * @param roleName to be validated
+     * @return true in case of existence
+     */
     boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName);
 
+    /**
+     * Check if a given role name in a list of roles exists for a given user and specific tenant
+     * @param userId of the current user
+     * @param tenantId of the active tenant
+     * @param roleName to be searched and validated
+     * @return true in case of existence
+     */
+    boolean checkPermissions(Long userId, Long tenantId, List<String> roleName);
+
+    /**
+     * Retrieves all the roles for a given user and tenant
+     * @param userId to be validated
+     * @param tenantId active tenant to be checked
+     * @return a list of system roles
+     */
     List<? extends SystemRole> getRolesByUserAndTenant(Long userId, Long tenantId);
 }

@@ -30,9 +30,14 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class for creating Tenant Role associations (and read from/convert to json)
+ *
  * @author Newton Carvalho
  */
 public class TenantRoleFactory {
+
+    private TenantRoleFactory(){
+        // empty constructor
+    }
 
     /**
      * Create a Tenant Role Association with already predefined fields.

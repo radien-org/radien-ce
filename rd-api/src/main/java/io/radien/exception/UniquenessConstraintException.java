@@ -16,15 +16,24 @@
 package io.radien.exception;
 
 /**
+ * Exception to be throw when the application tries to save some already existent or duplicate information
+ *
  * @author Bruno Gama
  */
 public class UniquenessConstraintException extends Exception{
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8576474264329891539L;
 
+    /**
+     * Uniqueness Constraint exception empty constructor
+     */
 	public UniquenessConstraintException() {
         super();
     }
 
+    /**
+     * Uniqueness Constraint exception constructor by a given message
+     * @param message to create the uniqueness constraint exception with
+     */
     public UniquenessConstraintException(String message) {
         super(message);
     }

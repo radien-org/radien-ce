@@ -24,20 +24,24 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.List;
 
 /**
  * Mapper utility class that allows to convert Tenant Role User association beans
  * into JSON objects and vice-versa
+ *
  * @author Newton Carvalho
  */
 public class TenantRoleUserModelMapper {
 
+    private TenantRoleUserModelMapper() {
+        // empty constructor
+    }
+
     /**
      * Obtains JSON object from Tenant Role User association
-     * @param model
-     * @return
+     * @param model with the information to be converted into a JSON
+     * @return a constructed JSON on the given information
      */
     public static JsonObject map(TenantRoleUser model) {
         return TenantRoleUserFactory.convertToJsonObject(model);
@@ -45,9 +49,8 @@ public class TenantRoleUserModelMapper {
 
     /**
      * Converts Input Stream (JSON array) into Tenant Role User List
-     * @param is
-     * @return
-     * @throws ParseException
+     * @param is inputted information to be converted into the object
+     * @return a list of tenant role user object based in the received information
      */
     public static List<? extends TenantRoleUser> mapList(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
@@ -58,11 +61,10 @@ public class TenantRoleUserModelMapper {
 
     /**
      * Converts Input Stream (JSON object) into Tenant Role User bean
-     * @param is
-     * @return
-     * @throws ParseException
+     * @param is inputted information to be converted into the object
+     * @return a tenant role user object based in the received information
      */
-    public static TenantRoleUser map(InputStream is) throws ParseException {
+    public static TenantRoleUser map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             return TenantRoleUserFactory.convert(jsonReader.readObject());
         }
@@ -70,8 +72,8 @@ public class TenantRoleUserModelMapper {
 
     /**
      * Obtains a TenantRoleUser Page from a Json input stream
-     * @param is
-     * @return
+     * @param is inputted information to be converted into the object
+     * @return a page of tenant role user object based in the received information
      */
     public static Page<TenantRoleUser> mapToPage(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {

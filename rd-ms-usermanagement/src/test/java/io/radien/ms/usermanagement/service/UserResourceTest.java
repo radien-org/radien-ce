@@ -1,5 +1,19 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.usermanagement.service;
-
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,6 +33,7 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.openid.entities.Principal;
@@ -63,6 +78,9 @@ public class UserResourceTest {
        MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Test of success to get the user on base of the subject
+     */
     @Test
     public void testGetUserIdBySub() {
         when(userBusinessService.getUserId("login1")).thenReturn(1L);
@@ -71,6 +89,9 @@ public class UserResourceTest {
         assertTrue(1L == response.readEntity(Long.class));
     }
 
+    /**
+     * Test of user not found where we get the user on base of his subject
+     */
     @Test
     public void testGetUserIdBySubNotFoundCase() {
         when(userBusinessService.getUserId("login1")).thenReturn(null);
@@ -78,6 +99,9 @@ public class UserResourceTest {
         assertEquals(404, response.getStatus());
     }
 
+    /**
+     * Test of generic exception where we get the user on base of his subject
+     */
     @Test
     public void testGetUserIdBySubExceptionCase() {
         when(userBusinessService.getUserId("login1")).
@@ -91,21 +115,16 @@ public class UserResourceTest {
      */
     @Test
     public void testGetAll() {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-        doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
+        preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, "admin", null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(200,response.getStatus());
@@ -116,21 +135,16 @@ public class UserResourceTest {
      */
     @Test
     public void testGetAllWithNoAuthorization() {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-        doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
+        preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, "admin", null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.getAll(null,1,10,null,true);
         assertEquals(403,response.getStatus());
@@ -140,7 +154,7 @@ public class UserResourceTest {
      * Test the Get All request Exception which will return a generic error message code 500.
      */
     @Test
-    public void testGetAllGenericException() throws MalformedURLException {
+    public void testGetAllGenericException() {
 
         HttpSession session = Mockito.mock(HttpSession.class);
         when(servletRequest.getSession()).thenReturn(session);
@@ -155,9 +169,41 @@ public class UserResourceTest {
      */
     @Test
     public void testGetById404() throws UserNotFoundException {
+        preProcessAuthentication();
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
+
+
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
         Response response = userResource.getById(1L);
         assertEquals(404,response.getStatus());
+    }
+
+    /**
+     * Test that will test the error message 404 User Not Found
+     */
+    @Test
+    public void testGetByIdUserWithoutRole() throws UserNotFoundException {
+        preProcessAuthentication();
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
+
+
+        when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
+        Response response = userResource.getById(1L);
+        assertEquals(403,response.getStatus());
     }
 
     /**
@@ -166,6 +212,17 @@ public class UserResourceTest {
      */
     @Test
     public void testGetById() throws UserNotFoundException {
+        preProcessAuthentication();
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
+
+
         when(userBusinessService.get(1L)).thenReturn(new User());
         Response response = userResource.getById(1L);
         assertEquals(200,response.getStatus());
@@ -206,8 +263,37 @@ public class UserResourceTest {
      */
     @Test
     public void testDelete() {
+        preProcessAuthentication();
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
+
         Response response = userResource.delete(1l);
         assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Deletion of the record with success, should return a 200 code message
+     */
+    @Test
+    public void testDeleteUserWithoutRole() {
+        preProcessAuthentication();
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.FALSE).build();
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
+
+        Response response = userResource.delete(1l);
+        assertEquals(403,response.getStatus());
     }
 
     /**
@@ -224,7 +310,7 @@ public class UserResourceTest {
      * Creation with success of a record. Should return a 200 code message
      */
     @Test
-    public void testSave() throws SystemException {
+    public void testSave() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -236,19 +322,22 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, "tenant-administrator", null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.save(new User());
         assertEquals(200,response.getStatus());
     }
 
     /**
-     *
-     * @throws SystemException
+     * Tests the save method by a requester that does not have the correct role or authorization
      */
     @Test
-    public void testSaveWithAuthorizationDenied() throws SystemException {
+    public void testSaveWithAuthorizationDenied() {
         Principal loggedUser = new Principal();
         loggedUser.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -263,8 +352,12 @@ public class UserResourceTest {
 
         Response notAuthorizedResponse = Response.ok().entity(Boolean.FALSE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(notAuthorizedResponse).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, "tenant-administrator", null);
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(notAuthorizedResponse).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
 
         Response response = userResource.save(new User());
         assertEquals(403,response.getStatus());
@@ -293,13 +386,44 @@ public class UserResourceTest {
     }
 
     /**
+     * Tests Save method to return Remote Resource Exception
+     * @throws UserNotFoundException in case of 404 error message
+     * @throws RemoteResourceException in case of 500 error message
+     * @throws UniquenessConstraintException in case of multiple existent users
+     */
+    @Test
+    public void testGetResponseFromException() throws UserNotFoundException, RemoteResourceException, UniquenessConstraintException {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+
+        doThrow(new RemoteResourceException()).when(userBusinessService).save(any(), anyBoolean());
+
+        User user = new User();
+        Response response = userResource.save(user);
+        assertEquals(500, response.getStatus());
+    }
+
+    /**
      * Creation with error of a record. Should return a 400 code message Invalid Requested Exception
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
      * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException, SystemException {
+    public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -309,9 +433,13 @@ public class UserResourceTest {
         when(session.getAttribute("USER")).thenReturn(principal);
         when(this.userBusinessService.getUserId(principal.getSub())).thenReturn(1001L);
 
-        Response granted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn(granted).when(tenantRoleClient).isRoleExistentForUser(1001L,
-                "tenant-administrator", null);
+        Response notAuthorizedResponse = Response.ok().entity(Boolean.TRUE).build();
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        doReturn(notAuthorizedResponse).when(tenantRoleClient).checkPermissions(
+                1001L, roleList, null);
 
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
         Response response = userResource.save(new User());
@@ -346,6 +474,9 @@ public class UserResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test batch insertion with success
+     */
     @Test
     public void testBatchAllElementsInserted() {
         List<User> users = new ArrayList<>();
@@ -368,6 +499,9 @@ public class UserResourceTest {
         assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.SUCCESS);
     }
 
+    /**
+     * Tests batch insertion but without success
+     */
     @Test
     public void testBatchSomeElementsNotInserted() {
         List<User> users = new ArrayList<>();
@@ -400,9 +534,11 @@ public class UserResourceTest {
         assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.PARTIAL_SUCCESS);
     }
 
+    /**
+     * Test batch insertion but no records are inserted
+     */
     @Test
     public void testBatchNoneElementsInserted() {
-        final int totalElements = 4;
         List<User> users = new ArrayList<>();
         for (int i=1; i<=4; i++) {
             users.add(new User());
@@ -427,6 +563,9 @@ public class UserResourceTest {
         assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.FAIL);
     }
 
+    /**
+     * Test Batch insertion generic exception
+     */
     @Test
     public void testBatchInsertException() {
         List<User> users = new ArrayList<>();
@@ -435,6 +574,10 @@ public class UserResourceTest {
         assertEquals(500, response.getStatus());
     }
 
+    /**
+     * Tests the set admin password method and should finish with success
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
     @Test
     public void testSetAdminResetPassword() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenReturn(new User());
@@ -442,6 +585,10 @@ public class UserResourceTest {
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Tests the set admin password method and should finish with generic 500 code message error
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
     @Test
     public void testSetAdminResetPasswordGenericError() throws UserNotFoundException {
         doThrow(new RuntimeException()).when(userBusinessService).get(1L);
@@ -449,6 +596,10 @@ public class UserResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Tests the set admin password method and should finish with generic 404 code message error
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
     @Test
     public void testSetAdminResetPassword404() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
@@ -456,16 +607,39 @@ public class UserResourceTest {
         assertEquals(404,response.getStatus());
     }
 
+    /**
+     * Tests the refresh token with success
+     */
     @Test
     public void testRefreshToken() {
         Response response = userResource.refreshToken("test");
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Tests the refresh token with generic exception 500 error code
+     * @throws RemoteResourceException in case of any issue while generating the refresh token
+     */
     @Test
     public void testRefreshTokenException() throws RemoteResourceException {
         doThrow(new RuntimeException()).when(userBusinessService).refreshToken(anyString());
         Response response = userResource.refreshToken("any");
         assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Private method to mock the pre process method requested while validating the roles
+     */
+    private void preProcessAuthentication() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(1001L).when(this.userBusinessService).getUserId(principal.getSub());
     }
 }
