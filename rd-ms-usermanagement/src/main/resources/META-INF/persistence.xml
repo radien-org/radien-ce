@@ -16,15 +16,6 @@
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="create-or-extend-tables"/>
-            <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
-            <property name="eclipselink.logging.level" value="SEVERE" />
-            <property name="eclipselink.target-database" value="HSQL"/>
-			<property name="eclipselink.cache.type" value="HARD_WEAK"/>
-			<property name="eclipselink.cache.size.default" value="1000"/>
-			<property name="eclipselink.logging.parameters" value="true"/>
-            <property name="eclipselink.jdbc.batch-writing" value="JDBC" />
-            <property name="eclipselink.jdbc.batch-writing.size" value="500" />
-            <property name="eclipselink.jdbc.cache-statements" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>
