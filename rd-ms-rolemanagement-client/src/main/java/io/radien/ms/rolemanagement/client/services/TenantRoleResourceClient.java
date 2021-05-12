@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Base contract for TenantRole endpoints
@@ -130,6 +131,20 @@ public interface TenantRoleResourceClient {
     Response isRoleExistentForUser(@QueryParam("userId") Long userId,
                                    @QueryParam("roleName") String roleName,
                                    @QueryParam("tenantId") Long tenantId);
+
+    /**
+     * Check if some Role exists for a User (Optionally under a Tenant)
+     * @param userId User identifier
+     * @param roleNames Role names identifiers
+     * @param tenantId Tenant identifier (Optional)
+     * @return Response OK containing a boolean value (true if there is some role is associated to the User,
+     * otherwise false).
+     * Response 404 in case of absence of parameter like user identifier or role name.
+     * Response 500 in case of any error
+     */
+    Response isAnyRoleExistentForUser(@QueryParam("userId") Long userId,
+                                      @QueryParam("roleNames") List<String> roleNames,
+                                      @QueryParam("tenantId") Long tenantId);
 
     /**
      * Verifies if a Permission exists for a User (Optionally for a Tenant)

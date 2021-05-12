@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Resource implementation responsible for deal with operations
@@ -93,7 +94,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             log("Retrieving TenantRole association for id %d", id);
             return Response.ok().entity(tenantRoleBusinessService.getById(id)).build();
         } catch (TenantRoleException e) {
-            return getAssocitionNotFoundException();
+            return getAssociationNotFoundException();
         } catch (Exception e) {
             return getGenericError(e);
         }
@@ -208,6 +209,30 @@ public class TenantRoleResource implements TenantRoleResourceClient {
         try {
             return Response.ok().entity(tenantRoleBusinessService.
                     isRoleExistentForUser(userId, roleName, tenantId)).build();
+        } catch (Exception e) {
+            return getGenericError(e);
+        }
+    }
+
+    /**
+     * Check if some Role exists for a User (Optionally under a Tenant)
+     * @param userId User identifier
+     * @param roleNames Role names identifiers
+     * @param tenantId Tenant identifier (Optional)
+     * @return Response OK containing a boolean value (true if there is some role is associated to the User,
+     * otherwise false).
+     * Response 404 in case of absence of parameter like user identifier or role name.
+     * Response 500 in case of any error
+     */
+    @Override
+    public Response isAnyRoleExistentForUser(Long userId, List<String> roleNames, Long tenantId) {
+        log("Checking if user %d has roles for tenantId %d", userId, tenantId);
+        if (userId == null || roleNames == null || roleNames.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        try {
+            return Response.ok().entity(tenantRoleBusinessService.
+                    isAnyRoleExistentForUser(userId, roleNames, tenantId)).build();
         } catch (Exception e) {
             return getGenericError(e);
         }
@@ -354,7 +379,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      * Launches a 404 Error Code to the user.
      * @return code 100 message Resource not found.
      */
-    private Response getAssocitionNotFoundException() {
+    private Response getAssociationNotFoundException() {
         String message = LinkedAuthorizationErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         log.error(message);
         return Response.status(Response.Status.NOT_FOUND).entity(message).build();

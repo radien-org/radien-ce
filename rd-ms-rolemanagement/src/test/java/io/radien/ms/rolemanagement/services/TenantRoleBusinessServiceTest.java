@@ -33,8 +33,7 @@ import static org.mockito.Mockito.*;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -254,6 +253,7 @@ public class TenantRoleBusinessServiceTest {
         // Check for Role Name and specific Tenant
         assertTrue(this.tenantRoleBusinessService.isRoleExistentForUser(user1Id,
                 roleNameForTenantAdministrator, tenantId));
+
     }
 
     @Test
@@ -268,8 +268,75 @@ public class TenantRoleBusinessServiceTest {
                 "super admin", tenantId));
     }
 
+
     @Test
     @Order(11)
+    public void isAnyRoleExistentForUser() {
+
+        // Assign user to the role "READER" for the tenant "1"
+        SystemRole reader = assertDoesNotThrow(() -> createRole("READER"));
+        assertDoesNotThrow(() -> createTenantRole(reader.getId(), tenantId));
+        assertDoesNotThrow(() -> this.tenantRoleBusinessService.assignUser(tenantId,
+                reader.getId(), user1Id));
+
+        // Assign user to the role "WRITER" for the tenant "4"
+        Long tenant4 = 4L;
+        SystemRole writer = assertDoesNotThrow(() -> createRole("WRITER"));
+        assertDoesNotThrow(() -> createTenantRole(writer.getId(), tenant4));
+        assertDoesNotThrow(() -> this.tenantRoleBusinessService.assignUser(tenant4,
+                writer.getId(), user1Id));
+
+        // Assign user to the role "OBSERVER" for the tenant "5"
+        Long tenant5 = 5L;
+        SystemRole observer = assertDoesNotThrow(() -> createRole("OBSERVER"));
+        assertDoesNotThrow(() -> createTenantRole(observer.getId(), tenant5));
+        assertDoesNotThrow(() -> this.tenantRoleBusinessService.assignUser(tenant5,
+                observer.getId(), user1Id));
+
+        // Check for All three not informing Tenant
+        assertTrue(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("READER", "WRITER", "OBSERVER"), null));
+
+        // Check for All three but informing one specific Tenant
+        assertTrue(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("READER", "WRITER", "OBSERVER"), tenantId));
+
+        // Checking just WRITER
+        assertTrue(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("WRITER"), null));
+
+        assertTrue(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("WRITER"), tenant4));
+
+        assertFalse(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("WRITER"), 7777L));
+
+        // Checking just OBSERVER
+        assertTrue(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("OBSERVER"), null));
+
+        assertTrue(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("OBSERVER"), tenant5));
+
+        assertFalse(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("OBSERVER"), tenantId));
+
+        // Checking "OBSERVER" and other non assigned roles
+        assertTrue(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("OBSERVER", "role-d", "role-f"), tenant5));
+
+        // Check for All three again but informing one specific (not existent) Tenant
+        assertFalse(tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                Arrays.asList("READER", "WRITER", "OBSERVER"), 99999L));
+
+        // Trying to check without informing roles
+        assertThrows(Exception.class, ()->
+                tenantRoleBusinessService.isAnyRoleExistentForUser(user1Id,
+                        null, 99999L));
+    }
+
+    @Test
+    @Order(12)
     public void getTenants() {
 
         // Create new roles
@@ -317,7 +384,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     public void getTenantsInvalidCase() {
         // Try to retrieve tenants taking in account a Role for which the user is not associated
         Long notAssociateRoleId = 8888L;
@@ -346,7 +413,7 @@ public class TenantRoleBusinessServiceTest {
                 guest.getName(), tenantId2));
     }
     @Test
-    @Order(14)
+    @Order(15)
     public void unassignUserInvalidCaseNoTenantRoleAssociated() {
         Long notAssociatedTenant = 99999L;
         Long notAssociatedRole = 99988L;
@@ -355,7 +422,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     public void unassignUserInvalidCaseUserNotAssigned() {
         // Get previously created Role
         SystemRole guest = assertDoesNotThrow(() -> createRole("guest"));
@@ -366,7 +433,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(16)
+    @Order(17)
     public void assignPermission() {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
@@ -411,7 +478,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(17)
+    @Order(18)
     public void assignPermissionInvalidCaseNoTenantRole() {
 
         // Creating permissions
@@ -437,7 +504,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(18)
+    @Order(19)
     public void assignPermissionInvalidCaseAssignmentAlreadyPerformed() {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
@@ -471,7 +538,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(19)
+    @Order(20)
     public void getPermissions() {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
@@ -525,7 +592,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(20)
+    @Order(21)
     public void isPermissionExistentForUser() {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
@@ -576,7 +643,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(21)
+    @Order(22)
     public void unAssignPermission() {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
@@ -608,7 +675,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(22)
+    @Order(23)
     public void unAssignPermissionInvalidCase() {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
@@ -623,19 +690,19 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(23)
+    @Order(24)
     public void getAll() {
         Page<SystemTenantRole> page = assertDoesNotThrow(() ->
                 tenantRoleBusinessService.getAll(1, 10));
         assertNotNull(page);
         assertNotNull(page.getResults());
         assertFalse(page.getResults().isEmpty());
-        assertTrue(page.getTotalPages() == 1);
+        assertTrue(page.getTotalPages() > 0);
         assertTrue(page.getTotalResults() > 0);
     }
 
     @Test
-    @Order(24)
+    @Order(25)
     public void deleteTenantRoleInvalidCaseNotExistentAssociation() {
         // Trying to remove for a non registered tenant
         assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
@@ -643,7 +710,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(25)
+    @Order(26)
     public void deleteTenantRoleInvalidCase() {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
@@ -688,7 +755,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(26)
+    @Order(27)
     public void checkParamPermissionNotExists() {
 
         PermissionRESTServiceAccess permissionRESTServiceAccess =
@@ -723,7 +790,7 @@ public class TenantRoleBusinessServiceTest {
     }
 
     @Test
-    @Order(27)
+    @Order(28)
     public void checkParamTenantNotExists() {
         TenantRESTServiceAccess tenantRESTServiceAccess =
                 mock(TenantRESTServiceAccess.class);
@@ -749,5 +816,23 @@ public class TenantRoleBusinessServiceTest {
 
         assertThrows(SystemException.class, ()-> tenantRoleBusinessService.
                 save(systemTenantRole));
+    }
+
+    @Test
+    @Order(29)
+    public void getTenantRESTServiceAccess() {
+        TenantRESTServiceAccess tenantRESTServiceAccess =
+                mock(TenantRESTServiceAccess.class);
+        tenantRoleBusinessService.setTenantRESTServiceAccess(tenantRESTServiceAccess);
+        assertEquals(tenantRESTServiceAccess, tenantRoleBusinessService.getTenantRESTServiceAccess());
+    }
+
+    @Test
+    @Order(30)
+    public void getPermissionRESTServiceAccess() {
+        PermissionRESTServiceAccess permissionRESTServiceAccess =
+                mock(PermissionRESTServiceAccess.class);
+        tenantRoleBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
+        assertEquals(permissionRESTServiceAccess, tenantRoleBusinessService.getPermissionRESTServiceAccess());
     }
 }

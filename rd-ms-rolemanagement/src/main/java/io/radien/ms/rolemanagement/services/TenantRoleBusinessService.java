@@ -199,6 +199,21 @@ public class TenantRoleBusinessService implements Serializable {
     }
 
     /**
+     * Check if some of the specifies Role exists for a User (Optionally for a Tenant)
+     * @param userId User identifier
+     * @param roleNames Roles name identifier
+     * @param tenantId Tenant identifier (Optional)
+     * @return true if role is associated to an User, otherwise false
+     */
+    public boolean isAnyRoleExistentForUser(Long userId, List<String> roleNames, Long tenantId) {
+        checkIfMandatoryParametersWereInformed(userId);
+        if (roleNames == null || roleNames.isEmpty()) {
+            throw new IllegalArgumentException("Role names are mandatory");
+        }
+        return this.tenantRoleServiceAccess.hasAnyRole(userId, roleNames, tenantId);
+    }
+
+    /**
      * Check if Permission exists for a User (Optionally for a Tenant)
      * @param userId User identifier
      * @param permissionId Permission identifier
