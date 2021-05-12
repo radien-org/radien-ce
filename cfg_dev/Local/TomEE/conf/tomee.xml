@@ -2,33 +2,33 @@
 <tomee>
 	<!-- see http://tomee.apache.org/containers-and-resources.html -->
 	<Resource id="jdbc/AppFrameDS" type="javax.sql.DataSource">
-		accessToUnderlyingConnectionAllowed = ${true_value}
-		alternateUsernameAllowed = ${false_value}
+		accessToUnderlyingConnectionAllowed = ${accessToUnderlyingConnectionAllowed}
+		alternateUsernameAllowed = ${alternateUsernameAllowed}
 		connectionProperties =
-		defaultAutoCommit = ${true_value}
+		defaultAutoCommit = ${defaultAutoCommit}
 		defaultReadOnly =
 		definition =
-		ignoreDefaultValues = ${false_value}
-		initialSize = ${AppFrameUserDS_initialSize}
-		jdbcDriver = ${AppFrameUserDS_jdbcDriver}
-		jdbcUrl = ${AppFrameUserDS_jdbcUrl}
-		jtaManaged = ${true_value}
-		maxActive = ${AppFrameUserDS_maxActive}
-		maxIdle = ${AppFrameUserDS_maxIdle}
-		maxOpenPreparedStatements = ${AppFrameUserDS_maxOpenPreparedStatements}
-		maxWaitTime = ${AppFrameUserDS_maxWaitTime}
-		minEvictableIdleTime = ${AppFrameUserDS_minEvictableIdleTime}
-		minIdle = ${AppFrameUserDS_minIdle}
-		numTestsPerEvictionRun = ${AppFrameUserDS_numTestsPerEvictionRun}
-		password =
-		passwordCipher = ${plainText_value}
-		poolPreparedStatements = ${false_value}
+		ignoreDefaultValues = ${ignoreDefaultValues}
+		initialSize = ${initialSize}
+		jdbcDriver = ${jdbcDriver}
+		jdbcUrl = ${jdbcUrl}
+		jtaManaged = ${jtaManaged}
+		maxActive = ${maxActive}
+		maxIdle = ${maxIdle}
+		maxOpenPreparedStatements = ${maxOpenPreparedStatements}
+		maxWaitTime = ${maxWaitTime}
+		minEvictableIdleTime = ${minEvictableIdleTime}
+		minIdle = ${minIdle}
+		numTestsPerEvictionRun = ${numTestsPerEvictionRun}
+		password = ${password}
+		passwordCipher = ${passwordCipher}
+		poolPreparedStatements = ${poolPreparedStatements}
 		serviceId =
-		testOnBorrow = ${true_value}
-		testOnReturn = ${false_value}
-		testWhileIdle = ${false_value}
-		timeBetweenEvictionRuns = ${AppFrameUserDS_timeBetweenEvictionRuns}
-		userName = ${sa_username}
-		validationQuery = ${AppFrameUserDS_validationQuery}
+		testOnBorrow = ${testOnBorrow}
+		testOnReturn = ${testOnReturn}
+		testWhileIdle = ${testWhileIdle}
+		timeBetweenEvictionRuns = ${timeBetweenEvictionRuns}
+		userName = ${userName}
+		validationQuery = ${validationQuery}
 	</Resource>
 </tomee>
