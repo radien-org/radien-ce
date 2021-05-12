@@ -31,10 +31,6 @@ import java.util.List;
  */
 public class ListLinkedAuthorizationModelMapper {
 
-    private ListLinkedAuthorizationModelMapper() {
-        //empty constructor
-    }
-
     /**
      * Converts the received JSON message into a list of linked authorizations
      * @param is inputted information to be converted into the object

@@ -46,10 +46,6 @@ public class RoleFactory {
 
     private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-    private RoleFactory() {
-        // empty constructor
-    }
-
     /**
      * Create a role with already predefined fields.
      *

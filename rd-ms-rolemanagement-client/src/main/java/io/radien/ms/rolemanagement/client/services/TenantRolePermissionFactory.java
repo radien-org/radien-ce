@@ -35,10 +35,6 @@ import java.util.stream.Collectors;
  */
 public class TenantRolePermissionFactory {
 
-    private TenantRolePermissionFactory() {
-        // empty constructor
-    }
-
     /**
      * Create a Tenant Role Permission Association with already predefined fields.
      *

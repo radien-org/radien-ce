@@ -35,10 +35,6 @@ import java.util.stream.Collectors;
  */
 public class TenantRoleUserFactory {
 
-    private TenantRoleUserFactory(){
-        // empty constructor
-    }
-
     /**
      * Create a Tenant Role User Association with already predefined fields.
      *

@@ -34,10 +34,6 @@ import java.util.stream.Collectors;
  */
 public class LinkedAuthorizationFactory {
 
-    private LinkedAuthorizationFactory() {
-        // empty constructor
-    }
-
     /**
      * Create a Linked Authorization with already predefined fields.
      *
