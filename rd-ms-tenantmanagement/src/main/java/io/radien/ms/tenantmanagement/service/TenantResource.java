@@ -69,15 +69,15 @@ public class TenantResource implements TenantResourceClient {
 	/**
 	 * Gets a list of requested tenants based on some filtered information
 	 * @param name to be searched for
-	 * @param type of the tenant to be searched
+	 * @param tenantType of the tenant to be searched
 	 * @param isExact should the values be exact to the given ones
 	 * @param isLogicalConjunction in case of true query will use an and in case of false query will use a or
 	 * @return 200 response code in case of success or 500 in case of any issue
 	 */
 	@Override
-	public Response get(String name, String type, boolean isExact, boolean isLogicalConjunction) {
+	public Response get(String name, String tenantType, boolean isExact, boolean isLogicalConjunction) {
 		try {
-			SystemTenantSearchFilter filter = new TenantSearchFilter(name, type, isExact, isLogicalConjunction);
+			SystemTenantSearchFilter filter = new TenantSearchFilter(name, tenantType, isExact, isLogicalConjunction);
 			List<? extends SystemTenant> list= tenantService.get(filter);
 			return Response.ok(list).build();
 		}catch (Exception e){

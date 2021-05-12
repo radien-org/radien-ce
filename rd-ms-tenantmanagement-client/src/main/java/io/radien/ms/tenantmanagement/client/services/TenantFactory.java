@@ -66,10 +66,10 @@ public class TenantFactory {
                                 Long clientPhoneNumber, String clientEmail, Long parentId, Long clientId, Long createdUser){
         Tenant tenant = new Tenant();
         tenant.setName(name);
-        tenant.setKey(key);
-        tenant.setType(type);
-        tenant.setStart(start);
-        tenant.setEnd(end);
+        tenant.setTenantKey(key);
+        tenant.setTenantType(type);
+        tenant.setTenantStart(start);
+        tenant.setTenantEnd(end);
 
         tenant.setClientAddress(clientAddress);
         tenant.setClientZipCode(clientZipCode);
@@ -100,9 +100,9 @@ public class TenantFactory {
     public static Tenant convert(JsonObject jsonTenant) throws ParseException {
         Long id = FactoryUtilService.getLongFromJson("id", jsonTenant);
         String name = FactoryUtilService.getStringFromJson("name", jsonTenant);
-        String key = FactoryUtilService.getStringFromJson("key", jsonTenant);
-        String start = FactoryUtilService.getStringFromJson("start", jsonTenant);
-        String end = FactoryUtilService.getStringFromJson("end", jsonTenant);
+        String key = FactoryUtilService.getStringFromJson("tenantKey", jsonTenant);
+        String start = FactoryUtilService.getStringFromJson("tenantStart", jsonTenant);
+        String end = FactoryUtilService.getStringFromJson("tenantEnd", jsonTenant);
 
         TenantType type = getTypeFromJson(jsonTenant);
 
@@ -128,15 +128,15 @@ public class TenantFactory {
         tenant.setId(id);
 
         if(start != null) {
-            tenant.setStart(LocalDate.parse(start));
+            tenant.setTenantStart(LocalDate.parse(start));
         } else {
-            tenant.setStart(null);
+            tenant.setTenantStart(null);
         }
 
         if(end != null) {
-            tenant.setEnd(LocalDate.parse(end));
+            tenant.setTenantEnd(LocalDate.parse(end));
         } else {
-            tenant.setEnd(null);
+            tenant.setTenantEnd(null);
         }
 
         tenant.setLastUpdateUser(lastUpdateUser);
@@ -162,7 +162,7 @@ public class TenantFactory {
      * @return a correct tenant type
      */
     private static TenantType getTypeFromJson(JsonObject jsonTenant) {
-        String typeAsString = FactoryUtilService.getStringFromJson("type", jsonTenant);
+        String typeAsString = FactoryUtilService.getStringFromJson("tenantType", jsonTenant);
         if (StringUtils.isEmpty(typeAsString)) {
             throw new IllegalStateException("Field type is mandatory");
         }
@@ -193,10 +193,10 @@ public class TenantFactory {
 
         FactoryUtilService.addValueLong(builder, "id", tenant.getId());
         FactoryUtilService.addValue(builder, "name", tenant.getName());
-        FactoryUtilService.addValue(builder, "key", tenant.getKey());
-        FactoryUtilService.addValue(builder, "type", tenant.getType().getName());
-        FactoryUtilService.addValue(builder, "start", tenant.getStart());
-        FactoryUtilService.addValue(builder, "end", tenant.getEnd());
+        FactoryUtilService.addValue(builder, "tenantKey", tenant.getTenantKey());
+        FactoryUtilService.addValue(builder, "tenantType", tenant.getTenantType().getName());
+        FactoryUtilService.addValue(builder, "tenantStart", tenant.getTenantStart());
+        FactoryUtilService.addValue(builder, "tenantEnd", tenant.getTenantEnd());
 
         FactoryUtilService.addValue(builder, "clientAddress", tenant.getClientAddress());
         FactoryUtilService.addValue(builder, "clientZipCode", tenant.getClientZipCode());

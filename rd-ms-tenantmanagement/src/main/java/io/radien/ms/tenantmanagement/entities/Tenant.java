@@ -59,27 +59,27 @@ public class Tenant extends io.radien.ms.tenantmanagement.client.entities.Tenant
 
 	@Column
 	@Override
-	public String getKey() {
-		return super.getKey();
+	public String getTenantKey() {
+		return super.getTenantKey();
 	}
 
 	@Column
 	@Override
 	@Convert(converter = TenantTypeConverter.class)
-	public TenantType getType() {
-		return super.getType();
+	public TenantType getTenantType() {
+		return super.getTenantType();
 	}
 
 	@Column
 	@Override
-	public LocalDate getStart() {
-		return super.getStart();
+	public LocalDate getTenantStart() {
+		return super.getTenantStart();
 	}
 
 	@Column
 	@Override
-	public LocalDate getEnd() {
-		return super.getEnd();
+	public LocalDate getTenantEnd() {
+		return super.getTenantEnd();
 	}
 
 	@Column

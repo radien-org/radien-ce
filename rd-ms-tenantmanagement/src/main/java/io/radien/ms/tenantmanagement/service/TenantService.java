@@ -155,7 +155,7 @@ public class TenantService implements TenantServiceAccess {
         }
 
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, tenantRoot, global);
-        global = getFieldPredicate("type", filter.getType(), filter, criteriaBuilder, tenantRoot, global);
+        global = getFieldPredicate("tenantType", filter.getTenantType(), filter, criteriaBuilder, tenantRoot, global);
 
         return global;
     }
@@ -233,27 +233,27 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("name"));
         }
 
-        if (validateIfFieldsAreEmpty(tenant.getKey())) {
-            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("key"));
+        if (validateIfFieldsAreEmpty(tenant.getTenantKey())) {
+            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantKey"));
         }
 
-        if (tenant.getType() == null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("type"));
+        if (tenant.getTenantType() == null) {
+            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantType"));
         }
 
-        if ((tenant.getEnd() != null && tenant.getStart() != null) && tenant.getEnd().compareTo(tenant.getStart()) <= 0) {
+        if ((tenant.getTenantEnd() != null && tenant.getTenantStart() != null) && tenant.getTenantEnd().compareTo(tenant.getTenantStart()) <= 0) {
             throw new TenantException(ErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString());
         }
 
-        if (tenant.getType() == TenantType.ROOT_TENANT) {
+        if (tenant.getTenantType() == TenantType.ROOT_TENANT) {
             validateRootTenant(tenant);
         }
 
-        if(tenant.getType() == TenantType.CLIENT_TENANT) {
+        if(tenant.getTenantType() == TenantType.CLIENT_TENANT) {
             validateClientTenant(tenant);
         }
 
-        if(tenant.getType() == TenantType.SUB_TENANT) {
+        if(tenant.getTenantType() == TenantType.SUB_TENANT) {
             validateSubTenant(tenant);
         }
     }
@@ -307,7 +307,7 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
         }
 
-        if(get(tenant.getParentId()).getType() == TenantType.SUB_TENANT) {
+        if(get(tenant.getParentId()).getTenantType() == TenantType.SUB_TENANT) {
             throw new TenantException(ErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString());
         }
     }

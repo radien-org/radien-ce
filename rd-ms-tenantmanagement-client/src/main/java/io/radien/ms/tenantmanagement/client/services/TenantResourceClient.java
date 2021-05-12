@@ -52,7 +52,7 @@ public interface TenantResourceClient {
                            @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     @GET
-    public Response get(@QueryParam("name") String name, @QueryParam("type") String type,
+    public Response get(@QueryParam("name") String name, @QueryParam("tenantType") String type,
                         @DefaultValue("false") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
