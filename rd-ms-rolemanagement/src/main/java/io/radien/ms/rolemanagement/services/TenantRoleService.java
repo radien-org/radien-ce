@@ -24,6 +24,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -332,33 +335,37 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             throw new IllegalArgumentException("Role is mandatory");
         }
 
-        String query =
-                "Select trp.permissionId " +
-                "From TenantRole tr, " +
-                "     TenantRolePermission trp " +
-                "where tr.tenantId = :pTenantId and " +
-                "      tr.roleId = :pRoleId and tr.id = trp.tenantRoleId";
 
-        if (userId != null) {
-            query = "Select trp.permissionId " +
-                    "From TenantRole tr, " +
-                    "     TenantRolePermission trp, " +
-                    "     TenantRoleUser tru " +
-                    "where tr.tenantId = :pTenantId and " +
-                    "      tr.roleId = :pRoleId and tr.id = trp.tenantRoleId and " +
-                    "      tru.userId = :pUserId and tru.tenantRoleId = tr.id";
-        }
 
         EntityManager em = getEntityManager();
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pTenantId", tenantId);
-        typedQuery.setParameter("pRoleId", roleId);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+        Root<TenantRolePermission> tenantRolePermissionRoot = criteriaQuery.from(TenantRolePermission.class);
 
+
+        criteriaQuery.select(tenantRolePermissionRoot.get("permissionId"));
+        Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
+        Predicate global = cb.and(
+                cb.equal(tenantRolePermissionRoot.get("tenantRoleId"),tenantRoleRoot.get("id")),
+                cb.equal(tenantRoleRoot.get("tenantId"),tenantId),
+                cb.equal(tenantRoleRoot.get("roleId"),roleId)
+        );
         if (userId != null) {
-            typedQuery.setParameter("pUserId", userId);
+            Root<TenantRoleUser> tenantRoleUserRoot = criteriaQuery.from(TenantRoleUser.class);
+            //tru.userId = :pUserId and tru.tenantRoleId = tr.id
+            global = cb.and(
+                    global,
+                    cb.equal(tenantRoleUserRoot.get("tenantRoleId"),tenantRoleRoot.get("id")),
+                    cb.equal(tenantRoleUserRoot.get("userId"),userId)
+                    );
         }
 
-        return typedQuery.getResultList();
+        criteriaQuery.where(global);
+
+        TypedQuery<Long> q = em.createQuery(criteriaQuery);
+        //Join<TenantRolePermission,TenantRole> join = tenantRolePermissionRoot.join("tenantRoleId",JoinType.INNER);
+
+        return q.getResultList();
     }
 
     /**
