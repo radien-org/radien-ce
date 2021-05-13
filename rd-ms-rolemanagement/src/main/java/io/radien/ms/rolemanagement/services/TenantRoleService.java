@@ -22,6 +22,7 @@ import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
+import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
@@ -35,8 +36,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -234,22 +233,30 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         if (tenantId == null) {
             throw new IllegalArgumentException("Tenant Id is mandatory");
         }
-        String query = "Select count(tr) From TenantRole tr " +
-                "where tr.roleId = :pRoleId and tr.tenantId = :pTenantId";
 
-        // In case of update operation Its useful to make sure the combination do not exist for other ids
-        if (currentTenantRoleId != null) {
-            query += " and tr.id <> :pTenantRoleId";
-        }
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRole> root = sc.from(TenantRole.class);
 
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pRoleId", roleId);
-        typedQuery.setParameter("pTenantId", tenantId);
+        sc.select(cb.count(root));
 
         if (currentTenantRoleId != null) {
-            typedQuery.setParameter("pTenantRoleId", currentTenantRoleId);
+            sc.where(
+                    cb.equal(root.get("tenantId"), tenantId),
+                    cb.equal(root.get("roleId"), roleId),
+                    cb.notEqual(root.get("id"), currentTenantRoleId)
+            );
         }
-        return typedQuery.getSingleResult() > 0;
+        else {
+            sc.where(
+                    cb.equal(root.get("tenantId"), tenantId),
+                    cb.equal(root.get("roleId"), roleId)
+            );
+        }
+
+        Long count = em.createQuery(sc).getSingleResult();
+
+        return count > 0;
     }
 
     /**
@@ -290,13 +297,16 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @return true if exists, otherwise false
      */
     protected boolean hasUsersAssociated(Long tenantRoleId, EntityManager em) {
-        String query = "Select count(tru) From TenantRoleUser tru " +
-                "where tru.tenantRoleId = :pTenantRoleId";
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
 
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pTenantRoleId", tenantRoleId);
+        sc.select(cb.count(root));
 
-        return typedQuery.getSingleResult() > 0;
+        sc.where(cb.equal(root.get("tenantRoleId"),tenantRoleId));
+        Long count = em.createQuery(sc).getSingleResult();
+
+        return count > 0;
     }
 
     /**
@@ -330,42 +340,32 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         if (tenantId == null) {
             throw new IllegalArgumentException("Tenant is mandatory");
         }
-
         if (roleId == null) {
             throw new IllegalArgumentException("Role is mandatory");
         }
-
-
-
         EntityManager em = getEntityManager();
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
-        Root<TenantRolePermission> tenantRolePermissionRoot = criteriaQuery.from(TenantRolePermission.class);
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
+        Root<TenantRolePermission> tenantRolePermissionRoot = cq.from(TenantRolePermission.class);
 
+        cq.select(tenantRolePermissionRoot.get("permissionId"));
 
-        criteriaQuery.select(tenantRolePermissionRoot.get("permissionId"));
-        Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
-        Predicate global = cb.and(
-                cb.equal(tenantRolePermissionRoot.get("tenantRoleId"),tenantRoleRoot.get("id")),
-                cb.equal(tenantRoleRoot.get("tenantId"),tenantId),
-                cb.equal(tenantRoleRoot.get("roleId"),roleId)
-        );
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(tenantRoleRoot.get("tenantId"), tenantId));
+        predicates.add(cb.equal(tenantRoleRoot.get("roleId"), roleId));
+        predicates.add(cb.equal(tenantRoleRoot.get("id"), tenantRolePermissionRoot.get("tenantRoleId")));
         if (userId != null) {
-            Root<TenantRoleUser> tenantRoleUserRoot = criteriaQuery.from(TenantRoleUser.class);
-            //tru.userId = :pUserId and tru.tenantRoleId = tr.id
-            global = cb.and(
-                    global,
-                    cb.equal(tenantRoleUserRoot.get("tenantRoleId"),tenantRoleRoot.get("id")),
-                    cb.equal(tenantRoleUserRoot.get("userId"),userId)
-                    );
+            Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+            predicates.add(cb.equal(tenantRoleRoot.get("id"), tenantRoleUserRoot.get("tenantRoleId")));
+            predicates.add(cb.equal(tenantRoleUserRoot.get("userId"), userId));
         }
 
-        criteriaQuery.where(global);
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
-        TypedQuery<Long> q = em.createQuery(criteriaQuery);
-        //Join<TenantRolePermission,TenantRole> join = tenantRolePermissionRoot.join("tenantRoleId",JoinType.INNER);
-
-        return q.getResultList();
+        TypedQuery<Long> query = em.createQuery(cq);
+        return query.getResultList();
     }
 
     /**
@@ -380,23 +380,63 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             throw new IllegalArgumentException("User id is mandatory");
         }
 
-        String query = "Select distinct tr.tenantId " +
-                       "From TenantRole tr, " +
-                       "     TenantRoleUser tru " +
-                       "where tru.userId = :pUserId and tru.tenantRoleId = tr.id";
-
-        if (roleId != null) {
-            query += " and tr.roleId = :pRoleId";
-        }
-
         EntityManager em = getEntityManager();
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pUserId", userId);
 
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+
+        cq.select(tenantRoleRoot.get("tenantId"));
+        cq.distinct(true);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(tenantRoleRoot.get("id"), tenantRoleUserRoot.get("tenantRoleId")));
         if (roleId != null) {
-            typedQuery.setParameter("pRoleId", roleId);
+            predicates.add(cb.equal(tenantRoleRoot.get("roleId"), roleId));
         }
+        predicates.add(cb.equal(tenantRoleUserRoot.get("userId"), userId));
 
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        TypedQuery<Long> query = em.createQuery(cq);
+        return query.getResultList();
+    }
+
+    /**
+     * Retrieve Tenant Role Ids related to a user identifier (See TenantRoleUser entity)
+     * @param userId user identifier
+     * @param em Entity manager to be reused
+     * @return Collections containing ids
+     */
+    protected List<Long> getTenantRoleIdsFromUser(Long userId, EntityManager em) {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<TenantRoleUser> tenantRoleUserRoot =
+                criteriaQuery.from(TenantRoleUser.class);
+
+        criteriaQuery.select(tenantRoleUserRoot.get("tenantRoleId"));
+        criteriaQuery.where(criteriaBuilder.equal(tenantRoleUserRoot.get("userId"), userId));
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
+        return typedQuery.getResultList();
+    }
+
+    /**
+     * Retrieve Tenant Role Ids related to a permission identifier (See TenantRolePermission entity)
+     * @param permissionId permission identifier
+     * @param em Entity manager to be reused
+     * @return Collections containing ids
+     */
+    protected List<Long> getTenantRoleIdsFromPermission(Long permissionId, EntityManager em) {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<TenantRolePermission> tenantRolePermissionRoot =
+                criteriaQuery.from(TenantRolePermission.class);
+
+        criteriaQuery.select(tenantRolePermissionRoot.get("tenantRoleId")).
+                where(criteriaBuilder.equal(tenantRolePermissionRoot.get("id"), permissionId));
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
         return typedQuery.getResultList();
     }
 
@@ -409,28 +449,37 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      */
     @Override
     public boolean hasAnyRole(Long userId, List<String> roleNames, Long tenantId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User id is mandatory");
+        }
 
-        String query =
-                "select count(tr) " +
-                "from TenantRole tr, TenantRoleUser tru, Role r " +
-                "where r.name in :pRoleNames and r.id = tr.roleId and" +
-                " tr.id = tru.tenantRoleId and" +
-                " tru.userId = :pUserId and" +
-                " tru.tenantRoleId = tr.id";
-
-        if (tenantId != null) {
-            query += " and tr.tenantId = :pTenantId";
+        if (roleNames == null || roleNames.isEmpty()) {
+            throw new IllegalArgumentException("Role name is mandatory");
         }
 
         EntityManager em = getEntityManager();
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pRoleNames", roleNames);
-        typedQuery.setParameter("pUserId", userId);
-        if (tenantId != null) {
-            typedQuery.setParameter("pTenantId", tenantId);
-        }
 
-        return typedQuery.getSingleResult() > 0;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Role> roleRoot = cq.from(Role.class);
+        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+
+        cq.select(cb.count(tenantRoleRoot));
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(roleRoot.get("name").in(roleNames));
+        predicates.add(cb.equal(roleRoot.get("id"), tenantRoleRoot.get("roleId")));
+        predicates.add(cb.equal(tenantRoleRoot.get("id"), tenantRoleUserRoot.get("tenantRoleId")));
+        if (tenantId != null) {
+            predicates.add(cb.equal(tenantRoleRoot.get("tenantId"), tenantId));
+        }
+        predicates.add(cb.equal(tenantRoleUserRoot.get("userId"), userId));
+
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        TypedQuery<Long> query = em.createQuery(cq);
+        return query.getSingleResult() > 0;
     }
 
     /**
@@ -442,25 +491,29 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      */
     @Override
     public boolean hasPermission(Long userId, Long permissionId, Long tenantId) {
-        String query =
-                "select count(tr) " +
-                        "from TenantRole tr, TenantRoleUser tru, TenantRolePermission trp " +
-                        "where trp.permissionId = :pPermissionId and trp.tenantRoleId = tr.id and" +
-                        " tru.userId = :pUserId and tru.tenantRoleId = tr.id";
-
-        if (tenantId != null) {
-            query += "  and tr.tenantId = :pTenantId";
-        }
-
         EntityManager em = getEntityManager();
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pPermissionId", permissionId);
-        typedQuery.setParameter("pUserId", userId);
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
+        Root<TenantRolePermission> tenantRolePermissionRoot = cq.from(TenantRolePermission.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+
+        cq.select(cb.count(tenantRoleRoot));
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(tenantRoleRoot.get("id"), tenantRolePermissionRoot.get("tenantRoleId")));
+        predicates.add(cb.equal(tenantRoleRoot.get("id"), tenantRoleUserRoot.get("tenantRoleId")));
+        predicates.add(cb.equal(tenantRolePermissionRoot.get("permissionId"), permissionId));
+        predicates.add(cb.equal(tenantRoleUserRoot.get("userId"), userId));
         if (tenantId != null) {
-            typedQuery.setParameter("pTenantId", tenantId);
+            predicates.add(cb.equal(tenantRoleRoot.get("tenantId"), tenantId));
         }
 
-        return typedQuery.getSingleResult() > 0;
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        TypedQuery<Long> query = em.createQuery(cq);
+        return query.getSingleResult() > 0;
     }
 
     /**
@@ -471,13 +524,32 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      */
     @Override
     public Long getTenantRoleId(Long tenant, Long role) {
+        return getTenantRoleId(tenant, role, getEntityManager());
+    }
+
+    /**
+     * Retrieves strictly the TenantRole id basing on tenant and role
+     * @param tenant tenant identifier
+     * @param  role role identifier
+     * @param em reused entity manager
+     * @return TenantRole id
+     */
+    protected Long getTenantRoleId(Long tenant, Long role, EntityManager em) {
         if (tenant == null || role == null) {
             throw new IllegalArgumentException("Role and Tenant are mandatory");
         }
-        String query = "Select tr.id From TenantRole tr where tr.tenantId = :pTenantId and tr.roleId = :pRoleId";
-        TypedQuery<Long> typedQuery = getEntityManager().createQuery(query, Long.class);
-        typedQuery.setParameter("pTenantId", tenant);
-        typedQuery.setParameter("pRoleId", role);
+
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
+
+        criteriaQuery.select(tenantRoleRoot.get("id")).
+                where(
+                        criteriaBuilder.equal(tenantRoleRoot.get("tenantId"), tenant),
+                        criteriaBuilder.equal(tenantRoleRoot.get("roleId"), role)
+                );
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
         try {
             return typedQuery.getSingleResult();
         }

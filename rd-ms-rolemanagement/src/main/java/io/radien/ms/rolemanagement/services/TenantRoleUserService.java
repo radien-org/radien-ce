@@ -21,6 +21,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
+import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -233,14 +234,18 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         if (tenantRoleId == null) {
             throw new IllegalArgumentException("Tenant Role Id is mandatory");
         }
-        String query = "Select count(tru) From TenantRoleUser tru " +
-                "where tru.userId = :pUserId and tru.tenantRoleId = :pTenantRoleId";
 
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pUserId", userId);
-        typedQuery.setParameter("pTenantRoleId", tenantRoleId);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
 
-        return typedQuery.getSingleResult() > 0;
+        sc.select(cb.count(root)).
+                where(
+                        cb.equal(root.get("userId"),userId),
+                        cb.equal(root.get("tenantRoleId"),tenantRoleId)
+                );
+
+        return em.createQuery(sc).getSingleResult() > 0;
     }
 
     /**
@@ -272,12 +277,20 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         if (tenantRole == null || user == null) {
             throw new IllegalArgumentException("TenantRole and user are mandatory");
         }
-        String query = "Select tru.id From TenantRoleUser tru where tru.tenantRoleId = :pTenantRoleId and tru.userId = :pUserId";
-        TypedQuery<Long> typedQuery = getEntityManager().createQuery(query, Long.class);
-        typedQuery.setParameter("pTenantRoleId", tenantRole);
-        typedQuery.setParameter("pUserId", user);
+
+        EntityManager em = getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
+
+        sc.select(root.get("id")).
+                where(
+                        cb.equal(root.get("userId"),user),
+                        cb.equal(root.get("tenantRoleId"),tenantRole)
+                );
+
         try {
-            return typedQuery.getSingleResult();
+            return em.createQuery(sc).getSingleResult();
         }
         catch (NoResultException e) {
             log.error("No TenantRoleUser existent tenantRole {} and user {}", tenantRole, user);
