@@ -233,7 +233,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
 
         criteriaQuery.where(
                 cb.equal(root.get("tenantRoleId"),tenantRole),
-                cb.equal(root.get("pPermissionId"),permission)
+                cb.equal(root.get("permissionId"),permission)
         );
 
         TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
