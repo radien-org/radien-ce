@@ -224,10 +224,20 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         if (tenantRole == null || permission == null) {
             throw new IllegalArgumentException("TenantRole and permission are mandatory");
         }
-        String query = "Select trp.id From TenantRolePermission trp where trp.tenantRoleId = :pTenantRoleId and trp.permissionId = :pPermissionId";
-        TypedQuery<Long> typedQuery = getEntityManager().createQuery(query, Long.class);
-        typedQuery.setParameter("pTenantRoleId", tenantRole);
-        typedQuery.setParameter("pPermissionId", permission);
+        EntityManager em = getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+        Root<TenantRolePermission> root = criteriaQuery.from(TenantRolePermission.class);
+
+        criteriaQuery.select(root.get("id"));
+
+        criteriaQuery.where(
+                cb.equal(root.get("tenantRoleId"),tenantRole),
+                cb.equal(root.get("pPermissionId"),permission)
+        );
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
+
         try {
             return typedQuery.getSingleResult();
         }
