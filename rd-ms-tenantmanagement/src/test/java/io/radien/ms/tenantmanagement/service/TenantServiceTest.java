@@ -589,11 +589,11 @@ public class TenantServiceTest {
 
         tenant.setName("test");
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":102, \"key\":\"error.tenant.field.not.informed\", \"message\":\"Tenant key was not informed.\"}", e.getMessage());
+        assertEquals("{\"code\":102, \"key\":\"error.tenant.field.not.informed\", \"message\":\"Tenant tenantKey was not informed.\"}", e.getMessage());
 
         tenant.setTenantKey("key-1");
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":102, \"key\":\"error.tenant.field.not.informed\", \"message\":\"Tenant type was not informed.\"}", e.getMessage());
+        assertEquals("{\"code\":102, \"key\":\"error.tenant.field.not.informed\", \"message\":\"Tenant tenantType was not informed.\"}", e.getMessage());
 
         tenant.setTenantType(TenantType.CLIENT_TENANT);
         tenant.setTenantEnd(LocalDate.now().minus(3, ChronoUnit.MONTHS));
