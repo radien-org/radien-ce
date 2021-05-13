@@ -23,6 +23,7 @@ import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.TenantRole;
+import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,13 +303,16 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @return true if exists, otherwise false
      */
     protected boolean hasPermissionsAssociated(Long tenantRoleId, EntityManager em) {
-        String query = "Select count(trp) From TenantRolePermission trp " +
-                "where trp.tenantRoleId = :pTenantRoleId";
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRolePermission> root = sc.from(TenantRolePermission.class);
 
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pTenantRoleId", tenantRoleId);
+        sc.select(cb.count(root));
 
-        return typedQuery.getSingleResult() > 0;
+        sc.where(cb.equal(root.get("tenantRoleId"),tenantRoleId));
+        Long count = em.createQuery(sc).getSingleResult();
+
+        return count > 0;
     }
 
     /**
