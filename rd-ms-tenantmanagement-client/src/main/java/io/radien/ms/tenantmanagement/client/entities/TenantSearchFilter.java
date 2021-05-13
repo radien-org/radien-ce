@@ -47,12 +47,12 @@ public class TenantSearchFilter implements SystemTenantSearchFilter {
     }
 
     @Override
-    public SystemTenantType getType() {
+    public SystemTenantType getTenantType() {
         return tenantType;
     }
 
     @Override
-    public void setType(SystemTenantType tenantType) {
+    public void setTenantType(SystemTenantType tenantType) {
         this.tenantType = tenantType;
     }
 

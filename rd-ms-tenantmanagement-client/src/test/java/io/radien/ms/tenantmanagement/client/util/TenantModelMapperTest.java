@@ -37,8 +37,8 @@ public class TenantModelMapperTest {
     public void testMapInputStream() throws ParseException {
         String example = "{\n" +
                 "\"name\": \"a\",\n" +
-                "\"key\": \"key\",\n" +
-                "\"type\": \"root\",\n" +
+                "\"tentKey\": \"key\",\n" +
+                "\"tenantType\": \"root\",\n" +
                 "\"start\": \"2021-01-29\",\n" +
                 "\"end\": \"2021-01-29\"\n" +
                 "}";
@@ -49,12 +49,12 @@ public class TenantModelMapperTest {
 
     @Test
     public void testMapJsonObject() {
-        Tenant tenant = TenantFactory.create("a", "key", TenantType.ROOT_TENANT, LocalDate.now(), null,
+        Tenant tenant = TenantFactory.create("a", "tenantKey", TenantType.ROOT_TENANT, LocalDate.now(), null,
                 null, null, null, null, null, null, null, null, 1L);
         JsonObject jsonObject = TenantModelMapper.map(tenant);
 
         assertEquals(tenant.getName(),jsonObject.getString("name"));
-        assertEquals(tenant.getStart().toString(),jsonObject.getString("start"));
+        assertEquals(tenant.getTenantStart().toString(),jsonObject.getString("tenantStart"));
     }
 
     @Test
@@ -64,10 +64,10 @@ public class TenantModelMapperTest {
                 "\"results\": [\n" +
                 "{\n" +
                 "\"name\": \"a\",\n" +
-                "\"key\": \"key\",\n" +
-                "\"type\": \"root\",\n" +
-                "\"start\": \"2021-01-29\",\n" +
-                "\"end\": \"2021-01-29\"\n" +
+                "\"tenantKey\": \"key\",\n" +
+                "\"tenantType\": \"root\",\n" +
+                "\"tenantStart\": \"2021-01-29\",\n" +
+                "\"tenantEnd\": \"2021-01-29\"\n" +
                 "}\n" +
                 "],\n" +
                 "\"totalPages\": 1,\n" +
@@ -87,8 +87,8 @@ public class TenantModelMapperTest {
                 "\"results\": [\n" +
                 "{\n" +
                 "\"name\": \"a\",\n" +
-                "\"key\": \"key\",\n" +
-                "\"type\": \"root\",\n" +
+                "\"tenantKey\": \"key\",\n" +
+                "\"tenantType\": \"root\",\n" +
                 "\"createDate\": \"a\",\n" +
                 "\"start\": \"2021-01-29\",\n" +
                 "\"end\": \"2021-01-29\"\n" +

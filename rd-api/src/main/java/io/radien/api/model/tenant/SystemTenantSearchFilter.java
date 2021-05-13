@@ -23,8 +23,8 @@ public interface SystemTenantSearchFilter {
     public String getName();
     public void setName(String name);
 
-    public SystemTenantType getType();
-    public void setType(SystemTenantType type);
+    public SystemTenantType getTenantType();
+    public void setTenantType(SystemTenantType tenantType);
 
     public boolean isExact();
     public void setExact(boolean exact);

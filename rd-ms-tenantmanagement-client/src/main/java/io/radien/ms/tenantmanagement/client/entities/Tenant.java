@@ -28,10 +28,10 @@ public class Tenant extends AbstractModel implements SystemTenant {
 
     private Long id;
     private String name;
-    private String key;
-    private TenantType type;
-    private LocalDate start;
-    private LocalDate end;
+    private String tenantKey;
+    private TenantType tenantType;
+    private LocalDate tenantStart;
+    private LocalDate tenantEnd;
 
     private String clientAddress;
     private String clientZipCode;
@@ -50,10 +50,10 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * Single and independent field for tenant constructor
      * @param id to be used
      * @param name of the tenant
-     * @param key value of the tenant
-     * @param type of the tenant
-     * @param start date of the tenant
-     * @param end date of the tenant
+     * @param tenantKey value of the tenant
+     * @param tenantType of the tenant
+     * @param tenantStart date of the tenant
+     * @param tenantEnd date of the tenant
      * @param clientAddress in case of type being a client tenant client address
      * @param clientZipCode in case of type being a client tenant client address zip code
      * @param clientCity in case of type being a client tenant client city
@@ -63,18 +63,18 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @param parentId tenant id to whom this tenant is bellow
      * @param clientId tenant id of the client tenant this tenant belongs to
      */
-    public Tenant(Long id, String name, String key, TenantType type, LocalDate start, LocalDate end,
+    public Tenant(Long id, String name, String tenantKey, TenantType tenantType, LocalDate tenantStart, LocalDate tenantEnd,
                     String clientAddress, String clientZipCode, String clientCity, String clientCountry,
                   Long clientPhoneNumber, String clientEmail, Long parentId, Long clientId) {
         this.id = id;
         this.name = name;
-        this.key = key;
-        this.type = type;
-        this.start = start;
-        this.end = end;
+        this.tenantKey = tenantKey;
+        this.tenantType = tenantType;
+        this.tenantStart = tenantStart;
+        this.tenantEnd = tenantEnd;
         this.parentId = parentId;
 
-        isClientTenantWithMultipleFields(type, clientAddress, clientZipCode, clientCity, clientCountry,
+        isClientTenantWithMultipleFields(tenantType, clientAddress, clientZipCode, clientCity, clientCountry,
                 clientPhoneNumber, clientEmail, clientId);
     }
 
@@ -85,10 +85,10 @@ public class Tenant extends AbstractModel implements SystemTenant {
     public Tenant(Tenant tenant) {
         this.id = tenant.getId();
         this.name = tenant.getName();
-        this.key = tenant.getKey();
-        this.type = tenant.getType();
-        this.start = tenant.getStart();
-        this.end = tenant.getEnd();
+        this.tenantKey = tenant.getTenantKey();
+        this.tenantType = tenant.getTenantType();
+        this.tenantStart = tenant.getTenantStart();
+        this.tenantEnd = tenant.getTenantEnd();
         this.parentId = tenant.getParentId();
 
         isClientTenant(tenant);
@@ -97,7 +97,7 @@ public class Tenant extends AbstractModel implements SystemTenant {
     /**
      * Manager for constructing tenants, will validate the type of the tenant and give the correct predefined values
      * to predefined fields
-     * @param type of the tenant
+     * @param tenantType of the tenant
      * @param clientAddress in case of type being a client tenant client address
      * @param clientZipCode in case of type being a client tenant client address zip code
      * @param clientCity in case of type being a client tenant client city
@@ -106,9 +106,9 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @param clientEmail in case of type being a client tenant client email address
      * @param clientId tenant id of the client tenant this tenant belongs to
      */
-    private void isClientTenantWithMultipleFields(TenantType type, String clientAddress, String clientZipCode, String clientCity, String clientCountry,
+    private void isClientTenantWithMultipleFields(TenantType tenantType, String clientAddress, String clientZipCode, String clientCity, String clientCountry,
                                                   Long clientPhoneNumber, String clientEmail, Long clientId) {
-        if(type != null && type.equals(TenantType.CLIENT_TENANT)) {
+        if(tenantType != null && tenantType.equals(TenantType.CLIENT_TENANT)) {
             this.clientAddress = clientAddress;
             this.clientZipCode = clientZipCode;
             this.clientCity = clientCity;
@@ -133,7 +133,7 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @param tenant information to be created
      */
     private void isClientTenant(Tenant tenant) {
-        if(type != null && type.equals(TenantType.CLIENT_TENANT)) {
+        if(tenantType != null && tenantType.equals(TenantType.CLIENT_TENANT)) {
             this.clientAddress = tenant.getClientAddress();
             this.clientZipCode = tenant.getClientZipCode();
             this.clientCity = tenant.getClientCity();
@@ -193,17 +193,17 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @return key
      */
     @Override
-    public String getKey() {
-        return key;
+    public String getTenantKey() {
+        return tenantKey;
     }
 
     /**
      * Setter for the tenant key
-     * @param key to be set
+     * @param tenantKey to be set
      */
     @Override
-    public void setKey(String key) {
-        this.key = key;
+    public void setTenantKey(String tenantKey) {
+        this.tenantKey = tenantKey;
     }
 
     /**
@@ -211,25 +211,25 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @return type
      */
     @Override
-    public TenantType getType() {
-        return type;
+    public TenantType getTenantType() {
+        return tenantType;
     }
 
     /**
      * Setter for the tenant type
-     * @param type to be set
+     * @param tenantType to be set
      */
     @Override
-    public void setType(SystemTenantType type) {
-        this.setType((TenantType) type);
+    public void setTenantType(SystemTenantType tenantType) {
+        this.setTenantType((TenantType) tenantType);
     }
 
     /**
      * Setter for the tenant type
-     * @param type to be set
+     * @param tenantType to be set
      */
-    public void setType(TenantType type) {
-        this.type = type;
+    public void setTenantType(TenantType tenantType) {
+        this.tenantType = tenantType;
     }
 
     /**
@@ -237,17 +237,17 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @return start date
      */
     @Override
-    public LocalDate getStart() {
-        return start;
+    public LocalDate getTenantStart() {
+        return tenantStart;
     }
 
     /**
      * Setter for the tenant start date
-     * @param start date to be set
+     * @param tenantStart date to be set
      */
     @Override
-    public void setStart(LocalDate start) {
-        this.start = start;
+    public void setTenantStart(LocalDate tenantStart) {
+        this.tenantStart = tenantStart;
     }
 
     /**
@@ -255,17 +255,17 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @return end date
      */
     @Override
-    public LocalDate getEnd() {
-        return end;
+    public LocalDate getTenantEnd() {
+        return tenantEnd;
     }
 
     /**
      * Setter for the tenant end date
-     * @param end date to be set
+     * @param tenantEnd date to be set
      */
     @Override
-    public void setEnd(LocalDate end) {
-        this.end = end;
+    public void setTenantEnd(LocalDate tenantEnd) {
+        this.tenantEnd = tenantEnd;
     }
 
     /**

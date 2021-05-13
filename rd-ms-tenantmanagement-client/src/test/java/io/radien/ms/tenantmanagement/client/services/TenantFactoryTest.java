@@ -17,7 +17,6 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
-import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -39,10 +38,10 @@ public class TenantFactoryTest extends TestCase {
     public TenantFactoryTest() {
         tenant.setName("nameValue");
         tenant.setCreateUser(2L);
-        tenant.setKey("key");
-        tenant.setType(TenantType.ROOT_TENANT);
-        tenant.setStart(null);
-        tenant.setEnd(null);
+        tenant.setTenantKey("tenantKey");
+        tenant.setTenantType(TenantType.ROOT_TENANT);
+        tenant.setTenantStart(null);
+        tenant.setTenantEnd(null);
     }
 
     @Test
@@ -59,10 +58,10 @@ public class TenantFactoryTest extends TestCase {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "nameValue");
-        builder.add("key", "key");
-        builder.add("type", TenantType.ROOT_TENANT.getName());
-        builder.addNull("start");
-        builder.addNull("end");
+        builder.add("tenantKey", "tenantKey");
+        builder.add("tenantType", TenantType.ROOT_TENANT.getName());
+        builder.addNull("tenantStart");
+        builder.addNull("tenantEnd");
         builder.addNull("clientAddress");
         builder.addNull("clientZipCode");
         builder.addNull("clientCity");
@@ -88,10 +87,10 @@ public class TenantFactoryTest extends TestCase {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "nameValue");
-        builder.add("key", "key");
-        builder.add("type", "TEST");
-        builder.addNull("start");
-        builder.addNull("end");
+        builder.add("tenantKey", "tenantkey");
+        builder.add("tenantType", "TEST");
+        builder.addNull("tenantStart");
+        builder.addNull("tenantEnd");
         builder.addNull("clientAddress");
         builder.addNull("clientZipCode");
         builder.addNull("clientCity");
@@ -121,10 +120,10 @@ public class TenantFactoryTest extends TestCase {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "nameValue");
-        builder.add("key", "key");
-        builder.add("type", TenantType.ROOT_TENANT.getName());
-        builder.add("start", "2020-03-03");
-        builder.add("end", "2021-03-03");
+        builder.add("tenantKey", "tenantKey");
+        builder.add("tenantType", TenantType.ROOT_TENANT.getName());
+        builder.add("tenantStart", "2020-03-03");
+        builder.add("tenantEnd", "2021-03-03");
         builder.addNull("clientAddress");
         builder.addNull("clientZipCode");
         builder.addNull("clientCity");
@@ -149,7 +148,7 @@ public class TenantFactoryTest extends TestCase {
     public void testConvertList() throws ParseException {
         List<Tenant> listOfCreatedTenants = new ArrayList<>();
 
-        Tenant tenant = TenantFactory.create("name", "key", TenantType.ROOT_TENANT,
+        Tenant tenant = TenantFactory.create("name", "tenantKey", TenantType.ROOT_TENANT,
                 null, null, null, null, null, null, null,
                 null, null, null, null);
 
@@ -171,10 +170,10 @@ public class TenantFactoryTest extends TestCase {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "nameValue");
-        builder.add("key", "key");
-        builder.add("type", TenantType.ROOT_TENANT.getName());
-        builder.addNull("start");
-        builder.addNull("end");
+        builder.add("tenantKey", "tenantKey");
+        builder.add("tenantType", TenantType.ROOT_TENANT.getName());
+        builder.addNull("tenantStart");
+        builder.addNull("tenantEnd");
         builder.addNull("clientAddress");
         builder.addNull("clientZipCode");
         builder.addNull("clientCity");
@@ -198,7 +197,7 @@ public class TenantFactoryTest extends TestCase {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "nameValue");
-        builder.add("key", "key");
+        builder.add("tenantKey", "tenantKey");
 
         json = builder.build();
 
@@ -211,8 +210,8 @@ public class TenantFactoryTest extends TestCase {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.addNull("id");
         builder.add("name", "nameValue");
-        builder.add("key", "key");
-        builder.add("type", "test");
+        builder.add("tenantKey", "tenantKey");
+        builder.add("tenantType", "test");
 
         json = builder.build();
 

@@ -45,10 +45,10 @@ public class TenantMessageBodyWriterTest extends TestCase {
     public void testWriteTo() throws IOException {
         String result = "{\"id\":null," +
                 "\"name\":\"name\"," +
-                "\"key\":\"key\"," +
-                "\"type\":\"ROOT\"," +
-                "\"start\":null," +
-                "\"end\":null," +
+                "\"tenantKey\":\"tenantKey\"," +
+                "\"tenantType\":\"ROOT\"," +
+                "\"tenantStart\":null," +
+                "\"tenantEnd\":null," +
                 "\"clientAddress\":null," +
                 "\"clientZipCode\":null," +
                 "\"clientCity\":null," +
@@ -60,7 +60,7 @@ public class TenantMessageBodyWriterTest extends TestCase {
                 "\"createUser\":null," +
                 "\"lastUpdateUser\":null}";
         TenantMessageBodyWriter target = new TenantMessageBodyWriter();
-        Tenant tenant = TenantFactory.create("name","key", TenantType.ROOT_TENANT,null, null, null, null, null, null, null, null, null, null, null);
+        Tenant tenant = TenantFactory.create("name","tenantKey", TenantType.ROOT_TENANT,null, null, null, null, null, null, null, null, null, null, null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(tenant,null,null,null, null,null, baos);
 

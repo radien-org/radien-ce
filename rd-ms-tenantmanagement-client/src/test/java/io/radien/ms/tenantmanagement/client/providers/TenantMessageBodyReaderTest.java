@@ -39,20 +39,20 @@ public class TenantMessageBodyReaderTest extends TestCase {
         String result = "{\"" +
                 "id\":null," +
                 "\"name\":\"name\"," +
-                "\"key\":\"key\"," +
+                "\"tenantKey\":\"tenantKey\"," +
                 "\"createUser\":null," +
                 "\"lastUpdateUser\":null," +
-                "\"type\":\"root\"" +
+                "\"tenantType\":\"root\"" +
                 "}";
         TenantMessageBodyReader target = new TenantMessageBodyReader();
         InputStream in = new ByteArrayInputStream(result.getBytes());
         Tenant tenant = target.readFrom(null,null,null,null,null, in);
         assertNull(tenant.getId());
         assertEquals("name",tenant.getName());
-        assertEquals("key",tenant.getKey());
+        assertEquals("tenantKey",tenant.getTenantKey());
         assertNull(tenant.getCreateUser());
         assertNull(tenant.getLastUpdateUser());
-        assertEquals(TenantType.ROOT_TENANT,tenant.getType());
+        assertEquals(TenantType.ROOT_TENANT,tenant.getTenantType());
     }
 
     @Test
@@ -60,11 +60,11 @@ public class TenantMessageBodyReaderTest extends TestCase {
         String result = "{\"" +
                 "id\":null," +
                 "\"name\":\"name\"," +
-                "\"key\":\"key\"," +
+                "\"tenantKey\":\"tenantKey\"," +
                 "\"createDate\": \"a\",\n" +
                 "\"createUser\":null," +
                 "\"lastUpdateUser\":null," +
-                "\"type\":\"root\"" +
+                "\"tenantType\":\"root\"" +
                 "}";
         TenantMessageBodyReader target = new TenantMessageBodyReader();
         InputStream in = new ByteArrayInputStream(result.getBytes());

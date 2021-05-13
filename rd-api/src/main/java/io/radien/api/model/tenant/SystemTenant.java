@@ -28,20 +28,20 @@ import java.time.LocalDate;
  */
 public interface SystemTenant extends Model {
 
-	public String getKey();
-	public void setKey(String key);
+	public String getTenantKey();
+	public void setTenantKey(String tenantKey);
 
 	public String getName();
 	public void setName(String name);
 
-	public LocalDate getStart();
-	public void setStart(LocalDate start);
+	public LocalDate getTenantStart();
+	public void setTenantStart(LocalDate tenantStart);
 
-	public LocalDate getEnd();
-	public void setEnd(LocalDate end);
+	public LocalDate getTenantEnd();
+	public void setTenantEnd(LocalDate tenantEnd);
 
-	public SystemTenantType getType();
-	public void setType(SystemTenantType type);
+	public SystemTenantType getTenantType();
+	public void setTenantType(SystemTenantType tenantType);
 
 	public String getClientAddress();
 	public void setClientAddress(String clientAddress);

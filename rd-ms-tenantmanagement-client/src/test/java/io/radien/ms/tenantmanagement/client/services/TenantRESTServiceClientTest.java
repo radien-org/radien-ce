@@ -71,8 +71,8 @@ public class TenantRESTServiceClientTest {
         MockitoAnnotations.initMocks(this);
 
         dummyTenant.setId(2L);
-        dummyTenant.setType(TenantType.ROOT_TENANT);
-        dummyTenant.setKey("key");
+        dummyTenant.setTenantType(TenantType.ROOT_TENANT);
+        dummyTenant.setTenantKey("tenantKey");
         dummyTenant.setName("name");
     }
 

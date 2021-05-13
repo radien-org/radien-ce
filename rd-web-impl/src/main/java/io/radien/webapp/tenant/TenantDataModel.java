@@ -24,7 +24,6 @@ import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
-import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -35,7 +34,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.util.List;
 
 /**
@@ -108,7 +106,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     }
 
     private void validateMandatoryFields(SystemTenant r) throws Exception {
-        if(r != null && r.getType().equals(TenantType.CLIENT_TENANT)) {
+        if(r != null && r.getTenantType().equals(TenantType.CLIENT_TENANT)) {
             if(r.getClientAddress() == null || r.getClientAddress().equals("")) {
                 sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_address_is_mandatory"));
             }
