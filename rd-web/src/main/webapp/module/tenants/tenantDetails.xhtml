@@ -84,11 +84,11 @@
             </b:panel>
 
             <b:commandButton value="#{msg.save}"
-                             tooltip="Save changes!"
+                             tooltip="#{msg.saveChanges}"
                              iconAwesome="fa-save"
                              action="#{tenantDataModel.edit(tenantDataModel.selectedTenant)}"/>
             <b:commandButton value="#{msg.rd_home_page}"
-                             tooltip="Return to tenant List!"
+                             tooltip="#{msg.returnToRecordList}"
                              iconAwesome="fa-home"
                              action="#{tenantDataModel.returnHome}"/>
         </h:form>
