@@ -30,14 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository (Service access implementation) for managing Tenant Role entities
@@ -403,44 +402,6 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     }
 
     /**
-     * Retrieve Tenant Role Ids related to a user identifier (See TenantRoleUser entity)
-     * @param userId user identifier
-     * @param em Entity manager to be reused
-     * @return Collections containing ids
-     */
-    protected List<Long> getTenantRoleIdsFromUser(Long userId, EntityManager em) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRoleUser> tenantRoleUserRoot =
-                criteriaQuery.from(TenantRoleUser.class);
-
-        criteriaQuery.select(tenantRoleUserRoot.get("tenantRoleId"));
-        criteriaQuery.where(criteriaBuilder.equal(tenantRoleUserRoot.get("userId"), userId));
-
-        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
-        return typedQuery.getResultList();
-    }
-
-    /**
-     * Retrieve Tenant Role Ids related to a permission identifier (See TenantRolePermission entity)
-     * @param permissionId permission identifier
-     * @param em Entity manager to be reused
-     * @return Collections containing ids
-     */
-    protected List<Long> getTenantRoleIdsFromPermission(Long permissionId, EntityManager em) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRolePermission> tenantRolePermissionRoot =
-                criteriaQuery.from(TenantRolePermission.class);
-
-        criteriaQuery.select(tenantRolePermissionRoot.get("tenantRoleId")).
-                where(criteriaBuilder.equal(tenantRolePermissionRoot.get("id"), permissionId));
-
-        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
-        return typedQuery.getResultList();
-    }
-
-    /**
      * Check if a User has some Role (Optionally for a specific Tenant)
      * @param userId User identifier
      * @param roleNames Role name identifier
@@ -523,22 +484,11 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @return TenantRole id
      */
     @Override
-    public Long getTenantRoleId(Long tenant, Long role) {
-        return getTenantRoleId(tenant, role, getEntityManager());
-    }
-
-    /**
-     * Retrieves strictly the TenantRole id basing on tenant and role
-     * @param tenant tenant identifier
-     * @param  role role identifier
-     * @param em reused entity manager
-     * @return TenantRole id
-     */
-    protected Long getTenantRoleId(Long tenant, Long role, EntityManager em) {
+    public Optional<Long> getTenantRoleId(Long tenant, Long role) {
         if (tenant == null || role == null) {
             throw new IllegalArgumentException("Role and Tenant are mandatory");
         }
-
+        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
@@ -550,13 +500,8 @@ public class TenantRoleService implements TenantRoleServiceAccess {
                 );
 
         TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
-        try {
-            return typedQuery.getSingleResult();
-        }
-        catch (NoResultException e) {
-            log.error("No TenantRole existent tenant {} and role {}", tenant, role);
-            return null;
-        }
+        List<Long> list = typedQuery.getResultList();
+        return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
     }
 
     public EntityManager getEntityManager() {

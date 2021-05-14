@@ -29,6 +29,7 @@ import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -282,10 +283,11 @@ public class TenantRolePermissionServiceTest {
         Long expectedId = sru.getId();
         Assertions.assertNotNull(expectedId);
 
-        Long id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 101L);
-        Assertions.assertEquals(expectedId, id);
+        Optional<Long> id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 101L);
+        Assertions.assertTrue(id.isPresent());
+        Assertions.assertEquals(expectedId, id.get());
 
         id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 202L);
-        Assertions.assertNull(id);
+        Assertions.assertFalse(id.isPresent());
     }
 }

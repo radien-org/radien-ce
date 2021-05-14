@@ -41,6 +41,7 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -426,11 +427,12 @@ public class TenantRoleServiceTest {
         Long expectedId = str.getId();
         Assertions.assertNotNull(expectedId);
 
-        Long id = this.tenantRoleServiceAccess.getTenantRoleId(10000L, 10001L);
-        Assertions.assertEquals(expectedId, id);
+        Optional<Long> id = this.tenantRoleServiceAccess.getTenantRoleId(10000L, 10001L);
+        Assertions.assertTrue(id.isPresent());
+        Assertions.assertEquals(expectedId, id.get());
 
         id = this.tenantRoleServiceAccess.getTenantRoleId(101010L, 202L);
-        Assertions.assertNull(id);
+        Assertions.assertFalse(id.isPresent());
     }
 
     /**

@@ -25,13 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository (Service access implementation) for managing Tenant Role Permission entities
@@ -220,7 +219,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @return TenantRolePermission id
      */
     @Override
-    public Long getTenantRolePermissionId(Long tenantRole, Long permission) {
+    public Optional<Long> getTenantRolePermissionId(Long tenantRole, Long permission) {
         if (tenantRole == null || permission == null) {
             throw new IllegalArgumentException("TenantRole and permission are mandatory");
         }
@@ -237,15 +236,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         );
 
         TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
-
-        try {
-            return typedQuery.getSingleResult();
-        }
-        catch (NoResultException e) {
-            log.error("No TenantRolePermission existent for tenantRole {} and user {}", tenantRole, permission);
-            return null;
-        }
-        
-        
+        List<Long> list = typedQuery.getResultList();
+        return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
     }
 }

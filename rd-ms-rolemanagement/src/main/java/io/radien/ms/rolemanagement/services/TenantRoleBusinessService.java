@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.swing.text.html.Option;
 import java.io.Serializable;
 import java.util.*;
 
@@ -238,15 +239,15 @@ public class TenantRoleBusinessService implements Serializable {
     public void assignUser(Long tenant, Long role, Long user) throws TenantRoleException,
             UniquenessConstraintException, SystemException {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
-        if (tenantRoleId == null) {
+        Optional<Long> tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
+        if (!tenantRoleId.isPresent()) {
             throwInformingInconsistencyFound("There is no association between tenant %d and role %d", tenant, role);
         }
-        if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user, tenantRoleId)) {
+        if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user, tenantRoleId.get())) {
             throwInformingInconsistencyFound("User is already associated with tenant %d and role %d", tenant, role);
         }
         TenantRoleUser tru = new TenantRoleUser();
-        tru.setTenantRoleId(tenantRoleId);
+        tru.setTenantRoleId(tenantRoleId.get());
         tru.setUserId(user);
         tru.setCreateDate(new Date());
         this.tenantRoleUserServiceAccess.create(tru);
@@ -261,15 +262,15 @@ public class TenantRoleBusinessService implements Serializable {
      */
     public void unassignUser(Long tenant, Long role, Long user) throws TenantRoleException {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
-        if (tenantRoleId == null) {
+        Optional<Long> tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
+        if (!tenantRoleId.isPresent()) {
             throwInformingInconsistencyFound("There is no association between tenant %d and role %d", tenant, role);
         }
-        Long tenantRoleUserId = this.tenantRoleUserServiceAccess.getTenantRoleUserId(tenantRoleId, user);
-        if (tenantRoleUserId == null) {
+        Optional<Long> tenantRoleUserId = this.tenantRoleUserServiceAccess.getTenantRoleUserId(tenantRoleId.get(), user);
+        if (!tenantRoleUserId.isPresent()) {
             throwInformingInconsistencyFound("No association found for user %d", user);
         }
-        this.tenantRoleUserServiceAccess.delete(tenantRoleUserId);
+        this.tenantRoleUserServiceAccess.delete(tenantRoleUserId.get());
     }
 
     /**
@@ -287,15 +288,15 @@ public class TenantRoleBusinessService implements Serializable {
 
         checkIfMandatoryParametersWereInformed(tenant, role, permission);
         checkIfParamsExists(null, null, permission);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
-        if (tenantRoleId == null) {
+        Optional<Long> tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
+        if (!tenantRoleId.isPresent()) {
             throwInformingInconsistencyFound("There is no association between tenant %d and role %d", tenant, role);
         }
-        if (this.tenantRolePermissionService.isAssociationAlreadyExistent(permission, tenantRoleId)) {
+        if (this.tenantRolePermissionService.isAssociationAlreadyExistent(permission, tenantRoleId.get())) {
             throwInformingInconsistencyFound("Permission is already associated with tenant %d and role %d", tenant, role);
         }
         TenantRolePermission trp = new TenantRolePermission();
-        trp.setTenantRoleId(tenantRoleId);
+        trp.setTenantRoleId(tenantRoleId.get());
         trp.setPermissionId(permission);
         trp.setCreateDate(new Date());
         this.tenantRolePermissionService.create(trp);
@@ -310,15 +311,15 @@ public class TenantRoleBusinessService implements Serializable {
      */
     public void unassignPermission(Long tenant, Long role, Long permission) throws TenantRoleException{
         checkIfMandatoryParametersWereInformed(tenant, role, permission);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
-        if (tenantRoleId == null) {
+        Optional<Long> tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role);
+        if (!tenantRoleId.isPresent()) {
             throwInformingInconsistencyFound("There is no association between tenant %d and role %d", tenant, role);
         }
-        Long tenantRolePermissionId = this.tenantRolePermissionService.getTenantRolePermissionId(tenantRoleId, permission);
-        if (tenantRolePermissionId == null) {
+        Optional<Long> tenantRolePermissionId = this.tenantRolePermissionService.getTenantRolePermissionId(tenantRoleId.get(), permission);
+        if (!tenantRolePermissionId.isPresent()) {
             throwInformingInconsistencyFound("No association found for permission %d", permission);
         }
-        this.tenantRolePermissionService.delete(tenantRolePermissionId);
+        this.tenantRolePermissionService.delete(tenantRolePermissionId.get());
     }
 
     /**

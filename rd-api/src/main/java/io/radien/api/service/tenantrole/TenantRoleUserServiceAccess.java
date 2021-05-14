@@ -22,6 +22,7 @@ import io.radien.api.service.ServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Describes a contract for a Repository responsible
@@ -80,5 +81,5 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param user identifier
      * @return TenantRoleUser id
      */
-    Long getTenantRoleUserId(Long tenantRole, Long user);
+    Optional<Long> getTenantRoleUserId(Long tenantRole, Long user);
 }

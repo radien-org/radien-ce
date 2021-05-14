@@ -34,6 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository (Service access implementation) for managing Tenant Role User entities
@@ -273,7 +274,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * @return TenantRoleUser id
      */
     @Override
-    public Long getTenantRoleUserId(Long tenantRole, Long user) {
+    public Optional<Long> getTenantRoleUserId(Long tenantRole, Long user) {
         if (tenantRole == null || user == null) {
             throw new IllegalArgumentException("TenantRole and user are mandatory");
         }
@@ -289,13 +290,8 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
                         cb.equal(root.get("tenantRoleId"),tenantRole)
                 );
 
-        try {
-            return em.createQuery(sc).getSingleResult();
-        }
-        catch (NoResultException e) {
-            log.error("No TenantRoleUser existent tenantRole {} and user {}", tenantRole, user);
-            return null;
-        }
+        List<Long> list = em.createQuery(sc).getResultList();
+        return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
     }
 
     public EntityManager getEntityManager() {

@@ -19,13 +19,11 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.NotFoundException;
-import io.radien.exception.TenantException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Describes a contract for a Repository responsible
@@ -120,5 +118,5 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param  role role identifier
      * @return TenantRole id
      */
-    Long getTenantRoleId(Long tenant, Long role);
+    Optional<Long> getTenantRoleId(Long tenant, Long role);
 }
