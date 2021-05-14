@@ -8,20 +8,21 @@
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
 
     <f:metadata>
-        <f:viewAction action="#{actionsDataModel.onload}"/>
+        <f:viewAction action="#{actionDataModel.onload}"/>
     </f:metadata>
 
     <ui:define name="content" bootsFacesDecorator="true">
         <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
-        <h:form id="actionsManagementTableDiv" styleClass="tableContainer">
+        <h:form id="actionManagementTableDiv" styleClass="tableContainer">
             <b:row>
                 <h:panelGroup layout="block" styleClass="headerInformation">
                     <h1><h:outputText value="#{msg.rd_actions} "/></h1>
                     <hr />
                 </h:panelGroup>
             </b:row>
-            <p:dataTable id="dataTable" value="#{actionsDataModel.lazyModel}"
-                         var="actions"
+
+            <p:dataTable id="dataTable" value="#{actionDataModel.lazyModel}"
+                         var="action"
                          paginator="true" rows="10"
                          lazy="true"
                          paginatorPosition="bottom"
@@ -30,51 +31,57 @@
                          rowsPerPageTemplate="5,10,20,50"
                          styleClass = "tableDesign"
                          selectionMode="single"
-                         selection="#{actionsDataModel.selectedActions}">
+                         selection="#{actionDataModel.selectedAction}">
 
-                <p:ajax event="rowSelect" listener="#{actionsDataModel.onRowSelect}" update="@form:actionsManagementTableDiv"
+                <p:ajax event="rowSelect" listener="#{actionDataModel.onRowSelect}" update="@form:actionManagementTableDiv"
                         oncomplete="$('.formValidationModalClass').modal('show')"/>
-                <p:column headerText="Id" sortBy="#{actions.id}">
-                    <h:outputText value="#{actions.id}"/>
+                <p:column headerText="#{msg.id}" sortBy="#{action.id}">
+                    <h:outputText value="#{action.id}"/>
                 </p:column>
 
-                <p:column headerText="Name">
-                    <h:outputText value="#{actions.name}"/>
+                <p:column headerText="#{msg.name}">
+                    <h:outputText value="#{action.name}"/>
                 </p:column>
             </p:dataTable>
 
-            <b:modal title="Selected Actions Details" styleClass="formValidationModalClass"
-                     closable="false" closeOnEscape="true" rendered="#{not empty actionsDataModel.selectedActions}" auto-update="true">
-                <b:dataTable value="#{actionsDataModel.selectedActions}"
-                             var="selectedActions"
-                             widgetVar="tableWidgetVar"
-                             responsive="true"
-                             paginated="false"
-                             searching="false"
-                             scroll-horizontally="true">
-                    <b:dataTableColumn value="#{selectedActions.id}" />
-                    <b:dataTableColumn value="#{selectedActions.name}" />
-                </b:dataTable>
+            <b:button id="delete-action-button"
+                      onclick="$('.formValidationModalClassDelete').modal('show')"
+                      value="#{msg.delete}"
+                      icon="trash"
+                      update=":actionManagementTableDiv">
+            </b:button>
+
+            <b:modal id="modal"
+                     title="Confirmation"
+                     styleClass="formValidationModalClassDelete"
+                     closable="false"
+                     close-on-escape="false" backdrop="false"
+                     rendered="#{not empty actionDataModel.selectedAction}">
+                <p>Are you sure you want to delete the selected action?</p>
                 <f:facet name="footer">
-                    <b:button value="Close" dismiss="modal" />
+                    <b:commandButton value="No" dismiss="modal"/>
+                    <b:commandButton value="Yes" look="warning"
+                                     actionListener="#{actionDataModel.delete}"
+                                     oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
                 </f:facet>
             </b:modal>
-        </h:form>
 
-        <h:form id="actionsManagementButtons">
+            <b:commandButton value="#{msg.edit}"
+                             tooltip="Edit existent action information!"
+                             iconAwesome="fa-edit"
+                             action="#{actionDataModel.editRecords}"/>
             <b:commandButton id="refresh" value="Refresh Values"
                              ajax="false"
                              iconAwesome="fa-refresh"
                              icon-spin="true"
-                             iconAlign="right"
-                             tooltip="Refresh existent Actions data table!"
-                             actionListener="#{actionsDataModel.onload}"
-                             immediate="true" update="@form:actionsManagementTableDiv"
+                             tooltip="Refresh existent action data table!"
+                             actionListener="#{actionDataModel.onload}"
+                             immediate="true" update="@form:actionManagementTableDiv"
                              auto-update="true"/>
-
             <b:commandButton value="#{msg.rd_add_action}"
                              action="action"
-                             iconAwesome="fa-user"
+                             iconAwesome="fa-cube"
+                             tooltip="Create a new action!"
                              iconAlign="center"/>
         </h:form>
     </ui:define>

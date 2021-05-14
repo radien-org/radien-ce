@@ -1,46 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:b="http://bootsfaces.net/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                template="/WEB-INF/templates/tpl_oaf.xhtml">
-    <ui:define name="content">
-        <b:container>
-            <b:row>
-				<b:column offsetXs="2" colXs="8">
-                <h:panelGroup layout="block" styleClass="headerInformation">
-						<h1><h:outputText value="#{msg.rd_action} "/></h1>
-                    <hr />
-                </h:panelGroup>
-				</b:column>
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="actionManagementTableDiv" styleClass="tableContainer">
+			<b:row>
+
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_action} Creation"/></h1>
+					<hr />
+				</h:panelGroup>
 			</b:row>
 
-			<h:form>
-				<h:inputHidden id="id" value="#{actionManager.action.id}"/>
-				<b:row >
-					<b:column offsetXs="2" colXs="8">
-						<b:inputText id="actionName" value="#{actionManager.action.name}"
-									 required="true" requiredMessage="#{msg.rd_action_name_is_mandatory}"
-									 size="15" label="#{msg.nameUpperCase}"/>
-					</b:column>
-            </b:row>
-				<b:row>
-					<b:column offsetXs="2" colXs="8">
-						<b:buttonGroup>
-							<b:commandButton value="#{msg.save}"
-											 action="#{actionManager.save(actionManager.action)}"
-											 iconAwesome="fa-function"
-											 iconAlign="center"/>
-							<b:commandButton value="#{msg.returnButton}"
-											 action="actions"
-											 iconAwesome="fa-arrow-circle-left"
-											 immediate="true"
-											 iconAlign="center"/>
-						</b:buttonGroup>
-					</b:column>
-				</b:row>
-			</h:form>
-        </b:container>
-    </ui:define>
+			<b:column offsetXs="2" colXs="8">
+				<b:inputText id="actionName" value="#{actionDataModel.action.name}"
+							 required="true" requiredMessage="#{msg.rd_action_name_is_mandatory}"
+							 label="#{msg.name}"/>
+
+				<b:buttonGroup>
+					<b:commandButton value="#{msg.save}"
+									 action="#{actionDataModel.save(actionDataModel.action)}"
+									 iconAwesome="fa-function"
+									 iconAlign="center"/>
+
+					<b:commandButton value="#{msg.returnButton}"
+									 action="#{actionDataModel.returnHome}"
+									 iconAwesome="fa-arrow-circle-left"
+									 immediate="true"
+									 iconAlign="center"/>
+				</b:buttonGroup>
+			</b:column>
+		</h:form>
+	</ui:define>
 </ui:composition>

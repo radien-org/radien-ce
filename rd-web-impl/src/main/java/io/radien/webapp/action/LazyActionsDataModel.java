@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 public class LazyActionsDataModel extends LazyDataModel<SystemAction> {
 
-    private static final long serialVersionUID = -7412588857597749996L;
+    private static final long serialVersionUID = -2212982407608665459L;
     private ActionRESTServiceAccess service;
 
     private List<? extends SystemAction> datasource;
