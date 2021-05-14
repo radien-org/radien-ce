@@ -57,7 +57,7 @@
                      closable="false"
                      close-on-escape="false" backdrop="false"
                      rendered="#{not empty actionDataModel.selectedAction}">
-                <p>Are you sure you want to delete the selected action?</p>
+                <p>#{msg.deleteConfirmation}</p>
                 <f:facet name="footer">
                     <b:commandButton value="No" dismiss="modal"/>
                     <b:commandButton value="Yes" look="warning"
@@ -67,21 +67,21 @@
             </b:modal>
 
             <b:commandButton value="#{msg.edit}"
-                             tooltip="Edit existent action information!"
+                             tooltip="#{msg.editRecordInformation}"
                              iconAwesome="fa-edit"
                              action="#{actionDataModel.editRecords}"/>
             <b:commandButton id="refresh" value="Refresh Values"
                              ajax="false"
                              iconAwesome="fa-refresh"
                              icon-spin="true"
-                             tooltip="Refresh existent action data table!"
+                             tooltip="#{msg.refreshTooltip}"
                              actionListener="#{actionDataModel.onload}"
                              immediate="true" update="@form:actionManagementTableDiv"
                              auto-update="true"/>
             <b:commandButton value="#{msg.rd_add_action}"
                              action="action"
                              iconAwesome="fa-cube"
-                             tooltip="Create a new action!"
+                             tooltip="#{msg.create_new_record}"
                              iconAlign="center"/>
         </h:form>
     </ui:define>
