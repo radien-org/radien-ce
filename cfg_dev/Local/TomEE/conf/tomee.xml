@@ -10,8 +10,8 @@
 		definition =
 		ignoreDefaultValues = ${ignoreDefaultValues}
 		initialSize = ${initialSize}
-		jdbcDriver = ${jdbcDriver}
-		jdbcUrl = ${jdbcUrl}
+		jdbcDriver = ${HSQL_jdbcDriver}
+		jdbcUrl = ${HSQL_jdbcUrl}
 		jtaManaged = ${jtaManaged}
 		maxActive = ${maxActive}
 		maxIdle = ${maxIdle}
@@ -20,7 +20,7 @@
 		minEvictableIdleTime = ${minEvictableIdleTime}
 		minIdle = ${minIdle}
 		numTestsPerEvictionRun = ${numTestsPerEvictionRun}
-		password = ${password}
+		password =
 		passwordCipher = ${passwordCipher}
 		poolPreparedStatements = ${poolPreparedStatements}
 		serviceId =
@@ -28,7 +28,7 @@
 		testOnReturn = ${testOnReturn}
 		testWhileIdle = ${testWhileIdle}
 		timeBetweenEvictionRuns = ${timeBetweenEvictionRuns}
-		userName = ${userName}
-		validationQuery = ${validationQuery}
+		userName = ${HSQL_userName}
+		validationQuery = ${HSQL_validationQuery}
 	</Resource>
 </tomee>
