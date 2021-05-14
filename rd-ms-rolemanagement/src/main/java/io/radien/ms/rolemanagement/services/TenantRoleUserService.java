@@ -21,7 +21,6 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
-import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,7 +245,8 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
                         cb.equal(root.get("tenantRoleId"),tenantRoleId)
                 );
 
-        return em.createQuery(sc).getSingleResult() > 0;
+        List<Long> count = em.createQuery(sc).getResultList();
+        return !count.isEmpty() ? count.get(0) > 0 : false;
     }
 
     /**

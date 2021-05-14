@@ -21,6 +21,7 @@ import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,14 +181,17 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         if (tenantRoleId == null) {
             throw new IllegalArgumentException("Tenant Role Id is mandatory");
         }
-        String query = "Select count(trp) From TenantRolePermission trp " +
-                "where trp.permissionId = :pPermissionId and trp.tenantRoleId = :pTenantRoleId";
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRolePermission> root = sc.from(TenantRolePermission.class);
 
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pPermissionId", permissionId);
-        typedQuery.setParameter("pTenantRoleId", tenantRoleId);
-
-        return typedQuery.getSingleResult() > 0;
+        sc.select(cb.count(root)).
+                where(
+                        cb.equal(root.get("permissionId"),permissionId),
+                        cb.equal(root.get("tenantRoleId"),tenantRoleId)
+                );
+        List<Long> count = em.createQuery(sc).getResultList();
+        return !count.isEmpty() ? count.get(0) > 0 : false;
     }
 
     /**
