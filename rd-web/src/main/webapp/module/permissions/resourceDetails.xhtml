@@ -27,11 +27,11 @@
             </b:panel>
 
             <b:commandButton value="#{msg.save}"
-                             tooltip="Save changes!"
+                             tooltip="#{msg.saveChanges}"
                              iconAwesome="fa-save"
                              action="#{resourceDataModel.edit(resourceDataModel.selectedResource)}"/>
             <b:commandButton value="#{msg.rd_home_page}"
-                             tooltip="Return to resource List!"
+                             tooltip="#{msg.returnToRecordList}"
                              iconAwesome="fa-home"
                              action="#{resourceDataModel.returnHome}"/>
         </h:form>

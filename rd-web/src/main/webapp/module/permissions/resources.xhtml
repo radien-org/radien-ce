@@ -52,7 +52,7 @@
             </b:button>
 
             <b:modal id="modal"
-                     title="Confirmation"
+                     title="#{msg.confirmation}"
                      styleClass="formValidationModalClassDelete"
                      closable="false"
                      close-on-escape="false" backdrop="false"
@@ -67,7 +67,7 @@
             </b:modal>
 
             <b:commandButton value="#{msg.edit}"
-                            tooltip="Edit existent resource information!"
+                            tooltip="#{msg.editRecordInformation}"
                             iconAwesome="fa-edit"
                             action="#{resourceDataModel.editRecords}"/>
             <b:commandButton id="refresh" value="Refresh Values"
@@ -75,7 +75,7 @@
                              iconAwesome="fa-refresh"
                              icon-spin="true"
                              iconAlign="right"
-                             tooltip="Refresh existent Resources data table!"
+                             tooltip="#{msg.refreshTooltip}"
                              actionListener="#{resourceDataModel.onload}"
                              immediate="true" update="@form:resourcesManagementTableDiv"
                              auto-update="true"/>
