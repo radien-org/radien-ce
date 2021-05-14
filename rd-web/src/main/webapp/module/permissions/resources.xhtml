@@ -8,7 +8,7 @@
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
 
     <f:metadata>
-        <f:viewAction action="#{resourcesDataModel.onload}"/>
+        <f:viewAction action="#{resourceDataModel.onload}"/>
     </f:metadata>
 
     <ui:define name="content" bootsFacesDecorator="true">
@@ -20,7 +20,7 @@
                     <hr />
                 </h:panelGroup>
             </b:row>
-            <p:dataTable id="dataTable" value="#{resourcesDataModel.lazyModel}"
+            <p:dataTable id="dataTable" value="#{resourceDataModel.lazyModel}"
                          var="resources"
                          paginator="true" rows="10"
                          lazy="true"
@@ -30,9 +30,9 @@
                          rowsPerPageTemplate="5,10,20,50"
                          styleClass = "tableDesign"
                          selectionMode="single"
-                         selection="#{resourcesDataModel.selectedResources}">
+                         selection="#{resourceDataModel.selectedResource}">
 
-                <p:ajax event="rowSelect" listener="#{resourcesDataModel.onRowSelect}" update="@form:resourcesManagementTableDiv"
+                <p:ajax event="rowSelect" listener="#{resourceDataModel.onRowSelect}" update="@form:resourcesManagementTableDiv"
                         oncomplete="$('.formValidationModalClass').modal('show')"/>
                 <p:column headerText="Id" sortBy="#{resources.id}">
                     <h:outputText value="#{resources.id}"/>
@@ -42,46 +42,41 @@
                     <h:outputText value="#{resources.name}"/>
                 </p:column>
 
-                <p:column headerText="#{msg.editUpper}">
-                    <b:commandButton value="#{msg.edit}"
-                                     iconAwesome="fa-function"
-                                     iconAlign="center"
-                                     action="#{resourceManager.edit(resources)}"/>
-                </p:column>
             </p:dataTable>
 
-            <b:modal title="Selected Resources Details" styleClass="formValidationModalClass"
-                     closable="false" closeOnEscape="true" rendered="#{not empty resourcesDataModel.selectedResources}" auto-update="true">
-                <b:dataTable value="#{resourcesDataModel.selectedResources}"
-                             var="selectedResources"
-                             widgetVar="tableWidgetVar"
-                             responsive="true"
-                             paginated="false"
-                             searching="false"
-                             scroll-horizontally="true">
-                    <b:dataTableColumn value="#{selectedResources.id}" />
-                    <b:dataTableColumn value="#{selectedResources.name}" />
-                    <b:dataTableColumn label="#{msg.editUpper}">
-                        <b:commandButton value="#{msg.edit}"
-                                         iconAwesome="fa-function"
-                                         iconAlign="center"
-                                         action="#{resourceManager.edit(selectedResources)}"/>
-                    </b:dataTableColumn>
-                </b:dataTable>
+            <b:button id="delete-resource-button"
+                      onclick="$('.formValidationModalClassDelete').modal('show')"
+                      value="#{msg.delete}"
+                      icon="trash"
+                      update=":resourceManagementTableDiv">
+            </b:button>
+
+            <b:modal id="modal"
+                     title="Confirmation"
+                     styleClass="formValidationModalClassDelete"
+                     closable="false"
+                     close-on-escape="false" backdrop="false"
+                     rendered="#{not empty resourceDataModel.selectedResource}">
+                <p>Are you sure you want to delete the selected resource?</p>
                 <f:facet name="footer">
-                    <b:button value="Close" dismiss="modal" />
+                    <b:commandButton value="No" dismiss="modal"/>
+                    <b:commandButton value="Yes" look="warning"
+                                     actionListener="#{resourceDataModel.delete}"
+                                     oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
                 </f:facet>
             </b:modal>
-        </h:form>
 
-        <h:form id="resourcesManagementButtons">
+            <b:commandButton value="#{msg.edit}"
+                            tooltip="Edit existent resource information!"
+                            iconAwesome="fa-edit"
+                            action="#{resourceDataModel.editRecords}"/>
             <b:commandButton id="refresh" value="Refresh Values"
                              ajax="false"
                              iconAwesome="fa-refresh"
                              icon-spin="true"
                              iconAlign="right"
                              tooltip="Refresh existent Resources data table!"
-                             actionListener="#{resourcesDataModel.onload}"
+                             actionListener="#{resourceDataModel.onload}"
                              immediate="true" update="@form:resourcesManagementTableDiv"
                              auto-update="true"/>
             <b:commandButton value="#{msg.rd_add_resource}"

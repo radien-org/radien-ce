@@ -64,8 +64,16 @@ public interface ResourceRESTServiceAccess extends Appframeable {
      * Creates given resource
      * @param resource to be created
      * @return true if resource has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of URL specification
      */
     public boolean create(SystemResource resource) throws SystemException;
+
+    /**
+     * Deletes given resource
+     * @param resourceId to be deleted
+     * @return true if resource has been deleted with success or false if not
+     * @throws SystemException in case of URL specification
+     */
+    public boolean delete(long resourceId) throws SystemException;
 
 }
