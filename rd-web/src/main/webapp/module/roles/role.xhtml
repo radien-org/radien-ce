@@ -1,60 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:b="http://bootsfaces.net/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                template="/WEB-INF/templates/tpl_oaf.xhtml">
-    <ui:define name="content">
-        <b:container>
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="roleManagementTableDiv" styleClass="tableContainer">
 			<b:row>
-				<b:column offsetXs="2" colXs="8">
-			    <h:panelGroup layout="block" styleClass="headerInformation">
-			        <h1><h:outputText value="#{msg.rd_role} "/></h1>
-			        <hr />
-			    </h:panelGroup>
-				</b:column>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_role} Creation"/></h1>
+					<hr />
+				</h:panelGroup>
 			</b:row>
 
-			<h:form>
-				<h:inputHidden id="id" value="#{roleManager.role.id}"/>
-				<b:row >
-					<b:column offsetXs="2" colXs="8">
-						<b:inputText id="roleName" value="#{roleManager.role.name}"
-									 required="true" requiredMessage="#{msg.rd_role_name_is_mandatory}"
-									 size="15" label="#{msg.nameUpperCase}"/>
-					</b:column>
-				</b:row>
-				<b:row >
-					<b:column offsetXs="2" colXs="8">
-						<b:inputText id="roleDescription" value="#{roleManager.role.description}"
-									 size="15" label="#{msg.description}"/>
-					</b:column>
-				</b:row>
-				<b:row >
-					<b:column offsetXs="2" colXs="8">
-						<b:datepicker validator="basicDateValidator"
-									  validatorMessage="#{msg.rd_role_termination_date_invalid}"
-									  value="#{roleManager.role.terminationDate}"
-									  label="#{msg.termination_date}"/>
-					</b:column>
-			</b:row>
-				<b:row>
-					<b:column offsetXs="2" colXs="8">
-						<b:buttonGroup>
-							<b:commandButton value="#{msg.save}"
-											 action="#{roleManager.save(roleManager.role)}"
-											 iconAwesome="fa-function"
-											 iconAlign="center"/>
-							<b:commandButton value="#{msg.returnButton}"
-											 action="roles"
-											 iconAwesome="fa-arrow-circle-left"
-											 immediate="true"
-											 iconAlign="center"/>
-						</b:buttonGroup>
-					</b:column>
-				</b:row>
-			</h:form>
-        </b:container>
-    </ui:define>
+			<b:column offsetXs="2" colXs="8">
+				<b:inputText id="roleName" value="#{roleDataModel.role.name}"
+							 required="true" requiredMessage="#{msg.rd_role_name_is_mandatory}"
+							 label="#{msg.name}"/>
+
+				<b:inputText id="roleDescription" value="#{roleDataModel.role.description}"
+							 label="#{msg.description}"/>
+
+				<b:datepicker validator="basicDateValidator"
+							  validatorMessage="#{msg.rd_role_termination_date_invalid}"
+							  value="#{roleDataModel.role.terminationDate}"
+							  label="#{msg.termination_date}"/>
+
+				<b:buttonGroup>
+					<b:commandButton value="#{msg.save}"
+									 action="#{roleDataModel.save(roleDataModel.role)}"
+									 iconAwesome="fa-function"
+									 iconAlign="center"/>
+
+					<b:commandButton value="#{msg.returnButton}"
+									 action="#{roleDataModel.returnHome}"
+									 iconAwesome="fa-arrow-circle-left"
+									 immediate="true"
+									 iconAlign="center"/>
+				</b:buttonGroup>
+			</b:column>
+		</h:form>
+	</ui:define>
 </ui:composition>
