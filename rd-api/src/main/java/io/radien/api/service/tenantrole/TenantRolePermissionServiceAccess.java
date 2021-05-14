@@ -21,6 +21,7 @@ import io.radien.api.service.ServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Describes a contract for a Repository responsible
@@ -64,4 +65,12 @@ public interface TenantRolePermissionServiceAccess extends ServiceAccess {
      * @return true if already exists, otherwise returns false
      */
     boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId);
+
+    /**
+     * Retrieves strictly the TenantRolePermission id basing on tenantRole and user
+     * @param tenantRoleId tenant identifier
+     * @param permission identifier
+     * @return TenantRolePermission id
+     */
+    Optional<Long> getTenantRolePermissionId(Long tenantRoleId, Long permission);
 }

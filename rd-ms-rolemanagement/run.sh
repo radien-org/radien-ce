@@ -1,1 +1,1 @@
-java -jar target/rd-ms-rolemanagement-exec.jar
+java -jar target/rolemanagementservice-exec.jar

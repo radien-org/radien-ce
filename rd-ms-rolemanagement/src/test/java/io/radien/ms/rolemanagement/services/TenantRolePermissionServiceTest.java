@@ -17,16 +17,19 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.junit.jupiter.api.*;
 
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -264,5 +267,27 @@ public class TenantRolePermissionServiceTest {
         list = tenantRolePermissionServiceAccess.get(filter);
         Assertions.assertNotNull(list);
         Assertions.assertTrue(list.isEmpty());
+    }
+
+    /**
+     * Test for method getTenantRolePermissionId(Long tenantRoleId, Long permissionId)
+     */
+    @Test
+    @Order(15)
+    public void testGetTenantRoleUserId() {
+        SystemTenantRolePermission sru = new TenantRolePermission();
+        sru.setTenantRoleId(101010L);
+        sru.setPermissionId(101L);
+        Assertions.assertDoesNotThrow(() -> this.tenantRolePermissionServiceAccess.create(sru));
+
+        Long expectedId = sru.getId();
+        Assertions.assertNotNull(expectedId);
+
+        Optional<Long> id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 101L);
+        Assertions.assertTrue(id.isPresent());
+        Assertions.assertEquals(expectedId, id.get());
+
+        id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 202L);
+        Assertions.assertFalse(id.isPresent());
     }
 }

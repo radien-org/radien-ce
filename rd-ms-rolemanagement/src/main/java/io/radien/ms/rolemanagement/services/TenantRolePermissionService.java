@@ -21,13 +21,17 @@ import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository (Service access implementation) for managing Tenant Role Permission entities
@@ -36,8 +40,10 @@ import java.util.List;
 @Stateful
 public class TenantRolePermissionService implements TenantRolePermissionServiceAccess {
 
-    @Inject
-    private EntityManagerHolder emh;
+    @PersistenceContext(unitName = "persistenceUnit")
+    private EntityManager entityManager;
+
+    private static final Logger log = LoggerFactory.getLogger(TenantRolePermissionService.class);
 
     /**
      * Gets the System Tenant Role Permission searching by the PK (id).
@@ -46,7 +52,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      */
     @Override
     public SystemTenantRolePermission get(Long tenantRolePermissionId) {
-        return emh.getEm().find(TenantRolePermission.class, tenantRolePermissionId);
+        return getEntityManager().find(TenantRolePermission.class, tenantRolePermissionId);
     }
 
     /**
@@ -55,7 +61,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @return a list o found system tenant role permission associations
      */
     public List<? extends SystemTenantRolePermission> get(SystemTenantRolePermissionSearchFilter filter) {
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<TenantRolePermission> criteriaQuery = criteriaBuilder.createQuery(TenantRolePermission.class);
         Root<TenantRolePermission> root = criteriaQuery.from(TenantRolePermission.class);
@@ -140,7 +146,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      */
     @Override
     public void create(SystemTenantRolePermission tenantRolePermission) throws UniquenessConstraintException {
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRolePermission.getPermissionId(),
                 tenantRolePermission.getTenantRoleId(), em);
         if (alreadyExistentRecords) {
@@ -158,7 +164,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      */
     @Override
     public boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId) {
-        return isAssociationAlreadyExistent(permissionId, tenantRoleId, emh.getEm());
+        return isAssociationAlreadyExistent(permissionId, tenantRoleId, getEntityManager());
     }
 
     /**
@@ -175,14 +181,17 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         if (tenantRoleId == null) {
             throw new IllegalArgumentException("Tenant Role Id is mandatory");
         }
-        String query = "Select count(trp) From TenantRolePermission trp " +
-                "where trp.permissionId = :pPermissionId and trp.tenantRoleId = :pTenantRoleId";
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRolePermission> root = sc.from(TenantRolePermission.class);
 
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pPermissionId", permissionId);
-        typedQuery.setParameter("pTenantRoleId", tenantRoleId);
-
-        return typedQuery.getSingleResult() > 0;
+        sc.select(cb.count(root)).
+                where(
+                        cb.equal(root.get("permissionId"),permissionId),
+                        cb.equal(root.get("tenantRoleId"),tenantRoleId)
+                );
+        List<Long> count = em.createQuery(sc).getResultList();
+        return !count.isEmpty() ? count.get(0) > 0 : false;
     }
 
     /**
@@ -195,11 +204,43 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         if (tenantRolePermissionId == null) {
             throw new IllegalArgumentException("Tenant Role Permission Id is mandatory");
         }
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<TenantRolePermission> criteriaDelete = cb.createCriteriaDelete(TenantRolePermission.class);
         Root<TenantRolePermission> tenantRolePermissionRoot = criteriaDelete.from(TenantRolePermission.class);
         criteriaDelete.where(cb.equal(tenantRolePermissionRoot.get("id"),tenantRolePermissionId));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    /**
+     * Retrieves strictly the TenantRolePermission id basing on tenantRole and user
+     * @param tenantRole tenant identifier
+     * @param permission identifier
+     * @return TenantRolePermission id
+     */
+    @Override
+    public Optional<Long> getTenantRolePermissionId(Long tenantRole, Long permission) {
+        if (tenantRole == null || permission == null) {
+            throw new IllegalArgumentException("TenantRole and permission are mandatory");
+        }
+        EntityManager em = getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+        Root<TenantRolePermission> root = criteriaQuery.from(TenantRolePermission.class);
+
+        criteriaQuery.select(root.get("id"));
+
+        criteriaQuery.where(
+                cb.equal(root.get("tenantRoleId"),tenantRole),
+                cb.equal(root.get("permissionId"),permission)
+        );
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
+        List<Long> list = typedQuery.getResultList();
+        return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
     }
 }

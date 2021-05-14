@@ -28,6 +28,7 @@ import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -280,5 +281,27 @@ public class TenantRoleUserServiceTest {
         Assertions.assertTrue(p.getTotalPages() ==  1);
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
+    }
+
+    /**
+     * Test for method getTenantRoleUserId(Long tenantRoleId, Long userId)
+     */
+    @Test
+    @Order(15)
+    public void testGetTenantRoleUserId() {
+        SystemTenantRoleUser sru = new TenantRoleUser();
+        sru.setTenantRoleId(101010L);
+        sru.setUserId(101L);
+        Assertions.assertDoesNotThrow(() -> this.tenantRoleUserServiceAccess.create(sru));
+
+        Long expectedId = sru.getId();
+        Assertions.assertNotNull(expectedId);
+
+        Optional<Long> id = this.tenantRoleUserServiceAccess.getTenantRoleUserId(101010L, 101L);
+        Assertions.assertTrue(id.isPresent());
+        Assertions.assertEquals(expectedId, id.get());
+
+        id = this.tenantRoleUserServiceAccess.getTenantRoleUserId(101010L, 202L);
+        Assertions.assertFalse(id.isPresent());
     }
 }

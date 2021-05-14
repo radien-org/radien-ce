@@ -34,7 +34,8 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
-import io.radien.ms.authz.client.LinkedAuthorizationClient;
+import io.radien.exception.SystemException;
+import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.junit.Before;
@@ -67,7 +68,7 @@ public class UserResourceTest {
     HttpServletRequest servletRequest;
 
     @Mock
-    LinkedAuthorizationClient linkedAuthorizationClient;
+    TenantRoleClient tenantRoleClient;
 
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
@@ -122,7 +123,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
         Response response = userResource.getAll(null,1,10,null,true);
@@ -142,7 +143,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
         Response response = userResource.getAll(null,1,10,null,true);
@@ -175,7 +176,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
 
@@ -196,7 +197,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
 
@@ -218,7 +219,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
 
@@ -269,7 +270,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
         Response response = userResource.delete(1l);
@@ -288,7 +289,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
         Response response = userResource.delete(1l);
@@ -325,7 +326,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
         Response response = userResource.save(new User());
@@ -355,7 +356,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(notAuthorizedResponse).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
         Response response = userResource.save(new User());
@@ -403,9 +404,9 @@ public class UserResourceTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
 
         doThrow(new RemoteResourceException()).when(userBusinessService).save(any(), anyBoolean());
@@ -437,7 +438,7 @@ public class UserResourceTest {
         roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
         roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(notAuthorizedResponse).when(linkedAuthorizationClient).checkPermissions(
+        doReturn(notAuthorizedResponse).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
