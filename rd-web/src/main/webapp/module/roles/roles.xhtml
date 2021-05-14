@@ -59,7 +59,7 @@
 			</b:button>
 
 			<b:modal id="modal"
-					 title="Confirmation"
+					 title="#{msg.confirmation}"
 					 styleClass="formValidationModalClassDelete"
 					 closable="false"
 					 close-on-escape="false" backdrop="false"
@@ -74,21 +74,21 @@
 			</b:modal>
 
 			<b:commandButton value="#{msg.edit}"
-							 tooltip="Edit existent role information!"
+							 tooltip="#{msg.editRecordInformation}"
 							 iconAwesome="fa-edit"
 							 action="#{roleDataModel.editRecords}"/>
 			<b:commandButton id="refresh" value="Refresh Values"
 							 ajax="false"
 							 iconAwesome="fa-refresh"
 							 icon-spin="true"
-							 tooltip="Refresh existent Role data table!"
+							 tooltip="#{msg.refreshTooltip}"
 							 actionListener="#{roleDataModel.onload}"
 							 immediate="true" update="@form:roleManagementTableDiv"
 							 auto-update="true"/>
 			<b:commandButton value="#{msg.rd_add_role}"
 							 action="role"
 							 iconAwesome="fa-cube"
-							 tooltip="Create a new role!"
+							 tooltip="#{msg.create_new_record}"
 							 iconAlign="center"/>
 		</h:form>
 	</ui:define>

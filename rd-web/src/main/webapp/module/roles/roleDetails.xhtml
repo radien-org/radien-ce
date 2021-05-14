@@ -33,11 +33,11 @@
             </b:panel>
 
             <b:commandButton value="#{msg.save}"
-                             tooltip="Save changes!"
+                             tooltip="#{msg.saveChanges}"
                              iconAwesome="fa-save"
                              action="#{roleDataModel.edit(roleDataModel.selectedRole)}"/>
             <b:commandButton value="#{msg.rd_home_page}"
-                             tooltip="Return to role List!"
+                             tooltip="#{msg.returnToRecordList}"
                              iconAwesome="fa-home"
                              action="#{roleDataModel.returnHome}"/>
         </h:form>
