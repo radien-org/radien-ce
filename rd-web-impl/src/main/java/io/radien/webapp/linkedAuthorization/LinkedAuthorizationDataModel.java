@@ -19,6 +19,8 @@ package io.radien.webapp.linkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
+import io.radien.webapp.AbstractManager;
+import io.radien.webapp.JSFUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -29,15 +31,13 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.text.ParseException;
 
 /**
  * @author Bruno Gama
  */
 @Model
 @SessionScoped
-public class LinkedAuthorizationDataModel implements Serializable {
+public class LinkedAuthorizationDataModel extends AbstractManager implements Serializable {
 
 
     private LazyDataModel<? extends SystemLinkedAuthorization> lazyModel;
@@ -48,12 +48,20 @@ public class LinkedAuthorizationDataModel implements Serializable {
     private LinkedAuthorizationRESTServiceAccess service;
 
     @PostConstruct
-    public void init() throws MalformedURLException, ParseException {
-        lazyModel = new LazyLinkedAuthorizationDataModel(service);
+    public void init() {
+        try {
+            lazyModel = new LazyLinkedAuthorizationDataModel(service);
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_linkedauthorization"));
+        }
     }
 
-    public void onload() throws MalformedURLException, ParseException {
-        init();
+    public void onload() {
+        try {
+            init();
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_linkedauthorization"));
+        }
     }
 
     public LazyDataModel<? extends SystemLinkedAuthorization> getLazyModel() {
