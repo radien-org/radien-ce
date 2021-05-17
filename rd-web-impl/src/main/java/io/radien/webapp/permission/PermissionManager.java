@@ -58,7 +58,6 @@ public class PermissionManager extends AbstractManager {
 
     public String save(SystemPermission p) {
         try {
-
             if (p.getName() == null || p.getName().trim().length() == 0) {
                 p.setName(this.selectedAction.getName() + " " + this.selectedResource.getName());
             }
@@ -84,7 +83,7 @@ public class PermissionManager extends AbstractManager {
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
                             "rd_resource_not_found"), p.getResourceId())));
         }
-        catch (SystemException e) {
+        catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
         }
         return "permission";
@@ -92,32 +91,39 @@ public class PermissionManager extends AbstractManager {
 
     public List<? extends SystemResource> filterResourcesByName(String filter) throws SystemException {
         List<? extends SystemResource> page = null;
-        if (filter.trim().length() == 0) {
-            page = this.resourceRESTServiceAccess.getAll(
-                    null, 1, 5, Arrays.asList("name"), true).getResults();
-        }
-        else {
-            if (!filter.endsWith("%")) {
-                filter += "%";
+        try {
+            if (filter.trim().length() == 0) {
+                page = this.resourceRESTServiceAccess.getAll(
+                        null, 1, 5, Arrays.asList("name"), true).getResults();
+            } else {
+                if (!filter.endsWith("%")) {
+                    filter += "%";
+                }
+                page = this.resourceRESTServiceAccess.getAll(
+                        filter, 1, 5, Arrays.asList("name"), true).getResults();
             }
-            page = this.resourceRESTServiceAccess.getAll(
-                    filter, 1, 5, Arrays.asList("name"), true).getResults();
+        } catch (SystemException e) {
+                handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
         }
         return page;
     }
 
     public List<? extends SystemAction> filterActionsByName(String filter) throws SystemException {
         List<? extends SystemAction> list = null;
-        if (filter.trim().length() == 0) {
-            list = this.actionRESTServiceAccess.getAll(
-                    null, 1, 10, Arrays.asList("name"), true).getResults();
-        }
-        else {
-            if (!filter.endsWith("%")) {
-                filter += "%";
+        try {
+            if (filter.trim().length() == 0) {
+                list = this.actionRESTServiceAccess.getAll(
+                        null, 1, 10, Arrays.asList("name"), true).getResults();
             }
-            list = this.actionRESTServiceAccess.getAll(
-                    filter, 1, 10, Arrays.asList("name"), true).getResults();
+            else {
+                if (!filter.endsWith("%")) {
+                    filter += "%";
+                }
+                list = this.actionRESTServiceAccess.getAll(
+                        filter, 1, 10, Arrays.asList("name"), true).getResults();
+            }
+        } catch (SystemException e) {
+            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
         }
         return list;
     }
