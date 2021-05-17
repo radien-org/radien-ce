@@ -22,6 +22,7 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
+import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -57,6 +58,8 @@ public abstract class AuthorizationChecker implements Serializable {
     private UserClient userClient;
 
     private LinkedAuthorizationClient linkedAuthorizationClient;
+
+    private TenantRoleClient tenantRoleClient;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -294,6 +297,28 @@ public abstract class AuthorizationChecker implements Serializable {
                     UserClient.class);
         }
         return userClient;
+    }
+
+    /**
+     * Gets tenant role management client instance
+     * @return tenant role client for user management instance
+     * @throws SystemException in case of any issue while retrieving the communication tenant
+     * role client instance
+     */
+    public TenantRoleClient getTenantRoleClient() throws SystemException{
+        if (tenantRoleClient == null) {
+            tenantRoleClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
+                    TenantRoleClient.class);
+        }
+        return tenantRoleClient;
+    }
+
+    /**
+     * Sets the tenant role client as the given one
+     * @param tenantRoleClient given tenant role client instance to be set
+     */
+    public void setTenantRoleClient(TenantRoleClient tenantRoleClient) {
+        this.tenantRoleClient = tenantRoleClient;
     }
 
     /**
