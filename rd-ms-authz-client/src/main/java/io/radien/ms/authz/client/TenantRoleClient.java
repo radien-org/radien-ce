@@ -83,6 +83,6 @@ public interface TenantRoleClient {
     @GET
     @Path("/exists/roles")
     Response checkPermissions(@QueryParam("userId") Long userId,
-                                   @QueryParam("roleNames") List<String> roleNames,
-                                   @QueryParam("tenantId") Long tenantId);
+                              @QueryParam("roleNames") List<String> roleNames,
+                              @QueryParam("tenantId") Long tenantId);
 }

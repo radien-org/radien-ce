@@ -21,7 +21,7 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
-import io.radien.ms.authz.client.TenantRoleClient;
+import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
 import io.radien.ms.openid.entities.Principal;
@@ -57,7 +57,7 @@ public class AuthorizationCheckerTest {
     private UserClient userClient;
 
     @Mock
-    private TenantRoleClient tenantRoleClient;
+    private LinkedAuthorizationClient linkedAuthorizationClient;
 
     @Mock
     private TokensPlaceHolder tokensPlaceHolder;
@@ -118,7 +118,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, null)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, null)).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -148,7 +148,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, tenantId)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, tenantId)).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -207,7 +207,7 @@ public class AuthorizationCheckerTest {
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
                 thenReturn("token-yyz");
 
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, tenantId)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, tenantId)).
                 thenThrow(new TokenExpiredException()).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build()).
                 thenThrow(new TokenExpiredException()).
@@ -242,7 +242,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, null)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, null)).
                 thenReturn(Response.ok().entity(Boolean.FALSE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -272,7 +272,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, tenantId)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, tenantId)).
                 thenReturn(Response.ok().entity(Boolean.FALSE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -301,7 +301,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, tenantId)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, tenantId)).
                 thenReturn(Response.status(300).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -411,8 +411,8 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isPermissionExistentForUser(userId, permissionId, tenantId)).
-                thenReturn(Response.ok().entity(Boolean.TRUE).build());
+        when(this.linkedAuthorizationClient.existsSpecificAssociation(tenantId, permissionId, null, userId, true)).
+                thenReturn(Response.ok().build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
         try {
@@ -440,8 +440,8 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isPermissionExistentForUser(userId, permissionId, tenantId)).
-                thenReturn(Response.ok().entity(Boolean.FALSE).build());
+        when(this.linkedAuthorizationClient.existsSpecificAssociation(tenantId, permissionId, null, userId, true)).
+                thenThrow(NotFoundException.class);
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
         try {
@@ -469,7 +469,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isPermissionExistentForUser(userId, permissionId, tenantId)).
+        when(this.linkedAuthorizationClient.existsSpecificAssociation(tenantId, permissionId, null, userId, true)).
                 thenThrow(RuntimeException.class);
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -503,9 +503,10 @@ public class AuthorizationCheckerTest {
                 thenReturn(Response.ok().entity(userId).build()).
                 thenReturn(Response.ok().entity(userId).build());
 
-        when(this.tenantRoleClient.isPermissionExistentForUser(userId, permissionId, tenantId)).
+        when(this.linkedAuthorizationClient.existsSpecificAssociation(tenantId,
+                permissionId, null, userId, true)).
                 thenThrow(TokenExpiredException.class).
-                thenReturn(Response.ok().entity(Boolean.TRUE).build()).
+                thenReturn(Response.ok().build()).
                 thenThrow(TokenExpiredException.class).
                 thenThrow(TokenExpiredException.class);
 
@@ -541,7 +542,7 @@ public class AuthorizationCheckerTest {
         when(session.getAttribute("USER")).thenReturn(principal);
 
         when(this.userClient.getUserIdBySub(principal.getSub())).thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, null)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, null)).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build());
 
         try {
@@ -572,7 +573,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).thenReturn(Response.ok().entity(userId).build());
 
-        when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, null)).
+        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, roleName, null)).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build());
 
         try {
@@ -599,11 +600,11 @@ public class AuthorizationCheckerTest {
     }
 
     @Test
-    public void testGettenantRoleClientWithError() throws SystemException {
+    public void testGetLinkedAuthorizationClientWithError() throws SystemException {
         AuthorizationChecker spied = Mockito.spy(AuthorizationChecker.class);
 
         RestClientBuilder builder = mock(RestClientBuilder.class);
-        doThrow(new RuntimeException()).when(builder).build(TenantRoleClient.class);
+        doThrow(new RuntimeException()).when(builder).build(LinkedAuthorizationClient.class);
         doReturn(builder).when(spied).getRestClientBuilder();
 
         OAFAccess oaf = mock(OAFAccess.class);
@@ -611,7 +612,7 @@ public class AuthorizationCheckerTest {
                 getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT);
         doReturn(oaf).when(spied).getOafAccess();
 
-        assertThrows(SystemException.class, () -> spied.getTenantRoleClient());
+        assertThrows(SystemException.class, () -> spied.getLinkedAuthorizationClient());
     }
 
     @Test
@@ -662,7 +663,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.checkPermissions(userId, roleList, null)).
+        when(this.linkedAuthorizationClient.checkPermissions(userId, roleList, null)).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -694,7 +695,7 @@ public class AuthorizationCheckerTest {
 
         when(this.userClient.getUserIdBySub(principal.getSub())).
                 thenReturn(Response.ok().entity(userId).build());
-        when(this.tenantRoleClient.checkPermissions(userId, roleList, null)).
+        when(this.linkedAuthorizationClient.checkPermissions(userId, roleList, null)).
                 thenReturn(Response.ok().entity(Boolean.FALSE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
@@ -743,7 +744,7 @@ public class AuthorizationCheckerTest {
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
                 thenReturn("token-yyz");
 
-        when(this.tenantRoleClient.checkPermissions(userId, roleList, tenantId)).
+        when(this.linkedAuthorizationClient.checkPermissions(userId, roleList, tenantId)).
                 thenThrow(new TokenExpiredException()).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build()).
                 thenThrow(new TokenExpiredException()).
