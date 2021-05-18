@@ -170,7 +170,7 @@ public class ActionDataModel extends AbstractManager implements Serializable {
 
     public void onRowSelect(SelectEvent<SystemAction> event) {
         this.selectedAction = event.getObject();
-        FacesMessage msg = new FacesMessage("Action Selected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rd_action_selected"), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }

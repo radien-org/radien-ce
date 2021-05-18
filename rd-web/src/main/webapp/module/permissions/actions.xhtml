@@ -52,15 +52,15 @@
             </b:button>
 
             <b:modal id="modal"
-                     title="Confirmation"
+                     title="#{msg.confirmation}"
                      styleClass="formValidationModalClassDelete"
                      closable="false"
                      close-on-escape="false" backdrop="false"
                      rendered="#{not empty actionDataModel.selectedAction}">
                 <p>#{msg.deleteConfirmation}</p>
                 <f:facet name="footer">
-                    <b:commandButton value="No" dismiss="modal"/>
-                    <b:commandButton value="Yes" look="warning"
+                    <b:commandButton value="#{msg.no}" dismiss="modal"/>
+                    <b:commandButton value="#{msg.yes}" look="warning"
                                      actionListener="#{actionDataModel.delete}"
                                      oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
                 </f:facet>
@@ -70,7 +70,7 @@
                              tooltip="#{msg.editRecordInformation}"
                              iconAwesome="fa-edit"
                              action="#{actionDataModel.editRecords}"/>
-            <b:commandButton id="refresh" value="Refresh Values"
+            <b:commandButton id="refresh" value="#{refreshValues}"
                              ajax="false"
                              iconAwesome="fa-refresh"
                              icon-spin="true"
