@@ -101,10 +101,10 @@
 					 closable="false"
 					 close-on-escape="false" backdrop="false"
 					 rendered="#{not empty tenantDataModel.selectedTenant}">
-				<p>Are you sure you want to delete the selected tenant?</p>
+				<p>#{msg.rd_tenant_deletition_confirmation}</p>
 				<f:facet name="footer">
-					<b:commandButton value="No" dismiss="modal"/>
-					<b:commandButton value="Yes" look="warning"
+					<b:commandButton value="#{msg.no}" dismiss="modal"/>
+					<b:commandButton value="#{msg.yes}" look="warning"
 									 actionListener="#{tenantDataModel.deleteTenantHierarchy}"
 									 oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
 				</f:facet>
@@ -114,7 +114,7 @@
 							 tooltip="#{msg.editRecordInformation}"
 							 iconAwesome="fa-edit"
 							 action="#{tenantDataModel.editRecords}"/>
-			<b:commandButton id="refresh" value="Refresh Values"
+			<b:commandButton id="refresh" value="#{msg.refreshValues}"
 							 ajax="false"
 							 iconAwesome="fa-refresh"
 							 icon-spin="true"

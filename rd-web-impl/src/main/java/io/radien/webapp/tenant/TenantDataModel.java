@@ -208,7 +208,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
 
     public void onRowSelect(SelectEvent<SystemTenant> event) {
         this.selectedTenant= event.getObject();
-        FacesMessage msg = new FacesMessage("Tenant Selected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rd_tenantSelected"), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }
