@@ -22,8 +22,6 @@ import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 
-import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class LazyLinkedAuthorizationDataModel extends LazyDataModel<SystemLinkedAuthorization> {
 
-    private static final long serialVersionUID = -7412588857597749996L;
+    private static final long serialVersionUID = 5374304621678901012L;
     private LinkedAuthorizationRESTServiceAccess service;
 
     private List<? extends SystemLinkedAuthorization> datasource;

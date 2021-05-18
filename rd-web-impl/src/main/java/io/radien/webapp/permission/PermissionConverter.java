@@ -16,12 +16,8 @@
 package io.radien.webapp.permission;
 
 import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.model.permission.SystemPermissionSearchFilter;
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
-import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.webapp.JSFUtil;
 
 import javax.faces.application.FacesMessage;

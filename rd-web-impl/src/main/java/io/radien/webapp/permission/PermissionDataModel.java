@@ -17,6 +17,8 @@ package io.radien.webapp.permission;
 
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
+import io.radien.webapp.AbstractManager;
+import io.radien.webapp.JSFUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -33,7 +35,7 @@ import java.io.Serializable;
  */
 @Model
 @SessionScoped
-public class PermissionDataModel implements Serializable {
+public class PermissionDataModel extends AbstractManager implements Serializable {
 
     private LazyDataModel<? extends SystemPermission> lazyModel;
 
@@ -44,11 +46,19 @@ public class PermissionDataModel implements Serializable {
 
     @PostConstruct
     public void init() {
-        lazyModel = new LazyPermissionDataModel(service);
+        try {
+            lazyModel = new LazyPermissionDataModel(service);
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_permissions"));
+        }
     }
 
     public void onload() {
-        init();
+        try {
+            init();
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_permissions"));
+        }
     }
 
     public LazyDataModel<? extends SystemPermission> getLazyModel() {

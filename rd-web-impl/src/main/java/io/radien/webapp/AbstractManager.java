@@ -46,10 +46,13 @@ public abstract class AbstractManager implements Serializable {
     }
 
     protected String extractErrorMessage(Exception exception) {
-        String errorMsg = (exception instanceof EJBException) ?
-                exception.getCause().getMessage() : exception.getMessage();
-        // Bootsfaces growl has issues to handle special characters
-        return errorMsg.replace("\n\t", "");
+        if(exception.getMessage() != null) {
+            String errorMsg = (exception instanceof EJBException) ?
+                    exception.getCause().getMessage() : exception.getMessage();
+            // Bootsfaces growl has issues to handle special characters
+            return errorMsg.replace("\n\t", "");
+        }
+        return "";
     }
 
     public Logger getLog() {

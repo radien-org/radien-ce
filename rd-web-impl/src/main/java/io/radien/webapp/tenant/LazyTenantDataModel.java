@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class LazyTenantDataModel extends LazyDataModel<SystemTenant> {
 
-    private static final long serialVersionUID = -7412588857597749996L;
+    private static final long serialVersionUID = -2487575100973554400L;
     private TenantRESTServiceAccess service;
 
     private List<? extends SystemTenant> datasource;

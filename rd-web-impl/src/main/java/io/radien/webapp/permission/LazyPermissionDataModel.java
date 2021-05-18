@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public class LazyPermissionDataModel extends LazyDataModel<SystemPermission> {
 
-    private static final long serialVersionUID = -7412588857597749996L;
+    private static final long serialVersionUID = -7135039336902887393L;
     private PermissionRESTServiceAccess service;
 
     private List<? extends SystemPermission> datasource;

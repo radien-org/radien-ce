@@ -27,9 +27,6 @@ import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.annotation.PostConstruct;
 
 import javax.enterprise.context.SessionScoped;
@@ -49,7 +46,6 @@ import java.io.Serializable;
 @SessionScoped
 public class UserDataModel extends AbstractManager implements Serializable {
     private static final long serialVersionUID = -4406564138942194060L;
-    private static final Logger log = LoggerFactory.getLogger(UserDataModel.class);
 
     @Inject
     private UserRESTServiceAccess service;
@@ -73,12 +69,16 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     @PostConstruct
     public void init() throws SystemException {
-        if(!hasUserAdministratorRoleAccess) {
-            hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
-        }
+        try {
+            if (!hasUserAdministratorRoleAccess) {
+                hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
+            }
 
-        if(hasUserAdministratorRoleAccess) {
-            lazyUserDataModel = new LazyUserDataModel(service);
+            if (hasUserAdministratorRoleAccess) {
+                lazyUserDataModel = new LazyUserDataModel(service);
+            }
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
         }
     }
 
@@ -88,7 +88,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * that are nonfatal and recoverable by user programs.
      */
     public void onload() throws SystemException {
-        init();
+        try {
+            init();
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+        }
     }
 
     /**
@@ -208,8 +212,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String editRecord() {
-        if(selectedUser != null) {
-            return "pretty:user";
+        try {
+            if (selectedUser != null) {
+                return "pretty:user";
+            }
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
         }
         return "pretty:users";
     }
@@ -219,8 +227,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String createRecord() {
-        user = new User();
-        user.setEnabled(true);
+        try {
+            user = new User();
+            user.setEnabled(true);
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+        }
         return "pretty:user";
     }
 
@@ -229,8 +241,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String userProfile() {
-        if(selectedUser != null) {
-            return "pretty:userProfile";
+        try {
+            if(selectedUser != null) {
+                return "pretty:userProfile";
+            }
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
         }
         return "pretty:users";
     }
@@ -240,8 +256,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String returnHome() {
-        user = new User();
-        selectedUser=null;
+        try {
+            user = new User();
+            selectedUser=null;
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+        }
         return "pretty:users";
     }
 

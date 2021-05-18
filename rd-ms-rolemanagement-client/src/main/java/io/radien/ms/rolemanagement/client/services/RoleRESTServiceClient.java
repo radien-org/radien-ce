@@ -307,6 +307,50 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
         }
     }
 
+    /**
+     * Calls the requester to delete a given role if not possible will reload the access token and retry
+     * @param roleId to be deleted
+     * @return true if role has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean delete(long roleId) throws SystemException {
+        try {
+            return deleteRequester(roleId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteRequester(roleId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Deletes given role
+     * @param roleId to be deleted
+     * @return true if role has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private boolean deleteRequester(long roleId) throws SystemException {
+        RoleResourceClient client;
+        try {
+            client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
+            throw new SystemException(e);
+        }
+        try (Response response = client.delete(roleId)) {
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                log.error(response.readEntity(String.class));
+                return false;
+            }
+        } catch (ProcessingException e) {
+            throw new SystemException(e);
+        }
+    }
+
 	@Override
 	public OAFAccess getOAF() {
 		return oaf;

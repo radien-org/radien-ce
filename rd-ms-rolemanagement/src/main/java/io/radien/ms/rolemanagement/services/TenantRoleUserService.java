@@ -28,9 +28,12 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository (Service access implementation) for managing Tenant Role User entities
@@ -39,8 +42,8 @@ import java.util.List;
 @Stateful
 public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
-    @Inject
-    private EntityManagerHolder emh;
+    @PersistenceContext(unitName = "persistenceUnit")
+    private EntityManager entityManager;
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleUserService.class);
 
@@ -51,7 +54,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      */
     @Override
     public SystemTenantRoleUser get(Long tenantRoleUserId) {
-        return emh.getEm().find(TenantRoleUser.class, tenantRoleUserId);
+        return getEntityManager().find(TenantRoleUser.class, tenantRoleUserId);
     }
 
     /**
@@ -63,7 +66,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     @Override
     public Page<SystemTenantRoleUser> getAll(int pageNo, int pageSize) {
         log.info("Retrieving tenant role user associations using pagination mode");
-        EntityManager entityManager = emh.getEm();
+        EntityManager entityManager = getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TenantRoleUser> criteriaQuery = criteriaBuilder.createQuery(TenantRoleUser.class);
         Root<TenantRoleUser> tenantRoleRoot = criteriaQuery.from(TenantRoleUser.class);
@@ -111,7 +114,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * @return a list o found system tenant role user associations
      */
     public List<? extends SystemTenantRoleUser> get(SystemTenantRoleUserSearchFilter filter) {
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<TenantRoleUser> criteriaQuery = criteriaBuilder.createQuery(TenantRoleUser.class);
         Root<TenantRoleUser> root = criteriaQuery.from(TenantRoleUser.class);
@@ -196,7 +199,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      */
     @Override
     public void create(SystemTenantRoleUser tenantRoleUser) throws UniquenessConstraintException {
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRoleUser.getUserId(),
                 tenantRoleUser.getTenantRoleId(), em);
         if (alreadyExistentRecords) {
@@ -214,7 +217,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      */
     @Override
     public boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId) {
-        return isAssociationAlreadyExistent(userId, tenantRoleId, emh.getEm());
+        return isAssociationAlreadyExistent(userId, tenantRoleId, getEntityManager());
     }
 
     /**
@@ -231,14 +234,19 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         if (tenantRoleId == null) {
             throw new IllegalArgumentException("Tenant Role Id is mandatory");
         }
-        String query = "Select count(tru) From TenantRoleUser tru " +
-                "where tru.userId = :pUserId and tru.tenantRoleId = :pTenantRoleId";
 
-        TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
-        typedQuery.setParameter("pUserId", userId);
-        typedQuery.setParameter("pTenantRoleId", tenantRoleId);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
 
-        return typedQuery.getSingleResult() > 0;
+        sc.select(cb.count(root)).
+                where(
+                        cb.equal(root.get("userId"),userId),
+                        cb.equal(root.get("tenantRoleId"),tenantRoleId)
+                );
+
+        List<Long> count = em.createQuery(sc).getResultList();
+        return !count.isEmpty() ? count.get(0) > 0 : false;
     }
 
     /**
@@ -251,11 +259,42 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         if (tenantRoleUserId == null) {
             throw new IllegalArgumentException("Tenant Role User Id is mandatory");
         }
-        EntityManager em = emh.getEm();
+        EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<TenantRoleUser> criteriaDelete = cb.createCriteriaDelete(TenantRoleUser.class);
         Root<TenantRoleUser> tenantRoleUserRoot = criteriaDelete.from(TenantRoleUser.class);
         criteriaDelete.where(cb.equal(tenantRoleUserRoot.get("id"),tenantRoleUserId));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
+    }
+
+    /**
+     * Retrieves strictly the TenantRoleUser id basing on tenantRole and user
+     * @param tenantRole tenant identifier
+     * @param user identifier
+     * @return TenantRoleUser id
+     */
+    @Override
+    public Optional<Long> getTenantRoleUserId(Long tenantRole, Long user) {
+        if (tenantRole == null || user == null) {
+            throw new IllegalArgumentException("TenantRole and user are mandatory");
+        }
+
+        EntityManager em = getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
+
+        sc.select(root.get("id")).
+                where(
+                        cb.equal(root.get("userId"),user),
+                        cb.equal(root.get("tenantRoleId"),tenantRole)
+                );
+
+        List<Long> list = em.createQuery(sc).getResultList();
+        return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

@@ -21,7 +21,7 @@
 				<h:inputHidden id="id" value="#{permissionManager.permission.id}"/>
 				<b:row>
 					<b:column offsetXs="2" colXs="8">
-						<p:outputLabel value="#{msg.nameUpperCase}"
+						<p:outputLabel value="#{msg.name}"
 									   for="permissionName"/>
 					</b:column>
 				</b:row>
@@ -29,7 +29,7 @@
 					<b:column offsetXs="2" colXs="8">
 						<p:inputText id="permissionName" value="#{permissionManager.permission.name}"
 									 requiredMessage="#{msg.rd_permission_name_is_mandatory}"
-									 label="#{msg.nameUpperCase}"/>
+									 label="#{msg.name}"/>
 					</b:column>
 				</b:row>
 
