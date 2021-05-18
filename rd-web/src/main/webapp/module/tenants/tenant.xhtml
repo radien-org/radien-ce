@@ -10,66 +10,66 @@
 		<h:form id="tenantManagementTableDiv" styleClass="tableContainer">
 			<b:row>
 				<h:panelGroup layout="block" styleClass="headerInformation">
-					<h1><h:outputText value="#{msg.rd_tenants} Creation"/></h1>
+					<h1><h:outputText value="#{msg.rd_tenant_creation}"/></h1>
 					<hr />
 				</h:panelGroup>
 			</b:row>
 
 			<b:column offsetXs="2" colXs="8">
-				<b:inputText id="tenantName" value="#{tenantDataModel.tenant.name}"
+				<b:inputText id="#{msg.rd_tenantName}" value="#{tenantDataModel.tenant.name}"
 							 required="true" requiredMessage="#{msg.rd_tenant_name_is_mandatory}"
-							 label="#{msg.nameUpperCase}"/>
-				<b:inputText id="tenantKey" value="#{tenantDataModel.tenant.tenantKey}"
+							 label="#{msg.name}"/>
+				<b:inputText id="#{msg.rd_tenantKey}" value="#{tenantDataModel.tenant.tenantKey}"
 							 required="true" requiredMessage="#{msg.rd_tenant_key_is_mandatory}"
 							 label="#{msg.key}"/>
 				<b:dateTimePicker validatorMessage="#{msg.rd_tenant_start_date_invalid}"
-								  converter="radienLocalDateTimeConverter"
-								  value="#{tenantDataModel.tenant.tenantStart}" showTime="false" format="DD-MM-YYYY"
+								  converter="#{msg.rd_tenant_radienLocalDateTimeConverter}"
+								  value="#{tenantDataModel.tenant.tenantStart}" showTime="false" format="#{msg.rd_dateFormat}"
 								  required="true" requiredMessage="#{msg.rd_tenant_start_date_is_mandatory}"
 								  label="#{msg.start}"/>
 				<b:dateTimePicker validatorMessage="#{msg.rd_tenant_end_date_invalid}"
-								  converter="radienLocalDateTimeConverter"
-								  value="#{tenantDataModel.tenant.tenantEnd}" showTime="false" format="DD-MM-YYYY"
+								  converter="#{msg.rd_tenant_radienLocalDateTimeConverter}"
+								  value="#{tenantDataModel.tenant.tenantEnd}" showTime="false" format="#{msg.rd_dateFormat}"
 								  required="false"
 								  label="#{msg.end}"/>
-				<b:selectOneMenu id="tenantType" value="#{tenantDataModel.tenant.tenantType}"
+				<b:selectOneMenu id="#{msg.rd_tenantType}" value="#{tenantDataModel.tenant.tenantType}"
 								 required="true" requiredMessage="#{msg.rd_tenant_type_is_mandatory}"
 								 label="#{msg.type}" select2="true" update="@parent" process="@form">
 					<f:selectItem itemLabel="#{msg.rd_tenant_remind_select_tenant_type}" itemValue="#{null}"/>
-					<f:selectItems value="#{tenantDataModel.tenantTypes}" var="tenantType"
+					<f:selectItems value="#{tenantDataModel.tenantTypes}" var="#{msg.rd_tenantType}"
 								   itemValue="#{tenantType}" itemLabel="#{tenantType.name}"/>
 				</b:selectOneMenu>
 
-				<b:row id="nonRootInformations" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT' || tenantDataModel.tenant.tenantType == 'SUB_TENANT'}" value="#{tenantDataModel.tenant.parentId}">
-					<b:selectOneMenu id="tenantParentId" value="#{tenantDataModel.tenant.parentId}"
+				<b:row id="#{msg.rd_nonRootInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT' || tenantDataModel.tenant.tenantType == 'SUB_TENANT'}" value="#{tenantDataModel.tenant.parentId}">
+					<b:selectOneMenu id="#{msg.rd_tenantParentId}" value="#{tenantDataModel.tenant.parentId}"
 									 label="#{msg.rd_tenant_parent}" select2="true">
 						<f:selectItem value="#{null}" itemLabel="#{msg.rd_tenant_remind_select_parent}"/>
-						<f:selectItems value="#{tenantDataModel.parents}" var="tenantParent"
+						<f:selectItems value="#{tenantDataModel.parents}" var="#{msg.rd_tenantParent}"
 									   itemValue="#{tenantParent.id}"
 									   itemLabel="#{tenantParent.name} - #{tenantParent.tenantKey} - #{tenantParent.tenantType.name}"/>
 					</b:selectOneMenu>
 				</b:row>
 
-				<b:row id="clientInformations" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT'}">
-					<b:inputText id="tenantClientAddress" value="#{tenantDataModel.tenant.clientAddress}"
+				<b:row id="#{msg.rd_clientInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT'}">
+					<b:inputText id="#{msg.rd_tenantClientAddress}" value="#{tenantDataModel.tenant.clientAddress}"
 								 label="#{msg.address}"/>
-					<b:inputText id="tenantClientZipCode" value="#{tenantDataModel.tenant.clientZipCode}"
+					<b:inputText id="#{msg.rd_tenantClientZipCode}" value="#{tenantDataModel.tenant.clientZipCode}"
 								 label="#{msg.zipCode}"/>
-					<b:inputText id="tenantClientCity" value="#{tenantDataModel.tenant.clientCity}"
+					<b:inputText id="#{msg.rd_tenantClientCity}" value="#{tenantDataModel.tenant.clientCity}"
 								 label="#{msg.city}"/>
-					<b:inputText id="tenantClientCountry" value="#{tenantDataModel.tenant.clientCountry}"
+					<b:inputText id="#{msg.rd_tenantClientCountry}" value="#{tenantDataModel.tenant.clientCountry}"
 								 label="#{msg.country}"/>
-					<b:inputText id="tenantClientPhoneNumber" value="#{tenantDataModel.tenant.clientPhoneNumber}"
+					<b:inputText id="#{msg.rd_tenantClientPhoneNumber}" value="#{tenantDataModel.tenant.clientPhoneNumber}"
 								 label="#{msg.phoneNumber}"/>
-					<b:inputText id="tenantClientEmail" value="#{tenantDataModel.tenant.clientEmail}"
+					<b:inputText id="#{msg.rd_tenantClientEmail}" value="#{tenantDataModel.tenant.clientEmail}"
 								 label="#{msg.email}"/>
 				</b:row>
 
-				<b:row id="subInformations" rendered="#{tenantDataModel.tenant.tenantType == 'SUB_TENANT'}">
-					<b:selectOneMenu id="tenantClientId" value="#{tenantDataModel.tenant.clientId}"
+				<b:row id="#{msg.rd_tenant_subInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'SUB_TENANT'}">
+					<b:selectOneMenu id="#{msg.rd_tenantClientId}" value="#{tenantDataModel.tenant.clientId}"
 									 label="#{msg.rd_tenant_client}" select2="true">
 						<f:selectItem value="#{null}" itemLabel="#{msg.rd_tenant_remind_select_client}"/>
-						<f:selectItems value="#{tenantDataModel.parents}" var="tenanClientParent"
+						<f:selectItems value="#{tenantDataModel.parents}" var="#{msg.rd_tenant_clientParent}"
 									   itemValue="#{tenanClientParent.id}"
 									   itemLabel="#{tenanClientParent.name} - #{tenanClientParent.tenantKey} - #{tenanClientParent.tenantType.name}"/>
 					</b:selectOneMenu>

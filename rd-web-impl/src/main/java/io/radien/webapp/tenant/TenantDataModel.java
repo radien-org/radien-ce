@@ -24,6 +24,7 @@ import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.action.LazyActionsDataModel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -54,11 +55,19 @@ public class TenantDataModel extends AbstractManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        lazyModel = new LazyTenantDataModel(service);
+        try {
+            lazyModel = new LazyTenantDataModel(service);
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_tenants"));
+        }
     }
 
     public void onload() {
-        init();
+        try {
+            init();
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_tenants"));
+        }
     }
 
     public String save(SystemTenant r) {
@@ -74,17 +83,24 @@ public class TenantDataModel extends AbstractManager implements Serializable {
                     JSFUtil.getMessage("rd_tenant"));
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_tenant"));
-            return null;
+            return "tenant";
         }
         tenant = new Tenant();
         return "tenants";
     }
 
     public String editRecords() {
-        if(selectedTenant != null) {
+        try {
+            if (selectedTenant != null) {
+                return "tenantDetails";
+            } else {
+                handleMessage(FacesMessage.SEVERITY_WARN, JSFUtil.getMessage("rd_select_record_first"), JSFUtil.getMessage("rd_tenants"));
+            }
+            return "tenants";
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_tenants"));
             return "tenantDetails";
         }
-        return "tenants";
     }
 
     public void deleteTenantHierarchy(){
@@ -97,6 +113,9 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_delete_error"), JSFUtil.getMessage("rd_user"));
         }
+
+        tenant = new Tenant();
+        selectedTenant=null;
     }
 
     public String returnHome() {
@@ -189,7 +208,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
 
     public void onRowSelect(SelectEvent<SystemTenant> event) {
         this.selectedTenant= event.getObject();
-        FacesMessage msg = new FacesMessage("Tenant Selected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rd_tenantSelected"), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }

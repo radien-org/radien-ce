@@ -39,7 +39,7 @@
 					<h:outputText value="#{tenant.id}"/>
 				</p:column>
 
-				<p:column headerText="#{msg.nameUpperCase}">
+				<p:column headerText="#{msg.name}">
 					<h:outputText value="#{tenant.name}"/>
 				</p:column>
 
@@ -96,36 +96,36 @@
 			</b:button>
 
 			<b:modal id="modal"
-					 title="Confirmation"
+					 title="#{msg.confirmation}"
 					 styleClass="formValidationModalClassDelete"
 					 closable="false"
 					 close-on-escape="false" backdrop="false"
 					 rendered="#{not empty tenantDataModel.selectedTenant}">
-				<p>Are you sure confirm to delete the selected tenant?</p>
+				<p>#{msg.rd_tenant_deletition_confirmation}</p>
 				<f:facet name="footer">
-					<b:commandButton value="No" dismiss="modal"/>
-					<b:commandButton value="Yes" look="warning"
+					<b:commandButton value="#{msg.no}" dismiss="modal"/>
+					<b:commandButton value="#{msg.yes}" look="warning"
 									 actionListener="#{tenantDataModel.deleteTenantHierarchy}"
 									 oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
 				</f:facet>
 			</b:modal>
 
 			<b:commandButton value="#{msg.edit}"
-							 tooltip="Edit existent tenant information!"
+							 tooltip="#{msg.editRecordInformation}"
 							 iconAwesome="fa-edit"
 							 action="#{tenantDataModel.editRecords}"/>
-			<b:commandButton id="refresh" value="Refresh Values"
+			<b:commandButton id="refresh" value="#{msg.refreshValues}"
 							 ajax="false"
 							 iconAwesome="fa-refresh"
 							 icon-spin="true"
-							 tooltip="Refresh existent Tenant data table!"
+							 tooltip="#{msg.refreshTooltip}"
 							 actionListener="#{tenantDataModel.onload}"
 							 immediate="true" update="@form:tenantManagementTableDiv"
 							 auto-update="true"/>
 			<b:commandButton value="#{msg.rd_add_tenant}"
 							 action="tenant"
 							 iconAwesome="fa-cube"
-							 tooltip="Create a new tenant!"
+							 tooltip="#{msg.create_new_record}"
 							 iconAlign="center"/>
 		</h:form>
 	</ui:define>
