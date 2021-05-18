@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class LazyRoleDataModel extends LazyDataModel<SystemRole> {
 
-    private static final long serialVersionUID = 7416623442338554256L;
+    private static final long serialVersionUID = 873732107207830430L;
     private RoleRESTServiceAccess service;
 
     private List<? extends SystemRole> datasource;

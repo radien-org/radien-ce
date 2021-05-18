@@ -69,8 +69,8 @@ public interface RoleRESTServiceAccess extends Appframeable{
     /**
      * Creates given role
      * @param role to be created
-     * @return true if user has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @return true if role has been created with success or false if not
+     * @throws SystemException in case of URL specification
      */
     public boolean create(SystemRole role) throws SystemException;
 
@@ -79,4 +79,12 @@ public interface RoleRESTServiceAccess extends Appframeable{
      * @return the count of existent roles.
      */
     public Long getTotalRecordsCount() throws SystemException;
+
+    /**
+     * Deletes given role
+     * @param roleId to be deleted
+     * @return true if role has been deleted with success or false if not
+     * @throws SystemException in case of URL specification
+     */
+    public boolean delete(long roleId) throws SystemException;
 }

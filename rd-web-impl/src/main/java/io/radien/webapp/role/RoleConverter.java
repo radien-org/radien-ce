@@ -15,9 +15,7 @@
  */
 package io.radien.webapp.role;
 
-import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
-import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.webapp.JSFUtil;
