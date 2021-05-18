@@ -34,11 +34,11 @@
 
                 <p:ajax event="rowSelect" listener="#{resourceDataModel.onRowSelect}" update="@form:resourcesManagementTableDiv"
                         oncomplete="$('.formValidationModalClass').modal('show')"/>
-                <p:column headerText="Id" sortBy="#{resources.id}">
+                <p:column headerText="#{msg.id}" sortBy="#{resources.id}">
                     <h:outputText value="#{resources.id}"/>
                 </p:column>
 
-                <p:column headerText="Name">
+                <p:column headerText="#{msg.name}">
                     <h:outputText value="#{resources.name}"/>
                 </p:column>
 
@@ -57,10 +57,10 @@
                      closable="false"
                      close-on-escape="false" backdrop="false"
                      rendered="#{not empty resourceDataModel.selectedResource}">
-                <p>Are you sure you want to delete the selected resource?</p>
+                <p>#{msg.rd_deletition_confirmation}</p>
                 <f:facet name="footer">
-                    <b:commandButton value="No" dismiss="modal"/>
-                    <b:commandButton value="Yes" look="warning"
+                    <b:commandButton value="#{msg.no}" dismiss="modal"/>
+                    <b:commandButton value="#{msg.yes}" look="warning"
                                      actionListener="#{resourceDataModel.delete}"
                                      oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
                 </f:facet>
@@ -70,7 +70,7 @@
                             tooltip="#{msg.editRecordInformation}"
                             iconAwesome="fa-edit"
                             action="#{resourceDataModel.editRecords}"/>
-            <b:commandButton id="refresh" value="Refresh Values"
+            <b:commandButton id="refresh" value="#{msg.refreshValues}"
                              ajax="false"
                              iconAwesome="fa-refresh"
                              icon-spin="true"

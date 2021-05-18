@@ -170,7 +170,7 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
 
     public void onRowSelect(SelectEvent<SystemResource> event) {
         this.selectedResource = event.getObject();
-        FacesMessage msg = new FacesMessage("Action Selected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rd_resource_selection"), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }
