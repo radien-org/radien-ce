@@ -60,8 +60,6 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TenantRoleRESTServiceClientTest {
 
-    private static final Logger log = LoggerFactory.getLogger(LinkedAuthorizationRESTServiceClient.class);
-
     @InjectMocks
     TenantRoleRESTServiceClient target;
 
