@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="actionManagementTableDiv" styleClass="tableContainer">
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_action} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+
+            <b:panel title="#{msg.rd_action_information}" collapsible="false">
+            <b:panelGrid colSpans="12">
+                <b:panelGrid colSpans="2,10">
+                    <h:outputLabel value="#{msg.id}: "/>
+                    <h:outputText id="actionId" value="#{actionDataModel.selectedAction.id}"/>
+
+                    <h:outputLabel value="#{msg.name}: "/>
+                    <b:inputText id="actionName" value="#{actionDataModel.selectedAction.name}"/>
+                </b:panelGrid>
+            </b:panelGrid>
+            </b:panel>
+
+            <b:commandButton value="#{msg.save}"
+                             tooltip="#{msg.saveChanges}"
+                             iconAwesome="fa-save"
+                             action="#{actionDataModel.edit(actionDataModel.selectedAction)}"/>
+            <b:commandButton value="#{msg.rd_home_page}"
+                             tooltip="#{msg.returnToRecordList}"
+                             iconAwesome="fa-home"
+                             action="#{actionDataModel.returnHome}"/>
+        </h:form>
+    </ui:define>
+</ui:composition>

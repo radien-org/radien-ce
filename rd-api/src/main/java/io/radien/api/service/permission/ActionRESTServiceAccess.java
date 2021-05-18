@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Newton Carvalho
  * Contract for Rest Service Client regarding Action domain object
+ * @author Newton Carvalho
  */
 public interface ActionRESTServiceAccess extends Appframeable {
 
@@ -68,5 +68,13 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @throws MalformedURLException in case of URL specification
      */
     public boolean create(SystemAction action) throws SystemException;
+
+    /**
+     * Deletes given action
+     * @param actionId to be deleted
+     * @return true if action has been deleted with success or false if not
+     * @throws SystemException in case of URL specification
+     */
+    public boolean delete(long actionId) throws SystemException;
 
 }

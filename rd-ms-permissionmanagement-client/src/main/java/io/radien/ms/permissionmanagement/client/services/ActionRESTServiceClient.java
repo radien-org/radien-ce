@@ -233,6 +233,49 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
         }
     }
 
+    /**
+     * Requests to delete a given action
+     * @param actionId to be delete
+     * @return true if action has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean delete(long actionId) throws SystemException {
+        try {
+            return deleteRequest(actionId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteRequest(actionId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Deletes given action
+     * @param actionId to be delete
+     * @return true if action has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private boolean deleteRequest(long actionId) throws SystemException{
+        ActionResourceClient client;
+        try {
+            client = clientServiceUtil.getActionResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+
+            Response response = client.delete(actionId);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                log.error(response.readEntity(String.class));
+                return false;
+            }
+        } catch (ProcessingException | MalformedURLException e) {
+            throw new SystemException(e.getMessage());
+        }
+    }
+
     protected List<? extends SystemAction> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
