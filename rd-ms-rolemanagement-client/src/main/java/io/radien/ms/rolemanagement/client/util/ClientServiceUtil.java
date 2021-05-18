@@ -17,10 +17,14 @@ package io.radien.ms.rolemanagement.client.util;
 
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationResponseExceptionMapper;
 import io.radien.ms.rolemanagement.client.exception.RoleResponseExceptionMapper;
+import io.radien.ms.rolemanagement.client.exception.TenantRoleResponseExceptionMapper;
 import io.radien.ms.rolemanagement.client.providers.LinkedAuthorizationMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.RoleMessageBodyWriter;
+import io.radien.ms.rolemanagement.client.providers.TenantRoleMessageBodyWriter;
+import io.radien.ms.rolemanagement.client.providers.TenantRoleUserMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.services.LinkedAuthorizationResourceClient;
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
+import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import javax.enterprise.context.RequestScoped;
@@ -67,5 +71,23 @@ public class ClientServiceUtil {
                 .register(LinkedAuthorizationResponseExceptionMapper.class)
                 .register(LinkedAuthorizationMessageBodyWriter.class)
                 .build(LinkedAuthorizationResourceClient.class);
+    }
+
+
+    /**
+     * Communication requester constructor for the tenant role side
+     * @param urlStr Tenant Role Resource client URL
+     * @return a Tenant Role Resource Client that can perform multiple requests and
+     * with the correct exceptions, mappers an message writers
+     * @throws MalformedURLException in case of error in the given URL or communication cannot be performed
+     */
+    public TenantRoleResourceClient getTenantResourceClient(String urlStr) throws MalformedURLException {
+        URL url = new URL(urlStr);
+        return RestClientBuilder.
+                newBuilder()
+                .baseUrl(url)
+                .register(TenantRoleResponseExceptionMapper.class)
+                .register(TenantRoleMessageBodyWriter.class)
+                .build(TenantRoleResourceClient.class);
     }
 }
