@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.api.OAFAccess;
@@ -74,7 +89,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
-    public Optional<SystemTenantRole> getTenantRoleByIdCore(Long id) throws SystemException {
+    private Optional<SystemTenantRole> getTenantRoleByIdCore(Long id) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -200,7 +215,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
-    protected List<? extends SystemPermission> getPermissionsCore(Long tenantId, Long roleId, Long userId) throws SystemException {
+    private List<? extends SystemPermission> getPermissionsCore(Long tenantId, Long roleId, Long userId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -237,7 +252,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
-    protected List<? extends SystemTenant> getTenantsCore(Long userId, Long roleId) throws SystemException {
+    private List<? extends SystemTenant> getTenantsCore(Long userId, Long roleId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -276,7 +291,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
-    protected Boolean assignUserCore(Long tenantId, Long roleId, Long userId) throws SystemException {
+    private Boolean assignUserCore(Long tenantId, Long roleId, Long userId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -319,7 +334,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
-    protected Boolean unassignUserCore(Long tenantId, Long roleId, Long userId) throws SystemException {
+    private Boolean unassignUserCore(Long tenantId, Long roleId, Long userId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -363,7 +378,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
-    public Boolean assignPermissionCore(Long tenantId, Long roleId, Long permissionId) throws SystemException {
+    private Boolean assignPermissionCore(Long tenantId, Long roleId, Long permissionId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -406,7 +421,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
-    protected Boolean unassignPermissionCore(Long tenantId, Long roleId, Long permissionId) throws SystemException {
+    private Boolean unassignPermissionCore(Long tenantId, Long roleId, Long permissionId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
@@ -438,18 +453,18 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
     @Override
     public List<? extends SystemTenantRole> getTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction) throws SystemException {
         try {
-            return coreGetTenantRoles(tenantId, roleId, isLogicalConjunction);
+            return getTenantRolesCore(tenantId, roleId, isLogicalConjunction);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return coreGetTenantRoles(tenantId, roleId, isLogicalConjunction);
+                return getTenantRolesCore(tenantId, roleId, isLogicalConjunction);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException("Unable to recover expiredToken");
             }
         }
     }
 
-    protected List<? extends SystemTenantRole> coreGetTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction) throws SystemException {
+    private List<? extends SystemTenantRole> getTenantRolesCore(Long tenantId, Long roleId, boolean isLogicalConjunction) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));

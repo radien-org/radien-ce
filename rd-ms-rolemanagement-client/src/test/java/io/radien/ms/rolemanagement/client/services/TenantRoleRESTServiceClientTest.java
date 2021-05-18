@@ -1,28 +1,33 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.ms.rolemanagement.client.services;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
-import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.security.TokensPlaceHolder;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
-import io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
-import io.radien.ms.rolemanagement.client.util.TenantRoleModelMapper;
-import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
-import io.radien.ms.tenantmanagement.client.entities.Tenant;
-import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,9 +39,6 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
@@ -44,8 +46,6 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
