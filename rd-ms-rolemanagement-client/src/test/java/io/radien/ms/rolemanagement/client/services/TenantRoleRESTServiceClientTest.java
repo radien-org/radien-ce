@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -158,7 +159,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getById(1L)).thenThrow(new RuntimeException("test"));
+        when(client.getById(1L)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -221,7 +222,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.save(any())).thenThrow(new RuntimeException("test"));
+        when(client.save(any())).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -281,7 +282,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.exists(any(), any())).thenThrow(new RuntimeException("test"));
+        when(client.exists(any(), any())).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -326,7 +327,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getPermissions(1L, 2L, 3L)).thenThrow(new RuntimeException("test"));
+        when(client.getPermissions(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -371,7 +372,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getTenants(1L, 2L)).thenThrow(new RuntimeException("test"));
+        when(client.getTenants(1L, 2L)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -420,7 +421,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.assignUser(1L, 2L, 3L)).thenThrow(new RuntimeException("test"));
+        when(client.assignUser(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -469,7 +470,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.unassignUser(1L, 2L, 3L)).thenThrow(new RuntimeException("test"));
+        when(client.unassignUser(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -497,7 +498,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.assignPermission(1L, 2L, 3L)).thenThrow(new RuntimeException("test"));
+        when(client.assignPermission(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -568,7 +569,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.unassignPermission(1L, 2L, 3L)).thenThrow(new RuntimeException("test"));
+        when(client.unassignPermission(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -617,7 +618,7 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getSpecific(1L, 2L, true)).thenThrow(new RuntimeException("test"));
+        when(client.getSpecific(1L, 2L, true)).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
