@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 public class LazyResourcesDataModel extends LazyDataModel<SystemResource> {
 
-    private static final long serialVersionUID = -7412588857597749996L;
+    private static final long serialVersionUID = -8992504396009603417L;
     private ResourceRESTServiceAccess service;
 
     private List<? extends SystemResource> datasource;
