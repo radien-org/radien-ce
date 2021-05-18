@@ -9,20 +9,20 @@
 		<h:form id="roleManagementTableDiv" styleClass="tableContainer">
 			<b:row>
 				<h:panelGroup layout="block" styleClass="headerInformation">
-					<h1><h:outputText value="#{msg.rd_role} Creation"/></h1>
+					<h1><h:outputText value="#{msg.rd_role_creation}"/></h1>
 					<hr />
 				</h:panelGroup>
 			</b:row>
 
 			<b:column offsetXs="2" colXs="8">
-				<b:inputText id="roleName" value="#{roleDataModel.role.name}"
+				<b:inputText id="#{msg.rd_roleName}" value="#{roleDataModel.role.name}"
 							 required="true" requiredMessage="#{msg.rd_role_name_is_mandatory}"
 							 label="#{msg.name}"/>
 
-				<b:inputText id="roleDescription" value="#{roleDataModel.role.description}"
+				<b:inputText id="#{msg.rd_roleDescription}" value="#{roleDataModel.role.description}"
 							 label="#{msg.description}"/>
 
-				<b:datepicker validator="basicDateValidator"
+				<b:datepicker validator="#{msg.rd_role_basicDataValidator}"
 							  validatorMessage="#{msg.rd_role_termination_date_invalid}"
 							  value="#{roleDataModel.role.terminationDate}"
 							  label="#{msg.termination_date}"/>

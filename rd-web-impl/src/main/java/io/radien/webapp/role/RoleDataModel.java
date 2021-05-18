@@ -170,7 +170,7 @@ public class RoleDataModel extends AbstractManager implements Serializable {
 
     public void onRowSelect(SelectEvent<SystemRole> event) {
         this.selectedRole = event.getObject();
-        FacesMessage msg = new FacesMessage("Role Selected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rd_role_selected"), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }
