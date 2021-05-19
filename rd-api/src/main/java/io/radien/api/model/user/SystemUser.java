@@ -18,9 +18,6 @@
 package io.radien.api.model.user;
 
 import io.radien.api.Model;
-import io.radien.api.model.identity.SystemIdentity;
-
-import java.util.Date;
 
 import java.util.Date;
 
@@ -45,6 +42,9 @@ public interface SystemUser extends Model {
 
 	public String getSub();
 	public void setSub(String sub);
+
+	public String getActiveTenant();
+	public void setActiveTenant(String activeTenant);
 
 	public String getFirstname();
 	public void setFirstname(String firstname);
