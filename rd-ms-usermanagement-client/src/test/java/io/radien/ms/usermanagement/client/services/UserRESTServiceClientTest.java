@@ -232,7 +232,7 @@ public class UserRESTServiceClientTest {
     public void testGetAll() throws MalformedURLException {
         List<User> list = new ArrayList<>();
         list.add(UserFactory.create("test1", "lastname1",
-                "logon1", "sub", "email", 2L));
+                "logon1", "sub", null, "email", 2L));
         Page<SystemUser> page = new Page<>(list, 1, 1, 1);
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
@@ -272,7 +272,7 @@ public class UserRESTServiceClientTest {
     public void testGetAllRefreshTokenExpiration() throws MalformedURLException {
         List<User> list = new ArrayList<>();
         list.add(UserFactory.create("test1", "lastname1",
-                "logon1", "sub", "email", 2L));
+                "logon1", "sub", null, "email", 2L));
         Page<SystemUser> page = new Page<>(list, 1, 1, 1);
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
@@ -371,7 +371,7 @@ public class UserRESTServiceClientTest {
     @Test
     public void testGetUserBySubWithResults() throws Exception {
         String a = "a";
-        User user = UserFactory.create(null, null, "logon", null, null, null);
+        User user = UserFactory.create(null, null, "logon", null, null, null, null);
         user.setSub(a);
 
         JsonArrayBuilder builder = Json.createArrayBuilder();

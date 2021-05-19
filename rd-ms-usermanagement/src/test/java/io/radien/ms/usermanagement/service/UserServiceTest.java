@@ -72,7 +72,7 @@ public class UserServiceTest {
             uTest = userPage.getResults().get(0);
         } else {
             uTest = UserFactory.create("firstName", "lastName", "logon",
-                    sub, "email@email.pt", 2L);
+                    sub,null, "email@email.pt", 2L);
             userServiceAccess.save(uTest);
         }
     }
@@ -112,7 +112,7 @@ public class UserServiceTest {
     @Test
     public void testAddDuplicatedUserEmail() {
         User u = UserFactory.create("testAddFirstName", "testAddLastName", "testAddLogon",
-                null, "email@email.pt", 2L);
+                null,null, "email@email.pt", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.save(u));
         String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
                 " one resource with the same value for the field: Email Address\"}";
@@ -129,7 +129,7 @@ public class UserServiceTest {
      */
     @Test
     public void testAddDuplicatedUserLogon() {
-        User u = UserFactory.create("testAddFirstName", "testAddLastName", "logon", null,
+        User u = UserFactory.create("testAddFirstName", "testAddLastName", "logon", null,null,
                 "testAddEmail@testAddEmail.pt", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.save(u));
         String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
@@ -142,7 +142,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserList() throws UserNotFoundException, UniquenessConstraintException {
         User u = UserFactory.create("testGetIdFirstName2", "testGetIdLastName2", "testGetIdLogon2",
-                null, "testGetIdEmail2@testGetIdEmail2.pt", 2L);
+                null,null, "testGetIdEmail2@testGetIdEmail2.pt", 2L);
         userServiceAccess.save(u);
         List<? extends SystemUser> result = userServiceAccess.getUserList();
         assertNotNull(result);
@@ -160,7 +160,7 @@ public class UserServiceTest {
     @Test
     public void testGetById() throws UserNotFoundException, UniquenessConstraintException {
         User u = UserFactory.create("testGetIdFirstName", "testGetIdLastName", "testGetIdLogon",
-                null, "testGetIdEmail@testGetIdEmail.pt", 2L);
+                null,null, "testGetIdEmail@testGetIdEmail.pt", 2L);
         userServiceAccess.save(u);
         SystemUser result = userServiceAccess.get(u.getId());
         assertNotNull(result);
@@ -180,12 +180,12 @@ public class UserServiceTest {
     @Test
     public void testGetByListOfIds() throws UniquenessConstraintException, UserNotFoundException {
         User u1 = UserFactory.create("testGetByListOfIdsFirstName1", "testGetByListOfIdsLastName1",
-                "testGetByListOfIdsLogon1", null,
+                "testGetByListOfIdsLogon1", null,null,
                 "testGetByListOfIdsEmail1@testGetByListOfIdsEmail1.pt", 2L);
         userServiceAccess.save(u1);
 
         User u2 = UserFactory.create("testGetByListOfIdsFirstName2", "testGetByListOfIdsLastName2",
-                "testGetByListOfIdsLogon2", null,
+                "testGetByListOfIdsLogon2", null,null,
                 "testGetByListOfIdsEmail2@testGetByListOfIdsEmail2.pt", 2L);
         userServiceAccess.save(u2);
 
@@ -240,17 +240,17 @@ public class UserServiceTest {
     @Test
     public void testDeleteByListOfIds() throws UserNotFoundException, UniquenessConstraintException {
         User u1 = UserFactory.create("testDeleteByListOfIdsFirstName1", "testDeleteByListOfIdsLastName1",
-                "testDeleteByListOfIdsLogon1", null,
+                "testDeleteByListOfIdsLogon1", null,null,
                 "testDeleteByListOfIdsEmail1@testDeleteByListOfIdsEmail1.pt", 2L);
         userServiceAccess.save(u1);
 
         User u2 = UserFactory.create("testDeleteByListOfIdsFirstName2", "testDeleteByListOfIdsLastName2",
-                "testDeleteByListOfIdsLogon2", null,
+                "testDeleteByListOfIdsLogon2", null,null,
                 "testDeleteByListOfIdsEmail2@testDeleteByListOfIdsEmail2.pt", 2L);
         userServiceAccess.save(u2);
 
         User u3 = UserFactory.create("testDeleteByListOfIdsFirstName3", "testDeleteByListOfIdsLastName3",
-                "testDeleteByListOfIdsLogon3", null,
+                "testDeleteByListOfIdsLogon3", null,null,
                 "testDeleteByListOfIdsEmail3@testDeleteByListOfIdsEmail3.pt", 2L);
         userServiceAccess.save(u3);
 
@@ -273,13 +273,16 @@ public class UserServiceTest {
      */
     @Test
     public void testUpdateSuccess() throws Exception {
-        SystemUser u1 = UserFactory.create("testUpdateFirstName1", "testUpdateLastName1", "testUpdateLogon1", "testeUpdateSub1", "testeUpdateEmail1@testeUpdate1.pt", 2L);
+        SystemUser u1 = UserFactory.create("testUpdateFirstName1", "testUpdateLastName1",
+                "testUpdateLogon1", "testeUpdateSub1",null, "testeUpdateEmail1@testeUpdate1.pt", 2L);
         userServiceAccess.save(u1);
 
-        SystemUser u2 = UserFactory.create("testUpdateFirstName2", "testUpdateLastName2", "testUpdateLogon2", "testeUpdateSub2", "testeUpdateEmail2@testeUpdate2.pt", 2L);
+        SystemUser u2 = UserFactory.create("testUpdateFirstName2", "testUpdateLastName2",
+                "testUpdateLogon2", "testeUpdateSub2",null, "testeUpdateEmail2@testeUpdate2.pt", 2L);
         userServiceAccess.save(u2);
 
-        SystemUser u3 = UserFactory.create("testUpdateFirstName1", "testUpdateLastName3", "testUpdateLogon3", "testeUpdateSub3", "testeUpdateEmail3@testeUpdate3.pt", 2L);
+        SystemUser u3 = UserFactory.create("testUpdateFirstName1", "testUpdateLastName3",
+                "testUpdateLogon3", "testeUpdateSub3",null, "testeUpdateEmail3@testeUpdate3.pt", 2L);
 
         u3.setId(u1.getId());
 
@@ -293,7 +296,8 @@ public class UserServiceTest {
         assertEquals(u1.getSub(), u3.getSub());
         assertEquals(u1.getUserEmail(), u3.getUserEmail());
 
-        SystemUser u4 = UserFactory.create("testUpdateFirstName4", "testUpdateLastName4", "testUpdateLogon4", "testeUpdateSub4", "testeUpdateEmail4@testeUpdate4.pt", 2L);
+        SystemUser u4 = UserFactory.create("testUpdateFirstName4", "testUpdateLastName4",
+                "testUpdateLogon4", "testeUpdateSub4", null,"testeUpdateEmail4@testeUpdate4.pt", 2L);
 
         u4.setId(u1.getId());
 
@@ -310,20 +314,33 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
-        User u1 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName1", "testUpdateFailureMultipleRecordsLastName1", "testUpdateFailureMultipleRecordsLogon1", "testUpdateFailureMultipleRecordsSub1", "testUpdateFailureMultipleRecordsEmail1@testUpdateFailureMultipleRecordsEmail1.pt", 2L);
+        User u1 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName1",
+                "testUpdateFailureMultipleRecordsLastName1", "testUpdateFailureMultipleRecordsLogon1",
+                "testUpdateFailureMultipleRecordsSub1", null,
+                "testUpdateFailureMultipleRecordsEmail1@testUpdateFailureMultipleRecordsEmail1.pt", 2L);
         userServiceAccess.save(u1);
 
-        User u2 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName2", "testUpdateFailureMultipleRecordsLastName2", "testUpdateFailureMultipleRecordsLogon2", "testUpdateFailureMultipleRecordsSub2", "testUpdateFailureMultipleRecordsEmail2@testUpdateFailureMultipleRecordsEmail2.pt", 2L);
+        User u2 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName2",
+                "testUpdateFailureMultipleRecordsLastName2", "testUpdateFailureMultipleRecordsLogon2",
+                "testUpdateFailureMultipleRecordsSub2", null,
+                "testUpdateFailureMultipleRecordsEmail2@testUpdateFailureMultipleRecordsEmail2.pt", 2L);
         userServiceAccess.save(u2);
 
-        User u3 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName3", "testUpdateFailureMultipleRecordsLastName3", "testUpdateFailureMultipleRecordsLogon3", "testUpdateFailureMultipleRecordsSub3", "testUpdateFailureMultipleRecordsEmail3@testUpdateFailureMultipleRecordsEmail3.pt", 2L);
+        User u3 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName3",
+                "testUpdateFailureMultipleRecordsLastName3", "testUpdateFailureMultipleRecordsLogon3",
+                "testUpdateFailureMultipleRecordsSub3", null,
+                "testUpdateFailureMultipleRecordsEmail3@testUpdateFailureMultipleRecordsEmail3.pt", 2L);
         userServiceAccess.save(u3);
 
-        User u4 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName4", "testUpdateFailureMultipleRecordsLastName4", "testUpdateFailureMultipleRecordsLogon3", "testUpdateFailureMultipleRecordsSub4", "testUpdateFailureMultipleRecordsEmail2@testUpdateFailureMultipleRecordsEmail2.pt", 2L);
+        User u4 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName4",
+                "testUpdateFailureMultipleRecordsLastName4", "testUpdateFailureMultipleRecordsLogon3",
+                "testUpdateFailureMultipleRecordsSub4", null,
+                "testUpdateFailureMultipleRecordsEmail2@testUpdateFailureMultipleRecordsEmail2.pt", 2L);
 
         Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
         String actualMessageEmailAndLogon = exceptionEmailAndLogon.getMessage();
-        String expectedMessageEmailAndLogon = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Email Address and Logon\"}";
+        String expectedMessageEmailAndLogon = "{\"code\":101, \"key\":\"error.duplicated.field\"," +
+                " \"message\":\"There is more than one resource with the same value for the field: Email Address and Logon\"}";
         assertTrue(actualMessageEmailAndLogon.contains(expectedMessageEmailAndLogon));
 
     }
@@ -338,19 +355,31 @@ public class UserServiceTest {
         String expectedMessageEmail = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
                 " one resource with the same value for the field: Email Address\"}";
 
-        User u1 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName1", "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon1", "testUpdateFailureDuplicatedEmailSub1", "testUpdateFailureDuplicatedEmail1@testUpdateFailureDuplicatedEmail1.pt", 2L);
+        User u1 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName1",
+                "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon1",
+                "testUpdateFailureDuplicatedEmailSub1",null,
+                "testUpdateFailureDuplicatedEmail1@testUpdateFailureDuplicatedEmail1.pt", 2L);
         userServiceAccess.save(u1);
 
-        User u2 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName2", "testUpdateFailureDuplicatedEmailLastName2", "testUpdateFailureDuplicatedEmailLogon2", "testUpdateFailureDuplicatedEmailSub2", "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
+        User u2 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName2",
+                "testUpdateFailureDuplicatedEmailLastName2", "testUpdateFailureDuplicatedEmailLogon2",
+                "testUpdateFailureDuplicatedEmailSub2", null,
+                "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
         userServiceAccess.save(u2);
 
-        User u3 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName1", "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon3", "testUpdateFailureDuplicatedEmailSub1", "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
+        User u3 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName1",
+                "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon3",
+                "testUpdateFailureDuplicatedEmailSub1", null,
+                "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
 
         Exception exceptionEmail = assertThrows(Exception.class, () -> userServiceAccess.save(u3));
         String actualMessageEmail = exceptionEmail.getMessage();
         assertTrue(actualMessageEmail.contains(expectedMessageEmail));
 
-        User u4 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName4", "testUpdateFailureDuplicatedEmailLastName4", "testUpdateFailureDuplicatedEmailLogon3", "testUpdateFailureDuplicatedEmailSub4", "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
+        User u4 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName4",
+                "testUpdateFailureDuplicatedEmailLastName4", "testUpdateFailureDuplicatedEmailLogon3",
+                "testUpdateFailureDuplicatedEmailSub4", null,
+                "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
 
         Exception exceptionEmail2 = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
         String actualMessageEmail2 = exceptionEmail2.getMessage();
@@ -367,19 +396,31 @@ public class UserServiceTest {
         String expectedMessageLogon = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
                 " one resource with the same value for the field: Logon\"}";
 
-        User u1 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName1", "testUpdateFailureDuplicatedLogonLastName1", "testUpdateFailureDuplicatedLogonLogon1", "testUpdateFailureDuplicatedLogonSub1", "testUpdateFailureDuplicatedLogonEmail1@testUpdateFailureDuplicatedLogonEmail1.pt", 2L);
+        User u1 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName1",
+                "testUpdateFailureDuplicatedLogonLastName1", "testUpdateFailureDuplicatedLogonLogon1",
+                "testUpdateFailureDuplicatedLogonSub1", null,
+                "testUpdateFailureDuplicatedLogonEmail1@testUpdateFailureDuplicatedLogonEmail1.pt", 2L);
         userServiceAccess.save(u1);
 
-        User u2 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName2", "testUpdateFailureDuplicatedLogonLastName2", "testUpdateFailureDuplicatedLogonLogon2", "testUpdateFailureDuplicatedLogonSub2", "testUpdateFailureDuplicatedLogonEmail2@testUpdateFailureDuplicatedLogonEmail2.pt", 2L);
+        User u2 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName2",
+                "testUpdateFailureDuplicatedLogonLastName2", "testUpdateFailureDuplicatedLogonLogon2",
+                "testUpdateFailureDuplicatedLogonSub2", null,
+                "testUpdateFailureDuplicatedLogonEmail2@testUpdateFailureDuplicatedLogonEmail2.pt", 2L);
         userServiceAccess.save(u2);
 
-        User u3 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName1", "testUpdateFailureDuplicatedLogonLastName1", "testUpdateFailureDuplicatedLogonLogon2", "testUpdateFailureDuplicatedLogonSub2", "testUpdateFailureDuplicatedLogonEmail3@testUpdateFailureDuplicatedLogonEmail3.pt", 2L);
+        User u3 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName1",
+                "testUpdateFailureDuplicatedLogonLastName1", "testUpdateFailureDuplicatedLogonLogon2",
+                "testUpdateFailureDuplicatedLogonSub2", null,
+                "testUpdateFailureDuplicatedLogonEmail3@testUpdateFailureDuplicatedLogonEmail3.pt", 2L);
 
         Exception exceptionLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u3));
         String actualMessageLogon = exceptionLogon.getMessage();
         assertTrue(actualMessageLogon.contains(expectedMessageLogon));
 
-        User u4 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName4", "testUpdateFailureDuplicatedLogonLastName4", "testUpdateFailureDuplicatedLogonLogon2", "testUpdateFailureDuplicatedLogonSub4", "testUpdateFailureDuplicatedLogonEmail4@testUpdateFailureDuplicatedLogonEmail4.pt", 2L);
+        User u4 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName4",
+                "testUpdateFailureDuplicatedLogonLastName4", "testUpdateFailureDuplicatedLogonLogon2",
+                "testUpdateFailureDuplicatedLogonSub4", null,
+                "testUpdateFailureDuplicatedLogonEmail4@testUpdateFailureDuplicatedLogonEmail4.pt", 2L);
 
         Exception exceptionLogon2 = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
         String actualMessageLogon2 = exceptionLogon2.getMessage();
@@ -393,16 +434,28 @@ public class UserServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedEmailAndLogon() throws Exception {
-        User u1 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName1", "testUpdateFailureDuplicatedEmailAndLogonLastName1", "testUpdateFailureDuplicatedEmailAndLogonLogon1", "testUpdateFailureDuplicatedEmailAndLogonSub1", "testUpdateFailureDuplicatedEmailAndLogon1@testUpdateFailureDuplicatedEmailAndLogon1.pt", 2L);
+        User u1 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName1",
+                "testUpdateFailureDuplicatedEmailAndLogonLastName1", "testUpdateFailureDuplicatedEmailAndLogonLogon1",
+                "testUpdateFailureDuplicatedEmailAndLogonSub1", null,
+                "testUpdateFailureDuplicatedEmailAndLogon1@testUpdateFailureDuplicatedEmailAndLogon1.pt", 2L);
         userServiceAccess.save(u1);
 
-        User u2 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName2", "testUpdateFailureDuplicatedEmailAndLogonLastName2", "testUpdateFailureDuplicatedEmailAndLogonLogon2", "testUpdateFailureDuplicatedEmailAndLogonSub2", "testUpdateFailureDuplicatedEmailAndLogon2@testUpdateFailureDuplicatedEmailAndLogon2.pt", 2L);
+        User u2 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName2",
+                "testUpdateFailureDuplicatedEmailAndLogonLastName2", "testUpdateFailureDuplicatedEmailAndLogonLogon2",
+                "testUpdateFailureDuplicatedEmailAndLogonSub2", null,
+                "testUpdateFailureDuplicatedEmailAndLogon2@testUpdateFailureDuplicatedEmailAndLogon2.pt", 2L);
         userServiceAccess.save(u2);
 
-        User u3 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName3", "testUpdateFailureDuplicatedEmailAndLogonLastName3", "testUpdateFailureDuplicatedEmailAndLogonLogon3", "testUpdateFailureDuplicatedEmailAndLogonSub3", "testUpdateFailureDuplicatedEmailAndLogon3@testUpdateFailureDuplicatedEmailAndLogon3.pt", 2L);
+        User u3 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName3",
+                "testUpdateFailureDuplicatedEmailAndLogonLastName3", "testUpdateFailureDuplicatedEmailAndLogonLogon3",
+                "testUpdateFailureDuplicatedEmailAndLogonSub3", null,
+                "testUpdateFailureDuplicatedEmailAndLogon3@testUpdateFailureDuplicatedEmailAndLogon3.pt", 2L);
         userServiceAccess.save(u3);
 
-        User u4 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName1", "testUpdateFailureDuplicatedEmailAndLogonLastName1", "testUpdateFailureDuplicatedEmailAndLogonLogon2", "testUpdateFailureDuplicatedEmailAndLogonSub1", "testUpdateFailureDuplicatedEmailAndLogon2@testUpdateFailureDuplicatedEmailAndLogon2.pt", 2L);
+        User u4 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName1",
+                "testUpdateFailureDuplicatedEmailAndLogonLastName1", "testUpdateFailureDuplicatedEmailAndLogonLogon2",
+                "testUpdateFailureDuplicatedEmailAndLogonSub1", null,
+                "testUpdateFailureDuplicatedEmailAndLogon2@testUpdateFailureDuplicatedEmailAndLogon2.pt", 2L);
 
         Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
         System.out.println(exceptionEmailAndLogon.toString());
@@ -415,10 +468,10 @@ public class UserServiceTest {
     @Test
     public void testGetAllSort() throws UniquenessConstraintException, UserNotFoundException {
         SystemUser userA = UserFactory.create("a", "lastName", "aGetAllSort",
-                "a", "aGetAllSort@email.pt", 2L);
+                "a", null,"aGetAllSort@email.pt", 2L);
         userServiceAccess.save(userA);
         SystemUser userB = UserFactory.create("zzz", "lastName", "bGetAllSort",
-                "b", "bGetAllSort@email.pt", 2L);
+                "b", null,"bGetAllSort@email.pt", 2L);
         userServiceAccess.save(userB);
 
         List<String> orderby = new ArrayList<>();
@@ -442,13 +495,13 @@ public class UserServiceTest {
     @Test
     public void testGetByIsExactOrLogical() throws UniquenessConstraintException, UserNotFoundException {
         SystemUser testById1 = UserFactory.create("zz", "lastName", "zz",
-                "zz", "zz@b.pt", 1L);
+                "zz", null,"zz@b.pt", 1L);
 
         SystemUser testById2 = UserFactory.create("aa", "lastName", "aa",
-                "aa", "aa@b.pt", 1L);
+                "aa", null,"aa@b.pt", 1L);
 
         SystemUser testById3 = UserFactory.create("aabb", "lastName", "aabb",
-                "aabb", "aabb@b.pt", 1L);
+                "aabb", null,"aabb@b.pt", 1L);
 
         userServiceAccess.save(testById1);
         userServiceAccess.save(testById2);
@@ -475,6 +528,7 @@ public class UserServiceTest {
                     String.valueOf(i),
                     String.format("userb.%d", i),
                     String.format("sub%d", i),
+                    String.format("activeTenant%d", i),
                     String.format("userb.%d@emmail.pt", i),
                     1L));
         }
@@ -500,6 +554,7 @@ public class UserServiceTest {
                     String.valueOf(i),
                     String.format("userbatch.%d", i),
                     String.format("userbatch%d", i),
+                    String.format("userbatch%d", i),
                     String.format("userbatch.%d@emmail.pt", i),
                     1L));
         }
@@ -518,6 +573,7 @@ public class UserServiceTest {
             users.add(UserFactory.create("userbatch",
                     String.valueOf(i+secondSetSize),
                     String.format("userbatch.%d", i+secondSetSize),
+                    String.format("userbatch%d", i+secondSetSize),
                     String.format("userbatch%d", i+secondSetSize),
                     String.format("userbatch.%d@emmail.pt", i+secondSetSize),
                     1L));

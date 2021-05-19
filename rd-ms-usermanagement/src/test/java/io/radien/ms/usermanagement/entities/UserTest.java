@@ -28,7 +28,7 @@ public class UserTest extends TestCase {
 
     public UserTest() {
         user = UserFactory.create("testFirstName", "testLastname", "logonTest",
-                "89f43c61-3ea5-4d8a-b08b-3a437eaed84e", "emailtest@emailtest.pt", 3L);
+                "89f43c61-3ea5-4d8a-b08b-3a437eaed84e",null, "emailtest@emailtest.pt", 3L);
         user.setId(2L);
         user.setTerminationDate(terminationDate);
         user.setEnabled(true);

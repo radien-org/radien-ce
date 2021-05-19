@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 
 import static org.mockito.ArgumentMatchers.anyList;
@@ -45,7 +44,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
 
 public class UserBusinessServiceTest extends TestCase {
 
@@ -71,7 +69,7 @@ public class UserBusinessServiceTest extends TestCase {
 
         Long id = userBusinessService.getUserId("sub1");
         assertNotNull(id);
-        assertTrue(id == 1L);
+        assertEquals(1L, (long) id);
 
         id = userBusinessService.getUserId("sub2");
         assertNull(id);
@@ -96,7 +94,7 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testGet() throws UserNotFoundException {
-        SystemUser user = UserFactory.create("a","b","l","s","e",1L);
+        SystemUser user = UserFactory.create("a","b","l","s",null,"e",1L);
         List<Long> listIds = Collections.singletonList(2L);
         List<SystemUser> listUsers = Collections.singletonList(user);
         when(userServiceAccess.get(2L)).thenReturn(user);
@@ -108,8 +106,8 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testDelete() throws UserNotFoundException, RemoteResourceException {
-        SystemUser user = UserFactory.create("a", "b", "l", "subTest", "e", 1L);
+    public void testDelete() throws UserNotFoundException {
+        SystemUser user = UserFactory.create("a", "b", "l", "subTest",null, "e", 1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
         boolean success = false;
@@ -123,7 +121,7 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testSave() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User u = UserFactory.create("a","b","l","s","e",1L);
+        User u = UserFactory.create("a","b","l","s",null,"e",1L);
         doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
         try{
@@ -136,9 +134,9 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testSaveSkipKeycloak() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User user = UserFactory.create("a","b","l",null,"e",1L);
+        User user = UserFactory.create("a","b","l",null,null,"e",1L);
         user.setId(2L);
-        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        User user2 = UserFactory.create("a","b","l",null,null,"e",1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
 
         boolean success = true;
@@ -152,7 +150,7 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testSaveSkipKeycloakWithCreationRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        User user2 = UserFactory.create("a","b","l",null,null,"e",1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
         doThrow(new RemoteResourceException()).when(keycloakService).createUser(any());
         boolean success = true;
@@ -165,8 +163,8 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSaveEmptyLogon() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User user = UserFactory.create("a","b","",null,"e",1L);
+    public void testSaveEmptyLogon() throws UniquenessConstraintException, UserNotFoundException {
+        User user = UserFactory.create("a","b","",null,null,"e",1L);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
@@ -180,8 +178,8 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSaveEmptyEmail() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User user = UserFactory.create("a","b","logon",null,"",1L);
+    public void testSaveEmptyEmail() throws UniquenessConstraintException, UserNotFoundException {
+        User user = UserFactory.create("a","b","logon",null,null,"",1L);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
@@ -196,9 +194,9 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testSaveSkipKeycloakRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User user = UserFactory.create("a","b","l",null,"e",1L);
+        User user = UserFactory.create("a","b","l",null,null,"e",1L);
         user.setId(2L);
-        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        User user2 = UserFactory.create("a","b","l",null,null,"e",1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
         doThrow(new RemoteResourceException()).when(keycloakService).updateUser(any());
 
@@ -212,8 +210,8 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User u = UserFactory.create("a","b","","s","e",1L);
+    public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException {
+        User u = UserFactory.create("a","b","","s",null,"e",1L);
         boolean success = false;
         try{
             userBusinessService.save(u,false);
@@ -224,10 +222,10 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSaveCreationFalse() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User user = UserFactory.create("a","b","l",null,"e",1L);
+    public void testSaveCreationFalse() throws UniquenessConstraintException, UserNotFoundException {
+        User user = UserFactory.create("a","b","l",null,null,"e",1L);
         user.setId(2L);
-        User user2 = UserFactory.create("a","b","l",null,"e",1L);
+        User user2 = UserFactory.create("a","b","l",null,null,"e",1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
 
         boolean success = true;
@@ -256,7 +254,7 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testSendUpdatePasswordEmail() throws Exception {
-        User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
+        User user = UserFactory.create("first", "last", "logon", "test-sub",null, "u@email.com", 1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
         doNothing().when(keycloakService,"sendUpdatePasswordEmail", ArgumentMatchers.any());
         userBusinessService.sendUpdatePasswordEmail(user);
@@ -264,7 +262,7 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testCreate() {
-        SystemUser user = UserFactory.create("a","b","l",null,"e",1L);
+        SystemUser user = UserFactory.create("a","b","l",null,null,"e",1L);
         user.setId(2L);
 
         List<SystemUser> listOfUsers = new ArrayList<>();
@@ -280,8 +278,8 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSendPasswordEmail() throws RemoteResourceException {
-        User user = UserFactory.create("a","b","l",null,"e",1L);
+    public void testSendPasswordEmail() {
+        User user = UserFactory.create("a","b","l",null,null,"e",1L);
         user.setId(2L);
 
         boolean success = true;
