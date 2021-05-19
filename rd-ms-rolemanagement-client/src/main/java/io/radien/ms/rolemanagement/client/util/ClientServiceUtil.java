@@ -17,11 +17,9 @@ package io.radien.ms.rolemanagement.client.util;
 
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationResponseExceptionMapper;
 import io.radien.ms.rolemanagement.client.exception.RoleResponseExceptionMapper;
-import io.radien.ms.rolemanagement.client.exception.TenantRoleResponseExceptionMapper;
 import io.radien.ms.rolemanagement.client.providers.LinkedAuthorizationMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.RoleMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.TenantRoleMessageBodyWriter;
-import io.radien.ms.rolemanagement.client.providers.TenantRoleUserMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.services.LinkedAuthorizationResourceClient;
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
@@ -86,7 +84,7 @@ public class ClientServiceUtil {
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
-                .register(TenantRoleResponseExceptionMapper.class)
+                .register(RoleResponseExceptionMapper.class)
                 .register(TenantRoleMessageBodyWriter.class)
                 .build(TenantRoleResourceClient.class);
     }
