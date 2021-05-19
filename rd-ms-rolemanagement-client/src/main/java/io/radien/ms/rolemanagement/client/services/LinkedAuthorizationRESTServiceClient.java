@@ -328,6 +328,44 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
         }
     }
 
+    /**
+     * Will request to get all the Linked Authorization in the DB searching for the field user id if not possible will
+     * refresh the access token and retry
+     * @param userId to be looked after
+     * @return list of linked authorizations
+     * @throws SystemException in case it founds multiple linked authorizations or if URL is malformed
+     */
+    @Override
+    public List<? extends SystemLinkedAuthorization> getSpecificAssociationByUserId(Long userId) throws SystemException {
+        try {
+            return getSpecificAssociationByUserIdRequester(userId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getSpecificAssociationByUserIdRequester(userId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Gets all the Linked Authorization in the DB searching for the field user id
+     * @param userId to be looked after
+     * @return list of linked authorizations
+     * @throws SystemException in case it founds multiple linked authorizations or if URL is malformed
+     */
+    private List<? extends SystemLinkedAuthorization> getSpecificAssociationByUserIdRequester(Long userId) throws SystemException {
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getSpecificAssociation(null, null,null,userId,false);
+            return ListLinkedAuthorizationModelMapper.map((InputStream) response.getEntity());
+        } catch (ExtensionException|ProcessingException | MalformedURLException e){
+            throw new SystemException(e.getMessage());
+        }
+    }
+
     @Override
     public OAFAccess getOAF() {
         return oaf;

@@ -395,4 +395,56 @@ public class LinkedAuthorizationRESTServiceClientTest {
         }
         assertTrue(success);
     }
+
+    @Test
+    public void getSpecificAssociationByUserId() throws MalformedURLException, SystemException {
+        Long user = 2L;
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        LinkedAuthorizationResourceClient linkedAuthorizationClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationClient.getSpecificAssociation(null, null, null, user,false)).thenReturn(response);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationClient);
+
+        List<? extends SystemLinkedAuthorization> list = new ArrayList<>();
+
+        assertEquals(list,target.getSpecificAssociationByUserId(2L));
+    }
+
+    @Test
+    public void testSpecificAssociationByUserIdException() throws Exception {
+        boolean success = false;
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        try {
+            target.getSpecificAssociationByUserId(2L);
+        }catch (SystemException se){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testSpecificAssociationByUserIdTokenExpiration() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.getSpecificAssociation(any(), any(), any(), anyLong(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getSpecificAssociationByUserId(2L);
+    }
 }
