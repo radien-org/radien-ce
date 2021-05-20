@@ -74,4 +74,12 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @throws SystemException
      */
     Boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) throws SystemException;
+
+    /**
+     * Requests find of linked authorization by user id
+     * @param userId to be found
+     * @return a list of system linked authorizations
+     * @throws SystemException in case of any issue
+     */
+    List<? extends SystemLinkedAuthorization> getSpecificAssociationByUserId(Long userId) throws SystemException;
 }
