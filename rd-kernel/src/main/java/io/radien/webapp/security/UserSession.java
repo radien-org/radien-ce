@@ -73,7 +73,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 		SystemUser user;
 		if(!existingUser.isPresent()){
-			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,email,getOAF().getSystemAdminUserId());
+			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,null,email,getOAF().getSystemAdminUserId());
 			userClientService.create(user,true);
 		} else {
 			user = existingUser.get();

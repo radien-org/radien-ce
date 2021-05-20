@@ -43,13 +43,14 @@ public class UserFactoryTest extends TestCase {
         builder.add("createUser", 2L);
         builder.addNull("lastUpdateUser");
         builder.addNull("sub");
+        builder.addNull("activeTenant");
         builder.add("firstname", "testFirstName");
         builder.add("lastname", "testLastname");
         builder.add("delegatedCreation",false);
         builder.add("enabled",true);
         json = builder.build();
 
-        user = UserFactory.create("testFirstName", "testLastname", "logonTest", null, "emailtest@emailtest.pt", 2L);
+        user = UserFactory.create("testFirstName", "testLastname", "logonTest", null,null,"emailtest@emailtest.pt", 2L);
     }
 
     /**

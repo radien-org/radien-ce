@@ -19,7 +19,10 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 
 public class PrincipalTest {
@@ -34,6 +37,7 @@ public class PrincipalTest {
         principal.setUserEmail("testEmail@testEmail.pt");
         principal.setFirstname("testFirstName");
         principal.setLastname("testLastName");
+        principal.setActiveTenant(null);
         principal.setSub("42a64cb0-4600-11eb-b378-0242ac130002");
         principal.setTerminationDate(terminationDate);
         principal.setEnabled(true);
@@ -53,6 +57,7 @@ public class PrincipalTest {
         assertEquals(p.getUserEmail(), principal.getUserEmail());
         assertEquals(p.getFirstname(), principal.getFirstname());
         assertEquals(p.getLastname(), principal.getLastname());
+        assertNull(p.getActiveTenant());
         assertEquals(p.getSub(), principal.getSub());
         assertEquals(p.getTerminationDate(), principal.getTerminationDate());
         assertEquals(p.isEnabled(), principal.isEnabled());
@@ -149,13 +154,13 @@ public class PrincipalTest {
 
     @Test
     public void getDelegatedCreation() {
-        assertEquals(false, principal.isDelegatedCreation());
+        assertFalse(principal.isDelegatedCreation());
     }
 
     @Test
     public void setDelegatedCreation() {
         principal.setDelegatedCreation(true);
-        assertEquals(true, principal.isDelegatedCreation());
+        assertTrue(principal.isDelegatedCreation());
     }
 
     @Test

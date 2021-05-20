@@ -32,6 +32,7 @@ public class Principal implements SystemUser {
     private String firstname;
     private String lastname;
     private String sub;
+    private Long activeTenant;
     private Date terminationDate;
     private boolean enabled;
     private boolean delegatedCreation;
@@ -50,6 +51,7 @@ public class Principal implements SystemUser {
         this.firstname = p.getFirstname();
         this.lastname = p.getLastname();
         this.sub = p.getSub();
+        this.activeTenant = p.getActiveTenant();
         this.terminationDate = p.getTerminationDate();
         this.enabled = p.enabled;
         this.setCreateDate(p.getCreateDate());
@@ -124,6 +126,16 @@ public class Principal implements SystemUser {
     @Override
     public void setSub(String sub) {
         this.sub = sub;
+    }
+
+    @Override
+    public Long getActiveTenant() {
+        return activeTenant;
+    }
+
+    @Override
+    public void setActiveTenant(Long activeTenant) {
+        this.activeTenant = activeTenant;
     }
 
     public boolean isDelegatedCreation() {

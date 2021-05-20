@@ -20,7 +20,7 @@ import io.radien.ms.usermanagement.legacy.UserFactory;
 import org.junit.Test;
 import org.keycloak.representations.idm.UserRepresentation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Bruno Gama
@@ -30,7 +30,7 @@ public class KeycloakFactoryTest {
     @Test
     public void convertToUserRepresentation() {
         SystemUser user = UserFactory.create("firstName", "lastName",
-                "logon", "sub", "email", 2L);
+                "logon", "sub",null, "email", 2L);
 
         UserRepresentation representations = KeycloakFactory.convertToUserRepresentation(user);
 

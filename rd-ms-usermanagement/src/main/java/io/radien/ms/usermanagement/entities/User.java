@@ -19,10 +19,6 @@ import java.util.Date;
 
 import javax.persistence.*;
 
-import io.radien.api.model.user.AbstractUserModel;
-import io.radien.api.model.user.SystemUser;
-
-
 /**
  * JPA entity representing a user in the openappframe system
  *
@@ -82,6 +78,11 @@ public class User extends io.radien.ms.usermanagement.client.entities.User {
 	@Override
 	public String getSub() {
 		return super.getSub();
+	}
+
+	@Override
+	public Long getActiveTenant() {
+		return super.getActiveTenant();
 	}
 
 	@Column
