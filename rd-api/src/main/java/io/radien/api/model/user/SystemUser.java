@@ -43,8 +43,8 @@ public interface SystemUser extends Model {
 	public String getSub();
 	public void setSub(String sub);
 
-	public String getActiveTenant();
-	public void setActiveTenant(String activeTenant);
+	public Long getActiveTenant();
+	public void setActiveTenant(Long activeTenant);
 
 	public String getFirstname();
 	public void setFirstname(String firstname);

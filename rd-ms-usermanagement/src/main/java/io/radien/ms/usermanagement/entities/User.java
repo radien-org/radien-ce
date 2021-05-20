@@ -81,7 +81,7 @@ public class User extends io.radien.ms.usermanagement.client.entities.User {
 	}
 
 	@Override
-	public String getActiveTenant() {
+	public Long getActiveTenant() {
 		return super.getActiveTenant();
 	}
 

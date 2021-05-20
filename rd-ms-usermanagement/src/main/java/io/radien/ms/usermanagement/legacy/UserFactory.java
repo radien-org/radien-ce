@@ -50,7 +50,7 @@ public class UserFactory implements Serializable {
 	 * @param email user email
 	 * @return a User object to be used
 	 */
-	public static User create(String firstname, String lastname, String logon, String sub, String activeTenant, String email, Long createdUser) {
+	public static User create(String firstname, String lastname, String logon, String sub, Long activeTenant, String email, Long createdUser) {
 		User u = new User();
 		u.setFirstname(firstname);
 		u.setLastname(lastname);
@@ -81,7 +81,7 @@ public class UserFactory implements Serializable {
 		Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
 		Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", person);
 		String sub = FactoryUtilService.getStringFromJson("sub", person);
-		String activeTenant = FactoryUtilService.getStringFromJson("activeTenant", person);
+		Long activeTenant = FactoryUtilService.getLongFromJson("activeTenant", person);
 		String firstname = FactoryUtilService.getStringFromJson("firstname", person);
 		String lastname = FactoryUtilService.getStringFromJson("lastname",person);
 		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);

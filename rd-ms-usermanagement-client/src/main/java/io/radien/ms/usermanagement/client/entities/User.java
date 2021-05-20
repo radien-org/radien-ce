@@ -31,7 +31,7 @@ public class User extends AbstractUserModel implements SystemUser {
 	private String firstname;
 	private String lastname;
 	private String sub;
-	private String activeTenant;
+	private Long activeTenant;
 	private Date terminationDate;
 	private boolean enabled;
 	private boolean delegatedCreation;
@@ -122,11 +122,11 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.sub = sub;
 	}
 
-	public String getActiveTenant() {
+	public Long getActiveTenant() {
 		return activeTenant;
 	}
 
-	public void setActiveTenant(String activeTenant) {
+	public void setActiveTenant(Long activeTenant) {
 		this.activeTenant = activeTenant;
 	}
 

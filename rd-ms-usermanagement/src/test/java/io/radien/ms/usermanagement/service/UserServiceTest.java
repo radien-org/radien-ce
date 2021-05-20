@@ -528,7 +528,7 @@ public class UserServiceTest {
                     String.valueOf(i),
                     String.format("userb.%d", i),
                     String.format("sub%d", i),
-                    String.format("activeTenant%d", i),
+                    null,
                     String.format("userb.%d@emmail.pt", i),
                     1L));
         }
@@ -554,7 +554,7 @@ public class UserServiceTest {
                     String.valueOf(i),
                     String.format("userbatch.%d", i),
                     String.format("userbatch%d", i),
-                    String.format("userbatch%d", i),
+                    null,
                     String.format("userbatch.%d@emmail.pt", i),
                     1L));
         }
@@ -574,7 +574,7 @@ public class UserServiceTest {
                     String.valueOf(i+secondSetSize),
                     String.format("userbatch.%d", i+secondSetSize),
                     String.format("userbatch%d", i+secondSetSize),
-                    String.format("userbatch%d", i+secondSetSize),
+                    null,
                     String.format("userbatch.%d@emmail.pt", i+secondSetSize),
                     1L));
         }

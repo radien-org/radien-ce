@@ -42,7 +42,7 @@ public class UserFactory {
      * @param email user email
      * @return a User object to be used
      */
-    public static User create(String firstname, String lastname, String logon, String sub, String activeTenant, String email, Long createdUser){
+    public static User create(String firstname, String lastname, String logon, String sub, Long activeTenant, String email, Long createdUser){
         User u = new User();
         u.setFirstname(firstname);
         u.setLastname(lastname);
@@ -73,7 +73,7 @@ public class UserFactory {
         Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
         Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", person);
         String sub = FactoryUtilService.getStringFromJson("sub", person);
-        String activeTenant = FactoryUtilService.getStringFromJson("activeTenant", person);
+        Long activeTenant = FactoryUtilService.getLongFromJson("activeTenant", person);
         String firstname = FactoryUtilService.getStringFromJson("firstname", person);
         String lastname = FactoryUtilService.getStringFromJson("lastname",person);
         Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",person);
@@ -119,7 +119,7 @@ public class UserFactory {
         FactoryUtilService.addValueLong(builder, "createUser", person.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", person.getLastUpdateUser());
         FactoryUtilService.addValue(builder, "sub", person.getSub());
-        FactoryUtilService.addValue(builder, "activeTenant", person.getActiveTenant());
+        FactoryUtilService.addValueLong(builder, "activeTenant", person.getActiveTenant());
         FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
         FactoryUtilService.addValue(builder, "lastname", person.getLastname());
         FactoryUtilService.addValueBoolean(builder, "delegatedCreation", person.isDelegatedCreation());
