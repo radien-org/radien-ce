@@ -19,6 +19,7 @@ package io.radien.webapp.tenant;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantType;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.exception.ProcessingException;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
@@ -35,6 +36,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,6 +57,9 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     private SystemTenant selectedTenant;
 
     private SystemTenant tenant = new Tenant();
+
+    protected Date tenantStartDate;
+    protected Date tenantEndDate;
 
     @PostConstruct
     public void init() {
@@ -73,7 +81,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     public String save(SystemTenant r) {
         try {
             validateMandatoryFields(r);
-
+            convertAndSetDates(r, this.tenantStartDate, this.tenantEndDate);
             if (r.getId() == null) {
                 this.service.create(r);
             } else {
@@ -166,6 +174,19 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         return "tenants";
     }
 
+    protected void convertAndSetDates(SystemTenant tenant, Date tenantStartDate, Date tenantEndDate) {
+        if (tenantStartDate != null) {
+            LocalDate startDate = this.tenantStartDate.toInstant().atZone(ZoneId.systemDefault()).
+                    toLocalDate();
+            tenant.setTenantStart(startDate);
+        }
+        if (tenantEndDate != null) {
+            LocalDate endDate = this.tenantEndDate.toInstant().atZone(ZoneId.systemDefault()).
+                    toLocalDate();
+            tenant.setTenantEnd(endDate);
+        }
+    }
+
     public SystemTenant getTenant() {
         return tenant;
     }
@@ -205,6 +226,14 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     public void setService(TenantRESTServiceAccess service) {
         this.service = service;
     }
+
+    public Date getTenantStartDate() { return tenantStartDate; }
+
+    public void setTenantStartDate(Date tenantStartDate) { this.tenantStartDate = tenantStartDate; }
+
+    public Date getTenantEndDate() { return tenantEndDate; }
+
+    public void setTenantEndDate(Date tenantEndDate) { this.tenantEndDate = tenantEndDate; }
 
     public void onRowSelect(SelectEvent<SystemTenant> event) {
         this.selectedTenant= event.getObject();
