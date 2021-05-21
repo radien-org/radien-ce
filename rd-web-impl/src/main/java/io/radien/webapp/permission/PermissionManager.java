@@ -85,6 +85,7 @@ public class PermissionManager extends AbstractManager {
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
+            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
         }
         return "permission";
     }

@@ -61,6 +61,13 @@
 								 iconAwesome="fa-save"
 								 rendered="#{userDataModel.selectedUser == null}"
 								 action="#{userDataModel.updateUser(userDataModel.user)}"/>
+
+				<b:commandButton value="Associate"
+								 tooltip="Associate Tenant!"
+								 iconAwesome="fa-cogs"
+								 rendered="#{userDataModel.tenantAssociationProcessAllowed}"
+								 action="#{userDataModel.prepareTenantAssociation}"/>
+
 				<b:commandButton value="#{msg.rd_home_page}"
 								 tooltip="Return to user List!"
 								 iconAwesome="fa-home"
