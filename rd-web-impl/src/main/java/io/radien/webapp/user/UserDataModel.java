@@ -17,7 +17,6 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.role.RoleRESTServiceAccess;
@@ -27,7 +26,6 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.Role;
-import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
@@ -48,8 +46,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Rajesh Gavvala
@@ -68,19 +64,10 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @Inject
     private WebAuthorizationChecker webAuthorizationChecker;
 
-    @Inject
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
-
-    @Inject
-    private RoleRESTServiceAccess roleRESTServiceAccess;
-
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
     private SystemUser selectedUser;
     private SystemUser userForTenantAssociation;
     private SystemUser user = new User();
-
-    private SystemTenant tenantForAssociation = new Tenant();
-    private SystemRole roleForAssociation = new Role();
 
     private boolean hasUserAdministratorRoleAccess = false;
     private boolean hasTenantAdministratorRoleAccess = false;

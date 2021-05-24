@@ -89,7 +89,7 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
 
     /**
      * Validates if the current user has any of the multiple correct roles given
-     * System Administrator or User AdministratorhasUserAdministratorRoleAccess
+     * System Administrator or User Administrator
      * @return true if user has one of those
      */
     public boolean hasUserAdministratorRoleAccess() {
