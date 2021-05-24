@@ -313,41 +313,35 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return true if the process can be handled/started, false otherwise
      */
     public boolean isTenantAssociationProcessAllowed() {
-        if (!isHasTenantAdministratorRoleAccess()) {
+        if (!hasTenantAdministratorRoleAccess) {
             return false;
         }
-        this.userForTenantAssociation = findUserToAssociate();
-        return this.userForTenantAssociation != null;
+        try {
+            this.userForTenantAssociation = findUserToAssociate();
+            return this.userForTenantAssociation != null;
+        }
+        catch(Exception e) {
+            this.handleError(e, JSFUtil.getMessage("rd_tenant_association_error_retrieve_user"));
+            return false;
+        }
     }
 
     /**
      * Find the user that may participate on the tenant association process
      * @return SystemUser instance, or null in case of not found any user
+     * @throws SystemException in case of any error during the attempt to retrieve SystemUser
      */
-    protected SystemUser findUserToAssociate() {
+    protected SystemUser findUserToAssociate() throws SystemException{
         // Corresponds to the user picked from the data grid (user selected to be update, etc)
         if (this.selectedUser != null && this.selectedUser.getId() != null) {
             return this.selectedUser;
         }
         // Corresponds to the user recently created
         if (this.user != null && !StringUtils.isEmpty(this.user.getLogon())) {
-            return getSystemUserFromLogon(this.user.getLogon());
+            // Retrieve a SystemUser using logon as parameter
+            return service.getUserByLogon(this.user.getLogon()).orElse(null);
         }
         return null;
-    }
-
-    /**
-     * Retrieve a SystemUser using logon as parameter
-     * @param logon parameter that will guide the search process
-     * @return User instance (if there is one available for the informed logon)
-     */
-    protected SystemUser getSystemUserFromLogon(String logon) {
-        try {
-            return service.getUserByLogon(logon).orElse(null);
-        } catch(Exception e) {
-            this.log.error("Error retrieving user from logon", e);
-            return null;
-        }
     }
 
     /**

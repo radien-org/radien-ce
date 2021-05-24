@@ -52,24 +52,24 @@
 
 				<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
 				<b:commandButton value="#{msg.save}"
-								 tooltip="Save changes!"
+								 tooltip="#{msg.saveChanges}"
 								 iconAwesome="fa-save"
 								 rendered="#{userDataModel.selectedUser != null}"
 								 action="#{userDataModel.updateUser(userDataModel.selectedUser)}"/>
 				<b:commandButton value="#{msg.save}"
-								 tooltip="Save changes!"
+								 tooltip="#{msg.saveChanges}"
 								 iconAwesome="fa-save"
 								 rendered="#{userDataModel.selectedUser == null}"
 								 action="#{userDataModel.updateUser(userDataModel.user)}"/>
 
-				<b:commandButton value="Associate"
-								 tooltip="Associate Tenant!"
+				<b:commandButton value="#{msg.associate}"
+								 tooltip="#{msg.rd_tenant_association}"
 								 iconAwesome="fa-cogs"
 								 rendered="#{userDataModel.tenantAssociationProcessAllowed}"
 								 action="#{userDataModel.prepareTenantAssociation}"/>
 
 				<b:commandButton value="#{msg.rd_home_page}"
-								 tooltip="Return to user List!"
+								 tooltip="#{msg.returnToUserList}"
 								 iconAwesome="fa-home"
 								 immediate="true"
 								 action="#{userDataModel.returnHome}"/>

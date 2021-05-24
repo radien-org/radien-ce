@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.webapp.user;
 
 import io.radien.api.model.user.SystemUser;
@@ -24,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -44,9 +60,22 @@ public class UserDataModelTest {
     @Mock
     private UserRESTServiceAccess userRESTServiceAccess;
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
+        FacesContext facesContext = Mockito.mock(FacesContext.class);
+        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
+        try {
+            Method setter = FacesContext.class.getDeclaredMethod("setCurrentInstance",
+                    new Class[] { FacesContext.class });
+            setter.setAccessible(true);
+            setter.invoke(null, new Object[] { facesContext });
+        } catch (Exception e) {
+            logger.error("Error setting mocked FacesContext instance", e);
+        }
     }
 
     /**
@@ -177,111 +206,4 @@ public class UserDataModelTest {
         this.userDataModel.setUserForTenantAssociation(user);
         assertEquals(this.userDataModel.getUserForTenantAssociation(), user);
     }
-
-
-//
-//    /**
-//     * Check if the tenant association process is allowed to be started from
-//     * the following perspective:
-//     * <ul>
-//     *     <li>Current logged user has the right roles (the one who will start/trigger the process)</li>
-//     *     <li>There is a user available to be associated with a Tenant (i.e a newly created user
-//     *     or a previously selected one from the data grid)</li>
-//     * </ul>
-//     * @return true if the process can be handled/started, false otherwise
-//     */
-//    public boolean isTenantAssociationProcessAllowed() {
-//        if (!isHasTenantAdministratorRoleAccess()) {
-//            return false;
-//        }
-//        this.userForTenantAssociation = findUserToAssociate();
-//        return this.userForTenantAssociation != null;
-//    }
-//
-//    /**
-//     * Find the user that may participate on the tenant association process
-//     * @return SystemUser instance, or null in case of not found any user
-//     */
-//    protected SystemUser findUserToAssociate() {
-//        // Corresponds to the user picked from the data grid (user selected to be update, etc)
-//        if (this.selectedUser != null && this.selectedUser.getId() != null) {
-//            return this.selectedUser;
-//        }
-//        // Corresponds to the user recently created
-//        if (this.user != null && !StringUtils.isEmpty(this.user.getLogon())) {
-//            return getSystemUserFromLogon(this.user.getLogon());
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * Retrieve a SystemUser using logon as parameter
-//     * @param logon parameter that will guide the search process
-//     * @return User instance (if there is one available for the informed logon)
-//     */
-//    protected SystemUser getSystemUserFromLogon(String logon) {
-//        try {
-//            return service.getUserByLogon(logon).orElse(null);
-//        } catch(Exception e) {
-//            this.log.error("Error retrieving user from logon", e);
-//            return null;
-//        }
-//    }
-//
-//    /**
-//     * This method do some preparing process (Pre-Processing) before redirecting
-//     * to the Tenant association screen
-//     * @return url mapping that refers Tenant association screen
-//     */
-//    public String prepareTenantAssociation() {
-//        return "pretty:userTenantAssociation";
-//    }
-//
-//    /**
-//     * Validates if current user has System Administrator or User Administrator roles
-//     * @return true in case of so
-//     */
-//    public boolean getHasUserAdministratorRoleAccess() {
-//        return hasUserAdministratorRoleAccess;
-//    }
-//
-//    /**
-//     * Sets if current user has System Administrator or User Administrator roles
-//     */
-//    public void setHasUserAdministratorRoleAccess(boolean hasUserAdministratorRoleAccess) {
-//        this.hasUserAdministratorRoleAccess = hasUserAdministratorRoleAccess;
-//    }
-//
-//    /**
-//     * Flag indicating if current user has System Administrator or any other Tenant Administration role
-//     * @return true if such condition is affirmative, false otherwise
-//     */
-//    public boolean isHasTenantAdministratorRoleAccess() {
-//        return hasTenantAdministratorRoleAccess;
-//    }
-//
-//    /**
-//     * Sets a flag indicating if the current user has System Administrator or
-//     * any other Tenant Administration role
-//     * @param hasTenantAdministratorRoleAccess boolean value to be set
-//     */
-//    public void setHasTenantAdministratorRoleAccess(boolean hasTenantAdministratorRoleAccess) {
-//        this.hasTenantAdministratorRoleAccess = hasTenantAdministratorRoleAccess;
-//    }
-//
-//    /**
-//     * Getter that refers tne User for whom will be applied the association with a tenant and a role
-//     * @return user for whom will done the associaton
-//     */
-//    public SystemUser getUserForTenantAssociation() {
-//        return userForTenantAssociation;
-//    }
-//
-//    /**
-//     * Setter that refers tne User for whom will be applied the association with a tenant and a role
-//     * @param userForTenantAssociation  user for whom will done the associaton
-//     */
-//    public void setUserForTenantAssociation(SystemUser userForTenantAssociation) {
-//        this.userForTenantAssociation = userForTenantAssociation;
-//    }
 }

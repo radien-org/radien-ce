@@ -12,7 +12,7 @@
 			<b:container>
 				<b:row>
 					<h:panelGroup layout="block" styleClass="headerInformation">
-						<h1><h:outputText value="#{msg.rd_user} - Tenant Association"/></h1>
+						<h1><h:outputText value="#{msg.rd_user} - #{msg.rd_tenant} #{msg.association}"/></h1>
 						<hr />
 					</h:panelGroup>
 				</b:row>
@@ -58,7 +58,7 @@
 					</b:row>
 					<b:buttonGroup>
 						<b:commandButton value="#{msg.rd_cancel_association}"
-										 tooltip="Return to user List!"
+										 tooltip="#{msg.returnToUserList}"
 										 iconAwesome="fa-home"
 										 immediate="true"
 										 action="#{userDataModel.returnHome}"/>
@@ -66,19 +66,20 @@
 						<b:button id="confirm-user-tenant-association-button"
 								  onclick="$('.formValidationModalConfirmTenantAssociation').modal('show')"
 								  value="#{msg.rd_associate}"
-								  tooltip="Associate Tenant!"
+								  tooltip="#{msg.rd_tenant_association}"
 								  iconAwesome="fa-cogs"/>
 						<b:modal id="model"
-								 title="Confirmation"
+								 title="#{msg.confirmation}"
 								 styleClass="formValidationModalConfirmTenantAssociation"
 								 closable="false"
 								 close-on-escape="false" backdrop="false">
-							<p>Are you sure you want to confirm tenant association for the informed user?</p>
+							<p>#{msg.rd_tenant_association_confirm}</p>
 							<f:facet name="footer">
-								<b:commandButton value="No"
+								<b:commandButton value="#{msg.no}"
+												 tooltip="#{msg.no}"
 												 onclick="{ $('.formValidationModalConfirmTenantAssociation').modal('hide') } "
 								/>
-								<b:commandButton value="Yes" look="warning"
+								<b:commandButton value="#{msg.yes}" look="warning"
 												 action="#{tenantRoleAssociationManager.associateUser(userDataModel.userForTenantAssociation.id, 'pretty:users')}"
 												 oncomplete="{ $('.formValidationModalConfirmTenantAssociation').modal('hide') } "/>
 							</f:facet>
