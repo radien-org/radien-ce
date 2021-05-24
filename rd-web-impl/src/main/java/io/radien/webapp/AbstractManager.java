@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
 import java.io.Serializable;
 import java.text.MessageFormat;
 
@@ -41,7 +42,11 @@ public abstract class AbstractManager implements Serializable {
 
     protected void handleMessage(FacesMessage.Severity severity, String pattern, Object ... params) {
         String msg = MessageFormat.format(pattern, params);
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, msg, null));
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        Flash flash = facesContext.getExternalContext().getFlash();
+        flash.setKeepMessages(true);
+        flash.setRedirect(true);
+        facesContext.addMessage(null, new FacesMessage(severity, msg, null));
         log.info(msg);
     }
 

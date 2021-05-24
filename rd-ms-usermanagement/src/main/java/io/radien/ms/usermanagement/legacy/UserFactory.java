@@ -119,7 +119,7 @@ public class UserFactory implements Serializable {
 		FactoryUtilService.addValueLong(builder, "createUser", person.getCreateUser());
 		FactoryUtilService.addValueLong(builder, "lastUpdateUser", person.getLastUpdateUser());
 		FactoryUtilService.addValue(builder, "sub", person.getSub());
-		FactoryUtilService.addValue(builder, "activeTenant", person.getActiveTenant());
+		FactoryUtilService.addValueLong(builder, "activeTenant", person.getActiveTenant());
 		FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
 		FactoryUtilService.addValue(builder, "lastname", person.getLastname());
 		FactoryUtilService.addValueBoolean(builder, "delegatedCreation", person.isDelegatedCreation());

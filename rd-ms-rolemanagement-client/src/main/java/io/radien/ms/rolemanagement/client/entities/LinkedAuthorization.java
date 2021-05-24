@@ -18,6 +18,8 @@ package io.radien.ms.rolemanagement.client.entities;
 import io.radien.api.model.linked.authorization.AbstractLinkedAuthorizationModel;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 
+import java.util.Objects;
+
 /**
  * Linked Authorization Object
  *
@@ -138,5 +140,19 @@ public class LinkedAuthorization extends AbstractLinkedAuthorizationModel implem
     @Override
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LinkedAuthorization that = (LinkedAuthorization) o;
+        return id.equals(that.id) && tenantId.equals(that.tenantId) && permissionId.equals(that.permissionId) && roleId.equals(that.roleId) && userId.equals(that.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, tenantId, permissionId, roleId, userId);
     }
 }
