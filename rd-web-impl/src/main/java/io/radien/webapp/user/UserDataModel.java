@@ -313,10 +313,10 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return true if the process can be handled/started, false otherwise
      */
     public boolean isTenantAssociationProcessAllowed() {
-        if (!hasTenantAdministratorRoleAccess) {
-            return false;
-        }
         try {
+            if (!hasTenantAdministratorRoleAccess) {
+                return false;
+            }
             this.userForTenantAssociation = findUserToAssociate();
             return this.userForTenantAssociation != null;
         }
