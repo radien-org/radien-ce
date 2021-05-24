@@ -15,11 +15,13 @@
  */
 package io.radien.webapp.tenantrole;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.Role;
@@ -52,6 +54,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
     private RoleRESTServiceAccess roleRESTServiceAccess;
+
+    @Inject
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
 
     private SystemTenant tenant = new Tenant();
 
@@ -130,6 +135,41 @@ public class TenantRoleAssociationManager extends AbstractManager {
         catch(Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
                     JSFUtil.getMessage("rd_roles"));
+            return null;
+        }
+    }
+
+    /**
+     * Retrieve all registered roles
+     * @return List containing roles
+     * @throws SystemException in case of any error
+     */
+    public List<? extends SystemRole> getRoles() throws SystemException {
+        try {
+            Page<? extends SystemRole> pagedInformation =
+                    roleRESTServiceAccess.getAll(null, 1, 30, null, true);
+            return pagedInformation.getResults();
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
+            return null;
+        }
+    }
+
+
+    /**
+     * Retrieve all registered tenants
+     * @return List containing tenants
+     * @throws SystemException in case of any error
+     */
+    public List<? extends SystemTenant> getTenants() throws SystemException {
+        try {
+            Page<? extends SystemTenant> pagedInformation =
+                    tenantRESTServiceAccess.getAll(null, 1, 30, null, true);
+            return pagedInformation.getResults();
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
             return null;
         }
     }

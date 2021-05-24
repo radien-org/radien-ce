@@ -36,7 +36,7 @@
 											 required="true" requiredMessage="#{msg.rd_tenant_is_mandatory}"
 											 select2="true">
 								<f:selectItem itemLabel="#{msg.rd_tenant_remind_select_tenant}" itemValue="#{null}"/>
-								<f:selectItems value="#{tenantRoleAssociationManager.tenantsFromCurrentUser}" var="tenant"
+								<f:selectItems value="#{tenantRoleAssociationManager.tenants}" var="tenant"
 											   itemValue="#{tenant.id}" itemLabel="#{tenant.name} - #{tenant.tenantType}"/>
 							</b:selectOneMenu>
 						</b:column>
@@ -51,7 +51,7 @@
 												 required="true" requiredMessage="#{msg.rd_role_is_mandatory}"
 												 select2="true">
 									<f:selectItem itemLabel="#{msg.rd_role_remind_select_role}" itemValue="#{null}"/>
-									<f:selectItems value="#{tenantRoleAssociationManager.initialRolesAllowedForAssociation}" var="role"
+									<f:selectItems value="#{tenantRoleAssociationManager.roles}" var="role"
 												   itemValue="#{role.id}" itemLabel="#{role.name} - #{role.description}"/>
 							</b:selectOneMenu>
 						</b:column>
@@ -65,7 +65,7 @@
 
 						<b:button id="confirm-user-tenant-association-button"
 								  onclick="$('.formValidationModalConfirmTenantAssociation').modal('show')"
-								  value="#{msg.rd_associate}"
+								  value="#{msg.associate}"
 								  tooltip="#{msg.rd_tenant_association}"
 								  iconAwesome="fa-cogs"/>
 						<b:modal id="model"
