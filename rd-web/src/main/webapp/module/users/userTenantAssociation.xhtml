@@ -46,16 +46,14 @@
 						<b:column medium-screen="2">
 							<h:outputLabel value="#{msg.rd_role}"/>
 						</b:column>
-						<b:column mediumScreen="4">
-							<b:column>
-								<b:selectOneMenu id="#{msg.rd_roles}" value="#{tenantRoleAssociationManager.role.id}"
+						<b:column mediumScreen="4" >
+							<b:selectOneMenu id="#{msg.rd_roles}" value="#{tenantRoleAssociationManager.role.id}"
 												 required="true" requiredMessage="#{msg.rd_role_is_mandatory}"
 												 select2="true">
 									<f:selectItem itemLabel="#{msg.rd_role_remind_select_role}" itemValue="#{null}"/>
 									<f:selectItems value="#{tenantRoleAssociationManager.initialRolesAllowedForAssociation}" var="role"
 												   itemValue="#{role.id}" itemLabel="#{role.name} - #{role.description}"/>
-								</b:selectOneMenu>
-							</b:column>
+							</b:selectOneMenu>
 						</b:column>
 					</b:row>
 					<b:buttonGroup>
