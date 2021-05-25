@@ -53,7 +53,7 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
      * @throws SystemException in case it founds any issue
      */
     @Override
-    protected Long getCurrentUserId() throws SystemException {
+    public Long getCurrentUserId() throws SystemException {
         Long id = userSession.getUserId();
         return id == null ? super.getCurrentUserId() : id;
     }
@@ -97,6 +97,27 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
             List<String> roleNames = new ArrayList<>();
             roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
             roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+            return super.hasGrantMultipleRoles(roleNames);
+        }
+        catch (Exception e) {
+            log.error("Error checking authorization", e);
+            return false;
+        }
+    }
+
+    /**
+     * Verifies if the current logged user has relevant roles to perform actions
+     * regarding tenant administration. It includes System Administrator, Tenant Administrator
+     * Client Tenant Administrator and Sub Tenant Administrator
+     * @return true if user has some of these roles, otherwise false
+     */
+    public boolean hasTenantAdministratorRoleAccess() {
+        try {
+            List<String> roleNames = new ArrayList<>();
+            roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+            roleNames.add(SystemRolesEnum.TENANT_ADMINISTRATOR.getRoleName());
+            roleNames.add(SystemRolesEnum.CLIENT_TENANT_ADMINISTRATOR.getRoleName());
+            roleNames.add(SystemRolesEnum.SUB_TENANT_ADMINISTRATOR.getRoleName());
             return super.hasGrantMultipleRoles(roleNames);
         }
         catch (Exception e) {

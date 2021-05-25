@@ -15,15 +15,23 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.role.RoleRESTServiceAccess;
+import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
+import io.radien.ms.rolemanagement.client.entities.Role;
+import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -58,9 +66,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
     private SystemUser selectedUser;
+    private SystemUser userForTenantAssociation;
     private SystemUser user = new User();
 
     private boolean hasUserAdministratorRoleAccess = false;
+    private boolean hasTenantAdministratorRoleAccess = false;
 
     /**
      * Post construction method for user management page
@@ -72,6 +82,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
         try {
             if (!hasUserAdministratorRoleAccess) {
                 hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
+            }
+            if (!hasTenantAdministratorRoleAccess) {
+                hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
             }
 
             if (hasUserAdministratorRoleAccess) {
@@ -275,6 +288,58 @@ public class UserDataModel extends AbstractManager implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
+
+    /**
+     * Check if the tenant association process is allowed to be started from
+     * the following perspective:
+     * <ul>
+     *     <li>Current logged user has the right roles (the one who will start/trigger the process)</li>
+     *     <li>There is a user available to be associated with a Tenant (i.e a newly created user
+     *     or a previously selected one from the data grid)</li>
+     * </ul>
+     * @return true if the process can be handled/started, false otherwise
+     */
+    public boolean isTenantAssociationProcessAllowed() {
+        try {
+            if (!hasTenantAdministratorRoleAccess) {
+                return false;
+            }
+            this.userForTenantAssociation = findUserToAssociate();
+            return this.userForTenantAssociation != null;
+        }
+        catch(Exception e) {
+            this.handleError(e, JSFUtil.getMessage("rd_tenant_association_error_retrieve_user"));
+            return false;
+        }
+    }
+
+    /**
+     * Find the user that may participate on the tenant association process
+     * @return SystemUser instance, or null in case of not found any user
+     * @throws SystemException in case of any error during the attempt to retrieve SystemUser
+     */
+    protected SystemUser findUserToAssociate() throws SystemException{
+        // Corresponds to the user picked from the data grid (user selected to be update, etc)
+        if (this.selectedUser != null && this.selectedUser.getId() != null) {
+            return this.selectedUser;
+        }
+        // Corresponds to the user recently created
+        if (this.user != null && !StringUtils.isEmpty(this.user.getLogon())) {
+            // Retrieve a SystemUser using logon as parameter
+            return service.getUserByLogon(this.user.getLogon()).orElse(null);
+        }
+        return null;
+    }
+
+    /**
+     * This method do some preparing process (Pre-Processing) before redirecting
+     * to the Tenant association screen
+     * @return url mapping that refers Tenant association screen
+     */
+    public String prepareTenantAssociation() {
+        return "pretty:userTenantAssociation";
+    }
+
     /**
      * Validates if current user has System Administrator or User Administrator roles
      * @return true in case of so
@@ -288,5 +353,38 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     public void setHasUserAdministratorRoleAccess(boolean hasUserAdministratorRoleAccess) {
         this.hasUserAdministratorRoleAccess = hasUserAdministratorRoleAccess;
+    }
+
+    /**
+     * Flag indicating if current user has System Administrator or any other Tenant Administration role
+     * @return true if such condition is affirmative, false otherwise
+     */
+    public boolean isHasTenantAdministratorRoleAccess() {
+        return hasTenantAdministratorRoleAccess;
+    }
+
+    /**
+     * Sets a flag indicating if the current user has System Administrator or
+     * any other Tenant Administration role
+     * @param hasTenantAdministratorRoleAccess boolean value to be set
+     */
+    public void setHasTenantAdministratorRoleAccess(boolean hasTenantAdministratorRoleAccess) {
+        this.hasTenantAdministratorRoleAccess = hasTenantAdministratorRoleAccess;
+    }
+
+    /**
+     * Getter that refers tne User for whom will be applied the association with a tenant and a role
+     * @return user for whom will done the association
+     */
+    public SystemUser getUserForTenantAssociation() {
+        return userForTenantAssociation;
+    }
+
+    /**
+     * Setter that refers tne User for whom will be applied the association with a tenant and a role
+     * @param userForTenantAssociation  user for whom will done the associaton
+     */
+    public void setUserForTenantAssociation(SystemUser userForTenantAssociation) {
+        this.userForTenantAssociation = userForTenantAssociation;
     }
 }
