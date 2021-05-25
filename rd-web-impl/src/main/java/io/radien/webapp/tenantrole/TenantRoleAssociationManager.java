@@ -135,7 +135,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         catch(Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
                     JSFUtil.getMessage("rd_roles"));
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -152,7 +152,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -170,7 +170,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -187,7 +187,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         catch(Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
                     JSFUtil.getMessage("rd_tenants_from_user"));
-            return null;
+            return new ArrayList<>();
         }
     }
 
