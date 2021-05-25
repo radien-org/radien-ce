@@ -46,7 +46,11 @@ public abstract class AbstractManager implements Serializable {
 
     protected void handleMessage(FacesMessage.Severity severity, String pattern, Object ... params) {
         String msg = MessageFormat.format(pattern, params);
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, msg, null));
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        Flash flash = facesContext.getExternalContext().getFlash();
+        flash.setKeepMessages(true);
+        flash.setRedirect(true);
+        facesContext.addMessage(null, new FacesMessage(severity, msg, null));
         log.info(msg);
     }
 
