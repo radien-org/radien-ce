@@ -43,6 +43,7 @@ import static org.junit.Assert.*;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -73,7 +74,9 @@ public class TenantRoleAssociationManagerTest {
         MockitoAnnotations.initMocks(this);
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         FacesContext facesContext = Mockito.mock(FacesContext.class);
+        Flash flash = Mockito.mock(Flash.class);
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
+        Mockito.when(externalContext.getFlash()).thenReturn(flash);
         try {
             Method setter = FacesContext.class.getDeclaredMethod("setCurrentInstance",
                     new Class[] { FacesContext.class });
@@ -96,7 +99,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setRole(role);
         tenantRoleAssociationManager.setTenant(tenant);
 
-        String expectedUrlMappingForRedirection = "test";
+        String expectedUrlMappingForRedirection = "pretty:users";
 
         doReturn(Boolean.FALSE).when(tenantRoleRESTServiceAccess).
                 exists(tenant.getId(), role.getId());
@@ -104,8 +107,7 @@ public class TenantRoleAssociationManagerTest {
         doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).assignUser(tenant.getId(),
                 role.getId(), userId);
 
-        String urlMapping = tenantRoleAssociationManager.
-                associateUser(userId, expectedUrlMappingForRedirection);
+        String urlMapping = tenantRoleAssociationManager.associateUser(userId);
 
         assertNotNull(urlMapping);
         assertEquals(urlMapping, expectedUrlMappingForRedirection);
@@ -124,8 +126,6 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setRole(role);
         tenantRoleAssociationManager.setTenant(tenant);
 
-        String expectedUrlMappingForRedirection = "test";
-
         doThrow(new RuntimeException("Error checking exists")).when(tenantRoleRESTServiceAccess).
                 exists(tenant.getId(), role.getId());
 
@@ -133,10 +133,10 @@ public class TenantRoleAssociationManagerTest {
         doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).assignUser(tenant.getId(),
                 role.getId(), userId);
 
-        String urlMapping = tenantRoleAssociationManager.
-                associateUser(userId, expectedUrlMappingForRedirection);
+        String urlMapping = tenantRoleAssociationManager.associateUser(userId);
 
-        assertNull(urlMapping);
+        assertNotNull(urlMapping);
+        assertEquals(urlMapping, "pretty:userTenantAssociation");
     }
 
     /**
@@ -183,7 +183,8 @@ public class TenantRoleAssociationManagerTest {
         doThrow(new SystemException("error")).when(roleRESTServiceAccess).getRoleByName(any());
         List<? extends SystemRole> initialRoles =
                 tenantRoleAssociationManager.getInitialRolesAllowedForAssociation();
-        assertNull(initialRoles);
+        assertNotNull(initialRoles);
+        assertTrue(initialRoles.isEmpty());
     }
 
     /**
@@ -224,9 +225,11 @@ public class TenantRoleAssociationManagerTest {
                 when(this.tenantRoleRESTServiceAccess).getTenants(currentUserId, null);
 
         List outcome = this.tenantRoleAssociationManager.getTenantsFromCurrentUser();
-        assertNull(outcome);
+        assertNotNull(outcome);
+        assertTrue(outcome.isEmpty());
 
         outcome = this.tenantRoleAssociationManager.getTenantsFromCurrentUser();
-        assertNull(outcome);
+        assertNotNull(outcome);
+        assertTrue(outcome.isEmpty());
     }
 }

@@ -26,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.faces.context.Flash;
 import javax.inject.Inject;
 
 import org.junit.Before;
@@ -67,7 +68,9 @@ public class UserDataModelTest {
         MockitoAnnotations.initMocks(this);
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         FacesContext facesContext = Mockito.mock(FacesContext.class);
+        Flash flash = Mockito.mock(Flash.class);
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
+        Mockito.when(externalContext.getFlash()).thenReturn(flash);
         try {
             Method setter = FacesContext.class.getDeclaredMethod("setCurrentInstance",
                     new Class[] { FacesContext.class });

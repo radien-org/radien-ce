@@ -80,7 +80,7 @@
 												 onclick="{ $('.formValidationModalConfirmTenantAssociation').modal('hide') } "
 								/>
 								<b:commandButton value="#{msg.yes}" look="warning"
-												 action="#{tenantRoleAssociationManager.associateUser(userDataModel.userForTenantAssociation.id, 'pretty:users')}"
+												 action="#{tenantRoleAssociationManager.associateUser(userDataModel.userForTenantAssociation.id)}"
 												 oncomplete="{ $('.formValidationModalConfirmTenantAssociation').modal('hide') } "/>
 							</f:facet>
 						</b:modal>

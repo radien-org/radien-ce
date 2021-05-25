@@ -66,9 +66,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Perform the association process between user, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
      * @param userId User identifier
-     * @param urlMappingReturn url for return
      */
-    public String associateUser(Long userId, String urlMappingReturn) {
+    public String associateUser(Long userId) {
         try {
             if (!tenantRoleRESTServiceAccess.exists(tenant.getId(), role.getId())) {
                 SystemTenantRole tenantRole = new TenantRole();
@@ -78,12 +77,12 @@ public class TenantRoleAssociationManager extends AbstractManager {
             }
             tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), userId);
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_tenant_association_creation_success"));
+            return "pretty:users";
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_tenant_association_creation_error"));
-            return null;
+            return "pretty:userTenantAssociation";
         }
-        return urlMappingReturn;
     }
 
     /**
