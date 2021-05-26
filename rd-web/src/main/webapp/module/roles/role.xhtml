@@ -22,7 +22,7 @@
 				<b:inputText id="#{msg.rd_roleDescription}" value="#{roleDataModel.role.description}"
 							 label="#{msg.description}"/>
 
-				<b:datepicker validator="#{msg.rd_role_basicDataValidator}"
+				<b:datepicker validator="basicDateValidator"
 							  validatorMessage="#{msg.rd_role_termination_date_invalid}"
 							  value="#{roleDataModel.role.terminationDate}"
 							  label="#{msg.termination_date}"/>
