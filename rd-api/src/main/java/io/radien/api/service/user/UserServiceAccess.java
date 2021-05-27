@@ -100,7 +100,7 @@ public interface UserServiceAccess extends ServiceAccess {
     public List<? extends SystemUser> getUserList();
 
     /**
-     * Batch deletion method, will delete all the received users from the db
+     * Batch creation method, will delete all the received users from the db
      * @param users list of users to be deleted
      * @return a batch summary with a report saying which records have been or not been deleted
      */
