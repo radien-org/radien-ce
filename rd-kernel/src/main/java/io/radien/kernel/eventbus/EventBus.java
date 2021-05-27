@@ -27,20 +27,19 @@ import org.slf4j.LoggerFactory;
 import io.radien.api.Event;
 
 /**
- * THe Openappframe EventBus
+ * The Openappframe EventBus
  *
  * @author Marco Weiland
  */
 public @RequestScoped class EventBus implements Serializable {
 
 	protected static final Logger log = LoggerFactory.getLogger(EventBus.class);
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5515891296903270720L;
 
 	/**
 	 * Fires an {@link Event} in the current CDI bean manager
 	 *
-	 * @param event
-	 *                  the event to be fired
+	 * @param event the event to be fired
 	 */
 	public void fireEvent(Event event) {
 		BeanManager beanManager = CDI.current().getBeanManager();

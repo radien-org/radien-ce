@@ -30,8 +30,7 @@ import io.radien.api.security.UserSessionEnabled;
 import io.radien.webapp.RedirectUtil;
 
 /**
- * Filter implementation that triggers if there is no user present on
- * sessionHandler bean
+ * Filter implementation that triggers if there is no user present on sessionHandler bean
  *
  * @author Marco Weiland
  */
@@ -51,12 +50,9 @@ public abstract class AbstractAuthorizationFilter extends AbstractWebFilter {
 	 * Processes all requests that have no user in session and are within the
 	 * openappframe modules, redirecting the user to the index page in tis case
 	 *
-	 * @param req
-	 *                  the Servlet request
-	 * @param res
-	 *                  te servlet response
-	 * @param chain
-	 *                  the filter chain
+	 * @param req the Servlet request
+	 * @param res the servlet response
+	 * @param chain the filter chain
 	 */
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
 

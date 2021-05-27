@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2006-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,10 @@ package io.radien.kernel.eventbus.event;
 import io.radien.api.Event;
 
 /**
+ * Abstract System Event constructor class
+ *
  * @author Marco Weiland
  */
 public abstract class AbstractSystemEvent implements Event {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2969151371922997002L;
 }

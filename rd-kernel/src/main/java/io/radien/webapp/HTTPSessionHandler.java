@@ -39,7 +39,7 @@ import io.radien.util.OAFHttpRequest;
  * @author Rafael Fernandes
  */
 public @RequestScoped class HTTPSessionHandler implements SessionHandler {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4874752589449604685L;
 	private static final Logger log = LoggerFactory.getLogger(HTTPSessionHandler.class);
 
 	public HTTPSessionHandler() {
@@ -50,6 +50,11 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 	private void init() {
 	}
 
+	/**
+	 * Get the current http session
+	 * @param create should session be created or not
+	 * @return the requested and created http session
+	 */
 	@Override
 	public HttpSession getSession(boolean create) {
 		ExternalContext externalContext = JSFUtil.getExternalContext();
@@ -59,16 +64,31 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 		return (HttpSession) JSFUtil.getExternalContext().getSession(create);
 	}
 
+	/**
+	 * Get the current http session
+	 * @param create should session be created or not
+	 * @param request http servlet request endpoint
+	 * @param response http servlet response endpoint
+	 * @return the requested and created http session
+	 */
 	@Override
 	public HttpSession getSession(boolean create, HttpServletRequest request, HttpServletResponse response) {
 		return (HttpSession) JSFUtil.getFacesContext(request, response).getExternalContext().getSession(create);
 	}
 
+	/**
+	 * Get current request
+	 * @return http servlet request
+	 */
 	@Override
 	public HttpServletRequest getRequest() {
 		return (HttpServletRequest) JSFUtil.getExternalContext().getRequest();
 	}
 
+	/**
+	 * Get active system user requesting creation
+	 * @return the active system user
+	 */
 	@Override
 	public SystemUser getUser() {
 		try {
@@ -85,7 +105,13 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 		}
 	}
 
-
+	/**
+	 * Get active system user requesting creation
+	 * @param request http servlet request endpoint
+	 * @param response http servlet response endpoint
+	 * @return the system user requesting session
+	 * @throws UserNotFoundException in case of user was not beeing able to be found or does not exist
+	 */
 	@Override
 	public SystemUser getUser(HttpServletRequest request, HttpServletResponse response) throws UserNotFoundException {
 		try {
@@ -104,6 +130,11 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 		}
 	}
 
+	/**
+	 * Registration of the system user
+	 * @param user to be register
+	 * @throws AccountNotValidException Exception to be thrown when a given system account is not valid
+	 */
 	@Override
 	public void register(SystemUser user) throws AccountNotValidException {
 		if (user == null) {
@@ -115,6 +146,12 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 		}
 	}
 
+	/**
+	 * Registration of the system user
+	 * @param req requester endpoint to be registered
+	 * @param user to be register
+	 * @throws AccountNotValidException Exception to be thrown when a given system account is not valid
+	 */
 	@Override
 	public void register(OAFHttpRequest req, SystemUser user) throws AccountNotValidException {
 		if (user == null) {
@@ -127,6 +164,11 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 
 	}
 
+	/**
+	 * Update the given system user
+	 * @param user to be updated
+	 * @throws AccountNotValidException Exception to be thrown when a given system account is not valid
+	 */
 	@Override
 	public void update(SystemUser user) throws AccountNotValidException {
 		if (user == null) {
@@ -139,18 +181,32 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 		}
 	}
 
+	/**
+	 * Method to logout the system user
+	 */
 	@Override
 	public void logout() {
 		getSession(false).invalidate();
 		eraseCookies(JSFUtil.getExternalContext());
 	}
 
+	/**
+	 * Method to logout the system user in the given endpoints
+	 * @param request http servlet request endpoint
+	 * @param response http servlet response endpoint
+	 */
 	@Override
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
 		getSession(false, request, response).invalidate();
 		eraseCookies(request, response);
 	}
 
+	/**
+	 * Method to register given user session in given endpoints
+	 * @param request http servlet request endpoint
+	 * @param response http servlet response endpoint
+	 * @param user to be register
+	 */
 	@Override
 	public void register(HttpServletRequest request, HttpServletResponse response, SystemUser user) {
 		HttpSession session = getSession(false, request, response);
@@ -161,11 +217,20 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 		}
 	}
 
+	/**
+	 * Method to recover a given user in a specific request enpdpoint
+	 * @param request http servlet request endpoint
+	 * @return if found
+	 */
 	@Override
 	public SystemUser getUser(HttpServletRequest request) {
 		return (SystemUser) request.getSession(false).getAttribute(ATTR_USER);
 	}
 
+	/**
+	 * Delete all the registered cookies from a certain context
+	 * @param externalContext context for the cookies to be deleted
+	 */
 	@Override
 	public void eraseCookies(ExternalContext externalContext) {
 		HttpServletRequest req = (HttpServletRequest) externalContext.getRequest();
@@ -173,6 +238,11 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 		eraseCookies(req, res);
 	}
 
+	/**
+	 *Delete all the registered cookies from a certain servlet endpoints
+	 * @param request http servlet request endpoint
+	 * @param response http servlet response endpoint
+	 */
 	@Override
 	public void eraseCookies(HttpServletRequest request, HttpServletResponse response) {
 		Cookie[] cookies = request.getCookies();

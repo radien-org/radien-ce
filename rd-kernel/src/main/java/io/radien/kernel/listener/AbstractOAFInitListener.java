@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,11 +30,17 @@ import io.radien.kernel.eventbus.event.InitApplicationEvent;
 import io.radien.kernel.interceptor.RuntimeIntercepted;
 
 /**
+ * Abstract Open Appframe Initializer listener constructor class
+ *
  * @author Marco Weiland
  */
 public abstract class AbstractOAFInitListener implements ServletContextListener {
 	protected static final Logger log = LoggerFactory.getLogger(AbstractOAFInitListener.class);
 
+	/**
+	 * Context initializer that will start and validate the running starting necessary beans
+	 * @param sce context to be started/initialized
+	 */
 	@Override @RuntimeIntercepted
 	public void contextInitialized(ServletContextEvent sce) {
 		BeanManager bm = getBeanManager();
@@ -74,10 +80,22 @@ public abstract class AbstractOAFInitListener implements ServletContextListener 
 		}
 	}
 
+	/**
+	 * Abstract OAF Initializer bean manager getter
+	 * @return the active requested bean manager
+	 */
 	protected abstract BeanManager getBeanManager();
 
+	/**
+	 * Abstract OAF Initializer appframe getter
+	 * @return the active oaf access
+	 */
 	protected abstract Class<? extends OAFAccess> getAppframe();
 
+	/**
+	 * Should discard and destroy the current servlet context event
+	 * @param sce context to be discarded and destroyed
+	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		log.info("context destroyed");
