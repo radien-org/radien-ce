@@ -19,11 +19,12 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.exception.SystemException;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 
 /**
+ * Tenant REST Service Access interface for future requests
+ *
  * @author Santana
  */
 public interface TenantRESTServiceAccess {
@@ -32,7 +33,7 @@ public interface TenantRESTServiceAccess {
      * Search for a tenant with given id
      * @param id of the tenant to be retrieved
      * @return true if contract has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public Optional<SystemTenant> getTenantById(Long id) throws SystemException ;
 
@@ -40,13 +41,19 @@ public interface TenantRESTServiceAccess {
      * Search for a tenant with given name
      * @param name of the tenant to be retrieved
      * @return true if contract has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public List<? extends SystemTenant> getTenantByName(String name) throws SystemException ;
 
     /**
-     * Fetches all tenants
-     * @return List of tenants
+     * Fetches all the existent tenants
+     * @param search specific value to be found
+     * @param pageNo where the user currently is
+     * @param pageSize number of records to be show by page
+     * @param sortBy column to be sorted
+     * @param isAscending true in case values should come sorted in ascending way
+     * @return a page of system tenants
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public Page<? extends SystemTenant> getAll(String search,
                                                int pageNo,
@@ -58,7 +65,7 @@ public interface TenantRESTServiceAccess {
      * Creates given tenant
      * @param contract to be created
      * @return true if tenant has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public boolean create(SystemTenant contract) throws SystemException;
 
@@ -66,7 +73,7 @@ public interface TenantRESTServiceAccess {
      * deletes given tenant
      * @param tenantId id of the tenant to be deleted
      * @return true if tenant has been deleted with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public boolean delete(long tenantId) throws SystemException;
 
@@ -74,7 +81,7 @@ public interface TenantRESTServiceAccess {
      * deletes given tenant hierarchy/tenant
      * @param tenantId id of the tenant and if exists under the parent tenants to be deleted
      * @return true if tenant has been deleted with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public boolean deleteTenantHierarchy(long tenantId) throws SystemException;
 
@@ -82,7 +89,7 @@ public interface TenantRESTServiceAccess {
      * updates given tenant
      * @param contract to be updated
      * @return true if tenant has been updated with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of token expiration or any issue on the application
      */
      public boolean update(SystemTenant contract) throws SystemException;
 

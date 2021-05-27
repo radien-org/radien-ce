@@ -16,19 +16,57 @@
 package io.radien.api.model.tenant;
 
 /**
+ * System Tenant search filter interface class
+ *
  * @author Bruno Gama
  */
 public interface SystemTenantSearchFilter {
 
+    /**
+     * System tenant search filter name getter
+     * @return the system tenant search filter name
+     */
     public String getName();
+
+    /**
+     * System tenant search filter name setter
+     * @param name to be set
+     */
     public void setName(String name);
 
+    /**
+     * System tenant search filter tenant type getter
+     * @return the system tenant search filter tenant type
+     */
     public SystemTenantType getTenantType();
+
+    /**
+     * System tenant search filter tenant type setter
+     * @param tenantType to be set
+     */
     public void setTenantType(SystemTenantType tenantType);
 
+    /**
+     * System tenant search filter is exact search getter
+     * @return the system tenant search filter is exact value
+     */
     public boolean isExact();
+
+    /**
+     * System tenant search filter is exact setter
+     * @param exact if true the search needs to be exactly as the given parameters
+     */
     public void setExact(boolean exact);
 
+    /**
+     * System tenant search filter is logical conjunction getter
+     * @return the logical conjunction value if true is an and if false is a or
+     */
     public boolean isLogicConjunction();
+
+    /**
+     * System tenant search filter logical conjunction setter
+     * @param logicConjunction the logical conjunction value if true is an and if false is a or
+     */
     public void setLogicConjunction(boolean logicConjunction);
 }
