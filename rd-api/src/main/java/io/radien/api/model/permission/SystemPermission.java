@@ -18,14 +18,45 @@ package io.radien.api.model.permission;
 import io.radien.api.model.Model;
 
 /**
- * @author Newton Carvalho
  * Contract description for Permission
+ *
+ * @author Newton Carvalho
  */
 public interface SystemPermission extends Model {
+
+    /**
+     * System Permission name getter
+     * @return the system permission name
+     */
     String getName();
+
+    /**
+     * System Permission name setter
+     * @param name to be set
+     */
     void setName(String name);
+
+    /**
+     * System Permission action id getter
+     * @return the system permission action id
+     */
     Long getActionId();
+
+    /**
+     * System Permission action id setter
+     * @param actionId to be set
+     */
     void setActionId(Long actionId);
+
+    /**
+     * System Permission resource id getter
+     * @return the system permission resource id
+     */
     Long getResourceId();
+
+    /**
+     * System Permission resource id setter
+     * @param resourceId to be set
+     */
     void setResourceId(Long resourceId);
 }

@@ -16,21 +16,57 @@
 package io.radien.api.model.tenantrole;
 
 /**
- * Contract that describes a filter to be applied
- * for Tenant Role associations
+ * Contract that describes a filter to be applied for Tenant Role associations
+ *
  * @author Newton Carvalho
  */
 public interface SystemTenantRoleSearchFilter {
 
+    /**
+     * System Tenant Role search filter tenant id getter
+     * @return System Tenant Role search filter tenant id
+     */
     Long getTenantId();
+
+    /**
+     * System Tenant Role search filter tenant id setter
+     * @param tenantId to be set
+     */
     void setTenantId(Long tenantId);
 
+    /**
+     * System Tenant Role search filter role id getter
+     * @return System Tenant Role search filter role id
+     */
     Long getRoleId();
+
+    /**
+     * System Tenant Role search filter role id setter
+     * @param roleId to be set
+     */
     void setRoleId(Long roleId);
 
+    /**
+     * System tenant role search filter is exact search getter
+     * @return the system tenant role search filter is exact value
+     */
     boolean isExact();
+
+    /**
+     * System tenant role search filter is exact setter
+     * @param exact if true the search needs to be exactly as the given parameters
+     */
     void setExact(boolean exact);
 
+    /**
+     * System tenant role search filter is logical conjunction getter
+     * @return the logical conjunction value if true is an and if false is a or
+     */
     boolean isLogicConjunction();
+
+    /**
+     * System tenant role search filter logical conjunction setter
+     * @param logicConjunction the logical conjunction value if true is an and if false is a or
+     */
     void setLogicConjunction(boolean logicConjunction);
 }

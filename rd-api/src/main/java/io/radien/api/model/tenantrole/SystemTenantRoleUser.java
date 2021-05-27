@@ -18,16 +18,34 @@ package io.radien.api.model.tenantrole;
 import io.radien.api.Model;
 
 /**
- * Contract that describes the association between an User
- * and a Tenant
+ * Contract that describes the association between an User and a Tenant
+ *
  * @author Newton Carvalho
  */
 public interface SystemTenantRoleUser extends Model {
 
+    /**
+     * System tenant role user user id getter
+     * @return System tenant role user user id
+     */
     Long getUserId();
+
+    /**
+     * System tenant role user user id setter
+     * @param userId to be set
+     */
     void setUserId(Long userId);
 
+    /**
+     * System tenant role user tenant role id getter
+     * @return System tenant role user tenant role id
+     */
     Long getTenantRoleId();
+
+    /**
+     * System tenant role user tenant role id setter
+     * @param tenantRoleId to be set
+     */
     void setTenantRoleId(Long tenantRoleId);
 
 }

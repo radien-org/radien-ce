@@ -24,13 +24,33 @@ import java.util.Map;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 
 /**
+ * Email templates interface class
+ *
  * @author Marco Weiland
  */
 public interface SystemMailTemplate extends Serializable {
 
-	void setContent(EnterpriseContent content);
+	/**
+	 * Email template content getter
+	 * @return the email template
+	 */
 	EnterpriseContent getContent();
 
-	void setArgs(HashMap<String, String> args);
+	/**
+	 * Email template content setter
+	 * @param content to be set
+	 */
+	void setContent(EnterpriseContent content);
+
+	/**
+	 * Email template arguments getter
+	 * @return the arguments in the email template
+	 */
 	Map<String, String> getArgs();
+
+	/**
+	 * Email template arguments setter
+	 * @param args to be set
+	 */
+	void setArgs(HashMap<String, String> args);
 }

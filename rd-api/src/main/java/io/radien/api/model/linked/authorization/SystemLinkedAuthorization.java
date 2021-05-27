@@ -18,19 +18,57 @@ package io.radien.api.model.linked.authorization;
 import io.radien.api.Model;
 
 /**
+ * System linked authorization interface methods
+ *
  * @author Bruno Gama
  */
 public interface SystemLinkedAuthorization extends Model {
 
+    /**
+     * System Linked Authorization role id getter
+     * @return the role id
+     */
     public Long getRoleId();
+
+    /**
+     * System Linked Authorization role id setter
+     * @param roleId to be set
+     */
     public void setRoleId(Long roleId);
 
+    /**
+     * System Linked Authorization permission id getter
+     * @return the permission id
+     */
     public Long getPermissionId();
+
+    /**
+     * System Linked Authorization permission id setter
+     * @param permissionId to be set
+     */
     public void setPermissionId(Long permissionId);
 
+    /**
+     * System Linked Authorization tenant id getter
+     * @return the tenant id
+     */
     public Long getTenantId();
+
+    /**
+     * System Linked Authorization tenant id setter
+     * @param tenantId to be set
+     */
     public void setTenantId(Long tenantId);
 
+    /**
+     * System Linked Authorization user id getter
+     * @return the user id
+     */
     public Long getUserId();
+
+    /**
+     * System Linked Authorization user id setter
+     * @param userId to be set
+     */
     public void setUserId(Long userId);
 }

@@ -17,14 +17,34 @@ package io.radien.api.model.permission;
 
 import io.radien.api.Model;
 
-
 /**
- * @author Newton Carvalho
  * Contract description for Resource
+ *
+ * @author Newton Carvalho
  */
 public interface SystemResource extends Model {
+
+    /**
+     * System Resource id getter
+     * @return system resource id
+     */
     Long getId();
+
+    /**
+     * System Resource id setter
+     * @param id to be set
+     */
     void setId(Long id);
+
+    /**
+     * System Resource name getter
+     * @return system resource name
+     */
     String getName();
+
+    /**
+     * System Resource name setter
+     * @param name to be set
+     */
     void setName(String name);
 }
