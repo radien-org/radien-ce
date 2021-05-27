@@ -26,8 +26,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * Contract description for the Data Service responsible for handle Permissions (CRUD)
+ *
+ * @author Newton Carvalho
  */
 public interface PermissionServiceAccess extends ServiceAccess {
 

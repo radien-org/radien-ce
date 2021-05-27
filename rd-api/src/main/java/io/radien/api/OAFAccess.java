@@ -21,25 +21,57 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
+ * OAF Access interface class
+ *
  * @author Marco Weiland
- * 
  */
 public interface OAFAccess extends Serializable {
 
+	/**
+	 * OAF Access version getter
+	 * @return the oaf version
+	 */
 	public String getVersion();
-	
+
+	/**
+	 * OAF Access system administrator user id getter
+	 * @return the oaf system administrator user id
+	 */
 	public Long getSystemAdminUserId();
 
+	/**
+	 * OAF Access resource bundle getter
+	 * @return the oaf resource bundle
+	 */
 	public ResourceBundle getResourceBundle(String bundleName);
 
+	/**
+	 * OAF Access fire event caller
+	 */
 	public void fireEvent(Event event);
 
+	/**
+	 * OAF Access default locale getter
+	 * @return the oaf default locale
+	 */
 	public Locale getDefaultLocale();
 
+	/**
+	 * OAF Access supported locales list getter
+	 * @return a map of oaf supported locales
+	 */
 	public Map<String, Locale> getSupportedLocales();
 
+	/**
+	 * OAF Access find locale getter
+	 * @return the oaf found locale for the required language
+	 */
 	public Locale findLocale(String language);
-	
+
+	/**
+	 * OAF Access property endpoint getter
+	 * @return the oaf property
+	 */
 	public String getProperty(SystemProperties cfg);
 
 }

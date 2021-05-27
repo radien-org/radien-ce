@@ -27,23 +27,63 @@ import java.util.Date;
  */
 public interface Model extends Serializable {
 
+	/**
+	 * Model id getter
+	 * @return model id
+	 */
 	Long getId();
 
+	/**
+	 * Model id setter
+	 * @param id to be set
+	 */
 	void setId(Long id);
 
+	/**
+	 * Record creation date getter
+	 * @return the record creation date
+	 */
 	Date getCreateDate();
 
+	/**
+	 * Record Creation date setter
+	 * @param createDate to be set
+	 */
 	void setCreateDate(Date createDate);
 
+	/**
+	 * Record Last Update date getter
+	 * @return Record last update date
+	 */
 	Date getLastUpdate();
 
+	/**
+	 * Record last update date setter
+	 * @param lastUpdate to be set
+	 */
 	void setLastUpdate(Date lastUpdate);
 
+	/**
+	 * Record create user getter
+	 * @return who created the record information
+	 */
 	Long getCreateUser();
 
+	/**
+	 * Record create user setter
+	 * @param createUser to be set
+	 */
 	void setCreateUser(Long createUser);
 
+	/**
+	 * Record last update user getter
+	 * @return the user information from whom was the last to update the record information
+	 */
 	Long getLastUpdateUser();
 
+	/**
+	 * Record last update user setter
+	 * @param lastUpdate to be set
+	 */
 	void setLastUpdateUser(Long lastUpdate);
 }

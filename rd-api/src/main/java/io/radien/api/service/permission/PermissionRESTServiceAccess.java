@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Newton Carvalho
  * Contract for Rest Service Client regarding SystemPermission domain object
+ *
+ * @author Newton Carvalho
  */
 public interface PermissionRESTServiceAccess extends Appframeable {
 
@@ -58,7 +59,6 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public List<? extends SystemPermission> getPermissionByActionAndResource(Long actionId, Long resourceId) throws SystemException;
-
 
     /**
      * Retrieves a Permission by Id

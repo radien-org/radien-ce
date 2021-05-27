@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.radien.api.service.ecm.model;
 
 import java.io.Serializable;
@@ -17,6 +33,8 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.TreeNode;
 
 /**
+ * Rest Tree Node class object for hierarchy
+ *
  * @author Marco Weiland
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,7 +43,7 @@ public class RestTreeNode implements TreeNode, Serializable {
 
     private static final String DEFAULT_TYPE = "default";
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 9183863826098427270L;
 
     @JsonProperty("type")
     private String type;
@@ -51,18 +69,29 @@ public class RestTreeNode implements TreeNode, Serializable {
     @JsonIgnore
     private String rowKey;
 
-
+    /**
+     * Rest Tree NOde empty constructor
+     */
     public RestTreeNode() {
         this.type = DEFAULT_TYPE;
         this.children = new ArrayList<>();
     }
 
+    /**
+     * Rest tree node object data constructor
+     * @param data to be uploaded
+     */
     public RestTreeNode(Object data) {
         this.type = DEFAULT_TYPE;
         this.children = new ArrayList<>();
         this.data = data;
     }
 
+    /**
+     * Rest tree node object data and tree node parent constructor
+     * @param data to be uploaded
+     * @param parent from the hierarchy
+     */
     public RestTreeNode(Object data, TreeNode parent) {
         this.type = DEFAULT_TYPE;
         this.data = data;
@@ -70,6 +99,12 @@ public class RestTreeNode implements TreeNode, Serializable {
         this.parent = parent;
     }
 
+    /**
+     * Rest tree node type, data and parent constructor
+     * @param type of the node
+     * @param data to be uploaded
+     * @param parent from the hierarchy
+     */
     public RestTreeNode(String type, Object data, TreeNode parent) {
         this.type = type;
         this.data = data;
@@ -77,8 +112,25 @@ public class RestTreeNode implements TreeNode, Serializable {
         this.parent = parent;
     }
 
-
-
+    /**
+     * Returns a hash code value for the object. This method is supported for the benefit of hash tables such
+     * as those provided by HashMap.
+     * The general contract of hashCode is:
+     * Whenever it is invoked on the same object more than once during an execution of a Java application,
+     * the hashCode method must consistently return the same integer, provided no information used in equals
+     * comparisons on the object is modified. This integer need not remain consistent from one execution of an
+     * application to another execution of the same application.
+     * If two objects are equal according to the equals(Object) method, then calling the hashCode method on each of
+     * the two objects must produce the same integer result.
+     * It is not required that if two objects are unequal according to the equals(java.lang.Object) method, then
+     * calling the hashCode method on each of the two objects must produce distinct integer results. However, the
+     * programmer should be aware that producing distinct integer results for unequal objects may improve the
+     * performance of hash tables.
+     * As much as is reasonably practical, the hashCode method defined by class Object does return distinct integers
+     * for distinct objects. (This is typically implemented by converting the internal address of the object into an
+     * integer, but this implementation technique is not required by the JavaTM programming language.)
+     * @return hash code value for this object.
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -88,6 +140,29 @@ public class RestTreeNode implements TreeNode, Serializable {
         return result;
     }
 
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     * The equals method implements an equivalence relation on non-null object references:
+     *
+     * It is reflexive: for any non-null reference value x, x.equals(x) should return true.
+     * It is symmetric: for any non-null reference values x and y, x.equals(y) should return true if and only if
+     * y.equals(x) returns true.
+     * It is transitive: for any non-null reference values x, y, and z, if x.equals(y) returns true and y.equals(z)
+     * returns true, then x.equals(z) should return true.
+     * It is consistent: for any non-null reference values x and y, multiple invocations of x.equals(y) consistently
+     * return true or consistently return false, provided no information used in equals comparisons on the objects
+     * is modified.
+     * For any non-null reference value x, x.equals(null) should return false.
+     * The equals method for class Object implements the most discriminating possible equivalence relation on objects;
+     * that is, for any non-null reference values x and y, this method returns true if and only if x and y refer to the
+     * same object (x == y has the value true).
+     *
+     * Note that it is generally necessary to override the hashCode method whenever this method is overridden, so
+     * as to maintain the general contract for the hashCode method, which states that equal objects must have equal
+     * hash codes.
+     * @param obj the reference object with which to compare.
+     * @return true if this object is the same as the obj argument; false otherwise.
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -117,6 +192,10 @@ public class RestTreeNode implements TreeNode, Serializable {
 
     }
 
+    /**
+     * This object (which is already a string!) is itself returned.
+     * @return he string itself.
+     */
     @Override
     public String toString() {
         if (data != null) {
