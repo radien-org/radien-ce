@@ -16,6 +16,8 @@
 package io.radien.api.service.mail.model;
 
 /**
+ * Type of the content email, if the email is going to be written in HTML format or plain text format
+ *
  * @author Marco Weiland
  */
 public enum MailContentType {
@@ -23,10 +25,18 @@ public enum MailContentType {
 
 	private String type;
 
+	/**
+	 * Mail content type constructor
+	 * @param type of the email
+	 */
 	MailContentType(String type) {
 		this.type = type;
 	}
 
+	/**
+	 * Email type getter
+	 * @return the email type
+	 */
 	public String type() {
 		return type;
 	}

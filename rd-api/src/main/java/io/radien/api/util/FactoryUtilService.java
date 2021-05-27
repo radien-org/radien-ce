@@ -15,12 +15,22 @@
  */
 package io.radien.api.util;
 
-import javax.json.*;
+import javax.json.JsonString;
+import javax.json.JsonObject;
+import javax.json.JsonNumber;
+import javax.json.JsonValue;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonArray;
 import java.io.Serializable;
 
+/**
+ * Factory Util service for converting objects into json ones or vice versa
+ *
+ * @author Nuno Santana
+ */
 public class FactoryUtilService implements Serializable {
 
-    private static final long serialVersionUID = 7731959741864165435L;
+    private static final long serialVersionUID = -6560813510881461316L;
 
     /**
      * Retrieves the String value from the Json Object
@@ -182,6 +192,12 @@ public class FactoryUtilService implements Serializable {
         }
     }
 
+    /**
+     * Adds the values from a json object into an array
+     * @param builder Json Object builder that it is being used
+     * @param key value of the json field
+     * @param value value of the field to be added
+     */
     public static void addValueArray(JsonObjectBuilder builder, String key, Object value) {
         if (value != null) {
             builder.add(key, (JsonValue) value);

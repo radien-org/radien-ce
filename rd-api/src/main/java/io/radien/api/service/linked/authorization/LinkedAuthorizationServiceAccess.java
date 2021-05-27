@@ -26,6 +26,8 @@ import io.radien.exception.UniquenessConstraintException;
 import java.util.List;
 
 /**
+ * Linked authorization service access interface class for requests
+ *
  * @author Bruno Gama
  */
 public interface LinkedAuthorizationServiceAccess extends ServiceAccess {

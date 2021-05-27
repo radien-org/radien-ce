@@ -18,6 +18,8 @@ package io.radien.api.service;
 import java.io.Serializable;
 
 /**
+ * Data Access Layer interface class object
+ *
  * @author Bruno Gama
  */
 public interface DataAccessLayer extends Serializable {
