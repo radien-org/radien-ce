@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2006-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,16 @@ package io.radien.api;
 import java.io.Serializable;
 
 /**
+ * Appframeable interface class
+ *
  * @author Marco Weiland
  */
 public interface Appframeable extends Serializable {
 
+	/**
+	 * Method to return the current oaf session
+	 * @return the current oaf access
+	 */
 	OAFAccess getOAF();
 
 }

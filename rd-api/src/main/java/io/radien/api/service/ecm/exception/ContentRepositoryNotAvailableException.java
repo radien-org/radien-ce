@@ -18,12 +18,11 @@ package io.radien.api.service.ecm.exception;
 import io.radien.exception.SystemException;
 
 /**
- * Exception extending the base SystemException, to be thrown when error occurs
- * int he CMS
+ * Exception extending the base SystemException, to be thrown when error occurs in the CMS
  *
  * @author Marco Weiland
  */
 public class ContentRepositoryNotAvailableException extends SystemException {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4346627471389807097L;
 
 }

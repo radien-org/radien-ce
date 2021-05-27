@@ -18,6 +18,8 @@ package io.radien.api.model.linked.authorization;
 import io.radien.api.model.AbstractModel;
 
 /**
+ * Abstract Linked Authorization Model
+ *
  * @author Bruno Gama
  */
 public abstract class AbstractLinkedAuthorizationModel extends AbstractModel implements SystemLinkedAuthorization {

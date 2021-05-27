@@ -27,8 +27,6 @@ import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.model.MailType;
 
-
-
 /**
  * Interface that defines the methods for the CMS
  *
@@ -36,6 +34,11 @@ import io.radien.api.service.mail.model.MailType;
  */
 public interface ContentServiceAccess extends ServiceAccess {
 
+	/**
+	 * Content Service Access retrieves by a given mail type the notification id by the received type
+	 * @param assignContextAdmin to be validated and retrieved the notification
+	 * @return a string value of the notification
+	 */
 	String getNotificationIdByType(MailType assignContextAdmin);
 
 	/**
@@ -49,20 +52,31 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 */
 	List<EnterpriseContent> getByViewIdLanguage(String viewId, boolean activeOnly, String language);
 
+	/**
+	 * Retrieves an Enterprise Content by searching for his activity value and language that belongs into a certain
+	 * view id
+	 * @param viewId to be search
+	 * @param activeOnly to be filter in the certain ecm activity
+	 * @param language of the ecm to be retrieved
+	 * @return a existent enterprise content
+	 */
 	default EnterpriseContent getFirstByViewIdLanguage(String viewId, boolean activeOnly, String language) {
 		List<? extends EnterpriseContent> contentList = getByViewIdLanguage(viewId, activeOnly, language);
 		return contentList != null && !contentList.isEmpty() ? contentList.get(0) : null;
 	}
 
+	/**
+	 * Validates if a certain enterprise content exists
+	 * @param content to be searched
+	 * @return true in case such ecm does exist
+	 */
 	default boolean exists(EnterpriseContent content) {
 		EnterpriseContent foundContent = getFirstByViewIdLanguage(content.getViewId(), false, content.getLanguage());
 		return foundContent != null && content.getLanguage().equalsIgnoreCase(foundContent.getLanguage());
 	}
 
-	
-
 	/**
-	 * Persistes the target Content
+	 * Persists the target Content
 	 *
 	 * @param obj the {@link EnterpriseContent} to be persisted
 	 */
@@ -75,37 +89,87 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 */
 	void delete(EnterpriseContent obj);
 
+	/**
+	 * Retrieves a list of enterprise contents search by his content typ
+	 * @param contentType to be search
+	 * @param language to be search
+	 * @return a list of enterprise contents
+	 */
 	List<EnterpriseContent> getByContentType(ContentType contentType, String language);
 
+	/**
+	 * Enterprise Content document tree model getter
+	 * @return the enterprise content document tree model
+	 */
 	TreeNode getDocumentTreeModel();
 
+	/**
+	 * Gets a list of all the children files existent for a given view id
+	 * @param viewId to be searched
+	 * @return a list of enterprise contents
+	 */
 	List<EnterpriseContent> getChildrenFiles(String viewId);
 
+	/**
+	 * Retrieves the correct notification id searching for the existent given type and language code
+	 * @param type to be searched
+	 * @param languageCode of the notification
+	 * @return a notification id
+	 */
 	String getNotificationIdByTypeAndLanguage(MailType type, String languageCode);
 
+	/**
+	 * Content application description getter to be found by given parameters
+	 * @param app to be found
+	 * @param language of the app
+	 * @return the app description
+	 */
 	String getAppDesc(String app, String language);
 
+	/**
+	 * Count how many tag names do exist in a given name
+	 * @param name to be counted
+	 * @return the count of tags
+	 */
 	int countByTagName(String name);
 
+	/**
+	 * By a given app and content will return the designated app info
+	 * @param content to be retrieved
+	 * @param app to be searched
+	 * @param language of the app
+	 * @return the app info id
+	 */
 	String getAppInfoId(String content, String app, String language);
 
 	/**
 	 * Tries to load the file present inside a content, if available
-	 *
-	 * @param content the {@link EnterpriseContent} from which the file will load
+	 * @param jcrPath  the {@link EnterpriseContent} from which the file will load
 	 * @return the new child {@link EnterpriseContent}
-	 * @throws ElementNotFoundException               Exception thrown if the
-	 *                                                Element is not found
-	 * @throws ContentRepositoryNotAvailableException Exception thrown if there is
-	 *                                                an error while querying the
-	 *                                                jcr
+	 * @throws ElementNotFoundException Exception thrown if the element is not found
+	 * @throws ContentRepositoryNotAvailableException Exception thrown if there is an error while querying the jcr
 	 */
 	EnterpriseContent loadFile(String jcrPath) throws ElementNotFoundException, ContentRepositoryNotAvailableException;
 
+	/**
+	 * Content service app description getter
+	 * @param language of the app to be found
+	 * @return a map of app descriptions
+	 */
 	Map<String, String> getAppDescriptions(String language);
 
+	/**
+	 * Content service folder contents getter
+	 * @param path to be retrieved
+	 * @return a list of all the contents existent in a given path
+	 */
 	List<EnterpriseContent> getFolderContents(String path);
 
+	/**
+	 * Content service content versions getter
+	 * @param path to be retrieved
+	 * @return a list of all the contents versions existent in a given path
+	 */
 	List<EnterpriseContent> getContentVersions(String path);
 
 	//TODO: What is this?

@@ -25,41 +25,42 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * Contract description for the Data Service responsible for handle Actions (CRUD)
+ *
+ * @author Newton Carvalho
  */
 public interface ActionServiceAccess extends ServiceAccess {
 
     /**
      * Retrieve an Action by an identifier
      * @param actionId action identifier
-     * @return
+     * @return the requested system action
      */
     public SystemAction get(Long actionId);
 
     /**
      * Retrieves a collection of Actions by its identifiers
      * @param actionId list of identifiers
-     * @return
+     * @return a list of system actions
      */
     public List<SystemAction> get(List<Long> actionId);
 
     /**
      * Retrieves actions using pagination approach
-     * @param search
+     * @param search values to be search
      * @param pageNo Page number
      * @param pageSize Page size
      * @param sortBy Sorting fields
      * @param isAscending Defines if ascending or descending in relation of sorting fields
-     * @return
+     * @return a pagination of system actions
      */
     public Page<SystemAction> getAll(String search, int pageNo, int pageSize,
                               List<String> sortBy, boolean isAscending);
 
     /**
      * Save an action (Create or Update)
-     * @param action
-     * @throws UniquenessConstraintException
+     * @param action to be stored/saved
+     * @throws UniquenessConstraintException in case the required action already exists or has duplicated information
      */
     public void save(SystemAction action) throws UniquenessConstraintException;
 
@@ -77,8 +78,8 @@ public interface ActionServiceAccess extends ServiceAccess {
 
     /**
      * Retrieve Actions using a search filter
-     * @param filter
-     * @return
+     * @param filter with specific fields to find the correct action
+     * @return a list of system actions
      */
     public List<? extends SystemAction> getActions(SystemActionSearchFilter filter);
 
