@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.radien.util;
 
 import java.text.MessageFormat;
@@ -11,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * String value Formatter Utilities class
+ *
  * @author Marco Weiland
  * @author Rafael Fernandes
  */
@@ -21,6 +39,14 @@ public class StringFormatUtil {
     private static Pattern EMPTY_PLACEHOLDER = Pattern.compile("\\{}");
     private static Pattern VALID_PLACEHOLDER = Pattern.compile("\\{\\d+}");
 
+    /**
+     * Writes a formatted string to this object's destination using the specified format string and arguments.
+     * The locale used is the one defined during the construction of this formatter.
+     * @param pattern A format string as described in Format string syntax.
+     * @param arguments Arguments referenced by the format specifiers in the format string.
+     *                  If there are more arguments than format specifiers, the extra arguments are ignored.
+     * @return the formatted value
+     */
     public static String format(String pattern, Object ... arguments) {
         validate(pattern, arguments);
 
@@ -37,6 +63,12 @@ public class StringFormatUtil {
         }
     }
 
+    /**
+     * Validates if with the given string pattern and arguments the following combination can be formatted or not
+     * @param pattern A format string as described in Format string syntax.
+     * @param arguments Arguments referenced by the format specifiers in the format string.
+     *                  If there are more arguments than format specifiers, the extra arguments are ignored.
+     */
     private static void validate(String pattern, Object ... arguments){
         boolean containsEmptyPlaceholder = EMPTY_PLACEHOLDER.matcher(pattern).find();
         boolean containsValidPlaceholder = VALID_PLACEHOLDER.matcher(pattern).find();

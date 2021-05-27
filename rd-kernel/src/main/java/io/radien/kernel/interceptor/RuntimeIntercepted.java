@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,8 @@ import java.lang.annotation.Target;
 import javax.interceptor.InterceptorBinding;
 
 /**
+ * Runtime intercepted from the runtime interceptor constructor
+ *
  * @author Marco Weiland
  */
 @Inherited

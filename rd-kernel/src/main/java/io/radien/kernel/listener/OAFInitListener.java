@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,25 +23,43 @@ import io.radien.api.OAFAccess;
 import io.radien.kernel.OpenAppframe;
 
 /**
+ * Open Appframe initializer listener
+ *
  * @author Marco Weiland
  */
 public class OAFInitListener extends AbstractOAFInitListener {
 
+	/**
+	 * Requests to start the given context event
+	 * @param sce context to be started/initialized
+	 */
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		super.contextInitialized(sce);
 	}
 
+	/**
+	 * Requests to delete/destroy the given context
+	 * @param sce context to be discarded and destroyed
+	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		super.contextDestroyed(sce);
 	}
 
+	/**
+	 * Request to return the current open appframe object
+	 * @return the active open appframe
+	 */
 	@Override
 	protected Class<? extends OAFAccess> getAppframe() {
 		return OpenAppframe.class;
 	}
 
+	/**
+	 * Requests the current CDI bean manager
+	 * @return the current bean manager from the CDI
+	 */
 	@Override
 	protected BeanManager getBeanManager() {
 		return CDI.current().getBeanManager();

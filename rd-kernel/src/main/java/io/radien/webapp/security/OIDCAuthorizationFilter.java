@@ -38,9 +38,17 @@ import io.radien.webapp.RedirectUtil;
  */
 public class OIDCAuthorizationFilter extends AuthorizationFilter {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6910833814070691420L;
 	private static final Logger log = LoggerFactory.getLogger(OIDCAuthorizationFilter.class);
 
+	/**
+	 * Processes all requests that have no user in session and are within the
+	 * openappframe modules, redirecting the user to the index page in tis case
+	 *
+	 * @param req the Servlet request
+	 * @param res the servlet response
+	 * @param chain the filter chain
+	 */
 	@Override
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -68,6 +76,13 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 
 	}
 
+	/**
+	 * Redirecting the user to the login page in this case
+	 *
+	 * @param req the Servlet request
+	 * @param res the servlet response
+	 * @param chain the filter chain
+	 */
 	@Override
 	protected String getRedirect(ServletRequest req, ServletResponse res, FilterChain chain) {
 

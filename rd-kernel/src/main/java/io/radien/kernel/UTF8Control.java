@@ -27,6 +27,8 @@ import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
 /**
+ * Custom implementation of ResourceBundle.Control that reads properties file in UTF-8.
+ *
  * @author Marco Weiland
  */
 public class UTF8Control extends Control {
