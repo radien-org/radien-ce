@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.exception.SystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,16 +70,22 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		//TODO:		refresh access token if needed
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
-
-		Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
-		SystemUser user;
-		if(!existingUser.isPresent()){
-			user = UserFactory.create(givenname,familyName, preferredUserName,userIdSubject,null,email,getOAF().getSystemAdminUserId());
-			userClientService.create(user,true);
-		} else {
-			user = existingUser.get();
+		try {
+			Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
+			SystemUser user;
+			if (!existingUser.isPresent()) {
+				user = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, null, email, getOAF().getSystemAdminUserId());
+				userClientService.create(user, true);
+			} else {
+				user = existingUser.get();
+			}
+			this.user = user;
+		} catch (SystemException exception){
+			log.error(exception.getMessage());
 		}
-		this.user = user;
+		if (this.user == null){
+			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,null,email,-1L);
+		}
 
 	}
 

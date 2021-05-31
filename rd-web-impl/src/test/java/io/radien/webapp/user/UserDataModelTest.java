@@ -20,25 +20,21 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import org.apache.commons.lang3.StringUtils;
+
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.faces.context.Flash;
-import javax.inject.Inject;
 
-import org.junit.Before;
+
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
