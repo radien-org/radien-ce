@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
@@ -67,6 +68,53 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    /**
+     * Retrieves TenantRole associations using pagination approach
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRole user associations (Chunk/Portion compatible
+     * with parameter Page number and Page size)
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException {
+        try {
+            return getAllCore(pageNo, pageSize);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getAllCore(pageNo, pageSize);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Core method that Retrieves TenantRole associations using pagination approach
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRole user associations (Chunk/Portion compatible
+     * with parameter Page number and Page size)
+     * @throws SystemException in case of any error
+     */
+    protected Page<? extends SystemTenantRole> getAllCore(int pageNo, int pageSize) throws SystemException {
+        try {
+            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getAll(pageNo, pageSize);
+            return TenantRoleModelMapper.mapToPage((InputStream) response.getEntity());
+        }
+        catch (TokenExpiredException t) {
+            throw t;
+        }
+        catch (Exception e) {
+            log.error("Error trying to retrieve Tenant Role User associations", e);
+            throw new SystemException(e);
+        }
+    }
 
     /**
      * Retrieve a Tenant Role association using the id as search parameter.

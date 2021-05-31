@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{tenantRoleAssociationDataModel.onload}"/>
+    </f:metadata>
+
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="tenantRoleAssociationManagementTableDiv" styleClass="tableContainer">
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.associations} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+            <p:dataTable id="dataTable" value="#{tenantRoleAssociationDataModel.lazyModel}"
+                         var="tenantRoleAssociation"
+                         paginator="true" rows="10"
+                         lazy="true"
+                         paginatorPosition="bottom"
+                         paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                         rowsPerPageTemplate="5,10,20,50"
+                         styleClass = "tableDesign"
+                         selectionMode="single"
+                         selection="#{tenantRoleAssociationDataModel.selectedAssociation}">
+
+                <p:ajax event="rowSelect" listener="#{tenantRoleAssociationDataModel.onRowSelect}" update="@form:tenantRoleAssociationManagementTableDiv"
+                        oncomplete="$('.formValidationModalClass').modal('show')"/>
+                <p:column headerText="Id" sortBy="#{tenantRoleAssociation.id}">
+                    <h:outputText value="#{tenantRoleAssociation.id}"/>
+                </p:column>
+                <p:column headerText="Tenant">
+                    <h:outputText value="#{tenantRoleAssociation.tenantId}"/>
+                </p:column>
+                <p:column headerText="Role">
+                    <h:outputText value="#{tenantRoleAssociation.roleId}"/>
+                </p:column>
+                <p:column headerText="#{msg.editUpper}">
+                    <b:commandButton value="#{msg.edit}"
+                                     iconAwesome="fa-function"
+                                     iconAlign="center"
+                                     action="#{tenantRoleAssociationManager.edit(tenantRoleAssociation)}"/>
+                </p:column>
+            </p:dataTable>
+
+            <b:modal title="Selected Association Details" styleClass="formValidationModalClass"
+                     closable="false" closeOnEscape="true" rendered="#{not empty tenantRoleAssociationDataModel.selectedAssociation}" auto-update="true">
+                <b:dataTable value="#{tenantRoleAssociationDataModel.selectedAssociation}"
+                             var="selectedAssociation"
+                             widgetVar="tableWidgetVar"
+                             responsive="true"
+                             paginated="false"
+                             searching="false"
+                             scroll-horizontally="true">
+                    <b:dataTableColumn value="#{selectedAssociation.id}" />
+                    <b:dataTableColumn value="#{selectedAssociation.tenantId}" />
+                    <b:dataTableColumn value="#{selectedAssociation.roleId}" />
+                </b:dataTable>
+                <f:facet name="footer">
+                    <b:button value="Close" dismiss="modal" />
+                </f:facet>
+            </b:modal>
+        </h:form>
+
+        <h:form id="tenantRoleAssociationManagementButtons">
+            <b:commandButton id="refresh" value="Refresh Values"
+                             ajax="false"
+                             iconAwesome="fa-refresh"
+                             icon-spin="true"
+                             iconAlign="right"
+                             tooltip="Refresh existent Associations data table!"
+                             actionListener="#{tenantRoleAssociationDataModel.onload}"
+                             immediate="true" update="@form:tenantRoleAssociationManagementTableDiv"
+                             auto-update="true"/>
+
+            <b:commandButton value="#{msg.add} #{msg.association}"
+                             action="#{tenantRoleAssociationManager.prepareToCreateTenantRole}"
+                             iconAwesome="fa-user"
+                             iconAlign="center"/>
+
+            <b:growl showDetail="true" allowDismiss="true" delay="0"/>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

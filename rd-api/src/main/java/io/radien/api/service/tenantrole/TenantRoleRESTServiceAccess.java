@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.tenantrole;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
@@ -27,6 +28,15 @@ import java.util.Optional;
  * @author Newton Carvalho
  */
 public interface TenantRoleRESTServiceAccess {
+
+    /**
+     * Retrieves TenantRoleUser association using pagination approach
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRole User associations (Chunk/Portion compatible
+     * with parameter Page number and Page size).
+     */
+    Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException;
 
     /**
      * Obtains TenantRole by Id
