@@ -15,7 +15,6 @@
  */
 package io.radien.aws.utils.s3;
 
-
 import io.radien.aws.utils.s3.exceptions.RemoteResourceNotAvailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +38,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
+ * S3 Amazon Cloud Storage file utils
  *
  * @author Nuno Santana
  */
-
 public class S3FileUtil {
 
     private static final Logger log = LoggerFactory.getLogger(S3FileUtil.class);
 
+    /**
+     * Will delete (if found) the requested file/path from the S3 Amazon Cloud
+     * @param x path to be deleted
+     * @throws IOException to be throw if not able to find/open path
+     */
     public static void deleteIfExists(Path x) throws IOException {
         try {
             Files.delete(x);
@@ -55,6 +59,16 @@ public class S3FileUtil {
         }
     }
 
+    /**
+     * Retrieves requested file from the S3 Amazon Cloud
+     * @param s3Region to lookup
+     * @param s3Bucket current bucket to find the requested file
+     * @param s3WorkDir working directory of the file
+     * @param name file name to be found
+     * @throws IOException to be throw if not able to find/open path
+     * @throws RemoteResourceNotAvailableException in case the resource is not available
+     * @throws FileNotFoundException in case the file is not found
+     */
     public static void getS3FileWithName(String s3Region, String s3Bucket, String s3WorkDir, String name) throws IOException,RemoteResourceNotAvailableException,FileNotFoundException {
         log.info("Starting transfer of the file {}", name);
         //Authorization is done in the machine scope and SDK takes care of get it
@@ -99,6 +113,16 @@ public class S3FileUtil {
 
     }
 
+    /**
+     * Counts how many files start with the following prefix in the requested directory in the S3
+     * @param s3Region to lookup
+     * @param s3Bucket current bucket to find the requested file
+     * @param s3WorkDir working directory of the file
+     * @param prefix to be found
+     * @return the count of all the files that the name start with the prefix value
+     * @throws RemoteResourceNotAvailableException in case the remote resource is not found or not available
+     * @throws IOException to be throw if not able to find/open path
+     */
     public static int getS3FilesStartingWith(String s3Region, String s3Bucket,String s3WorkDir, String prefix) throws RemoteResourceNotAvailableException, IOException{
         try {
             int count = 0;
