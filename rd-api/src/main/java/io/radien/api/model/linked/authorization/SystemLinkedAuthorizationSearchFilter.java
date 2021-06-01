@@ -16,27 +16,69 @@
 package io.radien.api.model.linked.authorization;
 
 /**
+ * System Linked Authorization search filter interface methods
+ *
  * @author Bruno Gama
  */
 public interface SystemLinkedAuthorizationSearchFilter {
 
+    /**
+     * System Linked Authorization filter tenant id getter
+     * @return the tenant id
+     */
     Long getTenantId();
 
+    /**
+     * System Linked Authorization filter tenant id setter
+     * @param tenantId to be set
+     */
     void setTenantId(Long tenantId);
 
+    /**
+     * System Linked Authorization filter permission id getter
+     * @return the permission id
+     */
     Long getPermissionId();
 
+    /**
+     * System Linked Authorization filter permission id setter
+     * @param permissionId to be set
+     */
     void setPermissionId(Long permissionId);
 
+    /**
+     * System Linked Authorization filter role id getter
+     * @return the role id
+     */
     Long getRoleId();
 
+    /**
+     * System Linked Authorization filter role id setter
+     * @param roleId to be set
+     */
     void setRoleId(Long roleId);
 
+    /**
+     * System Linked Authorization filter user id getter
+     * @return the user id
+     */
     Long getUserId();
 
+    /**
+     * System Linked Authorization filter user id setter
+     * @param userId to be set
+     */
     void setUserId(Long userId);
 
+    /**
+     * System Linked Authorization is logical conjunction getter
+     * @return the logical conjunction value if true is an and if false is a or
+     */
     boolean isLogicConjunction();
 
+    /**
+     * System Linked Authorization filter logical conjunction setter
+     * @param logicConjunction the logical conjunction value if true is an and if false is a or
+     */
     void setLogicConjunction(boolean logicConjunction);
 }

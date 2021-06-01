@@ -19,12 +19,32 @@ import io.radien.api.Model;
 
 /**
  * Describes the association among Tenant, Role and Permission
+ *
  * @author Newton Carvalho
  */
 public interface SystemTenantRolePermission extends Model {
+
+    /**
+     * System tenant role permission tenant role id getter
+     * @return System tenant role permission tenant role id
+     */
     Long getTenantRoleId();
+
+    /**
+     * System tenant role permission tenant role id setter
+     * @param tenantRoleId to be set
+     */
     void setTenantRoleId(Long tenantRoleId);
 
+    /**
+     * System tenant role permission permission id getter
+     * @return System tenant role permission permission id
+     */
     Long getPermissionId();
+
+    /**
+     * System tenant role permission permission id setter
+     * @param permissionId to be set
+     */
     void setPermissionId(Long permissionId);
 }

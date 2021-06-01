@@ -16,20 +16,45 @@
 package io.radien.api.model.permission;
 
 /**
- * @author Newton Carvalho
  * Contract description for resources search filter
+ *
+ * @author Newton Carvalho
  */
 public interface SystemResourceSearchFilter {
 
-    void setName(String name);
-
+    /**
+     * System Resource search filter name getter
+     * @return the system resource search filter name
+     */
     String getName();
 
+    /**
+     * System Resource search filter name setter
+     * @param name to be set
+     */
+    void setName(String name);
+
+    /**
+     * System resource search filter is exact search getter
+     * @return the system resource search filter is exact value
+     */
     boolean isExact();
 
+    /**
+     * System resource search filter is exact setter
+     * @param exact if true the search needs to be exactly as the given parameters
+     */
     void setExact(boolean exact);
 
+    /**
+     * System resource search filter is logical conjunction getter
+     * @return the logical conjunction value if true is an and if false is a or
+     */
     boolean isLogicConjunction();
 
+    /**
+     * System resource search filter logical conjunction setter
+     * @param logicConjunction the logical conjunction value if true is an and if false is a or
+     */
     void setLogicConjunction(boolean logicConjunction);
 }

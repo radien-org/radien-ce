@@ -32,15 +32,29 @@ public enum SystemMessageTypes {
 	private String typeKey;
 	private String resourceBundleLocation;
 
+	/**
+	 * System Message Types constructor. Creates a new System message tyoe by a given type and location
+	 * @param typeKey type message type
+	 * @param resourceBundleLocation location for the message type to be used
+	 */
 	SystemMessageTypes(String typeKey, String resourceBundleLocation) {
 		this.typeKey = typeKey;
 		this.resourceBundleLocation = resourceBundleLocation;
 	}
 
+	/**
+	 * System Message Type getter for the type
+	 * @return the string value of the type of the system message type
+	 */
 	public String typeKey() {
 		return typeKey;
 	}
 
+	/**
+	 * Gets the resource bundle required by the error type code type
+	 * @param errorType to be found
+	 * @return a resource bundle that has been found
+	 */
 	public ResourceBundle resourceBundle(SystemMessageTypes errorType) {
 		ResourceBundle resourceBundle = resourceBundles.get(errorType);
 		if (resourceBundle == null) {

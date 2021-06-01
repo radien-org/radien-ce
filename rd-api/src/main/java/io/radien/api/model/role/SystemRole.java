@@ -26,12 +26,39 @@ import java.util.Date;
  */
 public interface SystemRole extends Model {
 
+    /**
+     * System Role name getter
+     * @return the system role name
+     */
     public String getName();
+
+    /**
+     * System Role name setter
+     * @param name to be set
+     */
     public void setName(String name);
 
+    /**
+     * System Role description getter
+     * @return the system role description
+     */
     public String getDescription();
+
+    /**
+     * System Role description setter
+     * @param description to be set
+     */
     public void setDescription(String description);
 
+    /**
+     * System Role termination date getter
+     * @return the system role termination date
+     */
     public Date getTerminationDate();
+
+    /**
+     * System role termination date setter
+     * @param terminationDate to be set
+     */
     public void setTerminationDate(Date terminationDate);
 }
