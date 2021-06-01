@@ -33,7 +33,7 @@ import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
@@ -46,7 +46,7 @@ import java.util.List;
  * @author Newton Carvalho
  */
 @Model
-@ApplicationScoped
+@SessionScoped
 public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
