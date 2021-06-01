@@ -33,7 +33,6 @@ import io.radien.ms.usermanagement.client.services.UserFactory;
 
 import java.util.Optional;
 
-
 /**
  * Class responsible for managing the current user session
  *
@@ -59,11 +58,26 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	private SystemUser selectedUser;
 	private boolean validationTrue;
 
+	/**
+	 * Initialization of the user session
+	 */
 	@PostConstruct
 	private void init() {
 		log.info("Session initiated");
 	}
-	
+
+	/**
+	 * Method for taking care and processing the login of the current active user and his session
+	 * @param userIdSubject user subject identifier
+	 * @param email user email
+	 * @param preferredUserName preferred user selected name
+	 * @param givenname user name
+	 * @param familyName user last name
+	 * @param accessToken public access token for authorization purposes
+	 * @param refreshToken private access token for refreshing the public access token
+	 * @throws Exception in case of any issue while performing the login, starting the user session or validating the
+	 * user information
+	 */
 	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName,String accessToken, String refreshToken) throws Exception {
 		log.info("User session login starting");
 		log.info("user logged in: {}", userIdSubject);
@@ -90,15 +104,21 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	}
 
 	/**
+	 * User session id getter
 	 * @return the user id
 	 */
 	public Long getUserId() { return user != null ? user.getId() : null; }
 
+	/**
+	 * Validates if the user session is still active or not
+	 * @return true if user is still active
+	 */
 	public boolean isActive() {
 		return user!=null && user.isEnabled();
 	}
 
 	/**
+	 * User session subject getter
 	 * @return the userIdSubject
 	 */
 	public String getUserIdSubject() {
@@ -106,6 +126,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	}
 
 	/**
+	 * User session email getter
 	 * @return the email
 	 */
 	public String getEmail() {
@@ -113,6 +134,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	}
 
 	/**
+	 * User session prefered user name getter
 	 * @return the preferredUserName
 	 */
 	public String getPreferredUserName() {
@@ -121,6 +143,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	}
 
 	/**
+	 * User session first name getter
 	 * @return the userFirstName
 	 */
 	public String getUserFirstName() {
@@ -129,6 +152,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	}
 
 	/**
+	 * User session user last name
 	 * @return the userLastName
 	 */
 	public String getUserLastName() {
@@ -137,47 +161,83 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	}
 
 	/**
-	 * @return the userLastName
+	 * User session user full name getter
+	 * @return the userFullName
 	 */
 	public String getUserFullName() {
 		log.info("get Full Name");
 		return user.getFirstname() + " " +user.getLastname();
 	}
 
+	/**
+	 * Gets the current OAF access
+	 * @return the oaf object
+	 */
 	@Override
 	public OAFAccess getOAF() {
 		return oaf;
 	}
 
+	/**
+	 * User session access token getter
+	 * @return the user access token
+	 */
 	public String getAccessToken() {
 		return accessToken;
 	}
 
+	/**
+	 * User session access token setter
+	 * @param accessToken to be set
+	 */
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
 
+	/**
+	 * User session refresh token getter
+	 * @return user refresh token
+	 */
 	public String getRefreshToken() {
 		return refreshToken;
 	}
 
+	/**
+	 * User session refresh token setter
+	 * @param refreshToken to be set
+	 */
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
 
-
+	/**
+	 * User session selected user getter
+	 * @return the selected user information
+	 */
 	public SystemUser getSelectedUser() {
 		return selectedUser;
 	}
 
+	/**
+	 * User session selected user setter
+	 * @param selectedUser to be set
+	 */
 	public void setSelectedUser(SystemUser selectedUser) {
 		this.selectedUser = selectedUser;
 	}
 
+	/**
+	 * Validator to check if validation is true or not
+	 * @return returns the validation value
+	 */
 	public boolean isValidationTrue() {
 		return validationTrue;
 	}
 
+	/**
+	 * User session validation setter
+	 * @param validationTrue to be set
+	 */
 	public void setValidationTrue(boolean validationTrue) {
 		this.validationTrue = validationTrue;
 	}

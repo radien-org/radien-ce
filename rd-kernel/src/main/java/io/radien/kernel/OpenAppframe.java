@@ -32,6 +32,9 @@ public @Default @ApplicationScoped class OpenAppframe extends OAF {
 	public static final String OAF_EL_RESOLVE_NAME = "#{openAppframe}";
 	private static final long serialVersionUID = -1802569158933030590L;
 
+	/**
+	 * Method responsible for loading the system properties for the oaf application and managing the kernel utilities
+	 */
 	public OpenAppframe() {
 		super();
 		loadSystemProperties();
