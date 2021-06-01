@@ -18,6 +18,8 @@ package io.radien.api.model.role;
 import io.radien.api.model.AbstractModel;
 
 /**
+ * Abstract Role Model Object
+ *
  * @author Bruno Gama
  */
 public abstract class AbstractRoleModel extends AbstractModel implements SystemRole {

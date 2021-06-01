@@ -18,9 +18,11 @@ package io.radien.api.model.user;
 import io.radien.api.model.AbstractModel;
 
 /**
+ * Abstract User model object class
+ *
  * @author Marco Weiland
  */
 public abstract class AbstractUserModel extends AbstractModel implements SystemUser {
-	private static final long serialVersionUID = -4165151447731450930L;
+	private static final long serialVersionUID = 1230496518908342363L;
 
 }
