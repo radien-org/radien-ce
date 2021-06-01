@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Newton Carvalho
  * Contract for Rest Service Client regarding Resource domain object
+ *
+ * @author Newton Carvalho
  */
 public interface ResourceRESTServiceAccess extends Appframeable {
 
@@ -39,24 +40,23 @@ public interface ResourceRESTServiceAccess extends Appframeable {
      * @param sortBy list of values to sort request
      * @param isAscending in case of true data will come ascending mode if false descending
      * @return list of resources
-     * @throws MalformedURLException in case of URL exception construction
-     * @throws ParseException in case of any issue parsing the response information
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public Page<? extends SystemResource> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Retrieves a Resource by Id
-     * @param id
-     * @return
-     * @throws SystemException
+     * @param id to be search for
+     * @return the requested resource
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public Optional<SystemResource> getResourceById(Long id) throws SystemException;
 
     /**
      * Retrieves a Resource by Name
-     * @param name
-     * @return
-     * @throws SystemException
+     * @param name to be found
+     * @return the requested resource
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public Optional<SystemResource> getResourceByName(String name) throws SystemException;
 

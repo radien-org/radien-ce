@@ -18,6 +18,8 @@ package io.radien.api.service;
 import java.io.Serializable;
 
 /**
+ * Service Access interface class object
+ *
  * @author Marco Weiland
  */
 public interface ServiceAccess extends Serializable {

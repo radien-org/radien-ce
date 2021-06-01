@@ -20,11 +20,12 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.exception.SystemException;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 
 /**
+ * Role REST Service Access interface for future communications and requests
+ *
  * @author Bruno Gama
  */
 public interface RoleRESTServiceAccess extends Appframeable{
@@ -38,7 +39,7 @@ public interface RoleRESTServiceAccess extends Appframeable{
      * @param sortBy Sorting fields
      * @param isAscending Defines if ascending or descending in relation of sorting fields
      * @return page containing system roles
-     * @throws SystemException
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize,
                                              List<String> sortBy, boolean isAscending) throws SystemException;

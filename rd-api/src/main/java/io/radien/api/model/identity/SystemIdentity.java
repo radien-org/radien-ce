@@ -17,23 +17,50 @@
  */
 package io.radien.api.model.identity;
 
-import java.util.Date;
-import java.util.List;
-
 import io.radien.api.Model;
 
 /**
+ * System user identity interface
+ *
  * @author Marco Weiland
  */
 public interface SystemIdentity extends Model {
 
+	/**
+	 * user identity first name getter
+	 * @return the user first name
+	 */
 	public String getFirstname();
+
+	/**
+	 * user identity first name setter
+	 * @param firstname to be set
+	 */
 	public void setFirstname(String firstname);
 
+	/**
+	 * user identity last name getter
+	 * @return the user last name
+	 */
 	public String getLastname();
+
+	/**
+	 * user identity last name setter
+	 * @param lastname to be set
+	 */
 	public void setLastname(String lastname);
 
+	/**
+	 * user identity full name getter with reverse parameter
+	 * @param reverse should the full name be returned with last name first or not
+	 * @return the user full name
+	 */
 	public String getFullname(boolean reverse);
+
+	/**
+	 * user identity full name getter with first name and then last name
+	 * @return the user full name
+	 */
 	public String getFullname();
 
 

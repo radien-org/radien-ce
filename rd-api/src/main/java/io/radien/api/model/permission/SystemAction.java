@@ -17,14 +17,34 @@ package io.radien.api.model.permission;
 
 import io.radien.api.Model;
 
-
 /**
- * @author Newton Carvalho
  * Contract description for Action
+ *
+ * @author Newton Carvalho
  */
 public interface SystemAction extends Model {
+
+    /**
+     * System Action getter id
+     * @return the system action id
+     */
     Long getId();
+
+    /**
+     * System Action setter id
+     * @param id to be set
+     */
     void setId(Long id);
+
+    /**
+     * System Action getter name
+     * @return the system action name
+     */
     String getName();
+
+    /**
+     * System Action setter name
+     * @param name to be set
+     */
     void setName(String name);
 }

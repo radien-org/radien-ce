@@ -128,10 +128,18 @@ public enum OAFProperties implements SystemProperties{
 
     private String propKey;
 
+    /**
+     * OAF Properties constructor
+     * @param propKey endpoint to be constructed
+     */
     OAFProperties(String propKey) {
         this.propKey = propKey;
     }
 
+    /**
+     * Gets the correct requested property key value
+     * @return the property key value as a string
+     */
     @Override
     public String propKey() {
         return propKey;
