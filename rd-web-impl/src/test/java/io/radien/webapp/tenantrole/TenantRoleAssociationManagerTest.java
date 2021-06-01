@@ -550,7 +550,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_creation_success",
+        assertEquals("rd_tenant_role_permission_association_success",
                 captured.getSummary());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
     }
@@ -580,7 +580,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_creation_error",
+        assertEquals("rd_tenant_role_permission_association_error",
                 captured.getSummary());
         assertEquals("rd_permission_is_mandatory", captured.getDetail());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
@@ -615,7 +615,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_creation_error",
+        assertEquals("rd_tenant_role_permission_association_error",
                 captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));

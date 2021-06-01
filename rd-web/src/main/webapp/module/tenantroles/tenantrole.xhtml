@@ -8,7 +8,7 @@
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<ui:define name="content" bootsFacesDecorator="true">
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
-		<h:form>
+		<h:form id="tenantRoleAssociationsManagementTableDiv">
 			<h:inputHidden id="tenantRoleId" value="#{tenantRoleAssociationManager.tenantRole.id}"/>
 			<b:container>
 				<b:row>
@@ -81,7 +81,86 @@
 
 						<b:tab id="tabForPermissionAssigment" title="Permissions"
 							   rendered="#{tenantRoleAssociationManager.existsTenantRoleCreated}">
-							<p>Area to perform Permission assigment</p>
+							<b:container>
+								<b:row><h1/></b:row>
+								<b:row>
+									<b:column medium-screen="2">
+										<h:outputLabel value="#{msg.rd_permission}"/>
+									</b:column>
+									<b:column mediumScreen="4">
+										<p:autoComplete id="autoCompletForPermissionToBeAssigned"
+														value="#{tenantRoleAssociationManager.permission}"
+														var="selectedPermissionToAssign"
+														itemValue="${selectedPermissionToAssign}"
+														itemLabel="${selectedPermissionToAssign.name}"
+														converter="#{permissionConverter}"
+														completeMethod="#{entityFilterUtil.filterPermissionsByName}"
+														label="#{msg.rd_permission}"
+														emptyMessage="#{msg.rd_permissions_not_found}"
+														size="50" placeholder="#{msg.permissionPlaceholder}"
+														requiredMessage="#{msg.rd_permission_is_mandatory}"
+														effect="fade" dropdown="true" forceSelection="true"
+														styleClass="p-field p-col-12 p-md-4"/>
+									</b:column>
+									<b:column mediumScreen="2">
+										<b:commandButton id="tenantRolePermissionaAssociation"
+														 value="#{msg.associate}"
+														 tooltip="#{msg.associate} #{msg.rd_tenant} #{msg.rd_role} #{msg.rd_permission}"
+														 iconAwesome="fa-cogs"
+														 action="#{tenantRoleAssociationManager.assignPermission}"/>
+									</b:column>
+								</b:row>
+								<b:row><h1/></b:row>
+								<b:row>
+									<p:dataTable var="perm"
+												 value="#{tenantRoleAssociationManager.assignedPermissions}"
+												 paginator="true" paginatorPosition="bottom"
+												 rows="10" responsive="true"
+												 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+												 currentPageReportTemplate="({currentPage} #{msg.of} {totalPages})"
+												 rowsPerPageTemplate="5,10,15,30,50"
+												 id="permissionsTable" emptyMessage="#{msg.noRecordsFound}"
+												 info="false" sortOrder="ascending" styleClass="table--2"
+									   			 rowKey="#{perm.id}"
+												 selectionMode="single"
+												 selection="#{tenantRoleAssociationManager.permission}">
+
+										<p:ajax event="rowSelect"
+												listener="#{tenantRoleAssociationManager.onPermissionSelect}"
+												update="@all"/>
+
+										<p:column headerText="#{msg.id}">
+											<h:outputText value="#{perm.id}" />
+										</p:column>
+										<p:column headerText="#{msg.name}">
+											<h:outputText value="#{perm.name}" />
+										</p:column>
+										<p:column headerText="#{msg.rd_action}">
+											<h:outputText value="#{perm.actionId}" />
+										</p:column>
+										<p:column headerText="#{msg.rd_resource}">
+											<h:outputText value="#{perm.resourceId}" />
+										</p:column>
+									</p:dataTable>
+								</b:row>
+								<b:row><h1/></b:row>
+							</b:container>
+							<b:buttonGroup>
+
+								<b:commandButton id="cancelTenantRolePermissionAssociation"
+												 value="#{msg.rd_cancel_association}"
+												 tooltip="#{msg.returnToRecordList}"
+												 iconAwesome="fa-home"
+												 immediate="true"
+												 action="tenantroles"/>
+
+								<b:commandButton id="tenantRolePermissionUnAssociation"
+												 value="#{msg.dissociate}"
+												 tooltip="#{msg.dissociate} #{msg.rd_tenant} #{msg.rd_role} #{msg.rd_permission}"
+												 iconAwesome="fa-ban"
+												 action="#{tenantRoleAssociationManager.unAssignPermission}"/>
+
+							</b:buttonGroup>
 						</b:tab>
 
 						<b:tab id="tabForUserAssigment" title="User"

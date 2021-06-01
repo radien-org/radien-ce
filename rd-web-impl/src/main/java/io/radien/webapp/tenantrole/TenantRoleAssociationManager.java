@@ -32,8 +32,11 @@ import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import org.primefaces.event.SelectEvent;
 
-import javax.enterprise.context.ApplicationScoped;
+
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
@@ -46,7 +49,7 @@ import java.util.List;
  * @author Newton Carvalho
  */
 @Model
-@ApplicationScoped
+@SessionScoped
 public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
@@ -65,6 +68,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
     private SystemRole role = new Role();
     private SystemPermission permission = new Permission();
     private SystemTenantRole tenantRole = new TenantRole();
+
+    private SystemPermission previousSelectedPermission = new Permission();
 
     private List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
 
@@ -101,6 +106,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
      */
     public String prepareToCreateTenantRole() {
         this.tenantRole = new TenantRole();
+        this.assignedPermissions = new ArrayList<>();
+        this.previousSelectedPermission = new Permission();
         this.role = new Role();
         this.tenant = new Tenant();
         this.tenantRoleAssociationCreated = Boolean.FALSE;
@@ -118,6 +125,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenantRole = tenantRole;
         this.tabIndex = 0L;
         this.permission = new Permission();
+        this.previousSelectedPermission = new Permission();
         try {
             this.role = this.roleRESTServiceAccess.getRoleById(this.tenantRole.getRoleId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
@@ -174,9 +182,29 @@ public class TenantRoleAssociationManager extends AbstractManager {
             this.tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), permission.getId());
             this.calculatePermissions();
             handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_role_permission_association_creation_success"));
+                    JSFUtil.getMessage("rd_tenant_role_permission_association_success"));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_association_creation_error"));
+            handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_association_error"));
+        }
+        return "tenantrole";
+    }
+
+    /**
+     * Perform the association process between permission, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     */
+    public String unAssignPermission() {
+        this.tabIndex = 1L;
+        try {
+            if (previousSelectedPermission == null || previousSelectedPermission.getId() == null) {
+                throw new IllegalArgumentException(JSFUtil.getMessage("rd_permission_is_mandatory"));
+            }
+            this.tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(), permission.getId());
+            this.calculatePermissions();
+            handleMessage(FacesMessage.SEVERITY_INFO,
+                    JSFUtil.getMessage("rd_tenant_role_permission_dissociation_success"));
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_dissociation_error"));
         }
         return "tenantrole";
     }
@@ -300,6 +328,30 @@ public class TenantRoleAssociationManager extends AbstractManager {
      */
     public void setTabIndex(Long tabIndex) {
         this.tabIndex = tabIndex;
+    }
+
+    public SystemPermission getPreviousSelectedPermission() {
+        return previousSelectedPermission;
+    }
+
+    public void setPreviousSelectedPermission(SystemPermission previousSelectedPermission) {
+        this.previousSelectedPermission = previousSelectedPermission;
+    }
+
+    /**
+     * Stores the information regarding a selected permission
+     * @param event that will contain which permission has been selected
+     */
+    public void onPermissionSelect(SelectEvent<SystemPermission> event) {
+        if (previousSelectedPermission != null && previousSelectedPermission.getId() == event.getObject().getId()) {
+            // remove selection
+            previousSelectedPermission = new Permission();
+            permission = new Permission();
+        } else {
+            // select
+            previousSelectedPermission =event.getObject();
+        }
+        this.tabIndex = 1L;
     }
 
     /**
