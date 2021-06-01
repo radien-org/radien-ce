@@ -34,7 +34,7 @@ import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.util.ZoneComparator;
 
 /**
- * a Class responsible for managing openappframe web app i8n in the resource
+ * A Class responsible for managing openappframe web app i8n in the resource
  * bundle
  *
  * @author Marco Weiland
@@ -42,12 +42,15 @@ import io.radien.util.ZoneComparator;
 public abstract class AbstractLocaleManager implements LocaleManagerAccess {
 
 	protected static final Logger log = LoggerFactory.getLogger(AbstractLocaleManager.class);
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6320273528639534837L;
 	private Locale activeLocale;
 	private String activeLanguage;
 	private List<String> supportedLanguages;
 	private String clientTzOffset;
 
+	/**
+	 * Locale Manager initialization to start managing the OAF WebApp i18n resources
+	 */
 	@PostConstruct
 	protected void init() {
 
@@ -71,10 +74,18 @@ public abstract class AbstractLocaleManager implements LocaleManagerAccess {
 		clientTzOffset = String.format("%s (%s)", tzID, getOffset(LocalDateTime.now(), ZoneId.of(tzID)));
 	}
 
+	/**
+	 * Abstract Locale Manager active language getter
+	 * @return the current active language
+	 */
 	public String getActiveLanguage() {
 		return activeLanguage;
 	}
 
+	/**
+	 * Abstract Locale Manager active language setter
+	 * @param activeLocale to be set
+	 */
 	public void setActiveLanguage(String activeLocale) {
 		Locale localeToset = getOAF().findLocale(activeLocale);
 		FacesContext.getCurrentInstance().getViewRoot().setLocale(localeToset);
@@ -85,7 +96,6 @@ public abstract class AbstractLocaleManager implements LocaleManagerAccess {
 
 	/**
 	 * Returns the Locale of the current language
-	 *
 	 * @return the {@link Locale} object based on the current user language
 	 */
 	public Locale getActiveLocale() {
@@ -96,7 +106,6 @@ public abstract class AbstractLocaleManager implements LocaleManagerAccess {
 	/**
 	 * Returns all the timezones that can be handled by the JVM and JSF, sorted
 	 * by offset
-	 *
 	 * @return a List of timezones represented as a String
 	 */
 	public List<String> getTimeZoneList() {
@@ -108,29 +117,42 @@ public abstract class AbstractLocaleManager implements LocaleManagerAccess {
 
 	/**
 	 * Returns a String with the offset of a ZoneId
-	 *
-	 * @param dateTime
-	 *                     the {@link LocalDateTime} to get offset
-	 * @param id
-	 *                     the ZoneId containing the offset value
+	 * @param dateTime the {@link LocalDateTime} to get offset
+	 * @param id the ZoneId containing the offset value
 	 * @return a String with the offset value
 	 */
 	private String getOffset(LocalDateTime dateTime, ZoneId id) {
 		return dateTime.atZone(id).getOffset().getId().replace("Z", "+00:00");
 	}
 
+	/**
+	 * Abstract Locale Manager get all possible the supported languages
+	 * @return a list of all the possible and supported languages
+	 */
 	public List<String> getSupportedLanguages() {
 		return supportedLanguages;
 	}
 
+	/**
+	 * Abstract Locale Manager get all possible the supported locales
+	 * @return a list of all the possible and supported locales
+	 */
 	public Collection<Locale> getSupportedLocales() {
 		return getOAF().getSupportedLocales().values();
 	}
 
+	/**
+	 * Abstract Locale Manager get current client time zone offset
+	 * @return the current time zone offset
+	 */
 	public String getClientTzOffset() {
 		return this.clientTzOffset;
 	}
 
+	/**
+	 * Abstract Locale Manager setter for the client time zones offset
+	 * @param clientTzOffset to be set
+	 */
 	public void setClientTzOffset(String clientTzOffset) {
 		this.clientTzOffset = clientTzOffset;
 	}

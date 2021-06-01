@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2006-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,17 +22,28 @@ import io.radien.api.Appframeable;
 import io.radien.api.OAFProperties;
 
 /**
+ * Abstract Web Application constructor class
+ *
  * @author Marco Weiland
  */
 public abstract class AbstractWebapp implements Appframeable {
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 6930919846980181399L;
 	protected static final Logger log = LoggerFactory.getLogger(AbstractWebapp.class);
 	private static final String SNAPSHOT = "SNAPSHOT";
 
+	/**
+	 * Gets the current OAF access
+	 * @return the oaf object
+	 */
 	public String getProperty(OAFProperties cfg) {
 		return getOAF().getProperty(cfg);
 	}
 
+	/**
+	 * Gets the current Web app version
+	 * @return the string value of the requested version
+	 */
 	public String getVersion() {
 		String version = getProperty(OAFProperties.SYS_MF_APP_VERSION);
 //		if ( version != null &&  version.contains(SNAPSHOT) &&   getBuildNumber() != null && getBuildNumber().equalsIgnoreCase("")) {
@@ -41,6 +52,10 @@ public abstract class AbstractWebapp implements Appframeable {
 		return version;
 	}
 
+	/**
+	 * Web app version method getter
+	 * @return the web app version
+	 */
 	public String getWebappVersion() {
 		String version = getProperty(OAFProperties.SYS_MF_WEBAPP_VERSION);
 //		if ( version != null && version.contains(SNAPSHOT)) {
@@ -49,18 +64,34 @@ public abstract class AbstractWebapp implements Appframeable {
 		return version;
 	}
 
+	/**
+	 * Web app build number getter
+	 * @return web app build number
+	 */
 	public String getBuildNumber() {
 		return getProperty(OAFProperties.SYS_MF_BUILD_NUMBER);
 	}
 
+	/**
+	 * Returns the current web app name getter method
+	 * @return the web app name
+	 */
 	public String getAppName() {
 		return getProperty(OAFProperties.SYS_APP_NAME);
 	}
 
+	/**
+	 * Validates if for the current web app should be show the login or not
+	 * @return true if login should be show
+	 */
 	public boolean isShowLogin() {
 		return !Boolean.valueOf(getProperty(OAFProperties.SYS_AUTHENTICATION_OIDC_ENABLED));
 	}
 
+	/**
+	 * Validates if dynamic app menu is to e displayed
+	 * @return true if dynamic ap menu is to be show
+	 */
 	public boolean isDynamicAppmenuDisplayed() {
 		return Boolean.valueOf(getProperty(OAFProperties.SYS_DYNAMIC_APPMENU_DISPLAY_ENABLED));
 	}

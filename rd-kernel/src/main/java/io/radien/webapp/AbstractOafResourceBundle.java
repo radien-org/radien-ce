@@ -26,8 +26,16 @@ import org.slf4j.LoggerFactory;
 
 import io.radien.kernel.UTF8Control;
 
-
 /**
+ * Resource bundles contain locale-specific objects. When your program needs a locale-specific resource,
+ * a String for example, your program can load it from the resource bundle that is appropriate for the current
+ * user's locale. In this way, you can write program code that is largely independent of the user's locale
+ * isolating most, if not all, of the locale-specific information in resource bundles.
+ * This allows you to write programs that can:
+ * be easily localized, or translated, into different languages
+ * handle multiple locales at once
+ * be easily modified later to support even more locales
+ *
  * @author Marco Weiland
  */
 public abstract class AbstractOafResourceBundle extends ResourceBundle {
@@ -35,10 +43,18 @@ public abstract class AbstractOafResourceBundle extends ResourceBundle {
 	protected static final String DEFAULT_BUNDLE_NAME = "language/Language";
 	private static final Control UTF8_CONTROL = new UTF8Control();
 
+	/**
+	 * Abstract OAF resource Bundle empty param constructor
+	 */
 	public AbstractOafResourceBundle() {
 		setParent(ResourceBundle.getBundle(getBundleName(), FacesContext.getCurrentInstance().getViewRoot().getLocale(), UTF8_CONTROL));
 	}
 
+	/**
+	 * Gets an object for the given key from this resource bundle. Returns null if this resource bundle does not contain an object for the given key.
+	 * @param key the key for the desired object
+	 * @return the object for the given key, or null
+	 */
 	@Override
 	protected Object handleGetObject(@NotNull String key) {
 		Object o = null;
@@ -51,6 +67,10 @@ public abstract class AbstractOafResourceBundle extends ResourceBundle {
 		return key;
 	}
 
+	/**
+	 * Returns an enumeration of the keys.
+	 * @return an Enumeration of the keys contained in this ResourceBundle and its parent bundles.
+	 */
 	@NotNull
 	@Override
 	public Enumeration<String> getKeys() {

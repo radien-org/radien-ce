@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Method Runtime Interceptor constructor object class
+ *
  * @author Marco Weiland
  */
 @Interceptor
@@ -31,6 +33,14 @@ public class MethodRuntimeInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(MethodRuntimeInterceptor.class);
 	private static long counter = 0;
 
+
+	/**
+	 * Method to intercept invocations and life-cycle events on an associated target class.
+	 * In life-cycle events such as methods that create/destroy the bean occur, or an
+	 * EJB timeout method occurs.
+	 * @param ctx invocation context for intercept the runtime methods
+	 * @return the context result
+	 */
 	@AroundInvoke
 	public Object around(InvocationContext ctx) {
 		Object result = null;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,8 @@ import javax.inject.Inject;
 import io.radien.api.OAFAccess;
 
 /**
+ * Navigation model constructor class
+ *
  * @author Marco Weiland
  */
 public @Model @RequestScoped class Navigation extends AbstractNavigation {
@@ -34,6 +36,10 @@ public @Model @RequestScoped class Navigation extends AbstractNavigation {
 //	@Inject
 //	private DocumentManager dms;
 
+	/**
+	 * Gets the current OAF access
+	 * @return the oaf object
+	 */
 	@Override
 	protected OAFAccess getOAF() {
 		return oaf;
