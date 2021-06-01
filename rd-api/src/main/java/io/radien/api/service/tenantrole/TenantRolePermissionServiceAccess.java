@@ -26,6 +26,7 @@ import java.util.Optional;
 /**
  * Describes a contract for a Repository responsible
  * to perform operations over Tenant, Role and Permission association
+ *
  * @author Newton Carvalho
  */
 public interface TenantRolePermissionServiceAccess extends ServiceAccess {

@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Describes a contract for a Repository responsible
- * to perform operations over Tenant Role and user association
+ * Describes a contract for a Repository responsible to perform operations over Tenant Role and user association
+ *
  * @author Newton Carvalho
  */
 public interface TenantRoleUserServiceAccess extends ServiceAccess {
