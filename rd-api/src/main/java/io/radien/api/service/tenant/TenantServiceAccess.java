@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * Tenant Service Access interface with all the possible tenant requests
+ *
  * @author Santana
  */
 public interface TenantServiceAccess extends ServiceAccess {
@@ -75,10 +77,15 @@ public interface TenantServiceAccess extends ServiceAccess {
     /**
      * Deletes a requested tenant
      * @param tenantId to be deleted
-     * @return true in case of succes false in case of any error
+     * @return true in case of success false in case of any error
      */
     public boolean delete(Long tenantId);
 
+    /**
+     * Deletes a requested tenant and all the tenants bellow him
+     * @param tenantId to be deleted and all his children
+     * @return true in case of success
+     */
     public boolean deleteTenantHierarchy(Long tenantId);
 
     /**

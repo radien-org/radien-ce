@@ -27,15 +27,39 @@ import io.radien.api.Appframeable;
  */
 public interface LocaleManagerAccess extends Appframeable {
 
+	/**
+	 * Active language getter method
+	 * @return the current active language
+	 */
 	String getActiveLanguage();
 
+	/**
+	 * Active language setter method
+	 * @param activeLocale to be set
+	 */
 	void setActiveLanguage(String activeLocale);
 
+	/**
+	 * Active locale getter method
+	 * @return the current active locale
+	 */
 	Locale getActiveLocale();
 
+	/**
+	 * Active supported languages getter method
+	 * @return a list of all the supported languages
+	 */
 	List<String> getSupportedLanguages();
 
+	/**
+	 * Active client time zone offset getter method
+	 * @return the current active client time zone offset
+	 */
 	String getClientTzOffset();
 
+	/**
+	 * Active user session language getter method
+	 * @return the current user language
+	 */
 	String getUserLanguage();
 }

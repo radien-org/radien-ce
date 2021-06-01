@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,17 +24,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Faces Application Initialisation listener constructer class
+ *
  * @author Marco Weiland
  */
 // @WebListener
 public class FacesApplicationInitialisationListener implements SystemEventListener {
+
 	private static final Logger log = LoggerFactory.getLogger(FacesApplicationInitialisationListener.class);
 
+	/**
+	 * Processes the current requested event
+	 * @param event to be processed
+	 * @throws AbortProcessingException in case of triggered event to destroy the current requested event
+	 */
 	@Override
 	public void processEvent(SystemEvent event) throws AbortProcessingException {
 		log.info("Process event triggered");
 	}
 
+	/**
+	 * Validates if a current requested source is an instance of an application object
+	 * @param source to be validated
+	 * @return true in case the given source is an application
+	 */
 	@Override
 	public boolean isListenerForSource(Object source) {
 		return source instanceof Application;

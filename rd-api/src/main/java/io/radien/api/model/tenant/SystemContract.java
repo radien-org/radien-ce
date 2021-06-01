@@ -28,12 +28,39 @@ import java.time.LocalDateTime;
  */
 public interface SystemContract extends Model {
 
+	/**
+	 * System Contract name getter
+	 * @return system contract name
+	 */
 	public String getName();
+
+	/**
+	 * System Contract name setter
+	 * @param name to be set
+	 */
 	public void setName(String name);
 
+	/**
+	 * System Contract start date getter
+	 * @return system contract start date
+	 */
 	public LocalDateTime getStart();
+
+	/**
+	 * System Contract start date setter
+	 * @param time to be set
+	 */
 	public void setStart(LocalDateTime time);
 
+	/**
+	 * System Contract end date getter
+	 * @return system contract end date
+	 */
 	public LocalDateTime getEnd();
+
+	/**
+	 * System Contract end date setter
+	 * @param time to be set
+	 */
 	public void setEnd(LocalDateTime time);
 }

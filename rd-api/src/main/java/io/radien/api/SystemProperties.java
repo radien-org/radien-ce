@@ -19,10 +19,13 @@ package io.radien.api;
  * Enum class that contains the keys of the properties used in OAF
  *
  * @author Marco Weiland
- * 
  */
 public interface SystemProperties {
 
+    /**
+     * Property key value getter
+     * @return the correct property key value for the specified system property
+     */
     String propKey();
 
 }

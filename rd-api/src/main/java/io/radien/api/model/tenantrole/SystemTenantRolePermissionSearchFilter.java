@@ -16,21 +16,57 @@
 package io.radien.api.model.tenantrole;
 
 /**
- * Contract that describes a filter to be applied
- * for Tenant vs Role vs Permission associations
+ * Contract that describes a filter to be applied for Tenant vs Role vs Permission associations
+ *
  * @author Newton Carvalho
  */
 public interface SystemTenantRolePermissionSearchFilter {
 
+    /**
+     * System tenant role permission search filter tenant role id getter
+     * @return System tenant role permission search filter tenant role id
+     */
     Long getTenantRoleId();
+
+    /**
+     * System tenant role permission search filter tenant role id setter
+     * @param tenantRoleId to be set
+     */
     void setTenantRoleId(Long tenantRoleId);
 
+    /**
+     * System tenant role permission search filter permission id getter
+     * @return System tenant role permission search filter permission id
+     */
     Long getPermissionId();
+
+    /**
+     * System tenant role permission search filter permission id setter
+     * @param permissionId to be set
+     */
     void setPermissionId(Long permissionId);
 
-    boolean isExact();
-    void setExact(boolean exact);
+    /**
+     * System tenant role permission search filter is exact search getter
+     * @return the system tenant role permission search filter is exact value
+     */
+    public boolean isExact();
 
-    boolean isLogicConjunction();
-    void setLogicConjunction(boolean logicConjunction);
+    /**
+     * System tenant role permission search filter is exact setter
+     * @param exact if true the search needs to be exactly as the given parameters
+     */
+    public void setExact(boolean exact);
+
+    /**
+     * System tenant role permission search filter is logical conjunction getter
+     * @return the logical conjunction value if true is an and if false is a or
+     */
+    public boolean isLogicConjunction();
+
+    /**
+     * System tenant role permission search filter logical conjunction setter
+     * @param logicConjunction the logical conjunction value if true is an and if false is a or
+     */
+    public void setLogicConjunction(boolean logicConjunction);
 }

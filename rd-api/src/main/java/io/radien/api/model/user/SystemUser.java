@@ -28,31 +28,112 @@ import java.util.Date;
  */
 public interface SystemUser extends Model {
 
+	/**
+	 * System user logon getter
+	 * @return System user logon
+	 */
 	public String getLogon();
+
+	/**
+	 * System user logon setter
+	 * @param logon to be set
+	 */
 	public void setLogon(String logon);
 
+	/**
+	 * System user email getter
+	 * @return System user email
+	 */
 	public String getUserEmail();
+
+	/**
+	 * System user email setter
+	 * @param userEmail to be set
+	 */
 	public void setUserEmail(String userEmail);
 
+	/**
+	 * System user termination date getter
+	 * @return System user termination date
+	 */
 	public Date getTerminationDate();
+
+	/**
+	 * System user termination date setter
+	 * @param terminationDate to be set
+	 */
 	public void setTerminationDate(Date terminationDate);
 
+	/**
+	 * System user is enable getter
+	 * @return System user is still enable
+	 */
 	public boolean isEnabled();
+
+	/**
+	 * System user is enable setter
+	 * @param enabled to enable or disbale user
+	 */
 	public void setEnabled(boolean enabled);
 
+	/**
+	 * System user subject getter
+	 * @return System user subject
+	 */
 	public String getSub();
+
+	/**
+	 * System user subject setter
+	 * @param sub to be set
+	 */
 	public void setSub(String sub);
 
+	/**
+	 * System user active tenant getter
+	 * @return System user tenant
+	 */
 	public Long getActiveTenant();
+
+	/**
+	 * System user active tenant setter
+	 * @param activeTenant to be set
+	 */
 	public void setActiveTenant(Long activeTenant);
 
+	/**
+	 * System user first name getter
+	 * @return System user first name
+	 */
 	public String getFirstname();
+
+	/**
+	 * System user first name setter
+	 * @param firstname to be set
+	 */
 	public void setFirstname(String firstname);
 
+	/**
+	 * System user last name getter
+	 * @return System user last name
+	 */
 	public String getLastname();
-	public void setLastname(String firstname);
 
+	/**
+	 * System user last name setter
+	 * @param lastname to be set
+	 */
+	public void setLastname(String lastname);
+
+	/**
+	 * System user is delegated creation getter
+	 * @return System user delegated creation
+	 */
 	public boolean isDelegatedCreation();
+
+	/**
+	 * System user delegated creation setter
+	 * @param delegatedCreation to be set
+	 */
 	public void setDelegatedCreation(boolean delegatedCreation);
 
 }

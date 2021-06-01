@@ -16,20 +16,45 @@
 package io.radien.api.model.permission;
 
 /**
- * @author Newton Carvalho
  * Contract description for actions search filter
+ *
+ * @author Newton Carvalho
  */
 public interface SystemActionSearchFilter {
 
-    void setName(String name);
-
+    /**
+     * System Action search filter name getter
+     * @return the system action search filter name
+     */
     String getName();
 
+    /**
+     * System Action search filter name setter
+     * @param name to be set
+     */
+    void setName(String name);
+
+    /**
+     * System Action search filter is to be search exact
+     * @return is to be exact value
+     */
     boolean isExact();
 
+    /**
+     * System Action search filter is to be search exact
+     * @param exact to be set
+     */
     void setExact(boolean exact);
 
+    /**
+     * System Action is logical conjunction getter
+     * @return the logical conjunction value if true is an and if false is a or
+     */
     boolean isLogicConjunction();
 
+    /**
+     * System Action filter logical conjunction setter
+     * @param logicConjunction the logical conjunction value if true is an and if false is a or
+     */
     void setLogicConjunction(boolean logicConjunction);
 }

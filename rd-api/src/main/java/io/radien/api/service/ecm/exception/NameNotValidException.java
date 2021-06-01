@@ -23,8 +23,12 @@ import io.radien.exception.SystemException;
  * @author Marco Weiland
  */
 public class NameNotValidException extends SystemException {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5507333527620963837L;
 
+	/**
+	 * Name not valid exception message constructor
+	 * @param message to be added
+	 */
 	public NameNotValidException(String message) {
 		super(message);
 	}

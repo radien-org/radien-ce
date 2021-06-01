@@ -36,15 +36,29 @@ public class OAFHttpResponse extends HttpServletResponseWrapper {
 	// holds custom header and value mapping
 	private final Map<String, String> customHeaders;
 
+	/**
+	 * Custom OAF HTTP Request constructor by a given response
+	 * @param response for the creation of the OAF HTTP response
+	 */
 	OAFHttpResponse(HttpServletResponse response) {
 		super(response);
 		this.customHeaders = new HashMap<>();
 	}
 
+	/**
+	 * Adds the following name and value into the header of the HTTP response
+	 * @param name identifier
+	 * @param value for the header
+	 */
 	void putHeader(String name, String value) {
 		this.customHeaders.put(name, value);
 	}
 
+	/**
+	 * Retrieves by a given name the correct http response header
+	 * @param name to be found
+	 * @return string value of the http response header
+	 */
 	@Override
 	public String getHeader(String name) {
 		// check the custom headers first
@@ -57,6 +71,10 @@ public class OAFHttpResponse extends HttpServletResponseWrapper {
 		return ((HttpServletResponse) getResponse()).getHeader(name);
 	}
 
+	/**
+	 * Retrieves all the existent headers into an enumeration string
+	 * @return a enumeration array list of strings of all the existent header names
+	 */
 	@Override
 	public Collection<String> getHeaderNames() {
 		// create a set of the custom header names

@@ -15,11 +15,11 @@
  */
 package io.radien.api.service.ecm.model;
 
-
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
+ * ECM Folder properties class
+ *
  * @author Marco Weiland
  */
 @JsonDeserialize(as = Folder.class)
@@ -28,26 +28,48 @@ public class Folder extends AbstractECMModel implements EnterpriseContent {
 	private static final long serialVersionUID = 2618986654707693235L;
 	private Long id;
 
+	/**
+	 * ECM Folder properties constructor
+	 * @param name of the folder
+	 */
 	public Folder(String name) {
 		this.name = name;
 		this.contentType = ContentType.FOLDER;
 	}
 
+	/**
+	 * Compares this object with the specified object for order. Returns a negative integer, zero,
+	 * or a positive integer as this object is less than, equal to, or greater than the specified object.
+	 * @param o the object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+	 */
 	@Override
 	public int compareTo(EnterpriseContent o) {
 		return this.getName().compareTo(o.getName());
 	}
 
+	/**
+	 * This object (which is already a string!) is itself returned.
+	 * @return he string itself.
+	 */
 	@Override
 	public String toString() {
 		return name;
 	}
 
+	/**
+	 * Folder id getter
+	 * @return the folder id
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * Folder id setter
+	 * @param id to be set
+	 */
 	@Override
 	public void setId(Long id) {
 		this.id = id;

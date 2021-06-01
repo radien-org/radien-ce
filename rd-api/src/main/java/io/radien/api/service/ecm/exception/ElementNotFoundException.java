@@ -23,8 +23,12 @@ import io.radien.exception.SystemException;
  * @author Marco Weiland
  */
 public class ElementNotFoundException extends SystemException {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7116170979219764244L;
 
+	/**
+	 * Element not found exception message constructor
+	 * @param message to be added
+	 */
 	public ElementNotFoundException(String message) {
 		super(message);
 	}

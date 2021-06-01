@@ -23,12 +23,22 @@ import io.radien.api.model.AbstractModel;
  * @author Marco Weiland
  */
 public abstract class AbstractIdentityModel extends AbstractModel implements SystemIdentity {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4687165032538623479L;
 
+	/**
+	 * Getter for the user full name, either with comma divided or space divided
+	 * @param reverse in case of true will separate name with coma (last name, first name)
+	 *                in case of false will separate the name with a space (first name last name)
+	 * @return the user full name
+	 */
 	public String getFullname(boolean reverse) {
 		return reverse ? getLastname() + ", " + getFirstname() : getFirstname() + " " + getLastname();
 	}
 
+	/**
+	 * Will return the user full name in the correct order (first name last name)
+	 * @return the user full name
+	 */
 	public String getFullname() {
 		return getFullname(false);
 	}

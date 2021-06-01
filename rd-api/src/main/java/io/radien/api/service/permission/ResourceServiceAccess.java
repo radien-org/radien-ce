@@ -27,22 +27,23 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * Contract description for the Data Service responsible for handle Resources (CRUD)
+ *
+ * @author Newton Carvalho
  */
 public interface ResourceServiceAccess extends ServiceAccess {
 
     /**
      * Retrieve an Resource by an identifier
      * @param resourceId action identifier
-     * @return
+     * @return the requested system resource
      */
     public SystemResource get(Long resourceId);
 
     /**
      * Retrieves a collection of Resources by its identifiers
      * @param resourceIds list of identifiers
-     * @return
+     * @return a list of requested resources
      */
     public List<SystemResource> get(List<Long> resourceIds);
 
@@ -54,16 +55,14 @@ public interface ResourceServiceAccess extends ServiceAccess {
      * @param sortBy list of values to sort request
      * @param isAscending in case of true data will come ascending mode if false descending
      * @return list of resources
-     * @throws MalformedURLException in case of URL exception construction
-     * @throws ParseException in case of any issue parsing the response information
      */
     public Page<SystemResource> getAll(String search, int pageNo, int pageSize,
                               List<String> sortBy, boolean isAscending);
 
     /**
      * Save an resource (Create or Update)
-     * @param resource
-     * @throws UniquenessConstraintException
+     * @param resource to be stored/saved
+     * @throws UniquenessConstraintException in case the requested record already exists or has duplicated information
      */
     public void save(SystemResource resource) throws UniquenessConstraintException;
 
@@ -81,8 +80,8 @@ public interface ResourceServiceAccess extends ServiceAccess {
 
     /**
      * Retrieve Resources using a search filter
-     * @param filter
-     * @return
+     * @param filter with the fields that should be looked into to find the correct system resource
+     * @return a list of system resources
      */
     public List<? extends SystemResource> getResources(SystemResourceSearchFilter filter);
 

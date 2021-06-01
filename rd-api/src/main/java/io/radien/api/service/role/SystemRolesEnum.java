@@ -16,6 +16,8 @@
 package io.radien.api.service.role;
 
 /**
+ * Possible pre defined roles and information. More roles can appear but this ones will be used for system purposes
+ *
  * @author Bruno Gama
  **/
 public enum SystemRolesEnum {

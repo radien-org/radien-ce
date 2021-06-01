@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.radien.api.entity;
 
 import java.io.Serializable;
@@ -21,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Page type constructor for the generic show information
+ *
  * @author Nuno Santana
  * @author Bruno Gama
  */
@@ -32,12 +33,23 @@ public class Page<T extends Serializable> implements Serializable {
     private int totalResults;
     private int totalPages;
 
+    /**
+     * Empty page constructor. Will create an empty page
+     */
     public Page() {
         this.results = new ArrayList<>();
         this.currentPage = 0;
         this.totalResults = 0;
         this.totalPages = 0;
     }
+
+    /**
+     * Page constructor. Will create a page by the given requested information
+     * @param results list of results to be show
+     * @param currentPage where the user is requesting to see the information
+     * @param totalResults total number of results to be show
+     * @param totalPages total number of pages that can be show
+     */
     public Page(List<? extends T> results, int currentPage, int totalResults, int totalPages) {
         this.results = results;
         this.currentPage = currentPage;
@@ -45,34 +57,66 @@ public class Page<T extends Serializable> implements Serializable {
         this.totalPages = totalPages;
     }
 
+    /**
+     * Page getter for the results
+     * @return a list of objects to be used
+     */
     public List<? extends T> getResults() {
         return results;
     }
 
+    /**
+     * Results setter method. Will overwrite the current results page
+     * @param results to be overwritten
+     */
     public void setResults(List<? extends T> results) {
         this.results = results;
     }
 
+    /**
+     * Page getter for the current page where the user is to see the results
+     * @return the page number where the user is
+     */
     public int getCurrentPage() {
         return currentPage;
     }
 
+    /**
+     * Current page setter method. Will overwrite the current page
+     * @param currentPage to be set
+     */
     public void setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
     }
 
+    /**
+     * Page getter for the total results count
+     * @return a count of all the results existent in the result page
+     */
     public int getTotalResults() {
         return totalResults;
     }
 
+    /**
+     * Total results counter setter.
+     * @param totalResults will overwrite the total results
+     */
     public void setTotalResults(int totalResults) {
         this.totalResults = totalResults;
     }
 
+    /**
+     * Page total pages getter. Will get the number of necessary pages to show all the information.
+     * @return the number of necessary pages to show all the information
+     */
     public int getTotalPages() {
         return totalPages;
     }
 
+    /**
+     * Total pages to be set in the page constructor to be show.
+     * @param totalPages to be overwritten. How many pages is it going to be necessary to show all the information
+     */
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
     }

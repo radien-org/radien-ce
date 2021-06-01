@@ -22,9 +22,7 @@ import java.text.MessageFormat;
  * distinction
  *
  * @author Marco Weiland
- * 
  */
-
 public enum SystemMessages {
 
     /****************
@@ -64,6 +62,13 @@ public enum SystemMessages {
     private String msgKey;
     private SystemMessageTypes errorType;
 
+    /**
+     * System message constructor
+     * @param errorCode code for the specific message
+     * @param catKey category for the message
+     * @param msgKey message unique key
+     * @param errorType system message type
+     */
     SystemMessages(String errorCode, String catKey, String msgKey, SystemMessageTypes errorType) {
         this.errorCode = errorCode;
         this.catKey = catKey;
@@ -71,11 +76,22 @@ public enum SystemMessages {
         this.errorType = errorType;
     }
 
+    /**
+     * Format the requested system message
+     * @param message to be returned
+     * @return the requested system message
+     */
     private static String formatMessage(String message) {
         MessageFormat mf = new MessageFormat(message);
         return mf.format(new Object[0]);
     }
 
+    /**
+     * Format the requested system message with one argument
+     * @param message to be edited
+     * @param arg0 to be changed or added
+     * @return the system message formatted
+     */
     private static String formatMessage(String message, Object arg0) {
         MessageFormat mf = new MessageFormat(message);
         Object[] args = new Object[1];
@@ -83,6 +99,13 @@ public enum SystemMessages {
         return mf.format(args);
     }
 
+    /**
+     * Format the requested system message with two argument
+     * @param message to be edited
+     * @param arg0 to be changed or added
+     * @param arg1 to be changed or added
+     * @return the system message formatted
+     */
     private static String formatMessage(String message, Object arg0, Object arg1) {
         MessageFormat mf = new MessageFormat(message);
         Object[] args = new Object[2];
@@ -91,6 +114,14 @@ public enum SystemMessages {
         return mf.format(args);
     }
 
+    /**
+     * Format the requested system message with three argument
+     * @param message to be edited
+     * @param arg0 to be changed or added
+     * @param arg1 to be changed or added
+     * @param arg2 to be changed or added
+     * @return the system message formatted
+     */
     private static String formatMessage(String message, Object arg0, Object arg1, Object arg2) {
         MessageFormat mf = new MessageFormat(message);
         Object[] args = new Object[3];
@@ -100,26 +131,56 @@ public enum SystemMessages {
         return mf.format(args);
     }
 
+    /**
+     * Getter for category key
+     * @return a string value of the category key value
+     */
     public String catKey() {
         return catKey;
     }
 
+    /**
+     * Getter for the message key
+     * @return a string value of the message key value
+     */
     public String msgKey() {
         return msgKey;
     }
 
+    /**
+     * Creates a new system message with null values
+     * @return a string value of the system message
+     */
     public String message() {
         return message(null, null, null);
     }
 
+    /**
+     * Creates a system message with one parameter
+     * @param arg0 to be added in the system message
+     * @return a string value of the system message
+     */
     public String message(Object arg0) {
         return message(arg0, null, null);
     }
 
+    /**
+     * Creates a system message with two parameters
+     * @param arg0 to be added in the system message
+     * @param arg1 to be added in the system message
+     * @return a string value of the system message
+     */
     public String message(Object arg0, Object arg1) {
         return message(arg0, arg1, null);
     }
 
+    /**
+     * Creates a system message understanding how many parameters might be needed
+     * @param arg0 to be added in the system message
+     * @param arg1 to be added in the system message
+     * @param arg2 to be added in the system message
+     * @return a string value of the system message
+     */
     public String message(Object arg0, Object arg1, Object arg2) {
         String prefix = "[" + errorCode + "] : <" + getMessageString(errorType.typeKey()) + "> : ";
         String localizedMessage;
@@ -154,6 +215,12 @@ public enum SystemMessages {
         return prefix + localizedMessage;
     }
 
+    /**
+     * Method to count how many parameters are in the system message
+     * @param replaceCount counter to understand how many parameters does the system message has
+     * @param message to be counted how many parameters has
+     * @return the count of the parameters
+     */
     public int calculateReplaceCount(int replaceCount, String message) {
         if (message.contains("{0}")) {
             replaceCount++;
@@ -167,10 +234,20 @@ public enum SystemMessages {
         return replaceCount;
     }
 
+    /**
+     * Get system message value message
+     * @param messageKey to be found
+     * @return the string value of the system message
+     */
     private String getMessageString(String messageKey) {
         return errorType.resourceBundle(errorType).getString(messageKey);
     }
 
+    /**
+     * Get the system message by the error code value
+     * @param errorCode to be found
+     * @return the string value of the system message
+     */
     public String getMessageByErrorCode(String errorCode) {
         for (SystemMessages message : values()) {
             if (errorCode.matches(message.errorCode)) {
@@ -180,6 +257,9 @@ public enum SystemMessages {
         return KERNEL_UNKNOWN.message();
     }
 
+    /**
+     * System messages category key constants
+     */
     private static class Constants {
         static final String SYS_CAT_SYS = "sys.cat.sys";
         static final String SYS_CAT_SEC = "sys.cat.sec";

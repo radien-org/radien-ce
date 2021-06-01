@@ -35,10 +35,19 @@ public enum ContentType {
 
 	private String key;
 
+	/**
+	 * Content type constructor
+	 * @param key of the type
+	 */
 	ContentType(String key) {
 		this.key = key;
 	}
 
+	/**
+	 * Gets the content type enumerate by the given key
+	 * @param key to be search
+	 * @return the content type associated to the given key
+	 */
 	public static ContentType getByKey(String key) {
 		ContentType returnType = null;
 		for (ContentType type : values()) {
@@ -50,6 +59,10 @@ public enum ContentType {
 		return returnType;
 	}
 
+	/**
+	 * Content type key getter
+	 * @return the value of the key
+	 */
 	public String key() {
 		return key;
 	}

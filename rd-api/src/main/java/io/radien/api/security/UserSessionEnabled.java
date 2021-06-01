@@ -18,25 +18,66 @@ package io.radien.api.security;
 import io.radien.api.Appframeable;
 
 /**
- * @author Marco Weiland <m.weiland@radien.io>
+ * User Session enabled information interface class
  *
+ * @author Marco Weiland <m.weiland@radien.io>
  */
 public interface UserSessionEnabled extends Appframeable {
 
-	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName, String accessToken, String refreshToken) throws Exception;
-	
+	/**
+	 * Login process for the given parameters user
+	 * @param userIdSubject subject identifier of the user that is making the login
+	 * @param email of the user that is making the login
+	 * @param preferredUserName of the user that is making the login
+	 * @param givenname of the user that is making the login
+	 * @param familyName of the user that is making the login
+	 * @param accessToken of the user that is making the login
+	 * @param refreshToken of the user that is making the login
+	 * @throws Exception in case of any non specific error exceptions
+	 */
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName,
+					  String accessToken, String refreshToken) throws Exception;
+
+	/**
+	 * Is user active getter
+	 * @return if the user is still active or not
+	 */
 	public boolean isActive();
 
+	/**
+	 * User subject id getter
+	 * @return the user subject
+	 */
 	public String getUserIdSubject();
 
+	/**
+	 * User email getter
+	 * @return the user email
+	 */
 	public String getEmail() ;
 
+	/**
+	 * User preferred user name getter
+	 * @return the preferred user name specified by the user
+	 */
 	public String getPreferredUserName() ;
 
+	/**
+	 * User first name getter
+	 * @return user first name
+	 */
 	public String getUserFirstName();
 
+	/**
+	 * User last name getter
+	 * @return user last name
+	 */
 	public String getUserLastName();
 
+	/**
+	 * User id getter
+	 * @return user id
+	 */
 	public Long getUserId();
 
 }

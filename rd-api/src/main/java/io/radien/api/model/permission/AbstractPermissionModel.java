@@ -18,6 +18,8 @@ package io.radien.api.model.permission;
 import io.radien.api.model.AbstractModel;
 
 /**
+ * Abstract Permission Model Object
+ *
  * @author Newton Carvalho
  */
 public abstract class AbstractPermissionModel extends AbstractModel

@@ -22,6 +22,8 @@ import io.radien.exception.SystemException;
 import java.util.List;
 
 /**
+ * Contract REST service access interface and requested actions
+ *
  * @author Santana
  */
 public interface ContractRESTServiceAccess {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2006-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,18 @@ package io.radien.kernel;
 import javax.annotation.PostConstruct;
 
 /**
+ * Abstract appframe plugin class contructor
+ *
  * @author Marco Weiland
  */
 public abstract class AbstractAppframePlugin extends OAF {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3888664421101765706L;
 
 	public abstract String getPluginProperties();
 
+	/**
+	 * Will request for the plugin to be loaded in the OAF
+	 */
 	@PostConstruct
 	private void loadPlugin() {
 		loadPlugin(this);

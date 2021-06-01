@@ -20,6 +20,8 @@ import javax.inject.Inject;
 import io.radien.api.OAFAccess;
 
 /**
+ * Authorization filter object class
+ *
  * @author Marco Weiland
  */
 public class AuthorizationFilter extends AbstractAuthorizationFilter {
@@ -29,6 +31,10 @@ public class AuthorizationFilter extends AbstractAuthorizationFilter {
 	@Inject
 	private OAFAccess baseApp;
 
+	/**
+	 * Gets the current OAF access
+	 * @return the oaf object
+	 */
 	@Override
 	public OAFAccess getOAF() {
 		return baseApp;

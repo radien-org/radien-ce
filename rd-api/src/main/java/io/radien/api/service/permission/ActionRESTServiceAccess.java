@@ -39,25 +39,23 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @param sortBy sort by filter fields
      * @param isAscending ascending result list or descending
      * @return List of existent Actions
-     * @throws MalformedURLException in case of URL specification
-     * @throws ParseException in case of any issue when parsing the response
      * @throws SystemException in any other kind of system issue
      */
     public Page<? extends SystemAction> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Retrieves a Action by Id
-     * @param id
-     * @return
-     * @throws SystemException
+     * @param id of the system action to be search
+     * @return a optional list that might come empty or filled with system action that has the requested id
+     * @throws SystemException if there is any error in the token or any other field
      */
     public Optional<SystemAction> getActionById(Long id) throws SystemException;
 
     /**
      * Retrieves a Action by Name
-     * @param name
-     * @return
-     * @throws SystemException
+     * @param name to be searched for
+     * @return a optional list that might come empty or filled with system action that has the requested name
+     * @throws SystemException if there is any error in the token or any other field
      */
     public Optional<SystemAction> getActionByName(String name) throws SystemException;
 
@@ -65,7 +63,7 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * Creates given action
      * @param action to be created
      * @return true if action has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public boolean create(SystemAction action) throws SystemException;
 

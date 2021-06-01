@@ -18,18 +18,24 @@ package io.radien.api.service.ecm.exception;
 import io.radien.exception.SystemException;
 
 /**
- * Exception extending the base SystemException, to be thrown when error occurs
- * int he CMS
+ * Exception extending the base SystemException, to be thrown when error occurs in the CMS
  *
  * @author Marco Weiland
  */
 public class ContentNotAvailableException extends SystemException {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1568199281340528650L;
 
+	/**
+	 * Content Not Available exception empty constructor
+	 */
 	public ContentNotAvailableException() {
 		super();
 	}
 
+	/**
+	 * Content Not Available exception message constructor
+	 * @param message to be added
+	 */
 	public ContentNotAvailableException(String message) {
 		super(message);
 	}

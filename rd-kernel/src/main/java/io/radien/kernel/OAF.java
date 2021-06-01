@@ -55,7 +55,7 @@ import io.radien.kernel.eventbus.EventBus;
  */
 public abstract class OAF implements OAFAccess {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 8253904401371394099L;
 
 	private static final Logger log = LoggerFactory.getLogger(OAF.class);
 
@@ -100,8 +100,7 @@ public abstract class OAF implements OAFAccess {
      * Obtains the given {@link AbstractAppframePlugin} object manifest and
      * properties
      *
-     * @param plugin
-     *                   the {@link AbstractAppframePlugin} object to analyze
+     * @param plugin the {@link AbstractAppframePlugin} object to analyze
      */
     void loadPlugin(AbstractAppframePlugin plugin) {
         loadPluginManifest(plugin);
@@ -143,12 +142,9 @@ public abstract class OAF implements OAFAccess {
      * Loads properties into this class {@link Properties} object based on the
      * {@link Attributes} object obtained when reading plugin or app files
      *
-     * @param attributes
-     *                       the object containing the initial properties
-     * @param entry
-     *                       the Mao entry containing property key and its value
-     * @param errorMsg
-     *                       error message logged in case of an error
+     * @param attributes the object containing the initial properties
+     * @param entry the Mao entry containing property key and its value
+     * @param errorMsg error message logged in case of an error
      */
     private void loadPropertiesFromAttributesObject(Attributes attributes, Map.Entry<Object, Object> entry,
             String errorMsg) {
@@ -192,12 +188,8 @@ public abstract class OAF implements OAFAccess {
      * folder (normally tomcat) It locates them by the system property
      * 'catalina.base'
      *
-     * @param systemExtConfigFile
-     *                                the name of the properties file inside the
-     *                                tomcat conf folder
-     * @param s
-     *                                error message to be logged in case of an
-     *                                error
+     * @param systemExtConfigFile the name of the properties file inside the tomcat conf folder
+     * @param s error message to be logged in case of an error
      */
     private void loadPropertiesFromCatalinaLocation(String systemExtConfigFile, String s) {
         File configDir = new File(System.getProperty("catalina.base"), "conf");
@@ -213,8 +205,7 @@ public abstract class OAF implements OAFAccess {
      * Loads the given {@link AbstractAppframePlugin} object into the
      * {@link Properties} object
      *
-     * @param plugin
-     *                   the {@link AbstractAppframePlugin} object to analyze
+     * @param plugin the {@link AbstractAppframePlugin} object to analyze
      */
     private void loadPluginManifest(AbstractAppframePlugin plugin) {
         InputStream manifestStream = null;
@@ -245,9 +236,7 @@ public abstract class OAF implements OAFAccess {
     /**
      * calls the {@link OAF#loadPropertiesFromCatalinaLocation(String, String)}
      *
-     * @param contextPropertyFileName
-     *                                    the file name from which the
-     *                                    properties are laoded
+     * @param contextPropertyFileName the file name from which the properties are loaded
      */
     private void readPluginProperties(String contextPropertyFileName) {
         loadPropertiesFromCatalinaLocation(contextPropertyFileName, SystemMessages.KERNEL_PROPERTIES_ERROR.message());
@@ -259,8 +248,7 @@ public abstract class OAF implements OAFAccess {
      * Iterates the supported Locales list and tries to find the one identified
      * by the given value
      *
-     * @param value
-     *                  the locale identifier
+     * @param value the locale identifier
      * @return the {@link Locale} object identified by the given value param
      */
     @Override
@@ -282,8 +270,7 @@ public abstract class OAF implements OAFAccess {
     /**
      * Gets the file path based on the given resource path
      *
-     * @param resource
-     *                     the resource, normally properties file, from
+     * @param resource the resource, normally properties file, from
      * @return a String containing the correct file path
      */
     @NotNull
@@ -300,8 +287,7 @@ public abstract class OAF implements OAFAccess {
      * Fires an implementation of a {@link Event} onto this class
      * {@link OAF#eventBus}
      *
-     * @param event
-     *                  the Openappframe event to be fired on the CDI eventBus
+     * @param event the Openappframe event to be fired on the CDI eventBus
      */
     @Override
     public void fireEvent(Event event) {
@@ -322,8 +308,7 @@ public abstract class OAF implements OAFAccess {
      * Calls the method {@link OAF#getProperty(String)} using keys in the
      * {@link OAFProperties} enum
      *
-     * @param cfg
-     *                the value of the {@link OAFProperties} enum
+     * @param cfg the value of the {@link OAFProperties} enum
      * @return String containing the property value
      */
     @Override
@@ -334,8 +319,7 @@ public abstract class OAF implements OAFAccess {
     /**
      * Returns the property value based on its identifying key
      *
-     * @param propKey
-     *                    the property identifier
+     * @param propKey the property identifier
      * @return String containing the property value
      */
     protected String getProperty(String propKey) {
@@ -355,11 +339,8 @@ public abstract class OAF implements OAFAccess {
      * Similar to {@link OAF#getProperty(String)} but with and additional value
      * to be returned if the key is not found in the properties
      *
-     * @param propKey
-     *                         the property identifier
-     * @param defaultValue
-     *                         the default value returned if this key is not
-     *                         present in the properties
+     * @param propKey the property identifier
+     * @param defaultValue the default value returned if this key is not present in the properties
      * @return string containing the property value
      */
     protected String getProperty(String propKey, String defaultValue) {
@@ -380,8 +361,7 @@ public abstract class OAF implements OAFAccess {
     /**
      * Returns this application {@link ResourceBundle} object based on its name
      *
-     * @param bundleName
-     *                       the name of the resourceBundle to return
+     * @param bundleName the name of the resourceBundle to return
      * @return {@link ResourceBundle} identified by the bundleName
      */
     @Override
@@ -392,11 +372,18 @@ public abstract class OAF implements OAFAccess {
         return ResourceBundle.getBundle(bundleName, locale, loader, new UTF8Control());
     }
 
+    /**
+     * Method to load all the supported locales possible
+     * @return a map filled with all the supported locales for the current OAF
+     */
     @Override
     public Map<String, Locale> getSupportedLocales() {
         return supportedLocales;
     }
 
+    /**
+     * Method to upload all the supported locales into th supportedLocales hash map
+     */
     private void loadSupportedLocales() {
         supportedLocales = new HashMap<>();
         try {
@@ -415,6 +402,10 @@ public abstract class OAF implements OAFAccess {
         }
     }
 
+    /**
+     * Returns to the requester the predefined default locale for the current OAF
+     * @return the current default locale
+     */
     @Override
     public Locale getDefaultLocale() {
         try {
@@ -425,6 +416,10 @@ public abstract class OAF implements OAFAccess {
         return Locale.forLanguageTag("en-us");
     }
 
+    /**
+     * System messages getter method
+     * @return a array of system messages
+     */
     public SystemMessages[] getSystemMessages() {
         return systemMessages;
     }

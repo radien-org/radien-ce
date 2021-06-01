@@ -30,11 +30,19 @@ import io.radien.api.service.ecm.model.Folder;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 
 /**
- * 
- * @author Marco Weiland <m.weiland@radien.io>
+ * Deserializer or parser from json parser into Enterprise Content object
  *
+ * @author Marco Weiland <m.weiland@radien.io>
  */
 public class EnterpriseContentDeserializer extends JsonDeserializer<EnterpriseContent> {
+
+	/**
+	 * Converts a received json parser into a enterprise content
+	 * @param jp to be parsed
+	 * @param context to be used
+	 * @return a new constructed and ready to use enterprise content object
+	 * @throws IOException in case of any issue while parsing or reading the json information
+	 */
 	@Override
 	public EnterpriseContent deserialize(JsonParser jp, DeserializationContext context) throws IOException {
 		ObjectMapper mapper = (ObjectMapper) jp.getCodec();

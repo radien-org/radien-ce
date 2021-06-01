@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * Contract Service access interface with all the contract existent requests
+ *
  * @author Santana
  * @author Bruno Gama
  */

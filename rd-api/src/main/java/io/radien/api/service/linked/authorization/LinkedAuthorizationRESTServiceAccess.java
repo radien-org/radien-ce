@@ -23,6 +23,8 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 /**
+ * Linked authorization rest service access interface for requests
+ *
  * @author Bruno Gama
  */
 public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {

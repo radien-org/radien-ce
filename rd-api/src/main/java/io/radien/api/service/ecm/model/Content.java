@@ -15,12 +15,10 @@
  */
 package io.radien.api.service.ecm.model;
 
-
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
- * Simple implementation of an EnterpriseContent
+ * Simple implementation of an Enterprise Content Manager
  *
  * @author Marco Weiland
  */
@@ -30,27 +28,51 @@ public class Content extends AbstractECMModel implements EnterpriseContent {
 	private static final long serialVersionUID = -4081831237381066985L;
 	private Long id;
 
+	/**
+	 * ECM Content constructor
+	 * @param title of the content
+	 * @param htmlContent path for the content description
+	 */
 	public Content(String title, String htmlContent) {
 		this.name = title;
 		this.htmlContent = htmlContent;
 		this.contentType = ContentType.HTML;
 	}
 
+	/**
+	 * Compares this object with the specified object for order. Returns a negative integer,
+	 * zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+	 * @param o the object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than,
+	 * equal to, or greater than the specified object.
+	 */
 	@Override
 	public int compareTo(EnterpriseContent o) {
 		return this.getName().compareTo(o.getName());
 	}
 
+	/**
+	 * This object (which is already a string!) is itself returned.
+	 * @return the string itself.
+	 */
 	@Override
 	public String toString() {
 		return name;
 	}
 
+	/**
+	 * Content id getter
+	 * @return the content id
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * Content id setter
+	 * @param id to be set
+	 */
 	@Override
 	public void setId(Long id) {
 		this.id = id;

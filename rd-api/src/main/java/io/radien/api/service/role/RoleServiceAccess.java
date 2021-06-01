@@ -24,10 +24,18 @@ import io.radien.exception.UniquenessConstraintException;
 import java.util.List;
 
 /**
+ * Role Service Access interface with all the possible requests for the roles
+ *
  * @author Bruno Gama
  */
 public interface RoleServiceAccess extends ServiceAccess {
 
+    /**
+     * Gets a specific role by searching for its id
+     * @param roleId to be found
+     * @return the requested system role
+     * @throws RoleNotFoundException in case the requested id does not exist
+     */
     public SystemRole get(Long roleId) throws RoleNotFoundException;
 
     /**
@@ -41,10 +49,27 @@ public interface RoleServiceAccess extends ServiceAccess {
      */
     public Page<SystemRole> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
+    /**
+     * By a given filter object will try to find all the system roles that match that requested filter
+     * @param filter with fields to be found
+     * @return a list of all the system oles that match
+     */
     public List<? extends SystemRole> getSpecificRoles(SystemRoleSearchFilter filter);
 
+    /**
+     * Saves or stores the requested given role into the db
+     * @param role to be save/stored
+     * @throws RoleNotFoundException in case of update and the requested role does not exist
+     * @throws UniquenessConstraintException in case of saving and the record already exists or has duplicated
+     * information
+     */
     public void save(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException;
 
+    /**
+     * Deletes from the db the requested role
+     * @param roleId to be deleted
+     * @throws RoleNotFoundException in case the role could not be found
+     */
     public void delete(Long roleId) throws RoleNotFoundException;
 
     /**

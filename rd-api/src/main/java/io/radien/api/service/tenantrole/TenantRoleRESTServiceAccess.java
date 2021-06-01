@@ -25,6 +25,7 @@ import java.util.Optional;
 
 /**
  * Rest service client responsible to Deal with TenantRole endpoint
+ *
  * @author Newton Carvalho
  */
 public interface TenantRoleRESTServiceAccess {
