@@ -20,6 +20,8 @@ package io.radien.api.service.mail;
 import io.radien.api.service.ServiceAccess;
 
 /**
+ * Mail template access interface object
+ *
  * @author Marco Weiland
  */
 public interface MailTemplateAccess extends ServiceAccess {

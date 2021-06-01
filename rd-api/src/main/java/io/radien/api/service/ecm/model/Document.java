@@ -18,6 +18,8 @@ package io.radien.api.service.ecm.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
+ * ECM Document information object class
+ *
  * @author Marco Weiland
  */
 @JsonDeserialize(as = Document.class)
@@ -26,6 +28,13 @@ public class Document extends AbstractECMModel implements EnterpriseContent {
 	private static final long serialVersionUID = -1606222544052586973L;
 	private Long id;
 
+	/**
+	 * ECM Document constructor
+	 * @param fileStream to be uploaded
+	 * @param name of the document
+	 * @param fileSize of the document
+	 * @param documentMimeType for the upload
+	 */
 	public Document(byte[] fileStream, String name, long fileSize, String documentMimeType) {
 		this.name = name;
 		this.fileStream = fileStream;
@@ -35,22 +44,37 @@ public class Document extends AbstractECMModel implements EnterpriseContent {
 		this.contentType = ContentType.DOCUMENT;
 	}
 
+	/**
+	 * Compares this object with the specified object for order. Returns a negative integer, zero,
+	 * or a positive integer as this object is less than, equal to, or greater than the specified object.
+	 * @param o the object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+	 */
 	@Override
 	public int compareTo(EnterpriseContent o) {
 		return this.getName().compareTo(o.getName());
 	}
 
+	/**
+	 * This object (which is already a string!) is itself returned.
+	 * @return he string itself.
+	 */
 	@Override
 	public String toString() {
 		return name;
 	}
 
+	/**
+	 * ECM Document id getter
+	 * @return the document id
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
 
 	/**
+	 * Document id setter
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {

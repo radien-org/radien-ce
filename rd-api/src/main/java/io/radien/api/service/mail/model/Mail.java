@@ -24,45 +24,120 @@ import java.util.Map;
 import com.healthmarketscience.rmiio.RemoteInputStream;
 
 /**
+ * Email object with all the properties to be sent to whoever is requested
+ *
  * @author Marco Weiland
  */
 public interface Mail extends Serializable {
 
+	/**
+	 * Mail address to whom we are going to send the email (Only one receiver)
+	 * @param toAddress email address
+	 */
 	void addTOAdresse(String toAddress);
 
+	/**
+	 * Mail address to whom we are going to send the email in cc (Only one receiver)
+	 * @param ccAddress email address
+	 */
 	void addCCAdresse(String ccAddress);
 
+	/**
+	 * Mail address to whom we are going to send the email in bcc (Only one receiver)
+	 * @param bccAddress email address
+	 */
 	void addBCCAdresse(String bccAddress);
 
+	/**
+	 * Gets the Mail addresses to whom we are going to send the email (Multiple receiver)
+	 */
 	List<String> getTO();
 
+	/**
+	 * Gets the Mail addresses to whom we are going to send the email (Multiple receiver)
+	 * @param to list of email addresses to send
+	 */
 	void setTO(List<String> to);
 
+	/**
+	 * Gets the Mail addresses to whom we are going to send the email in CC (Multiple receiver)
+	 */
 	List<String> getCC();
 
+	/**
+	 * Gets the Mail addresses to whom we are going to send the email in CC (Multiple receiver)
+	 * @param cc list of email addresses to send in cc
+	 */
 	void setCC(List<String> cc);
 
+	/**
+	 * Gets the Mail addresses to whom we are going to send the email in BCC (Multiple receiver)
+	 */
 	List<String> getBCC();
 
+	/**
+	 * Gets the Mail addresses to whom we are going to send the email in BCC (Multiple receiver)
+	 * @param bcc list of email addresses to send in cc
+	 */
 	void setBCC(List<String> bcc);
 
+	/**
+	 * Get the value of the email sender
+	 * @return the email of the sender
+	 */
 	String getFrom();
 
+	/**
+	 * Sets the email of the sender
+	 * @param from should the email come from
+	 */
 	void setFrom(String from);
 
+	/**
+	 * Email subject getter
+	 * @return the email subject
+	 */
 	String getSubject();
 
+	/**
+	 * Email subject setter
+	 * @param subject to be set
+	 */
 	void setSubject(String subject);
 
+	/**
+	 * Email body getter
+	 * @return the email body
+	 */
 	String getBody();
 
+	/**
+	 * Email body setter
+	 * @param body to be set or added
+	 */
 	void setBody(String body);
 
+	/**
+	 * Email content type getter
+	 * @return the email subject
+	 */
 	MailContentType getContentType();
 
+	/**
+	 * Email content type setter
+	 * @param contentType to be set
+	 */
 	void setContentType(MailContentType contentType);
 
+	/**
+	 * Email attachments getter
+	 * @return the email attachments
+	 */
 	Map<String, RemoteInputStream> getAttachments();
 
+	/**
+	 * Email attachments setter
+	 * @param attachments to be set
+	 */
 	void setAttachments(Map<String, RemoteInputStream> attachments);
 }

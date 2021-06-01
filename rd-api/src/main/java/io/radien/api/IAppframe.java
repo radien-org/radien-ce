@@ -16,16 +16,34 @@
 package io.radien.api;
 
 /**
+ * Appframe interface class
+ *
  * @author Marco Weiland
  */
 public interface IAppframe extends Model {
 
+	/**
+	 * Appframe version getter
+	 * @return the appframe version
+	 */
 	String getVersion();
 
+	/**
+	 * Appframe version setter
+	 * @param version to be set
+	 */
 	void setVersion(String version);
 
+	/**
+	 * Appframe log getter
+	 * @return the appframe log
+	 */
 	String getLog();
 
+	/**
+	 * Appframe log setter
+	 * @param log to be set
+	 */
 	void setLog(String log);
 
 }
