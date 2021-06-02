@@ -67,6 +67,9 @@ public class PrincipalFactoryTest {
         assertEquals(principal.getLastname(), constructedNewUser.getLastname());
     }
 
+    /**
+     * Test method to validate the conversion of a Principal using a Json with keys missing
+     */
     @Test
     public void convertWithoutFields() {
         JsonObjectBuilder builder = Json.createObjectBuilder();

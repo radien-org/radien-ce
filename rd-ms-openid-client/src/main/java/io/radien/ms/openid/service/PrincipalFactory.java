@@ -53,6 +53,12 @@ public class PrincipalFactory {
         return principal;
     }
 
+    /**
+     * Convert jsonObject in Principal
+     *
+     * @param jsonObject to be converted
+     * @return Principal to be used
+     */
     public static Principal convert(JsonObject jsonObject) {
 
         String givenName = getString(jsonObject,"given_name");
@@ -62,7 +68,15 @@ public class PrincipalFactory {
         String sub = getString(jsonObject,"sub");
         return create(givenName, familyName, userName, sub, email, -1L);
     }
-    public static String getString(JsonObject jsonObject, String fieldName){
+
+    /**
+     * Get string from jsonObject
+     *
+     * @param jsonObject to fetch the string
+     * @param fieldName from string value we want to fetch
+     * @return String with value or null if non-existent
+     */
+    private static String getString(JsonObject jsonObject, String fieldName){
         if(jsonObject!=null) {
             Object value = jsonObject.get(fieldName);
             if (value != null) {
