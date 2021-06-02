@@ -91,6 +91,17 @@ public class UserBusinessService implements Serializable {
 			//for the user to be able to login he needs to be able to set password
 			throw new RemoteResourceException("email cannot be empty");
 		}
+
+		if(user.getFirstname().isEmpty()){
+			//for the user to be able to login he needs to be able to set password
+			throw new RemoteResourceException("firstname cannot be empty");
+		}
+
+		if(user.getLastname().isEmpty()){
+			//for the user to be able to login he needs to be able to set password
+			throw new RemoteResourceException("lastname cannot be empty");
+		}
+
 		boolean creation = user.getId() == null;
 		userServiceAccess.save(user);
 		if(creation && !skipKeycloak){

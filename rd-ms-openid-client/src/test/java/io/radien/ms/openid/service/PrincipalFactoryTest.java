@@ -8,6 +8,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PrincipalFactoryTest {
 
@@ -65,5 +66,20 @@ public class PrincipalFactoryTest {
         assertEquals(principal.getFirstname(), constructedNewUser.getFirstname());
         assertEquals(principal.getLastname(), constructedNewUser.getLastname());
     }
+
+    @Test
+    public void convertWithoutFields() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("id",1l);
+        Principal constructedNewUser = PrincipalFactory.convert(builder.build());
+
+        assertNull(principal.getLogon(), constructedNewUser.getLogon());
+        assertNull(principal.getUserEmail(), constructedNewUser.getUserEmail());
+        assertNull(constructedNewUser.getSub());
+        assertNull( constructedNewUser.getFirstname());
+        assertNull(constructedNewUser.getLastname());
+    }
+
+
 
 }

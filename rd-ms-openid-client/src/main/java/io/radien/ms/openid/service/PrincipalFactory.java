@@ -18,6 +18,7 @@ package io.radien.ms.openid.service;
 import io.radien.ms.openid.entities.Principal;
 
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import java.util.Date;
 
 /**
@@ -53,11 +54,21 @@ public class PrincipalFactory {
     }
 
     public static Principal convert(JsonObject jsonObject) {
-        String givenName = jsonObject.getString("given_name");
-        String familyName = jsonObject.getString("family_name");
-        String userName = jsonObject.getString("preferred_username");
-        String email = jsonObject.getString("email");
-        String sub = jsonObject.getString("sub");
+
+        String givenName = getString(jsonObject,"given_name");
+        String familyName = getString(jsonObject,"family_name");
+        String userName = getString(jsonObject,"preferred_username");
+        String email = getString(jsonObject,"email");
+        String sub = getString(jsonObject,"sub");
         return create(givenName, familyName, userName, sub, email, -1L);
+    }
+    public static String getString(JsonObject jsonObject, String fieldName){
+        if(jsonObject!=null) {
+            Object value = jsonObject.get(fieldName);
+            if (value != null) {
+                return ((JsonString) value).getString();
+            }
+        }
+        return null;
     }
 }
