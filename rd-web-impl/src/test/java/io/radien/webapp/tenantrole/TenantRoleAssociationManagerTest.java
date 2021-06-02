@@ -39,6 +39,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static io.radien.webapp.tenantrole.TenantRoleAssociationManager.K_URL_MAPPING_ID_TENANT_ROLE;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -254,7 +255,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testGetterSetterAssignedPermission() {
-        List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
+        List<SystemPermission> assignedPermissions = new ArrayList<>();
         tenantRoleAssociationManager.setAssignedPermissions(assignedPermissions);
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(),
                 assignedPermissions);
@@ -361,7 +362,7 @@ public class TenantRoleAssociationManagerTest {
         assertNull(tenantRoleAssociationManager.getTenant().getId());
 
         assertFalse(tenantRoleAssociationManager.isExistsTenantRoleCreated());
-        assertEquals(returnUri, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUri);
     }
 
     /**
@@ -423,7 +424,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
         
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -459,7 +460,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
 
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -507,7 +508,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getRole(), expectedRole);
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertTrue(tenantRoleAssociationManager.getAssignedPermissions().isEmpty());
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -543,7 +544,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(), expectedAssociatedPermissions);
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -573,7 +574,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());

@@ -79,7 +79,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any error
      */
     @Override
-    public Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException {
+    public Page<SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException {
         try {
             return getAllCore(pageNo, pageSize);
         } catch (TokenExpiredException expiredException) {
@@ -100,19 +100,18 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * with parameter Page number and Page size)
      * @throws SystemException in case of any error
      */
-    protected Page<? extends SystemTenantRole> getAllCore(int pageNo, int pageSize) throws SystemException {
+    protected Page<SystemTenantRole> getAllCore(int pageNo, int pageSize) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getAll(pageNo, pageSize);
-            return TenantRoleModelMapper.mapToPage((InputStream) response.getEntity());
+            return (Page) TenantRoleModelMapper.mapToPage((InputStream) response.getEntity());
         }
         catch (TokenExpiredException t) {
             throw t;
         }
         catch (Exception e) {
-            log.error("Error trying to retrieve Tenant Role User associations", e);
-            throw new SystemException(e);
+            throw new SystemException("Error trying to retrieve Tenant Role User associations", e);
         }
     }
 
@@ -258,7 +257,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any error
      */
     @Override
-    public List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException {
+    public List<SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException {
         try {
             return getPermissionsCore(tenantId, roleId, userId);
         } catch (TokenExpiredException expiredException) {
@@ -280,12 +279,12 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws TokenExpiredException if JWT token expires
      * @throws SystemException in case of any error
      */
-    private List<? extends SystemPermission> getPermissionsCore(Long tenantId, Long roleId, Long userId) throws SystemException {
+    private List<SystemPermission> getPermissionsCore(Long tenantId, Long roleId, Long userId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getPermissions(tenantId, roleId, userId);
-            return ListPermissionModelMapper.map((InputStream) response.getEntity());
+            return (List) ListPermissionModelMapper.map((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
@@ -301,7 +300,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any error
      */
     @Override
-    public List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
+    public List<SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
         try {
             return getTenantsCore(userId, roleId);
         } catch (TokenExpiredException expiredException) {
@@ -322,12 +321,12 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws TokenExpiredException if JWT token expires
      * @throws SystemException in case of any error
      */
-    private List<? extends SystemTenant> getTenantsCore(Long userId, Long roleId) throws SystemException {
+    private List<SystemTenant> getTenantsCore(Long userId, Long roleId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getTenants(userId, roleId);
-            return TenantModelMapper.mapList((InputStream) response.getEntity());
+            return (List) TenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ParseException | ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
@@ -532,7 +531,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of Any error
      */
     @Override
-    public List<? extends SystemTenantRole> getTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction) throws SystemException {
+    public List<SystemTenantRole> getTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction) throws SystemException {
         try {
             return getTenantRolesCore(tenantId, roleId, isLogicalConjunction);
         } catch (TokenExpiredException expiredException) {
@@ -554,12 +553,12 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws TokenExpiredException in case of JWT expiration
      * @throws SystemException in case of Any error
      */
-    private List<? extends SystemTenantRole> getTenantRolesCore(Long tenantId, Long roleId, boolean isLogicalConjunction) throws SystemException {
+    private List<SystemTenantRole> getTenantRolesCore(Long tenantId, Long roleId, boolean isLogicalConjunction) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getSpecific(tenantId, roleId, isLogicalConjunction);
-            return TenantRoleModelMapper.mapList((InputStream) response.getEntity());
+            return (List) TenantRoleModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);

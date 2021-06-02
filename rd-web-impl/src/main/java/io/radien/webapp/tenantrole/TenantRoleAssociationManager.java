@@ -66,11 +66,13 @@ public class TenantRoleAssociationManager extends AbstractManager {
     private SystemPermission permission = new Permission();
     private SystemTenantRole tenantRole = new TenantRole();
 
-    private List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
+    private List<SystemPermission> assignedPermissions = new ArrayList<>();
 
     private Boolean tenantRoleAssociationCreated = Boolean.FALSE;
 
     private Long tabIndex = 0L;
+
+    public static final String K_URL_MAPPING_ID_TENANT_ROLE = "tenantrole";
 
     /**
      * This method is effectively invoke to create Tenant role association
@@ -91,7 +93,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_save_error"),
                     JSFUtil.getMessage("tenant_role_association"));
         }
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -105,7 +107,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenant = new Tenant();
         this.tenantRoleAssociationCreated = Boolean.FALSE;
         this.tabIndex = 0L;
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -132,7 +134,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_edit_error"),
                     JSFUtil.getMessage("rd_tenant_role_association"));
         }
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -149,7 +151,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Retrieve permissions for tenant role combination
      * @return list containing permissions
      */
-    public List<? extends SystemPermission> calculatePermissions() {
+    public List<SystemPermission> calculatePermissions() {
         try {
             this.assignedPermissions = tenantRoleRESTServiceAccess.
                     getPermissions(tenant.getId(), role.getId(), null);
@@ -178,7 +180,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_association_creation_error"));
         }
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -189,7 +191,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public String associateUser(Long userId) {
         try {
             if (!tenantRoleRESTServiceAccess.exists(tenant.getId(), role.getId())) {
-                SystemTenantRole tenantRole = new TenantRole();
+                tenantRole = new TenantRole();
                 tenantRole.setTenantId(tenant.getId());
                 tenantRole.setRoleId(role.getId());
                 tenantRoleRESTServiceAccess.save(tenantRole);
@@ -274,7 +276,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Getter for the assigned permissions
      * @return List containing permissions
      */
-    public List<? extends SystemPermission> getAssignedPermissions() {
+    public List<SystemPermission> getAssignedPermissions() {
         return assignedPermissions;
     }
 
@@ -282,7 +284,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Setter for the assigned permission
      * @param assignedPermissions
      */
-    public void setAssignedPermissions(List<? extends SystemPermission> assignedPermissions) {
+    public void setAssignedPermissions(List<SystemPermission> assignedPermissions) {
         this.assignedPermissions = assignedPermissions;
     }
 
@@ -307,7 +309,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * that can be use to do the association between (user - tenant - role)
      * @return list containing Roles
      */
-    public List<? extends SystemRole> getInitialRolesAllowedForAssociation() {
+    public List<SystemRole> getInitialRolesAllowedForAssociation() {
         try {
             List<SystemRole> roles = new ArrayList<>();
             roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.GUEST.getRoleName()).get());
@@ -328,9 +330,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing roles
      * @throws SystemException in case of any error
      */
-    public List<? extends SystemRole> getRoles() throws SystemException {
+    public List<SystemRole> getRoles() throws SystemException {
         try {
-            Page<? extends SystemRole> pagedInformation =
+            Page pagedInformation =
                     roleRESTServiceAccess.getAll(null, 1, 30, null, true);
             return pagedInformation.getResults();
         }
@@ -346,9 +348,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing tenants
      * @throws SystemException in case of any error
      */
-    public List<? extends SystemTenant> getTenants() throws SystemException {
+    public List<SystemTenant> getTenants() throws SystemException {
         try {
-            Page<? extends SystemTenant> pagedInformation =
+            Page pagedInformation =
                     tenantRESTServiceAccess.getAll(null, 1, 30, null, true);
             return pagedInformation.getResults();
         }
@@ -363,7 +365,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * has Administrative roles
      * @return list containing tenants
      */
-    public List<? extends SystemTenant> getTenantsFromCurrentUser() throws SystemException {
+    public List<SystemTenant> getTenantsFromCurrentUser() throws SystemException {
         try {
             return this.tenantRoleRESTServiceAccess.getTenants(this.webAuthorizationChecker.
                     getCurrentUserId(), null);
