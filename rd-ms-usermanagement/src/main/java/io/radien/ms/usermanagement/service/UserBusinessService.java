@@ -82,6 +82,12 @@ public class UserBusinessService implements Serializable {
 		userServiceAccess.delete(id);
 	}
 
+	/**
+	 * Saves an User (Creation or Update).
+	 * @param user resource to be created or update
+	 * @param skipKeycloak boolean to skip creation on keycloak
+	 * @throws RemoteResourceException on empty logon, email, first and last name
+	 */
 	public void save(User user,boolean skipKeycloak) throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
 		if(user.getLogon().isEmpty()){
 			//according to current keycloak config
@@ -91,6 +97,15 @@ public class UserBusinessService implements Serializable {
 			//for the user to be able to login he needs to be able to set password
 			throw new RemoteResourceException("email cannot be empty");
 		}
+
+		if(user.getFirstname()!=null && user.getFirstname().isEmpty()){
+			throw new RemoteResourceException("firstname cannot be empty");
+		}
+
+		if(user.getLastname()!=null && user.getLastname().isEmpty()){
+			throw new RemoteResourceException("lastname cannot be empty");
+		}
+
 		boolean creation = user.getId() == null;
 		userServiceAccess.save(user);
 		if(creation && !skipKeycloak){
@@ -104,7 +119,7 @@ public class UserBusinessService implements Serializable {
 			try{
 				keycloakService.updateUser(user);
 			}catch (RemoteResourceException e){
-				//TODO: rollback
+				delete(user.getId());
 				throw e;
 			}
 		}
