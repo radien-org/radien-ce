@@ -178,6 +178,36 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
+    public void testSaveEmptyFirstName() throws UniquenessConstraintException, UserNotFoundException {
+        User user = UserFactory.create("","b","logon",null,null,"c",1L);
+        user.setId(2L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+
+        boolean success = true;
+        try{
+            userBusinessService.save(user, false);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertFalse(success);
+    }
+
+    @Test
+    public void testSaveEmptyLastName() throws UniquenessConstraintException, UserNotFoundException {
+        User user = UserFactory.create("a","","logon",null,null,"c",1L);
+        user.setId(2L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+
+        boolean success = true;
+        try{
+            userBusinessService.save(user, false);
+        } catch (RemoteResourceException e){
+            success = false;
+        }
+        assertFalse(success);
+    }
+
+    @Test
     public void testSaveEmptyEmail() throws UniquenessConstraintException, UserNotFoundException {
         User user = UserFactory.create("a","b","logon",null,null,"",1L);
         user.setId(2L);

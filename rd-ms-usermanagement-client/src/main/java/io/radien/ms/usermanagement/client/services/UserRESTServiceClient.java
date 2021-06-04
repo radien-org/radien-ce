@@ -25,6 +25,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.entity.Page;
@@ -160,7 +161,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             } else {
                 return Optional.empty();
             }
-        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
+        } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e) {
             log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
