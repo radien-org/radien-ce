@@ -38,7 +38,9 @@ import org.mockito.*;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.primefaces.event.SelectEvent;
 
+import static io.radien.webapp.tenantrole.TenantRoleAssociationManager.K_URL_MAPPING_ID_TENANT_ROLE;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -254,10 +256,28 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testGetterSetterAssignedPermission() {
-        List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
+        List<SystemPermission> assignedPermissions = new ArrayList<>();
         tenantRoleAssociationManager.setAssignedPermissions(assignedPermissions);
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(),
                 assignedPermissions);
+    }
+    /**
+     * Test for getters and setter methods regarding selectedPermissionToUnAssign attribute
+     */
+    @Test
+    public void testGetterSetterSelectedPermissionToUnAssign() {
+        Permission p = new Permission();
+        tenantRoleAssociationManager.setSelectedPermissionToUnAssign(p);
+        assertEquals(p, tenantRoleAssociationManager.getSelectedPermissionToUnAssign());
+    }
+    /**
+     * Test for getters and setter methods regarding selectedPermissionToUnAssign attribute
+     */
+    @Test
+    public void testGetterSetterPreviousSelectedPermissionToUnAssign() {
+        Permission p = new Permission();
+        tenantRoleAssociationManager.setPreviousSelectedPermissionToUnAssign(p);
+        assertEquals(p, tenantRoleAssociationManager.getPreviousSelectedPermissionToUnAssign());
     }
 
     /**
@@ -361,7 +381,7 @@ public class TenantRoleAssociationManagerTest {
         assertNull(tenantRoleAssociationManager.getTenant().getId());
 
         assertFalse(tenantRoleAssociationManager.isExistsTenantRoleCreated());
-        assertEquals(returnUri, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUri);
     }
 
     /**
@@ -398,7 +418,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(),
                 expectedAssociatedPermissions);
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
     }
 
     /**
@@ -423,7 +443,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
         
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -459,7 +479,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
 
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -507,7 +527,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getRole(), expectedRole);
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertTrue(tenantRoleAssociationManager.getAssignedPermissions().isEmpty());
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -543,7 +563,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(), expectedAssociatedPermissions);
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -552,7 +572,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
         assertEquals("rd_tenant_role_permission_association_success",
                 captured.getSummary());
-        assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
+        assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
     }
 
     /**
@@ -573,7 +593,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -582,7 +602,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
         assertEquals("rd_tenant_role_permission_association_error",
                 captured.getSummary());
-        assertEquals("rd_permission_is_mandatory", captured.getDetail());
+        assertEquals("rd_tenant_role_permission_association_no_permission_select", captured.getDetail());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
     }
 
@@ -608,7 +628,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -618,7 +638,141 @@ public class TenantRoleAssociationManagerTest {
         assertEquals("rd_tenant_role_permission_association_error",
                 captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
-        assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
+        assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
     }
 
+    /**
+     * Test the method (un)assignPermission(): the one which does/perform permission (un)assignment
+     * Perform the dissociation between permission, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     */
+    @Test
+    public void testUnAssignPermission() throws SystemException {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemPermission permissionToBeDissociated = new Permission(); permissionToBeDissociated.setId(3L);
+        tenantRoleAssociationManager.setSelectedPermissionToUnAssign(permissionToBeDissociated);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        when(tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(),
+                permissionToBeDissociated.getId())).then(i -> Boolean.TRUE);
+
+        String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
+
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals("rd_tenant_role_permission_dissociation_success",
+                captured.getSummary());
+        assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
+    }
+
+    /**
+     * Test the method (un)assignPermission(): the one which does/perform permission (un)assignment
+     * Perform the dissociation between permission, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     *
+     * Corresponds to scenario/case in which a Permission was not selected
+     */
+    @Test
+    public void testUnAssignPermissionWithNoPermissionSelected() {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemPermission permission = new Permission();
+        tenantRoleAssociationManager.setSelectedPermissionToUnAssign(permission);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
+
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_tenant_role_permission_dissociation_error",
+                captured.getSummary());
+        assertEquals("rd_tenant_role_permission_dissociation_no_permission_select", captured.getDetail());
+        assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
+    }
+
+    /**
+     * Test the method assignPermission(): the one which does/perform permission assignment
+     * Perform the association between permission, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     *
+     * Corresponds to scenario/case in which a Exception occurs during assigment process
+     */
+    @Test
+    public void testUnAssignPermissionWithException() throws SystemException {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemPermission permission = new Permission(); permission.setId(3L);
+        tenantRoleAssociationManager.setSelectedPermissionToUnAssign(permission);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        Exception e = new RuntimeException("Error (un)assigning permission");
+        when(tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(), permission.getId())).
+                thenThrow(e);
+
+        String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
+
+        assertEquals(K_URL_MAPPING_ID_TENANT_ROLE, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_tenant_role_permission_dissociation_error",
+                captured.getSummary());
+        assertEquals(e.getMessage(), captured.getDetail());
+        assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
+    }
+
+    /**
+     * Tests the method responsible for store the information regarding a selected permission
+     */
+    @Test
+    public void testOnPermissionSelect() {
+        Permission selectedPermissionOnDtGrid = new Permission();
+        selectedPermissionOnDtGrid.setId(1111L);
+        SelectEvent<SystemPermission> event = mock(SelectEvent.class);
+        when(event.getObject()).thenReturn(selectedPermissionOnDtGrid);
+
+        tenantRoleAssociationManager.onPermissionSelect(event);
+
+        assertEquals(selectedPermissionOnDtGrid,
+                tenantRoleAssociationManager.getPreviousSelectedPermissionToUnAssign());
+
+        tenantRoleAssociationManager.onPermissionSelect(event);
+
+        assertTrue(tenantRoleAssociationManager.
+                getPreviousSelectedPermissionToUnAssign().getId() == null);
+        assertTrue(tenantRoleAssociationManager.
+                getSelectedPermissionToUnAssign().getId() == null);
+    }
+
+    /**
+     * Tests the method responsible for store the information regarding a selected permission
+     * (on Bootsfaces DataTable)
+     */
+    @Test
+    public void testOnPermissionSelectBootsFaces() {
+        Permission selectedPermissionOnDtTable = new Permission();
+        selectedPermissionOnDtTable.setId(1111L);
+
+        tenantRoleAssociationManager.onPermissionSelect(selectedPermissionOnDtTable, "row", null);
+
+        assertEquals(selectedPermissionOnDtTable,
+                tenantRoleAssociationManager.getSelectedPermissionToUnAssign());
+    }
 }

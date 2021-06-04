@@ -69,13 +69,16 @@ public class TenantRoleAssociationManager extends AbstractManager {
     private SystemPermission permission = new Permission();
     private SystemTenantRole tenantRole = new TenantRole();
 
-    private SystemPermission previousSelectedPermission = new Permission();
+    private SystemPermission selectedPermissionToUnAssign = new Permission();
+    private SystemPermission previousSelectedPermissionToUnAssign = new Permission();
 
     private List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
 
     private Boolean tenantRoleAssociationCreated = Boolean.FALSE;
 
     private Long tabIndex = 0L;
+
+    public static final String K_URL_MAPPING_ID_TENANT_ROLE = "tenantrole";
 
     /**
      * This method is effectively invoke to create Tenant role association
@@ -96,7 +99,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_save_error"),
                     JSFUtil.getMessage("tenant_role_association"));
         }
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -107,12 +110,12 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public String prepareToCreateTenantRole() {
         this.tenantRole = new TenantRole();
         this.assignedPermissions = new ArrayList<>();
-        this.previousSelectedPermission = new Permission();
+        this.previousSelectedPermissionToUnAssign = new Permission();
         this.role = new Role();
         this.tenant = new Tenant();
         this.tenantRoleAssociationCreated = Boolean.FALSE;
         this.tabIndex = 0L;
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -125,7 +128,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenantRole = tenantRole;
         this.tabIndex = 0L;
         this.permission = new Permission();
-        this.previousSelectedPermission = new Permission();
+        this.previousSelectedPermissionToUnAssign = new Permission();
         try {
             this.role = this.roleRESTServiceAccess.getRoleById(this.tenantRole.getRoleId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
@@ -140,7 +143,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_edit_error"),
                     JSFUtil.getMessage("rd_tenant_role_association"));
         }
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -177,7 +180,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tabIndex = 1L;
         try {
             if (permission == null || permission.getId() == null) {
-                throw new IllegalArgumentException(JSFUtil.getMessage("rd_permission_is_mandatory"));
+                throw new IllegalArgumentException(JSFUtil.
+                        getMessage("rd_tenant_role_permission_association_no_permission_select"));
             }
             this.tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), permission.getId());
             this.calculatePermissions();
@@ -186,7 +190,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_association_error"));
         }
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -196,17 +200,20 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public String unAssignPermission() {
         this.tabIndex = 1L;
         try {
-            if (previousSelectedPermission == null || previousSelectedPermission.getId() == null) {
-                throw new IllegalArgumentException(JSFUtil.getMessage("rd_permission_is_mandatory"));
+            if (selectedPermissionToUnAssign == null || selectedPermissionToUnAssign.getId() == null) {
+                throw new IllegalArgumentException(JSFUtil.
+                        getMessage("rd_tenant_role_permission_dissociation_no_permission_select"));
             }
-            this.tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(), permission.getId());
+            this.tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(),
+                    selectedPermissionToUnAssign.getId());
             this.calculatePermissions();
             handleMessage(FacesMessage.SEVERITY_INFO,
                     JSFUtil.getMessage("rd_tenant_role_permission_dissociation_success"));
+            this.selectedPermissionToUnAssign = new Permission();
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_dissociation_error"));
         }
-        return "tenantrole";
+        return K_URL_MAPPING_ID_TENANT_ROLE;
     }
 
     /**
@@ -217,10 +224,10 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public String associateUser(Long userId) {
         try {
             if (!tenantRoleRESTServiceAccess.exists(tenant.getId(), role.getId())) {
-                SystemTenantRole tenantRole = new TenantRole();
-                tenantRole.setTenantId(tenant.getId());
-                tenantRole.setRoleId(role.getId());
-                tenantRoleRESTServiceAccess.save(tenantRole);
+                SystemTenantRole tr = new TenantRole();
+                tr.setTenantId(tenant.getId());
+                tr.setRoleId(role.getId());
+                tenantRoleRESTServiceAccess.save(tr);
             }
             tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), userId);
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_tenant_association_creation_success"));
@@ -310,7 +317,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Setter for the assigned permission
      * @param assignedPermissions
      */
-    public void setAssignedPermissions(List<? extends SystemPermission> assignedPermissions) {
+    public void setAssignedPermissions(List<SystemPermission> assignedPermissions) {
         this.assignedPermissions = assignedPermissions;
     }
 
@@ -330,12 +337,40 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tabIndex = tabIndex;
     }
 
-    public SystemPermission getPreviousSelectedPermission() {
-        return previousSelectedPermission;
+    /**
+     * Getter for the property that corresponds to the Permission selected for
+     * doing the dissociation
+     * @return Permission for which will be performed the dissociation
+     */
+    public SystemPermission getSelectedPermissionToUnAssign() {
+        return selectedPermissionToUnAssign;
     }
 
-    public void setPreviousSelectedPermission(SystemPermission previousSelectedPermission) {
-        this.previousSelectedPermission = previousSelectedPermission;
+    /**
+     * Setter for the property that corresponds to the Permission selected for
+     * doing the dissociation
+     * @param selectedPermissionToUnAssign Permission for which will be performed the dissociation
+     */
+    public void setSelectedPermissionToUnAssign(SystemPermission selectedPermissionToUnAssign) {
+        this.selectedPermissionToUnAssign = selectedPermissionToUnAssign;
+    }
+
+    /**
+     * Getter for the property that corresponds to the Permission Previously selected for
+     * doing the dissociation
+     * @return Previous Permission for which the dissociation was performed
+     */
+    public SystemPermission getPreviousSelectedPermissionToUnAssign() {
+        return previousSelectedPermissionToUnAssign;
+    }
+
+    /**
+     * Setter for the property that corresponds to the Permission Previously selected for
+     * doing the dissociation
+     * @param previousSelectedPermissionToUnAssign Previous Permission for which the dissociation was performed
+     */
+    public void setPreviousSelectedPermissionToUnAssign(SystemPermission previousSelectedPermissionToUnAssign) {
+        this.previousSelectedPermissionToUnAssign = previousSelectedPermissionToUnAssign;
     }
 
     /**
@@ -343,15 +378,31 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @param event that will contain which permission has been selected
      */
     public void onPermissionSelect(SelectEvent<SystemPermission> event) {
-        if (previousSelectedPermission != null && previousSelectedPermission.getId() == event.getObject().getId()) {
+        if (previousSelectedPermissionToUnAssign != null && previousSelectedPermissionToUnAssign.getId() == event.getObject().getId()) {
             // remove selection
-            previousSelectedPermission = new Permission();
-            permission = new Permission();
+            previousSelectedPermissionToUnAssign = new Permission();
+            selectedPermissionToUnAssign = new Permission();
         } else {
             // select
-            previousSelectedPermission =event.getObject();
+            previousSelectedPermissionToUnAssign =event.getObject();
         }
         this.tabIndex = 1L;
+    }
+
+    /**
+     * Listener method used by bootsfaces DataTable component to select
+     * one Permission
+     * @param perm Selected permission on DataTable
+     * @param typeOfSelection one of those predicted types on DataTable.
+     *                        This is either <b>row</b>, <b>column</b> or <b>item</b>
+     * @param indexes tells the JSF bean which rows, columns or cells have been selected.
+     *     Note that in the first two cases this is either an individual number or - if multiple items have been selected - a
+     *     comma separated list
+     */
+    public void onPermissionSelect(Permission perm, String typeOfSelection, String indexes) {
+        if (typeOfSelection.equals("row") && perm != null) {
+            this.selectedPermissionToUnAssign = perm;
+        }
     }
 
     /**
@@ -359,7 +410,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * that can be use to do the association between (user - tenant - role)
      * @return list containing Roles
      */
-    public List<? extends SystemRole> getInitialRolesAllowedForAssociation() {
+    public List<SystemRole> getInitialRolesAllowedForAssociation() {
         try {
             List<SystemRole> roles = new ArrayList<>();
             roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.GUEST.getRoleName()).get());
@@ -380,9 +431,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing roles
      * @throws SystemException in case of any error
      */
-    public List<? extends SystemRole> getRoles() throws SystemException {
+    public List<SystemRole> getRoles() throws SystemException {
         try {
-            Page<? extends SystemRole> pagedInformation =
+            Page pagedInformation =
                     roleRESTServiceAccess.getAll(null, 1, 30, null, true);
             return pagedInformation.getResults();
         }
@@ -398,9 +449,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing tenants
      * @throws SystemException in case of any error
      */
-    public List<? extends SystemTenant> getTenants() throws SystemException {
+    public List<SystemTenant> getTenants() throws SystemException {
         try {
-            Page<? extends SystemTenant> pagedInformation =
+            Page pagedInformation =
                     tenantRESTServiceAccess.getAll(null, 1, 30, null, true);
             return pagedInformation.getResults();
         }

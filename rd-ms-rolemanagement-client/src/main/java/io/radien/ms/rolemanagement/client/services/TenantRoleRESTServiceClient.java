@@ -111,8 +111,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             throw t;
         }
         catch (Exception e) {
-            log.error("Error trying to retrieve Tenant Role User associations", e);
-            throw new SystemException(e);
+            throw new SystemException("Error trying to retrieve Tenant Role User associations", e);
         }
     }
 

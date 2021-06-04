@@ -112,36 +112,20 @@
 								</b:row>
 								<b:row><h1/></b:row>
 								<b:row>
-									<p:dataTable var="perm"
-												 value="#{tenantRoleAssociationManager.assignedPermissions}"
-												 paginator="true" paginatorPosition="bottom"
-												 rows="10" responsive="true"
-												 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-												 currentPageReportTemplate="({currentPage} #{msg.of} {totalPages})"
-												 rowsPerPageTemplate="5,10,15,30,50"
-												 id="permissionsTable" emptyMessage="#{msg.noRecordsFound}"
-												 info="false" sortOrder="ascending" styleClass="table--2"
-									   			 rowKey="#{perm.id}"
+
+									<b:dataTable var="perm"
 												 selectionMode="single"
-												 selection="#{tenantRoleAssociationManager.permission}">
+												 selectedItems="rows"
+												 onselect="ajax:tenantRoleAssociationManager.onPermissionSelect(perm, typeOfSelection, indexes);"
+												 value="#{tenantRoleAssociationManager.assignedPermissions}">
 
-										<p:ajax event="rowSelect"
-												listener="#{tenantRoleAssociationManager.onPermissionSelect}"
-												update="@all"/>
+										<b:dataTableColumn value="#{perm.id}" label="#{msg.id}"/>
+										<b:dataTableColumn value="#{perm.name}" label="#{msg.name}"/>
+										<b:dataTableColumn value="#{perm.actionId}" label="#{msg.rd_action}"/>
+										<b:dataTableColumn value="#{perm.resourceId}" label="#{msg.rd_resource}"/>
 
-										<p:column headerText="#{msg.id}">
-											<h:outputText value="#{perm.id}" />
-										</p:column>
-										<p:column headerText="#{msg.name}">
-											<h:outputText value="#{perm.name}" />
-										</p:column>
-										<p:column headerText="#{msg.rd_action}">
-											<h:outputText value="#{perm.actionId}" />
-										</p:column>
-										<p:column headerText="#{msg.rd_resource}">
-											<h:outputText value="#{perm.resourceId}" />
-										</p:column>
-									</p:dataTable>
+									</b:dataTable>
+
 								</b:row>
 								<b:row><h1/></b:row>
 							</b:container>
