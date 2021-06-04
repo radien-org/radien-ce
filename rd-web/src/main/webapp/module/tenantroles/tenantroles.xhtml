@@ -71,12 +71,12 @@
         </h:form>
 
         <h:form id="tenantRoleAssociationManagementButtons">
-            <b:commandButton id="refresh" value="Refresh Values"
+            <b:commandButton id="refresh" value="#{msg.refreshValues}"
                              ajax="false"
                              iconAwesome="fa-refresh"
                              icon-spin="true"
                              iconAlign="right"
-                             tooltip="Refresh existent Associations data table!"
+                             tooltip="#{msg.refreshTooltipForTenantRoleAssociations}"
                              actionListener="#{tenantRoleAssociationDataModel.onload}"
                              immediate="true" update="@form:tenantRoleAssociationManagementTableDiv"
                              auto-update="true"/>

@@ -19,7 +19,7 @@
 				</b:row>
 				<b:column>
 					<b:tabView activeIndex="#{tenantRoleAssociationManager.tabIndex}">
-						<b:tab title="Tenant Role">
+						<b:tab title="#{msg.rd_tenant} #{msg.rd_role}">
 							<b:container>
 								<b:row><h1/></b:row>
 								<b:row>
@@ -79,7 +79,7 @@
 							</b:buttonGroup>
 						</b:tab>
 
-						<b:tab id="tabForPermissionAssigment" title="Permissions"
+						<b:tab id="tabForPermissionAssigment" title="#{msg.rd_permissions}"
 							   rendered="#{tenantRoleAssociationManager.existsTenantRoleCreated}">
 							<b:container>
 								<b:row><h1/></b:row>
@@ -147,9 +147,9 @@
 							</b:buttonGroup>
 						</b:tab>
 
-						<b:tab id="tabForUserAssigment" title="User"
+						<b:tab id="tabForUserAssigment" title="#{msg.rd_users}"
 							   rendered="#{tenantRoleAssociationManager.existsTenantRoleCreated}">
-							<p>Area to perform User assigment</p>
+							<p>${msg.userAssignmentArea}</p>
 						</b:tab>
 
 					</b:tabView>
