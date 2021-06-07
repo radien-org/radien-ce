@@ -67,7 +67,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     private SystemPermission permission = new Permission();
     private SystemTenantRole tenantRole = new TenantRole();
 
-    private List<SystemPermission> assignedPermissions = new ArrayList<>();
+    private List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
 
     private Boolean tenantRoleAssociationCreated = Boolean.FALSE;
 

@@ -25,6 +25,7 @@ import java.util.Optional;
 
 /**
  * Rest service client responsible to Deal with TenantRole endpoint
+ *
  * @author Newton Carvalho
  */
 public interface TenantRoleRESTServiceAccess {
@@ -36,7 +37,7 @@ public interface TenantRoleRESTServiceAccess {
      * @return Page containing TenantRole User associations (Chunk/Portion compatible
      * with parameter Page number and Page size).
      */
-    Page<SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException;
+    Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException;
 
     /**
      * Obtains TenantRole by Id
@@ -71,7 +72,7 @@ public interface TenantRoleRESTServiceAccess {
      * @return List containing permissions.
      * @throws SystemException in case of any error
      */
-    List<SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException;
+    List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException;
 
     /**
      * Retrieves the existent Tenants for a User (Optionally for a specific role)
@@ -80,7 +81,7 @@ public interface TenantRoleRESTServiceAccess {
      * @return List containing tenants
      * @throws SystemException in case of any error
      */
-    List<SystemTenant> getTenants(Long userId, Long roleId) throws SystemException;
+    List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException;
 
     /**
      * Retrieves TenantRole associations that met the following parameter
@@ -90,7 +91,7 @@ public interface TenantRoleRESTServiceAccess {
      * @return In case of successful operation returns a Collection containing TenantRole associations.
      * @throws SystemException in case of Any error
      */
-    List<SystemTenantRole> getTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction)
+    List<? extends SystemTenantRole> getTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction)
             throws SystemException;
 
     /**
