@@ -35,9 +35,10 @@
 														completeMethod="#{entityFilterUtil.filterTenantsByName}"
 														label="#{msg.rd_tenant}"
 														emptyMessage="#{msg.rd_tenants_not_found}"
-														size="50" placeholder="#{msg.tenantPlaceholder}"
+														size="50" placeholder="#{msg.rd_tenant_placeholder}"
 														required="true" requiredMessage="#{msg.rd_tenant_is_mandatory}"
 														effect="fade" dropdown="true" forceSelection="true"
+														scrollHeight="150"
 														styleClass="p-field p-col-12 p-md-4"/>
 									</b:column>
 								</b:row>
@@ -55,9 +56,10 @@
 														completeMethod="#{entityFilterUtil.filterRolesByName}"
 														label="#{msg.rd_role}"
 														emptyMessage="#{msg.rd_roles_not_found}"
-														size="50" placeholder="#{msg.rolePlaceholder}"
+														size="50" placeholder="#{msg.rd_role_placeholder}"
 														required="true" requiredMessage="#{msg.rd_role_is_mandatory}"
 														effect="fade" dropdown="true" forceSelection="true"
+														scrollHeight="150"
 														styleClass="p-field p-col-12 p-md-4"/>
 									</b:column>
 								</b:row>
@@ -97,9 +99,10 @@
 														completeMethod="#{entityFilterUtil.filterPermissionsByName}"
 														label="#{msg.rd_permission}"
 														emptyMessage="#{msg.rd_permissions_not_found}"
-														size="50" placeholder="#{msg.permissionPlaceholder}"
+														size="50" placeholder="#{msg.rd_permission_placeholder}"
 														requiredMessage="#{msg.rd_permission_is_mandatory}"
 														effect="fade" dropdown="true" forceSelection="true"
+														scrollHeight="150"
 														styleClass="p-field p-col-12 p-md-4"/>
 									</b:column>
 									<b:column mediumScreen="2">
@@ -149,7 +152,7 @@
 
 						<b:tab id="tabForUserAssigment" title="#{msg.rd_users}"
 							   rendered="#{tenantRoleAssociationManager.existsTenantRoleCreated}">
-							<p>${msg.userAssignmentArea}</p>
+							<p>${msg.rd_tenant_role_user_assigment}</p>
 						</b:tab>
 
 					</b:tabView>

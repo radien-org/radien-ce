@@ -21,17 +21,12 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
-import io.radien.ms.permissionmanagement.client.entities.Permission;
-import io.radien.ms.rolemanagement.client.entities.Role;
-import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +59,7 @@ public class EntityFilterUtil extends AbstractManager {
     public List<? extends SystemTenant> filterTenantsByName(String name) {
         try {
             return this.tenantRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
-                    1, 10, null, false).getResults();
+                    1, 100, null, false).getResults();
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_tenants"));
             return new ArrayList<>();

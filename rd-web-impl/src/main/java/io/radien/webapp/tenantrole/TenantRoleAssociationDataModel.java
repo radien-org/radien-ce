@@ -70,12 +70,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
      * Makes the LazyDataModel perform the onload event/method
      */
     public void onload() {
-        try {
-            init();
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"),
-                    JSFUtil.getMessage("tenant_role_associations"));
-        }
+        init();
     }
 
     /**
