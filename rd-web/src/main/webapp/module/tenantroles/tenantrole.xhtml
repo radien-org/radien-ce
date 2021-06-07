@@ -79,12 +79,12 @@
 							</b:buttonGroup>
 						</b:tab>
 
-						<b:tab id="tabForPermissionAssigment" title="Permissions"
+						<b:tab id="tabForPermissionAssigment" title="#{msg.rd_permissions}"
 							   rendered="#{tenantRoleAssociationManager.existsTenantRoleCreated}">
 							<p>${msg.rd_tenant_role_permission_assigment}</p>
 						</b:tab>
 
-						<b:tab id="tabForUserAssigment" title="User"
+						<b:tab id="tabForUserAssigment" title="#{msg.rd_users}"
 							   rendered="#{tenantRoleAssociationManager.existsTenantRoleCreated}">
 							<p>${msg.rd_tenant_role_user_assigment}</p>
 						</b:tab>
