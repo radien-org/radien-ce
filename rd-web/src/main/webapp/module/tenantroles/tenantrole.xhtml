@@ -8,7 +8,7 @@
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<ui:define name="content" bootsFacesDecorator="true">
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
-		<h:form>
+		<h:form id="tenantRoleAssociationsManagementTableDiv">
 			<h:inputHidden id="tenantRoleId" value="#{tenantRoleAssociationManager.tenantRole.id}"/>
 			<b:container>
 				<b:row>
@@ -19,7 +19,7 @@
 				</b:row>
 				<b:column>
 					<b:tabView activeIndex="#{tenantRoleAssociationManager.tabIndex}">
-						<b:tab title="Tenant Role">
+						<b:tab title="#{msg.rd_tenant} #{msg.rd_role}">
 							<b:container>
 								<b:row><h1/></b:row>
 								<b:row>
