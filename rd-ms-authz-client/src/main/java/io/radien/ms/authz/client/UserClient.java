@@ -39,10 +39,20 @@ import javax.ws.rs.core.Response;
 @Path("/user")
 public interface UserClient {
 
+    /**
+     * Rest request to get a specific user based on his subject
+     * @param sub to be found
+     * @return the http request response
+     */
     @GET
     @Path("/sub/{sub}")
     public Response getUserIdBySub(@PathParam("sub") String sub);
 
+    /**
+     * Rest request to refresh active user session token
+     * @param refreshToken active user refresh token to be validated and generated a new access token
+     * @return the http request response
+     */
     @POST
     @Path("/refresh")
     public Response refreshToken(String refreshToken);

@@ -24,11 +24,13 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * Lightweight simple translation module with dynamic JSON storage.
+ *
  * @author andresousa
  */
-
 @Entity
 public class I18NPropertyEntity implements Serializable {
+
     @Id
     private String key;
 
@@ -38,30 +40,60 @@ public class I18NPropertyEntity implements Serializable {
     @Column
     private List<TranslationEntity> translations;
 
+    /**
+     * I18N translation key value getter
+     * @return the I18N key string value
+     */
     public String getKey() {
         return key;
     }
 
+    /**
+     * I18N translation key value setter
+     * @param key to be set
+     */
     public void setKey(String key) {
         this.key = key;
     }
 
+    /**
+     * I18N translation type value getter
+     * @return the I18N type
+     */
     public LabelTypeEnum getType() {
         return type;
     }
 
+    /**
+     * I18N translation type setter
+     * @param type to be set
+     */
     public void setType(LabelTypeEnum type) {
         this.type = type;
     }
 
+    /**
+     * I18N translation entity getter
+     * @return a list of translations
+     */
     public List<TranslationEntity> getTranslations() {
         return translations;
     }
 
+    /**
+     * I18N translation entity setter
+     * @param translationEntities to be set
+     */
     public void setTranslations(List<TranslationEntity> translationEntities) {
         this.translations = translationEntities;
     }
 
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     * The equals method implements an equivalence relation on non-null object references:
+     * @param o the reference object with which to compare.
+     * @return if this object is the same as the obj argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

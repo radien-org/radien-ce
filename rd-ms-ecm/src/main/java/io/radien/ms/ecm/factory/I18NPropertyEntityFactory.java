@@ -23,11 +23,20 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * I18N translation entity factory, where we can create by given parameters the needed and required I18N properties
+ *
  * @author andresousa
  */
-
 public class I18NPropertyEntityFactory {
 
+    /**
+     * Creates a I18N Property entity by specifying all the parameters
+     * @param key to be created
+     * @param type of the I18N property
+     * @param language of the I18N language translation entity
+     * @param description of the I18N language translation entity
+     * @return a I18N property entity
+     */
     public static I18NPropertyEntity createWithDefaults(String key, LabelTypeEnum type, String language, String description) {
         I18NPropertyEntity entity = new I18NPropertyEntity();
         entity.setKey(key);
@@ -37,6 +46,13 @@ public class I18NPropertyEntityFactory {
         return entity;
     }
 
+    /**
+     * Creates a I18N Property entity by specifying the parameters but with one single translation entity
+     * @param key to be created
+     * @param type of the I18N property
+     * @param translationEntity composed with language and description
+     * @return a I18N property entity
+     */
     public static I18NPropertyEntity create(String key, LabelTypeEnum type, TranslationEntity translationEntity) {
         I18NPropertyEntity entity = new I18NPropertyEntity();
         entity.setKey(key);
@@ -46,6 +62,13 @@ public class I18NPropertyEntityFactory {
         return entity;
     }
 
+    /**
+     * Creates a I18N Property entity by specifying the parameters but with multiple translation entity
+     * @param key to be created
+     * @param type of the I18N property
+     * @param translationEntity list composed with language and description
+     * @return a I18N property entity
+     */
     public static I18NPropertyEntity create(String key, LabelTypeEnum type, List<TranslationEntity> translationEntity) {
         I18NPropertyEntity entity = new I18NPropertyEntity();
         entity.setKey(key);

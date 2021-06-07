@@ -40,6 +40,17 @@ import java.util.List;
 @Path("/linkedauthorization")
 public interface LinkedAuthorizationClient {
 
+    /**
+     * Rest request for validating if a specific association in the linked authorization does exist or not
+     * by a given filtered parameters
+     * @param tenantId tenant id in the linked authorizations
+     * @param permissionId permission id in the linked authorizations
+     * @param roleId role id in the linked authorizations
+     * @param userId user id in the linked authorizations
+     * @param isLogicalConjunction if the filtered values should be found as an and or a or. if true then it should be
+     *                             found with and clause
+     * @return the http request response
+     */
     @GET
     @Path("/exists")
     Response existsSpecificAssociation(@QueryParam("tenantId") Long tenantId,
@@ -48,12 +59,27 @@ public interface LinkedAuthorizationClient {
                                        @QueryParam("userId") Long userId,
                                        @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
+    /**
+     * Rest request to validate if a specific role does exist for a specific user
+     * @param userId to be found
+     * @param roleName to be found
+     * @param tenantId for the specific tenant
+     * @return the http request response
+     */
     @GET
     @Path("/exists/role")
     Response isRoleExistentForUser(@QueryParam("userId") Long userId,
                                    @QueryParam("roleName") String roleName,
                                    @QueryParam("tenantId") Long tenantId);
 
+    /**
+     * Rest request to check if any permission does exist for a given parameters as for a specific user with a
+     * specific role in a specific tenant
+     * @param userId to be found
+     * @param roleName to be found
+     * @param tenantId to be found
+     * @return the http request response
+     */
     @GET
     @Path("/exists/checkPermissions")
     Response checkPermissions(@QueryParam("userId") Long userId,
