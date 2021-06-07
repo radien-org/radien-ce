@@ -28,6 +28,7 @@ import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
@@ -224,9 +225,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public String associateUser(Long userId) {
         try {
             if (!tenantRoleRESTServiceAccess.exists(tenant.getId(), role.getId())) {
-                SystemTenantRole tr = new TenantRole();
-                tr.setTenantId(tenant.getId());
-                tr.setRoleId(role.getId());
+                SystemTenantRole tr = TenantRoleFactory.create(tenant.getId(), role.getId(),
+                        webAuthorizationChecker.getCurrentUserId());
                 tenantRoleRESTServiceAccess.save(tr);
             }
             tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), userId);

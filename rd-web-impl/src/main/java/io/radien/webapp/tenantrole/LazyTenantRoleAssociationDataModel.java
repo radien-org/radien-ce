@@ -74,15 +74,9 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
             log.error("Error trying to load associations", e);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error retrieving associations",
-                            extractErrorMessage(e)));
+                            e.getMessage()));
         }
         setRowCount(Math.toIntExact(rowCount));
         return datasource.stream().collect(Collectors.toList());
-    }
-
-    protected String extractErrorMessage(Exception exception) {
-        String errorMsg = (exception instanceof EJBException) ?
-                exception.getCause().getMessage() : exception.getMessage();
-        return errorMsg.replace("\n\t", "");
     }
 }
