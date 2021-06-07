@@ -36,7 +36,6 @@ import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.primefaces.event.SelectEvent;
 
 
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
@@ -79,7 +78,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     private Long tabIndex = 0L;
 
-    public static final String K_URL_MAPPING_ID_TENANT_ROLE = "tenantrole";
+    public static final String K_TENANT_ROLE_SCREEN = "tenantrole";
 
     /**
      * This method is effectively invoke to create Tenant role association
@@ -100,7 +99,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_save_error"),
                     JSFUtil.getMessage("tenant_role_association"));
         }
-        return K_URL_MAPPING_ID_TENANT_ROLE;
+        return K_TENANT_ROLE_SCREEN;
     }
 
     /**
@@ -116,7 +115,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenant = new Tenant();
         this.tenantRoleAssociationCreated = Boolean.FALSE;
         this.tabIndex = 0L;
-        return K_URL_MAPPING_ID_TENANT_ROLE;
+        return K_TENANT_ROLE_SCREEN;
     }
 
     /**
@@ -144,7 +143,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_edit_error"),
                     JSFUtil.getMessage("rd_tenant_role_association"));
         }
-        return K_URL_MAPPING_ID_TENANT_ROLE;
+        return K_TENANT_ROLE_SCREEN;
     }
 
     /**
@@ -191,7 +190,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_association_error"));
         }
-        return K_URL_MAPPING_ID_TENANT_ROLE;
+        return K_TENANT_ROLE_SCREEN;
     }
 
     /**
@@ -214,7 +213,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_dissociation_error"));
         }
-        return K_URL_MAPPING_ID_TENANT_ROLE;
+        return K_TENANT_ROLE_SCREEN;
     }
 
     /**
