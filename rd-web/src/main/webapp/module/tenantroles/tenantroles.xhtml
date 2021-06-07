@@ -34,13 +34,13 @@
 
                 <p:ajax event="rowSelect" listener="#{tenantRoleAssociationDataModel.onRowSelect}" update="@form:tenantRoleAssociationManagementTableDiv"
                         oncomplete="$('.formValidationModalClass').modal('show')"/>
-                <p:column headerText="Id" sortBy="#{tenantRoleAssociation.id}">
+                <p:column headerText="${msg.id}" sortBy="#{tenantRoleAssociation.id}">
                     <h:outputText value="#{tenantRoleAssociation.id}"/>
                 </p:column>
-                <p:column headerText="Tenant">
+                <p:column headerText="${msg.rd_tenant}">
                     <h:outputText value="#{tenantRoleAssociation.tenantId}"/>
                 </p:column>
-                <p:column headerText="Role">
+                <p:column headerText="${msg.rd_role}">
                     <h:outputText value="#{tenantRoleAssociation.roleId}"/>
                 </p:column>
                 <p:column headerText="#{msg.editUpper}">
@@ -51,7 +51,7 @@
                 </p:column>
             </p:dataTable>
 
-            <b:modal title="Selected Association Details" styleClass="formValidationModalClass"
+            <b:modal title="#{msg.rd_selected_tenant_role_association_details}" styleClass="formValidationModalClass"
                      closable="false" closeOnEscape="true" rendered="#{not empty tenantRoleAssociationDataModel.selectedAssociation}" auto-update="true">
                 <b:dataTable value="#{tenantRoleAssociationDataModel.selectedAssociation}"
                              var="selectedAssociation"
@@ -71,12 +71,12 @@
         </h:form>
 
         <h:form id="tenantRoleAssociationManagementButtons">
-            <b:commandButton id="refresh" value="Refresh Values"
+            <b:commandButton id="refresh" value="#{msg.refreshValues}"
                              ajax="false"
                              iconAwesome="fa-refresh"
                              icon-spin="true"
                              iconAlign="right"
-                             tooltip="Refresh existent Associations data table!"
+                             tooltip="#{msg.rd_refresh_tenant_role_associations_table}"
                              actionListener="#{tenantRoleAssociationDataModel.onload}"
                              immediate="true" update="@form:tenantRoleAssociationManagementTableDiv"
                              auto-update="true"/>

@@ -33,6 +33,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * LazyDataModel implemented specifically to attend the exhibition of TenantRole associations
+ * using Lazy loading fashion.
+ *
+ * The idea behind a LazyDataModel is to allow working with considerable hugh datasets,
+ * taking in consideration pagination parameters like page size, page number and so on,
+ * allowing to load only chunks of data that are really required in a specific moment
+ *
  * @author Newton Carvalho
  */
 public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTenantRole> {
@@ -42,11 +49,21 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
 
     private List<? extends SystemTenantRole> datasource;
 
+    /**
+     * Main constructor
+     * @param service TenantRoleRESTServiceAccess rest client to perform the role of a DataService,
+     *                providing data to assembly the datasource
+     */
     public LazyTenantRoleAssociationDataModel(TenantRoleRESTServiceAccess service) {
         this.service=service;
         this.datasource = new ArrayList<>();
     }
 
+    /**
+     * Retrieves a SystemTenantRole that corresponds to a DataTable row.
+     * @param rowKey id or index that refers a row (presented in a data table)
+     * @return SystemTenantRole instance that corresponds to the selected datatable row
+     */
     @Override
     public SystemTenantRole getRowData(String rowKey) {
         for (SystemTenantRole association : datasource) {
@@ -57,11 +74,25 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
         return null;
     }
 
+    /**
+     * This method retrieves the row identifier (or key) that exists for a given a SystemTenantRole object
+     * @param association TenantRole object contained in the grid, for which the row
+     *                    id (key) will be retrieved
+     * @return String value that corresponds to the row key
+     */
     @Override
     public String getRowKey(SystemTenantRole association) {
         return String.valueOf(association.getId());
     }
 
+    /**
+     * Core method that performs the page loading taking in consideration the parameters described bellow
+     * @param offset parameter that helps to calculate the page number
+     * @param pageSize corresponds to the page size.
+     * @param sortBy map containing references to properties/columns that may guide the data sort
+     * @param filterBy map containing references to properties/columns that may guide a filtering process
+     * @return list containing TenantRole associations corresponding to a page
+     */
     @Override
     public List<SystemTenantRole> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
@@ -74,15 +105,9 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
             log.error("Error trying to load associations", e);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error retrieving associations",
-                            extractErrorMessage(e)));
+                            e.getMessage()));
         }
         setRowCount(Math.toIntExact(rowCount));
         return datasource.stream().collect(Collectors.toList());
-    }
-
-    protected String extractErrorMessage(Exception exception) {
-        String errorMsg = (exception instanceof EJBException) ?
-                exception.getCause().getMessage() : exception.getMessage();
-        return errorMsg.replace("\n\t", "");
     }
 }

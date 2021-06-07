@@ -34,12 +34,17 @@ import javax.inject.Inject;
 import java.io.Serializable;
 
 /**
+ * JSF DataModel that will allow a first page (i.e tenantroles.xhtml)
+ * to exhibit a DataTable/DataGrid containing the TenantRole associations
+ * previously created.
+ *
+ * It relies on a LazyDataModel component to perform the lazy loading
+ *
  * @author Newton Carvalho
  */
 @Model
 @SessionScoped
 public class TenantRoleAssociationDataModel extends AbstractManager implements Serializable {
-
 
     private LazyDataModel<? extends SystemTenantRole> lazyModel;
 
@@ -48,6 +53,9 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
     @Inject
     private TenantRoleRESTServiceAccess service;
 
+    /**
+     * The most import stuff. Initializes the LazyDataModel component
+     */
     @PostConstruct
     public void init() {
         try {
@@ -58,6 +66,9 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
         }
     }
 
+    /**
+     * Makes the LazyDataModel perform the onload event/method
+     */
     public void onload() {
         try {
             init();
@@ -67,32 +78,61 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
         }
     }
 
+    /**
+     * Getter for the property that corresponds to the LazyDataModel component
+     * @return reference for the created LazyDataMode component
+     */
     public LazyDataModel<? extends SystemTenantRole> getLazyModel() {
         return lazyModel;
     }
 
+    /**
+     * Setter for the property that corresponds to the LazyDataModel component
+     * @param lazyModel  reference for the created LazyDataMode component
+     */
     public void setLazyModel(LazyDataModel<? extends SystemTenantRole> lazyModel) {
         this.lazyModel = lazyModel;
     }
 
+    /**
+     * Getter for the property that corresponds to the TenantRole object selected as row in a DataGrid
+     * @return reference for the selected TenantRole association
+     */
     public SystemTenantRoleUser getSelectedAssociation() {
         return selectedAssociation;
     }
 
+    /**
+     * Setter for the property that corresponds to the TenantRole object selected as row in a DataGrid
+     * @param selectedAssociation reference for the selected TenantRole association
+     */
     public void setSelectedAssociation(SystemTenantRoleUser selectedAssociation) {
         this.selectedAssociation = selectedAssociation;
     }
 
+    /**
+     * Getter for the property that corresponds to the TenantRole Rest client
+     * @return instance of TenantRoleRESTServiceAccess rest client
+     */
     public TenantRoleRESTServiceAccess getService() {
         return service;
     }
 
+    /**
+     * Setter for the property that corresponds to the TenantRole Rest client
+     * @param service  instance of TenantRoleRESTServiceAccess rest client
+     */
     public void setService(TenantRoleRESTServiceAccess service) {
         this.service = service;
     }
 
-    public void onRowSelect(SelectEvent<SystemTenant> event) {
-        FacesMessage msg = new FacesMessage("Customer Selected", String.valueOf(event.getObject().getId()));
+    /**
+     * Listener that will be executed in case of a row selection event
+     * @param event Event that corresponds of selecting a row (that contains a TenantRole association)
+     *              presented in a DataGrid
+     */
+    public void onRowSelect(SelectEvent<SystemTenantRole> event) {
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rowSelected"), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }
