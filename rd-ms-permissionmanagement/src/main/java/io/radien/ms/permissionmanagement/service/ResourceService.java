@@ -27,13 +27,21 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.CriteriaDelete;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Resource DB connection requests
+ * All the requests made between the resource entity and the database will be performed in here
+ *
  * @author Newton Carvalho
  */
 @Stateless
@@ -236,6 +244,14 @@ public class ResourceService implements ResourceServiceAccess {
         return q.getResultList();
     }
 
+    /**
+     * Will filter all the fields given in the criteria builder and in the filter and create the
+     * where clause for the query
+     * @param filter fields to be searched for
+     * @param criteriaBuilder database query builder
+     * @param resourceRoot database table to search the information
+     * @return a constructed predicate with the fields needed to be search
+     */
     private Predicate getFilteredPredicate(SystemResourceSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder,
                                            Root<Resource> resourceRoot) {
@@ -259,6 +275,16 @@ public class ResourceService implements ResourceServiceAccess {
         return global;
     }
 
+    /**
+     * Method that will create in the database query where clause each and single search
+     * @param name of the field to be search in the query
+     * @param value of the field to be search or compared in the query
+     * @param filter complete requested filter for further validations
+     * @param criteriaBuilder database query builder
+     * @param resourceRoot database table to search the information
+     * @param global complete where clause to be merged into the constructed information
+     * @return a constructed predicate with the fields needed to be search
+     */
     private Predicate getFieldPredicate(String name, Object value,
                                         SystemResourceSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
@@ -280,7 +306,11 @@ public class ResourceService implements ResourceServiceAccess {
         }
         return global;
     }
-    
+
+    /**
+     * Entity manager getter
+     * @return the correct requested entity manager
+     */
     protected EntityManager getEntityManager() {
         return holder.getEntityManager();
     }

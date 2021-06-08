@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Utility class to create Permission class instances
  * @author Newton Carvalho
- * Utilitary class to create Permission class instances
  */
 public class PermissionFactory {
 
@@ -99,8 +99,8 @@ public class PermissionFactory {
 
     /**
      * Converts a Json Array into an Action List
-     * @param jsonArray
-     * @return
+     * @param jsonArray to be converted and mapped the information from
+     * @return a list of permission with the information retrieved from the json array
      */
     public static List<Permission> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());

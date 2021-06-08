@@ -15,25 +15,42 @@
  */
 package io.radien.ms.permissionmanagement.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.TableGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
 
 /**
- * @author Newton Carvalho
- *
  * Contains the definitions of an Resource described on
  * {@link io.radien.ms.permissionmanagement.client.entities.Resource}
  * plus the JPA entity mapping
+ *
+ * @author Newton Carvalho
  */
 @Entity
 @Table(name = "RES01")
 public class Resource extends io.radien.ms.permissionmanagement.client.entities.Resource {
 
+	/**
+	 * Entity Resource empty constructor
+	 */
 	public Resource() {}
 
+	/**
+	 * Entity Resource constructor
+	 * @param a {@link io.radien.ms.permissionmanagement.client.entities.Resource} resource to be created
+	 */
 	public Resource(io.radien.ms.permissionmanagement.client.entities.Resource a) {
 		super(a);
 	}
 
+	/**
+	 * Resource id table field
+	 * @return resource id
+	 */
 	@Override
 	@Id
 	@TableGenerator(name = "GEN_SEQ_RES01", allocationSize = 2000)
@@ -42,6 +59,10 @@ public class Resource extends io.radien.ms.permissionmanagement.client.entities.
 		return super.getId();
 	}
 
+	/**
+	 * Resource name table field
+	 * @return resource name
+	 */
 	@Override
 	@Column(name = "NAME", nullable = false, unique = true)
 	public String getName() {

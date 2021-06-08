@@ -43,8 +43,8 @@ import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 
 /**
- * @author Newton Carvalho
  * Contract for Rest Service Client regarding Permission domain object
+ * @author Newton Carvalho
  */
 @RequestScoped
 public class PermissionRESTServiceClient extends AuthorizationChecker implements PermissionRESTServiceAccess {
@@ -428,6 +428,10 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
         }
     }
 
+    /**
+     * Permission OAF getter
+     * @return the permission active oaf session access
+     */
     @Override
     public OAFAccess getOAF() {
         return oaf;

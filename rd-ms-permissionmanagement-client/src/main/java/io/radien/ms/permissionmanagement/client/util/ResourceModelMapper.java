@@ -19,29 +19,34 @@ import io.radien.api.entity.Page;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.ms.permissionmanagement.client.services.ResourceFactory;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+
 import java.io.InputStream;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * This class maps the Resource pojos into Json objects an vice-versa
+ * @author Newton Carvalho
  */
 public class ResourceModelMapper {
 
     /**
      * Maps one Resource into a Json Object
-     * @param model
-     * @return
+     * @param model resource object to be converted
+     * @return json object with the given resource information
      */
     public static JsonObject map(Resource model) {
         return ResourceFactory.convertToJsonObject(model);
     }
 
     /**
-     * Maps an Resource Collection into a Json Array
-     * @param models
-     * @return
+     * Maps a Resource Collection into a Json Array
+     * @param models list of resource to be converted
+     * @return a json array with all the given list information
      */
     public static JsonArray map(List<Resource> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
@@ -54,8 +59,8 @@ public class ResourceModelMapper {
 
     /**
      * Maps a Json stream into a Resource
-     * @param is
-     * @return
+     * @param is to be mapped
+     * @return the converted and mapped resource
      */
     public static Resource map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
@@ -66,8 +71,8 @@ public class ResourceModelMapper {
 
     /**
      * Obtains a Resource Page from a Json input stream
-     * @param is
-     * @return
+     * @param is to be mapped
+     * @return a page of resource mapped from the input stream
      */
     public static Page<Resource> mapToPage(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {

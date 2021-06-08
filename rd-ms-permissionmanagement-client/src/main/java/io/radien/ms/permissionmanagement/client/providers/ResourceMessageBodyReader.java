@@ -31,17 +31,38 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author Newton Carvalho
  * Message body reader that converts a Json stream into an Resource
+ * @author Newton Carvalho
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class ResourceMessageBodyReader implements MessageBodyReader<Resource> {
+
+    /**
+     * Validator of the resource message body is readable
+     * @param type of the object
+     * @param genericType generic type of the object
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
+     * @return true if the given object is a resource object
+     */
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type != null && SystemResource.class.isAssignableFrom(type);
     }
 
+    /**
+     * Will call the resource mapper to convert the given object
+     * @param type of the object
+     * @param genericType generic type of the received object
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
+     * @param httpHeaders header of the http received
+     * @param entityStream received object
+     * @return a resource that has been converted from the entity stream
+     * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+     * implementation if a specific HTTP error response needs to be produced.
+     */
     @Override
     public Resource readFrom(Class<Resource> type, Type genericType,
                                Annotation[] annotations, MediaType mediaType,
