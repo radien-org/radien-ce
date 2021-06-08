@@ -18,7 +18,6 @@ package io.radien.ms.ecm.client.providers;
 import io.radien.ms.ecm.client.entities.I18NProperty;
 import io.radien.ms.ecm.client.util.I18NPropertyMapper;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -31,46 +30,59 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-
 /**
- * @author Marco Weiland
+ * I18N Property Message writer constructor class validator and converter for returned messages
  *
+ * @author Marco Weiland
  */
 public class I18NPropertyMessageBodyWriter implements MessageBodyWriter<I18NProperty> {
 
-	 	@Override
-	    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(I18NProperty.class);
-	    }
+	/**
+	 * Validates if the given message/object is writable or not
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if the given object is a I18N property object
+	 */
+	@Override
+	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return type.equals(I18NProperty.class);
+	}
 
-	    /*
-	    Deprecated in JAX RS 2.0
-	     */
-	    @Override
-	    public long getSize(I18NProperty model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return 0;
-	    }
+	/**
+	 * Calculates the size of the I18N message size
+	 * @param model object to be count the size
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return the object size length
+	 */
+	@Override
+	public long getSize(I18NProperty model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return 0;
+	}
 
-	    /**
-	     * Marsahl Book to OutputStream
-	     *
-	     * @param model
-	     * @param type
-	     * @param genericType
-	     * @param annotations
-	     * @param mediaType
-	     * @param httpHeaders
-	     * @param entityStream
-	     * @throws IOException
-	     * @throws WebApplicationException
-	     */
-	    @Override
-	    public void writeTo(I18NProperty model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-							MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-	        JsonWriter jsonWriter = Json.createWriter(entityStream);
-	        JsonObject jsonObject = I18NPropertyMapper.map(model);
-	        jsonWriter.writeObject(jsonObject);
-	        jsonWriter.close();
-	    }
-
+	/**
+	 * Will call the I18N Property mapper to convert the given object into a json
+	 *
+	 * @param model I18N object to be converted
+	 * @param type of the object
+	 * @param genericType generic type of the received object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
+	 */
+	@Override
+	public void writeTo(I18NProperty model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+						MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws WebApplicationException {
+		JsonWriter jsonWriter = Json.createWriter(entityStream);
+		JsonObject jsonObject = I18NPropertyMapper.map(model);
+		jsonWriter.writeObject(jsonObject);
+		jsonWriter.close();
+	}
 }

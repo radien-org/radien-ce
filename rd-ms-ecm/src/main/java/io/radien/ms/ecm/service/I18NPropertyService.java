@@ -36,17 +36,23 @@ import java.util.stream.Collectors;
 import static org.jnosql.diana.api.document.query.DocumentQueryBuilder.select;
 
 /**
+ * I18N property resource service requests
+ *
  * @author andresousa
  */
-
 @ApplicationScoped
 public class I18NPropertyService implements SystemI18NPropertyService {
+
     @Inject
     private DocumentTemplate documentTemplate;
     @Inject
     private OAFAccess oafAccess;
 
-
+    /**
+     * Method to lookup the I18N property by a given key value
+     * @param messageCode key value to be found
+     * @return the localized I18N message
+     */
     @Override
     public String getLocalizedMessage(String messageCode) {
         I18NProperty property = getByKey(messageCode);
@@ -56,6 +62,11 @@ public class I18NPropertyService implements SystemI18NPropertyService {
                 .orElse(property.getKey());
     }
 
+    /**
+     * Resource service that will save the requested I18N property
+     * @param property to be stored
+     * @return
+     */
     @Override
     public I18NProperty save(I18NProperty property) {
         I18NPropertyEntity entity = I18NPropertyEntityMapper.mapToEntity(property);
@@ -63,6 +74,11 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         return I18NPropertyEntityMapper.mapToDTO(entity);
     }
 
+    /**
+     * Resource service that will save multiple given I18N list properties
+     * @param propertyList with the informations to be stored
+     * @return
+     */
     @Override
     public List<I18NProperty> save(List<I18NProperty> propertyList) {
         List<I18NPropertyEntity> entityList = I18NPropertyEntityMapper.mapToEntity(propertyList);
@@ -73,17 +89,29 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         return result;
     }
 
+    /**
+     * Resource service to delete a requested I18N property
+     * @param property to be deleted
+     */
     @Override
     public void delete(I18NProperty property) {
         I18NPropertyEntity entity = I18NPropertyEntityMapper.mapToEntity(property);
         documentTemplate.delete(I18NPropertyEntity.class, entity);
     }
 
+    /**
+     * Resource service to retrieve all the existent I18N property keys
+     * @return a list of all the existent key values
+     */
     @Override
     public List<String> getKeys() {
         return getAll().stream().map(I18NProperty::getKey).collect(Collectors.toList());
     }
 
+    /**
+     * Resource service to retrieve all the I18N properties services into a list
+     * @return a list of all the retrieved I18N
+     */
     @Override
     public List<I18NProperty> getAll() {
         DocumentQuery query = select().from("I18NPropertyEntity").build();
@@ -91,12 +119,20 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         return I18NPropertyEntityMapper.mapToDTO(list);
     }
 
+    /**
+     * Retrieve a requested I18N by searching for the given key
+     * @param key to be search
+     * @return the found I18N with the requested key
+     */
     @Override
     public I18NProperty getByKey(String key) {
         Optional<I18NPropertyEntity> propertyOptional = documentTemplate.find(I18NPropertyEntity.class, key);
         return propertyOptional.map(I18NPropertyEntityMapper::mapToDTO).orElse(null);
     }
 
+    /**
+     * Request to initialize the I18N property
+     */
     @Override
     public void initializeProperties() {
         String availableLanguages = oafAccess.getProperty(OAFProperties.SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM);
@@ -106,6 +142,10 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         saveOrUpdate(loader.getAllProperties());
     }
 
+    /**
+     * Method that will validate if the requested given I18N should be saved or updated
+     * @param property to be saved or updated
+     */
     private void saveOrUpdate(I18NProperty property) {
         if(getByKey(property.getKey()) != null) {
             documentTemplate.update(property);
@@ -114,6 +154,10 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         documentTemplate.insert(property);
     }
 
+    /**
+     * Method that will validate if the requested given list of I18N should be saved or updated
+     * @param propList of I18N properties to be saved or updated
+     */
     private void saveOrUpdate(List<I18NProperty> propList) {
         List<I18NProperty> propertyList = getAll();
         List<I18NProperty> newProperties = new ArrayList<>(propList);
