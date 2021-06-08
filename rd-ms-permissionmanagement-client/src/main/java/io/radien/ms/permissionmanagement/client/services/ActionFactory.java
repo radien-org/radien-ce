@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Utility class to create Action class instances
  * @author Newton Carvalho
- * Utilitary class to create Action class instances
  */
 public class ActionFactory {
 
@@ -90,8 +90,8 @@ public class ActionFactory {
 
     /**
      * Converts a Json Array into an Action List
-     * @param jsonArray
-     * @return
+     * @param jsonArray to be mapped and extracted the information
+     * @return a list of actions extracted from the json array
      */
     public static List<Action> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());

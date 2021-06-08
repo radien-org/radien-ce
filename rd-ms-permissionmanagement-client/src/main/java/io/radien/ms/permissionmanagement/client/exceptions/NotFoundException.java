@@ -16,16 +16,24 @@
 package io.radien.ms.permissionmanagement.client.exceptions;
 
 /**
+ * Exception to be throw when no record has been found
  * @author Newton Carvalho
  */
 public class NotFoundException extends Exception {
 
 	private static final long serialVersionUID = 4865108199427159028L;
 
-	public NotFoundException() {
+    /**
+     * Not Found exception empty constructor
+     */
+    public NotFoundException() {
         super();
     }
 
+    /**
+     * Not found exception constructor by a given message
+     * @param message to create the not found exception with
+     */
     public NotFoundException(String message) {
         super(message);
     }

@@ -44,14 +44,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Newton Carvalho
  * Implementation for Rest Service Client regarding Action domain object
+ * @author Newton Carvalho
  */
 @RequestScoped
 @Default
 public class ActionRESTServiceClient extends AuthorizationChecker implements ActionRESTServiceAccess {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4416175112376323622L;
 
 	private static final Logger log = LoggerFactory.getLogger(ActionRESTServiceClient.class);
 
@@ -276,6 +276,11 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
         }
     }
 
+    /**
+     * Mapper for a received input stream into a list of possible system action
+     * @param is to be mapped
+     * @return a list of system action information
+     */
     protected List<? extends SystemAction> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
@@ -283,6 +288,10 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
         }
     }
 
+    /**
+     * OAF action getter
+     * @return the active action oaf
+     */
     @Override
     public OAFAccess getOAF() {
         return oaf;

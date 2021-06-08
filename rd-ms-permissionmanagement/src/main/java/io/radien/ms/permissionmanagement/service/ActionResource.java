@@ -27,14 +27,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * Controller implementation responsible for deal with CRUD
- * operations requests (CRUD) regarding Action domain objectject
+ * operations requests (CRUD) regarding Action domain object
+ *
+ * @author Newton Carvalho
  */
 @Path("action")
 @RequestScoped
@@ -73,7 +74,7 @@ public class ActionResource implements ActionResourceClient {
 	 * Finds all actions that matches a name
 	 * @param name action name
 	 * @param isExact indicates if the match is for approximated value or not
-	 * @param isLogicalConjunction
+	 * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
 	 * @return In case of successful operation returns 200 (http status)
 	 * and the collection (filled or not).<br>
 	 * Otherwise, in case of operational error, returns 500

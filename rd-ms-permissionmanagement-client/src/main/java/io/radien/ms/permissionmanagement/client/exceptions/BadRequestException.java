@@ -16,16 +16,26 @@
 package io.radien.ms.permissionmanagement.client.exceptions;
 
 /**
+ * Permission specific Bad request exception
+ * this exception is to be thrown when the user requests something that will have wrong requested data
+ *
  * @author Newton Carvalho
  */
 public class BadRequestException extends RuntimeException {
 
     private static final long serialVersionUID = 5485575161734022041L;
 
-	public BadRequestException() {
+    /**
+     * Bad Request exception empty constructor
+     */
+    public BadRequestException() {
         super();
     }
 
+    /**
+     * Bad Request exception message constructor
+     * @param message to be added into the bad request exception
+     */
     public BadRequestException(String message) {
         super(message);
     }

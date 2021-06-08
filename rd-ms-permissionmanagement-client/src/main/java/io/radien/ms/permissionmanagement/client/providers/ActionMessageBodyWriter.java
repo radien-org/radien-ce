@@ -33,39 +33,52 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author Newton Carvalho
- *
  * Converts a Action Pojo object into a Json Stream
+ * @author Newton Carvalho
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class ActionMessageBodyWriter implements MessageBodyWriter<Action> {
 
+	/**
+	 * Validates if the given message/object is writable or not
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if the given object is a Action object
+	 */
 	@Override
 	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return type.equals(Action.class);
 	}
 
-	/*
-    Deprecated in JAX RS 2.0
-     */
+	/**
+	 * Calculates the size of the Action message size
+	 * @param model object to be count the size
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return the object size length
+	 */
 	@Override
 	public long getSize(Action model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return 0;
 	}
 
 	/**
-	 * Marshal Action to OutputStream
+	 * Will call the Action mapper to convert the given object into a json
 	 *
-	 * @param model
-	 * @param type
-	 * @param genericType
-	 * @param annotations
-	 * @param mediaType
-	 * @param httpHeaders
-	 * @param entityStream
-	 * @throws IOException
-	 * @throws WebApplicationException
+	 * @param model action object to be converted
+	 * @param type of the object
+	 * @param genericType generic type of the received object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
 	 */
 	@Override
 	public void writeTo(Action model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
