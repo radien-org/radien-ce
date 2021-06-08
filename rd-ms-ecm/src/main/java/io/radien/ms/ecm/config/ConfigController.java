@@ -15,7 +15,10 @@
  */
 package io.radien.ms.ecm.config;
 
-import io.radien.api.*;
+import io.radien.api.OAFAccess;
+import io.radien.api.Event;
+import io.radien.api.SystemProperties;
+import io.radien.api.OAFProperties;
 import io.radien.api.kernel.messages.SystemMessages;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -28,6 +31,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Controller is responsible for handling users actions on the page. It also manages the flow between pages.
+ * Controller responds to the user actions and directs application flow.
+ * The controller will request from HTTP get and HTTP post.
+ */
 @ApplicationScoped
 public class ConfigController implements OAFAccess {
 
@@ -41,21 +49,38 @@ public class ConfigController implements OAFAccess {
         config = ConfigProvider.getConfig();
     }
 
+    /**
+     * OAF Configuration controller version getter method
+     * @return the oaf configuration controller version
+     */
     @Override
     public String getVersion() {
         return null;
     }
 
+    /**
+     * OAF Configuration controller system administrator user id getter
+     * @return the oaf configuration controller system administrator id
+     */
     @Override
     public Long getSystemAdminUserId() {
         return 0L;
     }
 
+    /**
+     * OAF Configuration controller event launcher
+     * @param event to be launch
+     */
     @Override
     public void fireEvent(Event event) {
 
     }
 
+    /**
+     * OAF Configuration controller locale finder to get the correct language
+     * @param language to be requested
+     * @return the locale of the language of the oaf configuration controller
+     */
     @Override
     public Locale findLocale(String language) {
         try {
@@ -71,6 +96,11 @@ public class ConfigController implements OAFAccess {
         return getDefaultLocale();
     }
 
+    /**
+     * OAF Configuration controller property getter
+     * @param cfg system properties configuration
+     * @return the system properties property key value as a string
+     */
     @Override
     public String getProperty(SystemProperties cfg) {
         return config.getValue(cfg.propKey(),String.class);
@@ -78,9 +108,7 @@ public class ConfigController implements OAFAccess {
 
     /**
      * Returns this application {@link ResourceBundle} object based on its name
-     *
-     * @param bundleName
-     *                       the name of the resourceBundle to return
+     * @param bundleName the name of the resourceBundle to return
      * @return {@link ResourceBundle} identified by the bundleName
      */
     @Override
@@ -90,12 +118,19 @@ public class ConfigController implements OAFAccess {
         return ResourceBundle.getBundle(bundleName, locale);
     }
 
+    /**
+     * Method to return a complete list of all the supported locales for this specific oaf configuration controller
+     * @return a map of supported and possible locales with language tag and locale
+     */
     @Override
     public Map<String, Locale> getSupportedLocales() {
         loadSupportedLocales();
         return supportedLocales;
     }
 
+    /**
+     * OAF Configuration controller method to load all the supported locales
+     */
     private void loadSupportedLocales() {
         try {
             for (String languageTag : getProperty(OAFProperties.SYS_SUPPORTED_LOCALES).split(",")) {
@@ -113,6 +148,11 @@ public class ConfigController implements OAFAccess {
         }
     }
 
+    /**
+     * OAF Configuration controller default locale getter if no default has been found then it will be returned
+     * locale for language english
+     * @return the default locale for the oaf configuration controller
+     */
     @Override
     public Locale getDefaultLocale() {
         try {

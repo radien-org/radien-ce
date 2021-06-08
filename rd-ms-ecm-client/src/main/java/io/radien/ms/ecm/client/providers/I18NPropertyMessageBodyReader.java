@@ -24,28 +24,48 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-
 /**
- * @author Marco Weiland
+ * I18N Property Message reader constructor class validator and converter for received messages
  *
+ * @author Marco Weiland
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class I18NPropertyMessageBodyReader implements MessageBodyReader<I18NProperty> {
-	 @Override
-	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(I18NProperty.class);
-	    }
 
-	    @Override
-	    public I18NProperty readFrom(Class<I18NProperty> type, Type genericType, Annotation[] annotations,
-									 MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-				throws IOException, WebApplicationException {
-	        return I18NPropertyMapper.map(entityStream);
-	    }
+	/**
+	 * Validator of the I18N property message body is readable
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if the given object is a I18N property object
+	 */
+	@Override
+	 public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+	 	return type.equals(I18NProperty.class);
+	 }
+
+	/**
+	 * Will call the I18N Property mapper to convert the given object
+	 * @param type of the object
+	 * @param genericType generic type of the received object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @return a I18N that has been converted from the entity stream
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
+	 */
+	 @Override
+	 public I18NProperty readFrom(Class<I18NProperty> type, Type genericType, Annotation[] annotations,
+								  MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+			 throws WebApplicationException {
+	 	return I18NPropertyMapper.map(entityStream);
+	 }
 }

@@ -19,6 +19,8 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
+ * ECM Application class object
+ *
  * @author Marco Weiland
  * @author andresousa
  */

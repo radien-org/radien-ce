@@ -23,12 +23,14 @@ import org.jnosql.artemis.Embeddable;
 import javax.validation.constraints.NotNull;
 
 /**
+ * The translation entity class object composed by a language and a description
+ *
  * @author andresousa
  */
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Embeddable
 public class TranslationEntity {
+
     @JsonProperty("language")
     @NotNull
     @Column
@@ -38,22 +40,44 @@ public class TranslationEntity {
     @Column
     private String description;
 
+    /**
+     * Translation entity language getter method
+     * @return the translation entity language
+     */
     public String getLanguage() {
         return language;
     }
 
+    /**
+     * Translation entity language setter method
+     * @param language to be set
+     */
     public void setLanguage(String language) {
         this.language = language;
     }
 
+    /**
+     * Translation entity description getter
+     * @return the translation entity description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Translation entity description setter
+     * @param description to be set
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     * The equals method implements an equivalence relation on non-null object references:
+     * @param o the reference object with which to compare.
+     * @return if this object is the same as the obj argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
