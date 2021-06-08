@@ -25,6 +25,8 @@ import java.io.Serializable;
  * TokenPlaceHolder implementation to be used by any
  * service/module that needs to propagate the access token to consume
  * secured services
+ *
+ * @author Newton Carvalho
  */
 @SessionScoped
 @Default
@@ -33,20 +35,36 @@ public class TokenHolder implements TokensPlaceHolder, Serializable {
     private String accessToken;
     private String refreshToken;
 
+    /**
+     * Token place holder access token getter
+     * @return token place holder access token
+     */
     @Override
     public String getAccessToken() {
         return accessToken;
     }
 
+    /**
+     * Token place holder access token setter
+     * @param accessToken to be set
+     */
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
+    /**
+     * Token place holder refresh token getter
+     * @return token place holder refresh token
+     */
     @Override
     public String getRefreshToken() {
         return refreshToken;
     }
 
+    /**
+     * Token place holder refresh token setter
+     * @param refreshToken to be set
+     */
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }

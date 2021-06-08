@@ -18,7 +18,6 @@ package io.radien.ms.openid.security;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 
-import javax.inject.Inject;
 import javax.json.JsonObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,9 +32,42 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 
+/**
+ * Callback servlet constructor class
+ *
+ * @author Nuno Santana
+ */
 @WebServlet(urlPatterns = "/callback")
 public class CallbackServlet extends AbstractServlet {
 
+    /**
+     * Called by the server (via the service method) to allow a servlet to handle a GET request.
+     * Overriding this method to support a GET request also automatically supports an HTTP HEAD request. A HEAD request
+     * is a GET request that returns no body in the response, only the request header fields.
+     * When overriding this method, read the request data, write the response headers, get the response's writer or
+     * output stream object, and finally, write the response data. It's best to include content type and encoding. When
+     * using a PrintWriter object to return the response, set the content type before accessing the
+     * PrintWriter object.
+     * The servlet container must write the headers before committing the response, because in HTTP the headers must be
+     * sent before the response body.
+     * Where possible, set the Content-Length header (with the {@link javax.servlet.ServletResponse#setContentLength}
+     * method), to allow the servlet container to use a persistent connection to return its response to the client,
+     * improving performance. The content length is automatically set if the entire response fits inside the response
+     * buffer.
+     * When using HTTP 1.1 chunked encoding (which means that the response has a Transfer-Encoding header), do not set
+     * the Content-Length header.
+     * The GET method should be safe, that is, without any side effects for which users are held responsible. For
+     * example, most form queries have no side effects. If a client request is intended to change stored data, the
+     * request should use some other HTTP method.
+     * The GET method should also be idempotent, meaning that it can be safely repeated. Sometimes making a method safe
+     * also makes it idempotent. For example, repeating queries is both safe and idempotent, but buying a product online
+     * or modifying data is neither safe nor idempotent.
+     * If the request is incorrectly formatted, doGet returns an HTTP "Bad Request" message.
+     * @param request  an {@link HttpServletRequest} object that contains the request the client has made of the servlet
+     * @param response an {@link HttpServletResponse} object that contains the response the servlet sends to the client
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     * @throws ServletException if the request for the GET could not be handled
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Config config = ConfigProvider.getConfig();
