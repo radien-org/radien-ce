@@ -133,6 +133,23 @@ public class FactoryUtilServiceTest extends TestCase {
     }
 
     @Test
+    public void testAddValueDouble() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        Double value= 2D;
+        Double secondValue = 3D;
+        FactoryUtilService.addValueDouble(builder, "createdUser", value);
+        FactoryUtilService.addValueDouble(builder, "updatedUser", secondValue);
+
+        JsonObject json = builder.build();
+
+        Double createdUser = FactoryUtilService.getDoubleFromJson("createdUser", json);
+        Double updatedUser = FactoryUtilService.getDoubleFromJson("updatedUser", json);
+
+        assertEquals(value, createdUser);
+        assertEquals(secondValue, updatedUser);
+    }
+
+    @Test
     public void testAddValueBoolean() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
