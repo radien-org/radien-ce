@@ -28,7 +28,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * This interface is intended for generating or propagating HTTP headers. It is
- * invoked by the MP Rest Client implementation before invoking any entity
+ * invoked by the MS Rest Client implementation before invoking any entity
  * providers on the outbound processing chain. It contains a single method,
  * update which takes parameters of headers passed in from the
  * incoming JAX-RS request (if applicable, if not, this will be an empty map)
