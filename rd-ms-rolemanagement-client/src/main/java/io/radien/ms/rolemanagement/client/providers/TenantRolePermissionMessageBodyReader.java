@@ -42,8 +42,8 @@ public class TenantRolePermissionMessageBodyReader implements MessageBodyReader<
 	 * Checks if the given JSON object can be read into a Tenant Role Permission one
 	 * @param type of the received object
 	 * @param genericType for multiple conversion purposes
-	 * @param annotations
-	 * @param mediaType
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
 	 * @return true in case received JSON can be read into a tenant role permission
 	 */
 	@Override
@@ -55,10 +55,10 @@ public class TenantRolePermissionMessageBodyReader implements MessageBodyReader<
 	 * Converts the given JSON object into a tenant role permission one
 	 * @param type for the final object (tenant role permission)
 	 * @param genericType for multiple conversion purposes
-	 * @param annotations
-	 * @param mediaType
-	 * @param httpHeaders
-	 * @param entityStream
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
 	 * @return a System Linked Authorization that has been gather the information from the given JSON
 	 * @throws WebApplicationException in case of any issue while parsing the JSON fields into system linked
 	 * authorization ones
