@@ -16,7 +16,6 @@
 
 package io.radien.webapp.tenantrole;
 
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
@@ -70,12 +69,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
      * Makes the LazyDataModel perform the onload event/method
      */
     public void onload() {
-        try {
-            init();
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"),
-                    JSFUtil.getMessage("tenant_role_associations"));
-        }
+        init();
     }
 
     /**

@@ -18,15 +18,17 @@ package io.radien.webapp.tenantrole;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.webapp.JSFUtil;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,7 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
     private TenantRoleRESTServiceAccess service;
 
     private List<? extends SystemTenantRole> datasource;
+    private String msgError = null;
 
     /**
      * Main constructor
@@ -57,6 +60,9 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
     public LazyTenantRoleAssociationDataModel(TenantRoleRESTServiceAccess service) {
         this.service=service;
         this.datasource = new ArrayList<>();
+        this.msgError = MessageFormat.format(
+                JSFUtil.getMessage("rd_retrieve_error"),
+                JSFUtil.getMessage("tenant_role_associations"));
     }
 
     /**
@@ -101,11 +107,16 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
                     service.getAll((offset/pageSize)+1, pageSize);
             datasource = pagedInformation.getResults();
             rowCount = (long)pagedInformation.getTotalResults();
-        } catch (Exception e){
-            log.error("Error trying to load associations", e);
+        } catch (SystemException s){
+            log.error("Error trying to load associations", s);
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error retrieving associations",
-                            e.getMessage()));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msgError,
+                            s.getMessage()));
+        } catch (Exception e){
+            log.error("Unknown error loading associations", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msgError,
+                            JSFUtil.getMessage("contactSystemAdministrator")));
         }
         setRowCount(Math.toIntExact(rowCount));
         return datasource.stream().collect(Collectors.toList());
