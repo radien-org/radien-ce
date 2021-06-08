@@ -24,7 +24,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
 
-
 /**
  * Tenant Role association with JPA descriptors
  * @author Newton Carvalho
@@ -33,12 +32,23 @@ import javax.persistence.Table;
 @Table(name = "TNT_ROL01", uniqueConstraints = @UniqueConstraint(columnNames = {"tenantId, roleId"}))
 public class TenantRole extends io.radien.ms.rolemanagement.client.entities.TenantRole {
 
+	/**
+	 * Tenant Role entity empty constructor
+	 */
 	public TenantRole(){ }
 
+	/**
+	 * Tenant Role entity constructor
+	 * @param tenantRole {@link io.radien.ms.rolemanagement.client.entities.TenantRole} to be added/created
+	 */
 	public TenantRole(io.radien.ms.rolemanagement.client.entities.TenantRole tenantRole){
 		super(tenantRole);
 	}
 
+	/**
+	 * Tenant Role id table field
+	 * @return the tenant role id
+	 */
 	@Id
 	@TableGenerator(name = "GEN_SEQ_TNT_ROL01", allocationSize = 100)
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT_ROL01")
@@ -47,12 +57,20 @@ public class TenantRole extends io.radien.ms.rolemanagement.client.entities.Tena
 		return super.getId();
 	}
 
+	/**
+	 * Tenant Role tenant id table field
+	 * @return tenant role tenant id
+	 */
 	@Column
 	@Override
 	public Long getTenantId() {
 		return super.getTenantId();
 	}
 
+	/**
+	 * Tenant Role role id table field
+	 * @return tenant role role id
+	 */
 	@Column
 	@Override
 	public Long getRoleId() {

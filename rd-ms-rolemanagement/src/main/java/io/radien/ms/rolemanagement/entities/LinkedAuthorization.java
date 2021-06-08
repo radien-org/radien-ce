@@ -15,7 +15,14 @@
  */
 package io.radien.ms.rolemanagement.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Id;
+import javax.persistence.TableGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
 
 /**
  * Linked Authorization between Tenants, Roles and Permissions Entity
@@ -28,12 +35,23 @@ public class LinkedAuthorization extends io.radien.ms.rolemanagement.client.enti
 
     private static final long serialVersionUID = 3141678141603574471L;
 
+    /**
+     * Linked Authorization empty constructor
+     */
     public LinkedAuthorization(){ }
 
+    /**
+     * Linked authorization constructor
+     * @param tenancyCtrl {@link io.radien.ms.rolemanagement.client.entities.LinkedAuthorization} to be created
+     */
     public LinkedAuthorization(io.radien.ms.rolemanagement.client.entities.LinkedAuthorization tenancyCtrl){
         super(tenancyCtrl);
     }
 
+    /**
+     * LInked authorization table id
+     * @return the linked authorization id
+     */
     @Id
     @TableGenerator(name = "GEN_SEQ_LINKAUTH01", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_LINKAUTH01")
@@ -42,24 +60,40 @@ public class LinkedAuthorization extends io.radien.ms.rolemanagement.client.enti
         return super.getId();
     }
 
+    /**
+     * Linked authorization permission id table field
+     * @return the linked authorization permission id
+     */
     @Column
     @Override
     public Long getPermissionId() {
         return super.getPermissionId();
     }
 
+    /**
+     * Linked authorization tenant id table field
+     * @return the linked authorization tenant id
+     */
     @Column
     @Override
     public Long getTenantId() {
         return super.getTenantId();
     }
 
+    /**
+     * Linked authorization role id table field
+     * @return the linked authorization role id
+     */
     @Column
     @Override
     public Long getRoleId() {
         return super.getRoleId();
     }
 
+    /**
+     * Linked authorization user id table field
+     * @return the linked authorization user id
+     */
     @Column
     @Override
     public Long getUserId() { return super.getUserId(); }
