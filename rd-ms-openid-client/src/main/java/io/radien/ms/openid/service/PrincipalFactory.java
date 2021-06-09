@@ -23,6 +23,7 @@ import java.util.Date;
 
 /**
  * An utilitarian class to create instance of Principal class
+ * @author Newton Carvalho
  */
 public class PrincipalFactory {
 
