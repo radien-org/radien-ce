@@ -558,7 +558,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getSpecific(tenantId, roleId, isLogicalConjunction);
-            return (List) TenantRoleModelMapper.mapList((InputStream) response.getEntity());
+            return TenantRoleModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
