@@ -33,9 +33,10 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * Controller implementation responsible for deal with CRUD
  * operations requests (CRUD) regarding Permission domain object
+ *
+ * @author Newton Carvalho
  */
 @RequestScoped
 public class PermissionResource implements PermissionResourceClient {
@@ -76,9 +77,8 @@ public class PermissionResource implements PermissionResourceClient {
 	 * Finds all permissions that matches a name
 	 * @param name permission name
 	 * @param isExact indicates if the match is for approximated value or not
-	 * @param isLogicalConjunction
-	 * @return In case of successful operation returns 200 (http status)
-	 * and the collection (filled or not).<br>
+	 * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+	 * @return In case of successful operation returns 200 (http status) and the collection (filled or not).
 	 * Otherwise, in case of operational error, returns 500
 	 */
 	public Response getPermissions(String name,
@@ -222,7 +222,7 @@ public class PermissionResource implements PermissionResourceClient {
 
 	/**
 	 * Returns a Bad Request response when some mandatory parameter is not present
-	 * @param parameterName
+	 * @param parameterName value that will indicate which field(s) have not been informed
 	 * @return code 400 message describing a not informed parameter
 	 */
 	private Response getNotInformedParametersResponse(String parameterName) {
@@ -234,13 +234,10 @@ public class PermissionResource implements PermissionResourceClient {
 	 * Validates if Permission exists for a referred Id (or alternatively taking in account name)
 	 * @param id Identifier to guide the search be searched (Primary parameter)
 	 * @name name Permission name, an alternative parameter to be used (only if Id is omitted)
-	 * @return
-	 * <ul>
-	 *     <li>200: If Permission exists</li>
-	 *     <li>404: If Permission does not exist</li>
-	 *     <li>400 (Bad Request): None expected parameter informed</li>
-	 *     <li>500: In case of any other issue</li>
-	 * </ul>
+	 * @return 200: If Permission exists
+	 *     	   404: If Permission does not exist
+	 *         400: (Bad Request): None expected parameter informed
+	 *         500: In case of any other issue
 	 */
 	@Override
 	public Response exists(Long id, String name) {

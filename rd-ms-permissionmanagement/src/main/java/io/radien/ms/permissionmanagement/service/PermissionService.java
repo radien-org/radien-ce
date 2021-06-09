@@ -42,6 +42,9 @@ import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.model.Permission;
 
 /**
+ * Permission DB connection requests
+ * All the requests made between the permission entity and the database will be performed in here
+ *
  * @author Newton Carvalho
  */
 @Stateless
@@ -50,6 +53,9 @@ public class PermissionService implements PermissionServiceAccess {
     @Inject
     private EntityManagerHolder holder;
 
+    /**
+     * Permission service empty constructor
+     */
     public PermissionService() {
         //empty
     }
@@ -251,6 +257,14 @@ public class PermissionService implements PermissionServiceAccess {
         return q.getResultList();
     }
 
+    /**
+     * Will filter all the fields given in the criteria builder and in the filter and create the
+     * where clause for the query
+     * @param filter fields to be searched for
+     * @param criteriaBuilder database query builder
+     * @param permissionRoot database table to search the information
+     * @return a constructed predicate with the fields needed to be search
+     */
     private Predicate getFilteredPredicate(SystemPermissionSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder, Root<Permission> permissionRoot) {
         Predicate global;
@@ -297,6 +311,10 @@ public class PermissionService implements PermissionServiceAccess {
         return global;
     }
 
+    /**
+     * Entity manager getter
+     * @return the correct requested entity manager
+     */
     protected EntityManager getEntityManager() {
         return this.holder.getEntityManager();
     }
@@ -348,6 +366,12 @@ public class PermissionService implements PermissionServiceAccess {
                 getResultStream().findFirst().orElse(null);
     }
 
+    /**
+     * Validator to see if given and request resource and action do exist and belong into one given permission
+     * @param p system permission previously constructed to be gathered the action and the resource
+     * @param em entity management table to be validated
+     * @return true if resource and action do exist
+     */
     protected boolean existsForResourceAndAction(SystemPermission p, EntityManager em) {
         if (p.getResourceId() == null || p.getActionId() == null) {
             return false;

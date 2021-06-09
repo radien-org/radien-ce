@@ -30,15 +30,15 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * This class maps the Permission pojos into Json objects an vice-versa
+ * @author Newton Carvalho
  */
 public class PermissionModelMapper {
 
     /**
      * Maps one Permission into a Json Object
-     * @param model
-     * @return
+     * @param model permission object to be converted
+     * @return json object with the given permission information
      */
     public static JsonObject map(Permission model) {
         return PermissionFactory.convertToJsonObject(model);
@@ -46,8 +46,8 @@ public class PermissionModelMapper {
 
     /**
      * Maps a Permission Collection into a Json Array
-     * @param models
-     * @return
+     * @param models list of permissions to be converted
+     * @return a json array with all the given list information
      */
     public static JsonArray map(List<Permission> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
@@ -60,8 +60,8 @@ public class PermissionModelMapper {
 
     /**
      * Maps a Json stream into a Permission
-     * @param is
-     * @return
+     * @param is to be mapped
+     * @return the converted and mapped permission
      */
     public static Permission map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
@@ -72,8 +72,8 @@ public class PermissionModelMapper {
 
     /**
      * Obtains a Permission Page from a Json input stream
-     * @param is
-     * @return
+     * @param is to be mapped
+     * @return a page of permissions mapped from the input stream
      */
     public static Page<Permission> mapToPage(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
