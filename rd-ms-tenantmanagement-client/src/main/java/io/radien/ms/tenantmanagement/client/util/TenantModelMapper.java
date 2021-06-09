@@ -28,16 +28,25 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
+ * Mapper from a given information into a JSON or a contract
  * @author Santana
- *
  */
 public class TenantModelMapper {
 
-
+    /**
+     * Maps into a Json Object a Tenant
+     * @param model tenant that has the information to be converted
+     * @return a json object created based the tenant
+     */
     public static JsonObject map(Tenant model) {
         return TenantFactory.convertToJsonObject(model);
     }
 
+    /**
+     * Creates a list of tenants based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a list of tenant object based in the received information
+     */
     public static List<? extends Tenant> mapList(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
@@ -45,6 +54,11 @@ public class TenantModelMapper {
         }
     }
 
+    /**
+     * Creates a tenant based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a tenant object based in the received information
+     */
     public static Tenant map(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             return TenantFactory.convert(jsonReader.readObject());
@@ -52,9 +66,9 @@ public class TenantModelMapper {
     }
 
     /**
-     * Obtains a Permission Page from a Json input stream
-     * @param is
-     * @return
+     * Creates a tenants based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a page of tenants object based in the received information
      */
     public static Page<Tenant> mapToPage(InputStream is) {
         Page<Tenant> page = null;

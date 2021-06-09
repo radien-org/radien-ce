@@ -38,13 +38,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Tenant requests to be performed into the DB and actions to take place
  * @author Nuno Santana
  */
-
 @Stateful
 public class TenantService implements TenantServiceAccess {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5367539772479734994L;
 
     @Inject
     private EntityManagerHolder emh;
@@ -425,6 +425,12 @@ public class TenantService implements TenantServiceAccess {
         return q.getSingleResult();
     }
 
+    /**
+     * Method to get all the requested tenant children tenants
+     * @param tenantId of the parent tenant
+     * @param em already created entity manager
+     * @return a list of all the tenant children ids
+     */
     protected List<Long> getChildren(Long tenantId, EntityManager em) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -434,6 +440,13 @@ public class TenantService implements TenantServiceAccess {
         TypedQuery<Long> q= em.createQuery(criteriaQuery);
         return q.getResultList();
     }
+
+    /**
+     * Requests the DB to delete all the children tenants of the requested tenant
+     * @param tenantId to be deleted and all his children
+     * @param entityManager already created entity manager
+     * @return true if deletion has been a success or false if there was an issue
+     */
     protected boolean deleteChildren(Long tenantId, EntityManager entityManager) {
         List<Long> children = getChildren(tenantId, entityManager);
 
@@ -445,6 +458,13 @@ public class TenantService implements TenantServiceAccess {
 
         return delete(tenantId, entityManager);
     }
+
+    /**
+     * Method to delete from the db a specific tenant
+     * @param tenantId to be deleted
+     * @param entityManager already created entity manager
+     * @return true if deletion has been a success or false if there was an issue
+     */
     protected boolean delete(Long tenantId, EntityManager entityManager) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<Tenant> criteriaDelete = cb.createCriteriaDelete(Tenant.class);
@@ -453,6 +473,12 @@ public class TenantService implements TenantServiceAccess {
         int ret = entityManager.createQuery(criteriaDelete).executeUpdate();
         return ret > 0;
     }
+
+    /**
+     * Requests the DB to delete all the children tenants of the requested tenant
+     * @param id to be deleted and all his children
+     * @return true if deletion has been a success or false if there was an issue
+     */
     public boolean deleteTenantHierarchy(Long id) {
         EntityManager em = emh.getEm();
         return deleteChildren(id, em);

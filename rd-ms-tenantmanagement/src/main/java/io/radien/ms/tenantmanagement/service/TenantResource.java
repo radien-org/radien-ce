@@ -30,11 +30,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
+ * Tenant rest requests only regarding the tenants and his tables
  * @author Santana
  */
 @RequestScoped
@@ -103,6 +103,11 @@ public class TenantResource implements TenantResourceClient {
 		}
 	}
 
+	/**
+	 * Requests to a tenant be deleted by given his id
+	 * @param id of the tenant to be deleted
+	 * @return a response with true or false based on the success or failure of the deletion
+	 */
 	@Override
 	public Response delete(long id) {
 		try {
@@ -112,6 +117,11 @@ public class TenantResource implements TenantResourceClient {
 		}
 	}
 
+	/**
+	 * Request to delete a tenant and all his children
+	 * @param id of the tenant to be deleted
+	 * @return a response with true or false based on the success or failure of the deletion
+	 */
 	@Override
 	public Response deleteTenantHierarchy(long id) {
 		try {
@@ -121,6 +131,11 @@ public class TenantResource implements TenantResourceClient {
 		}
 	}
 
+	/**
+	 * Method to request a creation of a tenant
+	 * @param tenant information to be created
+	 * @return a response with true or false based on the success or failure of the creation
+	 */
 	@Override
 	public Response create(Tenant tenant) {
 		try {
@@ -133,6 +148,12 @@ public class TenantResource implements TenantResourceClient {
 		}
 	}
 
+	/**
+	 * Method to update a requested tenant
+	 * @param id of the tenant to be updated
+ 	 * @param tenant information to be update
+	 * @return a response with true or false based on the success or failure of the update
+	 */
 	@Override
 	public Response update(long id, Tenant tenant) {
 		try {

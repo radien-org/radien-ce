@@ -22,6 +22,8 @@ import io.radien.api.model.tenant.SystemTenantType;
 import java.time.LocalDate;
 
 /**
+ * Tenant object constructor class and fields
+ *
  * @author Bruno Gama
  */
 public class Tenant extends AbstractModel implements SystemTenant {
