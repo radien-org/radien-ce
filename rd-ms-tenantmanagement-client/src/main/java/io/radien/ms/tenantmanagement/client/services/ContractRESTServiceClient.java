@@ -43,6 +43,8 @@ import io.radien.api.OAFProperties;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 
 /**
+ * Contract REST service requests to the client
+ *
  * @author Santana
  */
 @RequestScoped

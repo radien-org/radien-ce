@@ -15,6 +15,11 @@
  */
 package io.radien.ms.tenantmanagement.client.exceptions;
 
+/**
+ * Enumerate for the tenant error code messages
+ *
+ * @author Newton Carvalho
+ */
 public enum ErrorCodeMessage {
 
     /**
@@ -48,12 +53,23 @@ public enum ErrorCodeMessage {
     private final String key;
     private final String fallBackMessage;
 
+    /**
+     * Tenant error code messages constructor
+     *
+     * @param code of the error message
+     * @param key of the error message
+     * @param fallBackMessage of the error message
+     */
     ErrorCodeMessage(int code, String key, String fallBackMessage) {
         this.code = code;
         this.key=key;
         this.fallBackMessage = fallBackMessage;
     }
 
+    /**
+     * Converts to string the requested message without parameters
+     * @return a string error message
+     */
     @Override
     public String toString() {
         return "{" +
@@ -63,6 +79,10 @@ public enum ErrorCodeMessage {
                 "}";
     }
 
+    /**
+     * Converts to string the requested message with parameters
+     * @return a string error message with defined parameters
+     */
     public String toString(String... args) {
         String message = String.format(fallBackMessage, args);
         return "{" +

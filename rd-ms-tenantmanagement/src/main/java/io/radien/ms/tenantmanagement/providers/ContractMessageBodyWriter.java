@@ -31,43 +31,56 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author mawe
+ * Contract Message body Writer from object to JSON
  *
+ * @author mawe
  */
 public class ContractMessageBodyWriter implements MessageBodyWriter<Contract> {
 
+	/**
+	 * Validates if the given received type is a contract object
+	 * @param type of the received object
+	 * @param genericType for multiple conversions
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if received object is in fact a contract one
+	 */
 	 @Override
-	    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(Contract.class);
-	    }
+	 public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+	 	return type.equals(Contract.class);
+	 }
 
-	    /*
-	    Deprecated in JAX RS 2.0
-	     */
-	    @Override
-	    public long getSize(Contract model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return 0;
-	    }
+	/**
+	 * Gets the number of received objects and counts it
+	 * @param model received
+	 * @param type of the received object
+	 * @param genericType for multiple conversions
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return the number of received objects
+	 */
+	@Override
+	public long getSize(Contract model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return 0;
+	}
 
-	    /**
-	     * Marsahl Book to OutputStream
-	     *
-	     * @param model
-	     * @param type
-	     * @param genericType
-	     * @param annotations
-	     * @param mediaType
-	     * @param httpHeaders
-	     * @param entityStream
-	     * @throws IOException
-	     * @throws WebApplicationException
-	     */
-	    @Override
-	    public void writeTo(Contract model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-	        JsonWriter jsonWriter = Json.createWriter(entityStream);
-	        JsonObject jsonObject = ContractModelMapper.map(model);
-	        jsonWriter.writeObject(jsonObject);
-	        jsonWriter.close();
-	    }
-
+	/**
+	 * Writes the received contract object into a json message
+	 * @param model received to be written
+	 * @param type of the received object
+	 * @param genericType for multiple conversions
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
+	 */
+	@Override
+	public void writeTo(Contract model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+		JsonWriter jsonWriter = Json.createWriter(entityStream);
+		JsonObject jsonObject = ContractModelMapper.map(model);
+		jsonWriter.writeObject(jsonObject);
+		jsonWriter.close();
+	}
 }

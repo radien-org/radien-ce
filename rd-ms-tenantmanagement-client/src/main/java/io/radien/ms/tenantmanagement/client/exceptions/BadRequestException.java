@@ -16,14 +16,24 @@
 package io.radien.ms.tenantmanagement.client.exceptions;
 
 /**
+ * Tenant and contract specific Bad request exception
+ * this exception is to be thrown when the user requests something that will have wrong requested data
+ *
  * @author Bruno Gama
  */
 public class BadRequestException extends RuntimeException {
 
+    /**
+     * Bad Request exception empty constructor
+     */
     public BadRequestException() {
         super();
     }
 
+    /**
+     * Bad Request exception message constructor
+     * @param message to be added into the bad request exception
+     */
     public BadRequestException(String message) {
         super(message);
     }

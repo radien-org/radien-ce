@@ -28,6 +28,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
+ * Client Service utility to retrieve and create the client builders
+ *
  * @author Bruno Gama
  */
 @RequestScoped
@@ -50,6 +52,12 @@ public class ClientServiceUtil {
                 .build(ContractResourceClient.class);
     }
 
+    /**
+     * Gets a Rest Client for Tenants
+     * @param urlStr url of rest endpoint
+     * @return a client from the contract
+     * @throws MalformedURLException in case of any url issue
+     */
     public TenantResourceClient getTenantResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         return RestClientBuilder.
