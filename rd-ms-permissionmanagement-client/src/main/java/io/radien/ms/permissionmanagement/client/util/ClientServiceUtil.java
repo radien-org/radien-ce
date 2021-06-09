@@ -30,8 +30,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * @author Bruno Gama
  * Utility class that produces Rest Clients for Permission and Action
+ * @author Bruno Gama
  */
 @RequestScoped
 public class ClientServiceUtil {
@@ -55,8 +55,8 @@ public class ClientServiceUtil {
     /**
      * Gets a Rest Client for Action
      * @param urlStr url of rest endpoint
-     * @return
-     * @throws MalformedURLException
+     * @return the client form for the action
+     * @throws MalformedURLException in case of any url issue
      */
     public ActionResourceClient getActionResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
@@ -71,8 +71,8 @@ public class ClientServiceUtil {
     /**
      * Gets a Rest Client for Resource
      * @param urlStr url of rest endpoint
-     * @return
-     * @throws MalformedURLException
+     * @return the client form for the resource
+     * @throws MalformedURLException in case of any url issue
      */
     public ResourceResourceClient getResourceResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);

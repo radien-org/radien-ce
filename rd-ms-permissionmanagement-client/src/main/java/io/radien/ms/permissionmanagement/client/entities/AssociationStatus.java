@@ -16,17 +16,27 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 /**
- * @author Newton Carvalho
  * This class describes the result of an association operation
+ *
+ * @author Newton Carvalho
  */
 public class AssociationStatus {
+
     private final boolean successful;
     private String message;
 
+    /**
+     * Association Status success constructor
+     */
     public AssociationStatus() {
         this(true, "");
     }
 
+    /**
+     * Association status constructor
+     * @param success value of success or failure of the association
+     * @param message in case of failure detailed message of the issue
+     */
     public AssociationStatus(boolean success, String message) {
         this.successful = success;
         this.message = message;
@@ -34,7 +44,7 @@ public class AssociationStatus {
 
     /**
      * Indicates if the operation was successful or not
-     * @return
+     * @return true if operation was a success
      */
     public boolean isOK() {
         return successful;
@@ -42,7 +52,7 @@ public class AssociationStatus {
 
     /**
      * Describes the issue occurred during the operation
-     * @return
+     * @return the detailed issue message
      */
     public String getMessage() {
         return message;

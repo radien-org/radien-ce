@@ -16,16 +16,27 @@
 package io.radien.ms.permissionmanagement.client.exceptions;
 
 /**
+ * Permission specific Internal server error exception
+ * this exception is to be thrown when the user requests something and the server was not able to
+ * process it
+ *
  * @author Newton Carvalho
  */
 public class InternalServerErrorException extends Exception {
 
 	private static final long serialVersionUID = 858909633422934639L;
 
-	public InternalServerErrorException() {
+    /**
+     * Internal server error exception empty constructor
+     */
+    public InternalServerErrorException() {
         super();
     }
 
+    /**
+     * Internal server error exception message constructor
+     * @param message to be added into the Internal server error exception
+     */
     public InternalServerErrorException(String message) {
         super(message);
     }

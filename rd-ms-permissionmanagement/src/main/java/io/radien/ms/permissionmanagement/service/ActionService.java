@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Action DB connection requests
+ * All the requests made between the action entity and the database will be performed in here
+ *
  * @author Newton Carvalho
  */
 @Stateless
@@ -244,6 +247,14 @@ public class ActionService implements ActionServiceAccess {
         return q.getResultList();
     }
 
+    /**
+     * Will filter all the fields given in the criteria builder and in the filter and create the
+     * where clause for the query
+     * @param filter fields to be searched for
+     * @param criteriaBuilder database query builder
+     * @param actionRoot database table to search the information
+     * @return a constructed predicate with the fields needed to be search
+     */
     private Predicate getFilteredPredicate(SystemActionSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder,
                                            Root<Action> actionRoot) {
@@ -267,6 +278,16 @@ public class ActionService implements ActionServiceAccess {
         return global;
     }
 
+    /**
+     * Method that will create in the database query where clause each and single search
+     * @param name of the field to be search in the query
+     * @param value of the field to be search or compared in the query
+     * @param filter complete requested filter for further validations
+     * @param criteriaBuilder database query builder
+     * @param actionRoot database table to search the information
+     * @param global complete where clause to be merged into the constructed information
+     * @return a constructed predicate with the fields needed to be search
+     */
     private Predicate getFieldPredicate(String name, Object value,
                                         SystemActionSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
@@ -288,7 +309,11 @@ public class ActionService implements ActionServiceAccess {
         }
         return global;
     }
-    
+
+    /**
+     * Entity manager getter
+     * @return the correct requested entity manager
+     */
     protected EntityManager getEntityManager() {
         return holder.getEntityManager();
     }

@@ -18,8 +18,9 @@ package io.radien.ms.permissionmanagement.client.entities;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 
 /**
- * @author Newton Carvalho
  * Encapsulates the parameters applied to search for actions
+ *
+ * @author Newton Carvalho
  */
 public class ActionSearchFilter implements SystemActionSearchFilter {
 
@@ -27,8 +28,17 @@ public class ActionSearchFilter implements SystemActionSearchFilter {
     private boolean isExact;
     private boolean isLogicConjunction;
 
+    /**
+     * Action search filter object empty constructor
+     */
     public ActionSearchFilter(){}
 
+    /**
+     * Action search filter object constructor
+     * @param name to be found
+     * @param isExact should the requested value be exact to the given one
+     * @param isLogicConjunction true in case search option is and conjunction
+     */
     public ActionSearchFilter(String name,
                               boolean isExact, boolean isLogicConjunction) {
         this.name = name;
@@ -36,27 +46,51 @@ public class ActionSearchFilter implements SystemActionSearchFilter {
         this.isLogicConjunction = isLogicConjunction;
     }
 
+    /**
+     * Action search filter name getter
+     * @return the action search filter name
+     */
     @Override
     public String getName() { return name;}
 
+    /**
+     * Action search filter name setter
+     * @param name to be set
+     */
     @Override
     public void setName(String name) { this.name = name; }
 
+    /**
+     * Action search filter is search to be exact getter
+     * @return the action search filter value that indicates if the search should be exact or not
+     */
     @Override
     public boolean isExact() {
         return isExact;
     }
 
+    /**
+     * Action search filter is search to be exact setter
+     * @param exact to be set
+     */
     @Override
     public void setExact(boolean exact) {
         isExact = exact;
     }
 
+    /**
+     * Action search filter is logical conjunction getter
+     * @return Action search filter is logical conjunction
+     */
     @Override
     public boolean isLogicConjunction() {
         return isLogicConjunction;
     }
 
+    /**
+     * Action search filter is logical conjunction setter
+     * @param logicConjunction the logical conjunction value if true is an and if false is a or
+     */
     @Override
     public void setLogicConjunction(boolean logicConjunction) {
         isLogicConjunction = logicConjunction;

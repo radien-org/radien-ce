@@ -27,15 +27,15 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * @author Newton Carvalho
  * This class maps the Action pojos into Json objects an vice-versa
+ * @author Newton Carvalho
  */
 public class ActionModelMapper {
 
     /**
      * Maps one Action into a Json Object
-     * @param model
-     * @return
+     * @param model to be converted into Json
+     * @return the converted json object
      */
     public static JsonObject map(Action model) {
         return ActionFactory.convertToJsonObject(model);
@@ -43,8 +43,8 @@ public class ActionModelMapper {
 
     /**
      * Maps an Action Collection into a Json Array
-     * @param models
-     * @return
+     * @param models list of actions to be converted and sent
+     * @return json array with all the given action information
      */
     public static JsonArray map(List<Action> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
@@ -57,8 +57,8 @@ public class ActionModelMapper {
 
     /**
      * Maps a Json stream into a Action
-     * @param is
-     * @return
+     * @param is input stream to be converted into action
+     * @return action object retrieved from the input stream
      */
     public static Action map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
