@@ -49,6 +49,7 @@ import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 public class ContractRESTServiceClient extends AuthorizationChecker implements ContractRESTServiceAccess {
     private static final long serialVersionUID = 7576466262027147334L;
 
+    private static final String UNABLE_TO_RECOVER_TOKEN = "Unable to recover expiredToken";
     @Inject
     private ClientServiceUtil clientServiceUtil;
 
@@ -71,7 +72,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             try{
                 return getContractByNameRequest(name);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -109,7 +110,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             try{
                 return createRequester(systemContract);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -129,8 +130,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             throw new SystemException(e.getMessage());
         }
 
-        try {
-            Response response = client.create((Contract) contract);
+        try (Response response = client.create((Contract) contract)){
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
@@ -156,7 +156,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             try{
                 return updateRequester(contractId, systemContract);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -205,7 +205,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             try{
                 return getAlRequester(pageNo, pageSize);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -241,7 +241,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             try{
                 return getTotalRecordsCountRequester();
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -279,7 +279,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             try{
                 return isContractExistentRequester(contractId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -320,7 +320,7 @@ public class ContractRESTServiceClient extends AuthorizationChecker implements C
             try{
                 return deleteRequest(contractId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
