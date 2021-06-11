@@ -54,6 +54,8 @@ import io.radien.ms.usermanagement.client.util.ListUserModelMapper;
 import static java.util.stream.Collectors.toList;
 
 /**
+ * User management service client for Rest Service Client regarding user domain object
+ *
  * @author Bruno Gama
  * @author Nuno Santana
  * @author Marco Weiland
@@ -62,7 +64,7 @@ import static java.util.stream.Collectors.toList;
 @Default
 @RegisterProvider(UserResponseExceptionMapper.class)
 public class UserRESTServiceClient extends AuthorizationChecker implements UserRESTServiceAccess {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8231324104338674760L;
 
     private static final Logger log = LoggerFactory.getLogger(UserRESTServiceClient.class);
 
@@ -136,6 +138,13 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    /**
+     * Method to retrieve a specific system user by a given user id
+     * @param id to be fetched and found
+     * @return a optional list and if filled with the required system user
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     * @throws TokenExpiredException in case of JWT token expiration
+     */
     private Optional<SystemUser> getSystemUser(Long id) throws SystemException, TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
@@ -150,6 +159,13 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    /**
+     * Method to retrieve a specific system user by a given user subject
+     * @param sub to be fetched and found
+     * @return a optional list and if filled with the required system user
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     * @throws TokenExpiredException in case of JWT token expiration
+     */
     private Optional<SystemUser> getSystemUser(String sub) throws SystemException, TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
@@ -167,6 +183,13 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    /**
+     * Method to retrieve a specific system user by a given user logon
+     * @param logon to be fetched and found
+     * @return a optional list and if filled with the required system user
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     * @throws TokenExpiredException in case of JWT token expiration
+     */
     private Optional<SystemUser> getSystemUserByLogon(String logon) throws SystemException, TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
@@ -184,10 +207,8 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
-
     /**
      * Creates given user
-     *
      * @param user to be created
      * @return true if user has been created with success or false if not
      * @throws MalformedURLException in case of URL specification
@@ -207,6 +228,14 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    /**
+     * Method to create a given user in the db
+     * @param user information/object to be created and added into the db
+     * @param skipKeycloak boolean to skip or not the user creation in the keycloak
+     * @return returns true if user has been created with success
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     * @throws TokenExpiredException in case of JWT token expiration
+     */
     private boolean createUser(SystemUser user, boolean skipKeycloak) throws TokenExpiredException, SystemException {
         UserResourceClient client;
         try {
@@ -230,6 +259,16 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    /**
+     * Returns all the existent System Users into a pagination format
+     * @param search in case there should only be returned a specific type of users
+     * @param pageNo where the user currently is
+     * @param pageSize number of records to be show by page
+     * @param sortBy any specific column
+     * @param isAscending true in case records should be filter in ascending order
+     * @return a page of all the requested system users
+     * @throws MalformedURLException in case of any issue while attempting communication with the client side
+     */
     @Override
     public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
         Page<User> pageUsers = null;
@@ -247,6 +286,16 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         return pageUsers;
     }
 
+    /**
+     * Returns all the existent System Users into a pagination format
+     * @param search in case there should only be returned a specific type of users
+     * @param pageNo where the user currently is
+     * @param pageSize number of records to be show by page
+     * @param sortBy any specific column
+     * @param isAscending true in case records should be filter in ascending order
+     * @return a page of all the requested system users
+     * @throws TokenExpiredException in case of any issue while attempting communication with the client side
+     */
     private Page<User> getPageUsers(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws TokenExpiredException {
         Page<User> page = new Page<>();
         try {
@@ -264,6 +313,11 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         return page;
     }
 
+    /**
+     * Send the update password email to the active/requested user
+     * @param id user id to be validated his information and the email sent
+     * @return true in case of success
+     */
     @Override
     public boolean sendUpdatePasswordEmail(long id) {
         boolean setAdminResetPassword = false;
@@ -280,6 +334,12 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         return setAdminResetPassword;
     }
 
+    /**
+     * Method for the request to update the user password and send it via email to him
+     * @param id of the user to update the password
+     * @return true in case of success
+     * @throws TokenExpiredException in case of any issue while attempting communication with the client side
+     */
     private boolean updatePasswordEmail(long id) throws TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
@@ -295,6 +355,11 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         return false;
     }
 
+    /**
+     * Deletes the requested user from the db
+     * @param id of the user to be deleted
+     * @return true in case of deletion
+     */
     @Override
     public boolean deleteUser(long id) {
         try {
@@ -310,6 +375,12 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    /**
+     * Deletes the requested user from the db
+     * @param id of the user to be deleted
+     * @return true in case of deletion
+     * @throws TokenExpiredException in case of any issue while attempting communication with the client side
+     */
     private boolean delUser(long id) throws TokenExpiredException {
         boolean deleteUser = false;
         try {
@@ -326,6 +397,11 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         return deleteUser;
     }
 
+    /**
+     * Updates the given user information, will validate by the given user id since that one cannot change
+     * @param user information to be updated
+     * @return true in case of success
+     */
     @Override
     public boolean updateUser(SystemUser user) {
         try {
@@ -341,6 +417,12 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         return false;
     }
 
+    /**
+     * Updates the given user information, will validate by the given user id since that one cannot change
+     * @param user information to be updated
+     * @return true in case of success
+     * @throws TokenExpiredException in case of any issue while attempting communication with the client side
+     */
     private boolean updateUser(User user) throws TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
@@ -383,7 +465,20 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
-
+    /**
+     * Adds multiple users into the DB.
+     *
+     * @param systemUsers of users to be added
+     * @return returns Optional containing the process summary.<br>
+     * There will be a summary when:<br>
+     * If ALL users were added without any issue (Http Status = 200)<br>
+     * If issues regarding some users were found (Http status = 202)<br>
+     * If none users were added, what means that all informed users contained issues (Http status = 400) <br>
+     * In case of 500 error the returned optional will be empty
+     * and the found issues as well.
+     * @throws TokenExpiredException in case of JWT token expiration
+     * @throws MalformedURLException in case of URL specification
+     */
     private Optional<BatchSummary> createBatch(List<SystemUser> systemUsers) throws MalformedURLException, TokenExpiredException {
         UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
         List<User> users = systemUsers.stream().map(User.class::cast).collect(toList());
@@ -401,22 +496,10 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
-    /*public boolean refreshToken() throws SystemException {
-        try {
-            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-
-            Response response = client.refreshToken(tokensPlaceHolder.getRefreshToken());
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                tokensPlaceHolder.setAccessToken(response.readEntity(String.class));
-                return true;
-            }
-            return false;
-
-        } catch (ExtensionException | ProcessingException | MalformedURLException | TokenExpiredException e) {
-            throw new SystemException(e);
-        }
-    }*/
-
+    /**
+     * Method to return the current oaf session
+     * @return the current oaf access
+     */
     @Override
     public OAFAccess getOAF() {
         return oaf;

@@ -43,8 +43,8 @@ public class SystemRoleMessageBodyReader implements MessageBodyReader<SystemRole
      * Checks if the given JSON object can be read into a Role one
      * @param type of the received object
      * @param genericType for multiple conversion purposes
-     * @param annotations
-     * @param mediaType
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
      * @return true in case received JSON can be read into a role
      */
     @Override
@@ -56,12 +56,13 @@ public class SystemRoleMessageBodyReader implements MessageBodyReader<SystemRole
      * Converts the given JSON object into a role one
      * @param type for the final object (role)
      * @param genericType for multiple conversion purposes
-     * @param annotations
-     * @param mediaType
-     * @param httpHeaders
-     * @param entityStream
-     * @return a System Role that has been gather the information from the given JSON
-     * @throws WebApplicationException in case of any issue while parsing the JSON fields into system role
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
+     * @param httpHeaders header of the http received
+     * @param entityStream received object
+     * @return a system role that has been converted from the entity stream
+     * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+     * implementation if a specific HTTP error response needs to be produced.
      */
     @Override
     public SystemRole readFrom(Class<SystemRole> type, Type genericType, Annotation[] annotations,

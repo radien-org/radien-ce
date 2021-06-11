@@ -15,7 +15,6 @@
  */
 package io.radien.ms.usermanagement.client.providers;
 
-
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
 
@@ -31,19 +30,41 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author mawe
+ * User Message reader constructor class validator and converter for received messages
  *
+ * @author mawe
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserMessageBodyReader implements MessageBodyReader<User> {
-	 	@Override
-	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	 		return type.equals(User.class);
-	    }
 
-	    @Override
-	    public User readFrom(Class<User> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-	 		return UserModelMapper.map(entityStream);
-	    }
+	/**
+	 * Validator of the user message body is readable
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if the given object is a user object
+	 */
+	@Override
+	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return type.equals(User.class);
+	}
+
+	/**
+	 * Will call the user model mapper to convert the given object
+	 * @param type of the object
+	 * @param genericType generic type of the received object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @return a user object that has been converted from the entity stream
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
+	 */
+	@Override
+	public User readFrom(Class<User> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+		return UserModelMapper.map(entityStream);
+	}
 }
