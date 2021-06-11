@@ -19,7 +19,7 @@ package io.radien.api.service.mail.model;
  * Mail type, depending on the subject, body, and request the email can be a confirmation, reset password,
  * change email and many others.
  *
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author Marco Weiland
  */
 public enum MailType {
 	CONFIRMATION, 

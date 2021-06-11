@@ -17,7 +17,7 @@ package io.radien.api.service.ecm.model;
 
 /**
  * System Content Version interface implementation class
- * @author André Sousa <a.sousa@radien.io>
+ * @author André Sousa
  */
 public interface SystemContentVersion extends Comparable<SystemContentVersion> {
 

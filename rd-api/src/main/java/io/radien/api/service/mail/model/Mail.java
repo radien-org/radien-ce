@@ -50,6 +50,7 @@ public interface Mail extends Serializable {
 
 	/**
 	 * Gets the Mail addresses to whom we are going to send the email (Multiple receiver)
+	 * @return a list of email addresses
 	 */
 	List<String> getTO();
 
@@ -61,6 +62,7 @@ public interface Mail extends Serializable {
 
 	/**
 	 * Gets the Mail addresses to whom we are going to send the email in CC (Multiple receiver)
+	 * @return a list of email addresses
 	 */
 	List<String> getCC();
 
@@ -72,6 +74,7 @@ public interface Mail extends Serializable {
 
 	/**
 	 * Gets the Mail addresses to whom we are going to send the email in BCC (Multiple receiver)
+	 * @return a list of email addresses
 	 */
 	List<String> getBCC();
 

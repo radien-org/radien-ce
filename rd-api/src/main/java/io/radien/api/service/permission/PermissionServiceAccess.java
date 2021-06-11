@@ -36,6 +36,7 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * Gets the System Permission searching by the PK (id).
      * @param permissionId to be searched.
      * @return the system Permission requested to be found.
+     * @throws PermissionNotFoundException in case the requested permission could not be found
      */
     public SystemPermission get(Long permissionId) throws PermissionNotFoundException;
 
@@ -80,6 +81,7 @@ public interface PermissionServiceAccess extends ServiceAccess {
     /**
      * Get PermissionsBy unique columns
      * @param filter entity with available filters to search Permission
+     * @return a list of found permissions that match the given search filter
      */
     public List<? extends SystemPermission> getPermissions(SystemPermissionSearchFilter filter);
 

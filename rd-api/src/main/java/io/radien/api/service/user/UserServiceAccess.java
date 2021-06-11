@@ -29,7 +29,7 @@ import io.radien.exception.UserNotFoundException;
 /**
  * User Service access interface class and all the possible requests
  *
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author Marco Weiland
  */
 public interface UserServiceAccess extends ServiceAccess {
 

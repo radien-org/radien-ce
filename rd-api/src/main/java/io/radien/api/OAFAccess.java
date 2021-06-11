@@ -41,12 +41,14 @@ public interface OAFAccess extends Serializable {
 
 	/**
 	 * OAF Access resource bundle getter
+	 * @param bundleName the name of the resourceBundle to return or be found
 	 * @return the oaf resource bundle
 	 */
 	public ResourceBundle getResourceBundle(String bundleName);
 
 	/**
 	 * OAF Access fire event caller
+	 * @param event to be launch
 	 */
 	public void fireEvent(Event event);
 
@@ -64,13 +66,15 @@ public interface OAFAccess extends Serializable {
 
 	/**
 	 * OAF Access find locale getter
+	 * @param language to be found
 	 * @return the oaf found locale for the required language
 	 */
 	public Locale findLocale(String language);
 
 	/**
 	 * OAF Access property endpoint getter
-	 * @return the oaf property
+	 * @param cfg system properties configuration
+	 * @return the system properties property key value as a string
 	 */
 	public String getProperty(SystemProperties cfg);
 

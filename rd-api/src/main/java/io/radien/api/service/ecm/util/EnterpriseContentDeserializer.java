@@ -32,7 +32,7 @@ import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 /**
  * Deserializer or parser from json parser into Enterprise Content object
  *
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author Marco Weiland
  */
 public class EnterpriseContentDeserializer extends JsonDeserializer<EnterpriseContent> {
 

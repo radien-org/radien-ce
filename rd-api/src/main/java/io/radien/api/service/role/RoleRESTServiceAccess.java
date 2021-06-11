@@ -79,6 +79,11 @@ public interface RoleRESTServiceAccess extends Appframeable{
      * Will calculate how many records are existent in the db
      * @return the count of existent roles.
      */
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent roles.
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
     public Long getTotalRecordsCount() throws SystemException;
 
     /**
