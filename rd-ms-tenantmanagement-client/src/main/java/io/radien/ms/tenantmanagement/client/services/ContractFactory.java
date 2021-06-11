@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Contract factory for mapping converting and creating contract objects
+ *
  * @author Bruno Gama
  */
 public class ContractFactory {
@@ -115,6 +117,12 @@ public class ContractFactory {
         return  builder.build();
     }
 
+    /**
+     * Contract method to convert a given json array into a list of contracts
+     * @param jsonArray to be mapped and converted
+     * @return a list of the mapped information with all the given contracts
+     * @throws ParseException in case of issue while parsing the json array
+     */
     public static List<Contract> convert(JsonArray jsonArray) throws ParseException{
         List<Contract> list = new ArrayList<>();
         for (JsonValue i : jsonArray) {

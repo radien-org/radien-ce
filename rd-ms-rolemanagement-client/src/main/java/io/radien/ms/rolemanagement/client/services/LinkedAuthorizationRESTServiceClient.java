@@ -366,6 +366,10 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
         }
     }
 
+    /**
+     * OAF linked authorization getter
+     * @return the active linked authorization oaf
+     */
     @Override
     public OAFAccess getOAF() {
         return oaf;

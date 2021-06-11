@@ -36,6 +36,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Tenant factory for mapping and converting given information
+ *
  * @author Bruno Gama
  */
 public class TenantFactory {

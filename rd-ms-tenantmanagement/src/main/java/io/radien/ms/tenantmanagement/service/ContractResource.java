@@ -32,12 +32,14 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * @author Santana
+ * Contract requests only regarding the contracts and his tables
+ * @author Nuno Santana
  */
 @RequestScoped
 public class ContractResource implements ContractResourceClient {
 
 	private static final Logger log = LoggerFactory.getLogger(ContractResource.class);
+
 	@Inject
 	private ContractServiceAccess contractService;
 
@@ -71,6 +73,11 @@ public class ContractResource implements ContractResourceClient {
 		}
 	}
 
+	/**
+	 * Method to retrieve a specific contract based on the given name
+	 * @param name to be search
+	 * @return the requested contract
+	 */
 	@Override
 	public Response get(String name) {
 		try {
@@ -81,7 +88,11 @@ public class ContractResource implements ContractResourceClient {
 		}
 	}
 
-
+	/**
+	 * Method to get a specific contract based on the requested id
+	 * @param id to be search
+	 * @return the requested contract
+	 */
 	@Override
 	public Response getById(Long id) {
 		try {
@@ -95,6 +106,11 @@ public class ContractResource implements ContractResourceClient {
 		}
 	}
 
+	/**
+	 * Method to delete a specific contract based on his id
+	 * @param id of the contract to be deleted
+	 * @return a response with true or false based on the success or failure of the deletion
+	 */
 	@Override
 	public Response delete(long id) {
 		try {
@@ -104,6 +120,11 @@ public class ContractResource implements ContractResourceClient {
 		}
 	}
 
+	/**
+	 * Request to create a specific and given contract object
+	 * @param contract object information to be created
+	 * @return a response with true or false based on the success or failure of the creation
+	 */
 	@Override
 	public Response create(Contract contract) {
 		try {
@@ -116,6 +137,12 @@ public class ContractResource implements ContractResourceClient {
 		}
 	}
 
+	/**
+	 * Request to update a specific contract
+	 * @param id of the contract to be update
+	 * @param contract information to update
+	 * @return a response with true or false based on the success or failure of the update
+	 */
 	@Override
 	public Response update(long id, Contract contract) {
 		try {

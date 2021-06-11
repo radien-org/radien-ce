@@ -15,7 +15,6 @@
  */
 package io.radien.ms.tenantmanagement.client.providers;
 
-
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.util.ContractModelMapper;
 
@@ -33,23 +32,44 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 
 /**
- * @author Santana
- *
+ * Contract JSON reader into object
+ * Reads the given JSON object and converts it into a contract
+ * @author Nuno Santana
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class ContractMessageBodyReader implements MessageBodyReader<Contract> {
-	 	@Override
-	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	 		return type.equals(Contract.class);
-	    }
 
-	    @Override
-	    public Contract readFrom(Class<Contract> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-			try {
-				return ContractModelMapper.map(entityStream);
-			} catch (ParseException e) {
-				throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
-			}
+	/**
+	 * Checks if the given JSON object can be read into a contract one
+	 * @param type of the received object
+	 * @param genericType for multiple conversion purposes
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true in case received JSON can be read into a contract
+	 */
+	@Override
+	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return type.equals(Contract.class);
+	}
+
+	/**
+	 * Converts the given JSON object into a contract one
+	 * @param type for the final object (contract)
+	 * @param type for multiple conversion purposes
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @return a System Contract that has been gather the information from the given JSON
+	 * @throws WebApplicationException in case of any issue while parsing the JSON fields into system contract ones
+	 */
+	@Override
+	public Contract readFrom(Class<Contract> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+		try {
+			return ContractModelMapper.map(entityStream);
+		} catch (ParseException e) {
+			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
+	}
 }

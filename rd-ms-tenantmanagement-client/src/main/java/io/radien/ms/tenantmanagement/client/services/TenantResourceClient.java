@@ -35,6 +35,8 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
+ * Tenant REST requests
+ *
  * @author Santana
  */
 @Path("tenant")
@@ -43,6 +45,16 @@ import java.util.List;
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface TenantResourceClient {
 
+    /**
+     * Gets all the tenant information into a paginated mode and return those information to the user.
+     * @param search name description for some tenant
+     * @param pageNo of the requested information. Where the tenant is.
+     * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.	 *
+     * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
+     * error.
+     */
     @GET
     @Path("/getAll")
     public Response getAll(@QueryParam("search") String search,
@@ -51,30 +63,69 @@ public interface TenantResourceClient {
                            @QueryParam("sortBy") List<String> sortBy,
                            @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
+    /**
+     * Gets a list of requested tenants based on some filtered information
+     * @param name to be searched for
+     * @param type of the tenant to be searched
+     * @param isExact should the values be exact to the given ones
+     * @param isLogicalConjunction in case of true query will use an and in case of false query will use a or
+     * @return 200 response code in case of success or 500 in case of any issue
+     */
     @GET
     public Response get(@QueryParam("name") String name, @QueryParam("tenantType") String type,
                         @DefaultValue("false") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
+    /**
+     * Gets tenant based on the given id
+     * @param id to be searched for
+     * @return 200 code message in case of success or 500 in case of any error
+     */
     @GET
     @Path("/{id}")
     public Response getById(@NotNull @PathParam("id") Long id);
 
+    /**
+     * Requests to a tenant be deleted by given his id
+     * @param id of the tenant to be deleted
+     * @return a response with true or false based on the success or failure of the deletion
+     */
     @DELETE
     @Path("/{id}")
     public Response delete(@NotNull @PathParam("id") long id);
 
+    /**
+     * Request to delete a tenant and all his children
+     * @param id of the tenant to be deleted
+     * @return a response with true or false based on the success or failure of the deletion
+     */
     @DELETE
     @Path("/deleteTenantHierarchy/{id}")
     public Response deleteTenantHierarchy(@NotNull @PathParam("id") long id);
 
+    /**
+     * Method to request a creation of a tenant
+     * @param tenant information to be created
+     * @return a response with true or false based on the success or failure of the creation
+     */
     @POST
     public Response create(Tenant tenant);
 
+    /**
+     * Method to update a requested tenant
+     * @param id of the tenant to be updated
+     * @param contract information to be update
+     * @return a response with true or false based on the success or failure of the update
+     */
     @PUT
     @Path("/{id}")
     public Response update(@NotNull @PathParam("id") long id,Tenant contract);
 
+    /**
+     * Validates if specific requested Tenant exists
+     * @param id to be searched
+     * @return response true if it exists
+     */
     @GET
     @Path("/exists/{id}")
     public Response exists(@NotNull @PathParam("id") Long id);

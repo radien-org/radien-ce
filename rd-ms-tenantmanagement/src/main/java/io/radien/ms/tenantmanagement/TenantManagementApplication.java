@@ -19,8 +19,9 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
- * @author Santana
+ * Tenant management application version controller
  *
+ * @author Santana
  */
 @ApplicationPath("/v1")
 public class TenantManagementApplication extends Application {

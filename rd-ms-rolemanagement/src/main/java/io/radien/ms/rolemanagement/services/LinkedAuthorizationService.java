@@ -33,7 +33,11 @@ import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.CriteriaDelete;
 import java.util.List;
 
 /**
@@ -415,7 +419,6 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
      * @return the count of users
      */
     private long getCount(Predicate global, Root<LinkedAuthorization> userRoot) {
-
         log.info("Going to count the existent records.");
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
