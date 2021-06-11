@@ -24,25 +24,34 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import java.time.LocalDateTime;
 
-
-
 /**
  * JPA entity representing a contract in the openappframe system
  *
  * @author Santana
  */
-
 @Entity
 @Table(name = "CTR01")
 public class Contract extends io.radien.ms.tenantmanagement.client.entities.Contract {
 
 	private static final long serialVersionUID = -7928267613860708799L;
 
+	/**
+	 * Entity contract empty constructor
+	 */
 	public Contract(){ }
 
+	/**
+	 * Entity contract constructor
+	 * @param contract {@link io.radien.ms.tenantmanagement.client.entities.Contract} to be added or created
+	 */
 	public Contract(io.radien.ms.tenantmanagement.client.entities.Contract contract){
 		super(contract);
 	}
+
+	/**
+	 * Contract id table field getter
+	 * @return the contract id
+	 */
 	@Id
 	@TableGenerator(name = "GEN_SEQ_CTR01", allocationSize = 100)
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_CTR01")
@@ -51,18 +60,30 @@ public class Contract extends io.radien.ms.tenantmanagement.client.entities.Cont
 		return super.getId();
 	}
 
+	/**
+	 * Contract name table field getter
+	 * @return contract name
+	 */
 	@Column(unique = true)
 	@Override
 	public String getName() {
 		return super.getName();
 	}
 
+	/**
+	 * Contract start table field getter
+	 * @return contract start date
+	 */
 	@Column
 	@Override
 	public LocalDateTime getStart() {
 		return super.getStart();
 	}
 
+	/**
+	 * Contract end date table field getter
+	 * @return contract end date
+	 */
 	@Column
 	@Override
 	public LocalDateTime getEnd() {
