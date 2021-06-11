@@ -17,7 +17,6 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.SystemProperties;
 import io.radien.api.model.user.SystemUser;
-import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.config.KeycloakConfigs;
 import org.eclipse.microprofile.config.Config;
@@ -28,11 +27,21 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 
+/**
+ * Keycloak request services and actions
+ *
+ * @author Nuno Santana
+ */
 @Stateless
 public class KeycloakService {
 
     private static final Logger log = LoggerFactory.getLogger(KeycloakService.class);
 
+    /**
+     * Method to retrieve active keycloak client
+     * @return the active keycloak client session
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     private KeycloakClient getKeycloakClient() throws RemoteResourceException {
         KeycloakClient client = new KeycloakClient()
                 .clientId(getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
@@ -49,6 +58,12 @@ public class KeycloakService {
         return client;
     }
 
+    /**
+     * Request to the keycloak client to create given user
+     * @param user to be created
+     * @return the newlly created user subject
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public String createUser(SystemUser user) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(user);
         KeycloakClient client = getKeycloakClient();
@@ -64,27 +79,53 @@ public class KeycloakService {
         return sub;
     }
 
+    /**
+     * Method to request keycloak to delete specific user
+     * @param sub of the user to be deleted
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public void deleteUser(String sub) throws RemoteResourceException {
         KeycloakClient client = getKeycloakClient();
         client.deleteUser(sub);
     }
 
+    /**
+     * Method to request keycloak to update a specific user information
+     * @param newUser information to be update
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public void updateUser(SystemUser newUser) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(newUser);
         KeycloakClient client = getKeycloakClient();
         client.updateUser(newUser.getSub(), userRepresentation);
     }
 
+    /**
+     * Method to request the keycloak client to send new updated password to the specific user
+     * @param user to be reset password and sent email
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public void sendUpdatePasswordEmail(SystemUser user) throws RemoteResourceException{
         KeycloakClient client = getKeycloakClient();
         client.sendUpdatePasswordEmail(user.getSub());
     }
 
+    /**
+     * Method to request the keycloak client to refresh access token by a given refresh token (after validation)
+     * @param refreshToken to be validated if can refresh access token
+     * @return the new access token
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public String refeshToken(String refreshToken) throws RemoteResourceException {
         KeycloakClient client = getKeycloakClient();
         return client.refreshToken(refreshToken);
     }
 
+    /**
+     * Method to retrieve the keycloak client configuration
+     * @param cfg to be retrieved
+     * @return a string value of the keycloak property configuration
+     */
     private String getProperty(SystemProperties cfg) {
         Config config = ConfigProvider.getConfig();
         return config.getValue(cfg.propKey(),String.class);

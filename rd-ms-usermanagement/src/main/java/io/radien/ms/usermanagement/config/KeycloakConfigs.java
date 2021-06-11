@@ -17,6 +17,11 @@ package io.radien.ms.usermanagement.config;
 
 import io.radien.api.SystemProperties;
 
+/**
+ * Keycloak configurations enumerated class
+ *
+ * @author Nuno Santana
+ */
 public enum KeycloakConfigs implements SystemProperties {
 
     ADMIN_URL("keycloak.admin.url"),
@@ -34,10 +39,18 @@ public enum KeycloakConfigs implements SystemProperties {
 
     private String propKey;
 
+    /**
+     * Keycloak configuration constructor
+     * @param propKey to be used
+     */
     KeycloakConfigs(String propKey){
         this.propKey = propKey;
     }
 
+    /**
+     * Selected configuration property key getter
+     * @return property key
+     */
     public String propKey() {
         return propKey;
     }

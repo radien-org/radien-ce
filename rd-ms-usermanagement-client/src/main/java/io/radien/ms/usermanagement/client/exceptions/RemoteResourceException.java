@@ -15,12 +15,24 @@
  */
 package io.radien.ms.usermanagement.client.exceptions;
 
+/**
+ * Exceptions that may occur during the execution of a remote method call.
+ *
+ * @author Nuno Santana
+ */
 public class RemoteResourceException extends Exception{
 
+    /**
+     * Remote resource exception empty constructor
+     */
     public RemoteResourceException() {
         super();
     }
 
+    /**
+     * Remote resource exception message constructor
+     * @param message specific message to be added into the exception when being throw
+     */
     public RemoteResourceException(String message) {
         super(message);
     }

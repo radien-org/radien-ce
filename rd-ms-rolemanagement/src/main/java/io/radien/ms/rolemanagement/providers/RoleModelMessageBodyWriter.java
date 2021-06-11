@@ -40,8 +40,8 @@ public class RoleModelMessageBodyWriter implements MessageBodyWriter<Role> {
      * Validates if the given received type is a role object
      * @param type of the received object
      * @param genericType for multiple conversions
-     * @param annotations
-     * @param mediaType
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
      * @return true if received object is in fact a role one
      */
     @Override
@@ -54,8 +54,8 @@ public class RoleModelMessageBodyWriter implements MessageBodyWriter<Role> {
      * @param role received
      * @param type of the received object
      * @param genericType for multiple conversions
-     * @param annotations
-     * @param mediaType
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
      * @return the number of received objects
      */
     @Override
@@ -68,11 +68,13 @@ public class RoleModelMessageBodyWriter implements MessageBodyWriter<Role> {
      * @param role received to be written
      * @param type of the received object
      * @param genericType for multiple conversions
-     * @param annotations
-     * @param mediaType
-     * @param httpHeaders
-     * @param entityStream
-     * @throws WebApplicationException in case of error while converting any object field into a json
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
+     * @param httpHeaders header of the http received
+     * @param entityStream received object
+     * @return a role that has been converted from the entity stream
+     * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+     * implementation if a specific HTTP error response needs to be produced.
      */
     @Override
     public void writeTo(Role role, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws WebApplicationException {

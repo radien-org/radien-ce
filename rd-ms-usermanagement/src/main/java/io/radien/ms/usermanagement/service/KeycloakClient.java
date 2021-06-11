@@ -15,8 +15,6 @@
  */
 package io.radien.ms.usermanagement.service;
 
-
-import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 import kong.unirest.Headers;
@@ -31,9 +29,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 /**
+ * Keycloak client side configuration contructor class
+ *
  * @author Nuno Santana
  */
 public class KeycloakClient {
@@ -50,61 +49,123 @@ public class KeycloakClient {
     private String radienSecret;
     private String radienTokenPath;
 
+    /**
+     * Keycloak client empty constructor
+     */
     public KeycloakClient() {
     }
 
+    /**
+     * Keycloak idp url setter with getter
+     * @param idpUrl to be set and updated
+     * @return the current idp url
+     */
     public KeycloakClient idpUrl(String idpUrl) {
         this.idpUrl = idpUrl;
         return this;
     }
 
+    /**
+     * Keycloak token path setter with getter
+     * @param tokenPath to be set and/or updated
+     * @return the current token path
+     */
     public KeycloakClient tokenPath(String tokenPath) {
         this.tokenPath = tokenPath;
         return this;
     }
 
+    /**
+     * Keycloak client id setter with getter
+     * @param clientId to be set and/or updated
+     * @return the current client id
+     */
     public KeycloakClient clientId(String clientId) {
         this.clientId = clientId;
         return this;
     }
 
+    /**
+     * Keycloak username setter with getter
+     * @param username to be set and/or updated
+     * @return the current client username
+     */
     public KeycloakClient username(String username) {
         this.username = username;
         return this;
     }
 
+    /**
+     * Keycloak password setter with getter
+     * @param password to be set and/or updated
+     * @return the current client password
+     */
     public KeycloakClient password(String password) {
         this.password = password;
         return this;
     }
 
+    /**
+     * Keycloak user path setter with getter
+     * @param userPath to be set and/or updated
+     * @return the current client user path
+     */
     public KeycloakClient userPath(String userPath) {
         this.userPath = userPath;
         return this;
     }
 
+    /**
+     * Keycloak radien client id setter with getter
+     * @param radienClientId to be set and/or updated
+     * @return the current client radien client id
+     */
     public KeycloakClient radienClientId(String radienClientId) {
         this.radienClientId = radienClientId;
         return this;
     }
 
+    /**
+     * Keycloak radien secret setter with getter
+     * @param radienSecret to be set and/or updated
+     * @return the current client radien secret
+     */
     public KeycloakClient radienSecret(String radienSecret) {
         this.radienSecret = radienSecret;
         return this;
     }
+
+    /**
+     * Keycloak radien token path setter with getter
+     * @param radienTokenPath to be set and/or updated
+     * @return the current client radien token path
+     */
     public KeycloakClient radienTokenPath(String radienTokenPath) {
         this.radienTokenPath = radienTokenPath;
         return this;
     }
 
+    /**
+     * Keycloak access token getter
+     * @return the current active and request access token
+     */
     public String getAccessToken() {
         return result.get("access_token");
     }
 
+    /**
+     * Keycloak refresh token getter
+     * @return the current active and request refresh token
+     */
     public String getRefreshToken() {
         return result.get("refresh_token");
     }
 
+    /**
+     * Keycloak login process and field filler
+     * @return http response hash map with all the login fields
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public HashMap login() throws RemoteResourceException {
         HttpResponse<HashMap> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
@@ -123,6 +184,12 @@ public class KeycloakClient {
         }
     }
 
+    /**
+     * Keycloak user creation process
+     * @param userRepresentation to be created
+     * @return the created user subject
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public String createUser(UserRepresentation userRepresentation) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.post(idpUrl + userPath)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
@@ -154,6 +221,11 @@ public class KeycloakClient {
         throw new RemoteResourceException("Unable to create User in keycloak");
     }
 
+    /**
+     * Method to send a new password via email to the requested user that will be found via his subject
+     * @param sub of the user to be found
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public void sendUpdatePasswordEmail(String sub) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub + "/execute-actions-email")
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
@@ -166,6 +238,11 @@ public class KeycloakClient {
         }
     }
 
+    /**
+     * Keycloak method to delete requested user
+     * @param sub subject of the user to be deleted
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public void deleteUser(String sub) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.delete(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
@@ -177,6 +254,10 @@ public class KeycloakClient {
         }
     }
 
+    /**
+     * Keycloak refresh active access token
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public void refreshToken() throws RemoteResourceException {
         HttpResponse<HashMap> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
@@ -192,6 +273,12 @@ public class KeycloakClient {
         }
     }
 
+    /**
+     * Keycloak refresh active access token
+     * @param refreshToken to be updated and refreshed
+     * @return new access token
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public String refreshToken(String refreshToken) throws RemoteResourceException {
         HttpResponse<HashMap> response = Unirest.post(idpUrl + radienTokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
@@ -213,6 +300,12 @@ public class KeycloakClient {
         }
     }
 
+    /**
+     * Keycloak update specific and requested user with the given user representation
+     * @param sub of the user information to be updated
+     * @param userRepresentation information to be added or updated
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
     public void updateUser(String sub,UserRepresentation userRepresentation) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
@@ -224,6 +317,10 @@ public class KeycloakClient {
         }
     }
 
+    /**
+     * Method to get the access token/authorization token
+     * @return the authorization token in use
+     */
     private String getAuthorization() {
         return "Bearer " + getAccessToken();
     }

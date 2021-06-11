@@ -25,11 +25,17 @@ import javax.json.JsonReader;
 import java.io.InputStream;
 
 /**
- * @author Marco Weiland 
+ * User Management page mapper
  *
+ * @author Marco Weiland 
  */
 public class PageModelMapper {
 
+    /**
+     * Mapper for a received input stream into a page of possible users
+     * @param is to be mapped
+     * @return a page of user information
+     */
     public static Page<User> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();

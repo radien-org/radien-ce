@@ -22,10 +22,19 @@ import javax.ws.rs.Path;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 
+/**
+ * Controller is responsible for handling users actions on the page. It also manages the flow between pages.
+ * Controller responds to the user actions and directs application flow.
+ * The controller will request from HTTP get and HTTP post.
+ */
 @Path("/config")
 @RequestScoped
 public class ConfigController {
 
+    /**
+     * Request to get retrieve the injected configuration value
+     * @return the injected configuration value
+     */
     @Path("/injected")
     @GET
     public String getInjectedConfigValue() {
@@ -34,6 +43,10 @@ public class ConfigController {
 
     //TODO: Check why configurations are giving errors
 
+    /**
+     * Request to find a specific configuration value
+     * @return the requested configuration value
+     */
     @Path("/lookup")
     @GET
     public String getLookupConfigValue() {

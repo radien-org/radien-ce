@@ -17,7 +17,6 @@ package io.radien.ms.usermanagement.client.util;
 
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
-import io.radien.ms.usermanagement.client.entities.GlobalHeaders;
 import io.radien.ms.usermanagement.client.providers.UserMessageBodyWriter;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -26,8 +25,20 @@ import javax.ejb.Stateless;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Utility class that produces Rest Clients for User management
+ * @author Bruno Gama
+ */
 @Stateless
 public class ClientServiceUtil {
+
+    /**
+     * Gets a Rest Client for user
+     * @param urlStr url of rest endpoint
+     * @return a client form the user
+     * @throws MalformedURLException in case of any url issue
+     * @throws TokenExpiredException  in case of JWT token expiration
+     */
     public UserResourceClient getUserResourceClient(String urlStr) throws MalformedURLException , TokenExpiredException {
         URL url = new URL(urlStr);
         return RestClientBuilder.
