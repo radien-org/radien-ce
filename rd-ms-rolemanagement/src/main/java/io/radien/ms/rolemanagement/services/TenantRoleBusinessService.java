@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.swing.text.html.Option;
 import java.io.Serializable;
 import java.util.*;
 
@@ -361,7 +360,7 @@ public class TenantRoleBusinessService implements Serializable {
 
     /**
      * Check if all specified parameters were informed
-     * @param params vargs contains variables that correspond method parameters
+     * @param params vars contains variables that correspond method parameters
      */
     protected void checkIfMandatoryParametersWereInformed(Object...params) {
         for (Object o:params) {
@@ -374,7 +373,7 @@ public class TenantRoleBusinessService implements Serializable {
      * This method just throw a TenantRoleException to inform that an inconsistency was found
      * @param rawMsg Informative message describing the inconsistency
      * @param params Parameters to be aggregated into the message
-     * @throws TenantRoleException
+     * @throws TenantRoleException in case of any inconsistency found
      */
     protected void throwInformingInconsistencyFound(String rawMsg, Object ... params) throws TenantRoleException {
         String formattedMsg = params != null ? String.format(rawMsg, params) : rawMsg;

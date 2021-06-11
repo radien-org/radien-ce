@@ -19,6 +19,8 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
+ * Role Application path version
+ *
  * @author Bruno Gama
  */
 @ApplicationPath("v1")
