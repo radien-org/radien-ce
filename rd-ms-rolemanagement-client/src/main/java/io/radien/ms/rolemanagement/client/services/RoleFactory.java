@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 /**
  * Client Role Factory conversions
- *
  * Factory that will create based on given fields the role or convert the role into a json object
  *
  * @author Bruno Gama
@@ -149,6 +148,11 @@ public class RoleFactory {
         return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 
+    /**
+     * Method to convert a given json array with relevant information into role objects that will be stored into a list
+     * @param jsonArray to be mapped
+     * @return a list of all the role information
+     */
     public static List<Role> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
     }

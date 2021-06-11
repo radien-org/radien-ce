@@ -45,8 +45,8 @@ public class TenantRoleMessageBodyWriter implements MessageBodyWriter<TenantRole
      * Validates if the given received type is a tenant role object
      * @param type of the received object
      * @param genericType for multiple conversions
-     * @param annotations
-     * @param mediaType
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
      * @return true if received object is in fact a tenant role one
      */
     @Override
@@ -59,8 +59,8 @@ public class TenantRoleMessageBodyWriter implements MessageBodyWriter<TenantRole
      * @param model received
      * @param type of the received object
      * @param genericType for multiple conversions
-     * @param annotations
-     * @param mediaType
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
      * @return the number of received objects
      */
     @Override
@@ -73,10 +73,10 @@ public class TenantRoleMessageBodyWriter implements MessageBodyWriter<TenantRole
      * @param model received to be written
      * @param type of the received object
      * @param genericType for multiple conversions
-     * @param annotations
-     * @param mediaType
-     * @param httpHeaders
-     * @param entityStream
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
+     * @param httpHeaders header of the http received
+     * @param entityStream received object
      * @throws WebApplicationException in case of error while converting any object field into a json
      * @throws IOException in case of error while receiving or sending the message from or to the user
      */
