@@ -399,7 +399,7 @@ public class TenantServiceTest {
 
         SystemTenant systemTenant = tenantServiceAccess.get(tenantSub.getId());
         assertNotNull(systemTenant);
-        assertEquals(TenantType.SUB_TENANT, systemTenant.getTenantType(), );
+        assertEquals(TenantType.SUB_TENANT, systemTenant.getTenantType());
 
         TenantSearchFilter filter = new TenantSearchFilter("volkswagen-accountancy", null, false, false);
         List<? extends SystemTenant> list =
