@@ -142,6 +142,20 @@ public interface TenantRoleResourceClient {
     Response getTenants(@PathParam("userId") Long userId, @QueryParam("roleId") Long roleId);
 
     /**
+     * Under a pagination approach, retrieves the Users associations that exist
+     * for a TenantRole
+     * @param tenantRoleId identifier for a TenantRole
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Response OK with Page containing TenantRoleUser instances. Response 500 in case of any other error.
+     */
+    @GET
+    @Path("/users")
+    Response getUsers(@QueryParam("tenantRoleId") Long tenantRoleId,
+                      @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                      @DefaultValue("10") @QueryParam("pageSize") int pageSize);
+
+    /**
      * Check if Role exists for a User (Optionally under a Tenant)
      * @param userId User identifier
      * @param roleName Role name identifier

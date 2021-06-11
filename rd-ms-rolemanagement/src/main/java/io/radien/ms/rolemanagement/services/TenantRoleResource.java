@@ -192,6 +192,25 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     }
 
     /**
+     * Under a pagination approach, retrieves the Users associations that exist
+     * for a TenantRole
+     * @param tenantRoleId identifier for a TenantRole
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRoleUser instances
+     */
+    @Override
+    public Response getUsers(Long tenantRoleId, int pageNo, int pageSize) {
+        log("Retrieving tenant role users");
+        try {
+            return Response.ok().entity(tenantRoleBusinessService.
+                    getUsers(tenantRoleId, pageNo, pageSize)).build();
+        } catch (Exception e) {
+            return getGenericError(e);
+        }
+    }
+
+    /**
      * Check if Role exists for a User (Optionally under a Tenant)
      * @param userId User identifier
      * @param roleName Role name identifier

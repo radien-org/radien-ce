@@ -20,19 +20,25 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 
 
@@ -43,6 +49,7 @@ import javax.inject.Inject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JSF manager bean that will handle all associations regarding TenantRole domain
@@ -64,15 +71,23 @@ public class TenantRoleAssociationManager extends AbstractManager {
     @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
 
+    @Inject
+    private UserRESTServiceAccess userRESTServiceAccess;
+
     private SystemTenant tenant = new Tenant();
     private SystemRole role = new Role();
     private SystemPermission permission = new Permission();
     private SystemTenantRole tenantRole = new TenantRole();
+    private SystemUser user = new User();
 
     private SystemPermission selectedPermissionToUnAssign = new Permission();
     private SystemPermission previousSelectedPermissionToUnAssign = new Permission();
 
+    private SystemTenantRoleUser selectedUserToUnAssign = new TenantRoleUser();
+    private SystemTenantRoleUser previousSelectedUserToUnAssign = new TenantRoleUser();
+
     private List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
+    private LazyTenantRoleUserDataModel lazyTenantRoleUserDataModel;
 
     private Boolean tenantRoleAssociationCreated = Boolean.FALSE;
 
@@ -111,6 +126,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenantRole = new TenantRole();
         this.assignedPermissions = new ArrayList<>();
         this.previousSelectedPermissionToUnAssign = new Permission();
+        this.previousSelectedUserToUnAssign = new TenantRoleUser();
         this.role = new Role();
         this.tenant = new Tenant();
         this.tenantRoleAssociationCreated = Boolean.FALSE;
@@ -128,7 +144,11 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenantRole = tenantRole;
         this.tabIndex = 0L;
         this.permission = new Permission();
+        this.user = new User();
         this.previousSelectedPermissionToUnAssign = new Permission();
+        this.selectedPermissionToUnAssign = new Permission();
+        this.previousSelectedUserToUnAssign = new TenantRoleUser();
+        this.selectedUserToUnAssign = new TenantRoleUser();
         try {
             this.role = this.roleRESTServiceAccess.getRoleById(this.tenantRole.getRoleId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
@@ -138,6 +158,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
                             "rd_tenant_not_found"), this.tenantRole.getTenantId())));
             this.calculatePermissions();
+            this.calculateUsers();
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_edit_error"),
@@ -170,6 +191,37 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     JSFUtil.getMessage("rd_permissions"));
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * Given a tenant and a role, retrieves the id that exists for that
+     * relationship
+     * @return Id (key) that must exist for a Tenant Role association
+     */
+    protected Long getTenantRoleId() {
+        if (tenant == null || tenant.getId() == null || role == null || role.getId() == null) {
+            return null;
+        }
+        try {
+            List<? extends SystemTenantRole> tenantRoles = tenantRoleRESTServiceAccess.
+                    getTenantRoles(tenant.getId(), role.getId(), true);
+            return tenantRoles != null && !tenantRoles.isEmpty() ?
+                    tenantRoles.get(0).getId() : null;
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("tenant_role_association_id"));
+            return null;
+        }
+    }
+
+    /**
+     * Retrieve users for tenant role combination
+     */
+    public void calculateUsers() {
+        Long tenantRoleId = getTenantRoleId();
+        this.lazyTenantRoleUserDataModel = new LazyTenantRoleUserDataModel(tenantRoleId,
+                tenantRoleRESTServiceAccess);
     }
 
     /**
@@ -236,6 +288,73 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_tenant_association_creation_error"));
             return "pretty:userTenantAssociation";
         }
+    }
+
+    /**
+     * Perform the association process between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     */
+    public String assignUser() {
+        this.tabIndex = 2L;
+        try {
+            if (user == null || StringUtils.isBlank(user.getLogon())) {
+                throw new IllegalArgumentException(JSFUtil.
+                        getMessage("rd_tenant_role_user_association_no_user_select"));
+            }
+            user = userRESTServiceAccess.getUserByLogon(user.getLogon()).orElseThrow
+                        (() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
+                        "rd_user_not_found"), this.user.getLogon())));
+
+            this.tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId());
+            this.calculateUsers();
+            handleMessage(FacesMessage.SEVERITY_INFO,
+                    JSFUtil.getMessage("rd_tenant_role_user_association_success"));
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_tenant_role_user_association_error"));
+        }
+        return K_TENANT_ROLE_SCREEN;
+    }
+
+    /**
+     * Perform the association process between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     */
+    public String unAssignUser() {
+        this.tabIndex = 2L;
+        try {
+            if (selectedUserToUnAssign == null || selectedUserToUnAssign.getUserId() == null) {
+                throw new IllegalArgumentException(JSFUtil.
+                        getMessage("rd_tenant_role_user_dissociation_no_user_select"));
+            }
+            this.tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(),
+                    selectedUserToUnAssign.getUserId());
+            this.calculateUsers();
+            this.selectedUserToUnAssign = new TenantRoleUser();
+            handleMessage(FacesMessage.SEVERITY_INFO,
+                    JSFUtil.getMessage("rd_tenant_role_user_dissociation_success"));
+            this.selectedPermissionToUnAssign = new Permission();
+        } catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_tenant_role_user_dissociation_error"));
+        }
+        return K_TENANT_ROLE_SCREEN;
+    }
+
+    /**
+     * Getter for the property that corresponds to the user for
+     * whom the association is going to be done
+     * @return User for which will be performed the association
+     */
+    public SystemUser getUser() {
+        return user;
+    }
+
+    /**
+     * Setter for the property that corresponds to the user for
+     * whom the association is going to be done
+     * @param user User for which will be performed the association
+     */
+    public void setUser(SystemUser user) {
+        this.user = user;
     }
 
     /**
@@ -389,19 +508,19 @@ public class TenantRoleAssociationManager extends AbstractManager {
     }
 
     /**
-     * Listener method used by bootsfaces DataTable component to select
-     * one Permission
-     * @param perm Selected permission on DataTable
-     * @param typeOfSelection one of those predicted types on DataTable.
-     *                        This is either <b>row</b>, <b>column</b> or <b>item</b>
-     * @param indexes tells the JSF bean which rows, columns or cells have been selected.
-     *     Note that in the first two cases this is either an individual number or - if multiple items have been selected - a
-     *     comma separated list
+     * Stores the information regarding a selected user
+     * @param event that will contain which user has been selected
      */
-    public void onPermissionSelect(Permission perm, String typeOfSelection, String indexes) {
-        if (typeOfSelection.equals("row") && perm != null) {
-            this.selectedPermissionToUnAssign = perm;
+    public void onUserSelect(SelectEvent<SystemTenantRoleUser> event) {
+        if (previousSelectedUserToUnAssign != null && previousSelectedUserToUnAssign.getId() == event.getObject().getId()) {
+            // remove selection
+            previousSelectedUserToUnAssign = new TenantRoleUser();
+            selectedUserToUnAssign = new TenantRoleUser();
+        } else {
+            // select
+            previousSelectedUserToUnAssign =event.getObject();
         }
+        this.tabIndex = 2L;
     }
 
     /**
@@ -474,6 +593,86 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
                     JSFUtil.getMessage("rd_tenants_from_user"));
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * This getter method retrieves the current instance for
+     * LazyTenantRoleUserDataModel component
+     * @return instance for LazyTenantRoleUserDataModel
+     */
+    public LazyTenantRoleUserDataModel getLazyTenantRoleUserDataModel() {
+        return lazyTenantRoleUserDataModel;
+    }
+
+    /**
+     * Getter for the property that corresponds to an user selected on
+     * the data grid to perform an (un)assigment/dissociation
+     * @return instance of SystemTenantRoleUser
+     */
+    public SystemTenantRoleUser getSelectedUserToUnAssign() {
+        return selectedUserToUnAssign;
+    }
+
+    /**
+     * Setter for the property that corresponds to an user selected on
+     * the data grid to perform an (un)assigment/dissociation
+     * @param selectedUserToUnAssign  instance of SystemTenantRoleUser
+     */
+    public void setSelectedUserToUnAssign(SystemTenantRoleUser selectedUserToUnAssign) {
+        this.selectedUserToUnAssign = selectedUserToUnAssign;
+    }
+
+    /**
+     * Retrieve logon information from a user
+     * @param userId user identifier
+     * @return user logon
+     */
+    public String getLogon(Long userId) {
+        try {
+            Optional<SystemUser> optional = this.userRESTServiceAccess.
+                    getUserById(userId);
+            return optional.isPresent() ? optional.get().getLogon() :
+                    String.valueOf(userId);
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("rd_user"));
+            return String.valueOf(userId);
+        }
+    }
+
+    /**
+     * Retrieve name from a tenant
+     * @param tenantId tenant identifier
+     * @return tenant name
+     */
+    public String getTenantName(Long tenantId) {
+        try {
+            Optional<SystemTenant> opt = tenantRESTServiceAccess.getTenantById(tenantId);
+            return opt.isPresent() ? opt.get().getName() : String.valueOf(tenantId);
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("rd_tenant"));
+            return String.valueOf(tenantId);
+        }
+    }
+
+    /**
+     * Retrieve name from a Role
+     * @param roleId role identifier
+     * @return role name
+     */
+    public String getRoleName(Long roleId) {
+        try {
+            Optional<SystemRole> opt = roleRESTServiceAccess.getRoleById(roleId);
+            return opt.isPresent() ? opt.get().getName() : String.valueOf(roleId);
+        }
+        catch (Exception e) {
+            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+                    JSFUtil.getMessage("rd_role"));
+            return String.valueOf(roleId);
         }
     }
 

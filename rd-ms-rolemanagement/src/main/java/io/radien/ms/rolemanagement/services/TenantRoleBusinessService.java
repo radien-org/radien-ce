@@ -20,6 +20,7 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
@@ -38,7 +39,11 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Date;
 
 /**
  * Component that orchestrates the using of diverse Service Access components
@@ -184,6 +189,18 @@ public class TenantRoleBusinessService implements Serializable {
             }
         }
         return list;
+    }
+
+    /**
+     * Retrieves TenantRole User associations using pagination approach
+     * @param tenantRoleId tenant role id
+     * @param pageNumber page number
+     * @param pageSize page size
+     * @return Page containing TenantRoleUser associations (Chunk/Portion compatible
+     * with parameter Page number and Page size)
+     */
+    public Page<SystemTenantRoleUser> getUsers(Long tenantRoleId, int pageNumber, int pageSize) {
+        return this.tenantRoleUserServiceAccess.getAll(tenantRoleId, pageNumber, pageSize);
     }
 
     /**

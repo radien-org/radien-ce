@@ -21,6 +21,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
@@ -29,6 +30,7 @@ import io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRoleModelMapper;
+import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
@@ -562,6 +564,53 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Under a pagination approach, retrieves the Users associations that exist
+     * for a TenantRole
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantRoleId identifier for a TenantRole
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRoleUser instances
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Page<? extends SystemTenantRoleUser> getUsers(Long tenantRoleId, int pageNo, int pageSize) throws SystemException {
+        try {
+            return getUsersCore(tenantRoleId, pageNo, pageSize);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getUsersCore(tenantRoleId, pageNo, pageSize);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Core method that Retrieves TenantRoleUser associations using pagination approach
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRole user associations (Chunk/Portion compatible
+     * with parameter Page number and Page size)
+     * @throws SystemException in case of any error
+     */
+    protected Page<? extends SystemTenantRoleUser> getUsersCore(Long tenantRoleId, int pageNo, int pageSize) throws SystemException {
+        try {
+            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getUsers(tenantRoleId, pageNo, pageSize);
+            return TenantRoleUserModelMapper.mapToPage((InputStream) response.getEntity());
+        }
+        catch (TokenExpiredException t) {
+            throw t;
+        }
+        catch (Exception e) {
+            throw new SystemException("Error trying to retrieve Tenant Role User associations", e);
         }
     }
 }

@@ -522,4 +522,34 @@ public class TenantRoleResourceTest {
         assertEquals(500, response.getStatus());
     }
 
+    /**
+     * Tests response from getUsers method
+     */
+    @Test
+    @Order(31)
+    public void testGetUsers() {
+        Response response = tenantRoleResource.getUsers(1L,
+                2, 3);
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Tests response from getUsers method when exceptions occur
+     * during the processing
+     */
+    @Test
+    @Order(32)
+    public void testGetUserWithException() {
+        try {
+            doThrow(new RuntimeException("error")).
+                    when(tenantRoleBusinessService).getUsers(1L,
+                    2, 3);
+        }
+        catch (Exception e) {
+            fail("unexpected");
+        }
+        Response response = tenantRoleResource.getUsers(1L,
+                2, 3);
+        assertEquals(500, response.getStatus());
+    }
 }

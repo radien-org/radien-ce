@@ -116,19 +116,36 @@
 								<b:row><h1/></b:row>
 								<b:row>
 
-									<b:dataTable var="perm"
+									<p:dataTable var="perm"
+												 value="#{tenantRoleAssociationManager.assignedPermissions}"
+												 paginator="true" paginatorPosition="bottom"
+												 rows="10" responsive="true"
+												 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+												 currentPageReportTemplate="({currentPage} #{msg.of} {totalPages})"
+												 rowsPerPageTemplate="5,10,15,30,50"
+												 id="permissionsTable" emptyMessage="#{msg.noRecordsFound}"
+												 info="false" sortOrder="ascending" styleClass="table--2"
+									   			 rowKey="#{perm.id}"
 												 selectionMode="single"
-												 selectedItems="rows"
-												 onselect="ajax:tenantRoleAssociationManager.onPermissionSelect(perm, typeOfSelection, indexes);"
-												 value="#{tenantRoleAssociationManager.assignedPermissions}">
+												 selection="#{tenantRoleAssociationManager.selectedPermissionToUnAssign}">
 
-										<b:dataTableColumn value="#{perm.id}" label="#{msg.id}"/>
-										<b:dataTableColumn value="#{perm.name}" label="#{msg.name}"/>
-										<b:dataTableColumn value="#{perm.actionId}" label="#{msg.rd_action}"/>
-										<b:dataTableColumn value="#{perm.resourceId}" label="#{msg.rd_resource}"/>
+										<p:ajax event="rowSelect"
+												listener="#{tenantRoleAssociationManager.onPermissionSelect}"
+												update="@all"/>
 
-									</b:dataTable>
-
+										<p:column headerText="#{msg.id}">
+											<h:outputText value="#{perm.id}" />
+										</p:column>
+										<p:column headerText="#{msg.name}">
+											<h:outputText value="#{perm.name}" />
+										</p:column>
+										<p:column headerText="#{msg.rd_action}">
+											<h:outputText value="#{perm.actionId}" />
+										</p:column>
+										<p:column headerText="#{msg.rd_resource}">
+											<h:outputText value="#{perm.resourceId}" />
+										</p:column>
+									</p:dataTable>
 								</b:row>
 								<b:row><h1/></b:row>
 							</b:container>
@@ -152,7 +169,69 @@
 
 						<b:tab id="tabForUserAssigment" title="#{msg.rd_users}"
 							   rendered="#{tenantRoleAssociationManager.existsTenantRoleCreated}">
-							<p>${msg.rd_tenant_role_user_assigment}</p>
+							<b:container>
+								<b:row><h1/></b:row>
+								<b:row>
+									<b:column medium-screen="2">
+										<h:outputLabel value="#{msg.rd_user_logon}"/>
+									</b:column>
+									<b:column mediumScreen="4">
+										<b:inputText id="usrLogin" value="#{tenantRoleAssociationManager.user.logon}"/>
+									</b:column>
+									<b:column mediumScreen="2">
+										<b:commandButton id="tenantRoleUserAssociation"
+														 value="#{msg.associate}"
+														 tooltip="#{msg.associate} #{msg.rd_tenant} #{msg.rd_role} #{msg.rd_user}"
+														 iconAwesome="fa-cogs"
+														 action="#{tenantRoleAssociationManager.assignUser}"/>
+									</b:column>
+								</b:row>
+								<b:row><h1/></b:row>
+								<b:row>
+									<p:dataTable id="usersDataTable"
+												 value="#{tenantRoleAssociationManager.lazyTenantRoleUserDataModel}"
+												 var="tenantRoleUserAssociation"
+												 paginator="true" rows="10"
+												 lazy="true"
+												 paginatorPosition="bottom"
+												 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+												 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+												 rowsPerPageTemplate="5,10,20,50"
+												 styleClass = "tableDesign"
+												 selectionMode="single"
+												 rowKey="#{tenantRoleUserAssociation.id}"
+												 selection="#{tenantRoleAssociationManager.selectedUserToUnAssign}">
+
+										<p:ajax event="rowSelect" listener="#{tenantRoleAssociationManager.onUserSelect}"
+												update="@form:tenantRoleAssociationsManagementTableDiv"
+												oncomplete="$('.formValidationModalClass').modal('show')"/>
+										<p:column headerText="#{msg.id}" sortBy="#{tenantRoleUserAssociation.id}">
+											<h:outputText value="#{tenantRoleUserAssociation.id}"/>
+										</p:column>
+										<p:column headerText="#{msg.rd_user_logon}">
+											<h:outputText value="#{tenantRoleAssociationManager.getLogon(tenantRoleUserAssociation.userId)}"/>
+										</p:column>
+									</p:dataTable>
+
+								</b:row>
+								<b:row><h1/></b:row>
+							</b:container>
+							<b:buttonGroup>
+
+								<b:commandButton id="cancelTenantRolePermissionAssociation"
+												 value="#{msg.rd_cancel_association}"
+												 tooltip="#{msg.returnToRecordList}"
+												 iconAwesome="fa-home"
+												 immediate="true"
+												 action="tenantroles"/>
+
+								<b:commandButton id="tenantRoleUserUnAssociation"
+												 value="#{msg.dissociate}"
+												 tooltip="#{msg.dissociate} #{msg.rd_tenant} #{msg.rd_role} #{msg.rd_user}"
+												 iconAwesome="fa-ban"
+												 action="#{tenantRoleAssociationManager.unAssignUser}"/>
+
+							</b:buttonGroup>
 						</b:tab>
 
 					</b:tabView>

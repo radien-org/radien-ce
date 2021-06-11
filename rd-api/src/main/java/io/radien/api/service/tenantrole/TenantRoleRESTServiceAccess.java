@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.exception.SystemException;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,7 @@ import java.util.Optional;
 public interface TenantRoleRESTServiceAccess {
 
     /**
-     * Retrieves TenantRoleUser association using pagination approach
+     * Retrieves TenantRole association using pagination approach
      * @param pageNo page number
      * @param pageSize page size
      * @return Page containing TenantRole User associations (Chunk/Portion compatible
@@ -135,4 +136,15 @@ public interface TenantRoleRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean unassignPermission(Long tenantId, Long roleId, Long permissionId) throws SystemException;
+
+    /**
+     * Under a pagination approach, retrieves the Users associations that exist
+     * for a TenantRole
+     * @param tenantRoleId identifier for a TenantRole
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRoleUser instances
+     * @throws SystemException in case of any error
+     */
+    Page<? extends SystemTenantRoleUser> getUsers(Long tenantRoleId, int pageNo, int pageSize) throws SystemException;
 }

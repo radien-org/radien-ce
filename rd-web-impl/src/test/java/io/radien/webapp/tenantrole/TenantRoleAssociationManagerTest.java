@@ -70,7 +70,8 @@ import java.util.Optional;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
-public class TenantRoleAssociationManagerTest {
+public class
+TenantRoleAssociationManagerTest {
 
     @InjectMocks
     private TenantRoleAssociationManager tenantRoleAssociationManager;
@@ -773,20 +774,5 @@ public class TenantRoleAssociationManagerTest {
                 getPreviousSelectedPermissionToUnAssign().getId() == null);
         assertTrue(tenantRoleAssociationManager.
                 getSelectedPermissionToUnAssign().getId() == null);
-    }
-
-    /**
-     * Tests the method responsible for store the information regarding a selected permission
-     * (on Bootsfaces DataTable)
-     */
-    @Test
-    public void testOnPermissionSelectBootsFaces() {
-        Permission selectedPermissionOnDtTable = new Permission();
-        selectedPermissionOnDtTable.setId(1111L);
-
-        tenantRoleAssociationManager.onPermissionSelect(selectedPermissionOnDtTable, "row", null);
-
-        assertEquals(selectedPermissionOnDtTable,
-                tenantRoleAssociationManager.getSelectedPermissionToUnAssign());
     }
 }

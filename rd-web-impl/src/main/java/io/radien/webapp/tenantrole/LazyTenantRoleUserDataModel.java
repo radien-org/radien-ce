@@ -16,7 +16,7 @@
 package io.radien.webapp.tenantrole;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.webapp.JSFUtil;
@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * LazyDataModel implemented specifically to attend the exhibition of TenantRole associations
- * using Lazy loading fashion.
+ * LazyDataModel implemented specifically to attend the exhibition of TenantRoleUser
+ * objects (Association between Tenant, Role and USER) under a Lazy Loading approach
  *
  * The idea behind a LazyDataModel is to allow working with considerable hugh datasets,
  * taking in consideration pagination parameters like page size, page number and so on,
@@ -44,37 +44,55 @@ import java.util.stream.Collectors;
  *
  * @author Newton Carvalho
  */
-public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTenantRole> {
+public class LazyTenantRoleUserDataModel extends LazyDataModel<SystemTenantRoleUser> {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-    private TenantRoleRESTServiceAccess service;
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
-    private List<? extends SystemTenantRole> datasource;
-    private String msgError = null;
+    private List<? extends SystemTenantRoleUser> datasource;
+    private boolean fetchAll = false;
+    private Long tenantRoleId = null;
+    private String msgError = MessageFormat.format(
+            JSFUtil.getMessage("rd_retrieve_error"),
+            JSFUtil.getMessage("tenant_role_associations"));
 
     /**
-     * Main constructor
-     * @param service TenantRoleRESTServiceAccess rest client to perform the role of a DataService,
-     *                providing data to assembly the datasource
+     * The idea for this constructor is to allow fetching TenantRoleUser relations
+     * existent for a tenantRole id
+     * @param tenantRoleId identifier that refers a TenantRole association and
+     *                     which will guide the search process (like Filter parameter)
+     * @param tenantRoleRESTServiceAccess TenantRoleRESTServiceAccess rest client to perform the role of a
+     *                DataService, providing (or retrieving) data to assembly the datasource
      */
-    public LazyTenantRoleAssociationDataModel(TenantRoleRESTServiceAccess service) {
-        this.service=service;
-        this.datasource = new ArrayList<>();
-        this.msgError = MessageFormat.format(
-                JSFUtil.getMessage("rd_retrieve_error"),
-                JSFUtil.getMessage("tenant_role_associations"));
+    public LazyTenantRoleUserDataModel(Long tenantRoleId,
+                                       TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess) {
+        this(tenantRoleRESTServiceAccess);
+        this.tenantRoleId = tenantRoleId;
+        this.fetchAll = false;
     }
 
     /**
-     * Retrieves a SystemTenantRole that corresponds to a DataTable row.
+     * Default constructor
+     * @param tenantRoleRESTServiceAccess TenantRoleRESTServiceAccess rest client to perform the role of a
+     *                DataService, providing data to assembly the datasource
+     */
+    public LazyTenantRoleUserDataModel(TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess) {
+        this.tenantRoleRESTServiceAccess = tenantRoleRESTServiceAccess;
+        this.fetchAll = true;
+    }
+
+    /**
+     * Retrieves a SystemTenantRoleUser that corresponds to a DataTable row.
      * @param rowKey id or index that refers a row (presented in a data table)
      * @return SystemTenantRole instance that corresponds to the selected datatable row
      */
     @Override
-    public SystemTenantRole getRowData(String rowKey) {
-        for (SystemTenantRole association : datasource) {
-            if (association.getId() == Integer.parseInt(rowKey)) {
-                return association;
+    public SystemTenantRoleUser getRowData(String rowKey) {
+        if (rowKey != null && !rowKey.equals("null")) {
+            for (SystemTenantRoleUser association : datasource) {
+                if (association.getId() == Integer.parseInt(rowKey)) {
+                    return association;
+                }
             }
         }
         return null;
@@ -87,33 +105,38 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
      * @return String value that corresponds to the row key
      */
     @Override
-    public String getRowKey(SystemTenantRole association) {
+    public String getRowKey(SystemTenantRoleUser association) {
         return String.valueOf(association.getId());
     }
 
     /**
-     * Core method that performs the page loading taking in consideration the parameters described bellow
+     * Core method that performs the page loading taking in consideration
+     * the parameters described bellow.
      * @param offset parameter that helps to calculate the page number
      * @param pageSize corresponds to the page size.
      * @param sortBy map containing references to properties/columns that may guide the data sort
      * @param filterBy map containing references to properties/columns that may guide a filtering process
-     * @return list containing TenantRole associations corresponding to a page
+     * @return list containing TenantRoleUser associations corresponding to a page
      */
     @Override
-    public List<SystemTenantRole> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
+    public List<SystemTenantRoleUser> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         Long rowCount = 0L;
         try {
-            Page<? extends SystemTenantRole> pagedInformation =
-                    service.getAll((offset/pageSize)+1, pageSize);
-            datasource = pagedInformation.getResults();
-            rowCount = (long)pagedInformation.getTotalResults();
+            if (tenantRoleId == null && !fetchAll) {
+                datasource = new ArrayList<>();
+            } else {
+                Page<? extends SystemTenantRoleUser> pagedInformation =
+                        tenantRoleRESTServiceAccess.getUsers(tenantRoleId, (offset/pageSize)+1, pageSize);
+                datasource = pagedInformation.getResults();
+                rowCount = (long)pagedInformation.getTotalResults();
+            }
         } catch (SystemException s){
-            log.error("Error trying to load associations", s);
+            log.error("Error trying to load tenant role user associations", s);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msgError,
                             s.getMessage()));
         } catch (Exception e){
-            log.error("Unknown error loading associations", e);
+            log.error("Unknown error loading tenant role user associations", e);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msgError,
                             JSFUtil.getMessage("contactSystemAdministrator")));
