@@ -46,6 +46,9 @@ public class S3FileUtil {
 
     private static final Logger log = LoggerFactory.getLogger(S3FileUtil.class);
 
+    protected S3FileUtil(){
+    }
+
     /**
      * Will delete (if found) the requested file/path from the S3 Amazon Cloud
      * @param x path to be deleted
@@ -69,7 +72,7 @@ public class S3FileUtil {
      * @throws RemoteResourceNotAvailableException in case the resource is not available
      * @throws FileNotFoundException in case the file is not found
      */
-    public static void getS3FileWithName(String s3Region, String s3Bucket, String s3WorkDir, String name) throws IOException,RemoteResourceNotAvailableException,FileNotFoundException {
+    public static void getS3FileWithName(String s3Region, String s3Bucket, String s3WorkDir, String name) throws IOException,RemoteResourceNotAvailableException {
         log.info("Starting transfer of the file {}", name);
         //Authorization is done in the machine scope and SDK takes care of get it
 
@@ -83,7 +86,6 @@ public class S3FileUtil {
                     ResponseTransformer.toFile(x));
             log.info("Transfer of file {} finished with success", name);
         } catch (NoSuchBucketException e) {
-            log.error("Bucket: {} {}", s3Bucket , e.getMessage());
             if (e.getCause() != null) {
                 log.error(e.getCause().getMessage());
             }
@@ -97,13 +99,11 @@ public class S3FileUtil {
             }
             throw new FileNotFoundException(msg);
         } catch (SdkClientException e) {
-            log.error(e.getMessage());
             if (e.getCause() != null) {
                 log.error(e.getCause().getMessage());
             }
             throw new RemoteResourceNotAvailableException(e.getMessage(),e);
         } catch (IOException e) {
-            log.error(e.getMessage());
             if (e.getCause() != null) {
                 log.error(e.getCause().getMessage());
             }
@@ -134,15 +134,15 @@ public class S3FileUtil {
 
             boolean done = false;
             S3Client s3 = S3Client.builder().region(Region.of(s3Region)).build();
-            while(!done) {
+            while (!done) {
                 ListObjectsV2Response listObjectsV2Response = s3.listObjectsV2(listObjectsV2Request);
-                for(S3Object content : listObjectsV2Response.contents()) {
-                    if(content.key().startsWith(prefix)) {
-                        getS3FileWithName(s3Region,s3Bucket,s3WorkDir,content.key());
+                for (S3Object content : listObjectsV2Response.contents()) {
+                    if (content.key().startsWith(prefix)) {
+                        getS3FileWithName(s3Region, s3Bucket, s3WorkDir, content.key());
                         count++;
                     }
                 }
-                if(listObjectsV2Response.nextContinuationToken() == null) {
+                if (listObjectsV2Response.nextContinuationToken() == null) {
                     done = true;
                 }
                 listObjectsV2Request = listObjectsV2Request.toBuilder()
@@ -150,14 +150,7 @@ public class S3FileUtil {
                         .build();
             }
             return count;
-        } catch (NoSuchBucketException e) {
-            log.error("Bucket: " + s3Bucket + e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getMessage());
-            }
-            throw new RemoteResourceNotAvailableException(e.getMessage(),e);
-        }  catch (SdkClientException e) {
-            log.error(e.getMessage());
+        }  catch (SdkClientException|NoSuchBucketException e) {
             if (e.getCause() != null) {
                 log.error(e.getCause().getMessage());
             }
