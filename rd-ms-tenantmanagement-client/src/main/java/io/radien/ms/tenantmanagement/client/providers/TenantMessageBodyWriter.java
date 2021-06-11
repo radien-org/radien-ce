@@ -15,9 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.providers;
 
-import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
-import io.radien.ms.tenantmanagement.client.util.ContractModelMapper;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 
 import javax.json.Json;
@@ -35,45 +33,58 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author Santana
+ * Tenant Message body Writer from object to JSON
  *
+ * @author mawe
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class TenantMessageBodyWriter implements MessageBodyWriter<Tenant> {
 
+	/**
+	 * Validates if the given received type is a tenant object
+	 * @param type of the received object
+	 * @param genericType for multiple conversions
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if received object is in fact a tenant one
+	 */
 	 @Override
-	    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+	 public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 	 	return type.equals(Tenant.class);
-	    }
+	 }
 
-	    /*
-	    Deprecated in JAX RS 2.0
-	     */
-	    @Override
-	    public long getSize(Tenant model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	    	return 0;
-	    }
+	/**
+	 * Gets the number of received objects and counts it
+	 * @param model received
+	 * @param type of the received object
+	 * @param genericType for multiple conversions
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return the number of received objects
+	 */
+	@Override
+	public long getSize(Tenant model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return 0;
+	}
 
-	    /**
-	     * Marshal User to OutputStream
-	     *
-	     * @param model
-	     * @param type
-	     * @param genericType
-	     * @param annotations
-	     * @param mediaType
-	     * @param httpHeaders
-	     * @param entityStream
-	     * @throws IOException
-	     * @throws WebApplicationException
-	     */
-	    @Override
-	    public void writeTo(Tenant model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-	    	JsonWriter jsonWriter = Json.createWriter(entityStream);
-	        JsonObject jsonObject = TenantModelMapper.map(model);
-	        jsonWriter.writeObject(jsonObject);
-	        jsonWriter.close();
-	    }
-
+	/**
+	 * Writes the received tenant object into a json message
+	 * @param model received to be written
+	 * @param type of the received object
+	 * @param genericType for multiple conversions
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
+	 */
+	@Override
+	public void writeTo(Tenant model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+		JsonWriter jsonWriter = Json.createWriter(entityStream);
+		JsonObject jsonObject = TenantModelMapper.map(model);
+		jsonWriter.writeObject(jsonObject);
+		jsonWriter.close();
+	}
 }
