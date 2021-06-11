@@ -15,12 +15,17 @@
  */
 package io.radien.ms.rolemanagement.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.TableGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
 import java.util.Date;
 
 /**
- * Role Entity
- *
+ * Role Entity table fields
  * @author Bruno Gama
  */
 @Entity
@@ -29,12 +34,23 @@ public class Role extends io.radien.ms.rolemanagement.client.entities.Role {
 
     private static final long serialVersionUID = -725339588872652151L;
 
+    /**
+     * Role entity emty constructor
+     */
     public Role(){ }
 
+    /**
+     * Role entity constructor
+     * @param role {@link io.radien.ms.rolemanagement.client.entities.Role} to be added/created
+     */
     public Role(io.radien.ms.rolemanagement.client.entities.Role role){
         super(role);
     }
 
+    /**
+     * Role entity id table field
+     * @return the role id
+     */
     @Id
     @TableGenerator(name = "GEN_SEQ_ROL01", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_ROL01")
@@ -43,18 +59,30 @@ public class Role extends io.radien.ms.rolemanagement.client.entities.Role {
         return super.getId();
     }
 
+    /**
+     * Role entity name table field
+     * @return the role name
+     */
     @Column(unique = true)
     @Override
     public String getName() {
         return super.getName();
     }
 
+    /**
+     * Role entity description table field
+     * @return the role description
+     */
     @Column
     @Override
     public String getDescription() {
         return super.getDescription();
     }
 
+    /**
+     * Role entity termination table field
+     * @return the role termination date
+     */
     @Column
     @Override
     public Date getTerminationDate() {

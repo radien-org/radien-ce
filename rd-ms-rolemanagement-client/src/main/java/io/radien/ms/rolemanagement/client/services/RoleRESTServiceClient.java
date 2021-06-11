@@ -351,6 +351,10 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
         }
     }
 
+    /**
+     * OAF role getter
+     * @return the active role oaf
+     */
 	@Override
 	public OAFAccess getOAF() {
 		return oaf;

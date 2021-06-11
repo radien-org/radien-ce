@@ -32,12 +32,23 @@ import javax.persistence.Table;
 @Table(name = "TNT_ROL_USR01", uniqueConstraints = @UniqueConstraint(columnNames = {"tenantRoleId, userId"}))
 public class TenantRoleUser extends io.radien.ms.rolemanagement.client.entities.TenantRoleUser {
 
+	/**
+	 * Tenant Role User entity empty constructor
+	 */
 	public TenantRoleUser(){ }
 
+	/**
+	 * Tenant Role User entity constructor
+	 * @param tenantRoleUser {@link io.radien.ms.rolemanagement.client.entities.TenantRoleUser} to be added/created
+	 */
 	public TenantRoleUser(io.radien.ms.rolemanagement.client.entities.TenantRoleUser tenantRoleUser){
 		super(tenantRoleUser);
 	}
 
+	/**
+	 * Tenant Role User id table field
+	 * @return tenant role user id
+	 */
 	@Id
 	@TableGenerator(name = "GEN_SEQ_TNT_ROL_USR01", allocationSize = 100)
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT_ROL_USR01")
@@ -46,12 +57,20 @@ public class TenantRoleUser extends io.radien.ms.rolemanagement.client.entities.
 		return super.getId();
 	}
 
+	/**
+	 * Tenant Role User tenant role id table field
+	 * @return tenant role user tenant role id
+	 */
 	@Column
 	@Override
 	public Long getTenantRoleId() {
 		return super.getTenantRoleId();
 	}
 
+	/**
+	 * Tenant Role User user id table field
+	 * @return tenant role user user id
+	 */
 	@Column
 	@Override
 	public Long getUserId() {

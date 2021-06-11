@@ -15,7 +15,10 @@
  */
 package io.radien.ms.tenantmanagement.config;
 
-import io.radien.api.*;
+import io.radien.api.OAFAccess;
+import io.radien.api.Event;
+import io.radien.api.SystemProperties;
+import io.radien.api.OAFProperties;
 import io.radien.api.kernel.messages.SystemMessages;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -28,6 +31,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Tenant management oaf access configuration
+ * @author Bruno Gama
+ */
 @ApplicationScoped
 public class TenantConfiguration implements OAFAccess {
 
@@ -37,26 +44,44 @@ public class TenantConfiguration implements OAFAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * Tenant OAF Configuration constructor
+     */
     public TenantConfiguration() {
         config = ConfigProvider.getConfig();
         supportedLocales = new HashMap<>();
     }
 
+    /**
+     * Configuration Tenant version getter
+     * @return the configuration permission version
+     */
     @Override
     public String getVersion() {
         return null;
     }
 
+    /**
+     * Configuration tenant system administrator user id getter
+     * @return the tenant oaf configuration system administrator user id
+     */
     @Override
     public Long getSystemAdminUserId() {
         return 0L;
     }
 
+    /**
+     * Configuration tenant fire event caller
+     */
     @Override
     public void fireEvent(Event event) {
 
     }
 
+    /**
+     * Configuration tenant find locale getter
+     * @return the tenant oaf configuration found locale for the required language
+     */
     @Override
     public Locale findLocale(String language) {
         try {
@@ -72,6 +97,10 @@ public class TenantConfiguration implements OAFAccess {
         return getDefaultLocale();
     }
 
+    /**
+     * Configuration tenant property endpoint getter
+     * @return the tenant oaf configuration property
+     */
     @Override
     public String getProperty(SystemProperties cfg) {
         return config.getValue(cfg.propKey(), String.class);
@@ -90,12 +119,19 @@ public class TenantConfiguration implements OAFAccess {
         return ResourceBundle.getBundle(bundleName, locale);
     }
 
+    /**
+     * Configuration tenant supported locales list getter
+     * @return a map of tenant oaf configuration supported locales
+     */
     @Override
     public Map<String, Locale> getSupportedLocales() {
         loadSupportedLocales();
         return supportedLocales;
     }
 
+    /**
+     * Configuration tenant load of all the supported locales
+     */
     private void loadSupportedLocales() {
         try {
             for (String languageTag : getProperty(OAFProperties.SYS_SUPPORTED_LOCALES).split(",")) {
@@ -113,6 +149,10 @@ public class TenantConfiguration implements OAFAccess {
         }
     }
 
+    /**
+     * Configuration tenant default locale getter
+     * @return the tenant oaf configuration default locale
+     */
     @Override
     public Locale getDefaultLocale() {
         try {

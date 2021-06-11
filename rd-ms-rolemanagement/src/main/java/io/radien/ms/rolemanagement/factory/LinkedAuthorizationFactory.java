@@ -68,7 +68,7 @@ public class LinkedAuthorizationFactory implements Serializable {
     }
 
     /**
-     *  Converts a JSONObject to a LinkedAuthorization object that will be used by the Application.
+     * Converts a JSONObject to a LinkedAuthorization object that will be used by the Application.
      * @param jsonRole receives a json object with all the information.
      * @return a LinkedAuthorization object constructed by the given json.
      */

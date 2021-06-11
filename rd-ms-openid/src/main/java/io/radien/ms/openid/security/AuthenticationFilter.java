@@ -76,7 +76,7 @@ public class AuthenticationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        log.debug("AuthenticationFilter init");
     }
 
     /**
@@ -121,7 +121,7 @@ public class AuthenticationFilter implements Filter {
         }
 
         //public
-        if(req.getRequestURI().endsWith("v1/user/refresh") ){
+        if(req.getRequestURI().endsWith("v1/user/refresh") || (req.getRequestURI().endsWith("service/v1/health"))){
             chain.doFilter(request, response);
 
         } else if (failed) {
@@ -129,7 +129,6 @@ public class AuthenticationFilter implements Filter {
             ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resp.getWriter().write("Failed authentication..");
             resp.setContentType("application/json; charset=UTF-8");
-            //resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Failed authentication..");
         }
 
     }
@@ -164,27 +163,30 @@ public class AuthenticationFilter implements Filter {
             }
 
             Payload payload = jwsObject.getPayload();
-            JsonReader reader = Json.createReader(new StringReader(payload.toString()));
-            JsonObject jsonObject = reader.readObject();
-            String[] scopes = jsonObject.getString("scope").split(" ");
-            //TODO: validate scopes
+            try (JsonReader reader = Json.createReader(new StringReader(payload.toString()))) {
+                JsonObject jsonObject = reader.readObject();
+                String[] scopes = jsonObject.getString("scope").split(" ");
+                //TODO: validate scopes
 
-            if (!issuer.equals(jsonObject.getString("iss"))) {
-                return false;
+                if (!issuer.equals(jsonObject.getString("iss"))) {
+                    return false;
+                }
+
+                if (!jsonObject.getString("typ").equals("Bearer")) {
+                    return false;
+                }
+
+                LocalDateTime exp = LocalDateTime.ofInstant(Instant.ofEpochSecond(jsonObject.getJsonNumber("exp").longValue()), ZoneId.systemDefault());
+                if (exp.isBefore(LocalDateTime.now())) {
+                    //TODO: refresh token
+                    return false;
+
+                }
+                Principal principal = PrincipalFactory.convert(jsonObject);
+                session.setAttribute("USER", principal);
             }
 
-            if (!jsonObject.getString("typ").equals("Bearer")) {
-                return false;
-            }
 
-            LocalDateTime exp = LocalDateTime.ofInstant(Instant.ofEpochSecond(jsonObject.getJsonNumber("exp").longValue()), ZoneId.systemDefault());
-            if (exp.isBefore(LocalDateTime.now())) {
-                //TODO: refresh token
-                return false;
-
-            }
-            Principal principal = PrincipalFactory.convert(jsonObject);
-            session.setAttribute("USER", principal);
 
             return true;
         } catch (ParseException | MalformedURLException | JwkException | JOSEException e) {
@@ -204,6 +206,6 @@ public class AuthenticationFilter implements Filter {
      */
     @Override
     public void destroy() {
-
+        log.debug("AuthenticationFilter destroy");
     }
 }

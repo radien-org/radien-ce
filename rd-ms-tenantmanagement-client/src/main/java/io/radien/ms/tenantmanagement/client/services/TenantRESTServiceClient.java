@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Contract REST service requests to the client
+ *
  * @author Santana
  */
 @Stateless

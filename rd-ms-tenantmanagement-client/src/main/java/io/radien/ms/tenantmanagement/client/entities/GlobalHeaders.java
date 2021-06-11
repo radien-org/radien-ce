@@ -27,14 +27,34 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * @author Bruno Gama
+ * This interface is intended for generating or propagating HTTP headers. It is
+ * invoked by the MS Rest Client implementation before invoking any entity
+ * providers on the outbound processing chain. It contains a single method,
+ * update which takes parameters of headers passed in from the
+ * incoming JAX-RS request (if applicable, if not, this will be an empty map)
+ * and a read-only map of headers specified by ClientHeaderParam or
+ * HeaderParam annotations on the client interface.
+ *
+ *  @author Bruno Gama
  */
 @Default
 @Named("tenantGlobalHeaders")
 public class GlobalHeaders implements ClientHeadersFactory {
+
     @Inject
     private TokensPlaceHolder tokensPlaceHolder;
 
+    /**
+     * Updates the HTTP headers to send to the remote service. Note that providers
+     * on the outbound processing chain could further update the headers.
+     *
+     * @param incomingHeaders - the map of headers from the inbound JAX-RS request. This will
+     * be an empty map if the associated client interface is not part of a JAX-RS request.
+     * @param outgoingHeaders - the read-only map of header parameters specified on the
+     * client interface.
+     * @return a map of HTTP headers to merge with the clientOutgoingHeaders to be sent to
+     * the remote service.
+     */
     @Override
     public MultivaluedMap<String, String> update(MultivaluedMap<String, String> incomingHeaders, MultivaluedMap<String, String> outgoingHeaders) {
         //TODO: Understand why standard injection is not working

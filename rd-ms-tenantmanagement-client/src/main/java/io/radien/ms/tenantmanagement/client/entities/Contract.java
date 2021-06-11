@@ -20,6 +20,10 @@ import io.radien.api.model.tenant.SystemContract;
 
 import java.time.LocalDateTime;
 
+/**
+ * Contract object class and constructor
+ * @author Nuno Santana
+ */
 public class Contract extends AbstractModel implements SystemContract {
 
 	private static final long serialVersionUID = -3532886874455311100L;
@@ -29,8 +33,15 @@ public class Contract extends AbstractModel implements SystemContract {
 	private LocalDateTime start;
 	private LocalDateTime end;
 
+	/**
+	 * Contract object empty constructor
+	 */
 	public Contract(){}
 
+	/**
+	 * Contract constructor
+	 * @param u contract to be created and used
+	 */
 	public Contract(Contract u) {
 		this.id = u.getId();
 		this.name = u.getName();
@@ -42,41 +53,73 @@ public class Contract extends AbstractModel implements SystemContract {
 		this.setLastUpdate(u.getLastUpdate());
 	}
 
+	/**
+	 * Contract id getter
+	 * @return the contract id
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * Contract id setter
+	 * @param id to be set
+	 */
 	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	/**
+	 * Contract name getter
+	 * @return the contract name
+	 */
 	@Override
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Contract name setter
+	 * @param name to be set
+	 */
 	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Contract start date getter
+	 * @return the contract start date
+	 */
 	@Override
 	public LocalDateTime getStart() {
 		return start;
 	}
 
+	/**
+	 * Contract start date setter
+	 * @param start to be set
+	 */
 	@Override
 	public void setStart(LocalDateTime start) {
 		this.start=start;
 	}
 
+	/**
+	 * Contract end date getter
+	 * @return the contract end date
+	 */
 	@Override
 	public LocalDateTime getEnd() {
 		return end;
 	}
 
+	/**
+	 * Contract end date setter
+	 * @param end to be set
+	 */
 	@Override
 	public void setEnd(LocalDateTime end) {
 		this.end = end;

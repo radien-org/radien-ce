@@ -29,12 +29,16 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
+ * Mapper from a given information into a JSON or a Contract
  * @author Santana
- *
  */
 public class ContractModelMapper {
 
-
+    /**
+     * Maps into a Json Object a Contract
+     * @param model role that has the information to be converted
+     * @return a json object created based the contract
+     */
     public static JsonObject map(Contract model) {
         return ContractFactory.convertToJsonObject(model);
     }
@@ -48,6 +52,11 @@ public class ContractModelMapper {
         return arrayBuilder.build();
     }
 
+    /**
+     * Creates a contract based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a contract object based in the received information
+     */
     public static Contract map(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
@@ -57,9 +66,9 @@ public class ContractModelMapper {
     }
 
     /**
-     * Obtains a Permission Page from a Json input stream
-     * @param is
-     * @return
+     * Creates a contract based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a page with contract based in the received information
      */
     public static Page<Contract> mapToPage(InputStream is) {
         Page<Contract> page = null;

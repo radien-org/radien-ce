@@ -26,9 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -294,6 +292,10 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
     }
 
+    /**
+     * Returns the active entity manager being used by the tenant role user service
+     * @return the active entity manager
+     */
     public EntityManager getEntityManager() {
         return entityManager;
     }

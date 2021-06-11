@@ -15,13 +15,23 @@
  */
 package io.radien.ms.tenantmanagement.client.util;
 
-import javax.json.*;
+import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonNumber;
+import javax.json.JsonArray;
+import javax.json.JsonValue;
+import javax.json.JsonObjectBuilder;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+/**
+ * Factory for the tenants and contracts to retrieve or convert the information from or to a json
+ *
+ * @author Bruno Gama
+ */
 public class FactoryUtilService implements Serializable {
     private final static String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
@@ -170,6 +180,12 @@ public class FactoryUtilService implements Serializable {
         }
     }
 
+    /**
+     * Adds the value given object into an json array
+     * @param builder Json Object builder that it is being used
+     * @param key value of the json field
+     * @param value value of the field to be added
+     */
     public static void addValueArray(JsonObjectBuilder builder, String key, Object value) {
         if (value != null) {
             builder.add(key, (JsonValue) value);
@@ -177,7 +193,6 @@ public class FactoryUtilService implements Serializable {
             builder.addNull(key);
         }
     }
-
 
     /**
      * Retrieves the LocalDateTime value from the Json Object
@@ -199,5 +214,4 @@ public class FactoryUtilService implements Serializable {
         }
         return null;
     }
-
 }
