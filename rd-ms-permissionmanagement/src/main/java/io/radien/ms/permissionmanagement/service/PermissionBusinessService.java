@@ -38,8 +38,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 /**
- * @author Newton Carvalho
  * Service facade to perform operations beyond the simple CRUD contract
+ *
+ * @author Newton Carvalho
  */
 @Stateless
 public class PermissionBusinessService {
@@ -56,12 +57,12 @@ public class PermissionBusinessService {
 
     /***
      * Assign an action and a resource to a permission
-     * @param permissionId
-     * @param actionId
-     * @param resourceId
+     * @param permissionId to be associated
+     * @param actionId to be associated
+     * @param resourceId to be associated
      * @return AssociationStatus describing the status operation (if it was successful or not) and the
      * issue description (in case of unsuccessful operation)
-     * @throws UniquenessConstraintException
+     * @throws UniquenessConstraintException in case of duplicated fields
      */
     public AssociationStatus associate(Long permissionId, Long actionId, Long resourceId) throws UniquenessConstraintException{
         if (permissionId == null)
@@ -100,10 +101,10 @@ public class PermissionBusinessService {
 
     /***
      * UnAssign an action to a permission
-     * @param permissionId
+     * @param permissionId to be dissociated
      * @return AssociationStatus describing the status operation (if it was successful or not) and the
      * issue description (in case of unsuccessful operation)
-     * @throws UniquenessConstraintException
+     * @throws UniquenessConstraintException in case of duplicated fields
      */
     public AssociationStatus dissociation(Long permissionId) throws UniquenessConstraintException {
         if (permissionId == null)
@@ -126,8 +127,8 @@ public class PermissionBusinessService {
 
     /**
      * Check if an action exists on the DB
-     * @param actionId
-     * @return
+     * @param actionId to validate the existence
+     * @return true if action does exist in the permissions
      */
     protected boolean checkIfActionExists(Long actionId) {
         EntityManager em = emf.createEntityManager();
@@ -143,8 +144,8 @@ public class PermissionBusinessService {
 
     /**
      * Check if an resource exists on the DB
-     * @param resourceId
-     * @return
+     * @param resourceId to validate the existence
+     * @return true if the resource does exist in the permissions
      */
     protected boolean checkIfResourceExists(Long resourceId) {
         EntityManager em = emf.createEntityManager();

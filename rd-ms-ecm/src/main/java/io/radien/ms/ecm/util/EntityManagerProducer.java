@@ -26,9 +26,10 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 /**
+ * Entity Manager for the I18N producer
+ *
  * @author andresousa
  */
-
 @ApplicationScoped
 public class EntityManagerProducer {
     private static final String DATABASE = "cms_radien";

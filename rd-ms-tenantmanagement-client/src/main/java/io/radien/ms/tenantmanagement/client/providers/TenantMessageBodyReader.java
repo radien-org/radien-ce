@@ -30,16 +30,38 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 
 /**
+ * Tenant JSON reader into object
+ * Reads the given JSON object and converts it into a tenant
  * @author Newton Carvalho
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class TenantMessageBodyReader implements MessageBodyReader<Tenant> {
+
+	/**
+	 * Checks if the given JSON object can be read into a tenant one
+	 * @param type of the received object
+	 * @param genericType for multiple conversion purposes
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true in case received JSON can be read into a tenant
+	 */
 	@Override
 	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return type.equals(Tenant.class);
 	}
 
+	/**
+	 * Converts the given JSON object into a contract one
+	 * @param type for the final object (tenant)
+	 * @param type for multiple conversion purposes
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @return a System Tenant that has been gather the information from the given JSON
+	 * @throws WebApplicationException in case of any issue while parsing the JSON fields into system tenant ones
+	 */
 	@Override
 	public Tenant readFrom(Class<Tenant> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
 		Tenant tenant = null;

@@ -72,7 +72,7 @@ public interface SystemUser extends Model {
 
 	/**
 	 * System user is enable setter
-	 * @param enabled to enable or disbale user
+	 * @param enabled to enable or disable user
 	 */
 	public void setEnabled(boolean enabled);
 

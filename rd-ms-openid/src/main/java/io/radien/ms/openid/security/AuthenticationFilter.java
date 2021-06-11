@@ -48,13 +48,10 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 import java.security.interfaces.RSAPublicKey;
 
@@ -64,10 +61,13 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import java.util.stream.Collectors;
-
+/**
+ *A Filter that performs authentication of a particular request.
+ * @author Nuno Santana
+ */
 @WebFilter("/*")
 public class AuthenticationFilter implements Filter {
+
     //TODO: Move this to security library so it can be reused by multiple microservices
     @Context
     private ResourceInfo resourceInfo;
@@ -76,9 +76,31 @@ public class AuthenticationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        log.debug("AuthenticationFilter init");
     }
 
+    /**
+     * The doFilter method of the Filter is called by the container each time a request/response pair is
+     * passed through the chain due to a client request for a resource at the end of the chain. The FilterChain passed
+     * in to this method allows the Filter to pass on the request and response to the next entity in the chain.
+     *
+     * A typical implementation of this method would follow the following pattern:
+     * Examine the request
+     * Optionally wrap the request object with a custom implementation to filter content or headers for input
+     * filtering
+     * Optionally wrap the response object with a custom implementation to filter content or headers for output
+     * filtering
+     * Either invoke the next entity in the chain using the FilterChain object
+     * or not pass on the request/response pair to the next entity in the filter chain to block the
+     * request processing
+     * Directly set headers on the response after invocation of the next entity in the filter chain.
+     *
+     * @param request  the ServletRequest object contains the client's request
+     * @param response the ServletResponse object contains the filter's response
+     * @param chain    the FilterChain for invoking the next filter or the resource
+     * @throws IOException      if an I/O related error has occurred during the processing
+     * @throws ServletException if an exception occurs that interferes with the filter's normal operation
+     **/
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
@@ -99,7 +121,7 @@ public class AuthenticationFilter implements Filter {
         }
 
         //public
-        if(req.getRequestURI().endsWith("v1/user/refresh") ){
+        if(req.getRequestURI().endsWith("v1/user/refresh") || (req.getRequestURI().endsWith("service/v1/health"))){
             chain.doFilter(request, response);
 
         } else if (failed) {
@@ -107,11 +129,17 @@ public class AuthenticationFilter implements Filter {
             ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resp.getWriter().write("Failed authentication..");
             resp.setContentType("application/json; charset=UTF-8");
-            //resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Failed authentication..");
         }
 
     }
 
+    /**
+     * Everytime the container receives a request/response the following method will get the authorization issuer and
+     * url to validate the request/response authentication
+     * @param session where the request/response is coming or going into
+     * @param accessToken user access token to be validated or added
+     * @return true in case the token has been validated with success
+     */
     private boolean validateToken(HttpSession session, String accessToken) {
         try {
             JWSObject jwsObject = JWSObject.parse(accessToken);
@@ -135,27 +163,30 @@ public class AuthenticationFilter implements Filter {
             }
 
             Payload payload = jwsObject.getPayload();
-            JsonReader reader = Json.createReader(new StringReader(payload.toString()));
-            JsonObject jsonObject = reader.readObject();
-            String[] scopes = jsonObject.getString("scope").split(" ");
-            //TODO: validate scopes
+            try (JsonReader reader = Json.createReader(new StringReader(payload.toString()))) {
+                JsonObject jsonObject = reader.readObject();
+                String[] scopes = jsonObject.getString("scope").split(" ");
+                //TODO: validate scopes
 
-            if (!issuer.equals(jsonObject.getString("iss"))) {
-                return false;
+                if (!issuer.equals(jsonObject.getString("iss"))) {
+                    return false;
+                }
+
+                if (!jsonObject.getString("typ").equals("Bearer")) {
+                    return false;
+                }
+
+                LocalDateTime exp = LocalDateTime.ofInstant(Instant.ofEpochSecond(jsonObject.getJsonNumber("exp").longValue()), ZoneId.systemDefault());
+                if (exp.isBefore(LocalDateTime.now())) {
+                    //TODO: refresh token
+                    return false;
+
+                }
+                Principal principal = PrincipalFactory.convert(jsonObject);
+                session.setAttribute("USER", principal);
             }
 
-            if (!jsonObject.getString("typ").equals("Bearer")) {
-                return false;
-            }
 
-            LocalDateTime exp = LocalDateTime.ofInstant(Instant.ofEpochSecond(jsonObject.getJsonNumber("exp").longValue()), ZoneId.systemDefault());
-            if (exp.isBefore(LocalDateTime.now())) {
-                //TODO: refresh token
-                return false;
-
-            }
-            Principal principal = PrincipalFactory.convert(jsonObject);
-            session.setAttribute("USER", principal);
 
             return true;
         } catch (ParseException | MalformedURLException | JwkException | JOSEException e) {
@@ -164,8 +195,17 @@ public class AuthenticationFilter implements Filter {
         return false;
     }
 
+    /**
+     * Called by the web container to indicate to a filter that it is being taken out of service.
+     * This method is only called once all threads within the filter's doFilter method have exited or after a timeout
+     * period has passed. After the web container calls this method, it will not call the doFilter method again on this
+     * instance of the filter.
+     * This method gives the filter an opportunity to clean up any resources that are being held (for example, memory,
+     * file handles, threads) and make sure that any persistent state is synchronized with the filter's current state in
+     * memory.
+     */
     @Override
     public void destroy() {
-
+        log.debug("AuthenticationFilter destroy");
     }
 }

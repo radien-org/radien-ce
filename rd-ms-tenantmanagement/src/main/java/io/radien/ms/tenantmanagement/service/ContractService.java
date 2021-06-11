@@ -40,13 +40,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * Contract requests to be performed into the DB and actions to take place
  * @author Nuno Santana
  */
-
 @Stateful
 public class ContractService implements ContractServiceAccess {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6720615849486414582L;
 
     @Inject
     private EntityManagerHolder emh;

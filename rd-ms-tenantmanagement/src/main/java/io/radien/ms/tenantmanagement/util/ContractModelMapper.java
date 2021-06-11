@@ -15,7 +15,6 @@
  */
 package io.radien.ms.tenantmanagement.util;
 
-
 import io.radien.ms.tenantmanagement.client.services.ContractFactory;
 import io.radien.ms.tenantmanagement.entities.Contract;
 
@@ -29,18 +28,26 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-
 /**
+ * Mapper from a given information into a JSON or a contract
  * @author Santana
- *
  */
 public class ContractModelMapper {
 
-
+    /**
+     * Maps into a Json Object a Contract
+     * @param model contract that has the information to be converted
+     * @return a json object created based the contract
+     */
     public static JsonObject map(Contract model) {
         return ContractFactory.convertToJsonObject(model);
     }
 
+    /**
+     * Maps into a Json Object array based on a contract array list
+     * @param models contract that have the information to be converted
+     * @return a json array created based on the multiple contracts
+     */
     public static JsonArray map(List<Contract> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
@@ -50,6 +57,11 @@ public class ContractModelMapper {
         return arrayBuilder.build();
     }
 
+    /**
+     * Creates a contract based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a contract object based in the received information
+     */
     public static Contract map(InputStream is) throws ParseException{
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();

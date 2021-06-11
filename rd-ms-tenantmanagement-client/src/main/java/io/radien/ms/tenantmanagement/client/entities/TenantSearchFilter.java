@@ -19,6 +19,7 @@ import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenantType;
 
 /**
+ * Encapsulates the parameters applied to search for tenants
  * @author Bruno Gama
  */
 public class TenantSearchFilter implements SystemTenantSearchFilter {
@@ -28,6 +29,13 @@ public class TenantSearchFilter implements SystemTenantSearchFilter {
     private boolean isExact;
     private boolean isLogicConjunction;
 
+    /**
+     * Tenant search filter constructor
+     * @param name of the tenant to be found
+     * @param type of the tenant to be found
+     * @param isExact true in case search option should be exact
+     * @param isLogicalConjunction true in case search option is and conjunction
+     */
     public TenantSearchFilter(String name, String type, boolean isExact, boolean isLogicalConjunction) {
         this.name = name;
         SystemTenantType tenantType = TenantType.getByName(type);
@@ -36,43 +44,75 @@ public class TenantSearchFilter implements SystemTenantSearchFilter {
         this.isLogicConjunction = isLogicalConjunction;
     }
 
+    /**
+     * Tenant search filter name getter
+     * @return the tenant search filter name
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * Tenant search filter name setter
+     * @param name to be set
+     */
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Tenant search filter type getter
+     * @return the tenant search filter type
+     */
     @Override
     public SystemTenantType getTenantType() {
         return tenantType;
     }
 
+    /**
+     * Tenant search filter type setter
+     * @param tenantType to be set
+     */
     @Override
     public void setTenantType(SystemTenantType tenantType) {
         this.tenantType = tenantType;
     }
 
+    /**
+     * Tenant search filter get is exact search
+     * @return true or false value
+     */
     @Override
     public boolean isExact() {
         return isExact;
     }
 
+    /**
+     * Tenant search filter set exact
+     * @param exact to be set and updated
+     */
     @Override
     public void setExact(boolean exact) {
-        this.isExact = exact;
+        isExact = exact;
     }
 
+    /**
+     * Tenant search filter get is logical conjunction
+     * @return true or false value
+     */
     @Override
     public boolean isLogicConjunction() {
         return isLogicConjunction;
     }
 
+    /**
+     * Tenant search filter set is logic conjunction
+     * @param logicConjunction to be set and updated
+     */
     @Override
     public void setLogicConjunction(boolean logicConjunction) {
-        this.isLogicConjunction = logicConjunction;
+        isLogicConjunction = logicConjunction;
     }
 }

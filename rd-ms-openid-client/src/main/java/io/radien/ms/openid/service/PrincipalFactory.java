@@ -18,10 +18,12 @@ package io.radien.ms.openid.service;
 import io.radien.ms.openid.entities.Principal;
 
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import java.util.Date;
 
 /**
  * An utilitarian class to create instance of Principal class
+ * @author Newton Carvalho
  */
 public class PrincipalFactory {
 
@@ -52,12 +54,36 @@ public class PrincipalFactory {
         return principal;
     }
 
+    /**
+     * Convert jsonObject in Principal
+     *
+     * @param jsonObject to be converted
+     * @return Principal to be used
+     */
     public static Principal convert(JsonObject jsonObject) {
-        String givenName = jsonObject.getString("given_name");
-        String familyName = jsonObject.getString("family_name");
-        String userName = jsonObject.getString("preferred_username");
-        String email = jsonObject.getString("email");
-        String sub = jsonObject.getString("sub");
+
+        String givenName = getString(jsonObject,"given_name");
+        String familyName = getString(jsonObject,"family_name");
+        String userName = getString(jsonObject,"preferred_username");
+        String email = getString(jsonObject,"email");
+        String sub = getString(jsonObject,"sub");
         return create(givenName, familyName, userName, sub, email, -1L);
+    }
+
+    /**
+     * Get string from jsonObject
+     *
+     * @param jsonObject to fetch the string
+     * @param fieldName from string value we want to fetch
+     * @return String with value or null if non-existent
+     */
+    private static String getString(JsonObject jsonObject, String fieldName){
+        if(jsonObject!=null) {
+            Object value = jsonObject.get(fieldName);
+            if (value != null) {
+                return ((JsonString) value).getString();
+            }
+        }
+        return null;
     }
 }

@@ -399,7 +399,7 @@ public class TenantServiceTest {
 
         SystemTenant systemTenant = tenantServiceAccess.get(tenantSub.getId());
         assertNotNull(systemTenant);
-        assertEquals(systemTenant.getTenantType(), TenantType.SUB_TENANT);
+        assertEquals(TenantType.SUB_TENANT, systemTenant.getTenantType(), );
 
         TenantSearchFilter filter = new TenantSearchFilter("volkswagen-accountancy", null, false, false);
         List<? extends SystemTenant> list =
@@ -576,6 +576,7 @@ public class TenantServiceTest {
 
         // Page size = 100 -> Overkill!!
         Page<SystemTenant> page = tenantServiceAccess.getAll(null,1,100,null,false);
+        assertTrue(page.getTotalResults()>2);
     }
 
     /**

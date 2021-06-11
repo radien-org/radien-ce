@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Utility class to create Resource class instances
  * @author Newton Carvalho
- * Utilitary class to create Resource class instances
  */
 public class ResourceFactory {
 
@@ -90,8 +90,8 @@ public class ResourceFactory {
 
     /**
      * Converts a Json Array into an Resource List
-     * @param jsonArray
-     * @return
+     * @param jsonArray to retrieve and gather the necessary information to be mapped
+     * @return a list of extracted resources
      */
     public static List<Resource> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());

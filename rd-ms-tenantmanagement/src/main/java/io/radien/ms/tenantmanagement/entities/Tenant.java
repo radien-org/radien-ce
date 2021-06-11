@@ -31,18 +31,29 @@ import java.time.LocalDate;
  *
  * @author Santana
  */
-
 @Entity
 @Table(name = "TNT01")
 public class Tenant extends io.radien.ms.tenantmanagement.client.entities.Tenant {
 
 	private static final long serialVersionUID = 307978393054123750L;
 
+	/**
+	 * Tenant entity empty constructor
+	 */
 	public Tenant(){ }
 
+	/**
+	 * Tenant entity constructor
+	 * @param tenant {@link io.radien.ms.tenantmanagement.client.entities.Tenant} to be created/added
+	 */
 	public Tenant(io.radien.ms.tenantmanagement.client.entities.Tenant tenant){
 		super(tenant);
 	}
+
+	/**
+	 * Tenant id table field getter
+	 * @return the tenant id
+	 */
 	@Id
 	@TableGenerator(name = "GEN_SEQ_TNT01", allocationSize = 100)
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT01")
@@ -51,18 +62,30 @@ public class Tenant extends io.radien.ms.tenantmanagement.client.entities.Tenant
 		return super.getId();
 	}
 
+	/**
+	 * Tenant name table field getter
+	 * @return the tenant name
+	 */
 	@Column(unique = true)
 	@Override
 	public String getName() {
 		return super.getName();
 	}
 
+	/**
+	 * Tenant key table field getter
+	 * @return the tenant key
+	 */
 	@Column
 	@Override
 	public String getTenantKey() {
 		return super.getTenantKey();
 	}
 
+	/**
+	 * Tenant type table field getter
+	 * @return the tenant type
+	 */
 	@Column
 	@Override
 	@Convert(converter = TenantTypeConverter.class)
@@ -70,60 +93,100 @@ public class Tenant extends io.radien.ms.tenantmanagement.client.entities.Tenant
 		return super.getTenantType();
 	}
 
+	/**
+	 * Tenant start date table field getter
+	 * @return the tenant start date
+	 */
 	@Column
 	@Override
 	public LocalDate getTenantStart() {
 		return super.getTenantStart();
 	}
 
+	/**
+	 * Tenant end date table field getter
+	 * @return the tenant end date
+	 */
 	@Column
 	@Override
 	public LocalDate getTenantEnd() {
 		return super.getTenantEnd();
 	}
 
+	/**
+	 * Tenant client address table field getter
+	 * @return the tenant client address
+	 */
 	@Column
 	@Override
 	public String getClientAddress() {
 		return super.getClientAddress();
 	}
 
+	/**
+	 * Tenant client zip code table field getter
+	 * @return the tenant client zip code
+	 */
 	@Column
 	@Override
 	public String getClientZipCode() {
 		return super.getClientZipCode();
 	}
 
+	/**
+	 * Tenant client city table field getter
+	 * @return the tenant client city
+	 */
 	@Column
 	@Override
 	public String getClientCity() {
 		return super.getClientCity();
 	}
 
+	/**
+	 * Tenant Client country table field getter
+	 * @return the tenant client country
+	 */
 	@Column
 	@Override
 	public String getClientCountry() {
 		return super.getClientCountry();
 	}
 
+	/**
+	 * Tenant Client phone number table field getter
+	 * @return tenant client phone number
+	 */
 	@Column
 	@Override
 	public Long getClientPhoneNumber() {
 		return super.getClientPhoneNumber();
 	}
 
+	/**
+	 * Tenant client email table field getter
+	 * @return the tenant client email
+	 */
 	@Column
 	@Override
 	public String getClientEmail() {
 		return super.getClientEmail();
 	}
 
+	/**
+	 * Tenant parent id table field getter
+	 * @return the tenant parent id
+	 */
 	@Column
 	@Override
 	public Long getParentId() {
 		return super.getParentId();
 	}
 
+	/**
+	 * Tenant client id table field getter
+	 * @return the tenant client id
+	 */
 	@Column
 	@Override
 	public Long getClientId() {

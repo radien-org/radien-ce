@@ -28,7 +28,6 @@ import io.radien.exception.*;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.util.List;
 
 /**

@@ -31,17 +31,38 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author Newton Carvalho
  * Message body reader that converts a Json stream into an Permission
+ * @author Newton Carvalho
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class PermissionMessageBodyReader implements MessageBodyReader<Permission> {
+
+    /**
+     * Validator of the Permission message body is readable
+     * @param type of the object
+     * @param genericType generic type of the object
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
+     * @return true if the given object is a permission object
+     */
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type != null && SystemPermission.class.isAssignableFrom(type);
     }
 
+    /**
+     * Will call the permission mapper to convert the given object
+     * @param type of the object
+     * @param genericType generic type of the received object
+     * @param annotations annotation
+     * @param mediaType type of the given readable field
+     * @param httpHeaders header of the http received
+     * @param entityStream received object
+     * @return a permission that has been converted from the entity stream
+     * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+     * implementation if a specific HTTP error response needs to be produced.
+     */
     @Override
     public Permission readFrom(Class<Permission> type, Type genericType,
                                Annotation[] annotations, MediaType mediaType,

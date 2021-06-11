@@ -27,12 +27,18 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 /**
+ * Permission mapper for the exceptions
  * @author Bruno Gama
  */
 @Provider
-public class PermissionResponseExceptionMapper implements
-        ResponseExceptionMapper<Exception> {
+public class PermissionResponseExceptionMapper implements ResponseExceptionMapper<Exception> {
 
+    /**
+     * Validates if by a given status code the error message can be handle by the following mapper
+     * @param statusCode to be validated
+     * @param headers
+     * @return true in case handler can handle exception
+     */
     @Override
     public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
         return statusCode == 400        // Bad Request
@@ -41,6 +47,11 @@ public class PermissionResponseExceptionMapper implements
                 || statusCode == 500;   // Internal Server Error
     }
 
+    /**
+     * Throws the correct permission exception by the given response
+     * @param response message to be validated
+     * @return a exception
+     */
     @Override
     public Exception toThrowable(Response response) {
         switch(response.getStatus()) {

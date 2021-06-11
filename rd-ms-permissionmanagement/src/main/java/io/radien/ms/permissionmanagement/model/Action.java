@@ -15,25 +15,42 @@
  */
 package io.radien.ms.permissionmanagement.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.TableGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
 
 /**
- * @author Newton Carvalho
- *
  * Contains the definitions of an Action described on
  * {@link io.radien.ms.permissionmanagement.client.entities.Action}
  * plus the JPA entity mapping
+ *
+ * @author Newton Carvalho
  */
 @Entity
 @Table(name = "ACT01")
 public class Action extends io.radien.ms.permissionmanagement.client.entities.Action {
 
+	/**
+	 * Entity Action empty constructor
+	 */
 	public Action() {}
 
+	/**
+	 * Entity action constructor
+	 * @param a {@link io.radien.ms.permissionmanagement.client.entities.Action} action to be created
+	 */
 	public Action(io.radien.ms.permissionmanagement.client.entities.Action a) {
 		super(a);
 	}
 
+	/**
+	 * Entity action id value
+	 * @return the action id
+	 */
 	@Override
 	@Id
 	@TableGenerator(name = "GEN_SEQ_ACT01", allocationSize = 2000)
@@ -42,6 +59,10 @@ public class Action extends io.radien.ms.permissionmanagement.client.entities.Ac
 		return super.getId();
 	}
 
+	/**
+	 * Entity action name value
+	 * @return the action name
+	 */
 	@Override
 	@Column(name = "NAME", nullable = false, unique = true)
 	public String getName() {

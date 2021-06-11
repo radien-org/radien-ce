@@ -18,35 +18,60 @@ package io.radien.ms.permissionmanagement.client.entities;
 import io.radien.api.model.permission.AbstractResourceModel;
 
 /**
- * @author Newton Carvalho
  * Entity that corresponds to the Resource
+ *
+ * @author Newton Carvalho
  */
 public class Resource extends AbstractResourceModel {
+
     private Long id;
     private String name;
 
+    /**
+     * Resource empty constructor
+     */
     public Resource() {}
 
+    /**
+     * Resource constructor
+     * @param a resource to be added or created
+     */
     public Resource(Resource a) {
         this.id = a.getId();
         this.name = a.getName();
     }
 
+    /**
+     * Resource id getter
+     * @return resource id
+     */
     @Override
     public Long getId() {
         return id;
     }
 
+    /**
+     * Resource id setter
+     * @param id to be set
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Resource name getter
+     * @return resource name
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * Resource name setter
+     * @param name to be set
+     */
     @Override
     public void setName(String name) {
         this.name = name;

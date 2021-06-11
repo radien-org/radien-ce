@@ -18,10 +18,17 @@ package io.radien.ms.ecm.factory;
 import io.radien.ms.ecm.entities.TranslationEntity;
 
 /**
+ * Translation entity factory, where we can create by given parameters the needed and required Translation Entity
  * @author andresousa
  */
-
 public class TranslationEntityFactory {
+
+    /**
+     * Translation entity creation method
+     * @param language of the translation entity
+     * @param description of the translation entity
+     * @return the created translation
+     */
     public static TranslationEntity create(String language, String description) {
         TranslationEntity translationEntity = new TranslationEntity();
         translationEntity.setLanguage(language);

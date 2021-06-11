@@ -19,8 +19,8 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
+ * Current and actual used permission entity version
  * @author n.carvalho
- *
  */
 @ApplicationPath("/v1")
 public class RadienApplication extends Application {

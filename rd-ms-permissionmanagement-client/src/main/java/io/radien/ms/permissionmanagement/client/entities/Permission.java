@@ -16,24 +16,31 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.AbstractPermissionModel;
-import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 
 /**
- * @author Newton Carvalho
  * Entity that corresponds to the Permission
+ *
+ * @author Newton Carvalho
  */
 public class Permission extends AbstractPermissionModel implements SystemPermission {
 
-	private static final long serialVersionUID = -3532886874455311100L;
+	private static final long serialVersionUID = -9109161353494484789L;
 
 	private Long id;
 	private String name;
 	private Long actionId;
 	private Long resourceId;
 
+	/**
+	 * Permission empty constructor
+	 */
 	public Permission(){}
 
+	/**
+	 * Permission object constructor
+	 * @param p permission information to be added and created
+	 */
 	public Permission(Permission p) {
 		this.id = p.getId();
 		this.name = p.getName();
@@ -41,38 +48,70 @@ public class Permission extends AbstractPermissionModel implements SystemPermiss
 		this.resourceId = p.getResourceId();
 	}
 
+	/**
+	 * Permission id getter
+	 * @return the permission id
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * Permission id setter
+	 * @param id to be set
+	 */
 	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	/**
+	 * Permission name getter
+	 * @return the permission name
+	 */
 	@Override
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Permission name setter
+	 * @param name to be set
+	 */
 	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Permission action id getter
+	 * @return the permission action id associated
+	 */
 	@Override
 	public Long getActionId() {
 		return actionId;
 	}
 
+	/**
+	 * Permission action id setter
+	 * @param actionId to be set
+	 */
 	public void setActionId(Long actionId) {
 		this.actionId = actionId;
 	}
 
+	/**
+	 * Permission resource id getter
+	 * @return the permission resource id associated
+	 */
 	@Override
 	public Long getResourceId() { return resourceId; }
 
+	/**
+	 * Permission resource id setter
+	 * @param resourceId to be set
+	 */
 	@Override
 	public void setResourceId(Long resourceId) { this.resourceId = resourceId; }
 }

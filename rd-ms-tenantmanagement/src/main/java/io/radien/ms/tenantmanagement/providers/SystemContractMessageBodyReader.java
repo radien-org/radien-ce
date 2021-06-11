@@ -26,26 +26,46 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 
 /**
- * @author santana
- *
+ * Contract JSON reader into object
+ * Reads the given JSON object and converts it into a contract
+ * @author Nuno Santana
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class SystemContractMessageBodyReader implements MessageBodyReader<SystemContract> {
-	 	@Override
-	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(Contract.class);
-	    }
 
+	/**
+	 * Checks if the given JSON object can be read into a contract one
+	 * @param type of the received object
+	 * @param genericType for multiple conversion purposes
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true in case received JSON can be read into a contract
+	 */
 	@Override
-	public SystemContract readFrom(Class<SystemContract> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, InputStream inputStream) throws IOException, WebApplicationException {
+	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return type.equals(Contract.class);
+	}
+
+	/**
+	 * Converts the given JSON object into a contract one
+	 * @param aClass for the final object (contract)
+	 * @param type for multiple conversion purposes
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param multivaluedMap header of the http received
+	 * @param inputStream received object
+	 * @return a System Contract that has been gather the information from the given JSON
+	 * @throws WebApplicationException in case of any issue while parsing the JSON fields into system contract ones
+	 */
+	@Override
+	public SystemContract readFrom(Class<SystemContract> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, InputStream inputStream) throws WebApplicationException {
 		try {
 			return ContractModelMapper.map(inputStream);
 		} catch (ParseException e) {

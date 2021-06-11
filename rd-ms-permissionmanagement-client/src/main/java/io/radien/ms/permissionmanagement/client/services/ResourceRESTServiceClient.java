@@ -44,13 +44,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Newton Carvalho
  * Implementation for Rest Service Client regarding Resource domain object
+ * @author Newton Carvalho
  */
 @Stateless @Default
 public class ResourceRESTServiceClient extends AuthorizationChecker implements ResourceRESTServiceAccess {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 9067873232102652213L;
 
 	private static final Logger log = LoggerFactory.getLogger(ResourceRESTServiceClient.class);
 
@@ -275,6 +275,11 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
         }
     }
 
+    /**
+     * Mapper for a received input stream into a list of possible system action
+     * @param is to be mapped
+     * @return a list of system action information
+     */
     protected List<? extends SystemResource> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
@@ -282,6 +287,10 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
         }
     }
 
+    /**
+     * OAF action getter
+     * @return the active action oaf
+     */
     @Override
     public OAFAccess getOAF() {
         return oaf;

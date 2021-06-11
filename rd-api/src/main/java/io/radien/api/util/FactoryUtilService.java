@@ -87,6 +87,24 @@ public class FactoryUtilService implements Serializable {
     }
 
     /**
+     * Retrieves the Double value from the Json Object
+     * @param key of the value to be retrieved
+     * @param json object with the values to be retrieved
+     * @return Double value
+     */
+    public static Double getDoubleFromJson(String key, JsonObject json) {
+        Double returnedValue = null;
+        // case where key is present with value null
+        if (isValueNotNull(key, json)) {
+            JsonNumber value = json.getJsonNumber(key);
+            if (value != null) {
+                returnedValue = value.doubleValue();
+            }
+        }
+        return returnedValue;
+    }
+
+    /**
      * Retrieves the Boolean value from the Json Object
      * @param key of the value to be retrieved
      * @param json object with the values to be retrieved
@@ -172,6 +190,21 @@ public class FactoryUtilService implements Serializable {
     public static void addValueLong(JsonObjectBuilder builder, String key, Object value) {
         if (value != null) {
             builder.add(key, (Long) value);
+        } else {
+            builder.addNull(key);
+        }
+    }
+
+    /**
+     * Adds the values Double to the designated keys in a json object
+     *
+     * @param builder Json Object builder that it is being used
+     * @param key value of the json field
+     * @param value value of the field to be added
+     */
+    public static void addValueDouble(JsonObjectBuilder builder, String key, Object value) {
+        if (value != null) {
+            builder.add(key, (Double) value);
         } else {
             builder.addNull(key);
         }
