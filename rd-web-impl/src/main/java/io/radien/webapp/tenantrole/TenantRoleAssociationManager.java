@@ -496,7 +496,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @param event that will contain which permission has been selected
      */
     public void onPermissionSelect(SelectEvent<SystemPermission> event) {
-        if (previousSelectedPermissionToUnAssign != null && previousSelectedPermissionToUnAssign.getId() == event.getObject().getId()) {
+        if (previousSelectedPermissionToUnAssign != null && previousSelectedPermissionToUnAssign.getId().equals(event.getObject().getId())) {
             // remove selection
             previousSelectedPermissionToUnAssign = new Permission();
             selectedPermissionToUnAssign = new Permission();
@@ -512,7 +512,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @param event that will contain which user has been selected
      */
     public void onUserSelect(SelectEvent<SystemTenantRoleUser> event) {
-        if (previousSelectedUserToUnAssign != null && previousSelectedUserToUnAssign.getId() == event.getObject().getId()) {
+        if (previousSelectedUserToUnAssign != null && previousSelectedUserToUnAssign.getId().equals(event.getObject().getId())) {
             // remove selection
             previousSelectedUserToUnAssign = new TenantRoleUser();
             selectedUserToUnAssign = new TenantRoleUser();
