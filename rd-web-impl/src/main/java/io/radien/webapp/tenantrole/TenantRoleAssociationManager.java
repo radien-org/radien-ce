@@ -38,6 +38,7 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 
@@ -496,7 +497,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @param event that will contain which permission has been selected
      */
     public void onPermissionSelect(SelectEvent<SystemPermission> event) {
-        if (previousSelectedPermissionToUnAssign != null && previousSelectedPermissionToUnAssign.getId().equals(event.getObject().getId())) {
+        if (previousSelectedPermissionToUnAssign != null && event.getObject().getId().
+                equals(previousSelectedPermissionToUnAssign.getId())) {
             // remove selection
             previousSelectedPermissionToUnAssign = new Permission();
             selectedPermissionToUnAssign = new Permission();
@@ -512,7 +514,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @param event that will contain which user has been selected
      */
     public void onUserSelect(SelectEvent<SystemTenantRoleUser> event) {
-        if (previousSelectedUserToUnAssign != null && previousSelectedUserToUnAssign.getId().equals(event.getObject().getId())) {
+        if (previousSelectedUserToUnAssign != null && event.getObject().getId().
+                equals(previousSelectedUserToUnAssign.getId())) {
             // remove selection
             previousSelectedUserToUnAssign = new TenantRoleUser();
             selectedUserToUnAssign = new TenantRoleUser();
