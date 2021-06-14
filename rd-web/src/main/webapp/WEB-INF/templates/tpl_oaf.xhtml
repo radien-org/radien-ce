@@ -88,6 +88,12 @@
 									<f:param name="navigationNode" value="linkedauthorizations" />
 									<f:attribute name="navigationNode" value="linkedauthorizations" />
 								</b:navCommandLink>
+								<b:navCommandLink value="#{msg.tenant_role_associations}"
+												  action="#{navigation.navigate}"
+												  actionListener="#{navigation.navigationAction}">
+									<f:param name="navigationNode" value="tenantroles" />
+									<f:attribute name="navigationNode" value="tenantroles" />
+								</b:navCommandLink>
 							</b:dropMenu>
 							<b:dropMenu value="#{msg.rd_permissions_menu}" rendered="#{userSession.active}">
 								<b:navCommandLink value="#{msg.rd_permissions}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">

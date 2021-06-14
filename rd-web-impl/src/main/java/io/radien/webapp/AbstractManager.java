@@ -51,7 +51,7 @@ public abstract class AbstractManager implements Serializable {
         flash.setKeepMessages(true);
         flash.setRedirect(true);
         facesContext.addMessage(null, new FacesMessage(severity, msg, null));
-        log.info(msg);
+        log.info(msg);  
     }
 
     protected String extractErrorMessage(Exception exception) {

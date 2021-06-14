@@ -56,6 +56,15 @@
 		<view-id value="/module/linkedauthorization/linkedauthorization.oaf" />
 	</url-mapping>
 
+	<url-mapping id="tenantroles">
+		<pattern value="/module/tenantroles" />
+		<view-id value="/module/tenantroles/tenantroles.oaf" />
+	</url-mapping>
+	<url-mapping id="tenantrole">
+		<pattern value="/module/tenantrole" />
+		<view-id value="/module/tenantrole/tenantrole.oaf" />
+	</url-mapping>
+
 	<!-- Permissionsmanagement -->
 	<url-mapping id="permissions">
 		<pattern value="/module/permissions" />
