@@ -34,6 +34,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonReader;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -60,6 +61,8 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
 
     private static final Logger log = LoggerFactory.getLogger(LinkedAuthorizationRESTServiceClient.class);
 
+    private static final String UNABLE_TO_RECOVER_TOKEN="Unable to recover expiredToken";
+
     @Inject
     private OAFAccess oaf;
 
@@ -85,7 +88,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return checkIfLinkedAuthorizationExistsRequester(tenant, permission, role, userId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -141,7 +144,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return getAllRequester(pageNo, pageSize);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -161,8 +164,10 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
 
             Response response = client.getAllAssociations(pageNo, pageSize);
 
-            JsonArray jsonArray = (JsonArray) Json.createReader(new StringReader(response.readEntity(String.class))).readObject().get("results");
-            linkedAuthorizationsList = LinkedAuthorizationFactory.convert(jsonArray);
+            try (JsonReader jsonReader =Json.createReader(new StringReader(response.readEntity(String.class)))){
+                JsonArray jsonArray = (JsonArray) jsonReader.readObject().get("results");
+                linkedAuthorizationsList = LinkedAuthorizationFactory.convert(jsonArray);
+            }
         }   catch (ExtensionException | ProcessingException | MalformedURLException es){
                 throw new SystemException(es);
         }
@@ -182,7 +187,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return getTotalRecordsCountRequester();
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -222,7 +227,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return getLInkedAuthorizationRoleIdRequester(role);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -258,7 +263,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return createRequester(linkedAuthorization);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -304,7 +309,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return isRoleExistentForUserRequester(userId, tenantId, roleName);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
@@ -344,7 +349,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return getSpecificAssociationByUserIdRequester(userId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }
