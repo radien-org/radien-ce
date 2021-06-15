@@ -15,6 +15,11 @@
  */
 package io.radien.ms.usermanagement.config;
 
+/**
+ * Keycloak type of emails enumeration
+ *
+ * @author Nuno Santana
+ */
 public enum KeycloakEmailActions  {
 
     TOTP("CONFIGURE_TOTP"),
@@ -25,10 +30,18 @@ public enum KeycloakEmailActions  {
 
     private String propKey;
 
+    /**
+     * Keycloak email action constructor
+     * @param propKey to be used
+     */
     KeycloakEmailActions(String propKey){
         this.propKey = propKey;
     }
 
+    /**
+     * Selected email action property key getter
+     * @return property key
+     */
     public String propKey() {
         return propKey;
     }

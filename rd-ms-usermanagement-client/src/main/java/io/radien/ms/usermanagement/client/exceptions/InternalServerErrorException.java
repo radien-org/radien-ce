@@ -15,12 +15,25 @@
  */
 package io.radien.ms.usermanagement.client.exceptions;
 
+/**
+ * A runtime exception indicating an internal server error.
+ * The server encountered an unexpected condition which prevented it from fulfilling the request.
+ *
+ * @author Bruno Gama
+ */
 public class InternalServerErrorException extends Exception{
 
+    /**
+     * Internal server error exception empty constructor
+     */
     public InternalServerErrorException() {
         super();
     }
 
+    /**
+     * Internal server error exception message constructor
+     * @param message specific message to be added into the exception when being throw
+     */
     public InternalServerErrorException(String message) {
         super(message);
     }

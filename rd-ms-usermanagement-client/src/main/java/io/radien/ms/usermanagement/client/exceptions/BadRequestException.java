@@ -15,12 +15,25 @@
  */
 package io.radien.ms.usermanagement.client.exceptions;
 
+/**
+ * User specific Bad request exception
+ * this exception is to be thrown when the user requests something that will have wrong requested data
+ *
+ * @author Nuno Santana
+ */
 public class BadRequestException extends Exception{
 
+    /**
+     * Bad Request exception empty constructor
+     */
     public BadRequestException() {
         super();
     }
 
+    /**
+     * Bad Request exception message constructor
+     * @param message to be added into the bad request exception
+     */
     public BadRequestException(String message) {
         super(message);
     }
