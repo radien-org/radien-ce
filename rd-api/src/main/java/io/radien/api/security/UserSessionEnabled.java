@@ -20,7 +20,7 @@ import io.radien.api.Appframeable;
 /**
  * User Session enabled information interface class
  *
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author Marco Weiland
  */
 public interface UserSessionEnabled extends Appframeable {
 
