@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -31,12 +32,10 @@ import java.util.stream.Collectors;
 /**
  * @author Bruno Gama
  */
-public class LazyResourcesDataModel extends LazyDataModel<SystemResource> {
+public class LazyResourcesDataModel extends LazyAbstractDataModel<SystemResource> {
 
     private static final long serialVersionUID = -8992504396009603417L;
     private ResourceRESTServiceAccess service;
-
-    private List<? extends SystemResource> datasource;
 
     public LazyResourcesDataModel(ResourceRESTServiceAccess service) {
         this.service=service;
@@ -44,36 +43,8 @@ public class LazyResourcesDataModel extends LazyDataModel<SystemResource> {
     }
 
     @Override
-    public SystemResource getRowData(String rowKey) {
-        for (SystemResource resource : datasource) {
-            if (resource.getId() == Integer.parseInt(rowKey)) {
-                return resource;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public String getRowKey(SystemResource resource) {
-        return String.valueOf(resource.getId());
-    }
-
-    @Override
-    public List<SystemResource> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-        Long rowCount = 0L;
-        try {
-            Page<? extends SystemResource> pagedInformation = service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
-
-            datasource = pagedInformation.getResults();
-
-            rowCount = (long) pagedInformation.getTotalResults();
-        } catch (SystemException e) {
-            e.printStackTrace();
-        }
-
-        setRowCount(Math.toIntExact(rowCount));
-
-        return datasource.stream().collect(Collectors.toList());
+    public Page<? extends SystemResource> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+        return service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
     }
 }
 

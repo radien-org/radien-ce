@@ -42,7 +42,7 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @throws MalformedURLException in case of URL exception construction
      * @throws SystemException in case of any communication error
      */
-    public Page<? extends SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException, SystemException;
+    public Page<? extends SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Fetches list of specific permissions
