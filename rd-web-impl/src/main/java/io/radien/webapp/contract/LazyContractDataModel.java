@@ -21,14 +21,10 @@ import io.radien.api.service.tenant.ContractRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Bruno Gama
