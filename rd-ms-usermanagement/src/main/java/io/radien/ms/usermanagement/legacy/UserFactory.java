@@ -45,19 +45,17 @@ public class UserFactory implements Serializable {
 	 * @param lastname user last name
 	 * @param logon user logon
 	 * @param sub user subject
-	 * @param activeTenant user last active tenant
 	 * @param createdUser the user which has created the user
 	 * @param email user email
 	 * @return a User object to be used
 	 */
-	public static User create(String firstname, String lastname, String logon, String sub, Long activeTenant, String email, Long createdUser) {
+	public static User create(String firstname, String lastname, String logon, String sub, String email, Long createdUser) {
 		User u = new User();
 		u.setFirstname(firstname);
 		u.setLastname(lastname);
 		u.setLogon(logon);
 		u.setEnabled(true);
 		u.setSub(sub);
-		u.setActiveTenant(activeTenant);
 		u.setCreateUser(createdUser);
 		Date now = new Date();
 		u.setLastUpdate(now);
@@ -81,7 +79,6 @@ public class UserFactory implements Serializable {
 		Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
 		Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", person);
 		String sub = FactoryUtilService.getStringFromJson("sub", person);
-		Long activeTenant = FactoryUtilService.getLongFromJson("activeTenant", person);
 		String firstname = FactoryUtilService.getStringFromJson("firstname", person);
 		String lastname = FactoryUtilService.getStringFromJson("lastname",person);
 		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);
@@ -93,7 +90,6 @@ public class UserFactory implements Serializable {
 		user.setCreateDate(new Date());
 		user.setLastUpdate(new Date());
 		user.setSub(sub);
-		user.setActiveTenant(activeTenant);
 		user.setFirstname(firstname);
 		user.setLastname(lastname);
 		user.setCreateUser(createUser);
@@ -119,7 +115,6 @@ public class UserFactory implements Serializable {
 		FactoryUtilService.addValueLong(builder, "createUser", person.getCreateUser());
 		FactoryUtilService.addValueLong(builder, "lastUpdateUser", person.getLastUpdateUser());
 		FactoryUtilService.addValue(builder, "sub", person.getSub());
-		FactoryUtilService.addValueLong(builder, "activeTenant", person.getActiveTenant());
 		FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
 		FactoryUtilService.addValue(builder, "lastname", person.getLastname());
 		FactoryUtilService.addValueBoolean(builder, "delegatedCreation", person.isDelegatedCreation());

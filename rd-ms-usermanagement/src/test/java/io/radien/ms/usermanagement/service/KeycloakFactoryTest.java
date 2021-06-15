@@ -30,7 +30,7 @@ public class KeycloakFactoryTest {
     @Test
     public void convertToUserRepresentation() {
         SystemUser user = UserFactory.create("firstName", "lastName",
-                "logon", "sub",null, "email", 2L);
+                "logon", "sub", "email", 2L);
 
         UserRepresentation representations = KeycloakFactory.convertToUserRepresentation(user);
 
