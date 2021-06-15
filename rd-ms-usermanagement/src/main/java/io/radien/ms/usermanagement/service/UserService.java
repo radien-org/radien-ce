@@ -25,7 +25,11 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.persistence.*;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
@@ -50,22 +54,24 @@ import io.radien.ms.usermanagement.entities.User;
 import java.util.stream.IntStream;
 
 /**
+ * User management requests and accesses into the db to gather information or validating
+ *
  * @author Nuno Santana
  * @author Bruno Gama
  * @author Marco Weiland
  */
 @Stateful
 public class UserService implements UserServiceAccess{
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8258219044233966135L;
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
 	@PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
 	private EntityManager em;
 
 	/**
-	 * Retrieves strictly the user id basing on user sub
-	 * @param userSub
-	 * @return
+	 * Requests the user id based on the received user subject
+	 * @param userSub to be found
+	 * @return the user id
 	 */
 	@Override
 	public Long getUserId(String userSub) {
@@ -304,6 +310,10 @@ public class UserService implements UserServiceAccess{
 		return q.getResultList();
 	}
 
+	/**
+	 * Gets all the users from the db into a list
+	 * @return a list of all the existent users
+	 */
 	@Override
 	public List<? extends SystemUser> getUserList() {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -315,6 +325,14 @@ public class UserService implements UserServiceAccess{
 		return systemUsers;
 	}
 
+	/**
+	 * Will filter all the fields given in the criteria builder and in the filter and create the
+	 * where clause for the query
+	 * @param filter fields to be searched for
+	 * @param criteriaBuilder database query builder
+	 * @param userRoot database table to search the information
+	 * @return a constructed predicate with the fields needed to be search
+	 */
 	private Predicate getFilteredPredicate(SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
 		Predicate global;
 
@@ -338,6 +356,16 @@ public class UserService implements UserServiceAccess{
 		return global;
 	}
 
+	/**
+	 * Method that will create in the database query where clause each and single search
+	 * @param name of the field to be search in the query
+	 * @param value of the field to be search or compared in the query
+	 * @param filter complete requested filter for further validations
+	 * @param criteriaBuilder database query builder
+	 * @param actionRoot database table to search the information
+	 * @param global complete where clause to be merged into the constructed information
+	 * @return a constructed predicate with the fields needed to be search
+	 */
 	private Predicate getFieldPredicate(String name, String value, SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global) {
 		if(value != null) {
 			Predicate subPredicate;
@@ -356,6 +384,11 @@ public class UserService implements UserServiceAccess{
 		return global;
 	}
 
+	/**
+	 * Batch creation method, will delete all the received users from the db
+	 * @param users list of users to be deleted
+	 * @return a batch summary with a report saying which records have been or not been deleted
+	 */
 	@Override
 	public BatchSummary create(List<? extends SystemUser> users) {
 		BatchSummary batchSummary = new BatchSummary(users.size());
@@ -376,6 +409,13 @@ public class UserService implements UserServiceAccess{
 		return batchSummary;
 	}
 
+	/**
+	 * Translates a given list of system users that have been tried to be inserted via batch mode
+	 * and will understand individually which one what was the issue for not being inserted in the batch
+	 * insertion
+	 * @param insertionUsers that have been tried to be created and were not possible
+	 * @return a map composed of the user id and the issue faced
+	 */
 	private Map<Integer, DataIssue> retrieveIssues(
 			List<? extends SystemUser> insertionUsers) {
 
@@ -411,6 +451,14 @@ public class UserService implements UserServiceAccess{
 		return issuesByRow;
 	}
 
+	/**
+	 * Method to populate new found issues to be validated and/or filtered in the future
+	 * @param field to be searched
+	 * @param value to be searched
+	 * @param index of the hashmap of issues
+	 * @param issuesByRow hashmap with all the issue information
+	 * @param parameterSet areas to be set
+	 */
 	private void populateParametersAndFindIssues(String field,
 												 String value,
 												 int index,
@@ -423,6 +471,14 @@ public class UserService implements UserServiceAccess{
 		}
 	}
 
+	/**
+	 * Method that will try to find specific issue and specific description in the list
+	 * @param field to be searched
+	 * @param value to be searched
+	 * @param index of the hashmap of issues
+	 * @param issuesByRow hashmap with all the issue information
+	 * @param searchArea possible multiple areas to be search
+	 */
 	private void seekForIssue(String field,
 							  String value,
 							  int index,
@@ -435,6 +491,12 @@ public class UserService implements UserServiceAccess{
 		}
 	}
 
+	/**
+	 * Retrieval method from a given specific field from multiple rows
+	 * @param property to be retrieved
+	 * @param parameters to be compared
+	 * @return list of all the found values
+	 */
 	private List<String> retrieveDataFromDB(String property, Collection<String> parameters) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
@@ -445,6 +507,12 @@ public class UserService implements UserServiceAccess{
 		return typedQuery.getResultList();
 	}
 
+	/**
+	 * Adds reason to the list of reasons
+	 * @param index of the hashmap of issues
+	 * @param map hashmap with all the issue information
+	 * @param issueDescription the issue description
+	 */
 	private void addNewFoundIssue (Integer index, Map<Integer, DataIssue> map, String issueDescription) {
 		DataIssue di = map.get(index);
 		if (di == null) {

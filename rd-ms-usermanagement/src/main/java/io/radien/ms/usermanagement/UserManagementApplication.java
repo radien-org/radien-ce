@@ -19,8 +19,9 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
- * @author mawe
+ * User management application versioning constructor
  *
+ * @author mawe
  */
 @ApplicationPath("v1")
 public class UserManagementApplication extends Application {

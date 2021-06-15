@@ -28,6 +28,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * User Management object factory. Converts and maps information from Json or to Json into a User or from a User object
+ *
+ * @author Bruno Gama
+ */
 public class UserFactory {
 
     /**

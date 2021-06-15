@@ -20,9 +20,14 @@ import io.radien.api.model.user.SystemUser;
 
 import java.util.Date;
 
+/**
+ * User object constructor class
+ *
+ * @author Bruno Gama
+ */
 public class User extends AbstractUserModel implements SystemUser {
 
-	private static final long serialVersionUID = -3532886874455311100L;
+	private static final long serialVersionUID = 8894482343339525951L;
 
 	private Long id;
 
@@ -36,8 +41,15 @@ public class User extends AbstractUserModel implements SystemUser {
 	private boolean enabled;
 	private boolean delegatedCreation;
 
+	/**
+	 * User empty constructor
+	 */
 	public User(){}
 
+	/**
+	 * User constructor
+	 * @param u information to be constructed
+	 */
 	public User(User u) {
 		this.id = u.getId();
 		this.logon = u.getLogon();
@@ -54,86 +66,166 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.setLastUpdate(u.getLastUpdate());
 	}
 
+	/**
+	 * User id getter method
+	 * @return the user id
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * User id setter method
+	 * @param id to be set
+	 */
 	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	/**
+	 * User logon getter method
+	 * @return the user logon
+	 */
 	public String getLogon() {
 		return logon;
 	}
 
+	/**
+	 * User logon setter method
+	 * @param logon to be set
+	 */
 	public void setLogon(String logon) {
 		this.logon = logon;
 	}
 
+	/**
+	 * User termination date getter method
+	 * @return the user termination date
+	 */
 	public Date getTerminationDate() {
 		return terminationDate;
 	}
 
+	/**
+	 * User termination date setter method
+	 * @param terminationDate to be set
+	 */
 	public void setTerminationDate(Date terminationDate) {
 		this.terminationDate = terminationDate;
 	}
 
+	/**
+	 * User email getter method
+	 * @return the user email
+	 */
 	public String getUserEmail() {
 		return userEmail;
 	}
 
+	/**
+	 * User email setter method
+	 * @param userEmail to be set
+	 */
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
 
+	/**
+	 * User first name getter method
+	 * @return the user first name
+	 */
 	public String getFirstname() {
 		return firstname;
 	}
 
+	/**
+	 * User first name setter method
+	 * @param firstname to be set
+	 */
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
 	}
 
+	/**
+	 * User last name getter method
+	 * @return the user last name
+	 */
 	public String getLastname() {
 		return lastname;
 	}
 
+	/**
+	 * User last name setter
+	 * @param lastname to be set
+	 */
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
 
+	/**
+	 * Is user enable getter
+	 * @return if user is or not enable boolean value
+	 */
 	public boolean isEnabled() {
 		return enabled;
 	}
 
+	/**
+	 * Is user enable setter method
+	 * @param enabled to enable or disable user
+	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
+	/**
+	 * User subject getter method
+	 * @return the user subject unique identifier
+	 */
 	@Override
 	public String getSub() {
 		return sub;
 	}
 
+	/**
+	 * User subject setter method
+	 * @param sub to be set
+	 */
 	@Override
 	public void setSub(String sub) {
 		this.sub = sub;
 	}
 
+	/**
+	 * User active tenant getter method
+	 * @return the current active tenant for the required user
+	 */
 	public Long getActiveTenant() {
 		return activeTenant;
 	}
 
+	/**
+	 * User active tenant setter method
+	 * @param activeTenant to be set
+	 */
 	public void setActiveTenant(Long activeTenant) {
 		this.activeTenant = activeTenant;
 	}
 
+	/**
+	 * Has user been delegated creation getter method
+	 * @return true if user has delegated creation
+	 */
 	public boolean isDelegatedCreation() {
 		return delegatedCreation;
 	}
 
+	/**
+	 * Has user been delegated creation setter method
+	 * @param delegatedCreation to be set
+	 */
 	public void setDelegatedCreation(boolean delegatedCreation) {
 		this.delegatedCreation = delegatedCreation;
 	}

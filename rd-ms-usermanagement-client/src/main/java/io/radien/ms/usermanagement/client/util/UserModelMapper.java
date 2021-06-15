@@ -28,16 +28,25 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * @author Marco Weiland 
- *
+ * This class maps the User pojos into Json objects an vice-versa
+ * @author Marco Weiland
  */
 public class UserModelMapper {
 
-
+    /**
+     * Maps one user object into a Json Object
+     * @param model to be converted into Json
+     * @return the converted json object
+     */
     public static JsonObject map(User model) {
         return UserFactory.convertToJsonObject(model);
     }
 
+    /**
+     * Maps an user list into a Json Array
+     * @param models list of users to be converted and sent
+     * @return json array with all the given user information
+     */
     public static JsonArray map(List<User> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
@@ -47,6 +56,11 @@ public class UserModelMapper {
         return arrayBuilder.build();
     }
 
+    /**
+     * Maps a Json stream into a user object
+     * @param is input stream to be converted into user
+     * @return user object retrieved from the input stream
+     */
     public static User map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
@@ -55,6 +69,11 @@ public class UserModelMapper {
         }
     }
 
+    /**
+     * Obtains a User Page from a Json input stream
+     * @param is to be mapped
+     * @return a page of user mapped from the input stream
+     */
     public static Page<User> mapToPage(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();

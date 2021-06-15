@@ -15,7 +15,6 @@
  */
 package io.radien.ms.usermanagement.providers;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -32,19 +31,41 @@ import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.util.UserModelMapper;
 
 /**
- * @author mawe
+ * System User Message reader constructor class validator and converter for received messages
  *
+ * @author Marco Weiland
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class SystemUserMessageBodyReader implements MessageBodyReader<SystemUser> {
-	 	@Override
-	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(User.class);
-	    }
 
+	/**
+	 * Validator of the User message body is readable
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if the given object is a User object
+	 */
 	@Override
-	public SystemUser readFrom(Class<SystemUser> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, InputStream inputStream) throws IOException, WebApplicationException {
+	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return type.equals(User.class);
+	}
+
+	/**
+	 * Will call the User mapper to convert the given object
+	 * @param aClass of the object
+	 * @param type generic type of the received object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param multivaluedMap header of the http received
+	 * @param inputStream received object
+	 * @return a system user that has been converted from the entity stream
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
+	 */
+	@Override
+	public SystemUser readFrom(Class<SystemUser> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, InputStream inputStream) throws WebApplicationException {
 		return UserModelMapper.map(inputStream);
 	}
 

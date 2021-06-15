@@ -18,7 +18,6 @@ package io.radien.ms.usermanagement.service;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -46,9 +45,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Resource class with all the requests to be performed inside the user management
+ *
  * @author Nuno Santana
  * @author Bruno Gama
- *
  */
 @Path("user")
 @RequestScoped
@@ -314,7 +314,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	/**
 	 * Will send the updated password via email to the user in case of success will return a 200 code message
 	 * @param id of the user that should the email be sent to
-	 * @return
+	 * @return ok in case the email has been sent with the refreshed password
 	 */
 	@Override
 	public Response sendUpdatePasswordEmail(long id){
