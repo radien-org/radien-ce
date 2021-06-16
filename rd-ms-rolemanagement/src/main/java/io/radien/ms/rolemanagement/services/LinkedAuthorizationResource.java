@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
@@ -115,6 +116,30 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             log.info("Will delete a specific tenancy association with the following id {}.", id);
             linkedAuthorizationBusinessService.getAssociationById(id);
             linkedAuthorizationBusinessService.deleteAssociation(id);
+        } catch (LinkedAuthorizationNotFoundException e) {
+            return getRoleNotFoundException();
+        } catch (Exception e){
+            return getGenericError(e);
+        }
+        return Response.ok().build();
+    }
+
+    /**
+     * Delete request which will delete ALL linked authorization information
+     * that exists for a tenant and user (Both informed as parameter).
+     *
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return 200 code message if success, 404 if no associations were found,  500 code message if there is any error.
+     */
+    @Override
+    public Response deleteAssociations(Long tenantId, Long roleId, Long permissionId, Long userId) {
+        try {
+            log.info("Will delete All tenancy association with the following tenant {} role {} permission {} and user {}.",
+                    tenantId, roleId, permissionId, userId);
+            this.linkedAuthorizationBusinessService.deleteAssociations(tenantId, roleId, permissionId, userId);
+        } catch (LinkedAuthorizationException e) {
+            return getInvalidRequestResponse(e.getMessage());
         } catch (LinkedAuthorizationNotFoundException e) {
             return getRoleNotFoundException();
         } catch (Exception e){
@@ -267,6 +292,15 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
      */
     private Response getInvalidRequestResponse(UniquenessConstraintException e) {
         String message = e.getMessage();
+        return getInvalidRequestResponse(message);
+    }
+
+    /**
+     * Invalid Request error exception. Launches a 400 Error Code to the user.
+     * @param message message regarding the detected issue (to be shown)
+     * @return code 400 message Generic Exception
+     */
+    private Response getInvalidRequestResponse(String message) {
         log.error(message);
         return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }

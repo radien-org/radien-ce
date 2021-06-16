@@ -38,6 +38,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaDelete;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -218,6 +219,21 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         Root<LinkedAuthorization> associationRoot = criteriaDelete.from(LinkedAuthorization.class);
 
         criteriaDelete.where(cb.equal(associationRoot.get("id"),associationId));
+        entityManager.createQuery(criteriaDelete).executeUpdate();
+    }
+
+    /**
+     * Deletes a list of linked authorization associations taking in consideration
+     * a set of ids
+     * @param ids to be deleted.
+     */
+    @Override
+    public void deleteAssociations(Collection<Long> ids) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<LinkedAuthorization> criteriaDelete = cb.createCriteriaDelete(LinkedAuthorization.class);
+        Root<LinkedAuthorization> linkedAuthorizationRoot = criteriaDelete.from(LinkedAuthorization.class);
+
+        criteriaDelete.where(linkedAuthorizationRoot.get("id").in(ids));
         entityManager.createQuery(criteriaDelete).executeUpdate();
     }
 

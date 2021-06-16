@@ -27,6 +27,8 @@ public enum LinkedAuthorizationErrorCodeMessage {
      */
     RESOURCE_NOT_FOUND(100, "error.role.not.found","Association was not found."),
     DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one association role with the same value for the field: %s"),
+    NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION(102, "error.dissociation.no.params", "Not informed parameters for dissociation"),
+
     /**
      * System Error Code Messages
      */

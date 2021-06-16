@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
@@ -373,6 +374,41 @@ public class LinkedAuthorizationResourceTest {
     public void testCheckPermissionsNotFound() {
         List<String> roleList = new ArrayList<>();
         Response response = linkedAuthorizationResource.checkPermissions(null, roleList, null);
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
+     * Test for dissociation process (for tenant and user) when a generic exception occurs
+     * Expected: Http Status 500
+     */
+    @Test
+    public void testDissociation() {
+        Response response = linkedAuthorizationResource.deleteAssociations(1l,null,null,1l);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test for dissociation process (for tenant and user) when a generic exception occurs
+     * Expected: Http Status 500
+     */
+    @Test
+    public void testDissociateTenantGenericError() throws LinkedAuthorizationException, LinkedAuthorizationNotFoundException{
+        doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).
+                deleteAssociations(1L, 1l,1l,1L);
+        Response response = linkedAuthorizationResource.deleteAssociations(1L,1l, 1l,1L);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Test for dissociation process (for tenant and user) when there
+     * is no associations available
+     * Expected: Http Status 404
+     */
+    @Test
+    public void testDissociateTenantUserNotFoundError() throws LinkedAuthorizationException, LinkedAuthorizationNotFoundException {
+        doThrow(new LinkedAuthorizationNotFoundException()).when(linkedAuthorizationBusinessService).
+                deleteAssociations(1L, 1l,1l,1L);
+        Response response = linkedAuthorizationResource.deleteAssociations(1L, 1l,1l,1L);
         assertEquals(404,response.getStatus());
     }
 }

@@ -34,6 +34,7 @@ import org.junit.Test;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -162,6 +163,18 @@ public class LinkedAuthorizationServiceTest {
     }
 
 
+    /**
+     * Test for method deleteAssociations(ids)
+     * @throws LinkedAuthorizationNotFoundException
+     */
+    @Test
+    public void testDeleteAssociations() throws LinkedAuthorizationNotFoundException {
+        SystemLinkedAuthorization result = linkedAuthorizationServiceAccess.getAssociationById(systemLinkedAuthorization.getId());
+        assertNotNull(result);
+        assertEquals(systemLinkedAuthorization.getRoleId(), result.getRoleId());
+        linkedAuthorizationServiceAccess.deleteAssociations(Arrays.asList(systemLinkedAuthorization.getId()));
+    }
+
     @Test
     public void testCheckIfRolesExist() throws UniquenessConstraintException, RoleNotFoundException {
         SystemRole checkIfIExists = RoleFactory.create("test", "description", 11L);
@@ -238,10 +251,14 @@ public class LinkedAuthorizationServiceTest {
         assertTrue(linkedAuthorizationServiceAccess.exists(filter2));
     }
 
+    /**
+     * Test for method getTotalRecordsCount()
+     * @throws LinkedAuthorizationNotFoundException
+     */
     @Test
     public void testGetTotalRecordsCount() {
         long result = linkedAuthorizationServiceAccess.getTotalRecordsCount();
-        assertEquals(9, result);
+        assertEquals(8, result);
     }
 
     @Test
