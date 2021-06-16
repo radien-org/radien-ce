@@ -49,14 +49,13 @@ public class UserModelMessageBodyWriterTest extends TestCase {
                 "\"createUser\":null," +
                 "\"lastUpdateUser\":null," +
                 "\"sub\":\"sub\"," +
-                "\"activeTenant\":null," +
                 "\"firstname\":\"a\"," +
                 "\"lastname\":\"b\"," +
                 "\"delegatedCreation\":false," +
                 "\"enabled\":true" +
                 "}";
         UserModelMessageBodyWriter target = new UserModelMessageBodyWriter();
-        User user = UserFactory.create("a","b","logon","sub",null,"email@server.pt", null);
+        User user = UserFactory.create("a","b","logon","sub","email@server.pt", null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(user,null,null,null, null,null, baos);
 

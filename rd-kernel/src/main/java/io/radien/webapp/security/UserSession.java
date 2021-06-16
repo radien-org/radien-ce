@@ -88,7 +88,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 			SystemUser user;
 			if (!existingUser.isPresent()) {
-				user = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, null, email, getOAF().getSystemAdminUserId());
+				user = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, getOAF().getSystemAdminUserId());
 				userClientService.create(user, true);
 			} else {
 				user = existingUser.get();
@@ -98,7 +98,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			log.error(exception.getMessage());
 		}
 		if (this.user == null){
-			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,null,email,-1L);
+			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email,-1L);
 		}
 
 	}

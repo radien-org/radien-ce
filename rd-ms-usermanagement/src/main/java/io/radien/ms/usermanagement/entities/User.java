@@ -122,15 +122,6 @@ public class User extends io.radien.ms.usermanagement.client.entities.User {
 	}
 
 	/**
-	 * User entity active tenant table field
-	 * @return user active tenant
-	 */
-	@Override
-	public Long getActiveTenant() {
-		return super.getActiveTenant();
-	}
-
-	/**
 	 * User entity termination date table field
 	 * @return user termination date
 	 */

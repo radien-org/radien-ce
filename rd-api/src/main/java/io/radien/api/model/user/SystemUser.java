@@ -89,18 +89,6 @@ public interface SystemUser extends Model {
 	public void setSub(String sub);
 
 	/**
-	 * System user active tenant getter
-	 * @return System user tenant
-	 */
-	public Long getActiveTenant();
-
-	/**
-	 * System user active tenant setter
-	 * @param activeTenant to be set
-	 */
-	public void setActiveTenant(Long activeTenant);
-
-	/**
 	 * System user first name getter
 	 * @return System user first name
 	 */

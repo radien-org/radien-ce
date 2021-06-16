@@ -42,13 +42,13 @@
 
 
 	                    <b:navCommandLink value="#{msg.ecm}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}"
-										  rendered="#{userSession.active and activeTenantDataModel.activeTenant ne null and activeTenantDataModel.activeTenant ne msg.rd_no_active_tenant}">
+										  rendered="#{userSession.active}">
 	                        <f:param name="navigationNode" value="ecm" />
 	                        <f:attribute name="navigationNode" value="ecm" />
 	                    </b:navCommandLink>
 
 
-						<b:dropMenu value="#{msg.rd_user_contracts_menu}" rendered="#{userSession.active and activeTenantDataModel.activeTenant ne null and activeTenantDataModel.activeTenant ne msg.rd_no_active_tenant}">
+						<b:dropMenu value="#{msg.rd_user_contracts_menu}" rendered="#{userSession.active}">
 							<b:navCommandLink value="#{msg.rd_contract_region_south_west}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
 								<f:param name="navigationNode" value="users" />
 								<f:attribute name="navigationNode" value="users" />
@@ -72,7 +72,7 @@
 						</b:dropMenu>
 
 
-						<b:dropMenu value="#{msg.rd_system_menu}" rendered="#{userSession.active and activeTenantDataModel.activeTenant ne null and activeTenantDataModel.activeTenant ne msg.rd_no_active_tenant}">
+						<b:dropMenu value="#{msg.rd_system_menu}" rendered="#{userSession.active}">
 							<b:navCommandLink value="#{msg.rd_users_menu}" action="#{navigation.navigate}"
 											  actionListener="#{navigation.navigationAction}"
 											  rendered="#{authzChecker.hasUserAdministratorRoleAccess()}">
@@ -122,16 +122,6 @@
 		                        <f:attribute name="navigationNode" value="userprofile" />
 		                    </b:navCommandLink>
 						</b:dropMenu>
-					</b:navbarLinks>
-
-					<b:navbarLinks pull="right">
-						<b:selectOneMenu id="#{msg.activeTenantCombobox}" value="#{activeTenantDataModel.activeTenant}"
-										 onchange="submit()" valueChangeListener="#{activeTenantDataModel.tenantChanged}" required="true"
-										 requiredMessage="#{msg.rd_active_tenant_must_be_choose}" rendered="#{userSession.active}"
-										 update="@all">
-							<f:selectItem itemLabel="#{msg.choose_active_tenant}" itemValue="#{msg.rd_no_active_tenant}" />
-							<f:selectItems value="#{activeTenantDataModel.getUserTenants()}" var="t" itemValue="#{t}" itemLabel="#{t}" />
-						</b:selectOneMenu>
 					</b:navbarLinks>
 
 				</b:navBar>
