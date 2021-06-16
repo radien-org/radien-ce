@@ -138,8 +138,6 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * Delete ALL linked authorization information
      * that exists for the following parameters
      * @param tenantId Tenant identifier
-     * @param roleId Role identifier
-     * @param permissionId Permission identifier
      * @param userId User identifier
      * @throws LinkedAuthorizationNotFoundException if not associations (Linked Authorization)
      * exist for the tenant and user informed as parameter
