@@ -20,6 +20,7 @@ import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -44,12 +45,11 @@ import java.util.stream.Collectors;
  *
  * @author Newton Carvalho
  */
-public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTenantRole> {
+public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<SystemTenantRole> {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
     private TenantRoleRESTServiceAccess service;
 
-    private List<? extends SystemTenantRole> datasource;
     private String msgError = null;
 
     /**
@@ -65,30 +65,10 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
                 JSFUtil.getMessage("tenant_role_associations"));
     }
 
-    /**
-     * Retrieves a SystemTenantRole that corresponds to a DataTable row.
-     * @param rowKey id or index that refers a row (presented in a data table)
-     * @return SystemTenantRole instance that corresponds to the selected datatable row
-     */
-    @Override
-    public SystemTenantRole getRowData(String rowKey) {
-        for (SystemTenantRole association : datasource) {
-            if (association.getId() == Integer.parseInt(rowKey)) {
-                return association;
-            }
-        }
-        return null;
-    }
 
-    /**
-     * This method retrieves the row identifier (or key) that exists for a given a SystemTenantRole object
-     * @param association TenantRole object contained in the grid, for which the row
-     *                    id (key) will be retrieved
-     * @return String value that corresponds to the row key
-     */
     @Override
-    public String getRowKey(SystemTenantRole association) {
-        return String.valueOf(association.getId());
+    public Page<? extends SystemTenantRole> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+        return service.getAll((offset/pageSize)+1, pageSize);
     }
 
     /**
@@ -101,10 +81,10 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
      */
     @Override
     public List<SystemTenantRole> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-        Long rowCount = 0L;
+        long rowCount = 0L;
         try {
             Page<? extends SystemTenantRole> pagedInformation =
-                    service.getAll((offset/pageSize)+1, pageSize);
+                    getData(offset,pageSize,sortBy,filterBy);
             datasource = pagedInformation.getResults();
             rowCount = (long)pagedInformation.getTotalResults();
         } catch (SystemException s){
@@ -119,6 +99,6 @@ public class LazyTenantRoleAssociationDataModel extends LazyDataModel<SystemTena
                             JSFUtil.getMessage("contactSystemAdministrator")));
         }
         setRowCount(Math.toIntExact(rowCount));
-        return datasource.stream().collect(Collectors.toList());
+        return new ArrayList<>(datasource);
     }
 }

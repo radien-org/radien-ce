@@ -15,7 +15,7 @@
  */
 package io.radien.api.model.permission;
 
-import io.radien.api.model.Model;
+import io.radien.api.Model;
 
 /**
  * Contract description for Permission
