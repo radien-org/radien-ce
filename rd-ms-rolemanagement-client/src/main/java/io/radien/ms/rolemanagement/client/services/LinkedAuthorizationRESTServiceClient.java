@@ -373,23 +373,21 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
 
     /**
      * Will request delete ALL Linked Authorizations that exist in the DB for the following
-     * parameters (tenant, role, permission and user).
+     * parameters (tenant and user).
      * In case of JWT expiration will refresh the access token and retry
      * the operation
      * @param tenantId Tenant identifier
-     * @param roleId Role identifier
-     * @param permissionId Tenant identifier
      * @param userId User identifier
      * @return SystemException in case of error
      */
     @Override
-    public boolean deleteAssociations(Long tenantId, Long roleId, Long permissionId, Long userId) throws SystemException {
+    public boolean deleteAssociations(Long tenantId, Long userId) throws SystemException {
         try {
-            return dissociateTenantUserRequester(tenantId, roleId, permissionId, userId);
+            return dissociateTenantUserRequester(tenantId, userId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return dissociateTenantUserRequester(tenantId, roleId, permissionId, userId);
+                return dissociateTenantUserRequester(tenantId, userId);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException("Unable to recover expiredToken");
             }
@@ -398,16 +396,16 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
 
     /**
      * Delete ALL Linked Authorizations that exist in the DB for the following
-     * parameters (tenant, role, permission and user).
+     * parameters (tenant and user).
      * @param tenantId Tenant identifier
      * @param userId User identifier
      * @return SystemException in case of error
      */
-    private boolean dissociateTenantUserRequester(Long tenantId, Long roleId, Long permissionId, Long userId) throws SystemException {
+    private boolean dissociateTenantUserRequester(Long tenantId, Long userId) throws SystemException {
         try {
             LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.
                     getLinkedAuthorizationResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.deleteAssociations(tenantId, roleId, permissionId, userId);
+            Response response = client.deleteAssociations(tenantId, userId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {

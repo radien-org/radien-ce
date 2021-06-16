@@ -93,12 +93,10 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
 
     /**
      * Will request delete ALL Linked Authorizations that exist in the DB for the following
-     * parameters (tenant, role, permission and user).
+     * parameters (tenant and user).
      * @param tenantId Tenant identifier
-     * @param roleId Role identifier
-     * @param permissionId Tenant identifier
      * @param userId User identifier
      * @return SystemException in case of error
      */
-    boolean deleteAssociations(Long tenantId, Long roleId, Long permissionId, Long userId) throws SystemException;
+    boolean deleteAssociations(Long tenantId, Long userId) throws SystemException;
 }

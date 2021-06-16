@@ -458,10 +458,10 @@ public class LinkedAuthorizationRESTServiceClientTest {
     @Test
     public void dissociateTenantUser()  {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
-        when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1l,1l,1L)).thenReturn(Response.ok().build());
+        when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L)).thenReturn(Response.ok().build());
         assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
                 getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
-        assertTrue(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L, 1L,1L)));
+        assertTrue(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L)));
     }
 
     /**
@@ -472,7 +472,7 @@ public class LinkedAuthorizationRESTServiceClientTest {
     public void testDissociateTenantUserMalformedException() throws MalformedURLException {
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
                 getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
-        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1l,1l,1L));
+        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L));
     }
 
     /**
@@ -482,12 +482,12 @@ public class LinkedAuthorizationRESTServiceClientTest {
     @Test
     public void testDissociateTenantUserFail() {
         LinkedAuthorizationResourceClient linkedAuthorization = Mockito.mock(LinkedAuthorizationResourceClient.class);
-        when(linkedAuthorization.deleteAssociations(1L, 1L, 1L,1L)).thenReturn(
+        when(linkedAuthorization.deleteAssociations(1L, 1L)).thenReturn(
                 Response.serverError().entity("test error msg").build());
         assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.
                 getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).
                 thenReturn(linkedAuthorization));
-        assertFalse(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L, 1L,1L)));
+        assertFalse(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L)));
     }
 
     /**
@@ -497,10 +497,10 @@ public class LinkedAuthorizationRESTServiceClientTest {
     @Test
     public void testDissociateTenantUserProcessingException() {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
-        when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L, 1L,1L)).
+        when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L)).
                 thenThrow(new ProcessingException(""));
         assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
                 getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
-        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L, 1L,1L));
+        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L));
     }
 }

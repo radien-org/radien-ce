@@ -101,14 +101,11 @@ public interface LinkedAuthorizationResourceClient {
      *
      * @param tenantId Tenant identifier
      * @param userId User identifier
-     * @return 200 code message if success, * @return 200 code message if success,
-     * 404 if no associations were found, 500 code message if there is any error.
+     * @return 200 code message if success
+     * 400 if neither tenant and user were informed, 500 code message if there is any error.
      */
     @DELETE
-    @Path("/dissociate")
     Response deleteAssociations(@QueryParam("tenantId") Long tenantId,
-                                @QueryParam("roleId") Long roleId,
-                                @QueryParam("permissionId") Long permissionId,
                                 @QueryParam("userId") Long userId);
 
     /**

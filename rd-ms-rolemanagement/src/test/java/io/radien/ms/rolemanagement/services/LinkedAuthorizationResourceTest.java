@@ -383,7 +383,7 @@ public class LinkedAuthorizationResourceTest {
      */
     @Test
     public void testDissociation() {
-        Response response = linkedAuthorizationResource.deleteAssociations(1l,null,null,1l);
+        Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
         assertEquals(200,response.getStatus());
     }
 
@@ -394,8 +394,8 @@ public class LinkedAuthorizationResourceTest {
     @Test
     public void testDissociateTenantGenericError() throws LinkedAuthorizationException, LinkedAuthorizationNotFoundException{
         doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).
-                deleteAssociations(1L, 1l,1l,1L);
-        Response response = linkedAuthorizationResource.deleteAssociations(1L,1l, 1l,1L);
+                deleteAssociations(1L, 1L);
+        Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
         assertEquals(500,response.getStatus());
     }
 
@@ -407,8 +407,8 @@ public class LinkedAuthorizationResourceTest {
     @Test
     public void testDissociateTenantUserNotFoundError() throws LinkedAuthorizationException, LinkedAuthorizationNotFoundException {
         doThrow(new LinkedAuthorizationNotFoundException()).when(linkedAuthorizationBusinessService).
-                deleteAssociations(1L, 1l,1l,1L);
-        Response response = linkedAuthorizationResource.deleteAssociations(1L, 1l,1l,1L);
+                deleteAssociations(1L, 1L);
+        Response response = linkedAuthorizationResource.deleteAssociations(1L, 1L);
         assertEquals(404,response.getStatus());
     }
 }

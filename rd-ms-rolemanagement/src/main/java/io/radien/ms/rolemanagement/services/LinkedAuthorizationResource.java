@@ -127,21 +127,18 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
     /**
      * Delete request which will delete ALL linked authorization information
      * that exists for a tenant and user (Both informed as parameter).
-     *
      * @param tenantId Tenant identifier
      * @param userId User identifier
      * @return 200 code message if success, 404 if no associations were found,  500 code message if there is any error.
      */
     @Override
-    public Response deleteAssociations(Long tenantId, Long roleId, Long permissionId, Long userId) {
+    public Response deleteAssociations(Long tenantId, Long userId) {
         try {
-            log.info("Will delete All tenancy association with the following tenant {} role {} permission {} and user {}.",
-                    tenantId, roleId, permissionId, userId);
-            this.linkedAuthorizationBusinessService.deleteAssociations(tenantId, roleId, permissionId, userId);
+            log.info("Will delete All tenancy association with the following tenant {} and user {}.",
+                    tenantId, userId);
+            this.linkedAuthorizationBusinessService.deleteAssociations(tenantId, userId);
         } catch (LinkedAuthorizationException e) {
             return getInvalidRequestResponse(e.getMessage());
-        } catch (LinkedAuthorizationNotFoundException e) {
-            return getRoleNotFoundException();
         } catch (Exception e){
             return getGenericError(e);
         }

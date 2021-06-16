@@ -226,7 +226,7 @@ public class LinkedAuthorizationBusinessServiceTest {
                 then(i -> expectedLinkedAuthorization);
 
         assertDoesNotThrow(() -> doNothing().when(this.linkedAuthorizationServiceAccess).deleteAssociations(any()));
-        assertDoesNotThrow(() -> linkedAuthorizationBusinessService.deleteAssociations(1L, null, null,1L));
+        assertDoesNotThrow(() -> linkedAuthorizationBusinessService.deleteAssociations(1L, 1L));
     }
 
     /**
@@ -239,6 +239,6 @@ public class LinkedAuthorizationBusinessServiceTest {
         when(this.linkedAuthorizationServiceAccess.getSpecificAssociation(any())).
                 then(i -> expectedLinkedAuthorization);
         assertThrows(LinkedAuthorizationNotFoundException.class, ()->
-                linkedAuthorizationBusinessService.deleteAssociations(1L, null, null,1L));
+                linkedAuthorizationBusinessService.deleteAssociations(1L, 1L));
     }
 }

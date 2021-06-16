@@ -144,22 +144,20 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @throws LinkedAuthorizationNotFoundException if not associations (Linked Authorization)
      * exist for the tenant and user informed as parameter
      */
-    public void deleteAssociations(Long tenantId, Long roleId, Long permissionId, Long userId) throws LinkedAuthorizationNotFoundException, LinkedAuthorizationException {
-        if (tenantId == null && roleId == null && permissionId == null && userId == null) {
+    public void deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationNotFoundException, LinkedAuthorizationException {
+        if (tenantId == null || userId == null) {
             throw new LinkedAuthorizationException(LinkedAuthorizationErrorCodeMessage.
                     NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
         }
         SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId,
-                permissionId, roleId, userId, true);
-        List<? extends SystemLinkedAuthorization> retrieved = linkedAuthorizationServiceAccess.
+                null, null, userId, true);
+        List<? extends SystemLinkedAuthorization> existentAssociations = linkedAuthorizationServiceAccess.
                 getSpecificAssociation(filter);
-        if (retrieved.isEmpty()) {
-            throw new LinkedAuthorizationNotFoundException(LinkedAuthorizationErrorCodeMessage.
-                    RESOURCE_NOT_FOUND.toString());
+        if (!existentAssociations.isEmpty()) {
+            List<Long> ids = existentAssociations.stream().map(SystemLinkedAuthorization::getId).
+                    collect(Collectors.toList());
+            linkedAuthorizationServiceAccess.deleteAssociations(ids);
         }
-        linkedAuthorizationServiceAccess.deleteAssociations(
-                retrieved.stream().map(SystemLinkedAuthorization::getId).
-                        collect(Collectors.toList()));
     }
 
     /**
