@@ -39,11 +39,15 @@ public class ActiveTenantFactory {
      * Create a tenant with already predefine fields.
      * @param userId user id to whom this active tenant belongs
      * @param tenantId tenant id to whom this active tenant belongs and has active
+     * @param tenantName tenant name to whom the active tenant belongs
+     * @param isTenantActive if the selected record is active for the selected user
      */
-    public static ActiveTenant create(Long userId, Long tenantId){
+    public static ActiveTenant create(Long userId, Long tenantId, String tenantName, boolean isTenantActive){
         ActiveTenant activeTenant = new ActiveTenant();
         activeTenant.setUserId(userId);
         activeTenant.setTenantId(tenantId);
+        activeTenant.setTenantName(tenantName);
+        activeTenant.setIsTenantActive(isTenantActive);
 
         return activeTenant;
     }
@@ -60,8 +64,10 @@ public class ActiveTenantFactory {
         Long id = FactoryUtilService.getLongFromJson("id", jsonTenant);
         Long userId = FactoryUtilService.getLongFromJson("userId", jsonTenant);
         Long tenantId = FactoryUtilService.getLongFromJson("tenantId", jsonTenant);
+        String tenantName = FactoryUtilService.getStringFromJson("tenantName", jsonTenant);
+        boolean isTenantActive = Boolean.parseBoolean(FactoryUtilService.getStringFromJson("isTenantActive", jsonTenant));
 
-        ActiveTenant activeTenant = create(userId, tenantId);
+        ActiveTenant activeTenant = create(userId, tenantId, tenantName, isTenantActive);
         activeTenant.setId(id);
 
         return activeTenant;
@@ -79,6 +85,8 @@ public class ActiveTenantFactory {
         FactoryUtilService.addValueLong(builder, "id", activeTenant.getId());
         FactoryUtilService.addValueLong(builder, "userId", activeTenant.getUserId());
         FactoryUtilService.addValueLong(builder, "tenantId", activeTenant.getTenantId());
+        FactoryUtilService.addValue(builder, "tenantName", activeTenant.getTenantName());
+        FactoryUtilService.addValue(builder, "isTenantActive", activeTenant.getIsTenantActive());
 
         return  builder.build();
     }

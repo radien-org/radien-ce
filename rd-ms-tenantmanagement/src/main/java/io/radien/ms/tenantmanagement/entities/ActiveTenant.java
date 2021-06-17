@@ -52,8 +52,8 @@ public class ActiveTenant extends io.radien.ms.tenantmanagement.client.entities.
 	 * @return the active tenant id
 	 */
 	@Id
-	@TableGenerator(name = "GEN_SEQ_TNT01", allocationSize = 100)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT01")
+	@TableGenerator(name = "GEN_SEQ_ACTTNT01", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_ACTTNT01")
 	@Override
 	public Long getId() {
 		return super.getId();
@@ -77,5 +77,25 @@ public class ActiveTenant extends io.radien.ms.tenantmanagement.client.entities.
 	@Override
 	public Long getTenantId() {
 		return super.getTenantId();
+	}
+
+	/**
+	 * Active Tenant tenant name table field getter
+	 * @return active tenant tenant name
+	 */
+	@Column
+	@Override
+	public String getTenantName() {
+		return super.getTenantName();
+	}
+
+	/**
+	 * Active Tenant is tenant active table field getter
+	 * @return active tenant is tenant active
+	 */
+	@Column
+	@Override
+	public boolean getIsTenantActive() {
+		return super.getIsTenantActive();
 	}
 }

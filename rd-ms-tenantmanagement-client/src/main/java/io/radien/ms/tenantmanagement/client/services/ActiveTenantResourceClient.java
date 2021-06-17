@@ -56,7 +56,6 @@ public interface ActiveTenantResourceClient {
      * error.
      */
     @GET
-    @Path("/getAll")
     public Response getAll(@QueryParam("search") String search,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,

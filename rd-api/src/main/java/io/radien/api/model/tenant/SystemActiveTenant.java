@@ -47,4 +47,28 @@ public interface SystemActiveTenant extends Model {
 	 * @param tenantId to be set
 	 */
 	public void setTenantId(Long tenantId);
+
+	/**
+	 * System active tenant tenant name getter
+	 * @return system active tenant tenant name
+	 */
+	public String getTenantName();
+
+	/**
+	 * System active tenant tenant name setter
+	 * @param tenantName to be set
+	 */
+	public void setTenantName(String tenantName);
+
+	/**
+	 * System active tenant is tenant active
+	 * @return system active tenant is tenant active
+	 */
+	public boolean getIsTenantActive();
+
+	/**
+	 * System active tenant is tenant active setter
+	 * @param isTenantActive to be set
+	 */
+	public void setIsTenantActive(boolean isTenantActive);
 }

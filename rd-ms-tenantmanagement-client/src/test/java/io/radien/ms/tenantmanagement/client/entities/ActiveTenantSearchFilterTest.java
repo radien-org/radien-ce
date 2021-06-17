@@ -29,7 +29,7 @@ public class ActiveTenantSearchFilterTest extends TestCase {
     private final ActiveTenantSearchFilter searchFilter;
 
     public ActiveTenantSearchFilterTest() {
-        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, true, true);
+        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, null, false, true);
     }
 
     /**
@@ -68,23 +68,6 @@ public class ActiveTenantSearchFilterTest extends TestCase {
         searchFilter.setTenantId(3L);
         assertNotNull(searchFilter.getTenantId());
         assertEquals((Long) 3L, searchFilter.getTenantId());
-    }
-
-    /**
-     * Test the search filter is exact value getter
-     */
-    @Test
-    public void testIsExact() {
-        assertTrue(searchFilter.isExact());
-    }
-
-    /**
-     * Test the search filter is exact value setter
-     */
-    @Test
-    public void testSetExact() {
-        searchFilter.setExact(false);
-        assertFalse(searchFilter.isExact());
     }
 
     /**

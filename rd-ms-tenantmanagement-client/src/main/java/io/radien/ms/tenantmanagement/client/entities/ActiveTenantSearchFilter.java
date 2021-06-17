@@ -25,20 +25,23 @@ public class ActiveTenantSearchFilter implements SystemActiveTenantSearchFilter 
 
     private Long userId;
     private Long tenantId;
-    private boolean isExact;
+    private String tenantName;
+    private boolean isTenantActive;
     private boolean isLogicConjunction;
 
     /**
      * Active Tenant search filter constructor
      * @param userId of the active tenant to be found
      * @param tenantId of the active tenant to be found
-     * @param isExact true in case search option should be exact
+     * @param tenantName of the active tenant to be found
+     * @param isTenantActive true if the user has the following tenant has active
      * @param isLogicalConjunction true in case search option is and conjunction
      */
-    public ActiveTenantSearchFilter(Long userId, Long tenantId, boolean isExact, boolean isLogicalConjunction) {
+    public ActiveTenantSearchFilter(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isLogicalConjunction) {
         this.userId = userId;
         this.tenantId = tenantId;
-        this.isExact = isExact;
+        this.tenantName = tenantName;
+        this.isTenantActive = isTenantActive;
         this.isLogicConjunction = isLogicalConjunction;
     }
 
@@ -73,26 +76,44 @@ public class ActiveTenantSearchFilter implements SystemActiveTenantSearchFilter 
      * System active tenant search filter tenant id setter
      * @param tenantId to be set
      */
+    @Override
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
     /**
-     * Active Tenant search filter get is exact search
-     * @return true or false value
+     * System active tenant search filter tenant name getter
+     * @return the system active tenant search filter tenant name
      */
     @Override
-    public boolean isExact() {
-        return isExact;
+    public String getTenantName() {
+        return tenantName;
     }
 
     /**
-     * Active Tenant search filter set exact
-     * @param exact to be set and updated
+     * System active tenant search filter tenant name setter
+     * @param tenantName to be set
+     */
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
+
+    /**
+     * Active Tenant is tenant active for the user
+     * @return true or false value
      */
     @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
+    public boolean getIsTenantActive() {
+        return isTenantActive;
+    }
+
+    /**
+     * Active Tenant is tenant active for the user
+     * @param isTenantActive to be set and updated
+     */
+    @Override
+    public void setIsTenantActive(boolean isTenantActive) {
+        this.isTenantActive = isTenantActive;
     }
 
     /**

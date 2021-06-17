@@ -66,10 +66,15 @@ public class TenantMessageBodyReaderTest extends TestCase {
                 "\"lastUpdateUser\":null," +
                 "\"tenantType\":\"root\"" +
                 "}";
-        TenantMessageBodyReader target = new TenantMessageBodyReader();
-        InputStream in = new ByteArrayInputStream(result.getBytes());
+        boolean success = false;
+        try {
+            TenantMessageBodyReader target = new TenantMessageBodyReader();
+            InputStream in = new ByteArrayInputStream(result.getBytes());
 
-        Tenant tenant = target.readFrom(null,null,null,null,null, in);
-        assertNull(tenant);
+            Tenant tenant = target.readFrom(null, null, null, null, null, in);
+        } catch (Exception e) {
+            success = true;
+        }
+        assertTrue(success);
     }
 }

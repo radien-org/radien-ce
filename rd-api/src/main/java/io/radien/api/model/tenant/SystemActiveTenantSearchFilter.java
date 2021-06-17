@@ -47,16 +47,28 @@ public interface SystemActiveTenantSearchFilter {
     public void setTenantId(Long tenantId);
 
     /**
-     * System tenant search filter is exact search getter
-     * @return the system tenant search filter is exact value
+     * System active tenant search filter tenant name getter
+     * @return the system active tenant search filter tenant name
      */
-    public boolean isExact();
+    public String getTenantName();
 
     /**
-     * System tenant search filter is exact setter
-     * @param exact if true the search needs to be exactly as the given parameters
+     * System active tenant search filter tenant name setter
+     * @param tenantName to be set
      */
-    public void setExact(boolean exact);
+    public void setTenantName(String tenantName);
+
+    /**
+     * System active tenant is tenant active
+     * @return system active tenant is tenant active
+     */
+    public boolean getIsTenantActive();
+
+    /**
+     * System active tenant is tenant active setter
+     * @param isTenantActive to be set
+     */
+    public void setIsTenantActive(boolean isTenantActive);
 
     /**
      * System tenant search filter is logical conjunction getter

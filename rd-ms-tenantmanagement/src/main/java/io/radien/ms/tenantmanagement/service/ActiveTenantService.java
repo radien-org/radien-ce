@@ -80,7 +80,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
         criteriaQuery.select(activeTenantRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get("name"), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get("tenantName"), search));
             criteriaQuery.where(global);
         }
         if(sortBy != null && !sortBy.isEmpty()){
@@ -170,12 +170,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     private Predicate getFieldPredicate(String name, Object value, SystemActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate;
-            if (value instanceof String && !filter.isExact()) {
-                subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");
-            }
-            else {
-                subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
-            }
+            subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");
 
             if(filter.isLogicConjunction()) {
                 global = criteriaBuilder.and(global, subPredicate);
