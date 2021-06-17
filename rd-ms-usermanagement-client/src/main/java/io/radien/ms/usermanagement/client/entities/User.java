@@ -56,7 +56,6 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.firstname = u.getFirstname();
 		this.lastname = u.getLastname();
 		this.sub = u.getSub();
-		this.activeTenant = u.getActiveTenant();
 		if (u.getTerminationDate() != null) {
 			this.terminationDate = (Date) u.getTerminationDate().clone();
 		}
