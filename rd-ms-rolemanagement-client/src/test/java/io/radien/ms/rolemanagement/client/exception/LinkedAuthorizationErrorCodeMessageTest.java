@@ -27,6 +27,6 @@ public class LinkedAuthorizationErrorCodeMessageTest extends TestCase {
     public void testToString() {
         assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: %s\"}", LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString());
         assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant ID\"}", LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant ID"));
-        assertEquals("{\"code\":102, \"key\":\"error.dissociation.no.params\", \"message\":\"Not informed parameters for dissociation\"}", LinkedAuthorizationErrorCodeMessage.NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
+        assertEquals("{\"code\":102, \"key\":\"error.dissociation.no.params\", \"message\":\"Parameters for dissociation not informed\"}", LinkedAuthorizationErrorCodeMessage.NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
     }
 }

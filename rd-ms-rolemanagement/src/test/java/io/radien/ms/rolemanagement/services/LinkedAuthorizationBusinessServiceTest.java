@@ -228,17 +228,4 @@ public class LinkedAuthorizationBusinessServiceTest {
         assertDoesNotThrow(() -> doNothing().when(this.linkedAuthorizationServiceAccess).deleteAssociations(any()));
         assertDoesNotThrow(() -> linkedAuthorizationBusinessService.deleteAssociations(1L, 1L));
     }
-
-    /**
-     * Test for method dissociateTenantUser(Long tenant, Long user)
-     * Expected outcome (fail): Linked Authorization associations not found and deletion performed
-     */
-    @Test
-    public void testDissociateTenantUserWhenAssociationsNotFound() {
-        List<SystemLinkedAuthorization> expectedLinkedAuthorization = new ArrayList<>();
-        when(this.linkedAuthorizationServiceAccess.getSpecificAssociation(any())).
-                then(i -> expectedLinkedAuthorization);
-        assertThrows(LinkedAuthorizationNotFoundException.class, ()->
-                linkedAuthorizationBusinessService.deleteAssociations(1L, 1L));
-    }
 }

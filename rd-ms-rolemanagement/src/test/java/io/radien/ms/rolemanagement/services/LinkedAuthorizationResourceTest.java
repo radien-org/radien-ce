@@ -399,16 +399,4 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(500,response.getStatus());
     }
 
-    /**
-     * Test for dissociation process (for tenant and user) when there
-     * is no associations available
-     * Expected: Http Status 404
-     */
-    @Test
-    public void testDissociateTenantUserNotFoundError() throws LinkedAuthorizationException, LinkedAuthorizationNotFoundException {
-        doThrow(new LinkedAuthorizationNotFoundException()).when(linkedAuthorizationBusinessService).
-                deleteAssociations(1L, 1L);
-        Response response = linkedAuthorizationResource.deleteAssociations(1L, 1L);
-        assertEquals(404,response.getStatus());
-    }
 }
