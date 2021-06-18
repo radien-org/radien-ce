@@ -230,4 +230,16 @@ public class LinkedAuthorizationBusinessServiceTest {
             fail("unexpected");
         }
     }
-}
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome (fail): No parameters informed
+     */
+    @Test
+    public void testDissociateTenantUserWithNoParameters() {
+        assertThrows(LinkedAuthorizationException.class, ()->
+                linkedAuthorizationBusinessService.deleteAssociations(null, null));
+    }
+
+
+    }
