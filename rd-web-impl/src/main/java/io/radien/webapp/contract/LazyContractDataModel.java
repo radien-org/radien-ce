@@ -19,25 +19,20 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.tenant.ContractRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Bruno Gama
  */
-public class LazyContractDataModel extends LazyDataModel<SystemContract> {
+public class LazyContractDataModel extends LazyAbstractDataModel<SystemContract> {
 
     private static final long serialVersionUID = -7412588857597749996L;
     private ContractRESTServiceAccess service;
-
-    private List<? extends SystemContract> datasource;
 
     public LazyContractDataModel(ContractRESTServiceAccess service) {
         this.service=service;
@@ -45,35 +40,7 @@ public class LazyContractDataModel extends LazyDataModel<SystemContract> {
     }
 
     @Override
-    public SystemContract getRowData(String rowKey) {
-        for (SystemContract contract : datasource) {
-            if (contract.getId() == Integer.parseInt(rowKey)) {
-                return contract;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public String getRowKey(SystemContract contract) {
-        return String.valueOf(contract.getId());
-    }
-
-    @Override
-    public List<SystemContract> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-        Long rowCount = 0L;
-        try {
-            Page<? extends SystemContract> pagedInformation = service.getAll((offset/pageSize)+1, pageSize);
-
-            datasource = pagedInformation.getResults();
-
-            rowCount = service.getTotalRecordsCount();
-        } catch (SystemException e) {
-            e.printStackTrace();
-        }
-
-        setRowCount(Math.toIntExact(rowCount));
-
-        return datasource.stream().collect(Collectors.toList());
+    public Page<? extends SystemContract> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+        return service.getAll((offset/pageSize)+1, pageSize);
     }
 }

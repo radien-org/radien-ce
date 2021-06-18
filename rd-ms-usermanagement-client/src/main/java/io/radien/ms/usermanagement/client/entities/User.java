@@ -36,7 +36,6 @@ public class User extends AbstractUserModel implements SystemUser {
 	private String firstname;
 	private String lastname;
 	private String sub;
-	private Long activeTenant;
 	private Date terminationDate;
 	private boolean enabled;
 	private boolean delegatedCreation;
@@ -57,13 +56,18 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.firstname = u.getFirstname();
 		this.lastname = u.getLastname();
 		this.sub = u.getSub();
-		this.activeTenant = u.getActiveTenant();
-		this.terminationDate = u.getTerminationDate();
+		if (u.getTerminationDate() != null) {
+			this.terminationDate = (Date) u.getTerminationDate().clone();
+		}
 		this.enabled = u.enabled;
-		this.setCreateDate(u.getCreateDate());
+		if (u.getCreateDate() != null) {
+			this.setCreateDate((Date) u.getCreateDate().clone());
+		}
+		if (u.getLastUpdate() != null){
+			this.setLastUpdate((Date)u.getLastUpdate().clone());
+		}
 		this.setCreateUser(u.getCreateUser());
 		this.setLastUpdateUser(u.getLastUpdateUser());
-		this.setLastUpdate(u.getLastUpdate());
 	}
 
 	/**
@@ -196,22 +200,6 @@ public class User extends AbstractUserModel implements SystemUser {
 	@Override
 	public void setSub(String sub) {
 		this.sub = sub;
-	}
-
-	/**
-	 * User active tenant getter method
-	 * @return the current active tenant for the required user
-	 */
-	public Long getActiveTenant() {
-		return activeTenant;
-	}
-
-	/**
-	 * User active tenant setter method
-	 * @param activeTenant to be set
-	 */
-	public void setActiveTenant(Long activeTenant) {
-		this.activeTenant = activeTenant;
 	}
 
 	/**
