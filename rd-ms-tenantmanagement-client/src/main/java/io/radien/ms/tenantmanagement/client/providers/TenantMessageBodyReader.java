@@ -17,6 +17,8 @@ package io.radien.ms.tenantmanagement.client.providers;
 
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -37,6 +39,7 @@ import java.text.ParseException;
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class TenantMessageBodyReader implements MessageBodyReader<Tenant> {
+	protected final static Logger log = LoggerFactory.getLogger(TenantMessageBodyReader.class);
 
 	/**
 	 * Checks if the given JSON object can be read into a tenant one
@@ -68,7 +71,7 @@ public class TenantMessageBodyReader implements MessageBodyReader<Tenant> {
 		try {
 			tenant = TenantModelMapper.map(entityStream);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
 		return tenant;
 	}
