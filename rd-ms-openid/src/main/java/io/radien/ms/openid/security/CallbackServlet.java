@@ -17,6 +17,8 @@ package io.radien.ms.openid.security;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.JsonObject;
 import javax.servlet.ServletException;
@@ -40,6 +42,8 @@ import java.io.IOException;
 @WebServlet(urlPatterns = "/callback")
 public class CallbackServlet extends AbstractServlet {
 
+    private static final Logger log = LoggerFactory.getLogger(CallbackServlet.class);
+    private static final String ERROR = "error";
     /**
      * Called by the server (via the service method) to allow a servlet to handle a GET request.
      * Overriding this method to support a GET request also automatically supports an HTTP HEAD request. A HEAD request
@@ -75,16 +79,24 @@ public class CallbackServlet extends AbstractServlet {
         String clientSecret = config.getValue("auth.clientSecret", String.class);
 
         //Error:
-        String error = request.getParameter("error");
+        String error = request.getParameter(ERROR);
         if (error != null) {
-            request.setAttribute("error", error);
-            dispatch("/", request, response);
+            request.setAttribute(ERROR, error);
+            try {
+                dispatch("/", request, response);
+            } catch (ServletException |IOException e){
+                log.error(e.getMessage());
+            }
             return;
         }
         String localState = (String) request.getSession().getAttribute("CLIENT_LOCAL_STATE");
         if (localState == null || !localState.equals(request.getParameter("state"))) {
-            request.setAttribute("error", "The state attribute doesn't match !!");
-            dispatch("/", request, response);
+            request.setAttribute(ERROR, "The state attribute doesn't match !!");
+            try {
+                dispatch("/", request, response);
+            } catch (ServletException |IOException e){
+                log.error(e.getMessage());
+            }
             return;
         }
 
@@ -105,9 +117,13 @@ public class CallbackServlet extends AbstractServlet {
                     .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), JsonObject.class);
             request.getSession().setAttribute("tokenResponse", tokenResponse);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            request.setAttribute("error", ex.getMessage());
+            log.error(ex.getMessage());
+            request.setAttribute(ERROR, ex.getMessage());
         }
-        dispatch("/", request, response);
+        try {
+            dispatch("/", request, response);
+        } catch (ServletException |IOException e) {
+            log.error(e.getMessage());
+        }
     }
 }
