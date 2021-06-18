@@ -94,7 +94,7 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 			logger.info("Authentication attempt finished");
 			HttpSession session = request.getSession(true);
 			session.setAttribute("accessToken",token.getValue());
-			session.setAttribute("refreshToken",token.getRefreshToken());
+			session.setAttribute("refreshToken",token.getRefreshToken().getValue());
 			return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 		} catch (Exception e) {
 			logger.error("Could not obtain user details from token", e);

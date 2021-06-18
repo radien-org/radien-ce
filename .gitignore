@@ -31,3 +31,4 @@ target/
 oaf_cms/
 .mvn/
 .envrc
+mvnvm.properties
