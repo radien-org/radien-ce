@@ -78,7 +78,7 @@ public class AuthorizationCodeServlet extends HttpServlet {
         Config config = ConfigProvider.getConfig();
         String authorizationUri = config.getValue("auth.userAuthorizationUri", String.class);
         String clientId = config.getValue("auth.clientId", String.class);
-        String redirectUri = config.getValue("client.redirectUri", String.class);;
+        String redirectUri = config.getValue("client.redirectUri", String.class);
         String scope = config.getValue("client.scope", String.class);
 
         String authorizationLocation = authorizationUri + "?response_type=code"
@@ -91,8 +91,6 @@ public class AuthorizationCodeServlet extends HttpServlet {
             response.sendRedirect(authorizationLocation);
         } catch (IOException e){
             log.error("Error sending redirect",e);
-            //this was added to block Exception details to reach user
-            throw new IOException();
         }
     }
 }
