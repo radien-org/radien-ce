@@ -23,6 +23,7 @@ import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAcce
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
@@ -38,17 +39,13 @@ import org.mockito.Spy;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Bruno Gama
@@ -225,7 +222,12 @@ public class LinkedAuthorizationBusinessServiceTest {
         when(this.linkedAuthorizationServiceAccess.getSpecificAssociation(any())).
                 then(i -> expectedLinkedAuthorization);
 
-        assertDoesNotThrow(() -> doNothing().when(this.linkedAuthorizationServiceAccess).deleteAssociations(any()));
-        assertDoesNotThrow(() -> linkedAuthorizationBusinessService.deleteAssociations(1L, 1L));
+        doNothing().when(this.linkedAuthorizationServiceAccess).deleteAssociations(any());
+
+        try {
+            linkedAuthorizationBusinessService.deleteAssociations(1L, 1L);
+        } catch (LinkedAuthorizationNotFoundException | LinkedAuthorizationException e) {
+            fail("unexpected");
+        }
     }
 }
