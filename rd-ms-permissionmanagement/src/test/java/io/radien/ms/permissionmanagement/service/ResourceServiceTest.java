@@ -21,10 +21,14 @@ import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.model.Resource;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -36,14 +40,17 @@ import static org.junit.Assert.*;
  */
 public class ResourceServiceTest {
 
-    ResourceServiceAccess resourceServiceAccess;
-    SystemResource resourceTest;
+    static ResourceServiceAccess resourceServiceAccess;
+    static SystemResource resourceTest;
+    static EJBContainer container;
 
-    public ResourceServiceTest() throws Exception {
+    @BeforeClass
+    public static void start() throws Exception {
         Properties p = new Properties();
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        p.put("openejb.deployments.classpath.include",".*permission.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
+        container = EJBContainer.createEJBContainer(p);
+        final Context context = container.getContext();
 
         resourceServiceAccess = (ResourceServiceAccess) 
                 context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
@@ -55,6 +62,18 @@ public class ResourceServiceTest {
         } else {
             resourceTest = createResource("resourceName", 2L);
             resourceServiceAccess.save(resourceTest);
+        }
+    }
+
+    @Before
+    public void inject() throws NamingException {
+        container.getContext().bind("inject", this);
+    }
+
+    @AfterClass
+    public static void stop() {
+        if (container != null) {
+            container.close();
         }
     }
 

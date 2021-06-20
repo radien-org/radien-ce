@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
@@ -57,10 +58,7 @@ public class TenantRoleBusinessService implements Serializable {
     @Inject
     private TenantRolePermissionServiceAccess tenantRolePermissionService;
 
-    @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
-
-    @Inject
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Inject
@@ -68,6 +66,11 @@ public class TenantRoleBusinessService implements Serializable {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    public TenantRoleBusinessService(){
+        CDI<Object> cdi =CDI.current();
+        tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
+        permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
+    }
     /**
      * Retrieves TenantRole association using pagination approach
      * @param pageNumber page number

@@ -26,6 +26,7 @@ import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.*;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
@@ -44,14 +45,18 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     @Inject
     private LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
 
-    @Inject
-    private TenantRESTServiceAccess tenantRESTServiceAccess;
 
-    @Inject
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Inject
     private RoleServiceAccess roleServiceAccess;
+
+    public LinkedAuthorizationBusinessService(){
+        CDI<Object> cdi =CDI.current();
+        tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
+        permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
+    }
 
     /**
      * Searches the Linked Authorization association based on the id
