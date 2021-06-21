@@ -139,7 +139,7 @@ public interface PermissionResourceClient {
     /**
      * Validates if Permission exists for a referred Id (or alternatively taking in account name)
      * @param id Identifier to guide the search be searched (Primary parameter)
-     * @name name Permission name, an alternative parameter to be used (only if Id is omitted)
+     * @param name Permission name, an alternative parameter to be used (only if Id is omitted)
      * @return 200: If Permission exists
      *     	   404: If Permission does not exist
      *         400: (Bad Request): None expected parameter informed

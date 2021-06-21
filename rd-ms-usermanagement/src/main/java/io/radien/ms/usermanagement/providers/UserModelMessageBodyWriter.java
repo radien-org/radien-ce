@@ -75,7 +75,6 @@ public class UserModelMessageBodyWriter implements MessageBodyWriter<User> {
 	 * @param mediaType type of the given readable field
 	 * @param httpHeaders header of the http received
 	 * @param entityStream received object
-	 * @return a user that has been converted from the entity stream
 	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
 	 * implementation if a specific HTTP error response needs to be produced.
 	 */

@@ -28,7 +28,7 @@ import io.radien.persistence.service.system.AppframeService;
 import junit.framework.TestCase;
 
 /**
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author Marco Weiland
  *
  */
 public class AppframeServiceTest extends TestCase {

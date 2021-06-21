@@ -211,7 +211,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * Creates given user
      * @param user to be created
      * @return true if user has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case it founds multiple users or if URL is malformed
      */
     public boolean create(SystemUser user, boolean skipKeycloak) throws SystemException {
         UserResourceClient client;
@@ -267,7 +267,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @param sortBy any specific column
      * @param isAscending true in case records should be filter in ascending order
      * @return a page of all the requested system users
-     * @throws MalformedURLException in case of any issue while attempting communication with the client side
      */
     @Override
     public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {

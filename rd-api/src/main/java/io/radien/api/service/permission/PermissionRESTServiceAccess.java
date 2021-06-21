@@ -39,7 +39,6 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @param sortBy list of values to sort request
      * @param isAscending in case of true data will come ascending mode if false descending
      * @return list of permissions
-     * @throws MalformedURLException in case of URL exception construction
      * @throws SystemException in case of any communication error
      */
     public Page<? extends SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
