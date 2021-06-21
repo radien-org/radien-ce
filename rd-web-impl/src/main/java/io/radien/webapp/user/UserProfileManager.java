@@ -23,6 +23,7 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
 
+import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
@@ -69,7 +70,6 @@ public class UserProfileManager extends AbstractManager {
     private static final String URL_MAPPING_ID_LOGGED_USER_PROFILE = "pretty:profile";
     private static final String URL_MAPPING_ID_HOME = "pretty:index";
 
-    private SystemTenant previousSelectedTenantToUnAssign;
     private SystemTenant selectedTenantToUnAssign;
     private Long tabIndex = 0L;
 
@@ -93,18 +93,18 @@ public class UserProfileManager extends AbstractManager {
     }
 
     /**
-     * Stores the information regarding a selected permission
-     * @param event that will contain which permission has been selected
+     * Listener method used by bootsfaces DataTable component to select
+     * one Tenant
+     * @param tenant Selected tenant on DataTable
+     * @param typeOfSelection one of those predicted types on DataTable.
+     *                        This is either row, column or item
+     * @param indexes tells the JSF bean which rows, columns or cells have been selected.
+     *     Note that in the first two cases this is either an individual number or - if multiple items have been selected - a
+     *     comma separated list
      */
-    public void onTenantSelect(SelectEvent<SystemTenant> event) {
-        if (previousSelectedTenantToUnAssign != null && event.getObject().getId().
-                equals(previousSelectedTenantToUnAssign.getId())) {
-            // remove selection
-            previousSelectedTenantToUnAssign = new Tenant();
-            selectedTenantToUnAssign = new Tenant();
-        } else {
-            // select
-            previousSelectedTenantToUnAssign = event.getObject();
+    public void onTenantSelect(Tenant tenant, String typeOfSelection, String indexes) {
+        if (typeOfSelection.equals("row") && tenant != null) {
+            this.selectedTenantToUnAssign = tenant;
         }
     }
 
@@ -188,15 +188,6 @@ public class UserProfileManager extends AbstractManager {
      */
     public void setSelectedTenantToUnAssign(SystemTenant selectedTenantToUnAssign) {
         this.selectedTenantToUnAssign = selectedTenantToUnAssign;
-    }
-
-    /**
-     * Getter for the property that corresponds to the Tenant Previously selected for
-     * doing the dissociation
-     * @return Previous Tenant for which the dissociation was performed
-     */
-    public SystemTenant getPreviousSelectedTenantToUnAssign() {
-        return previousSelectedTenantToUnAssign;
     }
 
     /**

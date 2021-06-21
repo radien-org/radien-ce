@@ -52,33 +52,15 @@
 							<b:container>
 								<b:row><h1/></b:row>
 								<b:row>
-									<p:dataTable var="tenantRef"
-												 value="#{userProfileManager.assignedTenants}"
-												 paginator="true" paginatorPosition="bottom"
-												 rows="10" responsive="true"
-												 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-												 currentPageReportTemplate="({currentPage} #{msg.of} {totalPages})"
-												 rowsPerPageTemplate="5,10,15,30,50"
-												 id="userTenantsTable" emptyMessage="#{msg.noRecordsFound}"
-												 info="false" sortOrder="ascending" styleClass="table--2"
-												 rowKey="#{tenantRef.id}"
+									<b:dataTable var="tenantRef"
 												 selectionMode="single"
-												 selection="#{userProfileManager.selectedTenantToUnAssign}">
-
-										<p:ajax event="rowSelect"
-												listener="#{userProfileManager.onTenantSelect}"
-												update="@all"/>
-
-										<p:column headerText="#{msg.id}">
-											<h:outputText value="#{tenantRef.id}" />
-										</p:column>
-										<p:column headerText="#{msg.name}">
-											<h:outputText value="#{tenantRef.name}" />
-										</p:column>
-										<p:column headerText="#{msg.rd_tenant} #{msg.type} ">
-											<h:outputText value="#{tenantRef.tenantType}" />
-										</p:column>
-									</p:dataTable>
+												 selectedItems="rows"
+												 onselect="ajax:userProfileManager.onTenantSelect(tenantRef, typeOfSelection, indexes);"
+												 value="#{userProfileManager.assignedTenants}">
+										<b:dataTableColumn value="#{tenantRef.id}" label="#{msg.id}"/>
+										<b:dataTableColumn value="#{tenantRef.name}" label="#{msg.name}"/>
+										<b:dataTableColumn value="#{tenantRef.tenantType.name}" label="#{msg.type}"/>
+									</b:dataTable>
 								</b:row>
 								<b:row><h1/></b:row>
 							</b:container>
