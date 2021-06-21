@@ -16,8 +16,8 @@
 package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.api.entity.Page;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
-import io.radien.ms.tenantmanagement.client.util.FactoryUtilService;
 
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -118,7 +118,7 @@ public class ActiveTenantFactory {
         int totalPages = io.radien.api.util.FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = io.radien.api.util.FactoryUtilService.getIntFromJson("totalResults", page);
 
-        ArrayList<ActiveTenant> pageResults = new ArrayList();
+        ArrayList<ActiveTenant> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){

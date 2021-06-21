@@ -18,20 +18,22 @@ package io.radien.ms.tenantmanagement.client.util;
 import io.radien.api.entity.Page;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.util.List;
 
 /**
  * Mapper from a given information into a JSON or a Active tenant
  * @author Bruno Gama
  */
 public class ActiveTenantModelMapper {
+
+    protected final static Logger log = LoggerFactory.getLogger(ActiveTenantModelMapper.class);
 
     /**
      * Maps into a Json Object a active Tenant
@@ -65,7 +67,7 @@ public class ActiveTenantModelMapper {
 
             page = ActiveTenantFactory.convertJsonToPage(jsonObject);
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
         }
         return page;
     }

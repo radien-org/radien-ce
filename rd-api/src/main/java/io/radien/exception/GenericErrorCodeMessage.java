@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.tenantmanagement.client.exceptions;
+
+package io.radien.exception;
 
 /**
- * Enumerate for the tenant error code messages
+ * Enumerate for the error code messages
  *
- * @author Newton Carvalho
- */
-public enum ErrorCodeMessage {
+ * @author Bruno Gama
+ **/
+public enum GenericErrorCodeMessage {
 
     /**
-     * Business Error Code Messages
+     * Tenant Business Error Code Messages
      */
-    RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
-    DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
+    TENANT_RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
+    TENANT_DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
 
     TENANT_FIELD_NOT_INFORMED(102, "error.tenant.field.not.informed", "Tenant %s was not informed."),
 
@@ -60,7 +61,7 @@ public enum ErrorCodeMessage {
      * @param key of the error message
      * @param fallBackMessage of the error message
      */
-    ErrorCodeMessage(int code, String key, String fallBackMessage) {
+    GenericErrorCodeMessage(int code, String key, String fallBackMessage) {
         this.code = code;
         this.key=key;
         this.fallBackMessage = fallBackMessage;
@@ -91,4 +92,5 @@ public enum ErrorCodeMessage {
                 ", \"message\":\"" + message + "\"" +
                 "}";
     }
+
 }

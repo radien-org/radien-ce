@@ -56,6 +56,8 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     @Inject
     private OAFAccess oafAccess;
+
+    private final String unableToRecoverExpiredToken = "Unable to recover expiredToken";
     
     /**
      * Gets requester to get the active tenant in the DB searching for the field Id
@@ -73,7 +75,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getSystemActiveTenant(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(unableToRecoverExpiredToken);
             }
         }
 
@@ -119,7 +121,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getActiveTenantPage(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(unableToRecoverExpiredToken);
             }
         }
     }
@@ -160,7 +162,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return createActiveTenant((ActiveTenant) activeTenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(unableToRecoverExpiredToken);
             }
         }
     }
@@ -183,7 +185,8 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String issueMessage = response.readEntity(String.class);
+                log.error(issueMessage);
                 return false;
             }
         } catch (ProcessingException pe) {
@@ -206,7 +209,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return deleteRequester(activeTenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(unableToRecoverExpiredToken);
             }
         }
     }
@@ -229,7 +232,8 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String issueMessage = response.readEntity(String.class);
+                log.error(issueMessage);
                 return false;
             }
         } catch (ProcessingException pe) {
@@ -252,7 +256,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return updateActiveTenant(activeTenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(unableToRecoverExpiredToken);
             }
         }
     }
@@ -275,7 +279,8 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String issueMessage = response.readEntity(String.class);
+                log.error(issueMessage);
                 return false;
             }
         } catch (ProcessingException pe) {
@@ -298,7 +303,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return isActiveTenantExistentRequester(activeTenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(unableToRecoverExpiredToken);
             }
         }
     }
