@@ -23,10 +23,6 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
@@ -35,7 +31,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Bruno Gama
@@ -46,7 +50,7 @@ public class RoleServiceTest {
     static SystemRole systemRole;
     static EJBContainer container;
 
-    @BeforeClass
+    @BeforeAll
     public static void start() throws NamingException, RoleNotFoundException, UniquenessConstraintException {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
@@ -72,12 +76,7 @@ public class RoleServiceTest {
         }
     }
 
-    @Before
-    public void inject() throws NamingException {
-        container.getContext().bind("inject", this);
-    }
-
-    @AfterClass
+    @AfterAll
     public static void stop() {
         if (container != null) {
             container.close();

@@ -17,16 +17,16 @@ package io.radien.ms.rolemanagement.providers;
 
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
-import io.radien.ms.rolemanagement.providers.LinkedAuthorizationModelMessageBodyWriter;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 
 /**
  * @author Bruno Gama
  */
-public class LinkedAuthorizationModelMessageBodyWriterTest extends TestCase {
+public class LinkedAuthorizationModelMessageBodyWriterTest {
 
     @Test
     public void testIsWriteable() {

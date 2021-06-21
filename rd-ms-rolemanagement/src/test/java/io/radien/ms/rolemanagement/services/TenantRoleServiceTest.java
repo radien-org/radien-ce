@@ -12,8 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
@@ -34,11 +33,7 @@ import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
@@ -49,11 +44,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-*/
 /**
  * @author Newton Carvalho
- *//*
-
+ */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TenantRoleServiceTest {
 
@@ -68,7 +61,7 @@ public class TenantRoleServiceTest {
     Long baseRoleId = 111L;
     Long baseTenantId = 222L;
 
-    @BeforeClass
+    @BeforeAll
     public static void start() throws Exception {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
@@ -82,10 +75,7 @@ public class TenantRoleServiceTest {
         container = EJBContainer.createEJBContainer(p);
         final Context context = container.getContext();
 
-        String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleService";
-        tenantRoleServiceAccess = (TenantRoleServiceAccess) context.lookup(lookupString);
-
-        lookupString = "java:global/rd-ms-rolemanagement//TenantRolePermissionService";
+        String lookupString = "java:global/rd-ms-rolemanagement//TenantRolePermissionService";
         tenantRolePermissionServiceAccess = (TenantRolePermissionServiceAccess) context.lookup(lookupString);
 
         lookupString = "java:global/rd-ms-rolemanagement//TenantRoleUserService";
@@ -95,27 +85,27 @@ public class TenantRoleServiceTest {
         roleServiceAccess = (RoleServiceAccess) context.lookup(lookupString);
     }
 
-    @Before
+    @BeforeEach
     public void inject() throws NamingException {
+        String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleService";
+        tenantRoleServiceAccess = (TenantRoleServiceAccess) container.getContext().lookup(lookupString);
         container.getContext().bind("inject", this);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() {
         if (container != null) {
             container.close();
         }
     }
 
-    */
-/**
+    /**
      * Add tenant role test.
      * Will create the new tenant role.
      * Expected result: Success.
      * Tested methods: void save(TenantRole tenantRole)     *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     *//*
-
+     */
     @Order(1)
     @Test
     public void testSave() throws UniquenessConstraintException {
@@ -128,14 +118,12 @@ public class TenantRoleServiceTest {
         Assertions.assertNotNull(systemTenantRole.getId());
     }
 
-    */
-/**
+    /**
      * Try to Add a tenant role with repeated information
      * Will not create the new tenant role.
      * Expected result: Fail. UniquenessConstraintException
      * Tested methods: void save(TenantRole tenantRole)     *
-     *//*
-
+     */
     @Order(2)
     @Test
     public void testSaveDuplicatedWithError() {
@@ -146,13 +134,11 @@ public class TenantRoleServiceTest {
                 this.tenantRoleServiceAccess.save(systemTenantRole));
     }
 
-    */
-/**
+    /**
      * Try to create a Tenant Role and then update it
      * Expected result: Success.
      * Tested methods: void save(TenantRole tenantRole)
-     *//*
-
+     */
     @Test
     @Order(3)
     public void testUpdate() throws UniquenessConstraintException {
@@ -184,13 +170,11 @@ public class TenantRoleServiceTest {
         Assertions.assertEquals(retrieved.getTenantId(), newTenantId);
     }
 
-    */
-/**
+    /**
      * Test updating a TenantRole with repeated information (The set Tenant + Role is unique)
      * Expected: Fail (Raising UniquenessConstraintException)
      * Tested methods: void save(TenantRole tenantRole)
-     *//*
-
+     */
     @Test
     @Order(4)
     public void testUpdateWithError() {
@@ -207,12 +191,10 @@ public class TenantRoleServiceTest {
         Assertions.assertThrows(UniquenessConstraintException.class,() -> this.tenantRoleServiceAccess.save(updatableTenantRole));
     }
 
-    */
-/**
+    /**
      * Test retrieving a TenantRole by Id
      * Tested methods: SystemTenantRole get(Long id)
-     *//*
-
+     */
     @Test
     @Order(5)
     public void testGetById() {
@@ -226,13 +208,11 @@ public class TenantRoleServiceTest {
         Assertions.assertNotNull(retrieved);
     }
 
-    */
-/**
+    /**
      * Test retrieving a TenantRole by an Id that does not exist
      * Expected: Success
      * Tested methods: SystemTenantRole get(Long id)
-     *//*
-
+     */
     @Test
     @Order(6)
     public void testGetByIdNotExistent() {
@@ -240,24 +220,20 @@ public class TenantRoleServiceTest {
         Assertions.assertNull(systemTenantRole);
     }
 
-    */
-/**
+    /**
      * Test checking if an association (Tenant + role) exists
      * Expected: SUCCESS
-     *//*
-
+     */
     @Test
     @Order(7)
     public void testAssociationExists() {
         Assertions.assertTrue(this.tenantRoleServiceAccess.isAssociationAlreadyExistent(baseRoleId, baseTenantId));
     }
 
-    */
-/**
+    /**
      * Test checking if an association (Tenant + role) exists
      * Expected: FAIL
-     *//*
-
+     */
     @Test
     @Order(8)
     public void testAssociationNotExists() {
@@ -265,13 +241,11 @@ public class TenantRoleServiceTest {
         Assertions.assertFalse(this.tenantRoleServiceAccess.isAssociationAlreadyExistent(9L, 88L));
     }
 
-    */
-/**
+    /**
      * Test checking if an association (Tenant + role) exists,
      * but omitting mandatory param Tenant Id
      * Expected: FAIL
-     *//*
-
+     */
     @Test
     @Order(9)
     public void testAssociationWithoutInformingTenant() {
@@ -281,13 +255,11 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains("Tenant Id is mandatory"));
     }
 
-    */
-/**
+    /**
      * Test checking if an association (Tenant + role) exists,
      * but omitting mandatory param Role Id
      * Expected: FAIL
-     *//*
-
+     */
     @Test
     @Order(10)
     public void testAssociationWithoutInformingRole() {
@@ -297,12 +269,10 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains("Role Id is mandatory"));
     }
 
-    */
-/**
+    /**
      * Try to delete an existent TenantRole
      * Expected: SUCCESS
-     *//*
-
+     */
     @Test
     @Order(11)
     public void testDeleteTenantRole() {
@@ -322,12 +292,10 @@ public class TenantRoleServiceTest {
         Assertions.assertNull(str);
     }
 
-    */
-/**
+    /**
      * Try to delete without informing Id
      * Expected: FAIL (Raise Exception)
-     *//*
-
+     */
     @Test
     @Order(12)
     public void testDeleteWithoutInformingId() {
@@ -335,12 +303,10 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
     }
 
-    */
-/**
+    /**
      * Try to delete an TenantRole that has an User (TenantRoleUser) associated
      * Expected: FAIL (Raising TenantRoleException)
-     *//*
-
+     */
     @Test
     @Order(13)
     public void testDeleteWithUserAssociated() {
@@ -360,12 +326,10 @@ public class TenantRoleServiceTest {
         Assertions.assertThrows(TenantRoleException.class, () -> tenantRoleServiceAccess.delete(tenantRole.getId()));
     }
 
-    */
-/**
+    /**
      * Try to delete an TenantRole that has a Permission (TenantRolePermission) associated
      * Expected: FAIL (Raising TenantRoleException)
-     *//*
-
+     */
     @Test
     @Order(14)
     public void testDeleteWithPermissionAssociated() {
@@ -385,12 +349,10 @@ public class TenantRoleServiceTest {
         Assertions.assertThrows(TenantRoleException.class, () -> tenantRoleServiceAccess.delete(tenantRole.getId()));
     }
 
-    */
-/**
+    /**
      * Retrieves all TenantRoles (inserted during this test) under a pagination approach
      * Expected: SUCCESS (A page not empty)
-     *//*
-
+     */
     @Test
     @Order(15)
     public void testPagination() {
@@ -402,14 +364,12 @@ public class TenantRoleServiceTest {
         Assertions.assertFalse(p.getResults().isEmpty());
     }
 
-    */
-/**
+    /**
      * Retrieve TenantRole association under filter approach.
      * For this case, applies (as parameters) the tenant id and the role id already used to
      * create the first TenantRole association
      * Expected: SUCCESS
-     *//*
-
+     */
     @Test
     @Order(16)
     public void testRetrieveTheFirstAssociationUsingFilter() {
@@ -420,12 +380,10 @@ public class TenantRoleServiceTest {
         Assertions.assertEquals(list.size(), 1);
     }
 
-    */
-/**
+    /**
      * Testing retrieval setting isLogicalConjunction to false (Performing OR instead AND)
      * Expected: Success
-     *//*
-
+     */
     @Test
     @Order(17)
     public void testRetrieveSettingLogicConjunctionToFalse() {
@@ -447,12 +405,10 @@ public class TenantRoleServiceTest {
         Assertions.assertEquals(list.size(), 2);
     }
 
-    */
-/**
+    /**
      * Filtering by parameters that does not exists
      * Expected: Fail (Empty collection)
-     *//*
-
+     */
     @Test
     @Order(18)
     public void testFilterUsingInvalidParameters() {
@@ -469,11 +425,9 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(list.isEmpty());
     }
 
-    */
-/**
+    /**
      * Tests method getTenantRoleId(Long tenant, Long role)
-     *//*
-
+     */
     @Test
     @Order(19)
     public void testGetTenantRoleId() {
@@ -493,11 +447,9 @@ public class TenantRoleServiceTest {
         Assertions.assertFalse(id.isPresent());
     }
 
-    */
-/**
+    /**
      * Tests for method hasAnyRole(Long userId, List<String> roles, tenantId)
-     *//*
-
+     */
     @Test
     @Order(20)
     public void testHasAnyRole() {
@@ -566,18 +518,14 @@ public class TenantRoleServiceTest {
                 hasAnyRole(user2, Arrays.asList("role-a", "role-b", "role-c"), tenant2));
     }
 
-    */
-/**
+    /**
      * Tests for method hasPermission(Long userId, Long permissionId, Long tenantId)
-     *//*
-
+     */
     @Test
     @Order(21)
     public void testHasPermission() {
 
-        */
-/** Roles *//*
-
+        /** Roles */
         SystemRole roleC = new Role();
         roleC.setName("role-c1");
         Assertions.assertDoesNotThrow(() -> this.roleServiceAccess.save(roleC));
@@ -589,9 +537,7 @@ public class TenantRoleServiceTest {
         Long tenant1 = 888L;
         Long tenant2 = 889L;
 
-        */
-/** Tenant Roles *//*
-
+        /** Tenant Roles */
         SystemTenantRole tenant1RoleC = new TenantRole();
         tenant1RoleC.setTenantId(tenant1); tenant1RoleC.setRoleId(roleC.getId());
         Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.save(tenant1RoleC));
@@ -604,9 +550,7 @@ public class TenantRoleServiceTest {
         Long permission2 = 100002L;
         Long permission3 = 100003L;
 
-        */
-/** Tenant Role Permission *//*
-
+        /** Tenant Role Permission */
         SystemTenantRolePermission tenant1RoleCPermission1 = new TenantRolePermission();
         tenant1RoleCPermission1.setTenantRoleId(tenant1RoleC.getId());
         tenant1RoleCPermission1.setPermissionId(permission1);
@@ -627,9 +571,7 @@ public class TenantRoleServiceTest {
         tenant2RoleDPermission3.setPermissionId(permission3);
         Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(tenant2RoleDPermission3));
 
-        */
-/** Tenant Role Users *//*
-
+        /** Tenant Role Users */
 
         Long user1 = 10002222L;
         Long user2 = 10002223L;
@@ -642,9 +584,7 @@ public class TenantRoleServiceTest {
         tenant2RoleDUser2.setUserId(user2); tenant2RoleDUser2.setTenantRoleId(tenant2RoleD.getId());
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenant2RoleDUser2));
 
-        */
-/** Checking permission *//*
-
+        /** Checking permission */
         Assertions.assertTrue(tenantRoleServiceAccess.hasPermission(user1, permission1, null));
         Assertions.assertFalse(tenantRoleServiceAccess.hasPermission(user1, permission3, null));
         Assertions.assertTrue(tenantRoleServiceAccess.hasPermission(user1, permission1, tenant1));
@@ -653,11 +593,9 @@ public class TenantRoleServiceTest {
         Assertions.assertFalse(tenantRoleServiceAccess.hasPermission(user1, permission2, tenant2));
     }
 
-    */
-/**
+    /**
      * Tests for method getTenants(Long userId, Long roleId)
-     *//*
-
+     */
     @Test
     @Order(22)
     public void testGetTenants() {
@@ -745,17 +683,13 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(ids.isEmpty());
     }
 
-    */
-/**
+    /**
      * Tests for method getPermissions(Long tenantId, Long roleId, Long userId)
-     *//*
-
+     */
     @Test
     @Order(23)
     public void testGetPermissions() {
-        */
-/** Roles *//*
-
+        /** Roles */
         SystemRole roleC = new Role();
         roleC.setName("role-cc1");
         Assertions.assertDoesNotThrow(() -> this.roleServiceAccess.save(roleC));
@@ -767,9 +701,7 @@ public class TenantRoleServiceTest {
         Long tenant1 = 888L;
         Long tenant2 = 889L;
 
-        */
-/** Tenant Roles *//*
-
+        /** Tenant Roles */
         SystemTenantRole tenant1RoleC = new TenantRole();
         tenant1RoleC.setTenantId(tenant1); tenant1RoleC.setRoleId(roleC.getId());
         Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.save(tenant1RoleC));
@@ -782,9 +714,7 @@ public class TenantRoleServiceTest {
         Long permission2 = 100002L;
         Long permission3 = 100003L;
 
-        */
-/** Tenant Role Permission *//*
-
+        /** Tenant Role Permission */
         SystemTenantRolePermission tenant1RoleCPermission1 = new TenantRolePermission();
         tenant1RoleCPermission1.setTenantRoleId(tenant1RoleC.getId());
         tenant1RoleCPermission1.setPermissionId(permission1);
@@ -805,9 +735,7 @@ public class TenantRoleServiceTest {
         tenant2RoleDPermission3.setPermissionId(permission3);
         Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(tenant2RoleDPermission3));
 
-        */
-/** Tenant Role Users *//*
-
+        /** Tenant Role Users */
 
         Long user1 = 10002222L;
         Long user2 = 10002223L;
@@ -820,9 +748,7 @@ public class TenantRoleServiceTest {
         tenant2RoleDUser2.setUserId(user2); tenant2RoleDUser2.setTenantRoleId(tenant2RoleD.getId());
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenant2RoleDUser2));
 
-        */
-/** Retrieving permissions *//*
-
+        /** Retrieving permissions */
         List<Long> permissionIds = tenantRoleServiceAccess.getPermissions(tenant1, roleC.getId(), null);
         Assertions.assertTrue(permissionIds.contains(permission1) && permissionIds.contains(permission2));
 
@@ -842,12 +768,10 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(permissionIds.contains(permission2) && permissionIds.contains(permission3));
     }
 
-    */
-/**
+    /**
      * Tests for method getPermissions(Long tenantId, Long roleId, Long userId)
      * without informing the mandatory field tenant
-     *//*
-
+     */
     @Test
     @Order(24)
     public void testGetPermissionsWithoutMandatoryFieldTenant() {
@@ -857,12 +781,10 @@ public class TenantRoleServiceTest {
     }
 
 
-    */
-/**
+    /**
      * Tests for method getPermissions(Long tenantId, Long roleId, Long userId)
      * without informing the mandatory field Role
-     *//*
-
+     */
     @Test
     @Order(25)
     public void testGetPermissionsWithoutMandatoryFieldRole() {
@@ -871,12 +793,10 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
     }
 
-    */
-/**
+    /**
      * Tests for method getTenants(Long userId, Long roleId)
      * without informing the mandatory field Role
-     *//*
-
+     */
     @Test
     @Order(26)
     public void testGetTenantsWithoutMandatoryFieldUser() {
@@ -885,12 +805,10 @@ public class TenantRoleServiceTest {
         Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
     }
 
-    */
-/**
+    /**
      * Tests for method getTenantRoleId(Long tenant, Long role)
      * without informing the mandatory field Role
-     *//*
-
+     */
     @Test
     @Order(27)
     public void testGetTenantRoleIdWithoutMandatoryFields() {
@@ -898,4 +816,4 @@ public class TenantRoleServiceTest {
                 tenantRoleServiceAccess.getTenantRoleId(null, null));
         Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
     }
-}*/
+}

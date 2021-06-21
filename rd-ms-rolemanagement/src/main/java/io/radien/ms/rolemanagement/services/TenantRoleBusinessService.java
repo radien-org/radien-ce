@@ -66,11 +66,6 @@ public class TenantRoleBusinessService implements Serializable {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public TenantRoleBusinessService(){
-        CDI<Object> cdi =CDI.current();
-        tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
-        permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
-    }
     /**
      * Retrieves TenantRole association using pagination approach
      * @param pageNumber page number
@@ -162,7 +157,7 @@ public class TenantRoleBusinessService implements Serializable {
         List<SystemPermission> list = new ArrayList<>();
         List<Long> ids = this.tenantRoleServiceAccess.getPermissions(tenantId, roleId, userId);
         for (Long id:ids) {
-            Optional<SystemPermission> opt = this.permissionRESTServiceAccess.getPermissionById(id);
+            Optional<SystemPermission> opt = getPermissionRESTServiceAccess().getPermissionById(id);
             if (opt.isPresent()) {
                 list.add(opt.get());
             }
@@ -181,7 +176,7 @@ public class TenantRoleBusinessService implements Serializable {
         List<SystemTenant> list = new ArrayList<>();
         List<Long> ids = this.tenantRoleServiceAccess.getTenants(userId, roleId);
         for (Long id:ids) {
-            Optional<SystemTenant> opt = this.tenantRESTServiceAccess.getTenantById(id);
+            Optional<SystemTenant> opt = getTenantRESTServiceAccess().getTenantById(id);
             if (opt.isPresent()) {
                 list.add(opt.get());
             }
@@ -385,6 +380,10 @@ public class TenantRoleBusinessService implements Serializable {
     }
 
     public TenantRESTServiceAccess getTenantRESTServiceAccess() {
+        if (tenantRESTServiceAccess == null) {
+            CDI<Object> cdi = CDI.current();
+            tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
+        }
         return tenantRESTServiceAccess;
     }
 
@@ -393,6 +392,10 @@ public class TenantRoleBusinessService implements Serializable {
     }
 
     public PermissionRESTServiceAccess getPermissionRESTServiceAccess() {
+        if (permissionRESTServiceAccess == null) {
+            CDI<Object> cdi = CDI.current();
+            permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
+        }
         return permissionRESTServiceAccess;
     }
 

@@ -2,8 +2,6 @@ package io.radien.ms.rolemanagement.util;
 
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
-import junit.framework.TestCase;
-import org.junit.Test;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -11,7 +9,11 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 
-public class RoleModelMapperTest extends TestCase {
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+public class RoleModelMapperTest {
 
     @Test
     public void testMapRole() {

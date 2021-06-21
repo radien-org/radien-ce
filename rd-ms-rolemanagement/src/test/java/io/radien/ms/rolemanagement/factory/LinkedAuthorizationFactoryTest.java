@@ -16,9 +16,9 @@
 package io.radien.ms.rolemanagement.factory;
 
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
-import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
-import junit.framework.TestCase;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -27,7 +27,7 @@ import javax.json.JsonObjectBuilder;
 /**
  * @author Bruno Gama
  */
-public class LinkedAuthorizationFactoryTest extends TestCase {
+public class LinkedAuthorizationFactoryTest {
 
     LinkedAuthorization linkedAuthorization = new LinkedAuthorization();
     JsonObject json;

@@ -12,8 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
@@ -40,9 +39,6 @@ import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
@@ -57,11 +53,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-*/
 /**
  * @author Newton Carvalho
- *//*
-
+ */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TenantRoleBusinessServiceTest {
 
@@ -81,10 +75,8 @@ public class TenantRoleBusinessServiceTest {
     static RoleServiceAccess roleServiceAccess;
     static EJBContainer container;
 
-
-    @Test
-    @Order(1)
-    public void start() throws NamingException {
+    @BeforeAll
+    public static void start() throws NamingException {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
@@ -114,12 +106,12 @@ public class TenantRoleBusinessServiceTest {
 
     }
 
-    @Before
+    @BeforeEach
     public void inject() throws NamingException {
         container.getContext().bind("inject", this);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() {
         if (container != null) {
             container.close();
@@ -172,7 +164,6 @@ public class TenantRoleBusinessServiceTest {
     @Test
     @Order(2)
     public void createRoleAdmin() throws RoleNotFoundException, UniquenessConstraintException, NamingException {
-        container.getContext().bind("inject", this);
         SystemRole roleAdmin = assertDoesNotThrow(() -> createRole(roleNameForTenantAdministrator));
         assertNotNull(roleAdmin);
     }
@@ -877,4 +868,3 @@ public class TenantRoleBusinessServiceTest {
         assertEquals(permissionRESTServiceAccess, tenantRoleBusinessService.getPermissionRESTServiceAccess());
     }
 }
-*/
