@@ -52,12 +52,6 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     @Inject
     private RoleServiceAccess roleServiceAccess;
 
-    public LinkedAuthorizationBusinessService(){
-        CDI<Object> cdi =CDI.current();
-        tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
-        permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
-    }
-
     /**
      * Searches the Linked Authorization association based on the id
      * @param associationId to be searched
@@ -115,8 +109,8 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @return true if everything is ok to be saved
      */
     public boolean checkIfFieldsAreValid(SystemLinkedAuthorization association) throws SystemException {
-        boolean isTenantExistent = tenantRESTServiceAccess.isTenantExistent(association.getTenantId());
-        boolean isPermissionExistent = permissionRESTServiceAccess.isPermissionExistent(association.getPermissionId(), null);
+        boolean isTenantExistent = getTenantRESTServiceAccess().isTenantExistent(association.getTenantId());
+        boolean isPermissionExistent = getPermissionRESTServiceAccess().isPermissionExistent(association.getPermissionId(), null);
         boolean isRoleExistent = roleServiceAccess.checkIfRolesExist(association.getRoleId(), null);
 
         if(!isTenantExistent ||
@@ -175,5 +169,21 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public boolean checkPermissions(Long userId, Long tenantId, List<String> roleNames) {
         return linkedAuthorizationServiceAccess.checkPermissions(userId, tenantId, roleNames);
+    }
+
+    public PermissionRESTServiceAccess getPermissionRESTServiceAccess() {
+        if (permissionRESTServiceAccess == null) {
+            CDI<Object> cdi = CDI.current();
+            permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
+        }
+        return permissionRESTServiceAccess;
+    }
+
+    public TenantRESTServiceAccess getTenantRESTServiceAccess() {
+        if (tenantRESTServiceAccess == null) {
+            CDI<Object> cdi = CDI.current();
+            tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
+        }
+        return tenantRESTServiceAccess;
     }
 }
