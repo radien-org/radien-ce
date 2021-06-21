@@ -57,10 +57,6 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-openid-client</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-ms-config-lib</artifactId>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
 		<dependency>
 			<groupId>org.eclipse.microprofile</groupId>
