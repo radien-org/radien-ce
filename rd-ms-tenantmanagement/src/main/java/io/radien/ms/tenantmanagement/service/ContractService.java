@@ -19,8 +19,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemContract;
 
 import io.radien.api.service.tenant.ContractServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.tenantmanagement.entities.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,7 +166,7 @@ public class ContractService implements ContractServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(contract);
         } else {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
         }
     }
 
@@ -182,7 +182,7 @@ public class ContractService implements ContractServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(contract);
         } else {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
         }
     }
 

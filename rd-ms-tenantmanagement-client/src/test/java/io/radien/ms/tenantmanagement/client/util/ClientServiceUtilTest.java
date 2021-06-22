@@ -58,4 +58,15 @@ public class ClientServiceUtilTest {
         }
         assertTrue(valid);
     }
+
+    @Test
+    public void testGetActiveTenantResourceClient() {
+        boolean valid = true;
+        try {
+            clientServiceUtil.getActiveTenantResourceClient("http://url.test.pt") ;
+        } catch (MalformedURLException e) {
+            valid = false;
+        }
+        assertTrue(valid);
+    }
 }
