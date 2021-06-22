@@ -380,12 +380,29 @@ public class LinkedAuthorizationResourceTest {
 
     /**
      * Test for dissociation process (for tenant and user) when a generic exception occurs
-     * Expected: Http Status 500
+     * Expected: Http Status 200
      */
     @Test
     public void testDissociation() {
         Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
         assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test for dissociation process (for tenant and user) when trying to submit
+     * an invalid request (Tenant not informed or User not informed)
+     * Expected: Http Status 400
+     */
+    @Test
+    public void testDissociationInvalidRequest() throws LinkedAuthorizationNotFoundException, LinkedAuthorizationException {
+        doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
+                deleteAssociations(nullable(Long.class), anyLong());
+        Response response = linkedAuthorizationResource.deleteAssociations(null,1l);
+        assertEquals(400,response.getStatus());
+        doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
+                deleteAssociations(anyLong(), nullable(Long.class));
+        response = linkedAuthorizationResource.deleteAssociations(1l,null);
+        assertEquals(400,response.getStatus());
     }
 
     /**

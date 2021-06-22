@@ -238,7 +238,9 @@ public class LinkedAuthorizationBusinessServiceTest {
     @Test
     public void testDissociateTenantUserWithNoParameters() {
         assertThrows(LinkedAuthorizationException.class, ()->
-                linkedAuthorizationBusinessService.deleteAssociations(null, null));
+                linkedAuthorizationBusinessService.deleteAssociations(null, 1L));
+        assertThrows(LinkedAuthorizationException.class, ()->
+                linkedAuthorizationBusinessService.deleteAssociations(1L, null));
     }
 
 

@@ -1,6 +1,5 @@
-package io.radien.ms.rolemanagement.client.exception;
+package io.radien.exception;
 
-import io.radien.exception.LinkedAuthorizationException;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
