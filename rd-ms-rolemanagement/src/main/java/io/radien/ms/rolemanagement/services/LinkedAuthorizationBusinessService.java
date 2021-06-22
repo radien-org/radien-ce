@@ -27,14 +27,12 @@ import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Linked Authorization Business Service will communicate with the service to perform the requests in the db
