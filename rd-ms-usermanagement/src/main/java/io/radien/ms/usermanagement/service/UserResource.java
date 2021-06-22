@@ -265,14 +265,9 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @param userList of users to be added
 	 * @return returns
 	 *
-	 * <ul>
-	 *     <li>OK (Http status 200):</li>
-	 *     <ul>
-	 *         <li>All users were added</li>
-	 *         <li>Some users were not added due found issues</li>	 *
-	 *     </ul>
-	 *     <li>BAD REQUEST (Http status 400): None users were added, were found issues for all them/li>
-	 * </ul>
+	 * OK (Http status 200):
+	 * All users were added Some users were not added due found issues
+	 * BAD REQUEST (Http status 400): None users were added, were found issues for all them
 	 *
 	 * For all cases the response must contains the quantity of not added users (not-processed-items),
 	 * the found issues and an internal status as well (SUCCESS, PARTIAL_SUCCESS and FAIL).

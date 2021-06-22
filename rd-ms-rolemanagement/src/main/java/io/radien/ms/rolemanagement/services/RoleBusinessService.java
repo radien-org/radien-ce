@@ -78,7 +78,6 @@ public class RoleBusinessService implements Serializable {
      * Delete request which will delete the given id role information
      *
      * @param id record to be deleted
-     * @return 200 code message if success, 404 if role is not found, 500 code message if there is any error.
      */
     public void delete(long id) throws RoleNotFoundException {
         roleServiceAccess.delete(id);
@@ -89,8 +88,6 @@ public class RoleBusinessService implements Serializable {
      * if the given role has an id or not.
      *
      * @param role information to be update or created.
-     * @return 200 code message if success, 400 code message if there are duplicated fields that can not be,
-     * 404 if role is not found, 500 code message if there is any error.
      */
     public void save(Role role) throws RoleNotFoundException, UniquenessConstraintException {
         roleServiceAccess.save(role);
