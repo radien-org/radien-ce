@@ -15,8 +15,6 @@
  */
 package io.radien.exception;
 
-import java.io.Serializable;
-
 /**
  * Exception to be thrown to describe general errors
  * regarding LinkedAuthorization domain

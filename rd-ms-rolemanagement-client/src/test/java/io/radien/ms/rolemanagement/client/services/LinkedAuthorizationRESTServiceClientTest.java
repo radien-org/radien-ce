@@ -503,4 +503,22 @@ public class LinkedAuthorizationRESTServiceClientTest {
                 getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
         assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L));
     }
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome: Fail due JWT expiration
+     */
+    @Test(expected = SystemException.class)
+    public void testDissociateTenantUserTokenExpiredException() throws Exception {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.deleteAssociations(anyLong(), anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.deleteAssociations(1L, 2L);
+    }
 }

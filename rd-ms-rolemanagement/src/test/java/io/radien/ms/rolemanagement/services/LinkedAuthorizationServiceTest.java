@@ -29,7 +29,9 @@ import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilt
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
@@ -38,7 +40,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
 
 /**
  * @author Bruno Gama
