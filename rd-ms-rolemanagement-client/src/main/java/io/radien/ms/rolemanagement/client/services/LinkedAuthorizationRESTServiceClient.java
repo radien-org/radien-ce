@@ -389,7 +389,7 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             try{
                 return dissociateTenantUserRequester(tenantId, userId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(UNABLE_TO_RECOVER_TOKEN);
             }
         }
     }

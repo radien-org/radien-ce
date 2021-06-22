@@ -96,7 +96,8 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * parameters (tenant and user).
      * @param tenantId Tenant identifier
      * @param userId User identifier
-     * @return SystemException in case of error
+     * @return true in case of success, otherwise false
+     * @throws SystemException in case of error
      */
     boolean deleteAssociations(Long tenantId, Long userId) throws SystemException;
 }

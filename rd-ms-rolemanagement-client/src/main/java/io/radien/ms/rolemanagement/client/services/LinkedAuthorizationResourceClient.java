@@ -105,6 +105,7 @@ public interface LinkedAuthorizationResourceClient {
      * 400 if neither tenant and user were informed, 500 code message if there is any error.
      */
     @DELETE
+    @Path("/deleteAssociations")
     Response deleteAssociations(@QueryParam("tenantId") Long tenantId,
                                 @QueryParam("userId") Long userId);
 

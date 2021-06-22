@@ -113,16 +113,11 @@ public class LinkedAuthorizationRESTServiceClientTest {
         assertEquals(list,target.getLinkedAuthorizationByRoleId(2L));
     }
 
-    @Test
+    @Test(expected = SystemException.class)
     public void testLinkedAuthorizationByRoleIdException() throws Exception {
         boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ExtensionException(new Exception()));
-        try {
-            target.getLinkedAuthorizationByRoleId(2L);
-        }catch (SystemException se){
-            success = true;
-        }
-        assertTrue(success);
+        target.getLinkedAuthorizationByRoleId(2L);
     }
 
     private String getLinkedAuthorizationManagementUrl(){
@@ -132,59 +127,35 @@ public class LinkedAuthorizationRESTServiceClientTest {
     }
 
     @Test
-    public void create() throws MalformedURLException {
+    public void create() throws MalformedURLException, SystemException {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorizationResourceClient.saveAssociation(any())).thenReturn(Response.ok().build());
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
-        boolean success = false;
-        try {
-            assertTrue(target.create(new LinkedAuthorization()));
-        } catch (SystemException e) {
-            success = true;
-        }
-        assertFalse(success);
+        assertTrue(target.create(new LinkedAuthorization()));
     }
 
-    @Test
-    public void testCreateMalformedException() throws MalformedURLException {
+    @Test(expected = SystemException.class)
+    public void testCreateMalformedException() throws MalformedURLException, SystemException {
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
         boolean success = false;
-        try {
-            assertTrue(target.create(new LinkedAuthorization()));
-        } catch(SystemException e) {
-            success = true;
-        }
-        assertTrue(success);
+        assertTrue(target.create(new LinkedAuthorization()));
     }
 
     @Test
-    public void testCreateFail() throws MalformedURLException {
+    public void testCreateFail() throws MalformedURLException, SystemException {
         LinkedAuthorizationResourceClient linkedAuthorization = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorization.saveAssociation(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorization);
-        boolean success = false;
-        try {
-            assertFalse(target.create(new LinkedAuthorization()));
-        } catch (SystemException e) {
-            success = true;
-        }
-        assertFalse(success);
-
+        assertFalse(target.create(new LinkedAuthorization()));
     }
 
-    @Test
-    public void testCreateProcessingException() throws MalformedURLException {
+    @Test(expected = SystemException.class)
+    public void testCreateProcessingException() throws SystemException, MalformedURLException {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorizationResourceClient.saveAssociation(any())).thenThrow(new ProcessingException(""));
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
         boolean success = false;
-        try {
-            target.create(new LinkedAuthorization());
-        }catch (ProcessingException | SystemException es){
-            success = true;
-        }
-        assertTrue(success);
-
+        target.create(new LinkedAuthorization());
     }
 
     @Test(expected = SystemException.class)
@@ -299,32 +270,22 @@ public class LinkedAuthorizationRESTServiceClientTest {
         assertFalse(target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L));
     }
 
-    @Test
+    @Test(expected = WebApplicationException.class)
     public void testIsLinkedAuthorizationExistentWebApplicationException() throws Exception {
         boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new WebApplicationException());
-        try {
-            target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
-        }catch (WebApplicationException se){
-            success = true;
-        }
-        assertTrue(success);
+        target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
     }
 
-    @Test
+    @Test(expected = SystemException.class)
     public void testIsLinkedAuthorizationExistentException() throws Exception {
         boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ProcessingException("teste"));
-        try {
-            target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
-        }catch (Exception se){
-            success = true;
-        }
-        assertTrue(success);
+        target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
     }
 
-    @Test
-    public void testGetAll() throws MalformedURLException {
+    @Test(expected = SystemException.class)
+    public void testGetAll() throws MalformedURLException, SystemException {
         List<LinkedAuthorization> list = new ArrayList<>();
         list.add(LinkedAuthorizationFactory.create(2L, 2L, 2L, 2L, 2L));
         list.add(LinkedAuthorizationFactory.create(3L, 3L, 3L, 3L, 3L));
@@ -347,7 +308,7 @@ public class LinkedAuthorizationRESTServiceClientTest {
         when(linkedAuthorizationClient.getAllAssociations(1, 100)).
                 then(i -> expectedResponse);
 
-        assertThrows(Exception.class, () -> target.getAll(1, 100));
+        target.getAll(1, 100);
     }
 
     @Test
@@ -386,17 +347,10 @@ public class LinkedAuthorizationRESTServiceClientTest {
         assertTrue(value);
     }
 
-    @Test
+    @Test(expected = SystemException.class)
     public void isRoleExistentForUserException() throws MalformedURLException, SystemException {
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
-
-        boolean success=false;
-        try {
-            target.isRoleExistentForUser(2L, 2L, "role");
-        }catch (Exception e) {
-            success=true;
-        }
-        assertTrue(success);
+        target.isRoleExistentForUser(2L, 2L, "role");
     }
 
     @Test
@@ -425,16 +379,11 @@ public class LinkedAuthorizationRESTServiceClientTest {
         assertEquals(list,target.getSpecificAssociationByUserId(2L));
     }
 
-    @Test
+    @Test(expected = SystemException.class)
     public void testSpecificAssociationByUserIdException() throws Exception {
         boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ExtensionException(new Exception()));
-        try {
-            target.getSpecificAssociationByUserId(2L);
-        }catch (SystemException se){
-            success = true;
-        }
-        assertTrue(success);
+        target.getSpecificAssociationByUserId(2L);
     }
 
     @Test(expected = SystemException.class)
@@ -468,11 +417,11 @@ public class LinkedAuthorizationRESTServiceClientTest {
      * Test for method dissociateTenantUser(Long tenant, Long user)
      * Expected outcome: Fail. Communication fail due MalformedURLException
      */
-    @Test
-    public void testDissociateTenantUserMalformedException() throws MalformedURLException {
+    @Test(expected = SystemException.class)
+    public void testDissociateTenantUserMalformedException() throws SystemException, MalformedURLException {
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
                 getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
-        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L));
+        target.deleteAssociations(1L, 1L);
     }
 
     /**
@@ -494,14 +443,14 @@ public class LinkedAuthorizationRESTServiceClientTest {
      * Test for method dissociateTenantUser(Long tenant, Long user)
      * Expected outcome: Fail due Processing exception
      */
-    @Test
-    public void testDissociateTenantUserProcessingException() {
+    @Test(expected = SystemException.class)
+    public void testDissociateTenantUserProcessingException() throws SystemException{
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L)).
                 thenThrow(new ProcessingException(""));
         assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
                 getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
-        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L));
+        target.deleteAssociations(1L, 1L);
     }
 
     /**
@@ -509,7 +458,7 @@ public class LinkedAuthorizationRESTServiceClientTest {
      * Expected outcome: Fail due JWT expiration
      */
     @Test(expected = SystemException.class)
-    public void testDissociateTenantUserTokenExpiredException() throws Exception {
+    public void testDissociateTenantUserTokenExpiredException() throws SystemException, MalformedURLException {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
 
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);

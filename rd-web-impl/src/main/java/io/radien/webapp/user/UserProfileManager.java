@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
  * Class Responsible to update/save logged in user profile
  *
  * @author Rajesh Gavvala
+ * @author Newton Carvalho
  */
 @Model
 @SessionScoped
