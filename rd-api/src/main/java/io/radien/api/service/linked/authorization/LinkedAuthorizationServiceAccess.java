@@ -23,6 +23,7 @@ import io.radien.api.service.ServiceAccess;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -69,6 +70,12 @@ public interface LinkedAuthorizationServiceAccess extends ServiceAccess {
      * @param association to be deleted
      */
     public void deleteAssociation(Long association) throws LinkedAuthorizationNotFoundException;
+
+    /**
+     * Deletes a set of linked authorization associations byt its ids
+     * @param ids identifiers of LinkedAuthorizations to be deleted
+     */
+    public void deleteAssociations(Collection<Long> ids);
 
     /**
      * Verifies if exist LinkedAuthorizations for a specific Filter

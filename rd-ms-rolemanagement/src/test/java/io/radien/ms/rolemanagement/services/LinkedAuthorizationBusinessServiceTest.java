@@ -23,12 +23,13 @@ import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAcce
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
-import junit.framework.TestCase;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -38,13 +39,18 @@ import org.mockito.Spy;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
 
 /**
  * @author Bruno Gama
  */
-public class LinkedAuthorizationBusinessServiceTest extends TestCase {
+public class LinkedAuthorizationBusinessServiceTest {
 
     @InjectMocks
     @Spy
@@ -196,4 +202,44 @@ public class LinkedAuthorizationBusinessServiceTest extends TestCase {
         List<String> roleList = new ArrayList<>();
         assertFalse(linkedAuthorizationBusinessService.checkPermissions(2L, 2L, roleList));
     }
-}
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome (success): Linked Authorization associations found and deletion performed
+     */
+    @Test
+    public void testDissociateTenantUser() {
+        List<SystemLinkedAuthorization> expectedLinkedAuthorization = new ArrayList<>();
+        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 1L, 1L,
+                1L, null));
+        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 2L, 1L,
+                1L, null));
+        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 3L, 1L,
+                1L, null));
+        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 4L, 1L,
+                1L, null));
+
+        when(this.linkedAuthorizationServiceAccess.getSpecificAssociation(any())).
+                then(i -> expectedLinkedAuthorization);
+
+        doNothing().when(this.linkedAuthorizationServiceAccess).deleteAssociations(any());
+
+        try {
+            linkedAuthorizationBusinessService.deleteAssociations(1L, 1L);
+        } catch (LinkedAuthorizationNotFoundException | LinkedAuthorizationException e) {
+            fail("unexpected");
+        }
+    }
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome (fail): No parameters informed
+     */
+    @Test
+    public void testDissociateTenantUserWithNoParameters() {
+        assertThrows(LinkedAuthorizationException.class, ()->
+                linkedAuthorizationBusinessService.deleteAssociations(null, null));
+    }
+
+
+    }

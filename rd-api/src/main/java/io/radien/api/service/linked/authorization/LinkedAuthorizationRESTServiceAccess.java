@@ -90,4 +90,13 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @throws SystemException in case of any issue
      */
     List<? extends SystemLinkedAuthorization> getSpecificAssociationByUserId(Long userId) throws SystemException;
+
+    /**
+     * Will request delete ALL Linked Authorizations that exist in the DB for the following
+     * parameters (tenant and user).
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return SystemException in case of error
+     */
+    boolean deleteAssociations(Long tenantId, Long userId) throws SystemException;
 }

@@ -46,8 +46,11 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -446,5 +449,58 @@ public class LinkedAuthorizationRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.getSpecificAssociationByUserId(2L);
+    }
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome: Success. Communication with endpoint performing well. Receive the expected response
+     */
+    @Test
+    public void dissociateTenantUser()  {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L)).thenReturn(Response.ok().build());
+        assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
+                getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
+        assertTrue(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L)));
+    }
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome: Fail. Communication fail due MalformedURLException
+     */
+    @Test
+    public void testDissociateTenantUserMalformedException() throws MalformedURLException {
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
+                getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
+        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L));
+    }
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome: Fail due response server error
+     */
+    @Test
+    public void testDissociateTenantUserFail() {
+        LinkedAuthorizationResourceClient linkedAuthorization = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorization.deleteAssociations(1L, 1L)).thenReturn(
+                Response.serverError().entity("test error msg").build());
+        assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.
+                getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).
+                thenReturn(linkedAuthorization));
+        assertFalse(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L)));
+    }
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome: Fail due Processing exception
+     */
+    @Test
+    public void testDissociateTenantUserProcessingException() {
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L)).
+                thenThrow(new ProcessingException(""));
+        assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
+                getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
+        assertThrows(SystemException.class, () -> target.deleteAssociations(1L, 1L));
     }
 }

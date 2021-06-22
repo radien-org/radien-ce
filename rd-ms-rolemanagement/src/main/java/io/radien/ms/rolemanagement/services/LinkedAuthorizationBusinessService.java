@@ -24,11 +24,14 @@ import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.*;
+import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
+import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Linked Authorization Business Service will communicate with the service to perform the requests in the db
@@ -129,6 +132,30 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public void deleteAssociation(Long associationId) throws LinkedAuthorizationNotFoundException {
         linkedAuthorizationServiceAccess.deleteAssociation(associationId);
+    }
+
+    /**
+     * Delete ALL linked authorization information
+     * that exists for the following parameters
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @throws LinkedAuthorizationNotFoundException if not associations (Linked Authorization)
+     * exist for the tenant and user informed as parameter
+     */
+    public void deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationNotFoundException, LinkedAuthorizationException {
+        if (tenantId == null || userId == null) {
+            throw new LinkedAuthorizationException(LinkedAuthorizationErrorCodeMessage.
+                    NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
+        }
+        SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId,
+                null, null, userId, true);
+        List<? extends SystemLinkedAuthorization> existentAssociations = linkedAuthorizationServiceAccess.
+                getSpecificAssociation(filter);
+        if (!existentAssociations.isEmpty()) {
+            List<Long> ids = existentAssociations.stream().map(SystemLinkedAuthorization::getId).
+                    collect(Collectors.toList());
+            linkedAuthorizationServiceAccess.deleteAssociations(ids);
+        }
     }
 
     /**

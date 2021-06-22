@@ -372,6 +372,53 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
     }
 
     /**
+     * Will request delete ALL Linked Authorizations that exist in the DB for the following
+     * parameters (tenant and user).
+     * In case of JWT expiration will refresh the access token and retry
+     * the operation
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return SystemException in case of error
+     */
+    @Override
+    public boolean deleteAssociations(Long tenantId, Long userId) throws SystemException {
+        try {
+            return dissociateTenantUserRequester(tenantId, userId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return dissociateTenantUserRequester(tenantId, userId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException("Unable to recover expiredToken");
+            }
+        }
+    }
+
+    /**
+     * Delete ALL Linked Authorizations that exist in the DB for the following
+     * parameters (tenant and user).
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return SystemException in case of error
+     */
+    private boolean dissociateTenantUserRequester(Long tenantId, Long userId) throws SystemException {
+        try {
+            LinkedAuthorizationResourceClient client = linkedAuthorizationServiceUtil.
+                    getLinkedAuthorizationResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.deleteAssociations(tenantId, userId);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                String responseMessage = response.readEntity(String.class);
+                log.error(responseMessage);
+                return false;
+            }
+        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
      * OAF linked authorization getter
      * @return the active linked authorization oaf
      */
