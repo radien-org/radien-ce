@@ -156,16 +156,18 @@ public class UserProfileManager extends AbstractManager {
      */
     public String dissociateUserTenant() {
         try {
-            this.tabIndex = 1L;
+            this.tabIndex = 0L;
             if (selectedTenantToUnAssign == null || selectedTenantToUnAssign.getId() == null) {
                 throw new Exception(JSFUtil.getMessage("rd_tenant_not_selected"));
             }
-            // TODO: Call backend method to delete tenant associations (once its approved and merged)
+            // Invoking backend method to delete tenant associations (once its approved and merged)
+            linkedAuthorizationRESTServiceAccess.deleteAssociations(
+                    selectedTenantToUnAssign.getId(), userSession.getUserId());
             selectedTenantToUnAssign = null;
-            handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_user_dissociation_success"));
+            this.assignedTenants = retrieveAssignedTenants();
         }
         catch (Exception e) {
+            this.tabIndex = 1L;
             handleError(e, JSFUtil.getMessage("rd_tenant_user_dissociation_error"));
             return URL_MAPPING_ID_LOGGED_USER_PROFILE;
         }
