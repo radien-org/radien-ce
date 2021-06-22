@@ -211,7 +211,18 @@ public class LinkedAuthorizationBusinessServiceTest {
     public void testDissociateTenantUser() throws LinkedAuthorizationException {
         when(this.linkedAuthorizationServiceAccess.
                 deleteAssociations(1L, 2L)).thenReturn(Boolean.TRUE);
-        linkedAuthorizationBusinessService.deleteAssociations(1L, 2L);
+        assertTrue(linkedAuthorizationBusinessService.deleteAssociations(1L, 2L));
+    }
+
+    /**
+     * Test for method dissociateTenantUser(Long tenant, Long user)
+     * Expected outcome (fail): Linked Authorization associations found and deletion performed
+     */
+    @Test
+    public void testDissociateTenantUserNoAssociationsFound() throws LinkedAuthorizationException {
+        when(this.linkedAuthorizationServiceAccess.
+                deleteAssociations(1L, 2L)).thenReturn(Boolean.FALSE);
+        assertFalse(linkedAuthorizationBusinessService.deleteAssociations(1L, 2L));
     }
 
     /**

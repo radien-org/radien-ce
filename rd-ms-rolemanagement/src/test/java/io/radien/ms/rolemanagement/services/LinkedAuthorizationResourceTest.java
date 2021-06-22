@@ -43,6 +43,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
@@ -387,7 +388,9 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 200
      */
     @Test
-    public void testDissociation() {
+    public void testDissociation() throws LinkedAuthorizationException {
+        doReturn(Boolean.TRUE).when(linkedAuthorizationBusinessService).
+                deleteAssociations(anyLong(), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
         assertEquals(200,response.getStatus());
     }
@@ -398,7 +401,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 400
      */
     @Test
-    public void testDissociationInvalidRequest() throws LinkedAuthorizationNotFoundException, LinkedAuthorizationException {
+    public void testDissociationInvalidRequest() throws LinkedAuthorizationException {
         doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(nullable(Long.class), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(null,1l);
@@ -410,11 +413,24 @@ public class LinkedAuthorizationResourceTest {
     }
 
     /**
+     * Test for dissociation process when no associations were found
+     * for tenant and user
+     * Expected: Http Status 404
+     */
+    @Test
+    public void testDissociationAssociationsNotFound() throws LinkedAuthorizationException {
+        doReturn(Boolean.FALSE).when(linkedAuthorizationBusinessService).
+                deleteAssociations(anyLong(), anyLong());
+        Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
      * Test for dissociation process (for tenant and user) when a generic exception occurs
      * Expected: Http Status 500
      */
     @Test
-    public void testDissociateTenantGenericError() throws LinkedAuthorizationException, LinkedAuthorizationNotFoundException{
+    public void testDissociateTenantGenericError() throws LinkedAuthorizationException {
         doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(1L, 1L);
         Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);

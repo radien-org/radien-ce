@@ -98,7 +98,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             SystemLinkedAuthorization systemAssociation = linkedAuthorizationBusinessService.getAssociationById(id);
             return Response.ok(systemAssociation).build();
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getRoleNotFoundException();
+            return getAssociationNotFoundResponse();
         } catch (Exception e) {
             return getGenericError(e);
         }
@@ -117,7 +117,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             linkedAuthorizationBusinessService.getAssociationById(id);
             linkedAuthorizationBusinessService.deleteAssociation(id);
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getRoleNotFoundException();
+            return getAssociationNotFoundResponse();
         } catch (Exception e){
             return getGenericError(e);
         }
@@ -129,14 +129,19 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
      * that exists for a tenant and user (Both informed as parameter).
      * @param tenantId Tenant identifier
      * @param userId User identifier
-     * @return 200 code message if success, 404 if no associations were found,  500 code message if there is any error.
+     * @return 200 code message if success, 404 if no associations were found,
+     * 400 if either tenant or user were not informed,
+     * 500 code message in case of any other error.
      */
     @Override
     public Response deleteAssociations(Long tenantId, Long userId) {
         try {
             log.info("Will delete All tenancy association with the following tenant {} and user {}.",
                     tenantId, userId);
-            this.linkedAuthorizationBusinessService.deleteAssociations(tenantId, userId);
+            boolean status = linkedAuthorizationBusinessService.deleteAssociations(tenantId, userId);
+            if (!status) {
+                return getAssociationNotFoundResponse();
+            }
         } catch (LinkedAuthorizationException e) {
             return getInvalidRequestResponse(e.getMessage());
         } catch (Exception e){
@@ -159,7 +164,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             linkedAuthorizationBusinessService.save(new io.radien.ms.rolemanagement.entities.LinkedAuthorization(association));
             return Response.ok().build();
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getRoleNotFoundException();
+            return getAssociationNotFoundResponse();
         } catch (UniquenessConstraintException e) {
             return getInvalidRequestResponse(e);
         } catch (Exception e) {
@@ -273,10 +278,10 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
     }
 
     /**
-     * Generic error exception to when the linked authorization could not be found in DB. Launches a 404 Error Code to the user.
+     * Response to be used when the linked authorization could not be found in DB. Launches a 404 Error Code to the user.
      * @return code 100 message Resource not found.
      */
-    private Response getRoleNotFoundException() {
+    private Response getAssociationNotFoundResponse() {
         String message = LinkedAuthorizationErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         log.error(message);
         return Response.status(Response.Status.NOT_FOUND).entity(message).build();

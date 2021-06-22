@@ -141,13 +141,14 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @param tenantId Tenant identifier
      * @param userId User identifier
      * @throws LinkedAuthorizationException if either tenant id or user id were not informed
+     * @return true in case of success (elements found and deleted), otherwise false
      */
-    public void deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException {
+    public boolean deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException {
         if (tenantId == null || userId == null) {
             throw new LinkedAuthorizationException(LinkedAuthorizationErrorCodeMessage.
                     NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
         }
-        linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
+        return linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
     }
 
     /**

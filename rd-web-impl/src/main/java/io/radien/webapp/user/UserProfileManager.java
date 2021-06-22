@@ -21,6 +21,7 @@ import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTService
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
+import io.radien.exception.ProcessingException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
@@ -117,7 +118,7 @@ public class UserProfileManager extends AbstractManager {
                     stream().map(SystemLinkedAuthorization::getTenantId).distinct().collect(Collectors.toList());
             // Retrieve tenant
             for (Long tId: tenantIds) {
-                tenantRESTServiceAccess.getTenantById(tId).ifPresent(i -> assignedOnes.add(i));
+                tenantRESTServiceAccess.getTenantById(tId).ifPresent(assignedOnes::add);
             }
             this.tabIndex = 1L;
         }
@@ -153,7 +154,7 @@ public class UserProfileManager extends AbstractManager {
     public String dissociateUserTenant() {
         try {
             if (selectedTenantToUnAssign == null || selectedTenantToUnAssign.getId() == null) {
-                throw new Exception(JSFUtil.getMessage("rd_tenant_not_selected"));
+                throw new ProcessingException(JSFUtil.getMessage("rd_tenant_not_selected"));
             }
             // Invoking backend method to delete tenant associations (once its approved and merged)
             linkedAuthorizationRESTServiceAccess.deleteAssociations(

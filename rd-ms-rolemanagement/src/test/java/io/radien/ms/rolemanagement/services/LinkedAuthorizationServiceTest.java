@@ -211,6 +211,8 @@ public class LinkedAuthorizationServiceTest {
         list = linkedAuthorizationServiceAccess.getSpecificAssociation(
                 new LinkedAuthorizationSearchFilter(tenantId,null,null, userId,true));
         assertEquals(0,list.size());
+
+        assertFalse(linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId));
     }
 
     @Test
