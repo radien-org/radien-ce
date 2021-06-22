@@ -180,6 +180,39 @@ public class LinkedAuthorizationServiceTest {
         linkedAuthorizationServiceAccess.deleteAssociations(Arrays.asList(systemLinkedAuthorization.getId()));
     }
 
+    /**
+     * Test for method deleteAssociations(tenantId, userId)
+     * @throws LinkedAuthorizationNotFoundException
+     * @throws UniquenessConstraintException
+     */
+    @Test
+    public void testDeleteAssociationsForTenantAndUser() throws LinkedAuthorizationNotFoundException,
+            UniquenessConstraintException {
+
+        Long tenantId = 999L;
+        Long userId = 78L;
+        SystemLinkedAuthorization linkedAuthorization1 = LinkedAuthorizationFactory.create(tenantId,
+                21L, 21L, userId, 900L);
+        SystemLinkedAuthorization linkedAuthorization2 = LinkedAuthorizationFactory.create(tenantId,
+                31L, 31L, userId, 900L);
+        SystemLinkedAuthorization linkedAuthorization3 = LinkedAuthorizationFactory.create(tenantId,
+                21L, 41L, userId, 900L);
+
+        linkedAuthorizationServiceAccess.save(linkedAuthorization1);
+        linkedAuthorizationServiceAccess.save(linkedAuthorization2);
+        linkedAuthorizationServiceAccess.save(linkedAuthorization3);
+
+        List<? extends SystemLinkedAuthorization> list = linkedAuthorizationServiceAccess.getSpecificAssociation(
+                new LinkedAuthorizationSearchFilter(tenantId,null,null, userId,true));
+        assertEquals(3,list.size());
+
+        assertTrue(linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId));
+
+        list = linkedAuthorizationServiceAccess.getSpecificAssociation(
+                new LinkedAuthorizationSearchFilter(tenantId,null,null, userId,true));
+        assertEquals(0,list.size());
+    }
+
     @Test
     public void testCheckIfRolesExist() throws UniquenessConstraintException, RoleNotFoundException {
         SystemRole checkIfIExists = RoleFactory.create("test", "description", 11L);

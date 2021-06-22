@@ -142,23 +142,14 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * that exists for the following parameters
      * @param tenantId Tenant identifier
      * @param userId User identifier
-     * @throws LinkedAuthorizationNotFoundException if not associations (Linked Authorization)
-     * exist for the tenant and user informed as parameter
+     * @throws LinkedAuthorizationException if either tenant id or user id were not informed
      */
-    public void deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationNotFoundException, LinkedAuthorizationException {
+    public void deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException {
         if (tenantId == null || userId == null) {
             throw new LinkedAuthorizationException(LinkedAuthorizationErrorCodeMessage.
                     NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
         }
-        SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId,
-                null, null, userId, true);
-        List<? extends SystemLinkedAuthorization> existentAssociations = linkedAuthorizationServiceAccess.
-                getSpecificAssociation(filter);
-        if (!existentAssociations.isEmpty()) {
-            List<Long> ids = existentAssociations.stream().map(SystemLinkedAuthorization::getId).
-                    collect(Collectors.toList());
-            linkedAuthorizationServiceAccess.deleteAssociations(ids);
-        }
+        linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
     }
 
     /**

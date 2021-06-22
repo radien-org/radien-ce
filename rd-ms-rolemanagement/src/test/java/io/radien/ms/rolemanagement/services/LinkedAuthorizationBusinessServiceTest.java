@@ -208,27 +208,10 @@ public class LinkedAuthorizationBusinessServiceTest {
      * Expected outcome (success): Linked Authorization associations found and deletion performed
      */
     @Test
-    public void testDissociateTenantUser() {
-        List<SystemLinkedAuthorization> expectedLinkedAuthorization = new ArrayList<>();
-        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 1L, 1L,
-                1L, null));
-        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 2L, 1L,
-                1L, null));
-        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 3L, 1L,
-                1L, null));
-        expectedLinkedAuthorization.add(LinkedAuthorizationFactory.create(1L, 4L, 1L,
-                1L, null));
-
-        when(this.linkedAuthorizationServiceAccess.getSpecificAssociation(any())).
-                then(i -> expectedLinkedAuthorization);
-
-        doNothing().when(this.linkedAuthorizationServiceAccess).deleteAssociations(any());
-
-        try {
-            linkedAuthorizationBusinessService.deleteAssociations(1L, 1L);
-        } catch (LinkedAuthorizationNotFoundException | LinkedAuthorizationException e) {
-            fail("unexpected");
-        }
+    public void testDissociateTenantUser() throws LinkedAuthorizationException {
+        when(this.linkedAuthorizationServiceAccess.
+                deleteAssociations(1L, 2L)).thenReturn(Boolean.TRUE);
+        linkedAuthorizationBusinessService.deleteAssociations(1L, 2L);
     }
 
     /**
