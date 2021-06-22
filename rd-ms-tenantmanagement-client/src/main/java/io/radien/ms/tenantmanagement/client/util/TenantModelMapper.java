@@ -18,6 +18,8 @@ package io.radien.ms.tenantmanagement.client.util;
 import io.radien.api.entity.Page;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.services.TenantFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -32,6 +34,8 @@ import java.util.List;
  * @author Santana
  */
 public class TenantModelMapper {
+
+    protected final static Logger log = LoggerFactory.getLogger(TenantModelMapper.class);
 
     /**
      * Maps into a Json Object a Tenant
@@ -77,7 +81,7 @@ public class TenantModelMapper {
 
             page = TenantFactory.convertJsonToPage(jsonObject);
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
         }
         return page;
     }

@@ -60,11 +60,11 @@ public class AuthorizationCodeServletTest {
         HttpSession session = Mockito.mock(HttpSession.class);
         when(req.getSession()).thenReturn(session);
         doThrow(new IOException()).when(resp).sendRedirect(any());
-        boolean success = false;
+        boolean success = true;
         try {
             target.doGet(req, resp);
         } catch (IOException e) {
-            success=true;
+            success=false;
         }
 
         assertTrue(success);

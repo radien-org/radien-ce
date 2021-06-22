@@ -16,14 +16,13 @@
 package io.radien.webapp;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javax.faces.FactoryFinder;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
-import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -48,7 +47,7 @@ import io.radien.util.StringFormatUtil;
  */
 public class JSFUtil {
 	private static final Logger log = LoggerFactory.getLogger(JSFUtil.class);
-	private static List<UIComponent> pageComponents = new ArrayList<>();
+	private JSFUtil(){}
 
 	/**
 	 * returns the message in the default bundle by the key given by arguments
@@ -72,21 +71,30 @@ public class JSFUtil {
 	}
 
 	public static String getString(AjaxBehaviorEvent event, String attribute, String defaultVal) {
-		String returnVal = JSFUtil.getExternalContext().getRequestParameterMap()
-				.get(attribute);
-		if (returnVal == null) {
-			returnVal = (String) event.getComponent().getAttributes().get(attribute);
+
+		Optional<String> returnVal = getReturnVal(attribute);
+		String result = returnVal.
+				orElse((String) event.getComponent().getAttributes().get(attribute));
+
+		return (result == null || result.equalsIgnoreCase("")) ? defaultVal : result;
+	}
+
+	private static Optional<String> getReturnVal(String attribute) {
+		ExternalContext externalContext = JSFUtil.getExternalContext();
+		if(externalContext == null){
+			log.error("Null External Context");
+			return Optional.empty();
 		}
-		return (returnVal == null || returnVal.equalsIgnoreCase("")) ? defaultVal : returnVal;
+		return Optional.of(externalContext.getRequestParameterMap()
+				.get(attribute));
 	}
 
 	public static String getString(ActionEvent event, String attribute, String defaultVal) {
-		String returnVal = JSFUtil.getExternalContext().getRequestParameterMap()
-				.get(attribute);
-		if (returnVal == null) {
-			returnVal = (String) event.getComponent().getAttributes().get(attribute);
-		}
-		return (returnVal == null || returnVal.equalsIgnoreCase("")) ? defaultVal : returnVal;
+		Optional<String> returnVal = getReturnVal(attribute);
+
+		String result = returnVal.orElse((String) event.getComponent().getAttributes().get(attribute));
+
+		return (result == null || result.equalsIgnoreCase("")) ? defaultVal : result;
 	}
 
 	public static Long getLong(ActionEvent event, String attribute, Long defaultVal) {
@@ -94,13 +102,10 @@ public class JSFUtil {
 		return returnVal == null ? defaultVal : returnVal;
 	}
 
-	public static Long getLong(AjaxBehaviorEvent event, String attribute, Long defaultVal) {
-		String returnValString = JSFUtil.getExternalContext().getRequestParameterMap()
-				.get(attribute);
-		if (returnValString == null) {
-			returnValString = "" + event.getComponent().getAttributes().get(attribute);
-		}
-		return Long.valueOf(returnValString);
+	public static Long getLong(AjaxBehaviorEvent event, String attribute) {
+		Optional<String> returnValString = getReturnVal(attribute);
+		String result = returnValString.orElse("" + event.getComponent().getAttributes().get(attribute));
+		return Long.valueOf(result);
 	}
 
 	public static FacesContext getFacesContext() {
@@ -177,15 +182,19 @@ public class JSFUtil {
 	 *
 	 * @return {@link String} with the parameter token value
 	 */
-	public static String getRequestParameter(String key) {
-		return JSFUtil.getExternalContext().getRequestParameterMap().get(key);
+	public static Optional<String> getRequestParameter(String key) {
+		return getReturnVal(key);
 	}
 
-	public static String getBaseUrl() {
-		HttpServletRequest origRequest = (HttpServletRequest) JSFUtil.getExternalContext()
+	public static Optional<String> getBaseUrl() {
+		ExternalContext externalContext = JSFUtil.getExternalContext();
+		if(externalContext == null){
+			return Optional.empty();
+		}
+		HttpServletRequest origRequest = (HttpServletRequest) externalContext
 				.getRequest();
-		return origRequest.toString().substring(0,
-				origRequest.toString().length() - origRequest.getServletPath().length());
+		return Optional.of(origRequest.toString().substring(0,
+				origRequest.toString().length() - origRequest.getServletPath().length()));
 	}
 
 	public static void addSuccessMessage( String messageKey) {
@@ -256,7 +265,12 @@ public class JSFUtil {
 
 	public static void addMessage( Severity severity,  String title,  String message) {
 		FacesMessage facesMsg = new FacesMessage(severity, title, message);
-		JSFUtil.getExternalContext().getFlash().setKeepMessages(true);
+		ExternalContext externalContext = JSFUtil.getExternalContext();
+		if(externalContext == null) {
+			log.error("Null external context");
+			return;
+		}
+		externalContext.getFlash().setKeepMessages(true);
 		FacesContext.getCurrentInstance().addMessage(null, facesMsg);
 	}
 

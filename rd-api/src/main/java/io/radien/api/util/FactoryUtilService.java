@@ -22,6 +22,10 @@ import javax.json.JsonValue;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonArray;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Factory Util service for converting objects into json ones or vice versa
@@ -29,6 +33,7 @@ import java.io.Serializable;
  * @author Nuno Santana
  */
 public class FactoryUtilService implements Serializable {
+    private final static String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     private static final long serialVersionUID = -6560813510881461316L;
 
@@ -181,6 +186,22 @@ public class FactoryUtilService implements Serializable {
     }
 
     /**
+     * Adds the values Date to the designated keys in a json object
+     *
+     * @param builder Json Object builder that it is being used
+     * @param key value of the json field
+     * @param value value of the field to be added
+     */
+    public static void addValue(JsonObjectBuilder builder, String key, Date value) {
+        if (value != null) {
+            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+            builder.add(key, df.format(value));
+        } else {
+            builder.addNull(key);
+        }
+    }
+
+    /**
      * Adds the values Long to the designated keys in a json object
      *
      * @param builder Json Object builder that it is being used
@@ -226,7 +247,7 @@ public class FactoryUtilService implements Serializable {
     }
 
     /**
-     * Adds the values from a json object into an array
+     * Adds the value given object into an json array
      * @param builder Json Object builder that it is being used
      * @param key value of the json field
      * @param value value of the field to be added
@@ -239,4 +260,24 @@ public class FactoryUtilService implements Serializable {
         }
     }
 
+    /**
+     * Retrieves the LocalDateTime value from the Json Object
+     * @param key of the value to be retrieved
+     * @param json object with the values to be retrieved
+     * @return LocalDateTime value
+     */
+    public static LocalDateTime getLocalDateTimeFromJson(String key, JsonObject json) {
+        String returnedString = null;
+        // case where key is present with value null
+        if (isValueNotNull(key, json)) {
+            JsonString value = json.getJsonString(key);
+            if (value != null) {
+                returnedString = value.getString();
+            }
+        }
+        if(returnedString != null){
+            return LocalDateTime.parse(returnedString);
+        }
+        return null;
+    }
 }

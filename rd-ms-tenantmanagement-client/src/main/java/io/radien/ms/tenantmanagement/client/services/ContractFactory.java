@@ -16,8 +16,9 @@
 package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.api.entity.Page;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
-import io.radien.ms.tenantmanagement.client.util.FactoryUtilService;
+
 
 import javax.json.Json;
 import javax.json.JsonArray;

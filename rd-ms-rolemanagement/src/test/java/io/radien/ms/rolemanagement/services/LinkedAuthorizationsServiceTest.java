@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,8 @@ import static org.mockito.Mockito.when;
  * @author Bruno Gama
  */
 public class LinkedAuthorizationsServiceTest extends TestCase {
+
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     @InjectMocks
     LinkedAuthorizationsService linkedAuthorizationsService;
@@ -96,7 +100,8 @@ public class LinkedAuthorizationsServiceTest extends TestCase {
         } catch (UniquenessConstraintException e) {
             success = true;
         } catch (LinkedAuthorizationNotFoundException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
+
         }
         assertTrue(success);
     }
