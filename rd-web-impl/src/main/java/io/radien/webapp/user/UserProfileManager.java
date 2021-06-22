@@ -21,14 +21,10 @@ import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTService
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
-import io.radien.exception.SystemException;
-
-import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
-import org.primefaces.event.SelectEvent;
 
 import javax.annotation.PostConstruct;
 
@@ -36,7 +32,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 
 import javax.faces.application.FacesMessage;
-
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +83,7 @@ public class UserProfileManager extends AbstractManager {
      * logged in user profile edited
      * @return Returns to the HTML(home) page
      */
-    public String redirectToHomePage() throws SystemException {
+    public String redirectToHomePage() {
         return URL_MAPPING_ID_HOME;
     }
 
@@ -156,7 +151,6 @@ public class UserProfileManager extends AbstractManager {
      */
     public String dissociateUserTenant() {
         try {
-            this.tabIndex = 0L;
             if (selectedTenantToUnAssign == null || selectedTenantToUnAssign.getId() == null) {
                 throw new Exception(JSFUtil.getMessage("rd_tenant_not_selected"));
             }
@@ -165,9 +159,12 @@ public class UserProfileManager extends AbstractManager {
                     selectedTenantToUnAssign.getId(), userSession.getUserId());
             selectedTenantToUnAssign = null;
             this.assignedTenants = retrieveAssignedTenants();
+            setTabIndex(0L);
+            handleMessage(FacesMessage.SEVERITY_INFO,
+                    JSFUtil.getMessage("rd_tenant_user_dissociation_success"));
         }
         catch (Exception e) {
-            this.tabIndex = 1L;
+            setTabIndex(1L);
             handleError(e, JSFUtil.getMessage("rd_tenant_user_dissociation_error"));
             return URL_MAPPING_ID_LOGGED_USER_PROFILE;
         }
@@ -206,5 +203,21 @@ public class UserProfileManager extends AbstractManager {
      */
     public void setTabIndex(Long tabIndex) {
         this.tabIndex = tabIndex;
+    }
+
+    /**
+     * Return the JSF URL mapping that refers the Logged User Profile GUI/Screen
+     * @return String value that corresponds to an JSF mapping URL
+     */
+    public String getLoggerUserGui() {
+        return URL_MAPPING_ID_LOGGED_USER_PROFILE;
+    }
+
+    /**
+     * Return the JSF URL mapping that refers the index home screen/area
+     * @return String value that corresponds to an JSF mapping URL
+     */
+    public String getHomeGui() {
+        return URL_MAPPING_ID_HOME;
     }
 }
