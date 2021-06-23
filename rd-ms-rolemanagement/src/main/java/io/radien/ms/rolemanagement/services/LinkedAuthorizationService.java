@@ -50,6 +50,11 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(LinkedAuthorizationService.class);
 
+    private static final String FIELD_TENANT_ID = "tenantId";
+    private static final String FIELD_ROLE_ID = "roleId";
+    private static final String FIELD_PERMISSION_ID = "permissionId";
+    private static final String FIELD_USER_ID = "userId";
+
     @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;
 
@@ -170,10 +175,10 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("tenantId", filter.getTenantId(), filter, criteriaBuilder, roleRoot, global);
-        global = getFieldPredicate("permissionId", filter.getPermissionId(), filter, criteriaBuilder, roleRoot, global);
-        global = getFieldPredicate("roleId", filter.getRoleId(), filter, criteriaBuilder, roleRoot, global);
-        global = getFieldPredicate("userId", filter.getUserId(), filter, criteriaBuilder, roleRoot, global);
+        global = getFieldPredicate(FIELD_TENANT_ID, filter.getTenantId(), filter, criteriaBuilder, roleRoot, global);
+        global = getFieldPredicate(FIELD_PERMISSION_ID, filter.getPermissionId(), filter, criteriaBuilder, roleRoot, global);
+        global = getFieldPredicate(FIELD_ROLE_ID, filter.getRoleId(), filter, criteriaBuilder, roleRoot, global);
+        global = getFieldPredicate(FIELD_USER_ID, filter.getUserId(), filter, criteriaBuilder, roleRoot, global);
 
         return global;
     }
@@ -219,6 +224,26 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
 
         criteriaDelete.where(cb.equal(associationRoot.get("id"),associationId));
         entityManager.createQuery(criteriaDelete).executeUpdate();
+    }
+
+    /**
+     * Delete linked authorization taking in consideration the following parameters
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return true in case of success (elements found and deleted), otherwise false
+     */
+    @Override
+    public boolean deleteAssociations(Long tenantId, Long userId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<LinkedAuthorization> criteriaDelete = cb.createCriteriaDelete(LinkedAuthorization.class);
+        Root<LinkedAuthorization> linkedAuthorizationRoot = criteriaDelete.from(LinkedAuthorization.class);
+
+        criteriaDelete.where(
+                cb.equal(linkedAuthorizationRoot.get(FIELD_TENANT_ID), tenantId),
+                cb.equal(linkedAuthorizationRoot.get(FIELD_USER_ID), userId)
+        );
+
+        return entityManager.createQuery(criteriaDelete).executeUpdate() > 0;
     }
 
     /**
@@ -270,10 +295,10 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         CriteriaQuery<LinkedAuthorization> criteriaQuery = criteriaBuilder.createQuery(LinkedAuthorization.class);
         Root<LinkedAuthorization> tenancyRoot = criteriaQuery.from(LinkedAuthorization.class);
         criteriaQuery.select(tenancyRoot);
-        Predicate global = criteriaBuilder.and(criteriaBuilder.equal(tenancyRoot.get("tenantId"), association.getTenantId()),
-                criteriaBuilder.equal(tenancyRoot.get("permissionId"), association.getPermissionId()),
-                criteriaBuilder.equal(tenancyRoot.get("roleId"), association.getRoleId()),
-                criteriaBuilder.equal(tenancyRoot.get("userId"), association.getUserId()));
+        Predicate global = criteriaBuilder.and(criteriaBuilder.equal(tenancyRoot.get(FIELD_TENANT_ID), association.getTenantId()),
+                criteriaBuilder.equal(tenancyRoot.get(FIELD_PERMISSION_ID), association.getPermissionId()),
+                criteriaBuilder.equal(tenancyRoot.get(FIELD_ROLE_ID), association.getRoleId()),
+                criteriaBuilder.equal(tenancyRoot.get(FIELD_USER_ID), association.getUserId()));
         if(association.getId()!= null) {
             global=criteriaBuilder.and(global, criteriaBuilder.notEqual(tenancyRoot.get("id"), association.getId()));
         }
@@ -302,10 +327,10 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("tenantId", filter.getTenantId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
-        global = getFieldPredicate("permissionId", filter.getPermissionId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
-        global = getFieldPredicate("roleId", filter.getRoleId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
-        global = getFieldPredicate("userId", filter.getUserId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_TENANT_ID, filter.getTenantId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_PERMISSION_ID, filter.getPermissionId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_ROLE_ID, filter.getRoleId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_USER_ID, filter.getUserId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
 
         criteriaQuery.where(global);
 

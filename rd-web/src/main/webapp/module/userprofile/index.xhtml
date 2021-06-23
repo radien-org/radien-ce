@@ -2,74 +2,102 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:b="http://bootsfaces.net/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
     <ui:define name="content">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="userProfileManager" styleClass="tableContainer">
+			<b:growl id="message" showDetail="true" allowDismiss="true" delay="0"/>
+			<!--@elvariable id="userSession" type="io.radien.webapp.security.UserSession"-->
+			<b:container>
+				<b:row>
+					<h:panelGroup layout="block" styleClass="headerInformation">
+						<h1><h:outputText value="#{msg.rd_user_profile} #{msg.of} #{userSession.userFullName} "/></h1>
+						<hr />
+					</h:panelGroup>
+				</b:row>
 
-        <b:container>
-			<b:row>
-			    <h:panelGroup layout="block">
-			        <h1><h:outputText value="#{msg.rd_user_profile} "/></h1>
-			        <hr />
-			    </h:panelGroup>
-			</b:row>
-			<b:row>
-			    <b:column span="3">
-			        <h:outputText value="#{msg.firstname}" />
-			
-			    </b:column>
-			    <b:column span="9">
-			        <h:outputText value="#{userSession.userFirstName}" />
-			
-			    </b:column>
-			</b:row>
-			<b:row>
-				<b:column span="3">
-					<h:outputText value="#{msg.lastname}" />
+				<b:tabView activeIndex="#{userProfileManager.tabIndex}">
+					<b:tab title="#{msg.basicInformation}">
+						<b:container>
+							<b:row><h1/></b:row>
+							<b:panelGrid colSpans="2,10">
+								<h:outputLabel for="userFirstName" value="#{msg.firstname}"/>
+								<b:inputText id="userFirstName" value="#{userSession.userFirstName}" disabled="true" span="6"/>
 
-				</b:column>
-				<b:column span="9">
-					<h:outputText value="#{userSession.userLastName}" />
+								<h:outputLabel for="userLastName" value="#{msg.lastname}"/>
+								<b:inputText id="userLastName" value="#{userSession.userLastName}" disabled="true" span="6"/>
 
-				</b:column>
-			</b:row>
-			<b:row>
-			    <b:column span="3">
-			        
-			        <h:outputText value="#{msg.email}" />
-			        
-			    </b:column>
-			    <b:column span="9">
-			        
-			        <h:outputText value="#{userSession.email}" />
-			        
-			    </b:column>
-			</b:row>
-			<b:row>
-				<b:column span="3">
+								<h:outputLabel value="#{msg.logon}"/>
+								<b:inputText id="userLogon" value="#{userSession.preferredUserName}" disabled="true" span="6"/>
 
-					<h:outputText value="#{msg.rd_user}" />
+								<h:outputLabel value="#{msg.email}"/>
+								<b:inputText id="userEmail" value="#{userSession.email}" disabled="true" span="6"/>
 
-				</b:column>
-				<b:column span="9">
+								<h:outputLabel value="#{msg.sub}"/>
+								<b:inputText id="userSub" value="#{userSession.userIdSubject}" disabled="true" span="6"/>
+							</b:panelGrid>
 
-					<h:outputText value="#{userSession.preferredUserName}" />
+							<b:commandButton value="#{msg.rd_home_page}"
+											 tooltip="#{msg.returnToHomePage}"
+											 iconAwesome="fa-home"
+											 action="#{userProfileManager.redirectToHomePage}"/>
 
-				</b:column>
-			</b:row>
-			<b:row>
-			    <b:column span="3">
-			        
-			        <h:outputText value="#{msg.identity_id}" />
-			    </b:column>
-			    <b:column span="9">
-			        
-			        <h:outputText value="#{userSession.userIdSubject}" />
-			    </b:column>
-			</b:row>
-        </b:container>
+						</b:container>
+					</b:tab>
 
+					<b:tab title="#{msg.rd_tenants}">
+							<b:container>
+								<b:row><h1/></b:row>
+								<b:row>
+									<b:dataTable var="tenantRef"
+												 selectionMode="single"
+												 selectedItems="rows"
+												 onselect="ajax:userProfileManager.onTenantSelect(tenantRef, typeOfSelection, indexes);"
+												 value="#{userProfileManager.assignedTenants}">
+										<b:dataTableColumn value="#{tenantRef.id}" label="#{msg.id}"/>
+										<b:dataTableColumn value="#{tenantRef.name}" label="#{msg.name}"/>
+										<b:dataTableColumn value="#{tenantRef.tenantType.name}" label="#{msg.type}"/>
+									</b:dataTable>
+								</b:row>
+								<b:row><h1/></b:row>
+							</b:container>
+							<b:buttonGroup>
 
+								<b:commandButton id="cancelUserTenantDissociation"
+												 value="#{msg.rd_cancel_association}"
+												 tooltip="#{msg.returnToHomePage}"
+												 iconAwesome="fa-home"
+												 immediate="true"
+												 action="#{userProfileManager.redirectToHomePage}"/>
+
+								<b:button id="userTenantDissociation"
+										  value="#{msg.dissociate}"
+										  tooltip="#{msg.dissociate} #{msg.rd_user} #{msg.rd_tenant}"
+										  iconAwesome="fa-ban"
+										  onclick="$('.formValidationModalDeleteTenantFromUserProfile').modal('show')"/>
+
+								<b:modal id="modalDissociation"
+										 title="#{msg.confirmation}"
+										 styleClass="formValidationModalDeleteTenantFromUserProfile"
+										 closable="false"
+										 close-on-escape="false" backdrop="false">
+									<p>#{msg.rd_tenant_self_dissociation_confirmation}</p>
+									<f:facet name="footer">
+										<b:commandButton value="#{msg.returnButton}"
+														 type="reset"
+														 onclick="{ $('.formValidationModalDeleteTenantFromUserProfile').modal('hide') } "/>
+										<b:commandButton value="#{msg.yes}" look="warning"
+														 action="#{userProfileManager.dissociateUserTenant}"
+														 oncomplete="{ $('.formValidationModalDeleteTenantFromUserProfile').modal('hide') } "/>
+									</f:facet>
+								</b:modal>
+							</b:buttonGroup>
+					</b:tab>
+				</b:tabView>
+			</b:container>
+		</h:form>
     </ui:define>
 </ui:composition>

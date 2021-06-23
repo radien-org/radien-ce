@@ -15,12 +15,14 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -34,9 +36,14 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
@@ -53,7 +60,7 @@ public class LinkedAuthorizationResourceTest {
     @Mock
     HttpServletRequest servletRequest;
 
-    @Before
+    @BeforeEach
     public void before(){
         MockitoAnnotations.initMocks(this);
     }
@@ -375,4 +382,59 @@ public class LinkedAuthorizationResourceTest {
         Response response = linkedAuthorizationResource.checkPermissions(null, roleList, null);
         assertEquals(404,response.getStatus());
     }
+
+    /**
+     * Test for dissociation process (for tenant and user) when a generic exception occurs
+     * Expected: Http Status 200
+     */
+    @Test
+    public void testDissociation() throws LinkedAuthorizationException {
+        doReturn(Boolean.TRUE).when(linkedAuthorizationBusinessService).
+                deleteAssociations(anyLong(), anyLong());
+        Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test for dissociation process (for tenant and user) when trying to submit
+     * an invalid request (Tenant not informed or User not informed)
+     * Expected: Http Status 400
+     */
+    @Test
+    public void testDissociationInvalidRequest() throws LinkedAuthorizationException {
+        doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
+                deleteAssociations(nullable(Long.class), anyLong());
+        Response response = linkedAuthorizationResource.deleteAssociations(null,1l);
+        assertEquals(400,response.getStatus());
+        doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
+                deleteAssociations(anyLong(), nullable(Long.class));
+        response = linkedAuthorizationResource.deleteAssociations(1l,null);
+        assertEquals(400,response.getStatus());
+    }
+
+    /**
+     * Test for dissociation process when no associations were found
+     * for tenant and user
+     * Expected: Http Status 404
+     */
+    @Test
+    public void testDissociationAssociationsNotFound() throws LinkedAuthorizationException {
+        doReturn(Boolean.FALSE).when(linkedAuthorizationBusinessService).
+                deleteAssociations(anyLong(), anyLong());
+        Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
+     * Test for dissociation process (for tenant and user) when a generic exception occurs
+     * Expected: Http Status 500
+     */
+    @Test
+    public void testDissociateTenantGenericError() throws LinkedAuthorizationException {
+        doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).
+                deleteAssociations(1L, 1L);
+        Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
+        assertEquals(500,response.getStatus());
+    }
+
 }
