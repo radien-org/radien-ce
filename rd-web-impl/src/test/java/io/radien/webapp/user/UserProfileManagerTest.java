@@ -190,7 +190,7 @@ public class UserProfileManagerTest {
      */
     @Test
     public void testGetterSetterForAssignedTenants() {
-        List<? extends SystemTenant> assigned = new ArrayList<>();
+        List<SystemTenant> assigned = new ArrayList<>();
         userProfileManager.setAssignedTenants(assigned);
         assertEquals(assigned, userProfileManager.getAssignedTenants());
     }

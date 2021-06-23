@@ -115,7 +115,6 @@ public class LinkedAuthorizationRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testLinkedAuthorizationByRoleIdException() throws Exception {
-        boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ExtensionException(new Exception()));
         target.getLinkedAuthorizationByRoleId(2L);
     }
@@ -439,12 +438,12 @@ public class LinkedAuthorizationRESTServiceClientTest {
      * Expected outcome: Fail due Processing exception
      */
     @Test(expected = SystemException.class)
-    public void testDissociateTenantUserProcessingException() throws SystemException{
+    public void testDissociateTenantUserProcessingException() throws SystemException, MalformedURLException {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L)).
                 thenThrow(new ProcessingException(""));
-        assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
-                getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
+                getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
         target.deleteAssociations(1L, 1L);
     }
 

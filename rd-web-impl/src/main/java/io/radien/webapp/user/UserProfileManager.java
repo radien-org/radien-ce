@@ -62,7 +62,7 @@ public class UserProfileManager extends AbstractManager {
     @Inject
     private LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
 
-    private List<? extends SystemTenant> assignedTenants;
+    private List<SystemTenant> assignedTenants;
 
     private static final String URL_MAPPING_ID_LOGGED_USER_PROFILE = "pretty:profile";
     private static final String URL_MAPPING_ID_HOME = "pretty:index";
@@ -109,7 +109,7 @@ public class UserProfileManager extends AbstractManager {
      * Retrieve the tenants assigned to / associated with the current logged user
      * @return List containing instances of SystemTenant
      */
-    protected List<? extends SystemTenant> retrieveAssignedTenants() {
+    protected List<SystemTenant> retrieveAssignedTenants() {
         List<SystemTenant> assignedOnes = new ArrayList<>();
         try {
             // Retrieve tenant ids
@@ -134,7 +134,7 @@ public class UserProfileManager extends AbstractManager {
      * with the current logged user
      * @return list containing tenants
      */
-    public List<? extends SystemTenant> getAssignedTenants() {
+    public List<SystemTenant> getAssignedTenants() {
         return assignedTenants;
     }
 
@@ -143,7 +143,7 @@ public class UserProfileManager extends AbstractManager {
      * with the current logged user
      * @param list list containing the tenants assigned to the current user
      */
-    public void setAssignedTenants(List<? extends SystemTenant> list) {
+    public void setAssignedTenants(List<SystemTenant> list) {
         this.assignedTenants = list;
     }
 
