@@ -80,12 +80,6 @@ public interface LinkedAuthorizationServiceAccess extends ServiceAccess {
     public boolean deleteAssociations(Long tenantId, Long userId);
 
     /**
-     * Deletes a set of linked authorization associations byt its ids
-     * @param ids identifiers of LinkedAuthorizations to be deleted
-     */
-    public void deleteAssociations(Collection<Long> ids);
-
-    /**
      * Verifies if exist LinkedAuthorizations for a specific Filter
      * @param filter contains the criteria that satisfies the search process
      * @return true (If finds some LinkedAuthorization for the informed filter), otherwise false

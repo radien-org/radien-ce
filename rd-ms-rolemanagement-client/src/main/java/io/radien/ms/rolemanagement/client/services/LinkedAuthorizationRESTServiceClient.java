@@ -23,7 +23,6 @@ import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
-import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.ListLinkedAuthorizationModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;

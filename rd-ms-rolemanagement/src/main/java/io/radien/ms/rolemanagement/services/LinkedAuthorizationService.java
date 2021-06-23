@@ -223,21 +223,6 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
     }
 
     /**
-     * Deletes a list of linked authorization associations taking in consideration
-     * a set of ids
-     * @param ids to be deleted.
-     */
-    @Override
-    public void deleteAssociations(Collection<Long> ids) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaDelete<LinkedAuthorization> criteriaDelete = cb.createCriteriaDelete(LinkedAuthorization.class);
-        Root<LinkedAuthorization> linkedAuthorizationRoot = criteriaDelete.from(LinkedAuthorization.class);
-
-        criteriaDelete.where(linkedAuthorizationRoot.get("id").in(ids));
-        entityManager.createQuery(criteriaDelete).executeUpdate();
-    }
-
-    /**
      * Delete linked authorization taking in consideration the following parameters
      * @param tenantId Tenant identifier
      * @param userId User identifier

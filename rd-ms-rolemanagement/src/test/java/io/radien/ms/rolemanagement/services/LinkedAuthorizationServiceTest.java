@@ -167,19 +167,6 @@ public class LinkedAuthorizationServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
-
-    /**
-     * Test for method deleteAssociations(ids)
-     * @throws LinkedAuthorizationNotFoundException
-     */
-    @Test
-    public void testDeleteAssociations() throws LinkedAuthorizationNotFoundException {
-        SystemLinkedAuthorization result = linkedAuthorizationServiceAccess.getAssociationById(systemLinkedAuthorization.getId());
-        assertNotNull(result);
-        assertEquals(systemLinkedAuthorization.getRoleId(), result.getRoleId());
-        linkedAuthorizationServiceAccess.deleteAssociations(Arrays.asList(systemLinkedAuthorization.getId()));
-    }
-
     /**
      * Test for method deleteAssociations(tenantId, userId)
      * @throws LinkedAuthorizationNotFoundException
@@ -298,7 +285,7 @@ public class LinkedAuthorizationServiceTest {
     @Test
     public void testGetTotalRecordsCount() {
         long result = linkedAuthorizationServiceAccess.getTotalRecordsCount();
-        assertEquals(8, result);
+        assertEquals(9, result);
     }
 
     @Test

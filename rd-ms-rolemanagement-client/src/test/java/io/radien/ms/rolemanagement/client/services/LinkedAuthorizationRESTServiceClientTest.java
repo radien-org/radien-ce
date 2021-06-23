@@ -137,8 +137,7 @@ public class LinkedAuthorizationRESTServiceClientTest {
     @Test(expected = SystemException.class)
     public void testCreateMalformedException() throws MalformedURLException, SystemException {
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
-        boolean success = false;
-        assertTrue(target.create(new LinkedAuthorization()));
+        target.create(new LinkedAuthorization());
     }
 
     @Test
@@ -154,7 +153,6 @@ public class LinkedAuthorizationRESTServiceClientTest {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorizationResourceClient.saveAssociation(any())).thenThrow(new ProcessingException(""));
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
-        boolean success = false;
         target.create(new LinkedAuthorization());
     }
 
@@ -272,14 +270,12 @@ public class LinkedAuthorizationRESTServiceClientTest {
 
     @Test(expected = WebApplicationException.class)
     public void testIsLinkedAuthorizationExistentWebApplicationException() throws Exception {
-        boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new WebApplicationException());
         target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
     }
 
     @Test(expected = SystemException.class)
     public void testIsLinkedAuthorizationExistentException() throws Exception {
-        boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ProcessingException("teste"));
         target.checkIfLinkedAuthorizationExists(2L, 2L, 2L, 2L);
     }
@@ -381,7 +377,6 @@ public class LinkedAuthorizationRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testSpecificAssociationByUserIdException() throws Exception {
-        boolean success = false;
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new ExtensionException(new Exception()));
         target.getSpecificAssociationByUserId(2L);
     }
