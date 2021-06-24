@@ -30,8 +30,12 @@ import java.util.List;
 public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
 
     /**
-     * Fetches all Linked Authorizations
-     * @return List of Linked Authorizations
+     * Calls the requester expecting to receive all the existent linked authorizations,
+     * if not possible will refresh the access token and retry
+     * @param pageNo of the information to be seen
+     * @param pageSize number of records to be showed
+     * @return a list of System Linked Authorizations
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public List<? extends SystemLinkedAuthorization> getAll(int pageNo, int pageSize) throws SystemException;
 
@@ -42,6 +46,7 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @param role Role identifier
      * @param userId User identifier
      * @return true (if exists some LinkedAuthorization attending the criteria), otherwise false
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     boolean checkIfLinkedAuthorizationExists(Long tenant, Long permission, Long role, Long userId) throws SystemException;
 
@@ -57,13 +62,14 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * Creates given linked authorization
      * @param linkedAuthorization to be created
      * @return true if linked authorization has been created with success or false if not
-     * @throws MalformedURLException in case of URL specification
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public boolean create(SystemLinkedAuthorization linkedAuthorization) throws SystemException;
 
     /**
      * Will calculate how many records are existent in the db
      * @return the count of existent linked authorizations.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public Long getTotalRecordsCount() throws SystemException;
 
@@ -72,8 +78,8 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @param userId corresponds to the user identifier
      * @param tenantId corresponds to a tenant identifier (Optional parameter)
      * @param roleName corresponds to the role name
-     * @return
-     * @throws SystemException
+     * @return true if the specified role does exist for the specific user
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     Boolean isRoleExistentForUser(Long userId, Long tenantId, String roleName) throws SystemException;
 
@@ -84,4 +90,14 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @throws SystemException in case of any issue
      */
     List<? extends SystemLinkedAuthorization> getSpecificAssociationByUserId(Long userId) throws SystemException;
+
+    /**
+     * Will request delete ALL Linked Authorizations that exist in the DB for the following
+     * parameters (tenant and user).
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return true in case of success, otherwise false
+     * @throws SystemException in case of error
+     */
+    boolean deleteAssociations(Long tenantId, Long userId) throws SystemException;
 }

@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * @author Bruno Gama
  */
-public class LazyPermissionDataModel extends LazyDataModel<SystemPermission> {
+public class LazyPermissionDataModel extends LazyAbstractDataModel<SystemPermission> {
 
     private static final long serialVersionUID = -7135039336902887393L;
     private PermissionRESTServiceAccess service;
@@ -45,35 +46,8 @@ public class LazyPermissionDataModel extends LazyDataModel<SystemPermission> {
     }
 
     @Override
-    public SystemPermission getRowData(String rowKey) {
-        for (SystemPermission permission : datasource) {
-            if (permission.getId() == Integer.parseInt(rowKey)) {
-                return permission;
-            }
-        }
-        return null;
+    public Page<? extends SystemPermission> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+        return service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
     }
 
-    @Override
-    public String getRowKey(SystemPermission permission) {
-        return String.valueOf(permission.getId());
-    }
-
-    @Override
-    public List<SystemPermission> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-        Long rowCount = 0L;
-        try {
-            Page<? extends SystemPermission> pagedInformation = service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
-
-            datasource = pagedInformation.getResults();
-
-            rowCount = service.getTotalRecordsCount();
-        } catch (MalformedURLException | SystemException e) {
-            e.printStackTrace();
-        }
-
-        setRowCount(Math.toIntExact(rowCount));
-
-        return datasource.stream().collect(Collectors.toList());
-    }
 }

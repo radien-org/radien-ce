@@ -38,7 +38,6 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 
@@ -88,7 +87,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     private SystemTenantRoleUser previousSelectedUserToUnAssign = new TenantRoleUser();
 
     private List<? extends SystemPermission> assignedPermissions = new ArrayList<>();
-    private LazyTenantRoleUserDataModel lazyTenantRoleUserDataModel;
+    private LazyTenantRoleUserDataModel lazyModel;
 
     private Boolean tenantRoleAssociationCreated = Boolean.FALSE;
 
@@ -108,6 +107,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             if (tenantRole.getId() == null) {
                 tenantRoleAssociationCreated = true;
             }
+            this.prepareUserDataTable();
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
                     JSFUtil.getMessage("tenant_role_association"));
         }
@@ -159,7 +159,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
                             "rd_tenant_not_found"), this.tenantRole.getTenantId())));
             this.calculatePermissions();
-            this.calculateUsers();
+            this.prepareUserDataTable();
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_edit_error"),
@@ -219,10 +219,12 @@ public class TenantRoleAssociationManager extends AbstractManager {
     /**
      * Retrieve users for tenant role combination
      */
-    public void calculateUsers() {
-        Long tenantRoleId = getTenantRoleId();
-        this.lazyTenantRoleUserDataModel = new LazyTenantRoleUserDataModel(tenantRoleId,
-                tenantRoleRESTServiceAccess);
+    public void prepareUserDataTable() {
+        if (this.lazyModel == null) {
+            this.lazyModel = new LazyTenantRoleUserDataModel(tenantRoleRESTServiceAccess,
+                    userRESTServiceAccess);
+        }
+        this.lazyModel.setTenantRoleId(getTenantRoleId());
     }
 
     /**
@@ -307,7 +309,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
                         "rd_user_not_found"), this.user.getLogon())));
 
             this.tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId());
-            this.calculateUsers();
+            this.prepareUserDataTable();
             handleMessage(FacesMessage.SEVERITY_INFO,
                     JSFUtil.getMessage("rd_tenant_role_user_association_success"));
         } catch (Exception e) {
@@ -329,7 +331,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             }
             this.tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(),
                     selectedUserToUnAssign.getUserId());
-            this.calculateUsers();
+            this.prepareUserDataTable();
             this.selectedUserToUnAssign = new TenantRoleUser();
             handleMessage(FacesMessage.SEVERITY_INFO,
                     JSFUtil.getMessage("rd_tenant_role_user_dissociation_success"));
@@ -434,7 +436,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     /**
      * Setter for the assigned permission
-     * @param assignedPermissions
+     * @param assignedPermissions list of the assigned permission
      */
     public void setAssignedPermissions(List<SystemPermission> assignedPermissions) {
         this.assignedPermissions = assignedPermissions;
@@ -604,8 +606,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * LazyTenantRoleUserDataModel component
      * @return instance for LazyTenantRoleUserDataModel
      */
-    public LazyTenantRoleUserDataModel getLazyTenantRoleUserDataModel() {
-        return lazyTenantRoleUserDataModel;
+    public LazyTenantRoleUserDataModel getLazyModel() {
+        return lazyModel;
     }
 
     /**

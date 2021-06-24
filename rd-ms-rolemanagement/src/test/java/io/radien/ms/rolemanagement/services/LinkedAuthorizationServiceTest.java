@@ -29,15 +29,32 @@ import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilt
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
-import org.junit.Test;
+
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 /**
  * @author Bruno Gama
@@ -56,8 +73,8 @@ public class LinkedAuthorizationServiceTest {
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.deployments.classpath.include",".*role.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
 
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 
@@ -161,6 +178,40 @@ public class LinkedAuthorizationServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    /**
+     * Test for method deleteAssociations(tenantId, userId)
+     * @throws LinkedAuthorizationNotFoundException
+     * @throws UniquenessConstraintException
+     */
+    @Test
+    public void testDeleteAssociationsForTenantAndUser() throws LinkedAuthorizationNotFoundException,
+            UniquenessConstraintException {
+
+        Long tenantId = 999L;
+        Long userId = 78L;
+        SystemLinkedAuthorization linkedAuthorization1 = LinkedAuthorizationFactory.create(tenantId,
+                21L, 21L, userId, 900L);
+        SystemLinkedAuthorization linkedAuthorization2 = LinkedAuthorizationFactory.create(tenantId,
+                31L, 31L, userId, 900L);
+        SystemLinkedAuthorization linkedAuthorization3 = LinkedAuthorizationFactory.create(tenantId,
+                21L, 41L, userId, 900L);
+
+        linkedAuthorizationServiceAccess.save(linkedAuthorization1);
+        linkedAuthorizationServiceAccess.save(linkedAuthorization2);
+        linkedAuthorizationServiceAccess.save(linkedAuthorization3);
+
+        List<? extends SystemLinkedAuthorization> list = linkedAuthorizationServiceAccess.getSpecificAssociation(
+                new LinkedAuthorizationSearchFilter(tenantId,null,null, userId,true));
+        assertEquals(3,list.size());
+
+        assertTrue(linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId));
+
+        list = linkedAuthorizationServiceAccess.getSpecificAssociation(
+                new LinkedAuthorizationSearchFilter(tenantId,null,null, userId,true));
+        assertEquals(0,list.size());
+
+        assertFalse(linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId));
+    }
 
     @Test
     public void testCheckIfRolesExist() throws UniquenessConstraintException, RoleNotFoundException {
@@ -238,6 +289,10 @@ public class LinkedAuthorizationServiceTest {
         assertTrue(linkedAuthorizationServiceAccess.exists(filter2));
     }
 
+    /**
+     * Test for method getTotalRecordsCount()
+     * @throws LinkedAuthorizationNotFoundException
+     */
     @Test
     public void testGetTotalRecordsCount() {
         long result = linkedAuthorizationServiceAccess.getTotalRecordsCount();

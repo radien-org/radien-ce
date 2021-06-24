@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -28,12 +29,10 @@ import java.util.stream.Collectors;
 /**
  * @author Bruno Gama
  */
-public class LazyTenantDataModel extends LazyDataModel<SystemTenant> {
+public class LazyTenantDataModel extends LazyAbstractDataModel<SystemTenant> {
 
     private static final long serialVersionUID = -2487575100973554400L;
     private TenantRESTServiceAccess service;
-
-    private List<? extends SystemTenant> datasource;
 
     public LazyTenantDataModel(TenantRESTServiceAccess service) {
         this.service=service;
@@ -41,35 +40,8 @@ public class LazyTenantDataModel extends LazyDataModel<SystemTenant> {
     }
 
     @Override
-    public SystemTenant getRowData(String rowKey) {
-        for (SystemTenant tenant : datasource) {
-            if (tenant.getId() == Integer.parseInt(rowKey)) {
-                return tenant;
-            }
-        }
-        return null;
+    public Page<? extends SystemTenant> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+        return service.getAll(null,(offset/pageSize) + 1, pageSize, null, false);
     }
 
-    @Override
-    public String getRowKey(SystemTenant tenant) {
-        return String.valueOf(tenant.getId());
-    }
-
-    @Override
-    public List<SystemTenant> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-        Long rowCount = 0L;
-        try {
-            Page<? extends SystemTenant> pagedInformation = service.getAll(null,(offset/pageSize) + 1, pageSize, null, false);
-
-            datasource = pagedInformation.getResults();
-
-            rowCount = (long)pagedInformation.getTotalResults();
-        } catch (SystemException e) {
-            e.printStackTrace();
-        }
-
-        setRowCount(Math.toIntExact(rowCount));
-
-        return datasource.stream().collect(Collectors.toList());
-    }
 }

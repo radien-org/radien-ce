@@ -30,7 +30,10 @@ import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.Permission;
 import io.radien.ms.permissionmanagement.model.Resource;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -45,20 +48,24 @@ import java.util.stream.Collectors;
  */
 public class PermissionBusinessServiceTest {
 
-    PermissionServiceAccess permissionServiceAccess;
-    ActionServiceAccess actionServiceAccess;
-    ResourceServiceAccess resourceServiceAccess;
-    PermissionBusinessService permissionBusinessService;
+    static PermissionServiceAccess permissionServiceAccess;
+    static ActionServiceAccess actionServiceAccess;
+    static ResourceServiceAccess resourceServiceAccess;
+    static PermissionBusinessService permissionBusinessService;
 
-    SystemPermission permission;
-    SystemAction action;
-    SystemResource resource;
+    static SystemPermission permission;
+    static SystemAction action;
+    static SystemResource resource;
 
-    public PermissionBusinessServiceTest() throws NamingException {
+    static EJBContainer container;
+
+    @BeforeClass
+    public static void PermissionBusinessServiceTest() throws NamingException {
         Properties p = new Properties();
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        p.put("openejb.deployments.classpath.include",".*permission.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
+        container = EJBContainer.createEJBContainer(p);
+        final Context context = container.getContext();
 
         permissionServiceAccess = (PermissionServiceAccess)
                 context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");
@@ -68,6 +75,18 @@ public class PermissionBusinessServiceTest {
                 context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
         permissionBusinessService = (PermissionBusinessService)
                 context.lookup("java:global/rd-ms-permissionmanagement//PermissionBusinessService");
+    }
+
+    @Before
+    public void inject() throws NamingException {
+        container.getContext().bind("inject", this);
+    }
+
+    @AfterClass
+    public static void stop() {
+        if (container != null) {
+            container.close();
+        }
     }
 
     @After

@@ -17,15 +17,17 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.exception.*;
 import io.radien.ms.rolemanagement.client.entities.Role;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -43,7 +45,7 @@ public class RoleResourceTest {
     RoleBusinessService roleBusinessService;
 
 
-    @Before
+    @BeforeEach
     public void before(){
         MockitoAnnotations.initMocks(this);
     }

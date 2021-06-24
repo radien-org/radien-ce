@@ -23,7 +23,13 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import java.util.ArrayList;
 
+/**
+ * Page factory converter. This class converts a received json object into a page of users
+ *
+ * @author Nuno Santana
+ */
 public class PageFactory {
+
     /**
      * Converts a JsonObject to a Page object
      *
@@ -41,7 +47,6 @@ public class PageFactory {
                 pageResults.add(UserFactory.convert(results.getJsonObject(i)));
             }
         }
-
         return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 }

@@ -49,9 +49,9 @@ public interface ContractServiceAccess extends ServiceAccess {
 
     /**
      * Gets the System Contract searching by the PK (id).
-     *
      * @param contractId to be searched.
      * @return the system contract requested to be found.
+     * @throws UserNotFoundException in case the requested user could not be found
      */
     public SystemContract get(Long contractId) throws UserNotFoundException;
 
@@ -82,8 +82,8 @@ public interface ContractServiceAccess extends ServiceAccess {
 
     /**
      * Deletes a unique contract selected by his id.
-     *
      * @param contractId to be deleted.
+     * @return true in case deletion could be performed with success
      */
     public boolean delete(Long contractId);
 

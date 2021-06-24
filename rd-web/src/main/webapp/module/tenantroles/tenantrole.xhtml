@@ -189,7 +189,7 @@
 								<b:row><h1/></b:row>
 								<b:row>
 									<p:dataTable id="usersDataTable"
-												 value="#{tenantRoleAssociationManager.lazyTenantRoleUserDataModel}"
+												 value="#{tenantRoleAssociationManager.lazyModel}"
 												 var="tenantRoleUserAssociation"
 												 paginator="true" rows="10"
 												 lazy="true"
@@ -209,10 +209,9 @@
 											<h:outputText value="#{tenantRoleUserAssociation.id}"/>
 										</p:column>
 										<p:column headerText="#{msg.rd_user_logon}">
-											<h:outputText value="#{tenantRoleAssociationManager.getLogon(tenantRoleUserAssociation.userId)}"/>
+											<h:outputText value="#{tenantRoleAssociationManager.lazyModel.getUser(tenantRoleUserAssociation.userId).logon}"/>
 										</p:column>
 									</p:dataTable>
-
 								</b:row>
 								<b:row><h1/></b:row>
 							</b:container>

@@ -55,7 +55,7 @@ public class KeycloakServiceTest extends TestCase {
         doNothing().when(client).sendUpdatePasswordEmail(any());
 
         String firstName = "a";
-        User u = UserFactory.create(firstName, "", "a4", "teste",null, "a@b.pt", 0L);
+        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
         String sub = target.createUser(u);
 
         assertEquals("", sub);
@@ -72,7 +72,7 @@ public class KeycloakServiceTest extends TestCase {
         doNothing().when(client).deleteUser(any());
 
         String firstName = "a";
-        User u = UserFactory.create(firstName, "", "a4", "teste",null, "a@b.pt", 0L);
+        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
 
         boolean success = false;
 
@@ -91,7 +91,7 @@ public class KeycloakServiceTest extends TestCase {
         doReturn(client).when(target,"getKeycloakClient");
         doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
 
-        SystemUser u = UserFactory.create("firstname", "", "a4", "teste",null, "a@b.pt", 0L);
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
 
         doNothing().when(client).updateUser(any(), any());
         boolean success = true;
@@ -111,7 +111,7 @@ public class KeycloakServiceTest extends TestCase {
         doReturn(client).when(target,"getKeycloakClient");
         doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
 
-        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", null,"a@b.pt", 0L);
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste","a@b.pt", 0L);
 
         doNothing().when(client).sendUpdatePasswordEmail(any());
         boolean success = true;
@@ -131,7 +131,7 @@ public class KeycloakServiceTest extends TestCase {
         doReturn(client).when(target,"getKeycloakClient");
         doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
 
-        SystemUser u = UserFactory.create("firstname", "", "a4", "teste",null, "a@b.pt", 0L);
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
 
         doReturn("teste").when(client).refreshToken(any());
 

@@ -99,5 +99,6 @@
 			<artifactId>cxf-rt-rs-mp-client</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 </project>

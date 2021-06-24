@@ -39,14 +39,20 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @param sortBy list of values to sort request
      * @param isAscending in case of true data will come ascending mode if false descending
      * @return list of permissions
-     * @throws MalformedURLException in case of URL exception construction
      * @throws SystemException in case of any communication error
      */
-    public Page<? extends SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException, SystemException;
+    public Page<? extends SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Fetches list of specific permissions
+     * @param search search parameter for matching permissions (optional).
+     * @param pageNo page number
+     * @param pageSize page size
+     * @param sortBy Sorting fields
+     * @param isAscending Defines if ascending or descending in relation of sorting fields
      * @return list of Permissions
+     * @throws SystemException in case of any communication error
+     * @throws MalformedURLException in case of URL exception construction
      */
     public List<? extends SystemPermission> getPermissions(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException, SystemException;
 
@@ -80,6 +86,7 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * Deletes given permission
      * @param permissionId id of the permissions to be deleted
      * @return true in case of success
+     * @throws SystemException in case of any communication error
      */
     public boolean delete(long permissionId) throws SystemException;
 
@@ -87,19 +94,23 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * Creates given permission
      * @param permission to be created
      * @return true in case of success
+     * @throws SystemException in case of any communication error
      */
     public boolean create(SystemPermission permission) throws SystemException;
 
     /**
      * Checks if permission is existent in the db
      * @param permissionId to be found
+     * @param permissionName to be found
      * @return true in case of success
+     * @throws SystemException in case of any communication error
      */
     public boolean isPermissionExistent(Long permissionId , String permissionName) throws SystemException;
 
     /**
      * Will calculate how many records are existent in the db
      * @return the count of existent permissions.
+     * @throws SystemException in case of any communication error
      */
     public Long getTotalRecordsCount() throws SystemException;
 }

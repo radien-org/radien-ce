@@ -30,19 +30,41 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author mawe
+ * User Page Message reader constructor class validator and converter for received messages
  *
+ * @author mawe
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class PageMessageBodyReader implements MessageBodyReader<Page> {
-	 	@Override
-	    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	 		return type.equals(Page.class);
-	    }
 
-	    @Override
-	    public Page readFrom(Class<Page> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-	 		return PageModelMapper.map(entityStream);
-	    }
+	/**
+	 * Validator of the user page message body is readable
+	 * @param type of the object
+	 * @param genericType generic type of the object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @return true if the given object is a page of users object
+	 */
+	@Override
+	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return type.equals(Page.class);
+	}
+
+	/**
+	 * Will call the user page model mapper to convert the given object
+	 * @param type of the object
+	 * @param genericType generic type of the received object
+	 * @param annotations annotation
+	 * @param mediaType type of the given readable field
+	 * @param httpHeaders header of the http received
+	 * @param entityStream received object
+	 * @return a page of users that has been converted from the entity stream
+	 * @throws WebApplicationException This exception may be thrown by a resource method, provider or StreamingOutput
+	 * implementation if a specific HTTP error response needs to be produced.
+	 */
+	@Override
+	public Page readFrom(Class<Page> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
+		return PageModelMapper.map(entityStream);
+	}
 }

@@ -23,9 +23,14 @@ import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAcce
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
-import io.radien.exception.*;
+import io.radien.exception.LinkedAuthorizationException;
+import io.radien.exception.LinkedAuthorizationNotFoundException;
+import io.radien.exception.SystemException;
+import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
@@ -44,10 +49,8 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     @Inject
     private LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
 
-    @Inject
-    private TenantRESTServiceAccess tenantRESTServiceAccess;
 
-    @Inject
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Inject
@@ -110,8 +113,8 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @return true if everything is ok to be saved
      */
     public boolean checkIfFieldsAreValid(SystemLinkedAuthorization association) throws SystemException {
-        boolean isTenantExistent = tenantRESTServiceAccess.isTenantExistent(association.getTenantId());
-        boolean isPermissionExistent = permissionRESTServiceAccess.isPermissionExistent(association.getPermissionId(), null);
+        boolean isTenantExistent = getTenantRESTServiceAccess().isTenantExistent(association.getTenantId());
+        boolean isPermissionExistent = getPermissionRESTServiceAccess().isPermissionExistent(association.getPermissionId(), null);
         boolean isRoleExistent = roleServiceAccess.checkIfRolesExist(association.getRoleId(), null);
 
         if(!isTenantExistent ||
@@ -129,6 +132,22 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public void deleteAssociation(Long associationId) throws LinkedAuthorizationNotFoundException {
         linkedAuthorizationServiceAccess.deleteAssociation(associationId);
+    }
+
+    /**
+     * Delete ALL linked authorization information
+     * that exists for the following parameters
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @throws LinkedAuthorizationException if either tenant id or user id were not informed
+     * @return true in case of success (elements found and deleted), otherwise false
+     */
+    public boolean deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException {
+        if (tenantId == null || userId == null) {
+            throw new LinkedAuthorizationException(LinkedAuthorizationErrorCodeMessage.
+                    NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
+        }
+        return linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
     }
 
     /**
@@ -170,5 +189,21 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public boolean checkPermissions(Long userId, Long tenantId, List<String> roleNames) {
         return linkedAuthorizationServiceAccess.checkPermissions(userId, tenantId, roleNames);
+    }
+
+    public PermissionRESTServiceAccess getPermissionRESTServiceAccess() {
+        if (permissionRESTServiceAccess == null) {
+            CDI<Object> cdi = CDI.current();
+            permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
+        }
+        return permissionRESTServiceAccess;
+    }
+
+    public TenantRESTServiceAccess getTenantRESTServiceAccess() {
+        if (tenantRESTServiceAccess == null) {
+            CDI<Object> cdi = CDI.current();
+            tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
+        }
+        return tenantRESTServiceAccess;
     }
 }

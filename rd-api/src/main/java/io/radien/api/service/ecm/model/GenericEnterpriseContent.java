@@ -119,7 +119,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
     /**
      * ECM Generic content named information constructor
      * @param name for the generic ecm content
-     * @throws NameNotValidException
+     * @throws NameNotValidException exception to be thrown when target file name in the cms is invalid
      */
     public GenericEnterpriseContent(String name) throws NameNotValidException {
         this.viewId = UUID.randomUUID().toString();

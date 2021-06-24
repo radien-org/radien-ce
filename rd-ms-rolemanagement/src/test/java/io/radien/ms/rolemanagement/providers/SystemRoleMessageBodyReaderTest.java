@@ -2,14 +2,16 @@ package io.radien.ms.rolemanagement.providers;
 
 import io.radien.api.model.role.SystemRole;
 import io.radien.ms.rolemanagement.entities.Role;
-import junit.framework.TestCase;
-import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class SystemRoleMessageBodyReaderTest extends TestCase {
+public class SystemRoleMessageBodyReaderTest {
 
     @Test
     public void testIsReadable() {

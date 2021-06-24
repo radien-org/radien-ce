@@ -69,8 +69,8 @@ public class ActionModelMapper {
 
     /**
      * Obtains a Action Page from a Json input stream
-     * @param is
-     * @return
+     * @param is to be mapped
+     * @return a page of actions mapped from the input stream
      */
     public static Page<Action> mapToPage(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {

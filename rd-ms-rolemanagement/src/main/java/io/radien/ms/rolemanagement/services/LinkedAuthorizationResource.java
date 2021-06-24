@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
@@ -97,7 +98,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             SystemLinkedAuthorization systemAssociation = linkedAuthorizationBusinessService.getAssociationById(id);
             return Response.ok(systemAssociation).build();
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getRoleNotFoundException();
+            return getAssociationNotFoundResponse();
         } catch (Exception e) {
             return getGenericError(e);
         }
@@ -116,7 +117,33 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             linkedAuthorizationBusinessService.getAssociationById(id);
             linkedAuthorizationBusinessService.deleteAssociation(id);
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getRoleNotFoundException();
+            return getAssociationNotFoundResponse();
+        } catch (Exception e){
+            return getGenericError(e);
+        }
+        return Response.ok().build();
+    }
+
+    /**
+     * Delete request which will delete ALL linked authorization information
+     * that exists for a tenant and user (Both informed as parameter).
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return 200 code message if success, 404 if no associations were found,
+     * 400 if either tenant or user were not informed,
+     * 500 code message in case of any other error.
+     */
+    @Override
+    public Response deleteAssociations(Long tenantId, Long userId) {
+        try {
+            log.info("Will delete All tenancy association with the following tenant {} and user {}.",
+                    tenantId, userId);
+            boolean status = linkedAuthorizationBusinessService.deleteAssociations(tenantId, userId);
+            if (!status) {
+                return getAssociationNotFoundResponse();
+            }
+        } catch (LinkedAuthorizationException e) {
+            return getInvalidRequestResponse(e.getMessage());
         } catch (Exception e){
             return getGenericError(e);
         }
@@ -137,7 +164,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             linkedAuthorizationBusinessService.save(new io.radien.ms.rolemanagement.entities.LinkedAuthorization(association));
             return Response.ok().build();
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getRoleNotFoundException();
+            return getAssociationNotFoundResponse();
         } catch (UniquenessConstraintException e) {
             return getInvalidRequestResponse(e);
         } catch (Exception e) {
@@ -251,10 +278,10 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
     }
 
     /**
-     * Generic error exception to when the linked authorization could not be found in DB. Launches a 404 Error Code to the user.
+     * Response to be used when the linked authorization could not be found in DB. Launches a 404 Error Code to the user.
      * @return code 100 message Resource not found.
      */
-    private Response getRoleNotFoundException() {
+    private Response getAssociationNotFoundResponse() {
         String message = LinkedAuthorizationErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         log.error(message);
         return Response.status(Response.Status.NOT_FOUND).entity(message).build();
@@ -267,6 +294,15 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
      */
     private Response getInvalidRequestResponse(UniquenessConstraintException e) {
         String message = e.getMessage();
+        return getInvalidRequestResponse(message);
+    }
+
+    /**
+     * Invalid Request error exception. Launches a 400 Error Code to the user.
+     * @param message message regarding the detected issue (to be shown)
+     * @return code 400 message Generic Exception
+     */
+    private Response getInvalidRequestResponse(String message) {
         log.error(message);
         return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }

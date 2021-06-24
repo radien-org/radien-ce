@@ -96,6 +96,20 @@ public interface LinkedAuthorizationResourceClient {
     public Response deleteAssociation(@NotNull @PathParam("id") long id);
 
     /**
+     * Delete request which will delete ALL linked authorization information
+     * that exists for a Tenant and an User (Both informed as parameter).
+     *
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return 200 code message if success
+     * 400 if neither tenant and user were informed, 500 code message if there is any error.
+     */
+    @DELETE
+    @Path("/deleteAssociations")
+    Response deleteAssociations(@QueryParam("tenantId") Long tenantId,
+                                @QueryParam("userId") Long userId);
+
+    /**
      * Inserts the given linked authorization information, wither creates a new record or updated one already existent one, depending
      * if the given linked authorization has an id or not.
      * @param association information to be update or created.

@@ -253,7 +253,7 @@ TenantRoleAssociationManagerTest {
      */
     @Test
     public void testGetterSetterForTabIndex() {
-        tenantRoleAssociationManager.setTabIndex(new Long(999L));
+        tenantRoleAssociationManager.setTabIndex(999L);
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(999L));
     }
 
@@ -770,9 +770,7 @@ TenantRoleAssociationManagerTest {
 
         tenantRoleAssociationManager.onPermissionSelect(event);
 
-        assertTrue(tenantRoleAssociationManager.
-                getPreviousSelectedPermissionToUnAssign().getId() == null);
-        assertTrue(tenantRoleAssociationManager.
-                getSelectedPermissionToUnAssign().getId() == null);
+        assertNull(tenantRoleAssociationManager.getPreviousSelectedPermissionToUnAssign().getId());
+        assertNull(tenantRoleAssociationManager.getSelectedPermissionToUnAssign().getId());
     }
 }

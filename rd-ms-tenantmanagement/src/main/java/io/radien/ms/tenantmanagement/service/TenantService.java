@@ -19,11 +19,11 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
-import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +202,7 @@ public class TenantService implements TenantServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(tenant);
         } else {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
         }
     }
 
@@ -219,7 +219,7 @@ public class TenantService implements TenantServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(tenant);
         } else {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
         }
     }
 
@@ -230,19 +230,19 @@ public class TenantService implements TenantServiceAccess {
      */
     private void validateTenant(SystemTenant tenant) throws TenantException {
         if (validateIfFieldsAreEmpty(tenant.getName())) {
-            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("name"));
+            throw new TenantException(GenericErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("name"));
         }
 
         if (validateIfFieldsAreEmpty(tenant.getTenantKey())) {
-            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantKey"));
+            throw new TenantException(GenericErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantKey"));
         }
 
         if (tenant.getTenantType() == null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantType"));
+            throw new TenantException(GenericErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantType"));
         }
 
         if ((tenant.getTenantEnd() != null && tenant.getTenantStart() != null) && tenant.getTenantEnd().compareTo(tenant.getTenantStart()) <= 0) {
-            throw new TenantException(ErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString());
         }
 
         if (tenant.getTenantType() == TenantType.ROOT_TENANT) {
@@ -277,18 +277,18 @@ public class TenantService implements TenantServiceAccess {
      */
     private void validateRootTenant(SystemTenant tenant) throws TenantException {
         if (tenant.getParentId() != null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_ROOT_WITH_PARENT.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_ROOT_WITH_PARENT.toString());
         }
 
         if(tenant.getClientId() != null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_ROOT_WITH_CLIENT.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_ROOT_WITH_CLIENT.toString());
         }
 
         // There must only exist one Root Tenant
         List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getName(), false, false));
         if (!list.isEmpty()) {
             if (tenant.getId() == null || list.size() > 1 || !list.get(0).getId().equals(tenant.getId())) {
-                throw new TenantException(ErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString());
+                throw new TenantException(GenericErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString());
             }
         }
     }
@@ -300,15 +300,15 @@ public class TenantService implements TenantServiceAccess {
      */
     private void validateClientTenant(SystemTenant tenant) throws TenantException {
         if(tenant.getParentId() == null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString());
         }
 
         if(get(tenant.getParentId()) == null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
         }
 
         if(get(tenant.getParentId()).getTenantType() == TenantType.SUB_TENANT) {
-            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString());
         }
     }
 
@@ -319,19 +319,19 @@ public class TenantService implements TenantServiceAccess {
      */
     private void validateSubTenant(SystemTenant tenant) throws TenantException {
         if(tenant.getParentId() == null){
-            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString());
         }
 
         if(tenant.getClientId() == null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_CLIENT_NOT_INFORMED.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_CLIENT_NOT_INFORMED.toString());
         }
 
         if(get(tenant.getParentId()) == null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
         }
 
         if(get(tenant.getClientId()) == null) {
-            throw new TenantException(ErrorCodeMessage.TENANT_CLIENT_NOT_FOUND.toString());
+            throw new TenantException(GenericErrorCodeMessage.TENANT_CLIENT_NOT_FOUND.toString());
         }
     }
 

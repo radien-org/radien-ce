@@ -13,34 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.config;
-
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+package io.radien.exception;
 
 /**
+ * Exception to express inconsistencies regarding Active Tenant domain object
+ *
  * @author Bruno Gama
- **/
-public class UmmsOAFTest extends TestCase {
+ */
+public class ActiveTenantException extends Exception{
 
-    @InjectMocks
-    UmmsOAF oaf;
-
-    @Before
-    public void setUp(){
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void testGetVersion() {
-        assertNull(oaf.getVersion());
-    }
-
-    @Test
-    public void testGetSystemAdminUserId() {
-        assertEquals((Long) 0L, oaf.getSystemAdminUserId());
+    /**
+     * Active Tenant exception constructor by a given message
+     * @param message to create the tenant exception with
+     */
+    public ActiveTenantException(String message) {
+        super(message);
     }
 }

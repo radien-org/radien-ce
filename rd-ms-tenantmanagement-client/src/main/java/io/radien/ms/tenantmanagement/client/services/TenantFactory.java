@@ -16,9 +16,9 @@
 package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.api.entity.Page;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
-import io.radien.ms.tenantmanagement.client.util.FactoryUtilService;
 import org.apache.cxf.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

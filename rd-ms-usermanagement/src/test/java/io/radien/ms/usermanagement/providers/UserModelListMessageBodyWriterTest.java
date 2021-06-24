@@ -50,7 +50,6 @@ public class UserModelListMessageBodyWriterTest extends TestCase {
                             "\"createUser\":null," +
                             "\"lastUpdateUser\":null," +
                             "\"sub\":\"sub\"," +
-                            "\"activeTenant\":null," +
                             "\"firstname\":\"a\"," +
                             "\"lastname\":\"b\"," +
                             "\"delegatedCreation\":false," +
@@ -58,7 +57,7 @@ public class UserModelListMessageBodyWriterTest extends TestCase {
                         "}]";
         UserModelListMessageBodyWriter target = new UserModelListMessageBodyWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        User u = UserFactory.create("a","b","logon","sub",null,"email@server.pt", null);
+        User u = UserFactory.create("a","b","logon","sub","email@server.pt", null);
         target.writeTo(Collections.singletonList(u),null,null,null,null,null,baos);
         assertEquals(result,baos.toString());
     }

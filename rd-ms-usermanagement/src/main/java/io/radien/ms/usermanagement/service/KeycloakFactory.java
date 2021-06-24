@@ -18,7 +18,20 @@ package io.radien.ms.usermanagement.service;
 import io.radien.api.model.user.SystemUser;
 import org.keycloak.representations.idm.UserRepresentation;
 
+/**
+ * Keycloak mapping and conversion from user information into user representation to be processed
+ * by keycloak
+ *
+ * @author Nuno Santana
+ */
 public class KeycloakFactory {
+
+    /**
+     * Converter method that will translate/convert a system user information
+     * into a user representation
+     * @param user to be converted
+     * @return the user representation for keycloak understanding
+     */
     public static UserRepresentation convertToUserRepresentation(SystemUser user) {
         UserRepresentation result = new UserRepresentation();
         result.setFirstName(user.getFirstname());

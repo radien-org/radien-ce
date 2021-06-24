@@ -18,12 +18,12 @@ package io.radien.ms.tenantmanagement.service;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TenantException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
-import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class TenantResource implements TenantResourceClient {
 			log.info("Will get all the role information I can find!");
 			return Response.ok(tenantService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -81,7 +81,7 @@ public class TenantResource implements TenantResourceClient {
 			List<? extends SystemTenant> list= tenantService.get(filter);
 			return Response.ok(list).build();
 		}catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -95,11 +95,11 @@ public class TenantResource implements TenantResourceClient {
 		try {
 			SystemTenant tenant = tenantService.get(id);
 			if(tenant == null){
-				return getResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
 			}
 			return Response.ok(tenant).build();
 		}catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -113,7 +113,7 @@ public class TenantResource implements TenantResourceClient {
 		try {
 			return Response.ok(tenantService.delete(id)).build();
 		}catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -127,7 +127,7 @@ public class TenantResource implements TenantResourceClient {
 		try {
 			return Response.ok(tenantService.deleteTenantHierarchy(id)).build();
 		}catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -142,9 +142,9 @@ public class TenantResource implements TenantResourceClient {
             tenantService.create(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
 			return Response.ok(tenant.getId()).build();
 		} catch (TenantException | UniquenessConstraintException u){
-			return getInvalidRequestResponse(u.getMessage());
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -161,9 +161,9 @@ public class TenantResource implements TenantResourceClient {
             tenantService.update(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
 			return Response.ok().build();
 		}catch (TenantException | UniquenessConstraintException u){
-			return getInvalidRequestResponse(u.getMessage());
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -177,37 +177,7 @@ public class TenantResource implements TenantResourceClient {
 		try {
 			return Response.ok(tenantService.exists(id)).build();
 		}catch (NotFoundException e){
-			return getResourceNotFoundException();
+			return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
 		}
 	}
-
-	/**
-	 * Generic error exception. Launches a 500 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 500 message Generic Exception
-	 */
-	private Response getGenericError(Exception e) {
-		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
-		log.error(message, e);
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-	}
-
-	/**
-	 * Invalid Request error exception. Launches a 400 Error Code to the user.
-	 * @param errorMessage exception message to be throw
-	 * @return code 400 message Generic Exception
-	 */
-	private Response getInvalidRequestResponse(String errorMessage) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
-	}
-
-
-	/**
-	 * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
-	 * @return code 100 message Resource not found.
-	 */
-	private Response getResourceNotFoundException() {
-		return Response.status(Response.Status.NOT_FOUND).entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
-	}
-
 }

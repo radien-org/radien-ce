@@ -67,8 +67,17 @@ public interface LinkedAuthorizationServiceAccess extends ServiceAccess {
     /**
      * Deletes a linked authorization record by a given id.
      * @param association to be deleted
+     * @throws LinkedAuthorizationNotFoundException in case of deletion if we cannot find the specific linked authorization.
      */
     public void deleteAssociation(Long association) throws LinkedAuthorizationNotFoundException;
+
+    /**
+     * Delete linked authorization taking in consideration the following parameters
+     * @param tenantId Tenant identifier
+     * @param userId User identifier
+     * @return true in case of success (elements found and deleted), otherwise false
+     */
+    public boolean deleteAssociations(Long tenantId, Long userId);
 
     /**
      * Verifies if exist LinkedAuthorizations for a specific Filter

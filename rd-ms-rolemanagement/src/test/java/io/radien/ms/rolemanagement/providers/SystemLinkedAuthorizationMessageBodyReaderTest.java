@@ -17,9 +17,10 @@ package io.radien.ms.rolemanagement.providers;
 
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
-import io.radien.ms.rolemanagement.providers.SystemLinkedAuthorizationMessageBodyReader;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -27,7 +28,7 @@ import java.io.InputStream;
 /**
  * @author Bruno Gama
  */
-public class SystemLinkedAuthorizationMessageBodyReaderTest extends TestCase {
+public class SystemLinkedAuthorizationMessageBodyReaderTest {
 
     @Test
     public void testIsReadable() {

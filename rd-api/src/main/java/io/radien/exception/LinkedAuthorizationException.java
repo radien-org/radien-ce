@@ -13,17 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.tenantmanagement.client.exceptions;
+package io.radien.exception;
 
-import org.junit.Test;
+/**
+ * Exception to be thrown to describe general errors
+ * regarding LinkedAuthorization domain
+ *
+ * @author Newton Carvalho
+ */
+public class LinkedAuthorizationException extends Exception {
 
-import static org.junit.Assert.assertEquals;
+    private static final long serialVersionUID = 8726694014446374642L;
 
-public class ErrorCodeMessageTest {
+    /**
+     * Linked Authorization Exception empty constructor
+     */
+    public LinkedAuthorizationException() {
+        super();
+    }
 
-    @Test
-    public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Email Address\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+    /**
+     * Linked Authorization Exception message constructor
+     * @param message to be added into the linked authorization exception
+     */
+    public LinkedAuthorizationException(String message) {
+        super(message);
     }
 }

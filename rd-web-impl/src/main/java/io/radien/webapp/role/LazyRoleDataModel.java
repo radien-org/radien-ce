@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -28,48 +29,22 @@ import java.util.stream.Collectors;
 /**
  * @author Bruno Gama
  */
-public class LazyRoleDataModel extends LazyDataModel<SystemRole> {
+public class LazyRoleDataModel extends LazyAbstractDataModel<SystemRole> {
 
     private static final long serialVersionUID = 873732107207830430L;
     private RoleRESTServiceAccess service;
 
-    private List<? extends SystemRole> datasource;
 
     public LazyRoleDataModel(RoleRESTServiceAccess service) {
         this.service=service;
-        this.datasource = new ArrayList<>();
+        datasource = new ArrayList<>();
     }
+
 
     @Override
-    public SystemRole getRowData(String rowKey) {
-        for (SystemRole role : datasource) {
-            if (role.getId() == Integer.parseInt(rowKey)) {
-                return role;
-            }
-        }
-        return null;
+    public Page<? extends SystemRole> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+        return service.getAll(null,(offset/pageSize)+1, pageSize, null, false);
     }
 
-    @Override
-    public String getRowKey(SystemRole role) {
-        return String.valueOf(role.getId());
-    }
 
-    @Override
-    public List<SystemRole> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-        Long rowCount = 0L;
-        try {
-            Page<? extends SystemRole> pagedInformation = service.getAll(null,(offset/pageSize)+1, pageSize, null, false);
-
-            datasource = pagedInformation.getResults();
-
-            rowCount = service.getTotalRecordsCount();
-        } catch (SystemException e) {
-            e.printStackTrace();
-        }
-
-        setRowCount(Math.toIntExact(rowCount));
-
-        return datasource.stream().collect(Collectors.toList());
-    }
 }

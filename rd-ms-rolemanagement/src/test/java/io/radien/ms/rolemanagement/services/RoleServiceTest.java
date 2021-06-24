@@ -23,36 +23,47 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
-import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Bruno Gama
  */
 public class RoleServiceTest {
-    Properties p;
-    RoleServiceAccess roleServiceAccess;
-    SystemRole systemRole;
+    static Properties p;
+    static RoleServiceAccess roleServiceAccess;
+    static SystemRole systemRole;
+    static EJBContainer container;
 
-
-    public RoleServiceTest() throws Exception {
+    @BeforeAll
+    public static void start() throws NamingException, RoleNotFoundException, UniquenessConstraintException {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.exclude-include.order", "include-exclude"); // Defines the processing order
+        p.put("openejb.deployments.classpath.include", ".*rolemanagement.*");
+        p.put("openejb.deployments.classpath.exclude", ".*client.*");
+        container = EJBContainer.createEJBContainer(p);
 
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        final Context context = container.getContext();
 
         roleServiceAccess = (RoleServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//RoleService");
 
@@ -62,6 +73,13 @@ public class RoleServiceTest {
         } else {
             systemRole = RoleFactory.create("name", "description", 2L);
             roleServiceAccess.save(systemRole);
+        }
+    }
+
+    @AfterAll
+    public static void stop() {
+        if (container != null) {
+            container.close();
         }
     }
 

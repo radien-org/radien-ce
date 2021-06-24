@@ -34,11 +34,11 @@ import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -50,34 +50,32 @@ import java.util.Properties;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TenantRoleServiceTest {
 
-    Properties p;
-    TenantRoleServiceAccess tenantRoleServiceAccess;
-    TenantRolePermissionServiceAccess tenantRolePermissionServiceAccess;
-    TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
-    RoleServiceAccess roleServiceAccess;
+    static Properties p;
+    static TenantRoleServiceAccess tenantRoleServiceAccess;
+    static TenantRolePermissionServiceAccess tenantRolePermissionServiceAccess;
+    static TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
+    static RoleServiceAccess roleServiceAccess;
 
-    SystemTenant rootTenant = null;
-
+    static SystemTenant rootTenant = null;
+    static EJBContainer container;
     Long baseRoleId = 111L;
     Long baseTenantId = 222L;
 
-    public TenantRoleServiceTest() throws Exception {
+    @BeforeAll
+    public static void start() throws Exception {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radienTest");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.deployments.classpath.include",".*role.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
 
+        container = EJBContainer.createEJBContainer(p);
+        final Context context = container.getContext();
 
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
-
-        String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleService";
-        tenantRoleServiceAccess = (TenantRoleServiceAccess) context.lookup(lookupString);
-
-        lookupString = "java:global/rd-ms-rolemanagement//TenantRolePermissionService";
+        String lookupString = "java:global/rd-ms-rolemanagement//TenantRolePermissionService";
         tenantRolePermissionServiceAccess = (TenantRolePermissionServiceAccess) context.lookup(lookupString);
 
         lookupString = "java:global/rd-ms-rolemanagement//TenantRoleUserService";
@@ -85,6 +83,20 @@ public class TenantRoleServiceTest {
 
         lookupString = "java:global/rd-ms-rolemanagement//RoleService";
         roleServiceAccess = (RoleServiceAccess) context.lookup(lookupString);
+    }
+
+    @BeforeEach
+    public void inject() throws NamingException {
+        String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleService";
+        tenantRoleServiceAccess = (TenantRoleServiceAccess) container.getContext().lookup(lookupString);
+        container.getContext().bind("inject", this);
+    }
+
+    @AfterAll
+    public static void stop() {
+        if (container != null) {
+            container.close();
+        }
     }
 
     /**

@@ -27,7 +27,7 @@ import io.radien.exception.SystemException;
 /**
  * User REST Service Access interface for future requests
  *
- * @author Marco Weiland <m.weiland@radien.io>
+ * @author Marco Weiland
  */
 public interface UserRESTServiceAccess extends Appframeable{
 
@@ -58,6 +58,14 @@ public interface UserRESTServiceAccess extends Appframeable{
     /**
      * Creates given user
      * @param user to be created
+     * @return true if user has been created with success or false if not
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    /**
+     * Creates given user
+     * @param user to be created
+     * @param skipKeycloak boolean value that will indicate if creation should also be performed in the keycloak
+     *                     idp or not
      * @return true if user has been created with success or false if not
      * @throws SystemException in case of token expiration or any issue on the application
      */

@@ -251,7 +251,7 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);
-				response.addCookie(cookie);
+				response.addCookie(cookie); //NOSONAR L254 complains in this line of header injection - which is not the case we are deleting headers/cookies
 			}
 	}
 

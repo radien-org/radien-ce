@@ -22,24 +22,28 @@ import io.radien.exception.RoleNotFoundException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.services.RoleFactory;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * @author Bruno Gama
  */
-public class RoleBusinessServiceTest extends TestCase {
+public class RoleBusinessServiceTest {
 
     @InjectMocks
     @Spy
@@ -47,7 +51,7 @@ public class RoleBusinessServiceTest extends TestCase {
     @Mock
     RoleServiceAccess roleServiceAccess;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         MockitoAnnotations.initMocks(this);
     }
@@ -70,7 +74,7 @@ public class RoleBusinessServiceTest extends TestCase {
     @Test
     public void testGetById() throws RoleNotFoundException {
         SystemRole systemRole = RoleFactory.create("name", "description", 4L);
-        when(roleServiceAccess.get(any())).thenReturn(systemRole);
+        when(roleServiceAccess.get(any(Long.class))).thenReturn(systemRole);
         SystemRole result = roleBusinessService.getById(3L);
         assertEquals(systemRole,result);
     }

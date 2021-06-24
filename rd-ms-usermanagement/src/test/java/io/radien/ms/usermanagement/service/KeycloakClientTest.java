@@ -15,11 +15,16 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.entities.User;
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeycloakClientTest extends TestCase {
+
+    protected final static Logger log = LoggerFactory.getLogger(KeycloakClientTest.class);
 
     KeycloakClient client;
 
@@ -39,7 +44,7 @@ public class KeycloakClientTest extends TestCase {
             String id = client.createUser(KeycloakFactory.convertToUserRepresentation(u));
             System.out.println(id);
         } catch (RemoteResourceException e){
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
         }
     }
 }

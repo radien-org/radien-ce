@@ -38,12 +38,11 @@
                     <h:outputText value="#{tenantRoleAssociation.id}"/>
                 </p:column>
                 <p:column headerText="${msg.rd_tenant}">
-                    <h:outputText value="#{tenantRoleAssociationManager.getTenantName(tenantRoleAssociation.tenantId)}"/>
+                    <h:outputText value="#{tenantRoleAssociationDataModel.lazyModel.getTenantName(tenantRoleAssociation.tenantId)}"/>
                 </p:column>
                 <p:column headerText="${msg.rd_role}">
-                    <h:outputText value="#{tenantRoleAssociationManager.getRoleName(tenantRoleAssociation.roleId)}"/>
+                    <h:outputText value="#{tenantRoleAssociationDataModel.lazyModel.getRoleName(tenantRoleAssociation.roleId)}"/>
                 </p:column>
-
                 <p:column headerText="#{msg.editUpper}">
                     <b:commandButton value="#{msg.edit}"
                                      iconAwesome="fa-function"

@@ -52,7 +52,6 @@ public abstract class AuthorizationChecker implements Serializable {
     @Context
     private HttpServletRequest servletRequest;
 
-    @Inject
     private OAFAccess oafAccess;
 
     private UserClient userClient;
@@ -66,6 +65,10 @@ public abstract class AuthorizationChecker implements Serializable {
     private TokensPlaceHolder tokensPlaceHolder;
 
     private RestClientBuilder restClientBuilder;
+
+    public AuthorizationChecker(){
+
+    }
 
     /**
      * By the active user this method will update the refresh token, so that he can continue to use the application
@@ -387,6 +390,9 @@ public abstract class AuthorizationChecker implements Serializable {
      * @return the oaf object
      */
     public OAFAccess getOafAccess() {
+        if(oafAccess == null) {
+            oafAccess = CDI.current().select(OAFAccess.class).get();
+        }
         return oafAccess;
     }
 }

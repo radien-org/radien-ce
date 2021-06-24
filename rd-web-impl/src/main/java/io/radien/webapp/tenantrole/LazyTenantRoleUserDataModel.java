@@ -17,19 +17,16 @@ package io.radien.webapp.tenantrole;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.webapp.JSFUtil;
+import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,69 +41,50 @@ import java.util.stream.Collectors;
  *
  * @author Newton Carvalho
  */
-public class LazyTenantRoleUserDataModel extends LazyDataModel<SystemTenantRoleUser> {
+public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTenantRoleUser> {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
-
-    private List<? extends SystemTenantRoleUser> datasource;
-    private boolean fetchAll = false;
+    private TenantRoleRESTServiceAccess service;
+    private UserRESTServiceAccess userService;
     private Long tenantRoleId = null;
-    private String msgError = MessageFormat.format(
-            JSFUtil.getMessage("rd_retrieve_error"),
-            JSFUtil.getMessage("tenant_role_associations"));
+    private Map<Long, SystemUser> userMapRef;
+    private static final SystemUser EMPTY_USER = new User();
 
     /**
      * The idea for this constructor is to allow fetching TenantRoleUser relations
      * existent for a tenantRole id
-     * @param tenantRoleId identifier that refers a TenantRole association and
-     *                     which will guide the search process (like Filter parameter)
      * @param tenantRoleRESTServiceAccess TenantRoleRESTServiceAccess rest client to perform the role of a
      *                DataService, providing (or retrieving) data to assembly the datasource
+     * @param userRESTServiceAccess auxiliary service that must be use to retrieve information
+     *                              regarding the user contained in the TenantRoleUser collection
      */
-    public LazyTenantRoleUserDataModel(Long tenantRoleId,
-                                       TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess) {
-        this(tenantRoleRESTServiceAccess);
-        this.tenantRoleId = tenantRoleId;
-        this.fetchAll = false;
+    public LazyTenantRoleUserDataModel(TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess,
+                                       UserRESTServiceAccess userRESTServiceAccess) {
+        this.service = tenantRoleRESTServiceAccess;
+        this.userService = userRESTServiceAccess;
+        this.userMapRef = new HashMap<>();
     }
 
-    /**
-     * Default constructor
-     * @param tenantRoleRESTServiceAccess TenantRoleRESTServiceAccess rest client to perform the role of a
-     *                DataService, providing data to assembly the datasource
-     */
-    public LazyTenantRoleUserDataModel(TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess) {
-        this.tenantRoleRESTServiceAccess = tenantRoleRESTServiceAccess;
-        this.fetchAll = true;
-    }
+//    /**
+//     * Retrieves a SystemTenantRoleUser that corresponds to a DataTable row.
+//     * @param rowKey id or index that refers a row (presented in a data table)
+//     * @return SystemTenantRole instance that corresponds to the selected datatable row
+//     */
+//    @Override
+//    public SystemTenantRoleUser getRowData(String rowKey) {
+//        if (rowKey != null && !rowKey.equals("null")) {
+//            for (SystemTenantRoleUser association : datasource) {
+//                if (association.getId() == Integer.parseInt(rowKey)) {
+//                    return association;
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
-    /**
-     * Retrieves a SystemTenantRoleUser that corresponds to a DataTable row.
-     * @param rowKey id or index that refers a row (presented in a data table)
-     * @return SystemTenantRole instance that corresponds to the selected datatable row
-     */
+
     @Override
     public SystemTenantRoleUser getRowData(String rowKey) {
-        if (rowKey != null && !rowKey.equals("null")) {
-            for (SystemTenantRoleUser association : datasource) {
-                if (association.getId() == Integer.parseInt(rowKey)) {
-                    return association;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * This method retrieves the row identifier (or key) that exists for a given a SystemTenantRole object
-     * @param association TenantRole object contained in the grid, for which the row
-     *                    id (key) will be retrieved
-     * @return String value that corresponds to the row key
-     */
-    @Override
-    public String getRowKey(SystemTenantRoleUser association) {
-        return String.valueOf(association.getId());
+        return !rowKey.equals("null") ? super.getRowData(rowKey) : null;
     }
 
     /**
@@ -119,29 +97,64 @@ public class LazyTenantRoleUserDataModel extends LazyDataModel<SystemTenantRoleU
      * @return list containing TenantRoleUser associations corresponding to a page
      */
     @Override
-    public List<SystemTenantRoleUser> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-        Long rowCount = 0L;
-        try {
-            if (tenantRoleId == null && !fetchAll) {
-                datasource = new ArrayList<>();
-            } else {
-                Page<? extends SystemTenantRoleUser> pagedInformation =
-                        tenantRoleRESTServiceAccess.getUsers(tenantRoleId, (offset/pageSize)+1, pageSize);
-                datasource = pagedInformation.getResults();
-                rowCount = (long)pagedInformation.getTotalResults();
+    public Page<? extends SystemTenantRoleUser> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+        Page<? extends SystemTenantRoleUser> page = service.getUsers(tenantRoleId,
+                (offset/pageSize)+1, pageSize);
+        // Get the user ids
+        List<Long> userIds = page.getResults().stream().map(SystemTenantRoleUser::getUserId).
+                distinct().collect(Collectors.toList());
+        updateUserReferencesForExhibition(userIds);
+        return page;
+    }
+
+    /**
+     * Retrieve the non mapped ids (either for role or tenant)
+     * @param originalIds A list of ids (for tenant or for roles)
+     * @param map eventually already contains reference of mapped object for the mentioned ids
+     * @return a filtered list of ids
+     */
+    protected List<Long> getNonMappedIds(List<Long> originalIds, Map<Long, ?> map) {
+        return originalIds.stream().filter(id -> !map.containsKey(id)).
+                collect(Collectors.toList());
+    }
+
+    /**
+     * If necessary, retrieve the Users that will be shown in the data grid for the current page
+     * @param userIds List containing user identifiers (Obtained from TenantRoleUser pagination)
+     */
+    protected void updateUserReferencesForExhibition(List<Long> userIds) throws SystemException {
+        // Filtering non mapped user ids
+        List<Long> ids = getNonMappedIds(userIds, userMapRef);
+        if (!ids.isEmpty()) {
+            // TODO: Necessary service to retrieve Users based on a list of Ids
+            for (Long id: ids) {
+                userService.getUserById(id).ifPresent(u -> userMapRef.put(id, u));
             }
-        } catch (SystemException s){
-            log.error("Error trying to load tenant role user associations", s);
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msgError,
-                            s.getMessage()));
-        } catch (Exception e){
-            log.error("Unknown error loading tenant role user associations", e);
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msgError,
-                            JSFUtil.getMessage("contactSystemAdministrator")));
         }
-        setRowCount(Math.toIntExact(rowCount));
-        return datasource.stream().collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve the user taking in consideration the informed id
+     * @param userId user identifier
+     * @return the user (if it exists), otherwise returns an empty pojo
+     */
+    public SystemUser getUser(Long userId) {
+        return userMapRef.containsKey(userId) ? userMapRef.get(userId) : EMPTY_USER;
+    }
+
+    /**
+     * Getter for tenantRoleId property
+     * @return long value that corresponds to the tenantRoleId property
+     */
+    public Long getTenantRoleId() {
+        return tenantRoleId;
+    }
+
+    /**
+     * Setter for tenantRoleId property
+     * @param tenantRoleId  long value that corresponds to the tenantRoleId property
+     */
+    public void setTenantRoleId(Long tenantRoleId) {
+        this.tenantRoleId = tenantRoleId;
     }
 }

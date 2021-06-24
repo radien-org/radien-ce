@@ -28,16 +28,26 @@ import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 
 /**
+ * This class maps the Permission pojos into Json objects an vice-versa
  * @author Marco Weiland 
- *
  */
 public class UserModelMapper {
 
 
+    /**
+     * Maps one user information into a Json Object
+     * @param model user object to be converted
+     * @return json object with the given user information
+     */
     public static JsonObject map(User model) {
         return UserFactory.convertToJsonObject(model);
     }
 
+    /**
+     * Maps a user Collection into a Json Array
+     * @param models list of users to be converted
+     * @return a json array with all the given list information
+     */
     public static JsonArray map(List<User> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
@@ -47,6 +57,11 @@ public class UserModelMapper {
         return arrayBuilder.build();
     }
 
+    /**
+     * Maps a Json stream into a user
+     * @param is to be mapped
+     * @return the converted and mapped user
+     */
     public static User map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();

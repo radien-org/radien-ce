@@ -97,6 +97,7 @@ public interface TenantRESTServiceAccess {
      * Checks if tenant is existent in the db
      * @param tenantId to be found
      * @return true in case of success
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     public boolean isTenantExistent(Long tenantId) throws  SystemException;
 

@@ -16,9 +16,10 @@
 
 package io.radien.webapp.tenantrole;
 
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.service.role.RoleRESTServiceAccess;
+import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
@@ -31,7 +32,6 @@ import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import java.io.Serializable;
 
 /**
  * JSF DataModel that will allow a first page (i.e tenantroles.xhtml)
@@ -44,7 +44,7 @@ import java.io.Serializable;
  */
 @Model
 @SessionScoped
-public class TenantRoleAssociationDataModel extends AbstractManager implements Serializable {
+public class TenantRoleAssociationDataModel extends AbstractManager {
 
     private LazyDataModel<? extends SystemTenantRole> lazyModel;
 
@@ -53,13 +53,20 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
     @Inject
     private TenantRoleRESTServiceAccess service;
 
+    @Inject
+    private RoleRESTServiceAccess roleRESTServiceAccess;
+
+    @Inject
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
+
     /**
      * The most import stuff. Initializes the LazyDataModel component
      */
     @PostConstruct
     public void init() {
         try {
-            lazyModel = new LazyTenantRoleAssociationDataModel(service);
+            lazyModel = new LazyTenantRoleAssociationDataModel(service,
+                    tenantRESTServiceAccess, roleRESTServiceAccess);
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_generic_error_message"),
                     JSFUtil.getMessage("tenant_role_associations"));

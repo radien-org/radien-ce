@@ -37,6 +37,7 @@ public interface TenantRoleRESTServiceAccess {
      * @param pageSize page size
      * @return Page containing TenantRole User associations (Chunk/Portion compatible
      * with parameter Page number and Page size).
+     * @throws SystemException in case of any error
      */
     Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException;
 
