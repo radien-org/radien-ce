@@ -50,7 +50,7 @@ public class RoleModelMapper {
     /**
      * Maps into a Json Object array based on a role array list
      * @param models role that have the information to be converted
-     * @returna json array created based on the multiple roles
+     * @return json array created based on the multiple roles
      */
     public static JsonArray map(List<Role> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();

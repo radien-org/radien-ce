@@ -24,6 +24,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import java.io.InputStream;
@@ -71,7 +72,7 @@ public class TenantMessageBodyReader implements MessageBodyReader<Tenant> {
 		try {
 			tenant = TenantModelMapper.map(entityStream);
 		} catch (ParseException e) {
-			log.error(e.getMessage(),e);
+			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
 		return tenant;
 	}

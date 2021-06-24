@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.tenantmanagement.client.exceptions;
+package io.radien.exception;
 
-import org.junit.Test;
+/**
+ * Exception to express inconsistencies regarding Active Tenant domain object
+ *
+ * @author Bruno Gama
+ */
+public class ActiveTenantException extends Exception{
 
-import static org.junit.Assert.assertEquals;
-
-public class ErrorCodeMessageTest {
-
-    @Test
-    public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Email Address\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+    /**
+     * Active Tenant exception constructor by a given message
+     * @param message to create the tenant exception with
+     */
+    public ActiveTenantException(String message) {
+        super(message);
     }
 }

@@ -21,9 +21,9 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.tenant.ContractServiceAccess;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
-import io.radien.ms.tenantmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class ContractResource implements ContractResourceClient {
 			log.info("Will get all the role information I can find!");
 			return Response.ok(contractService.getAll(pageNo, pageSize)).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class ContractResource implements ContractResourceClient {
 		try {
 			return Response.ok(contractService.getTotalRecordsCount()).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class ContractResource implements ContractResourceClient {
 			List<? extends SystemContract> list= contractService.get(name);
 			return Response.ok(list).build();
 		}catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -98,11 +98,11 @@ public class ContractResource implements ContractResourceClient {
 		try {
 			SystemContract contract = contractService.get(id);
 			if(contract == null){
-				return getResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
 			}
 			return Response.ok(contract).build();
 		}catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class ContractResource implements ContractResourceClient {
 		try {
 			return Response.ok(contractService.delete(id)).build();
 		}catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -131,9 +131,9 @@ public class ContractResource implements ContractResourceClient {
             contractService.create(new io.radien.ms.tenantmanagement.entities.Contract(contract));
 			return Response.ok(contract.getId()).build();
 		}catch (UniquenessConstraintException u){
-			return getInvalidRequestResponse(u);
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -150,9 +150,9 @@ public class ContractResource implements ContractResourceClient {
             contractService.update(new io.radien.ms.tenantmanagement.entities.Contract(contract));
 			return Response.ok().build();
 		}catch (UniquenessConstraintException u){
-			return getInvalidRequestResponse(u);
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -166,36 +166,7 @@ public class ContractResource implements ContractResourceClient {
 		try {
 			return Response.ok(contractService.exists(id)).build();
 		}catch (NotFoundException e){
-			return getResourceNotFoundException();
+			return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
 		}
 	}
-
-	/**
-	 * Generic error exception. Launches a 500 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 500 message Generic Exception
-	 */
-	private Response getGenericError(Exception e) {
-		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
-		log.error(message, e);
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-	}
-
-	/**
-	 * Invalid Request error exception. Launches a 400 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 400 message Generic Exception
-	 */
-	private Response getInvalidRequestResponse(UniquenessConstraintException e) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-	}
-
-	/**
-	 * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
-	 * @return code 100 message Resource not found.
-	 */
-	private Response getResourceNotFoundException() {
-		return Response.status(Response.Status.NOT_FOUND).entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
-	}
-
 }

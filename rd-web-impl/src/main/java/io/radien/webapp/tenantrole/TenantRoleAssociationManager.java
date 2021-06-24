@@ -266,7 +266,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     /**
      * Getter for the Initial entity to be persisted
-     * @return tenant role to be persisted
      */
     public void setTenantRole(SystemTenantRole tenantRole) {
         this.tenantRole = tenantRole;
@@ -282,7 +281,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     /**
      * Setter for the assigned permission
-     * @param assignedPermissions
+     * @param assignedPermissions list of the assigned permission
      */
     public void setAssignedPermissions(List<SystemPermission> assignedPermissions) {
         this.assignedPermissions = assignedPermissions;
