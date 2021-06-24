@@ -25,17 +25,19 @@ import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,17 +48,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class LinkedAuthorizationServiceIntegratedTest {
-    Properties p;
+
+    static Properties p;
     static LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
     static RoleServiceAccess roleServiceAccess;
+    static EJBContainer container;
+    static Context context;
 
-    public LinkedAuthorizationServiceIntegratedTest() throws Exception {
+    static final String roleJndiLookupUri = "java:global/rd-ms-rolemanagement//RoleService";
+    static final String linkedAuthzJndiLookupUri =
+            "java:global/rd-ms-rolemanagement//LinkedAuthorizationService";
+
+    @BeforeAll
+    public static void start() throws NamingException, RoleNotFoundException, UniquenessConstraintException {
         p = new Properties();
+        p.put("appframeDatabase", "new://Resource?type=DataSource");
+        p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
+        p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
+        p.put("appframeDatabase.userName", "sa");
+        p.put("appframeDatabase.password", "");
+        p.put("openejb.exclude-include.order", "include-exclude"); // Defines the processing order
+        p.put("openejb.deployments.classpath.include", ".*rolemanagement.*");
+        p.put("openejb.deployments.classpath.exclude", ".*client.*");
+        container = EJBContainer.createEJBContainer(p);
+        context = container.getContext();
+    }
 
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
-
-        linkedAuthorizationServiceAccess = (LinkedAuthorizationServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//LinkedAuthorizationService");
-        roleServiceAccess = (RoleServiceAccess) context.lookup("java:global/rd-ms-rolemanagement//RoleService");
+    @BeforeEach
+    public void setUp() throws NamingException {
+        roleServiceAccess = (RoleServiceAccess) context.lookup(roleJndiLookupUri);
+        linkedAuthorizationServiceAccess = (LinkedAuthorizationServiceAccess)
+                context.lookup(linkedAuthzJndiLookupUri);
     }
 
     @Test
@@ -166,6 +188,9 @@ public class LinkedAuthorizationServiceIntegratedTest {
         Page<SystemLinkedAuthorization> allLinkedAuths = linkedAuthorizationServiceAccess.getAll(1, 100);
         for (SystemLinkedAuthorization sl: allLinkedAuths.getResults()) {
             linkedAuthorizationServiceAccess.deleteAssociation(sl.getId());
+        }
+        if (container != null) {
+            container.close();
         }
     }
 }
