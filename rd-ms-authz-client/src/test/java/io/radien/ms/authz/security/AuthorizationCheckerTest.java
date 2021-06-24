@@ -63,7 +63,7 @@ public class AuthorizationCheckerTest {
     private TokensPlaceHolder tokensPlaceHolder;
 
     @Mock
-    OAFAccess oafAccess;
+    private OAFAccess oafAccess;
 
     @Before
     public void before() {
@@ -74,7 +74,7 @@ public class AuthorizationCheckerTest {
     public void testRefreshToken() {
         String refreshToken = "11122334445566";
         String newAccessToken = "33333333333";
-
+        when(oafAccess.getProperty(any())).thenReturn("x");
         when(tokensPlaceHolder.getRefreshToken()).thenReturn(refreshToken).
                 thenReturn(refreshToken).
                 thenReturn(refreshToken);

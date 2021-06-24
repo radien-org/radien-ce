@@ -1,15 +1,15 @@
 package io.radien.ms.rolemanagement.factory;
 
 import io.radien.ms.rolemanagement.entities.Role;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 
-public class RoleFactoryTest extends TestCase {
+public class RoleFactoryTest {
 
     Role role = new Role();
     JsonObject json;

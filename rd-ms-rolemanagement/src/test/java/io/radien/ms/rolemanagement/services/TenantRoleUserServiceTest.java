@@ -27,6 +27,7 @@ import org.junit.jupiter.api.*;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -37,27 +38,38 @@ import java.util.Properties;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TenantRoleUserServiceTest {
 
-    Properties p;
-    TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
+    static Properties p;
+    static TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
 
-    Long baseUserId = 111L;
-    Long baseTenantRoleId = 222L;
+    static Long baseUserId = 111L;
+    static Long baseTenantRoleId = 222L;
+    static EJBContainer container;
 
-    public TenantRoleUserServiceTest() throws Exception {
+    @BeforeAll
+    public static void start() throws Exception {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radienTest");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.deployments.classpath.include",".*role.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
 
+        container = EJBContainer.createEJBContainer(p);
+    }
 
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
-
+    @BeforeEach
+    public void inject() throws NamingException {
         String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleUserService";
-        tenantRoleUserServiceAccess = (TenantRoleUserServiceAccess) context.lookup(lookupString);
+        tenantRoleUserServiceAccess = (TenantRoleUserServiceAccess) container.getContext().lookup(lookupString);
+    }
+
+    @AfterAll
+    public static void stop() {
+        if (container != null) {
+            container.close();
+        }
     }
 
     /**

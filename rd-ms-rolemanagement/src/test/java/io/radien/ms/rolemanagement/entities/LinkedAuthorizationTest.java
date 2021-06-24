@@ -16,15 +16,17 @@
 package io.radien.ms.rolemanagement.entities;
 
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
 
 /**
  * @author Bruno Gama
  */
-public class LinkedAuthorizationTest extends TestCase {
+public class LinkedAuthorizationTest {
 
     LinkedAuthorization linkedAuthorization;
     Date now = new Date();

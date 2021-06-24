@@ -15,27 +15,21 @@
  */
 package io.radien.ms.rolemanagement.services;
 
-import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
-import org.apache.openejb.mockito.MockitoExtension;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMapOf;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 

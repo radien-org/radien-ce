@@ -17,17 +17,16 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
-import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.junit.jupiter.api.*;
 
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -38,27 +37,37 @@ import java.util.Properties;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TenantRolePermissionServiceTest {
 
-    Properties p;
-    TenantRolePermissionServiceAccess tenantRolePermissionServiceAccess;
+    static Properties p;
+    static TenantRolePermissionServiceAccess tenantRolePermissionServiceAccess;
+    static EJBContainer container;
+    static Long basePermissionId = 111L;
+    static Long baseTenantRoleId = 222L;
 
-    Long basePermissionId = 111L;
-    Long baseTenantRoleId = 222L;
-
-    public TenantRolePermissionServiceTest() throws Exception {
+    @BeforeEach
+    public void start() throws Exception {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radienTest");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.deployments.classpath.include",".*role.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
 
-
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        container = EJBContainer.createEJBContainer(p);
+        final Context context = container.getContext();
 
         String lookupString = "java:global/rd-ms-rolemanagement//TenantRolePermissionService";
         tenantRolePermissionServiceAccess = (TenantRolePermissionServiceAccess) context.lookup(lookupString);
+
+        container.getContext().bind("inject", this);
+    }
+
+    @AfterAll
+    public static void stop() {
+        if (container != null) {
+            container.close();
+        }
     }
 
     /**
@@ -68,6 +77,7 @@ public class TenantRolePermissionServiceTest {
      * Tested methods: void save(TenantRolePermission tenantRolePermission)     *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
      */
+
     @Order(1)
     @Test
     public void testCreate() throws UniquenessConstraintException {

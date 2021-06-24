@@ -27,10 +27,14 @@ import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,23 +49,25 @@ import static org.junit.Assert.*;
  */
 public class UserServiceTest {
 
-    Properties p;
-    UserServiceAccess userServiceAccess;
-    SystemUser uTest;
-    EJBContainer ejbContainer;
+    static Properties p;
+    static UserServiceAccess userServiceAccess;
+    static SystemUser uTest;
+    static EJBContainer container;
 
-    public UserServiceTest() throws Exception {
+    @BeforeClass
+    public static void start() throws Exception {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.exclude-include.order", "include-exclude");
+        p.put("openejb.deployments.classpath.include",".*usermanagement.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
 
-        ejbContainer = EJBContainer.createEJBContainer(p);
-        final Context context = ejbContainer.getContext();
+        container = EJBContainer.createEJBContainer(p);
+        final Context context = container.getContext();
 
         userServiceAccess = (UserServiceAccess) context.lookup("java:global/rd-ms-usermanagement//UserService");
 
@@ -74,6 +80,18 @@ public class UserServiceTest {
             uTest = UserFactory.create("firstName", "lastName", "logon",
                     sub, "email@email.pt", 2L);
             userServiceAccess.save(uTest);
+        }
+    }
+
+    @Before
+    public void inject() throws NamingException {
+        container.getContext().bind("inject", this);
+    }
+
+    @AfterClass
+    public static void stop() {
+        if (container != null) {
+            container.close();
         }
     }
 
@@ -515,7 +533,6 @@ public class UserServiceTest {
 
         List<? extends SystemUser> usersNotExact = userServiceAccess.getUsers(new UserSearchFilter("aa","aa","aa",false,true));
         assertEquals(2,usersNotExact.size());
-        ejbContainer.close();
     }
 
 

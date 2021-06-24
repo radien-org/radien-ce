@@ -55,8 +55,8 @@ public class ContractServiceTest {
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radienTest");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.deployments.classpath.include",".*tenant.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
 
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 

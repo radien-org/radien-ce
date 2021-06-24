@@ -23,9 +23,14 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
+
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -41,7 +46,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Bruno Gama
  */
-public class LinkedAuthorizationsServiceTest extends TestCase {
+public class LinkedAuthorizationsServiceTest {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -51,7 +56,7 @@ public class LinkedAuthorizationsServiceTest extends TestCase {
     @Mock
     LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         MockitoAnnotations.initMocks(this);
     }

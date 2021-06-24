@@ -30,8 +30,10 @@ import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
 
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -40,12 +42,18 @@ import org.mockito.Spy;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doNothing;
+
 
 /**
  * @author Bruno Gama

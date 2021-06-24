@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.config;
+package io.radien.ms.config.lib;
 
 import io.radien.api.Event;
 import io.radien.api.OAFAccess;
@@ -25,7 +25,8 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -36,19 +37,20 @@ import java.util.ResourceBundle;
  * Controller responds to the user actions and directs application flow.
  * The controller will request from HTTP get and HTTP post.
  */
-@RequestScoped
-public class UmmsOAF implements OAFAccess {
+@ApplicationScoped
+@Default
+public class MSOAF implements OAFAccess {
 
-    private final Config config;
+    private final transient Config config;
 
     private Map<String, Locale> supportedLocales = new HashMap<>();
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private static transient Logger log = LoggerFactory.getLogger(MSOAF.class);
 
     /**
-     * User Management Micro Service OAF Configuration constructor
+     *Micro Service OAF Configuration constructor
      */
-    public UmmsOAF() {
+    public MSOAF() {
         this.config = ConfigProvider.getConfig();
     }
 
@@ -76,7 +78,7 @@ public class UmmsOAF implements OAFAccess {
      */
     @Override
     public void fireEvent(Event event) {
-
+        log.error("fireEvent unsupported");
     }
 
     /**
@@ -118,7 +120,6 @@ public class UmmsOAF implements OAFAccess {
     @Override
     public ResourceBundle getResourceBundle(String bundleName) {
         Locale locale = Locale.getDefault();
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         return ResourceBundle.getBundle(bundleName, locale);
     }
 
@@ -138,17 +139,20 @@ public class UmmsOAF implements OAFAccess {
     private void loadSupportedLocales() {
         try {
             for (String languageTag : getProperty(OAFProperties.SYS_SUPPORTED_LOCALES).split(",")) {
-                try {
-                    Locale locale = Locale.forLanguageTag(languageTag);
-                    supportedLocales.put(locale.toLanguageTag(), locale);
-                    log.info("[OAF] added locale {}", locale);
-                } catch (Exception e) {
-                    log.error("[OAF] IETF BCP 47 languageTag {} for registering supported locale is not supported.", languageTag);
-                }
-
+                setSupportLocales(languageTag);
             }
         } catch (Exception e) {
             log.error(SystemMessages.KERNEL_LOCALE_ERROR.message(), e);
+        }
+    }
+
+    private void setSupportLocales(String languageTag) {
+        try {
+            Locale locale = Locale.forLanguageTag(languageTag);
+            supportedLocales.put(locale.toLanguageTag(), locale);
+            log.info("[OAF] added locale {}", locale);
+        } catch (Exception e) {
+            log.error("[OAF] IETF BCP 47 languageTag {} for registering supported locale is not supported.", languageTag);
         }
     }
 

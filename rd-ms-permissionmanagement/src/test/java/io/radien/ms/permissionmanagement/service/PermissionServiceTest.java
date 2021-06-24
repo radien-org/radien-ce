@@ -35,11 +35,14 @@ import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 import io.radien.ms.permissionmanagement.model.Action;
 import io.radien.ms.permissionmanagement.model.Permission;
 import io.radien.ms.permissionmanagement.model.Resource;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,24 +58,28 @@ import static org.junit.Assert.*;
  */
 public class PermissionServiceTest {
 
-    PermissionServiceAccess permissionServiceAccess;
-    ActionServiceAccess actionServiceAccess;
-    ResourceServiceAccess resourceServiceAccess;
-    SystemPermission pTest;
-    SystemAction aTest;
+    static PermissionServiceAccess permissionServiceAccess;
+    static ActionServiceAccess actionServiceAccess;
+    static ResourceServiceAccess resourceServiceAccess;
+    static SystemPermission pTest;
+    static SystemAction aTest;
+    static EJBContainer container;
 
-    public PermissionServiceTest() throws Exception {
+    @BeforeClass
+    public static void start() throws Exception {
         Properties p = new Properties();
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        p.put("openejb.deployments.classpath.include",".*permission.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
+        container = EJBContainer.createEJBContainer(p);
+        final Context context = container.getContext();
         permissionServiceAccess = (PermissionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");
         actionServiceAccess= (ActionServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
         resourceServiceAccess = (ResourceServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
     }
 
     @Before
-    public void init() throws UniquenessConstraintException {
+    public void init() throws UniquenessConstraintException, NamingException {
+        container.getContext().bind("inject", this);
         Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1,
                 1000, null, true);
         Page<? extends SystemPermission> permissionPage = permissionServiceAccess.getAll(null,
@@ -83,6 +90,13 @@ public class PermissionServiceTest {
 
         actionServiceAccess.delete(actionPage.getResults().stream().
                 map(SystemAction::getId).collect(Collectors.toList()));
+    }
+
+    @AfterClass
+    public static void stop() {
+        if (container != null) {
+            container.close();
+        }
     }
 
     /**

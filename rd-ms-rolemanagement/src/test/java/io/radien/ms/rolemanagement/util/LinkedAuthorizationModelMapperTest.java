@@ -17,9 +17,6 @@ package io.radien.ms.rolemanagement.util;
 
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
-import io.radien.ms.rolemanagement.util.LinkedAuthorizationModelMapper;
-import junit.framework.TestCase;
-import org.junit.Test;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -27,10 +24,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * @author Bruno Gama
  */
-public class LinkedAuthorizationModelMapperTest extends TestCase {
+public class LinkedAuthorizationModelMapperTest {
 
     @Test
     public void testMapRole() {

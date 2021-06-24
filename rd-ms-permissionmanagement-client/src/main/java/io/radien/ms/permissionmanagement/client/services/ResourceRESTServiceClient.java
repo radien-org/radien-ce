@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -54,7 +55,6 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
 
 	private static final Logger log = LoggerFactory.getLogger(ResourceRESTServiceClient.class);
 
-    @Inject
     private OAFAccess oaf;
 
     @Inject
@@ -98,7 +98,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
     private Page<? extends SystemResource> getAllRequester(String search, int pageNo, int pageSize,
                                                           List<String> sortBy, boolean isAscending) throws SystemException {
         try {
-            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
             return ResourceModelMapper.mapToPage((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
@@ -135,7 +135,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      */
     private Optional<SystemResource> getResourceByIdRequester(Long id) throws SystemException {
         try {
-            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
             Response response = client.getById(id);
@@ -176,7 +176,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      */
     private Optional<SystemResource> getResourceByNameRequester(String name) throws SystemException {
         try {
-            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
             Response response = client.getResources(name,true,true);
@@ -219,7 +219,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
     private boolean createRequester(SystemResource action) throws SystemException {
         ResourceResourceClient client;
         try {
-            client = clientServiceUtil.getResourceResourceClient(oaf.
+            client = clientServiceUtil.getResourceResourceClient(getOAF().
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
             Response response = client.save((Resource)action);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
@@ -261,7 +261,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
     private boolean deleteRequester(long resourceId) throws SystemException {
         ResourceResourceClient client;
         try {
-            client = clientServiceUtil.getResourceResourceClient(oaf.
+            client = clientServiceUtil.getResourceResourceClient(getOAF().
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
             Response response = client.delete(resourceId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
@@ -288,11 +288,13 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
     }
 
     /**
-     * OAF action getter
-     * @return the active action oaf
+     * Gets the current OAF access
+     * @return the oaf object
      */
-    @Override
     public OAFAccess getOAF() {
+        if(oaf == null) {
+            oaf = CDI.current().select(OAFAccess.class).get();
+        }
         return oaf;
     }
 }

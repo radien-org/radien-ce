@@ -17,15 +17,16 @@ package io.radien.ms.rolemanagement.providers;
 
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 
 /**
  * @author Bruno Gama
  */
-public class RoleModelMessageBodyWriterTest extends TestCase {
+public class RoleModelMessageBodyWriterTest {
 
     @Test
     public void testIsWriteable() {

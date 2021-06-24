@@ -21,8 +21,10 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
 
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -32,19 +34,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
-
 import java.util.ArrayList;
 import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.nullable;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Bruno Gama

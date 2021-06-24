@@ -25,22 +25,26 @@ import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
-import org.junit.AfterClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Newton Carvalho
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class LinkedAuthorizationServiceIntegratedTest {
     Properties p;
     static LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
@@ -153,7 +157,7 @@ public class LinkedAuthorizationServiceIntegratedTest {
      * The idea for this method is to do a "clean up" process, for do not
      * interfere in other tests cases ahead that use LinkedAuthorization
      */
-    @AfterClass
+    @AfterAll
     public static void cleanUp() throws LinkedAuthorizationNotFoundException, RoleNotFoundException {
         Page<SystemRole> allRoles = roleServiceAccess.getAll(null,1, 100, null, false);
         for (SystemRole sr: allRoles.getResults()) {

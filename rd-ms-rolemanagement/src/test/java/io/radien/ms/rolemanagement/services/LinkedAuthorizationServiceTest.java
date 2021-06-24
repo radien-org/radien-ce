@@ -30,6 +30,7 @@ import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
 
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,12 +38,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 /**
@@ -62,8 +73,8 @@ public class LinkedAuthorizationServiceTest {
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
         p.put("appframeDatabase.userName", "sa");
         p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*");
-        p.put("openejb.deployments.classpath.exclude",".*rd-ms-usermanagement-client.*");
+        p.put("openejb.deployments.classpath.include",".*role.*");
+        p.put("openejb.deployments.classpath.exclude",".*client.*");
 
         final Context context = EJBContainer.createEJBContainer(p).getContext();
 
