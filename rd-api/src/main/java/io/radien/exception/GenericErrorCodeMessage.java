@@ -24,11 +24,15 @@ package io.radien.exception;
 public enum GenericErrorCodeMessage {
 
     /**
+     * Generic Business Error Code Messages
+     */
+    RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
+
+    DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
+
+    /**
      * Tenant Business Error Code Messages
      */
-    TENANT_RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
-    TENANT_DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
-
     TENANT_FIELD_NOT_INFORMED(102, "error.tenant.field.not.informed", "Tenant %s was not informed."),
 
     TENANT_PARENT_NOT_INFORMED(103, "error.tenant.parent.not.informed", "Parent information not informed."),
@@ -44,6 +48,16 @@ public enum GenericErrorCodeMessage {
     TENANT_ROOT_ALREADY_INSERTED(109, "error.tenant.root.already.inserted", "There must be only one Root Tenant."),
     TENANT_ROOT_WITH_PARENT(110, "error.tenant.root.with.parent", "Tenant root cannot have parent associated."),
     TENANT_ROOT_WITH_CLIENT(111, "error.tenant.root.with.client", "Tenant root cannot have client associated."),
+
+    /**
+     * Permission Business Error Code Messages
+     */
+    PERMISSION_PARAMETERS_NOT_INFORMED(112, "error.mandatory.parameters.not.informed", "Mandatory parameters not informed: %s"),
+
+    /**
+     * Linked Authorization Business Error Code Messages
+     */
+    NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION(113, "error.dissociation.no.params", "Parameters for dissociation not informed"),
 
     /**
      * System Error Code Messages

@@ -225,11 +225,5 @@
 			<version>2.0.9</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.konghq</groupId>
-			<artifactId>unirest-java</artifactId>
-			<version>3.11.10</version>
-			<classifier>standalone</classifier>
-		</dependency>
 	</dependencies>
 </project>
