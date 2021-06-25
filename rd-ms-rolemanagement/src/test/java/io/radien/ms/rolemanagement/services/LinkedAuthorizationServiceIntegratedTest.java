@@ -70,6 +70,8 @@ public class LinkedAuthorizationServiceIntegratedTest {
         p.put("openejb.exclude-include.order", "include-exclude"); // Defines the processing order
         p.put("openejb.deployments.classpath.include", ".*rolemanagement.*");
         p.put("openejb.deployments.classpath.exclude", ".*client.*");
+        p.put("openejb.cdi.activated-on-ejb", "false");
+
         container = EJBContainer.createEJBContainer(p);
         context = container.getContext();
     }

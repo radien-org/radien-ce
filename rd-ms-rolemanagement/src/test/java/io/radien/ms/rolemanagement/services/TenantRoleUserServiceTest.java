@@ -55,7 +55,7 @@ public class TenantRoleUserServiceTest {
         p.put("appframeDatabase.password", "");
         p.put("openejb.deployments.classpath.include",".*role.*");
         p.put("openejb.deployments.classpath.exclude",".*client.*");
-
+        p.put("openejb.cdi.activated-on-ejb", "false");
         container = EJBContainer.createEJBContainer(p);
     }
 

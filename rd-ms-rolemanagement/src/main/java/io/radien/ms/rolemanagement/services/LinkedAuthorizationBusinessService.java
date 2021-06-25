@@ -31,13 +31,9 @@ import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
 import io.radien.exception.LinkedAuthorizationException;
-import io.radien.exception.LinkedAuthorizationNotFoundException;
-import io.radien.exception.SystemException;
-import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
@@ -59,6 +55,8 @@ public class LinkedAuthorizationBusinessService implements Serializable {
 
     @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
+
+    @Inject
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Inject
@@ -216,18 +214,10 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     }
 
     public PermissionRESTServiceAccess getPermissionRESTServiceAccess() {
-        if (permissionRESTServiceAccess == null) {
-            CDI<Object> cdi = CDI.current();
-            permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
-        }
         return permissionRESTServiceAccess;
     }
 
     public TenantRESTServiceAccess getTenantRESTServiceAccess() {
-        if (tenantRESTServiceAccess == null) {
-            CDI<Object> cdi = CDI.current();
-            tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
-        }
         return tenantRESTServiceAccess;
     }
 }
