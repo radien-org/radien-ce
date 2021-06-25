@@ -56,6 +56,24 @@ public class FactoryUtilService implements Serializable {
     }
 
     /**
+     * Retrieves the Boolean value from the Json Object
+     * @param key of the value to be retrieved
+     * @param json object with the values to be retrieved
+     * @return boolean value
+     */
+    public static Boolean getBooleanFromJson(String key, JsonObject json) {
+        Boolean returnedValue = null;
+        // case where key is present with value null
+        if (isValueNotNull(key, json)) {
+            Boolean value = Boolean.parseBoolean(json.get(key).toString());
+            if (value != null) {
+                returnedValue = value;
+            }
+        }
+        return returnedValue;
+    }
+
+    /**
      * Retrieves the Integer value from the Json Object
      * @param key of the value to be retrieved
      * @param json object with the values to be retrieved
@@ -107,24 +125,6 @@ public class FactoryUtilService implements Serializable {
             }
         }
         return returnedValue;
-    }
-
-    /**
-     * Retrieves the Boolean value from the Json Object
-     * @param key of the value to be retrieved
-     * @param json object with the values to be retrieved
-     * @return Boolean value
-     */
-    public static Boolean getBooleanFromJson(String key, JsonObject json) {
-        Boolean returnedBool = null;
-        // case where key is present with value null
-        if (isValueNotNull(key, json)) {
-            JsonValue value = json.get(key);
-            if (value != null) {
-                returnedBool = Boolean.parseBoolean(value.toString());
-            }
-        }
-        return returnedBool;
     }
 
     /**
