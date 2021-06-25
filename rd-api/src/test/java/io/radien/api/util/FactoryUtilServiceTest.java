@@ -43,6 +43,8 @@ public class FactoryUtilServiceTest extends TestCase {
         builder.add("lastname", "testLastname");
         builder.add("integerTest", 123);
         builder.add("arrayTest", arrayBuilder.build());
+        builder.add("booleanTest", false);
+        builder.add("doubleTest", 2.0);
         json = builder.build();
     }
 
@@ -80,6 +82,18 @@ public class FactoryUtilServiceTest extends TestCase {
     }
 
     @Test
+    public void testGetBooleanFromJson() {
+        boolean booleanValue = FactoryUtilService.getBooleanFromJson("booleanTest", json);
+        assertFalse(booleanValue);
+    }
+
+    @Test
+    public void testGetDoubleFromJson() {
+        double doubleValue = FactoryUtilService.getDoubleFromJson("doubleTest", json);
+        assertEquals(2.0, doubleValue);
+    }
+
+    @Test
     public void testGetArrayFromJson() {
         JsonArray array = FactoryUtilService.getArrayFromJson("arrayTest", json);
 
@@ -97,6 +111,22 @@ public class FactoryUtilServiceTest extends TestCase {
     public void testGetArrayFromJsonNonExistingKey() {
         JsonArray array = FactoryUtilService.getArrayFromJson("mandalorian", json);
         assertNull(array);
+    }
+
+    @Test
+    public void testAddValueBoolean(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueBoolean(builder, "newBooleanTest",false);
+        JsonObject json = builder.build();
+        assertFalse(FactoryUtilService.getBooleanFromJson("newBooleanTest" ,json));
+    }
+
+    @Test
+    public void testAddValueDouble(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueDouble(builder, "newDoubleTest",3.0);
+        JsonObject json = builder.build();
+        assertEquals(3.0, FactoryUtilService.getDoubleFromJson("newDoubleTest" ,json));
     }
 
     @Test
@@ -143,6 +173,14 @@ public class FactoryUtilServiceTest extends TestCase {
     public void testAddValueNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
         FactoryUtilService.addValue(builder, "id",null);
+        JsonObject json = builder.build();
+        assertNull(FactoryUtilService.getStringFromJson("id" ,json));
+    }
+
+    @Test
+    public void testAddValueDoubleNull(){
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueDouble(builder, "id",null);
         JsonObject json = builder.build();
         assertNull(FactoryUtilService.getStringFromJson("id" ,json));
     }

@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
 import io.radien.exception.NotFoundException;
@@ -81,6 +82,44 @@ public class ActiveTenantResourceTest {
     public void testGetById404() {
         Response response = activeTenantResource.getById(9L);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Tests response of the get specific association
+     */
+    @Test
+    public void testGet() {
+        Response response = activeTenantResource.get(2L,2L,"test", false,true);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests exception from the get specific association
+     */
+    @Test
+    public void testGetException() {
+        when(activeTenantServiceAccess.get((SystemActiveTenantSearchFilter) any())).thenThrow(new RuntimeException());
+        Response response = activeTenantResource.get(2L,2L,"test", false,true);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Tests response of the get specific association
+     */
+    @Test
+    public void testGetByUserAndTenant() {
+        Response response = activeTenantResource.getByUserAndTenant(2L,2L);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests exception from the get specific association
+     */
+    @Test
+    public void testGetByUserAndTenantException() {
+        when(activeTenantServiceAccess.getByUserAndTenant(anyLong(), anyLong())).thenThrow(new RuntimeException());
+        Response response = activeTenantResource.getByUserAndTenant(2L,2L);
+        assertEquals(500,response.getStatus());
     }
 
     /**
@@ -209,7 +248,7 @@ public class ActiveTenantResourceTest {
      */
     @Test
     public void testExists() {
-        Response response = activeTenantResource.exists(1L);
+        Response response = activeTenantResource.exists(1L, 1L);
         assertEquals(200,response.getStatus());
     }
 
@@ -218,9 +257,9 @@ public class ActiveTenantResourceTest {
      */
     @Test
     public void testExistsException() {
-        when(activeTenantResource.exists(any()))
+        when(activeTenantResource.exists(anyLong(), anyLong()))
                 .thenThrow(new NotFoundException());
-        Response response = activeTenantResource.exists(100L);
+        Response response = activeTenantResource.exists(100L, 100L);
         assertEquals(404,response.getStatus());
     }
 }

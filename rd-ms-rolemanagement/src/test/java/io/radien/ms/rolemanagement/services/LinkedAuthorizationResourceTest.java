@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
@@ -74,7 +75,7 @@ public class LinkedAuthorizationResourceTest {
     }
 
     /**
-     * Test reposnse of the get all method
+     * Test response of the get all method
      */
     @Test
     public void testGetAllAssociations() {
@@ -159,7 +160,7 @@ public class LinkedAuthorizationResourceTest {
      * @throws LinkedAuthorizationNotFoundException in case object was not found
      */
     @Test
-    public void testDeleteGenericError() throws LinkedAuthorizationNotFoundException {
+    public void testDeleteGenericError() throws LinkedAuthorizationNotFoundException, SystemException {
         doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).deleteAssociation(any());
         Response response = linkedAuthorizationResource.deleteAssociation(1l);
         assertEquals(500,response.getStatus());

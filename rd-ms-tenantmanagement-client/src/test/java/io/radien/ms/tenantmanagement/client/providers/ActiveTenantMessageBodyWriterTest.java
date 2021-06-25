@@ -60,7 +60,7 @@ public class ActiveTenantMessageBodyWriterTest extends TestCase {
                 "\"userId\":2," +
                 "\"tenantId\":2," +
                 "\"tenantName\":null," +
-                "\"isTenantActive\":\"false\"" +
+                "\"isTenantActive\":false" +
                 "}";
         ActiveTenantMessageBodyWriter target = new ActiveTenantMessageBodyWriter();
         ActiveTenant activeTenant = ActiveTenantFactory.create(2L, 2L, null, false);
