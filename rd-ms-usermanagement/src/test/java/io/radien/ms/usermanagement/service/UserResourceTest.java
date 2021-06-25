@@ -272,7 +272,7 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
                 1001L, roleList, null);
 
-        Response response = userResource.delete(1l);
+        Response response = userResource.delete(1L);
         assertEquals(200,response.getStatus());
     }
 
@@ -291,7 +291,7 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
                 1001L, roleList, null);
 
-        Response response = userResource.delete(1l);
+        Response response = userResource.delete(1L);
         assertEquals(403,response.getStatus());
     }
 
@@ -300,8 +300,8 @@ public class UserResourceTest {
      */
     @Test
     public void testDeleteGenericError() throws UserNotFoundException, RemoteResourceException {
-        doThrow(new RemoteResourceException()).when(userBusinessService).delete(1l);
-        Response response = userResource.delete(1l);
+        doThrow(new RemoteResourceException()).when(userBusinessService).delete(1L);
+        Response response = userResource.delete(1L);
         assertEquals(500,response.getStatus());
     }
 
@@ -495,7 +495,7 @@ public class UserResourceTest {
         assertEquals(response.getEntity().getClass(), BatchSummary.class);
         BatchSummary summary = (BatchSummary) response.getEntity();
         assertEquals(summary.getTotal(), users.size());
-        assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.SUCCESS);
+        assertEquals(BatchSummary.ProcessingStatus.SUCCESS, summary.getInternalStatus());
     }
 
     /**
@@ -530,7 +530,7 @@ public class UserResourceTest {
         BatchSummary summary = (BatchSummary) response.getEntity();
         assertEquals(summary.getTotalNonProcessed(), 4);
         assertEquals(summary.getTotalProcessed(), 6);
-        assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.PARTIAL_SUCCESS);
+        assertEquals(BatchSummary.ProcessingStatus.PARTIAL_SUCCESS, summary.getInternalStatus());
     }
 
     /**
@@ -557,9 +557,9 @@ public class UserResourceTest {
         assertNotNull(response.getEntity());
         assertEquals(response.getEntity().getClass(), BatchSummary.class);
         BatchSummary summary = (BatchSummary) response.getEntity();
-        assertEquals(summary.getTotalNonProcessed(), 4);
-        assertEquals(summary.getTotalProcessed(), 0);
-        assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.FAIL);
+        assertEquals(4, summary.getTotalNonProcessed());
+        assertEquals(0, summary.getTotalProcessed());
+        assertEquals(BatchSummary.ProcessingStatus.FAIL, summary.getInternalStatus());
     }
 
     /**

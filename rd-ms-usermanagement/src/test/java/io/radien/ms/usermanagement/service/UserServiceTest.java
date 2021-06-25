@@ -552,9 +552,9 @@ public class UserServiceTest {
         assertNotNull(batchSummary);
         assertEquals(batchSummary.getTotalProcessed(), size);
         assertEquals(batchSummary.getTotal(), batchSummary.getTotalProcessed());
-        assertEquals(batchSummary.getTotalNonProcessed(), 0);
+        assertEquals(0, batchSummary.getTotalNonProcessed());
         assertNotNull(batchSummary.getNonProcessedItems());
-        assertEquals(batchSummary.getNonProcessedItems().size(), 0);
+        assertEquals(0, batchSummary.getNonProcessedItems().size());
 
         Page<? extends SystemUser> page = userServiceAccess.getAll("userb.%", 1, 200, null, true);
         assertNotNull(page);
@@ -577,9 +577,9 @@ public class UserServiceTest {
         assertNotNull(batchSummary);
         assertEquals(batchSummary.getTotal(), firstSetSize);
         assertEquals(batchSummary.getTotalProcessed(), firstSetSize);
-        assertEquals(batchSummary.getTotalNonProcessed(), 0);
+        assertEquals(0, batchSummary.getTotalNonProcessed());
         assertNotNull(batchSummary.getNonProcessedItems());
-        assertEquals(batchSummary.getNonProcessedItems().size(), 0);
+        assertEquals(0, batchSummary.getNonProcessedItems().size());
 
         // Preparing a new set
         users.clear();
@@ -610,9 +610,9 @@ public class UserServiceTest {
         assertNotNull(batchSummary);
         assertEquals(batchSummary.getTotal(), secondSetSize);
         assertEquals(batchSummary.getTotalProcessed(), secondSetSize-6);
-        assertEquals(batchSummary.getTotalNonProcessed(), 6);
+        assertEquals(6, batchSummary.getTotalNonProcessed());
         assertNotNull(batchSummary.getNonProcessedItems());
-        assertEquals(batchSummary.getNonProcessedItems().size(), 6);
+        assertEquals(6, batchSummary.getNonProcessedItems().size());
 
         // Retrieving issues for 5th element
         Optional<DataIssue> issue = batchSummary.getNonProcessedItems().stream().filter(
