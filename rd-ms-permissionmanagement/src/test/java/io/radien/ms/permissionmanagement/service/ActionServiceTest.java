@@ -18,7 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
-import io.radien.exception.ActionNotFoundException;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
@@ -31,13 +31,22 @@ import org.junit.Test;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import java.util.*;
+import java.util.Properties;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
- * @author Nuno Santana
+ * Action Service test, to test the crud requests and responses
+ * {@link io.radien.ms.permissionmanagement.service.ActionService}
  *
+ * @author Nuno Santana
  * @author Bruno Gama
  */
 public class ActionServiceTest {
@@ -46,6 +55,10 @@ public class ActionServiceTest {
     static SystemAction actionTest;
     static EJBContainer container;
 
+    /**
+     * Constructor method to prepare all the variables and properties before running the tests
+     * @throws Exception in case of any issue
+     */
     @BeforeClass
     public static void start() throws Exception {
         Properties p = new Properties();
@@ -67,11 +80,18 @@ public class ActionServiceTest {
         }
     }
 
+    /**
+     * Injection method before starting the tests
+     * @throws NamingException in case of naming injection value exception
+     */
     @Before
     public void inject() throws NamingException {
         container.getContext().bind("inject", this);
     }
 
+    /**
+     * Method to stop the container after the testing classes have perform
+     */
     @AfterClass
     public static void stop() {
         if (container != null) {
@@ -83,9 +103,6 @@ public class ActionServiceTest {
      * Will create and save the Action.
      * Expected result: Success.
      * Tested methods: void save(Action Action)
-     *
-     * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws io.radien.ms.permissionmanagement.client.exceptions.NotFoundException in case no Action was found after the save in the DB
      */
     @Test
     public void testAddAction() {
@@ -93,6 +110,9 @@ public class ActionServiceTest {
         assertNotNull(result);
     }
 
+    /**
+     * Test to try to get a non existent action
+     */
     @Test
     public void testGetNotExistentAction() {
         SystemAction result = actionServiceAccess.get(111111111L);
@@ -127,7 +147,6 @@ public class ActionServiceTest {
      * Tested methods: SystemAction get(Long ActionId)
      *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws ActionNotFoundException in case no Action was found after the save in the DB
      */
     @Test
     public void testGetById() throws UniquenessConstraintException {
@@ -160,6 +179,9 @@ public class ActionServiceTest {
         assertEquals(2, result.size());
     }
 
+    /**
+     * Test to try to get a empty list of given id's
+     */
     @Test
     public void testGetByEmptyListOfIds() {
 
@@ -173,8 +195,6 @@ public class ActionServiceTest {
      * Will create a new Action, save it into the DB and delete it after using the specific ID.
      * Expected result: will return null when retrieving the Action.
      * Tested methods: void delete(Long ActionId)
-     *
-     * @throws ActionNotFoundException in case no Action was found after the save in the DB
      */
     @Test
     public void testDeleteById() {
@@ -194,7 +214,6 @@ public class ActionServiceTest {
      * Tested methods: void delete(Collection<Long> ActionIds)
      *
      * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws ActionNotFoundException in case no Action was found after the save in the DB
      */
     @Test
     public void testDeleteByListOfIds() throws UniquenessConstraintException {
@@ -252,6 +271,10 @@ public class ActionServiceTest {
 
     }
 
+    /**
+     * Test that will try to update multiple actions but should throw a failure exception
+     * @throws Exception to be throw
+     */
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
         Action p1 = ActionFactory.create("actionName1", 2L);
@@ -301,6 +324,10 @@ public class ActionServiceTest {
         assertTrue(messageFromException.contains(expectedMessageName));
     }
 
+    /**
+     * Test to get all the actions but with a specific given sort criteria
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testGetAllSort() throws UniquenessConstraintException {
         SystemAction actionA = ActionFactory.create("a", 2L);
@@ -325,10 +352,15 @@ public class ActionServiceTest {
         assertEquals("zzz",actionPage.getResults().get(0).getName());
 
         Page<? extends SystemAction> actionPageWhere = actionServiceAccess.getAll("a", 1, 10, null, true);
-        assertTrue(actionPageWhere.getTotalResults() == 1);
+        assertEquals(1, actionPageWhere.getTotalResults());
 
         assertEquals("a",actionPageWhere.getResults().get(0).getName());
     }
+
+    /**
+     * Test to try to get actions by id with exact and without exact logical search (and or or)
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testGetByIsExactOrLogical() throws UniquenessConstraintException {
         SystemAction testById1 = ActionFactory.create("zz", 1L);
@@ -381,6 +413,5 @@ public class ActionServiceTest {
         actions = actionServiceAccess.getActions(new ActionSearchFilter("xxx", true,true));
 
         assertEquals(1, actions.size());
-
     }
 }

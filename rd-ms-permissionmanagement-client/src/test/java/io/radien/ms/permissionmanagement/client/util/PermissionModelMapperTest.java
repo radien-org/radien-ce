@@ -27,10 +27,20 @@ import java.io.InputStream;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
+/**
+ * Permission Model Mapper Test
+ * Test to verify the mappers and the converters between an object(permission, input stream, json) and a JSON
+ * or Permission
+ * {@link io.radien.ms.permissionmanagement.client.util.PermissionModelMapper}
+ */
 public class PermissionModelMapperTest {
 
+    private final String nullStringValueForTesting = "NULL";
+
+    /**
+     * Test for the conversion from a input stream into a permission object
+     */
     @Test
     public void testMapInputStream() {
         String example = "{\n" +
@@ -43,11 +53,16 @@ public class PermissionModelMapperTest {
         assertEquals(28L,(long)permission.getId());
     }
 
+    /**
+     * Method to validate the permission fields
+     * @param perm to be validated
+     * @param jsonObject to be used
+     */
     private void validatePermissionJsonObject(Permission perm, JsonObject jsonObject){
         assertEquals(perm.getName(), jsonObject.getString("name"));
 
         if (perm.getCreateUser() == null) {
-            assertTrue(jsonObject.get("createUser").getValueType().toString().equals("NULL"));
+            assertEquals(nullStringValueForTesting, jsonObject.get("createUser").getValueType().toString());
         }
         else {
             assertEquals(perm.getCreateUser(),
@@ -55,7 +70,7 @@ public class PermissionModelMapperTest {
         }
 
         if (perm.getActionId() == null) {
-            assertTrue(jsonObject.get("actionId").getValueType().toString().equals("NULL"));
+            assertEquals(nullStringValueForTesting, jsonObject.get("actionId").getValueType().toString());
         }
         else {
             assertEquals(perm.getActionId(),
@@ -63,7 +78,7 @@ public class PermissionModelMapperTest {
         }
 
         if (perm.getResourceId() == null) {
-            assertTrue(jsonObject.get("resourceId").getValueType().toString().equals("NULL"));
+            assertEquals(nullStringValueForTesting, jsonObject.get("resourceId").getValueType().toString());
         }
         else {
             assertEquals(perm.getActionId(),
@@ -71,6 +86,9 @@ public class PermissionModelMapperTest {
         }
     }
 
+    /**
+     * Test a conversion from a permission object into a json one
+     */
     @Test
     public void testMapJsonObject() {
         String firstName = "aa";
@@ -79,6 +97,9 @@ public class PermissionModelMapperTest {
         validatePermissionJsonObject(permission, jsonObject);
     }
 
+    /**
+     * Test the conversion between a permission array into a json array
+     */
     @Test
     public void testMapList() {
         String firstName = "aa";

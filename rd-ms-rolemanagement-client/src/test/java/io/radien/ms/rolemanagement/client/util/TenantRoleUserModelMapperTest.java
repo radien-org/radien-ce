@@ -23,19 +23,24 @@ import org.junit.Test;
 import javax.json.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
+ * Test the mapping information from and to a Json or a Tenant Role User object association
  * @author Newton Carvalho
  **/
 public class TenantRoleUserModelMapperTest {
     Long tenantRoleId = 22L;
     Long userId = 25L;
+
+    /**
+     * Test the conversion from a input stream to a Tenant Role User Association
+     */
     @Test
-    public void testMapInputStream() throws ParseException {
+    public void testMapInputStream() {
         String example = "{\n" +
                 "\"tenantRoleId\": 1,\n" +
                 "\"userId\": 2\n" +
@@ -46,6 +51,9 @@ public class TenantRoleUserModelMapperTest {
         assertEquals((Long) 2L, tenantRole.getUserId());
     }
 
+    /**
+     * Test the mapping conversion from a tenant role user object into a json
+     */
     @Test
     public void testMapJsonObject() {
         TenantRoleUser tenantRole = TenantRoleUserFactory.create(tenantRoleId, userId, 2L);
@@ -54,6 +62,9 @@ public class TenantRoleUserModelMapperTest {
         assertEquals(tenantRole.getUserId(), (Long)jsonObject.getJsonNumber("userId").longValue());
     }
 
+    /**
+     * Test the conversion of a input stream page into a page of objects
+     */
     @Test
     public void testMapInputStreamToPage() {
         String example = "{\n" +
@@ -74,6 +85,9 @@ public class TenantRoleUserModelMapperTest {
         assertEquals(4, tenantRolePermission.getTotalResults());
     }
 
+    /**
+     * Test the conversion of a collection of tenant roles
+     */
     @Test
     public void testConversionToCollection() {
         String example = "[\n" +
@@ -86,6 +100,6 @@ public class TenantRoleUserModelMapperTest {
         InputStream in = new ByteArrayInputStream(example.getBytes());
         List<? extends TenantRoleUser> tenantRoles = TenantRoleUserModelMapper.mapList(in);
         assertNotNull(tenantRoles);
-        assertTrue(tenantRoles.size() == 1);
+        assertEquals(1, tenantRoles.size());
     }
 }

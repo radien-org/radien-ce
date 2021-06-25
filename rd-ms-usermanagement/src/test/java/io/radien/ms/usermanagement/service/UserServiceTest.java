@@ -44,6 +44,9 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 
 /**
+ * Tenant Role User Service rest requests and responses with access into the db
+ * {@link io.radien.ms.usermanagement.service.UserService}
+ *
  * @author Nuno Santana
  * @author Bruno Gama
  */
@@ -54,6 +57,9 @@ public class UserServiceTest {
     static SystemUser uTest;
     static EJBContainer container;
 
+    /**
+     * Method before test preparation
+     */
     @BeforeClass
     public static void start() throws Exception {
         p = new Properties();
@@ -83,11 +89,18 @@ public class UserServiceTest {
         }
     }
 
+    /**
+     * Injection method before starting the tests and data preparation
+     * @throws NamingException in case of naming injection value exception
+     */
     @Before
     public void inject() throws NamingException {
         container.getContext().bind("inject", this);
     }
 
+    /**
+     * Method to stop the container after the testing classes have perform
+     */
     @AfterClass
     public static void stop() {
         if (container != null) {
@@ -95,6 +108,9 @@ public class UserServiceTest {
         }
     }
 
+    /**
+     * Test to attempt to get a user id by searching for his subject
+     */
     @Test
     public void testGetUserIdBySub() {
         Long id = userServiceAccess.getUserId(uTest.getSub());
@@ -112,8 +128,7 @@ public class UserServiceTest {
      * Expected result: Success.
      * Tested methods: void save(User user)
      *
-     * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws NotFoundException in case no user was found after the save in the DB
+     * @throws UserNotFoundException in case no user was found after the save in the DB
      */
     @Test
     public void testAddUser() throws UserNotFoundException {
@@ -157,6 +172,11 @@ public class UserServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    /**
+     * Test to get a user list
+     * @throws UserNotFoundException in case specified user does not exist
+     * @throws UniquenessConstraintException in case there is a issue in the data and it is duplicated
+     */
     @Test
     public void testGetUserList() throws UserNotFoundException, UniquenessConstraintException {
         User u = UserFactory.create("testGetIdFirstName2", "testGetIdLastName2", "testGetIdLogon2",
@@ -213,8 +233,11 @@ public class UserServiceTest {
         assertEquals(2, result.size());
     }
 
+    /**
+     * Test to attempt to get a list by giving a empty list of ids
+     */
     @Test
-    public void testGetByEmptyListOfIds() throws UniquenessConstraintException {
+    public void testGetByEmptyListOfIds() {
 
         List<SystemUser> result = userServiceAccess.get(new ArrayList<>());
         assertNotNull(result);
@@ -227,22 +250,15 @@ public class UserServiceTest {
      * Expected result: will return null when retrieving the user.
      * Tested methods: void delete(Long userId)
      *
-     * @throws UniquenessConstraintException in case of requested action is not well constructed
-     * @throws NotFoundException in case no user was found after the save in the DB
+     * @throws UserNotFoundException in case no user was found after the save in the DB
      */
-    @Test
+    @Test(expected = UserNotFoundException.class)
     public void testDeleteById() throws UserNotFoundException {
         SystemUser result = userServiceAccess.get(uTest.getId());
         assertNotNull(result);
         assertEquals(uTest.getUserEmail(), result.getUserEmail());
         userServiceAccess.delete(uTest.getId());
-        boolean success = false;
-        try {
-            result = userServiceAccess.get(uTest.getId());
-        } catch (UserNotFoundException e){
-            success = true;
-        }
-        assertTrue(success);
+        userServiceAccess.get(uTest.getId());
     }
 
     /**
@@ -330,6 +346,10 @@ public class UserServiceTest {
         assertEquals(u1.getUserEmail(), u4.getUserEmail());
     }
 
+    /**
+     * Test to attempt to update multiple records with failure
+     * @throws Exception to be throw
+     */
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
         User u1 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName1",
@@ -483,6 +503,11 @@ public class UserServiceTest {
         assertTrue(actualMessageEmailAndLogon.contains(expectedMessageEmailAndLogon));
     }
 
+    /**
+     * Test to attempt to get all the users in a sorting criteria order
+     * @throws UniquenessConstraintException in case of duplicated data
+     * @throws UserNotFoundException in case certain user could not be found
+     */
     @Test
     public void testGetAllSort() throws UniquenessConstraintException, UserNotFoundException {
         SystemUser userA = UserFactory.create("a", "lastName", "aGetAllSort",
@@ -506,10 +531,16 @@ public class UserServiceTest {
         assertEquals("zzz",userPage.getResults().get(0).getFirstname());
 
         Page<? extends SystemUser> userPageWhere = userServiceAccess.getAll("aGetAllSort@email.pt", 1, 10, null, true);
-        assertTrue(userPageWhere.getTotalResults() == 1);
+        assertEquals(1, userPageWhere.getTotalResults());
 
         assertEquals("a",userPageWhere.getResults().get(0).getFirstname());
     }
+
+    /**
+     * Test to retrieve the users with and without exact logical search
+     * @throws UniquenessConstraintException in case of duplicated data
+     * @throws UserNotFoundException in case certain user could not be found
+     */
     @Test
     public void testGetByIsExactOrLogical() throws UniquenessConstraintException, UserNotFoundException {
         SystemUser testById1 = UserFactory.create("zz", "lastName", "zz",
@@ -535,7 +566,9 @@ public class UserServiceTest {
         assertEquals(2,usersNotExact.size());
     }
 
-
+    /**
+     * Test to attempt batch creation and all elements are inserted
+     */
     @Test
     public void testBatchAllElementsInserted() {
         List<User> users = new ArrayList<>();
@@ -561,6 +594,9 @@ public class UserServiceTest {
         assertEquals(batchSummary.getTotalProcessed(), page.getTotalResults());
     }
 
+    /**
+     * Test to attempt batch creation and not all elements are inserted
+     */
     @Test
     public void testBatchNotAllElementsInserted() {
         List<User> users = new ArrayList<>();
@@ -616,17 +652,17 @@ public class UserServiceTest {
 
         // Retrieving issues for 5th element
         Optional<DataIssue> issue = batchSummary.getNonProcessedItems().stream().filter(
-                dataIssue -> dataIssue.getRowId() == 5l).findFirst();
+                dataIssue -> dataIssue.getRowId() == 5L).findFirst();
         assertTrue(issue.isPresent());
-        assertTrue(issue.get().getRowId() == 5l);
-        assertTrue(issue.get().getReasons().size() == 2);
+        assertEquals(5L, issue.get().getRowId());
+        assertEquals(2, issue.get().getReasons().size());
 
         // Retrieving issue for 11th element
         issue = batchSummary.getNonProcessedItems().stream().filter(
-                dataIssue -> dataIssue.getRowId() == 11l).findFirst();
+                dataIssue -> dataIssue.getRowId() == 11L).findFirst();
         assertTrue(issue.isPresent());
-        assertTrue(issue.get().getRowId() == 11l);
-        assertTrue(issue.get().getReasons().size() == 3);
+        assertEquals(11L, issue.get().getRowId());
+        assertEquals(3, issue.get().getReasons().size());
 
         Page<? extends SystemUser> page = userServiceAccess.getAll("userbatch%", 1, 200, null, true);
         assertNotNull(page);

@@ -52,6 +52,8 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 
 /**
+ * User Resource rest requests and responses
+ *
  * @author Nuno Santana
  * @author Bruno Gama
  */
@@ -72,6 +74,9 @@ public class UserResourceTest {
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
 
+    /**
+     * Method before test preparation
+     */
     @Before
     public void before(){
        MockitoAnnotations.initMocks(this);
@@ -85,7 +90,7 @@ public class UserResourceTest {
         when(userBusinessService.getUserId("login1")).thenReturn(1L);
         Response response = userResource.getUserIdBySub("login1");
         assertEquals(200, response.getStatus());
-        assertTrue(1L == response.readEntity(Long.class));
+        assertEquals(1L, (long) response.readEntity(Long.class));
     }
 
     /**
