@@ -63,6 +63,21 @@ public interface ActiveTenantResourceClient {
                            @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     /**
+     * Gets a list of requested active tenants based on some filtered information
+     * @param userId to be searched for
+     * @param tenantId of the tenant to be searched
+     * @param isTenantActive should the values be exact to the given ones
+     * @param isLogicalConjunction in case of true query will use an and in case of false query will use a or
+     * @return 200 response code in case of success or 500 in case of any issue
+     */
+    @GET
+    @Path("/get")
+    public Response get(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId,
+                        @QueryParam("tenantName") String tenantName,
+                        @DefaultValue("false") @QueryParam("isTenantActive") boolean isTenantActive,
+                        @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
+
+    /**
      * Gets active tenant based on the given id
      * @param id to be searched for
      * @return 200 code message in case of success or 500 in case of any error
@@ -70,6 +85,16 @@ public interface ActiveTenantResourceClient {
     @GET
     @Path("/{id}")
     public Response getById(@NotNull @PathParam("id") Long id);
+
+    /**
+     * Gets active tenant based on the given id
+     * @param userId to be searched for
+     * @param tenantId to be searched for
+     * @return 200 code message in case of success or 500 in case of any error
+     */
+    @GET
+    @Path("/{userId}/{tenantId}")
+    public Response getByUserAndTenant(@NotNull @PathParam("userId") Long userId, @NotNull @PathParam("tenantId") Long tenantId);
 
     /**
      * Requests to a active tenant be deleted by given his id
@@ -100,11 +125,11 @@ public interface ActiveTenantResourceClient {
 
     /**
      * Validates if specific requested active Tenant exists
-     * @param id to be searched
+     * @param userId to be found
+     * @param tenantId to be found
      * @return response true if it exists
      */
     @GET
-    @Path("/exists/{id}")
-    public Response exists(@NotNull @PathParam("id") Long id);
-
+    @Path("/exists/{userId}/{tenantId}")
+    public Response exists(@NotNull @PathParam("userId") Long userId, @NotNull @PathParam("tenantId") Long tenantId);
 }

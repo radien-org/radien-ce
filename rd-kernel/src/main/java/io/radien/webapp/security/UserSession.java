@@ -90,6 +90,10 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			if (!existingUser.isPresent()) {
 				user = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, getOAF().getSystemAdminUserId());
 				userClientService.create(user, true);
+				Optional<SystemUser> userBySub = userClientService.getUserBySub(userIdSubject);
+				if(userBySub.isPresent()) {
+					user = userBySub.get();
+				}
 			} else {
 				user = existingUser.get();
 			}
@@ -101,6 +105,14 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email,-1L);
 		}
 
+	}
+
+	/**
+	 * User session user object getter
+	 * @return the active logged in user
+	 */
+	public SystemUser getUser() {
+		return user;
 	}
 
 	/**

@@ -250,7 +250,7 @@ public class FactoryUtilService implements Serializable {
      * Adds the value given object into an json array
      * @param builder Json Object builder that it is being used
      * @param key value of the json field
-     * @param value value of the field to be added
+     * @param value value of the field to be addedwebappDataModelEnum
      */
     public static void addValueArray(JsonObjectBuilder builder, String key, Object value) {
         if (value != null) {

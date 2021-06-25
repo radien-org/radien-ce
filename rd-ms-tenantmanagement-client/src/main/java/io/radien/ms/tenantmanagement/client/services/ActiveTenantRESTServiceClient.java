@@ -58,7 +58,48 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     private OAFAccess oafAccess;
 
     private final String unableToRecoverExpiredToken = "Unable to recover expiredToken";
-    
+
+
+    /**
+     * Gets requester to get the active tenant in the DB searching for the field Id
+     *
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @return list of active tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public List<? extends SystemActiveTenant> getActiveTenantByUserAndTenant(Long userId, Long tenantId) throws SystemException {
+        try {
+            return getActiveTenantByUserAndTenantRequester(userId, tenantId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getActiveTenantByUserAndTenantRequester(userId, tenantId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(unableToRecoverExpiredToken);
+            }
+        }
+    }
+
+    /**
+     * Gets the active tenant in the DB searching for the field Id
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @return list of tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private List<? extends SystemActiveTenant> getActiveTenantByUserAndTenantRequester(Long userId, Long tenantId) throws SystemException {
+        try {
+            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.getByUserAndTenant(userId, tenantId);
+            return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
+        }  catch (ExtensionException | ProcessingException | MalformedURLException| ParseException es){
+            throw new SystemException(es.getMessage());
+        }
+    }
+
     /**
      * Gets requester to get the active tenant in the DB searching for the field Id
      *
@@ -78,7 +119,52 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
                 throw new SystemException(unableToRecoverExpiredToken);
             }
         }
+    }
 
+    /**
+     * Gets the requester to get the active tenant in the DB searching for the user
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @param tenantName to be looked after
+     * @param isTenantActive to be looked after
+     * @return list of active tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId,
+                                                                      String tenantName, boolean isTenantActive) throws SystemException {
+        try {
+            return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(unableToRecoverExpiredToken);
+            }
+        }
+    }
+
+    /**
+     * Gets the active tenant in the DB searching for the user
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @param tenantName to be looked after
+     * @param isTenantActive to be looked after
+     * @return list of active tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private List<? extends ActiveTenant> getActiveTenantByFilterRequester(Long userId, Long tenantId,
+                                                                          String tenantName, boolean isTenantActive) throws SystemException {
+        try {
+            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(
+                    oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.get(userId, tenantId, tenantName, isTenantActive, false);
+            return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
+            throw new SystemException(es.getMessage());
+        }
     }
 
     /**
@@ -290,18 +376,19 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     /**
      * Gets the requester to see if a specific active tenant exists
-     * @param activeTenantId to be found
+     * @param userId to be found
+     * @param tenantId to be found
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public boolean isActiveTenantExistent(Long activeTenantId) throws SystemException {
+    public boolean isActiveTenantExistent(Long userId, Long tenantId) throws SystemException {
         try {
-            return isActiveTenantExistentRequester(activeTenantId);
+            return isActiveTenantExistentRequester(userId, tenantId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return isActiveTenantExistentRequester(activeTenantId);
+                return isActiveTenantExistentRequester(userId, tenantId);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(unableToRecoverExpiredToken);
             }
@@ -310,11 +397,12 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     /**
      * Sends a request to the active tenant client to validate if a specific active tenant exists
-     * @param activeTenantId to be found
+     * @param userId to be found
+     * @param tenantId to be found
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private boolean isActiveTenantExistentRequester(Long activeTenantId) throws SystemException {
+    private boolean isActiveTenantExistentRequester(Long userId, Long tenantId) throws SystemException {
         ActiveTenantResourceClient client;
         try {
             client = clientServiceUtil.
@@ -324,7 +412,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
         }
 
         try {
-            Response response = client.exists(activeTenantId);
+            Response response = client.exists(userId, tenantId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return response.readEntity(Boolean.class);
             }
@@ -333,5 +421,4 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
         }
         return false;
     }
-
 }

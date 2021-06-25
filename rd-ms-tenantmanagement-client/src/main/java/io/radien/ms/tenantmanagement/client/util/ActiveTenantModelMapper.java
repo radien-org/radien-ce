@@ -22,10 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * Mapper from a given information into a JSON or a Active tenant
@@ -42,6 +44,18 @@ public class ActiveTenantModelMapper {
      */
     public static JsonObject map(ActiveTenant model) {
         return ActiveTenantFactory.convertToJsonObject(model);
+    }
+
+    /**
+     * Creates a list of active tenants based a received inputted information
+     * @param is inputted information to be converted into the object
+     * @return a list of active tenant object based in the received information
+     */
+    public static List<? extends ActiveTenant> mapList(InputStream is) throws ParseException {
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            JsonArray jsonArray = jsonReader.readArray();
+            return ActiveTenantFactory.convert(jsonArray);
+        }
     }
 
     /**
