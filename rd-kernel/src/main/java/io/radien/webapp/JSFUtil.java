@@ -27,6 +27,7 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
+import javax.faces.context.Flash;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.lifecycle.Lifecycle;
@@ -270,7 +271,9 @@ public class JSFUtil {
 			log.error("Null external context");
 			return;
 		}
-		externalContext.getFlash().setKeepMessages(true);
+		Flash flash = externalContext.getFlash();
+		flash.setKeepMessages(true);
+		flash.setRedirect(true);
 		FacesContext.getCurrentInstance().addMessage(null, facesMsg);
 	}
 
