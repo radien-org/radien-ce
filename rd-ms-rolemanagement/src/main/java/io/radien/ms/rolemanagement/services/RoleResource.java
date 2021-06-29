@@ -84,11 +84,11 @@ public class RoleResource implements RoleResourceClient {
      * if there is any error.
      */
     @Override
-    public Response getSpecificRoles(String name, String description, boolean isExact, boolean isLogicalConjunction) {
+    public Response getSpecificRoles(String name, String description, List<Long> ids, boolean isExact, boolean isLogicalConjunction) {
         try {
-            log.info("Will search for a specific role with the name {}, description {}. With the following criteria: " +
-                    "Values must be exact: {}; Is a logical conjunction: {}", name, description, isExact, isLogicalConjunction);
-            SystemRoleSearchFilter filter = new RoleSearchFilter(name, description, isExact, isLogicalConjunction);
+            log.info("Will search for a specific role with the name {}, description {}, ids {}. With the following criteria: " +
+                    "Values must be exact: {}; Is a logical conjunction: {}", name, description, ids, isExact, isLogicalConjunction);
+            SystemRoleSearchFilter filter = new RoleSearchFilter(name, description, ids, isExact, isLogicalConjunction);
             return Response.ok(roleBusinessService.getSpecificRoles(filter)).build();
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);

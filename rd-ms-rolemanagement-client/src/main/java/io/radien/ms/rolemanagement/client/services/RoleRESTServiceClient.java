@@ -24,6 +24,7 @@ import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.Role;
+import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ListRoleModelMapper;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
@@ -63,6 +64,8 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    private static final String UNABLE_TO_RECOVER_EXPIRED_TOKEN = "Unable to recover expiredToken";
 
     /**
      * Calls the requester to retrieve a page object containing roles that matches search parameter.
@@ -178,7 +181,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
     private Optional<SystemRole> getRoleByNameRequester(String name) throws SystemException {
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getSpecificRoles(name, null, true, true);
+            Response response = client.getSpecificRoles(name, null, null,true, true);
             List<? extends SystemRole> list = ListRoleModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -220,10 +223,49 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
         try {
             RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
 
-            Response response = client.getSpecificRoles(null, description,false,false);
+            Response response = client.getSpecificRoles(null, description,null,false,false);
             return ListRoleModelMapper.map((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Gets the roles in the DB searching based in a given list of ids.
+     * To do that invokes the core method counterpart and handles TokenExpiration error.
+     * @param ids to be looked after
+     * @return list containing roles
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public List<? extends SystemRole> getRolesByIds(List<Long> ids) throws SystemException {
+        try {
+            return getSystemRoles(ids);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getSystemRoles(ids);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(UNABLE_TO_RECOVER_EXPIRED_TOKEN);
+            }
+        }
+    }
+
+    /**
+     * Core method that gets the roles in the DB searching based in a given list of ids
+     * @param ids to be looked after
+     * @return list containing roles
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    private List<? extends SystemRole> getSystemRoles(List<Long> ids) throws SystemException {
+        try {
+            RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+
+            Response response = client.getSpecificRoles(null, null, ids,true, true);
+            return ListRoleModelMapper.map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException|ProcessingException | MalformedURLException | InternalServerErrorException e){
+            throw new SystemException(e.getMessage());
         }
     }
 

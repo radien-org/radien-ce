@@ -146,6 +146,15 @@ public class RoleService implements RoleServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = roleRoot.get("id").in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
+        }
+
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, roleRoot, global);
         global = getFieldPredicate("description", filter.getDescription(), filter, criteriaBuilder, roleRoot, global);
 

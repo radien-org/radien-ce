@@ -15,12 +15,17 @@
  */
 package io.radien.api.model.role;
 
+import java.util.Collection;
+
 /**
  * System Role search filter interface class
  *
  * @author Bruno Gama
  */
 public interface SystemRoleSearchFilter {
+
+    Collection<Long> getIds();
+    void setIds(Collection<Long> ids);
 
     /**
      * System role search filter name getter

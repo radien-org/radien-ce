@@ -28,7 +28,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -67,7 +66,7 @@ public class RoleBusinessServiceTest {
     @Test
     public void testGetSpecificRoles() {
         List<? extends SystemRole> list = roleBusinessService.getSpecificRoles(new RoleSearchFilter
-                ("name", "description", true, true));
+                ("name", "description", new ArrayList<>(), true, true));
         assertEquals(0,list.size());
     }
 

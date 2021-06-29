@@ -75,7 +75,7 @@ public class RoleResourceTest {
      */
     @Test
     public void testGetSpecificAssociation() {
-        Response response = roleResource.getSpecificRoles("name","description",false,true);
+        Response response = roleResource.getSpecificRoles("name","description",null,false,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -85,7 +85,7 @@ public class RoleResourceTest {
     @Test
     public void testGetSpecificRolesException() {
         when(roleBusinessService.getSpecificRoles(any())).thenThrow(new RuntimeException());
-        Response response = roleResource.getSpecificRoles("name","description",false,true);
+        Response response = roleResource.getSpecificRoles("name","description",null,false,true);
         assertEquals(500,response.getStatus());
     }
 
