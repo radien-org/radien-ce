@@ -76,6 +76,7 @@ public interface RoleResourceClient {
     @Path("/find")
     public Response getSpecificRoles(@QueryParam("name") String name,
                                      @QueryParam("description") String description,
+                                     @QueryParam("ids") List<Long> ids,
                                      @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                                      @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
