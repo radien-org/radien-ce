@@ -54,10 +54,6 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	private String accessToken;
 
 	private String refreshToken;
-
-	private SystemUser selectedUser;
-	private boolean validationTrue;
-
 	/**
 	 * Initialization of the user session
 	 */
@@ -101,6 +97,23 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email,-1L);
 		}
 
+	}
+
+	/**
+	 * User session user login getter
+	 * @return login user information
+	 */
+	@Override
+	public SystemUser getUser() {
+		return user;
+	}
+
+	/**
+	 * User session setter for systemUser
+	 * @param user systemUser object
+	 */
+	public void setUser(SystemUser user) {
+		this.user = user;
 	}
 
 	/**
@@ -208,37 +221,5 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 */
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
-	}
-
-	/**
-	 * User session selected user getter
-	 * @return the selected user information
-	 */
-	public SystemUser getSelectedUser() {
-		return selectedUser;
-	}
-
-	/**
-	 * User session selected user setter
-	 * @param selectedUser to be set
-	 */
-	public void setSelectedUser(SystemUser selectedUser) {
-		this.selectedUser = selectedUser;
-	}
-
-	/**
-	 * Validator to check if validation is true or not
-	 * @return returns the validation value
-	 */
-	public boolean isValidationTrue() {
-		return validationTrue;
-	}
-
-	/**
-	 * User session validation setter
-	 * @param validationTrue to be set
-	 */
-	public void setValidationTrue(boolean validationTrue) {
-		this.validationTrue = validationTrue;
 	}
 }

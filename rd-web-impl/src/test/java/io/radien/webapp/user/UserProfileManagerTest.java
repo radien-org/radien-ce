@@ -16,12 +16,15 @@
 package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 import org.junit.Before;
@@ -46,7 +49,9 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -56,6 +61,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.nullable;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
 
 /**
  * Class that aggregates UnitTest cases for UserProfileManager
@@ -72,12 +79,17 @@ public class UserProfileManagerTest {
     private UserSession userSession;
 
     @Mock
+    private UserRESTServiceAccess userRESTServiceAccess;
+
+    @Mock
     private TenantRESTServiceAccess tenantRESTServiceAccess;
 
     @Mock
     private LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
 
     private FacesContext facesContext;
+
+    private SystemUser systemUser = new User();
 
     @Before
     public void before(){
@@ -99,6 +111,10 @@ public class UserProfileManagerTest {
         when(JSFUtil.getFacesContext()).thenReturn(facesContext);
         when(JSFUtil.getExternalContext()).thenReturn(externalContext);
         when(JSFUtil.getMessage(anyString())).thenAnswer(i -> i.getArguments()[0]);
+
+        systemUser.setId(117L);
+        systemUser.setFirstname("firstname");
+        systemUser.setLastname("lastname");
     }
 
     /**
@@ -223,7 +239,12 @@ public class UserProfileManagerTest {
     @Test
     public void testInit() {
         Long userId = 89L;
+        SystemUser clonedSystemUser = new User((User) systemUser);
+        userProfileManager.setClonedLogInUser(clonedSystemUser);
+
         when(userSession.getUserId()).then(i -> userId);
+        when(userSession.isActive()).then(isActive -> true);
+        when(userSession.getUser()).then(user -> systemUser);
 
         List<LinkedAuthorization> linkedAuthorizations = new ArrayList<>();
 
@@ -247,6 +268,10 @@ public class UserProfileManagerTest {
         List<? extends SystemTenant> assignedTenantsForCurrentUser = this.userProfileManager.getAssignedTenants();
         assertNotNull(assignedTenantsForCurrentUser);
         assertEquals(1, assignedTenantsForCurrentUser.size());
+
+        assertNotEquals(systemUser, userProfileManager.getClonedLogInUser());
+        assertEquals(systemUser.getFirstname(), userProfileManager.getClonedLogInUser().getFirstname());
+        assertNotNull(userProfileManager.getClonedLogInUser());
     }
 
     /**
@@ -338,6 +363,46 @@ public class UserProfileManagerTest {
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
         assertEquals("rd_retrieve_error", captured.getSummary());
         assertTrue(captured.getDetail().contains(errorMsg));
+    }
+
+    /**
+     * Test method - init()
+     * Test case exception in clonedLoginUser
+     * assert null login user
+     */
+    @Test
+    public void testInitWithException() {
+        doReturn(true).when(this.userSession).isActive();
+        doThrow(new RuntimeException()).when(this.userSession).getUser();
+        userProfileManager.init();
+
+        assertNull(userProfileManager.getClonedLogInUser());
+    }
+
+    /**
+     * Test method updateProfile()
+     * Test case success
+     * asserts equality of home HTML page
+     */
+    @Test
+    public void testUpdateProfile() {
+        systemUser.setFirstname("firstname-update");
+        doReturn(true).when(userRESTServiceAccess).updateUser(systemUser);
+
+        assertEquals("pretty:index", userProfileManager.updateProfile(systemUser));
+    }
+
+    /**
+     * Test method updateProfile()
+     * Test case exception
+     * asserts equality of user profile HTML page
+     */
+    @Test
+    public void testUpdateProfileWithException() {
+        systemUser.setFirstname("firstname-update");
+        doThrow(new RuntimeException()).when(userRESTServiceAccess).updateUser(systemUser);
+
+        assertEquals("pretty:profile", userProfileManager.updateProfile(systemUser));
     }
 
     /**
