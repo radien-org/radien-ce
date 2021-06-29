@@ -98,7 +98,7 @@ public class ContractResource implements ContractResourceClient {
 		try {
 			SystemContract contract = contractService.get(id);
 			if(contract == null){
-				return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 			}
 			return Response.ok(contract).build();
 		}catch (Exception e){
@@ -166,7 +166,7 @@ public class ContractResource implements ContractResourceClient {
 		try {
 			return Response.ok(contractService.exists(id)).build();
 		}catch (NotFoundException e){
-			return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		}
 	}
 }

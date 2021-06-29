@@ -19,9 +19,9 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
@@ -33,7 +33,11 @@ import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.CriteriaDelete;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -194,7 +198,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRole.getRoleId(),
                 tenantRole.getTenantId(), tenantRole.getId(), em);
         if (alreadyExistentRecords) {
-            throw new UniquenessConstraintException(RoleErrorCodeMessage.DUPLICATED_FIELD.toString("roleId and TenantId"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("roleId and TenantId"));
         }
         if (tenantRole.getId() == null) {
             em.persist(tenantRole);

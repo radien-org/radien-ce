@@ -24,7 +24,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
@@ -49,7 +49,6 @@ import io.radien.api.service.batch.DataIssue;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 
 /**
  * User Resource rest requests and responses
@@ -520,13 +519,13 @@ public class UserResourceTest {
         }
         List<DataIssue> issuedItems = new ArrayList<>();
         issuedItems.add(new DataIssue(2,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(3,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(7,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(8,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         when(userBusinessService.create(anyList())).thenReturn(new BatchSummary(users.size(), issuedItems));
         Response response = userResource.create(users);
         assertEquals(200, response.getStatus());
@@ -549,13 +548,13 @@ public class UserResourceTest {
         }
         List<DataIssue> issuedItems = new ArrayList<>();
         issuedItems.add(new DataIssue(1,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(2,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(3,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(4,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         when(userBusinessService.create(anyList())).thenReturn(new BatchSummary(4, issuedItems));
         Response response = userResource.create(users);
         assertEquals(400, response.getStatus());

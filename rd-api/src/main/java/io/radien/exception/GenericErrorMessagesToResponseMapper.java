@@ -18,6 +18,7 @@ package io.radien.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unirest.shaded.org.apache.http.HttpStatus;
 
 import javax.ws.rs.core.Response;
 
@@ -54,7 +55,26 @@ public class GenericErrorMessagesToResponseMapper {
      * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
      * @return code 100 message Resource not found.
      */
-    public static Response getTenantResourceNotFoundException() {
-        return Response.status(Response.Status.NOT_FOUND).entity(GenericErrorCodeMessage.TENANT_RESOURCE_NOT_FOUND.toString()).build();
+    public static Response getResourceNotFoundException() {
+        return Response.status(Response.Status.NOT_FOUND).entity(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
+    }
+
+    /**
+     * Returns a Bad Request response when some mandatory parameter is not present
+     * @param parameterName value that will indicate which field(s) have not been informed
+     * @return code 400 message describing a not informed parameter
+     */
+    public static Response getNotInformedParametersResponse(String parameterName) {
+        String message = GenericErrorCodeMessage.PERMISSION_PARAMETERS_NOT_INFORMED.toString(parameterName);
+        return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
+    }
+
+    /**
+     * Returns Forbidden response type in case of missing certain user roles
+     * @return code 403 message Forbidden response
+     */
+    public static Response getForbiddenResponse() {
+        return Response.status(HttpStatus.SC_FORBIDDEN).
+                entity("No Role available to perform this task").build();
     }
 }
