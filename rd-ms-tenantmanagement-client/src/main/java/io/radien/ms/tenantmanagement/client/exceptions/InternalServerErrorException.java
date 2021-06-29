@@ -22,7 +22,7 @@ package io.radien.ms.tenantmanagement.client.exceptions;
  *
  * @author Bruno Gama
  */
-public class InternalServerErrorException extends Exception {
+public class InternalServerErrorException extends RuntimeException {
 
     private static final long serialVersionUID = 8676945014432052159L;
 

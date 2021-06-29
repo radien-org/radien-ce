@@ -67,12 +67,14 @@ public interface TenantResourceClient {
      * Gets a list of requested tenants based on some filtered information
      * @param name to be searched for
      * @param type of the tenant to be searched
+     * @param ids list of ids to be search for
      * @param isExact should the values be exact to the given ones
      * @param isLogicalConjunction in case of true query will use an and in case of false query will use a or
      * @return 200 response code in case of success or 500 in case of any issue
      */
     @GET
     public Response get(@QueryParam("name") String name, @QueryParam("tenantType") String type,
+                        @QueryParam("ids") List<Long> ids,
                         @DefaultValue("false") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 

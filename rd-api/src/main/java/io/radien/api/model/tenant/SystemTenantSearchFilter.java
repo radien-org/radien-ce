@@ -15,12 +15,26 @@
  */
 package io.radien.api.model.tenant;
 
+import java.util.Collection;
+
 /**
  * System Tenant search filter interface class
  *
  * @author Bruno Gama
  */
 public interface SystemTenantSearchFilter {
+
+    /**
+     * Tenant search filter get ids
+     * @return ids for search filter
+     */
+    Collection<Long> getIds();
+
+    /**
+     * Tenant search filter ids setter
+     * @param ids to be set and replace
+     */
+    void setIds(Collection<Long> ids);
 
     /**
      * System tenant search filter name getter

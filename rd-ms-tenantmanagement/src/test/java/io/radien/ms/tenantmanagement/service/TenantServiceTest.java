@@ -32,10 +32,7 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,7 +49,7 @@ public class TenantServiceTest {
 
     Properties p;
     TenantServiceAccess tenantServiceAccess;
-    SystemTenant rootTenant = null;
+    SystemTenant rootTenant;
 
     public TenantServiceTest() throws Exception {
         p = new Properties();
@@ -69,7 +66,7 @@ public class TenantServiceTest {
 
         tenantServiceAccess = (TenantServiceAccess) context.lookup("java:global/rd-ms-tenantmanagement//TenantService");
 
-        TenantSearchFilter filter = new TenantSearchFilter("rootName", null, false, false);
+        TenantSearchFilter filter = new TenantSearchFilter("rootName", null, null,false, false);
         List<? extends SystemTenant> roots = tenantServiceAccess.get(filter);
         if (roots.isEmpty()) {
             rootTenant = new Tenant();
@@ -315,7 +312,7 @@ public class TenantServiceTest {
                 null, null, null,null, null,
                 null, rootTenant.getId(), null));
         tenantServiceAccess.create(c);
-        TenantSearchFilter filter = new TenantSearchFilter(name, null, false, false);
+        TenantSearchFilter filter = new TenantSearchFilter(name, null, null,false, false);
         List<? extends SystemTenant> result = tenantServiceAccess.get(filter);
         assertNotNull(result);
         assertEquals((Long) 200L, result.get(0).getId());
@@ -334,7 +331,7 @@ public class TenantServiceTest {
                 null, null, null,null, null,
                 null, rootTenant.getId(), null));
         tenantServiceAccess.create(c);
-        TenantSearchFilter filter = new TenantSearchFilter(name, null, false, true);
+        TenantSearchFilter filter = new TenantSearchFilter(name, null, null,false, true);
         List<? extends SystemTenant> result = tenantServiceAccess.get(filter);
         assertNotNull(result);
         assertEquals((Long) 923L, result.get(0).getId());
@@ -404,11 +401,55 @@ public class TenantServiceTest {
         assertNotNull(systemTenant);
         assertEquals(TenantType.SUB_TENANT, systemTenant.getTenantType());
 
-        TenantSearchFilter filter = new TenantSearchFilter("volkswagen-accountancy", null, false, false);
+        TenantSearchFilter filter = new TenantSearchFilter("volkswagen-accountancy", null, null,false, false);
         List<? extends SystemTenant> list =
                 tenantServiceAccess.get(filter);
         assertNotNull(list);
         assertFalse(list.isEmpty());
+    }
+
+    /**
+     * Test to retrieve (filter) tenants by a list of ids
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws TenantException in case of any issue in the data
+     */
+    @Test
+    public void testGetTenantsByIds() throws UniquenessConstraintException, TenantException {
+        Tenant tenant = new Tenant();
+        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantKey("keyClient");
+        tenant.setParentId(rootTenant.getId());
+        tenant.setName("bmw");
+        tenant.setTenantStart(LocalDate.now());
+        tenantServiceAccess.create(tenant);
+
+        Tenant tenantSub = new Tenant();
+        tenantSub.setTenantType(TenantType.SUB_TENANT);
+        tenantSub.setTenantKey("key111");
+        tenantSub.setParentId(tenant.getId());
+        tenantSub.setClientId(tenant.getId());
+        tenantSub.setName("bmw-hr");
+        tenantSub.setTenantStart(LocalDate.now());
+        tenantServiceAccess.create(tenantSub);
+
+        Tenant tenantSub2 = new Tenant();
+        tenantSub2.setTenantType(TenantType.SUB_TENANT);
+        tenantSub2.setTenantKey("key111");
+        tenantSub2.setParentId(tenant.getId());
+        tenantSub2.setClientId(tenant.getId());
+        tenantSub2.setName("bmw-it");
+        tenantSub2.setTenantStart(LocalDate.now());
+        tenantServiceAccess.create(tenantSub2);
+
+        List<Long> ids = Arrays.asList(tenant.getId(), tenantSub.getId(), tenantSub2.getId());
+
+        TenantSearchFilter filter = new TenantSearchFilter(null, null, ids,false, false);
+        List<? extends SystemTenant> list = tenantServiceAccess.get(filter);
+        assertEquals(3, list.size());
+
+        filter.setLogicConjunction(true);
+        list = tenantServiceAccess.get(filter);
+        assertEquals(3, list.size());
     }
 
     /**

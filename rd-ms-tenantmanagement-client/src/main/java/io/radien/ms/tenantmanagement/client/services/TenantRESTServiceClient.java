@@ -20,10 +20,12 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
@@ -124,10 +126,48 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
     private List<? extends Tenant> getTenantsByName(String name) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.get(name, null, true, true);
+            Response response = client.get(name, null, null, true, true);
             return TenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
+            throw new SystemException(es.getMessage());
+        }
+    }
+
+    /**
+     * Gets the tenants in the DB searching based in a given list of ids.
+     * To do that invokes the core method counterpart and handles TokenExpiration error.
+     * @param ids to be looked after
+     * @return list containing tenants
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public List<? extends SystemTenant> getTenantsByIds(List<Long> ids) throws SystemException {
+        try {
+            return getSystemTenants(ids);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getSystemTenants(ids);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that gets the tenants in the DB searching based in a given list of ids
+     * @param ids to be looked after
+     * @return list containing tenants
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    private List<? extends SystemTenant> getSystemTenants(List<Long> ids) throws SystemException {
+        try {
+            TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.get(null, null, ids, true, true);
+            return TenantModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException| ParseException |
+                InternalServerErrorException es){
             throw new SystemException(es.getMessage());
         }
     }
