@@ -32,7 +32,6 @@ import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
 import io.radien.exception.LinkedAuthorizationException;
-import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 import io.radien.exception.GenericErrorCodeMessage;
 
 
