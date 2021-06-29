@@ -240,7 +240,7 @@ public class TenantRoleBusinessServiceTest {
     @Order(6)
     public void existAssociation() {
         SystemRole roleAdmin = assertDoesNotThrow(() -> createRole(roleNameForTenantAdministrator));
-        SystemTenantRole tenantRole = assertDoesNotThrow(() ->
+        assertDoesNotThrow(() ->
                 createTenantRole(roleAdmin.getId(), tenantId));
         assertTrue(this.tenantRoleBusinessService.
                 existsAssociation(tenantId, roleAdmin.getId()));
@@ -606,21 +606,21 @@ public class TenantRoleBusinessServiceTest {
                 tenantId3, publisher.getId(), null));
 
         assertNotNull(permissions);
-        assertEquals(permissions.size(), 3);
+        assertEquals(3, permissions.size());
 
         // Permissions were not assigned to the following user
         Long nonRegisteredUser = 22222L;
         permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
                 tenantId3, publisher.getId(), nonRegisteredUser));
         assertNotNull(permissions);
-        assertEquals(permissions.size(), 0);
+        assertEquals(0, permissions.size());
 
         // But were automatically assigned to user user1Id, since he is assigned to
         // correspondent role
         permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
                 tenantId3, publisher.getId(), user1Id));
         assertNotNull(permissions);
-        assertEquals(permissions.size(), 3);
+        assertEquals(3, permissions.size());
     }
 
     @Test

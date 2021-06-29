@@ -40,6 +40,9 @@ import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Permission Resource Test for future requests and responses validation
+ * {@link io.radien.ms.permissionmanagement.service.PermissionResource}
+ *
  * @author Nuno Santana
  * @author Bruno Gama
  */
@@ -51,7 +54,10 @@ public class PermissionResourceTest {
     PermissionServiceAccess permissionServiceAccess;
     @Mock
     PermissionBusinessService permissionBusinessService;
-    
+
+    /**
+     * Method for test preparation
+     */
     @Before
     public void before(){
         MockitoAnnotations.initMocks(this);
@@ -143,7 +149,7 @@ public class PermissionResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(permissionServiceAccess).getPermissions(any());
-        Response response = permissionResource.getPermissions("perm", 1l, 2l,true,true);
+        Response response = permissionResource.getPermissions("perm", 1L, 2L,true,true);
         assertEquals(500,response.getStatus());
     }
 
@@ -152,7 +158,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testDelete() {
-        Response response = permissionResource.delete(1l);
+        Response response = permissionResource.delete(1L);
         assertEquals(200,response.getStatus());
     }
 
@@ -161,8 +167,8 @@ public class PermissionResourceTest {
      */
     @Test
     public void testDeleteGenericError() {
-        doThrow(new RuntimeException()).when(permissionServiceAccess).delete(1l);
-        Response response = permissionResource.delete(1l);
+        doThrow(new RuntimeException()).when(permissionServiceAccess).delete(1L);
+        Response response = permissionResource.delete(1L);
         assertEquals(500,response.getStatus());
     }
 
@@ -175,52 +181,76 @@ public class PermissionResourceTest {
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Test the successful creation of a association with a action record
+     * @throws UniquenessConstraintException in case of duplicated fields
+     */
     @Test
     public void testSuccessfulAssociationWithAction() throws UniquenessConstraintException {
         when(permissionBusinessService.associate(any(), any(), any())).thenReturn(new AssociationStatus());
-        Response response = permissionResource.associate(11l, 12L, 13L);
+        Response response = permissionResource.associate(11L, 12L, 13L);
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Test the un successful creation of a association with a action record
+     * @throws UniquenessConstraintException in case of duplicated fields
+     */
     @Test
     public void testUnsuccessfulAssociationWithAction() throws UniquenessConstraintException {
         when(permissionBusinessService.associate(any(), any(), any())).thenReturn(
                 new AssociationStatus(false, "unsuccessful operation"));
-        Response response = permissionResource.associate(11l, 12L, 13L);
+        Response response = permissionResource.associate(11L, 12L, 13L);
         assertEquals(400,response.getStatus());
         assertEquals(response.getEntity().getClass(), String.class);
-        assertEquals(response.getEntity().toString(), "unsuccessful operation");
+        assertEquals("unsuccessful operation", response.getEntity().toString());
     }
 
+    /**
+     * Test the un successful creation of a association with a action record with a generic exception being throw
+     * @throws UniquenessConstraintException in case of duplicated fields
+     */
     @Test
     public void testUnsuccessfulAssociationByException() throws UniquenessConstraintException {
         when(permissionBusinessService.associate(any(), any(), any())).
                 thenThrow(new RuntimeException("unsuccessful operation"));
-        Response response = permissionResource.associate(11l, 12L, 13L);
+        Response response = permissionResource.associate(11L, 12L, 13L);
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test a successfully dissociation
+     * @throws UniquenessConstraintException in case of duplicated fields
+     */
     @Test
     public void testSuccessfulDissociation() throws UniquenessConstraintException {
-        Long permissionId = 11L;
+        long permissionId = 11L;
         when(permissionBusinessService.dissociation(permissionId)).thenReturn(new AssociationStatus());
         Response response = permissionResource.dissociate(permissionId);
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Test a un successfully dissociation
+     * @throws UniquenessConstraintException in case of duplicated fields
+     */
     @Test
     public void testUnsuccessfulDissociation() throws UniquenessConstraintException {
-        Long permissionId = 11L;
+        long permissionId = 11L;
         when(permissionBusinessService.dissociation(permissionId)).thenThrow(
                 new RuntimeException("something happen"));
         Response response = permissionResource.dissociate(permissionId);
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test a un successfully dissociation with a exception being throw
+     * @throws UniquenessConstraintException in case of duplicated fields
+     */
     @Test
     public void testUnsuccessfulDissociationByException() throws UniquenessConstraintException {
         AssociationStatus associationStatus = new AssociationStatus(false, "something happen...");
-        Long permissionId = 11L;
+        long permissionId = 11L;
         when(permissionBusinessService.dissociation(permissionId)).thenReturn(associationStatus);
         Response response = permissionResource.dissociate(permissionId);
         assertEquals(400,response.getStatus());
@@ -232,7 +262,6 @@ public class PermissionResourceTest {
      * Creation with error of a record. Should return a 400 code message Invalid Requested Exception
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
-     * @throws PermissionNotFoundException in case of permission not found
      */
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException {
@@ -245,7 +274,6 @@ public class PermissionResourceTest {
      * Creation of a record with error. Should return a generic error message 500
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
-     * @throws PermissionNotFoundException in case of permission not found
      */
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException {
@@ -291,7 +319,6 @@ public class PermissionResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
-
     /**
      * Test the  endpoint ("exists") omitting all required parameters
      */
@@ -301,6 +328,9 @@ public class PermissionResourceTest {
         assertEquals(400,response.getStatus());
     }
 
+    /**
+     * Test to check if a certain action and resource have a permission associated
+     */
     @Test
     public void testHasPermission() {
         SystemPermission systemPermission = new Permission();
@@ -312,7 +342,7 @@ public class PermissionResourceTest {
     }
 
     /**
-     * Test the  endpoint ("exists") for cases whether there is no permission
+     * Test the endpoint ("exists") for cases whether there is no permission
      * for an informed Id
      */
     @Test
@@ -320,14 +350,18 @@ public class PermissionResourceTest {
         when(permissionServiceAccess.getPermissionByActionAndResourceNames("add", "contract")).
                 thenReturn(null);
         Response response = permissionResource.hasPermission("add", "contract");
-        assertEquals(response.getStatusInfo().toEnum(), Response.Status.NOT_FOUND);
+        assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo().toEnum());
     }
 
+    /**
+     * Test the endpoint ("exists") for cases whether there is permission
+     * for an informed Id but an error occurs
+     */
     @Test
     public void testingHasPermissionWhenErrorOccurs() {
         when(permissionServiceAccess.getPermissionByActionAndResourceNames("add", "contract")).
                 thenThrow(new RuntimeException("something happen during the search process"));
         Response response = permissionResource.hasPermission("add", "contract");
-        assertEquals(response.getStatusInfo().toEnum(), Response.Status.INTERNAL_SERVER_ERROR);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
     }
 }

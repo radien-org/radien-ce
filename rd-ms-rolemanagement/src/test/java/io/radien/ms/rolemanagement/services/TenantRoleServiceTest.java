@@ -377,7 +377,7 @@ public class TenantRoleServiceTest {
                 true, true);
         List<? extends SystemTenantRole> list = tenantRoleServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 1);
+        Assertions.assertEquals(1, list.size());
     }
 
     /**
@@ -402,7 +402,7 @@ public class TenantRoleServiceTest {
                 true, false);
         List<? extends SystemTenantRole> list = tenantRoleServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 2);
+        Assertions.assertEquals(2, list.size());
     }
 
     /**

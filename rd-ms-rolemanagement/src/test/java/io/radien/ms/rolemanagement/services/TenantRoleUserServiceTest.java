@@ -26,7 +26,6 @@ import org.junit.jupiter.api.*;
 
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.List;
 import java.util.Optional;
@@ -232,7 +231,7 @@ public class TenantRoleUserServiceTest {
                 true, true);
         List<? extends SystemTenantRoleUser> list = tenantRoleUserServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 1);
+        Assertions.assertEquals(1, list.size());
     }
 
     /**
@@ -257,7 +256,7 @@ public class TenantRoleUserServiceTest {
                 true, false);
         List<? extends SystemTenantRoleUser> list = tenantRoleUserServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 2);
+        Assertions.assertEquals(2, list.size());
     }
 
     /**
