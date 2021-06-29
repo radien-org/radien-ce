@@ -17,12 +17,14 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.ProcessingException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
@@ -70,6 +72,8 @@ public class UserProfileManager extends AbstractManager {
     private SystemTenant selectedTenantToUnAssign;
     private Long tabIndex = 0L;
 
+    private SystemUser clonedLogInUser;
+
     /**
      * This method initializes and constructs
      * user to edit profile
@@ -78,14 +82,62 @@ public class UserProfileManager extends AbstractManager {
     @PostConstruct
     public void init() {
         this.assignedTenants = retrieveAssignedTenants();
+        try{
+            if(userSession.isActive()){
+                clonedLogInUser = new User((User) userSession.getUser());
+            }
+        } catch (Exception e){
+            handleError(e, JSFUtil.getMessage("rd_retrieving_logged_user_error"));
+        }
     }
 
     /**
-     * Redirects user to the home page revert changes if
-     * logged in user profile edited
-     * @return Returns to the HTML(home) page
+     * Gets the property of user from clone
+     * login user
+     * @return cloned SystemUser object
      */
-    public String redirectToHomePage() {
+    public SystemUser getClonedLogInUser() {
+        return clonedLogInUser;
+    }
+
+    /**
+     * Setter for the SystemUser cloned object
+     * @param clonedLogInUser cloned object of login user
+     */
+    public void setClonedLogInUser(SystemUser clonedLogInUser) {
+        this.clonedLogInUser = clonedLogInUser;
+    }
+
+    /**
+     * Method updateProfile save/update of the logged in user
+     * profile information that have been edited
+     * @param updateUserProfile user profile updated information
+     * to be saved
+     * @return home HTML page if success otherwise user profile
+     */
+    public String updateProfile(SystemUser updateUserProfile) {
+        try{
+            if(updateUserProfile != null && updateUserProfile.getId() != null) {
+                boolean isUpdated = userService.updateUser(updateUserProfile);
+
+                if(isUpdated){
+                    handleMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            JSFUtil.getMessage("rd_user_profile_save_success"),
+                            JSFUtil.getMessage("rd_user"),
+                            updateUserProfile.getLogon());
+
+                    userSession.setUser(updateUserProfile);
+                }
+            }
+        } catch(Exception e) {
+            handleError(e,
+                    JSFUtil.getMessage("rd_user_profile_save_error"),
+                    JSFUtil.getMessage("rd_user"),
+                    updateUserProfile.getLogon());
+
+            return URL_MAPPING_ID_LOGGED_USER_PROFILE;
+        }
         return URL_MAPPING_ID_HOME;
     }
 
