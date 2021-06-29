@@ -36,8 +36,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -51,10 +49,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
+ * Tenant Role REST Service client requests tests
+ *
  * @author Newton Carvalho
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -78,17 +79,27 @@ public class TenantRoleRESTServiceClientTest {
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
 
+    /**
+     * Constructor method to prepare all the variables and properties before running the tests
+     */
     @BeforeEach
     public void before(){
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Private method to create the role management URL endpoint
+     * @return the role management url endpoint
+     */
     private String getRoleManagementUrl(){
         String url = "";
         when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT)).thenReturn(url);
         return url;
     }
 
+    /**
+     * Test the get tenant role by a given specific id
+     */
     @Test
     public void testGetTenantRoleById() {
 
@@ -121,6 +132,9 @@ public class TenantRoleRESTServiceClientTest {
         assertEquals(result.get().getId(), str.getId());
     }
 
+    /**
+     * Test the get association of a tenant role by id but this time with status not ok
+     */
     @Test
     public void testGetTenantRoleByIdWithStatusNeqOK() {
 
@@ -138,6 +152,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result.isPresent());
     }
 
+    /**
+     * Test the get tenant role by id but with token expiration
+     * @throws Exception to be throw
+     */
     @Test
     public void testGetTenantRoleByIdTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -152,6 +170,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getTenantRoleById(1L));
     }
 
+    /**
+     * Test the behaviour of getting the tenant role by id but with exception
+     * @throws Exception to be throw
+     */
     @Test
     public void testGetTenantRoleByIdException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -166,6 +188,9 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getTenantRoleById(1L));
     }
 
+    /**
+     * Method to test saving the association tenant role
+     */
     @Test
     public void testSave() {
 
@@ -184,6 +209,9 @@ public class TenantRoleRESTServiceClientTest {
         assertTrue(result);
     }
 
+    /**
+     * Method to test saving the association tenant role but with status not ok
+     */
     @Test
     public void testSaveWithStatusNeqOK() {
 
@@ -201,6 +229,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result);
     }
 
+    /**
+     * Method to test saving the association tenant role but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testSaveTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -215,6 +247,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.save(new TenantRole()));
     }
 
+    /**
+     * Method to test saving the association tenant role but with exception being throw
+     * @throws Exception to be throw
+     */
     @Test
     public void testSaveException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -229,6 +265,9 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.save(new TenantRole()));
     }
 
+    /**
+     * Test to validate if specific required association exists
+     */
     @Test
     public void testExists() {
 
@@ -244,6 +283,9 @@ public class TenantRoleRESTServiceClientTest {
         assertTrue(result);
     }
 
+    /**
+     * Test to validate if specific required association exists but with status not ok
+     */
     @Test
     public void testExistsWithStatusNeqOK() {
 
@@ -261,6 +303,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result);
     }
 
+    /**
+     * Test to validate if specific required association exists but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testExistsTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -275,6 +321,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.exists(1L, 2L));
     }
 
+    /**
+     * Test to validate if specific required association exists but with exception error
+     * @throws Exception to be throw
+     */
     @Test
     public void testExistsException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -289,6 +339,9 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.exists(1L, 2L));
     }
 
+    /**
+     * Test to get specific permission
+     */
     @Test
     public void testGetPermissions() {
 
@@ -306,6 +359,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result.isEmpty());
     }
 
+    /**
+     * Test to get specific permission but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testGetPermissionsTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -320,6 +377,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getPermissions(1L, 2L, 3L));
     }
 
+    /**
+     * Test to get specific permission but with exception being throw
+     * @throws Exception to be throw
+     */
     @Test
     public void testGetPermissionsException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -334,6 +395,9 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getPermissions(1L, 2L, 3L));
     }
 
+    /**
+     * Test to get specific tenant
+     */
     @Test
     public void testGetTenants() {
 
@@ -351,6 +415,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result.isEmpty());
     }
 
+    /**
+     * Test to get specific tenant but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testGetTenantsTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -365,6 +433,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getTenants(1L, 2L));
     }
 
+    /**
+     * Test to get specific tenant but with an exception being throw
+     * @throws Exception to be throw
+     */
     @Test
     public void testGetTenantsException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -379,6 +451,9 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getTenants(1L, 2L));
     }
 
+    /**
+     * Test the assignment of a user to the association
+     */
     @Test
     public void testAssignUser() {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -400,6 +475,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result);
     }
 
+    /**
+     * Test the assignment of a user to the association but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testAssignUserTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -414,6 +493,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.assignUser(1L, 2L, 3L));
     }
 
+    /**
+     * Test the assignment of a user to the association but with exception being throw
+     * @throws Exception to be trow
+     */
     @Test
     public void testAssignUserException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -428,6 +511,9 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.assignUser(1L, 2L, 3L));
     }
 
+    /**
+     * Test the un-assignment of a user to the association
+     */
     @Test
     public void testUnAssignUser() {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -449,6 +535,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result);
     }
 
+    /**
+     * Test the un-assignment of a user to the association but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testUnAssignUserTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -463,6 +553,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.unassignUser(1L, 2L, 3L));
     }
 
+    /**
+     * Test the un-assignment of a user to the association but with exception being throw
+     * @throws Exception to be throw
+     */
     @Test
     public void testUnAssignUserException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -477,6 +571,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.unassignUser(1L, 2L, 3L));
     }
 
+    /**
+     * Test the assignment of a permission to the association but with token expiration
+     * @throws Exception to be throw
+     */
     @Test
     public void testAssignPermissionTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -491,6 +589,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.assignPermission(1L, 2L, 3L));
     }
 
+    /**
+     * Test the assignment of a permission to the association but with exception to be throw
+     * @throws Exception to be throw
+     */
     @Test
     public void testAssignPermissionException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -505,6 +607,9 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.assignPermission(1L, 2L, 3L));
     }
 
+    /**
+     * Test the assignment of a permission to the association
+     */
     @Test
     public void testAssignPermission() {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -526,7 +631,9 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result);
     }
 
-
+    /**
+     * Test the un-assignment of a permission to the association
+     */
     @Test
     public void testUnAssignPermission() {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -548,6 +655,10 @@ public class TenantRoleRESTServiceClientTest {
         assertFalse(result);
     }
 
+    /**
+     * Test the un-assignment of a permission to the association but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testUnAssignPermissionTokenExpiration() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -562,6 +673,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.unassignPermission(1L, 2L, 3L));
     }
 
+    /**
+     * Test the un-assignment of a permission to the association but with exception being throw
+     * @throws Exception to be throw
+     */
     @Test
     public void testUnAssignPermissionException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -576,6 +691,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.unassignPermission(1L, 2L, 3L));
     }
 
+    /**
+     * Test the retrieval of the tenant roles into a list
+     * @throws Exception in case of error mapping the information
+     */
     @Test
     public void testTenantRoleList() throws Exception {
         String jsonArrayAsString = "[{\"id\": 1, \"tenantId\": 2, \"roleId\": 3}, " +
@@ -593,10 +712,13 @@ public class TenantRoleRESTServiceClientTest {
         List<? extends SystemTenantRole> tenantRolesList =
                 assertDoesNotThrow(() -> target.getTenantRoles(1L, 2L, true));
         assertNotNull(tenantRolesList);
-        assertTrue(tenantRolesList.size() == 2);
+        assertEquals(2, tenantRolesList.size());
     }
 
-
+    /**
+     * Test the retrieval of the tenant roles into a list but with token expired
+     * @throws Exception to be throw
+     */
     @Test
     public void testTenantRoleListWithTokenException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
@@ -611,6 +733,10 @@ public class TenantRoleRESTServiceClientTest {
         assertThrows(SystemException.class, () -> target.getTenantRoles(1L, 2L, true));
     }
 
+    /**
+     * Test the retrieval of the tenant roles into a list but with exception being throw
+     * @throws Exception to be throw
+     */
     @Test
     public void testTenantRoleListWithException() throws Exception {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);

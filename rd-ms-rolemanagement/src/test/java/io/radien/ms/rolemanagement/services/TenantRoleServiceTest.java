@@ -45,6 +45,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
+ * Tenant Role Service test
+ * {@link io.radien.ms.rolemanagement.services.TenantRoleService}
+ *
  * @author Newton Carvalho
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -61,6 +64,10 @@ public class TenantRoleServiceTest {
     Long baseRoleId = 111L;
     Long baseTenantId = 222L;
 
+    /**
+     * Method before test preparation
+     * @throws Exception in case of injection naming exception
+     */
     @BeforeAll
     public static void start() throws Exception {
         p = new Properties();
@@ -85,6 +92,10 @@ public class TenantRoleServiceTest {
         roleServiceAccess = (RoleServiceAccess) context.lookup(lookupString);
     }
 
+    /**
+     * Injection method
+     * @throws NamingException in case of injection naming exception
+     */
     @BeforeEach
     public void inject() throws NamingException {
         String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleService";
@@ -92,6 +103,9 @@ public class TenantRoleServiceTest {
         container.getContext().bind("inject", this);
     }
 
+    /**
+     * Method to stop the container after the testing classes have perform
+     */
     @AfterAll
     public static void stop() {
         if (container != null) {
@@ -359,7 +373,7 @@ public class TenantRoleServiceTest {
         Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
-        Assertions.assertTrue(p.getTotalPages() ==  1);
+        Assertions.assertEquals(1, p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
     }
