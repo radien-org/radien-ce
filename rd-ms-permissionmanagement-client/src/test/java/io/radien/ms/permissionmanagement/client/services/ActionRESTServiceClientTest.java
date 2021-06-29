@@ -56,6 +56,9 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 /**
+ * Action REST Service requests and responses test
+ * {@link io.radien.ms.permissionmanagement.client.services.ActionRESTServiceClient}
+ *
  * @author Nuno Santana
  * @author Bruno Gama
  */
@@ -79,11 +82,18 @@ public class ActionRESTServiceClientTest {
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
 
+    /**
+     * Preparation for the tests
+     */
     @Before
     public void before(){
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Test to attempt to retrieve the actions by a requested name
+     * @throws Exception to be throw
+     */
     @Test
     public void testGetActionByName() throws Exception {
         String a = "a";
@@ -108,12 +118,20 @@ public class ActionRESTServiceClientTest {
         assertEquals(Optional.empty(),target.getActionByName(a));
     }
 
+    /**
+     * Action management endpoint url getter
+     * @return the action enpoint url
+     */
     private String getActionManagementUrl(){
         String url = "";
         when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT)).thenReturn(url);
         return url;
     }
 
+    /**
+     * Test to attempt to get actions by name with results to be returned
+     * @throws Exception to be thrown in case of either record not found or values with wrong format
+     */
     @Test
     public void testGetActionByNameWithResults() throws Exception {
         String a = "a";
@@ -139,9 +157,13 @@ public class ActionRESTServiceClientTest {
         assertTrue(target.getActionByName(a).isPresent());
     }
 
+    /**
+     * Test to attempt to retrieve the action by id with results to be returned
+     * @throws Exception to be thrown in case of either record not found or values with wrong format
+     */
     @Test
     public void testGetActionByIdWithResults() throws Exception {
-        Action action = ActionFactory.create("permission-a", 2l);
+        Action action = ActionFactory.create("permission-a", 2L);
         action.setId(11L);
         InputStream is = new ByteArrayInputStream(ActionModelMapper.map(action).toString().getBytes());
         Response response = Response.ok(is).build();
@@ -155,6 +177,10 @@ public class ActionRESTServiceClientTest {
         assertEquals(opt.get().getId(), action.getId());
     }
 
+    /**
+     * Test to get action by finding it via the name field but multiple actions have that name or similar
+     * @throws Exception to be thrown in case of either record not found or values with wrong format
+     */
     @Test
     public void testGetActionByNameNonUnique() throws Exception {
         String actionName = "a";
@@ -175,77 +201,74 @@ public class ActionRESTServiceClientTest {
         assertFalse(result.isPresent());
     }
 
-    @Test
+    /**
+     * Test to check behaviour when we try to attempt to get action by name but we are faced with a extension exception
+     * @throws Exception to be throw
+     */
+    @Test(expected = SystemException.class)
     public void testGetActionByNameExtensionException() throws Exception {
-        boolean success = false;
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
-        try {
-            target.getActionByName("a");
-        }catch (SystemException se){
-            success = true;
-        }
-        assertTrue(success);
+        target.getActionByName("a");
     }
 
-    @Test
+    /**
+     * Test to check behaviour when we try to attempt to get action by name but we are faced with a processing exception
+     * @throws Exception to be throw
+     */
+    @Test(expected = SystemException.class)
     public void testGetActionByNameProcessingException() throws Exception {
-        boolean success = false;
         String a = "a";
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.getActions(a,true,true))
                 .thenThrow(new ProcessingException("test"));
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
-        try {
-            target.getActionByName(a);
-        }
-        catch (SystemException se){
-            success = true;
-        }
-        assertTrue(success);
+        target.getActionByName(a);
     }
+
+    /**
+     * Test to attempt to create a action
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     * @throws SystemException in case of token expiration
+     */
     @Test
-    public void testCreate() throws MalformedURLException {
+    public void testCreate() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-        boolean success = false;
-        try {
-			assertTrue(target.create(new Action()));
-		} catch (SystemException e) {
-			success = true;
-        }
-        assertFalse(success);
+        assertTrue(target.create(new Action()));
     }
+
+    /**
+     * Test to attempt to create a action but without success
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     * @throws SystemException in case of token expiration
+     */
     @Test
-    public void testCreateFail() throws MalformedURLException {
+    public void testCreateFail() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-        boolean success = false;
-        try {
-			assertFalse(target.create(new Action()));
-		} catch (SystemException e) {
-			 success = true;
-        }
-        assertFalse(success);
+        assertFalse(target.create(new Action()));
     }
 
-    @Test
-    public void testCreateProcessingException() throws MalformedURLException {
+    /**
+     * Test to create a action but we are faced with a processing exception
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     * @throws SystemException in case of token expiration
+     */
+    @Test(expected = SystemException.class)
+    public void testCreateProcessingException() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.save(any())).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-        boolean success = false;
-        try {
-            target.create(new Action());
-        }catch (ProcessingException | SystemException es){
-            success = true;
-        }
-        assertTrue(success);
-
+        target.create(new Action());
     }
 
+    /**
+     * Test to attempt the communicating with the endpoint but we are faced with a Malformed URL Exception
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     */
     @Test
     public void testCommunicationFail() throws MalformedURLException {
         MalformedURLException malformedURLException =
@@ -257,43 +280,43 @@ public class ActionRESTServiceClientTest {
         assertTrue(se.getMessage().contains(malformedURLException.getMessage()));
     }
 
+    /**
+     * Test to attempt to connect with the OAF
+     */
     @Test
     public void testAccessingOAF() {
         OAFAccess oafAccess = target.getOAF();
         assertNotNull(oafAccess);
     }
 
-
-    @Test
+    /**
+     * Test to attempt to get action by id but we are faced with a extension exception
+     * @throws Exception to be throw
+     */
+    @Test(expected = SystemException.class)
     public void testGetActionByIdExtensionException() throws Exception {
-        boolean success = false;
         when(clientServiceUtil.getActionResourceClient(
                 getActionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
-        try {
-            target.getActionById(1L);
-        }catch (SystemException se){
-            success = true;
-        }
-        assertTrue(success);
+        target.getActionById(1L);
     }
 
-    @Test
+    /**
+     * Test to attempt to get action by id but we are faced with a processing exception
+     * @throws Exception to be throw
+     */
+    @Test(expected = SystemException.class)
     public void testGetActionByIdProcessingException() throws Exception {
-        boolean success = false;
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
         when(resourceClient.getById(anyLong()))
                 .thenThrow(new ProcessingException("test"));
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-
-        try {
-            target.getActionById(1L);
-        }
-        catch (SystemException se){
-            success = true;
-        }
-        assertTrue(success);
+        target.getActionById(1L);
     }
 
+    /**
+     * Test to attempt to get multiple actions
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     */
     @Test
     public void testGetActions() throws MalformedURLException {
         List<Action> list = new ArrayList<>();
@@ -330,11 +353,16 @@ public class ActionRESTServiceClientTest {
         assertNotNull(retrievedPage);
         assertNotNull(retrievedPage.getResults());
         assertFalse(retrievedPage.getResults().isEmpty());
-        assertEquals(retrievedPage.getResults().size(), 3);
+        assertEquals(3, retrievedPage.getResults().size());
     }
 
-    @Test
-    public void testGetActionsWhenFailure() throws MalformedURLException {
+    /**
+     * Test to get actions but with failure
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of token expiration
+     */
+    @Test(expected = SystemException.class)
+    public void testGetActionsWhenFailure() throws MalformedURLException, SystemException {
         List<String> sortBy = new ArrayList<>();
         Response errorResponse = Response.status(500).build();
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
@@ -342,10 +370,15 @@ public class ActionRESTServiceClientTest {
                 thenThrow(new ProcessingException("error"));
         when(resourceClient.getAll("action%", 1, 100, sortBy, true)).
                 then(i -> errorResponse);
-        assertThrows(SystemException.class, () -> target.getAll("action%", 1, 100, sortBy, true));
+        target.getAll("action%", 1, 100, sortBy, true);
     }
 
 
+    /**
+     * Test to attempt to get all actions but with token expired
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of token expiration
+     */
     @Test(expected = SystemException.class)
     public void testGetAllTokenExpiration() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
@@ -361,7 +394,11 @@ public class ActionRESTServiceClientTest {
         target.getAll("search", 1, 10, sortBy, false);
     }
 
-
+    /**
+     * Test to get actions by id but with token expired
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of token expired
+     */
     @Test(expected = SystemException.class)
     public void testGetActionByIdTokenExpiration() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
@@ -376,6 +413,11 @@ public class ActionRESTServiceClientTest {
         target.getActionById(2L);
     }
 
+    /**
+     * Test to get actions by name but with token expired
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of token expired
+     */
     @Test(expected = SystemException.class)
     public void testGetActionByNameTokenExpiration() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
@@ -390,6 +432,11 @@ public class ActionRESTServiceClientTest {
         target.getActionByName("name");
     }
 
+    /**
+     * Test to create actions but with token expired
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of token expired
+     */
     @Test(expected = SystemException.class)
     public void testCreateTokenExpiration() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
@@ -405,5 +452,4 @@ public class ActionRESTServiceClientTest {
         SystemAction systemAction = ActionFactory.create("name", 2L);
         target.create(systemAction);
     }
-
 }

@@ -25,6 +25,7 @@ import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.api.service.permission.ResourceServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
@@ -49,11 +50,19 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+
 
 /**
- * @author Nuno Santana
+ * Permission Service test, to test the crud requests and responses
+ * {@link io.radien.ms.permissionmanagement.service.PermissionService}
  *
+ * @author Nuno Santana
  * @author Bruno Gama
  */
 public class PermissionServiceTest {
@@ -62,9 +71,12 @@ public class PermissionServiceTest {
     static ActionServiceAccess actionServiceAccess;
     static ResourceServiceAccess resourceServiceAccess;
     static SystemPermission pTest;
-    static SystemAction aTest;
     static EJBContainer container;
 
+    /**
+     * Constructor method to prepare all the variables and properties before running the tests
+     * @throws Exception in case of any issue
+     */
     @BeforeClass
     public static void start() throws Exception {
         Properties p = new Properties();
@@ -77,8 +89,12 @@ public class PermissionServiceTest {
         resourceServiceAccess = (ResourceServiceAccess) context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
     }
 
+    /**
+     * Injection method before starting the tests and data preparation
+     * @throws NamingException in case of naming injection value exception
+     */
     @Before
-    public void init() throws UniquenessConstraintException, NamingException {
+    public void init() throws NamingException {
         container.getContext().bind("inject", this);
         Page<? extends SystemAction> actionPage = actionServiceAccess.getAll(null, 1,
                 1000, null, true);
@@ -92,6 +108,9 @@ public class PermissionServiceTest {
                 map(SystemAction::getId).collect(Collectors.toList()));
     }
 
+    /**
+     * Method to stop the container after the testing classes have perform
+     */
     @AfterClass
     public static void stop() {
         if (container != null) {
@@ -120,7 +139,7 @@ public class PermissionServiceTest {
                 getPermissions(new PermissionSearchFilter(name, 111L, 1L, true, true));
 
         assertNotNull(permissions);
-        assertEquals(permissions.size(), 1);
+        assertEquals(1, permissions.size());
 
         SystemPermission systemPermission = permissions.get(0);
         assertEquals(systemPermission.getName(), permission.getName());
@@ -139,8 +158,7 @@ public class PermissionServiceTest {
 
         Permission u2 = PermissionFactory.create("permissionNameXYZ", null,2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(u2));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");;
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -164,6 +182,9 @@ public class PermissionServiceTest {
         assertEquals(u.getName(), result.getName());
     }
 
+    /**
+     * Method to test the get total existent permissions count
+     */
     @Test
     public void testGetTotalRecordsCount() {
         long result = permissionServiceAccess.getTotalRecordsCount();
@@ -179,7 +200,7 @@ public class PermissionServiceTest {
      * @throws UniquenessConstraintException in case of requested action is not well constructed
      */
     @Test
-    public void testGetByListOfIds() throws UniquenessConstraintException, PermissionNotFoundException {
+    public void testGetByListOfIds() throws UniquenessConstraintException {
         Permission p1 = PermissionFactory.create("testGetByListOfIdsFirstName1", null, 2L);
         permissionServiceAccess.save(p1);
 
@@ -192,6 +213,9 @@ public class PermissionServiceTest {
         assertEquals(2, result.size());
     }
 
+    /**
+     * Method to test the retrieval of a given empty list of id's, should return empty
+     */
     @Test
     public void testGetByEmptyListOfIds() {
 
@@ -293,6 +317,10 @@ public class PermissionServiceTest {
 
     }
 
+    /**
+     * Method to test updating with failure multiple permissions
+     * @throws Exception to be trow
+     */
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
         Permission p1 = PermissionFactory.create("permissionName1", null, 2L);
@@ -308,7 +336,7 @@ public class PermissionServiceTest {
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> permissionServiceAccess.save(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
 
     }
@@ -320,8 +348,7 @@ public class PermissionServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
-        String expectedMessageName = "{\"code\":101, \"key\":\"error.duplicated.field\", " +
-                "\"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
         Permission p1 = PermissionFactory.create("permissionNamePerm1", null, 2L);
         permissionServiceAccess.save(p1);
@@ -342,6 +369,10 @@ public class PermissionServiceTest {
         assertTrue(messageFromException.contains(expectedMessageName));
     }
 
+    /**
+     * Test to get all the permissions but with a specific given sort criteria
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testGetAllSort() throws UniquenessConstraintException, PermissionNotFoundException {
         SystemPermission permissionA = PermissionFactory.create("a", null, 2L);
@@ -365,10 +396,15 @@ public class PermissionServiceTest {
         assertEquals("zzz",permissionPage.getResults().get(0).getName());
 
         Page<? extends SystemPermission> permissionPageWhere = permissionServiceAccess.getAll("a", 1, 10, null, true);
-        assertTrue(permissionPageWhere.getTotalResults() == 1);
+        assertEquals(1, permissionPageWhere.getTotalResults());
 
         assertEquals("a",permissionPageWhere.getResults().get(0).getName());
     }
+
+    /**
+     * Test to try to get permissions by id with exact and without exact logical search (and or or)
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testGetByIsExactOrLogical() throws UniquenessConstraintException, PermissionNotFoundException {
         SystemPermission testById1 = PermissionFactory.create("zz", null, 1L);
@@ -397,6 +433,10 @@ public class PermissionServiceTest {
         assertEquals(3, permissionsNotExact.size());
     }
 
+    /**
+     * Method to test associating a permission and a entity together
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void associatePermissionAndAction() throws UniquenessConstraintException {
         SystemPermission sp = PermissionFactory.create("perm-radien-1", null, 1L);
@@ -438,6 +478,10 @@ public class PermissionServiceTest {
         assertEquals(p.getActionId(), action.getId());
     }
 
+    /**
+     * Method to test the filtering between the association of a permission and a action
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testFilterPermissionByAction() throws UniquenessConstraintException {
         Long actionId1 = 111L;
@@ -478,21 +522,25 @@ public class PermissionServiceTest {
         SystemPermissionSearchFilter filter = new PermissionSearchFilter(null, actionId3,
                 null, true, true);
         List<? extends SystemPermission> systemPermissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(systemPermissions.size(), 3);
+        assertEquals(3, systemPermissions.size());
 
         // Retrieving permissions by actionId2
         filter = new PermissionSearchFilter(null, actionId2,
                 null, true, true);
         systemPermissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(systemPermissions.size(), 2);
+        assertEquals(2, systemPermissions.size());
 
         // Retrieving permissions by actionId1
         filter = new PermissionSearchFilter(null, actionId1,
                 null, true, true);
         systemPermissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(systemPermissions.size(), 1);
+        assertEquals(1, systemPermissions.size());
     }
 
+    /**
+     * Method to test the filtering in the permission, action and resource association
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testFilterPermissionByActionAndResource() throws UniquenessConstraintException {
         Long actionId1 = 111L;
@@ -528,7 +576,7 @@ public class PermissionServiceTest {
         SystemPermissionSearchFilter filter = new PermissionSearchFilter("perm3",
                 actionId3, resourceId2, true, true);
         List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(permissions.size(), 1);
+        assertEquals(1, permissions.size());
         assertEquals(permissions.get(0).getId(), p3.getId());
         assertEquals(permissions.get(0).getActionId(), p3.getActionId());
         assertEquals(permissions.get(0).getResourceId(), p3.getResourceId());
@@ -536,24 +584,28 @@ public class PermissionServiceTest {
         filter = new PermissionSearchFilter("perm",
                 actionId3, resourceId2, false, true);
         permissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(permissions.size(), 1);
+        assertEquals(1, permissions.size());
 
         // Only p3 and p4 have actionId3 and resourceId2
         boolean p3AndP4 = permissions.stream().
-                allMatch(p -> p.getId() == p3.getId() || p.getId() == p4.getId());
+                allMatch(p -> p.getId().equals(p3.getId()) || p.getId().equals(p4.getId()));
         assertTrue(p3AndP4);
 
         filter = new PermissionSearchFilter("perm",
                 null, resourceId2, false, true);
         permissions = permissionServiceAccess.getPermissions(filter);
-        assertEquals(permissions.size(), 2);
+        assertEquals(2, permissions.size());
 
         // Only p3 and p4 have actionId3 and resourceId2
         boolean p2AndP3AndP4 = permissions.stream().
-                allMatch( p -> p.getId() == p2.getId() || p.getId() == p3.getId() || p.getId() == p4.getId());
+                allMatch( p -> p.getId().equals(p2.getId()) || p.getId().equals(p3.getId()) || p.getId().equals(p4.getId()));
         assertTrue(p2AndP3AndP4);
     }
 
+    /**
+     * Method to test the is permission existent method
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testExistsPermissionMethod() throws UniquenessConstraintException {
         Permission experiment = new Permission();
@@ -575,6 +627,9 @@ public class PermissionServiceTest {
         assertFalse(checkWithInvalidIdAndCorrectName);
     }
 
+    /**
+     * Test to check the behaviour of the attempt to get a non existent permission
+     */
     @Test
     public void testExistsPermissionNotFound() {
         boolean check = permissionServiceAccess.exists(3333L, null);
@@ -584,12 +639,19 @@ public class PermissionServiceTest {
         assertFalse(check);
     }
 
+    /**
+     * Test to validate the attempt to get a existent permission without giving any fields
+     */
     @Test
     public void testExistsPermissionWithNoArguments() {
         boolean check = permissionServiceAccess.exists(null, null);
         assertFalse(check);
     }
 
+    /**
+     * Method to test the retrieval of a permission based on the action and resource name
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testPermissionRetrievalByActionAndResourceNames() throws UniquenessConstraintException {
         SystemAction a1 = new Action();

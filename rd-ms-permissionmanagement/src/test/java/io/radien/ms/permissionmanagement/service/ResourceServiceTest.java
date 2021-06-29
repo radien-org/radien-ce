@@ -18,6 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.model.Resource;
@@ -29,13 +30,23 @@ import org.junit.Test;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import java.util.*;
-
-import static org.junit.Assert.*;
+import java.util.Properties;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
- * @author Nuno Santana
+ * Resource Service test, to test the crud requests and responses
+ * {@link io.radien.ms.permissionmanagement.service.ResourceService}
  *
+ * @author Nuno Santana
  * @author Bruno Gama
  */
 public class ResourceServiceTest {
@@ -44,6 +55,10 @@ public class ResourceServiceTest {
     static SystemResource resourceTest;
     static EJBContainer container;
 
+    /**
+     * Constructor method to prepare all the variables and properties before running the tests
+     * @throws Exception in case of any issue
+     */
     @BeforeClass
     public static void start() throws Exception {
         Properties p = new Properties();
@@ -65,11 +80,18 @@ public class ResourceServiceTest {
         }
     }
 
+    /**
+     * Injection method before starting the tests and data preparation
+     * @throws NamingException in case of naming injection value exception
+     */
     @Before
     public void inject() throws NamingException {
         container.getContext().bind("inject", this);
     }
 
+    /**
+     * Method to stop the container after the testing classes have perform
+     */
     @AfterClass
     public static void stop() {
         if (container != null) {
@@ -89,6 +111,9 @@ public class ResourceServiceTest {
         assertNotNull(result);
     }
 
+    /**
+     * Method to test the action of attempting to retrieve a non existent resource
+     */
     @Test
     public void testGetNotExistentResource() {
         SystemResource result = resourceServiceAccess.get(111111111L);
@@ -108,8 +133,7 @@ public class ResourceServiceTest {
 
         Resource r2 = createResource("resourceNameXXX", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> resourceServiceAccess.save(r2));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -154,6 +178,9 @@ public class ResourceServiceTest {
         assertEquals(2, result.size());
     }
 
+    /**
+     * Method to test the retrieval of a given empty list of id's, should return empty
+     */
     @Test
     public void testGetByEmptyListOfIds() {
 
@@ -207,6 +234,9 @@ public class ResourceServiceTest {
         assertEquals(r3.getName(), resultExistentOne.getName());
     }
 
+    /**
+     * Method to test the deletion of a given empty list of id's
+     */
     @Test
     public void testDeleteByEmptyListOfIds() {
         Collection<Long> resourceIds = null;
@@ -253,6 +283,10 @@ public class ResourceServiceTest {
 
     }
 
+    /**
+     * Method to test updating with failure multiple resources
+     * @throws Exception to be trow
+     */
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
         Resource r1 = createResource("resourceName1", 2L);
@@ -268,7 +302,7 @@ public class ResourceServiceTest {
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> resourceServiceAccess.save(r4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
 
     }
@@ -280,8 +314,7 @@ public class ResourceServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
-        String expectedMessageName = "{\"code\":101, \"key\":\"error.duplicated.field\", " +
-                "\"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
         Resource r1 = createResource("resourceNamePerm1", 2L);
         resourceServiceAccess.save(r1);
@@ -302,6 +335,10 @@ public class ResourceServiceTest {
         assertTrue(messageFromException.contains(expectedMessageName));
     }
 
+    /**
+     * Test to get all the resources but with a specific given sort criteria
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testGetAllSort() throws UniquenessConstraintException {
         SystemResource r1 = createResource("a", 2L);
@@ -326,10 +363,15 @@ public class ResourceServiceTest {
         assertEquals("zzz",resourcePage.getResults().get(0).getName());
 
         Page<? extends SystemResource> resourcePageWhere = resourceServiceAccess.getAll("a", 1, 10, null, true);
-        assertTrue(resourcePageWhere.getTotalResults() == 1);
+        assertEquals(1, resourcePageWhere.getTotalResults());
 
         assertEquals("a",resourcePageWhere.getResults().get(0).getName());
     }
+
+    /**
+     * Test to try to get resources by id with exact and without exact logical search (and or or)
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
     @Test
     public void testGetByIsExactOrLogical() throws UniquenessConstraintException {
         SystemResource sr1 = createResource("zz", 1L);
@@ -383,7 +425,13 @@ public class ResourceServiceTest {
         assertEquals(1, resources.size());
 
     }
-    
+
+    /**
+     * Private method to create resources for testing purposes
+     * @param name of the resource
+     * @param user to be created for the resource
+     * @return the created resource
+     */
     private static Resource createResource(String name, Long user) {
         Resource r = new Resource();
         r.setName(name);

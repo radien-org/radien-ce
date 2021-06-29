@@ -15,18 +15,23 @@
  */
 package io.radien.ms.rolemanagement.client.exception;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 /**
+ * Linked authorization Generic error message code test
  * @author Bruno Gama
  */
 public class LinkedAuthorizationErrorCodeMessageTest extends TestCase {
 
+    /**
+     * Validates the generic error code messages for the linked authorization
+     */
     @Test
     public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: %s\"}", LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant ID\"}", LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant ID"));
-        assertEquals("{\"code\":102, \"key\":\"error.dissociation.no.params\", \"message\":\"Parameters for dissociation not informed\"}", LinkedAuthorizationErrorCodeMessage.NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
+        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString());
+        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Tenant ID\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant ID"));
+        assertEquals("{\"code\":113, \"key\":\"error.dissociation.no.params\", \"message\":\"Parameters for dissociation not informed\"}", GenericErrorCodeMessage.NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
     }
 }

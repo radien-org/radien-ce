@@ -26,12 +26,14 @@ import org.junit.jupiter.api.*;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
-import javax.naming.NamingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
 /**
+ * Tenant Role Permission Service tester
+ * {@link io.radien.ms.rolemanagement.services.TenantRolePermissionService}
+ *
  * @author Newton Carvalho
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -43,6 +45,10 @@ public class TenantRolePermissionServiceTest {
     static Long basePermissionId = 111L;
     static Long baseTenantRoleId = 222L;
 
+    /**
+     * Test preparation db connection
+     * @throws Exception in case of failure mocking connection into the db
+     */
     @BeforeEach
     public void start() throws Exception {
         p = new Properties();
@@ -63,6 +69,9 @@ public class TenantRolePermissionServiceTest {
         container.getContext().bind("inject", this);
     }
 
+    /**
+     * Method to close the container after tests have run
+     */
     @AfterAll
     public static void stop() {
         if (container != null) {
@@ -231,7 +240,7 @@ public class TenantRolePermissionServiceTest {
                 true, true);
         List<? extends SystemTenantRolePermission> list = tenantRolePermissionServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 1);
+        Assertions.assertEquals(1, list.size());
     }
 
     /**
@@ -256,7 +265,7 @@ public class TenantRolePermissionServiceTest {
                 true, false);
         List<? extends SystemTenantRolePermission> list = tenantRolePermissionServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 2);
+        Assertions.assertEquals(2, list.size());
     }
 
     /**

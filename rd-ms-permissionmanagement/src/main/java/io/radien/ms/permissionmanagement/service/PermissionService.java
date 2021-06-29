@@ -36,8 +36,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 
 import io.radien.ms.permissionmanagement.model.Permission;
 
@@ -169,11 +169,11 @@ public class PermissionService implements PermissionServiceAccess {
         EntityManager em = getEntityManager();
         List<Permission> alreadyExistentRecords = searchDuplicatedName(permission, em);
         if (!alreadyExistentRecords.isEmpty()) {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
         boolean existsForActionAndResource = existsForResourceAndAction(permission, em);
         if (existsForActionAndResource) {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Action and Resource"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Action and Resource"));
         }
         if (permission.getId() == null) {
             em.persist(permission);

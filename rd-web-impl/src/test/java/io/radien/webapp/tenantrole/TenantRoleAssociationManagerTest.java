@@ -88,6 +88,9 @@ public class TenantRoleAssociationManagerTest {
 
     private FacesContext facesContext;
 
+    /**
+     * Method variables preparation
+     */
     @Before
     public void before(){
         MockitoAnnotations.initMocks(this);
@@ -213,7 +216,7 @@ public class TenantRoleAssociationManagerTest {
         String urlMapping = tenantRoleAssociationManager.associateUser(userId);
 
         assertNotNull(urlMapping);
-        assertEquals(urlMapping, "pretty:userTenantAssociation");
+        assertEquals("pretty:userTenantAssociation", urlMapping);
     }
 
     /**
@@ -251,7 +254,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testGetterSetterForTabIndex() {
-        tenantRoleAssociationManager.setTabIndex(new Long(999L));
+        tenantRoleAssociationManager.setTabIndex(999L);
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(999L));
     }
 
@@ -413,7 +416,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(),
                 expectedAssociatedPermissions);
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals("tenantrole", returnUriMappingId);
     }
 
     /**
@@ -623,7 +626,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals(returnUriMappingId, "tenantrole");
+        assertEquals("tenantrole", returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());

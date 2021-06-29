@@ -20,10 +20,10 @@ import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
-import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
     @Override
     public SystemLinkedAuthorization getAssociationById(Long associationId) throws LinkedAuthorizationNotFoundException {
         if(entityManager.find(LinkedAuthorization.class, associationId) == null) {
-            throw new LinkedAuthorizationNotFoundException(LinkedAuthorizationErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+            throw new LinkedAuthorizationNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
         }
 
         log.info("I found the record!");
@@ -266,13 +266,13 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
                 entityManager.persist(association);
             } else {
                 log.info("No id has been given, but there is already another record with some of the given information");
-                throw new UniquenessConstraintException(LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id"));
+                throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id"));
             }
         } else {
             log.info("We are going to update");
             if(!alreadyExistentAssociation.isEmpty()) {
                 log.info("An id has been given, but there is already another record with some of the given information");
-                throw new UniquenessConstraintException(LinkedAuthorizationErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id"));
+                throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id"));
             } else {
                 getAssociationById(association.getId());
 

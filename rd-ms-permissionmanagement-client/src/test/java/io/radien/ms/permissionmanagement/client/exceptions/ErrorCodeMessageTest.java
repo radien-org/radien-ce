@@ -15,19 +15,24 @@
  */
 package io.radien.ms.permissionmanagement.client.exceptions;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import org.junit.Test;
-
-import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Permission Management Generic Error Code Messages testing
+ */
 public class ErrorCodeMessageTest {
 
+    /**
+     * Permission testing to validate the generic error code messages
+     */
     @Test
     public void testToString() {
         assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}",
-                ErrorCodeMessage.DUPLICATED_FIELD.toString());
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString());
         assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: name\"}",
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("name"));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("name"));
     }
 }

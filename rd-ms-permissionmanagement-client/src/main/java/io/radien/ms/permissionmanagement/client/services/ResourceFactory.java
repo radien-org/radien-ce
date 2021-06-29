@@ -108,7 +108,7 @@ public class ResourceFactory {
         int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
 
-        ArrayList<Resource> pageResults = new ArrayList();
+        ArrayList<Resource> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){

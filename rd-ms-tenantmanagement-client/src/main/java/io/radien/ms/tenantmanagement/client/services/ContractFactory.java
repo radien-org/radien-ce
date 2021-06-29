@@ -19,7 +19,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -144,7 +143,7 @@ public class ContractFactory {
         int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
 
-        ArrayList<Contract> pageResults = new ArrayList();
+        ArrayList<Contract> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){

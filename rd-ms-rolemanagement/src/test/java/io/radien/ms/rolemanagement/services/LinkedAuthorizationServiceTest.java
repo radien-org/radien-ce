@@ -22,6 +22,7 @@ import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -30,31 +31,18 @@ import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
 
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-
-
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 
 /**
  * @author Bruno Gama
@@ -172,7 +160,7 @@ public class LinkedAuthorizationServiceTest {
         linkedAuthorizationServiceAccess.deleteAssociation(systemLinkedAuthorization.getId());
 
         Exception exception = assertThrows(LinkedAuthorizationNotFoundException.class, () -> linkedAuthorizationServiceAccess.getAssociationById((systemLinkedAuthorization.getId())));
-        String expectedMessage = "{\"code\":100, \"key\":\"error.role.not.found\", \"message\":\"Association was not found.\"}";
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -249,7 +237,7 @@ public class LinkedAuthorizationServiceTest {
 
         SystemLinkedAuthorization testSaveWithoutSuccess = LinkedAuthorizationFactory.create(30L, 30L, 30L, 30L, 30L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> linkedAuthorizationServiceAccess.save(testSaveWithoutSuccess));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant Id, Permission Id, Role Id and User Id\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -270,7 +258,7 @@ public class LinkedAuthorizationServiceTest {
         SystemLinkedAuthorization testUpdate = LinkedAuthorizationFactory.create(51L, 51L, 51L, 51L, 51L);
         testUpdate.setId(id50);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> linkedAuthorizationServiceAccess.save(testUpdate));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one association role with the same value for the field: Tenant Id, Permission Id, Role Id and User Id\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant Id, Permission Id, Role Id and User Id");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

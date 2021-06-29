@@ -27,11 +27,14 @@ import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
 import io.radien.exception.LinkedAuthorizationException;
 import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
+import io.radien.exception.GenericErrorCodeMessage;
+
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -166,7 +169,7 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public boolean deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException {
         if (tenantId == null || userId == null) {
-            throw new LinkedAuthorizationException(LinkedAuthorizationErrorCodeMessage.
+            throw new LinkedAuthorizationException(GenericErrorCodeMessage.
                     NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
         }
         return linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);

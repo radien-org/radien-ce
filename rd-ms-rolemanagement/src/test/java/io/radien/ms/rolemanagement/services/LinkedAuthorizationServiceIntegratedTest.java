@@ -44,6 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
+ * Linked authorization service integrated test to validate connections and requests
+ *
  * @author Newton Carvalho
  */
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -59,8 +61,11 @@ public class LinkedAuthorizationServiceIntegratedTest {
     static final String linkedAuthzJndiLookupUri =
             "java:global/rd-ms-rolemanagement//LinkedAuthorizationService";
 
+    /**
+     * Method to initialize db connection
+     */
     @BeforeAll
-    public static void start() throws NamingException, RoleNotFoundException, UniquenessConstraintException {
+    public static void start() {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
@@ -76,6 +81,10 @@ public class LinkedAuthorizationServiceIntegratedTest {
         context = container.getContext();
     }
 
+    /**
+     * Method to initialize the system variables for testing
+     * @throws NamingException in case of naming exception in the injection
+     */
     @BeforeEach
     public void setUp() throws NamingException {
         roleServiceAccess = (RoleServiceAccess) context.lookup(roleJndiLookupUri);
@@ -83,6 +92,12 @@ public class LinkedAuthorizationServiceIntegratedTest {
                 context.lookup(linkedAuthzJndiLookupUri);
     }
 
+    /**
+     * Test the integration between multiple services
+     * @throws RoleNotFoundException in case requested role could not be found
+     * @throws UniquenessConstraintException in case there are duplicated fields or records
+     * @throws LinkedAuthorizationNotFoundException in case linked authorization could not be found
+     */
     @Test
     public void testIntegrationAmongEntities() throws RoleNotFoundException, UniquenessConstraintException, LinkedAuthorizationNotFoundException {
         SystemRole main = new Role();
@@ -150,6 +165,9 @@ public class LinkedAuthorizationServiceIntegratedTest {
         assertTrue(exists);
     }
 
+    /**
+     * Test to attempt to connect with the wrong parameters
+     */
     @Test
     public void testInvokingWithWrongParameters() {
         assertThrows(Exception.class, () -> linkedAuthorizationServiceAccess.
@@ -157,23 +175,26 @@ public class LinkedAuthorizationServiceIntegratedTest {
         assertThrows(Exception.class, () -> linkedAuthorizationServiceAccess.
                 isRoleExistentForUser(null, null, "role-test"));
         assertThrows(Exception.class, () -> linkedAuthorizationServiceAccess.
-                isRoleExistentForUser(1l, null, null));
+                isRoleExistentForUser(1L, null, null));
     }
 
+    /**
+     * Test to retrieve the roles in all the users
+     */
     @Test
     public void testRetrieveRolesPerUser() {
-        Long idUser1 = 222L;
+        long idUser1 = 222L;
         List<? extends  SystemRole> roles = linkedAuthorizationServiceAccess.
                 getRolesByUserAndTenant(idUser1, null);
-        assertEquals(roles.size(), 2);
+        assertEquals(2, roles.size());
 
-        Long tenantId = 1111L;
+        long tenantId = 1111L;
         roles = linkedAuthorizationServiceAccess.getRolesByUserAndTenant(idUser1, tenantId);
-        assertEquals(roles.size(), 1);
+        assertEquals(1, roles.size());
 
         tenantId = 9999L;
         roles = linkedAuthorizationServiceAccess.getRolesByUserAndTenant(idUser1, tenantId);
-        assertEquals(roles.size(), 0);
+        assertEquals(0, roles.size());
     }
 
 

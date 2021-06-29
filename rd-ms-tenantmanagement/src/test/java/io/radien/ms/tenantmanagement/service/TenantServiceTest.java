@@ -18,6 +18,7 @@ package io.radien.ms.tenantmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TenantException;
 import io.radien.exception.UniquenessConstraintException;
@@ -36,7 +37,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Nuno Santana
@@ -103,8 +109,7 @@ public class TenantServiceTest {
         tenant.setTenantStart(LocalDate.now());
         tenant.setTenantKey(RandomStringUtils.randomAlphabetic(4));
         Exception exception = assertThrows(TenantException.class, () -> tenantServiceAccess.create(tenant));
-        String expectedMessage = "{\"code\":109, \"key\":\"error.tenant.root.already.inserted\"," +
-                " \"message\":\"There must be only one Root Tenant.\"}";
+        String expectedMessage = GenericErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString();
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -120,8 +125,7 @@ public class TenantServiceTest {
     public void testAddDuplicatedName() throws UniquenessConstraintException, TenantException {
         createTenant("testAddDuplicatedName");
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> createTenant("testAddDuplicatedName"));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -141,8 +145,7 @@ public class TenantServiceTest {
                         null,"testUpdateDuplicated", "key-x", TenantType.CLIENT_TENANT, null, null,
                         null, null, null,null, null,
                         null, rootTenant.getId(), null))));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -434,7 +437,7 @@ public class TenantServiceTest {
         tenantRoot.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.YEARS));
 
         TenantException e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenantRoot));
-        assertEquals("{\"code\":110, \"key\":\"error.tenant.root.with.parent\", \"message\":\"Tenant root cannot have parent associated.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_ROOT_WITH_PARENT.toString(), e.getMessage());
 
         Tenant tenantRoot2 = new Tenant();
         tenantRoot2.setTenantType(TenantType.ROOT_TENANT);
@@ -445,7 +448,7 @@ public class TenantServiceTest {
         tenantRoot2.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.YEARS));
 
         TenantException e2 = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenantRoot2));
-        assertEquals("{\"code\":111, \"key\":\"error.tenant.root.with.client\", \"message\":\"Tenant root cannot have client associated.\"}", e2.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_ROOT_WITH_CLIENT.toString(), e2.getMessage());
     }
 
     /**
@@ -475,7 +478,7 @@ public class TenantServiceTest {
         tenantRoot.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.YEARS));
 
         TenantException e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenantRoot));
-        assertEquals("{\"code\":107, \"key\":\"error.tenant.parent.type.invalid\", \"message\":\"Parent type is invalid.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString(), e.getMessage());
     }
 
     /**
@@ -492,7 +495,7 @@ public class TenantServiceTest {
         tenant.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.YEARS));
 
         TenantException e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":103, \"key\":\"error.tenant.parent.not.informed\", \"message\":\"Parent information not informed.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString(), e.getMessage());
     }
 
     /**
@@ -509,7 +512,7 @@ public class TenantServiceTest {
         tenant.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.YEARS));
 
         TenantException e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":104, \"key\":\"error.tenant.client.not.informed\", \"message\":\"Client information not informed.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_CLIENT_NOT_INFORMED.toString(), e.getMessage());
     }
 
     /**
@@ -527,7 +530,7 @@ public class TenantServiceTest {
         tenant.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.YEARS));
 
         TenantException e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":105, \"key\":\"error.tenant.parent.not.found\", \"message\":\"Parent registry not found.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString(), e.getMessage());
     }
 
     /**
@@ -545,7 +548,7 @@ public class TenantServiceTest {
         tenant.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.YEARS));
 
         TenantException e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":106, \"key\":\"error.tenant.client.not.found\", \"message\":\"Client registry not found.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_CLIENT_NOT_FOUND.toString(), e.getMessage());
     }
 
     /**
@@ -586,31 +589,31 @@ public class TenantServiceTest {
     public void creatingInvalidTenant() {
         SystemTenant tenant = new Tenant();
         TenantException e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":102, \"key\":\"error.tenant.field.not.informed\", \"message\":\"Tenant name was not informed.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("name"), e.getMessage());
 
         tenant.setName("test");
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":102, \"key\":\"error.tenant.field.not.informed\", \"message\":\"Tenant tenantKey was not informed.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantKey"), e.getMessage());
 
         tenant.setTenantKey("key-1");
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":102, \"key\":\"error.tenant.field.not.informed\", \"message\":\"Tenant tenantType was not informed.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantType"), e.getMessage());
 
         tenant.setTenantType(TenantType.CLIENT_TENANT);
         tenant.setTenantEnd(LocalDate.now().minus(3, ChronoUnit.MONTHS));
         tenant.setTenantStart(LocalDate.now());
 
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":108, \"key\":\"error.tenant.end.date.invalid\", \"message\":\"End date is invalid.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString(), e.getMessage());
 
         tenant.setTenantEnd(LocalDate.now().plus(3, ChronoUnit.MONTHS));
 
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":103, \"key\":\"error.tenant.parent.not.informed\", \"message\":\"Parent information not informed.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_PARENT_NOT_INFORMED.toString(), e.getMessage());
 
         tenant.setParentId(111L);
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
-        assertEquals("{\"code\":105, \"key\":\"error.tenant.parent.not.found\", \"message\":\"Parent registry not found.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString(), e.getMessage());
 
         SystemTenant newTenantRoot = new Tenant();
         newTenantRoot.setTenantType(TenantType.ROOT_TENANT);
@@ -621,7 +624,7 @@ public class TenantServiceTest {
         newTenantRoot.setParentId(111L);
 
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(newTenantRoot));
-        assertEquals("{\"code\":110, \"key\":\"error.tenant.root.with.parent\", \"message\":\"Tenant root cannot have parent associated.\"}", e.getMessage());
+        assertEquals(GenericErrorCodeMessage.TENANT_ROOT_WITH_PARENT.toString(), e.getMessage());
 
         newTenantRoot.setParentId(null);
     }

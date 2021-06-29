@@ -50,12 +50,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
+ * Linked authorization resource requests test
+ * {@link io.radien.ms.rolemanagement.services.LinkedAuthorizationResource}
+ *
  * @author Bruno Gama
  */
 public class LinkedAuthorizationResourceTest {
@@ -69,6 +67,9 @@ public class LinkedAuthorizationResourceTest {
     @Mock
     HttpServletRequest servletRequest;
 
+    /**
+     * Method for test preparation
+     */
     @BeforeEach
     public void before(){
         MockitoAnnotations.initMocks(this);
@@ -131,7 +132,7 @@ public class LinkedAuthorizationResourceTest {
     @Test
     public void testGetAssociationByIdGenericError() throws LinkedAuthorizationNotFoundException{
         when(linkedAuthorizationBusinessService.getAssociationById(any())).thenThrow(new RuntimeException());
-        Response response = linkedAuthorizationResource.getAssociationById(1l);
+        Response response = linkedAuthorizationResource.getAssociationById(1L);
         assertEquals(500,response.getStatus());
     }
 
@@ -151,7 +152,7 @@ public class LinkedAuthorizationResourceTest {
      */
     @Test
     public void testDeleteAssociation() {
-        Response response = linkedAuthorizationResource.deleteAssociation(1l);
+        Response response = linkedAuthorizationResource.deleteAssociation(1L);
         assertEquals(200,response.getStatus());
     }
 
@@ -162,7 +163,7 @@ public class LinkedAuthorizationResourceTest {
     @Test
     public void testDeleteGenericError() throws LinkedAuthorizationNotFoundException, SystemException {
         doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).deleteAssociation(any());
-        Response response = linkedAuthorizationResource.deleteAssociation(1l);
+        Response response = linkedAuthorizationResource.deleteAssociation(1L);
         assertEquals(500,response.getStatus());
     }
 
@@ -173,7 +174,7 @@ public class LinkedAuthorizationResourceTest {
     @Test
     public void testDeleteNotFoundError() throws LinkedAuthorizationNotFoundException {
         when(linkedAuthorizationBusinessService.getAssociationById(any())).thenThrow(new LinkedAuthorizationNotFoundException());
-        Response response = linkedAuthorizationResource.deleteAssociation(1l);
+        Response response = linkedAuthorizationResource.deleteAssociation(1L);
         assertEquals(404,response.getStatus());
     }
 
@@ -231,6 +232,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(404,response.getStatus());
     }
 
+    /**
+     * Test to validate if role exists
+     */
     @Test
     public void testValidateRole() {
         when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenReturn(true);
@@ -238,6 +242,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Test to validate if role exists and will not
+     */
     @Test
     public void testValidateRoleNotFoundCase() {
         when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenReturn(false);
@@ -245,6 +252,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(404 ,response.getStatus());
     }
 
+    /**
+     * Test to validate if role exists and will throw generic exception
+     */
     @Test
     public void testValidateRoleException() {
         when(linkedAuthorizationBusinessService.existsSpecificAssociation(any())).thenThrow(new RuntimeException());
@@ -272,6 +282,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test to attempt to get roles of a linked authorization by a given user and tenant
+     */
     @Test
     public void testGetRolesByUserAndTenant() {
         Long userId = 1L;
@@ -293,12 +306,18 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(response.getEntity(), roleList);
     }
 
+    /**
+     * Test to attempt to get roles of a linked authorization by a given user and tenant and they don't exist
+     */
     @Test
     public void testGetRolesByUserAndTenant404Case() {
         Response response = linkedAuthorizationResource.getRoles(null, null);
         assertEquals(404,response.getStatus());
     }
 
+    /**
+     * Test to attempt to get roles of a linked authorization by a given user and tenant with generic exception
+     */
     @Test
     public void testGetRolesByUserAndTenantWithException() {
         Long userId = 1L;
@@ -309,6 +328,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test to check if role exists for a user and tenant
+     */
     @Test
     public void testCheckIfRoleExistForUserTenant() {
         Long userId = 1L;
@@ -319,17 +341,23 @@ public class LinkedAuthorizationResourceTest {
         when(linkedAuthorizationBusinessService.isRoleExistentForUser(userId, tenantId, roleName))
                 .thenReturn(Boolean.FALSE);
         Response r = linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, null);
-        assertEquals(r.getEntity(), Boolean.TRUE);
+        assertEquals(Boolean.TRUE, r.getEntity());
         r = linkedAuthorizationResource.isRoleExistentForUser(userId, roleName, tenantId);
-        assertEquals(r.getEntity(), Boolean.FALSE);
+        assertEquals(Boolean.FALSE, r.getEntity());
     }
 
+    /**
+     * Test to check if role exists for a user and tenant and will not be found
+     */
     @Test
     public void testCheckIfRoleExistForUserTenant404Case() {
         Response response = linkedAuthorizationResource.isRoleExistentForUser(null, null, null);
         assertEquals(404,response.getStatus());
     }
 
+    /**
+     * Test to check if role exists for a user and tenant and will throw generic exception
+     */
     @Test
     public void testCheckIfRoleExistForUserTenantWithException() {
         Long userId = 1L;
@@ -341,12 +369,18 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test to get roles in linked authorizations
+     */
     @Test
     public void testGetRoles() {
         Response response = linkedAuthorizationResource.getRoles(2L, 2L);
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Test to get roles in linked authorizations and should return generic exception
+     */
     @Test
     public void testGetRolesException() {
         when(linkedAuthorizationResource.getRoles(anyLong(), anyLong()))
@@ -355,12 +389,18 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test to see if specific role exists for given user
+     */
     @Test
     public void testIsRoleExistentForUser() {
         Response response = linkedAuthorizationResource.isRoleExistentForUser(2L, "test", 2L);
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Test to see if specific role exists for given user and should return generic exception
+     */
     @Test
     public void testIsRoleExistentForUserException() {
         when(linkedAuthorizationBusinessService.isRoleExistentForUser(anyLong(), anyLong(), anyString()))
@@ -369,6 +409,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test to check if specific permission exists in the linked authorization
+     */
     @Test
     public void testCheckPermissions() {
         List<String> roleList = new ArrayList<>();
@@ -376,6 +419,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(200,response.getStatus());
     }
 
+    /**
+     * Test to check if specific permission exists in the linked authorization should return generic exception
+     */
     @Test
     public void testCheckPermissionsException() {
         when(linkedAuthorizationBusinessService.checkPermissions(anyLong(), anyLong(), anyList()))
@@ -385,6 +431,9 @@ public class LinkedAuthorizationResourceTest {
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Test to check if specific permission exists in the linked authorization should return permission not found
+     */
     @Test
     public void testCheckPermissionsNotFound() {
         List<String> roleList = new ArrayList<>();
@@ -400,7 +449,7 @@ public class LinkedAuthorizationResourceTest {
     public void testDissociation() throws LinkedAuthorizationException {
         doReturn(Boolean.TRUE).when(linkedAuthorizationBusinessService).
                 deleteAssociations(anyLong(), anyLong());
-        Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
+        Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
         assertEquals(200,response.getStatus());
     }
 
@@ -413,11 +462,11 @@ public class LinkedAuthorizationResourceTest {
     public void testDissociationInvalidRequest() throws LinkedAuthorizationException {
         doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(nullable(Long.class), anyLong());
-        Response response = linkedAuthorizationResource.deleteAssociations(null,1l);
+        Response response = linkedAuthorizationResource.deleteAssociations(null,1L);
         assertEquals(400,response.getStatus());
         doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(anyLong(), nullable(Long.class));
-        response = linkedAuthorizationResource.deleteAssociations(1l,null);
+        response = linkedAuthorizationResource.deleteAssociations(1L,null);
         assertEquals(400,response.getStatus());
     }
 
@@ -430,7 +479,7 @@ public class LinkedAuthorizationResourceTest {
     public void testDissociationAssociationsNotFound() throws LinkedAuthorizationException {
         doReturn(Boolean.FALSE).when(linkedAuthorizationBusinessService).
                 deleteAssociations(anyLong(), anyLong());
-        Response response = linkedAuthorizationResource.deleteAssociations(1l,1l);
+        Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
         assertEquals(404,response.getStatus());
     }
 

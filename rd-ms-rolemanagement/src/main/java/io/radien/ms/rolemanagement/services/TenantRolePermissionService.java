@@ -18,8 +18,8 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +153,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRolePermission.getPermissionId(),
                 tenantRolePermission.getTenantRoleId(), em);
         if (alreadyExistentRecords) {
-            throw new UniquenessConstraintException(RoleErrorCodeMessage.
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.
                     DUPLICATED_FIELD.toString("permissionId and roleTenantId"));
         }
         em.persist(tenantRolePermission);

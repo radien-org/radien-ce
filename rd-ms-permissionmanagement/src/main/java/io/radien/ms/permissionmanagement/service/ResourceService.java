@@ -19,8 +19,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
 import io.radien.api.service.permission.ResourceServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.model.Resource;
 
 import javax.ejb.Stateless;
@@ -160,7 +160,7 @@ public class ResourceService implements ResourceServiceAccess {
         EntityManager em = getEntityManager();
         List<Resource> alreadyExistentRecords = searchDuplicatedName(resource, em);
         if (!alreadyExistentRecords.isEmpty()) {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
         if(resource.getId() == null) {
             em.persist(resource);

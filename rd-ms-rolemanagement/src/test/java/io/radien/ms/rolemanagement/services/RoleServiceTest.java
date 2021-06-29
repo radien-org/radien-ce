@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
@@ -33,7 +34,6 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -126,7 +126,7 @@ public class RoleServiceTest {
     public void testGetByIdException() {
         Exception exception = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get(99L));
 
-        String expectedMessage = "{\"code\":100, \"key\":\"error.role.not.found\", \"message\":\"Role was not found.\"}";
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -140,7 +140,7 @@ public class RoleServiceTest {
         roleServiceAccess.delete(systemRole.getId());
 
         Exception exception = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((systemRole.getId())));
-        String expectedMessage = "{\"code\":100, \"key\":\"error.role.not.found\", \"message\":\"Role was not found.\"}";
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -205,6 +205,6 @@ public class RoleServiceTest {
     @Test
     public void testGetTotalRecordsCount() {
         long result = roleServiceAccess.getTotalRecordsCount();
-        assertEquals(1, result);
+        assertEquals(2, result);
     }
 }
