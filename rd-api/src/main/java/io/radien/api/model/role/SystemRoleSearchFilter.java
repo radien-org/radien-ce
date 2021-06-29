@@ -24,7 +24,16 @@ import java.util.Collection;
  */
 public interface SystemRoleSearchFilter {
 
+    /**
+     * Role search filter get ids
+     * @return ids for search filter
+     */
     Collection<Long> getIds();
+
+    /**
+     * Role search filter ids setter
+     * @param ids to be set and replace
+     */
     void setIds(Collection<Long> ids);
 
     /**

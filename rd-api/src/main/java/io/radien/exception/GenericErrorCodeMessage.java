@@ -62,6 +62,7 @@ public enum GenericErrorCodeMessage {
     /**
      * System Error Code Messages
      */
+    EXPIRED_ACCESS_TOKEN(499, "error.unable.recover.expired.token", "Unable to recover expired token"),
     GENERIC_ERROR(500, "error.generic.error", "Generic Error.");
 
     private final int code;

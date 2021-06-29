@@ -32,6 +32,8 @@ import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
+
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -64,8 +66,6 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
-
-    private static final String UNABLE_TO_RECOVER_EXPIRED_TOKEN = "Unable to recover expiredToken";
 
     /**
      * Calls the requester to retrieve a page object containing roles that matches search parameter.
@@ -245,7 +245,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return getSystemRoles(ids);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(UNABLE_TO_RECOVER_EXPIRED_TOKEN);
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
