@@ -20,6 +20,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -41,7 +42,11 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 /**
  * @author Nuno Santana
@@ -132,8 +137,7 @@ public class UserServiceTest {
         User u = UserFactory.create("testAddFirstName", "testAddLastName", "testAddLogon",
                 null, "email@email.pt", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.save(u));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Email Address\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -150,8 +154,7 @@ public class UserServiceTest {
         User u = UserFactory.create("testAddFirstName", "testAddLastName", "logon", null,
                 "testAddEmail@testAddEmail.pt", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.save(u));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Logon\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -357,8 +360,7 @@ public class UserServiceTest {
 
         Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
         String actualMessageEmailAndLogon = exceptionEmailAndLogon.getMessage();
-        String expectedMessageEmailAndLogon = "{\"code\":101, \"key\":\"error.duplicated.field\"," +
-                " \"message\":\"There is more than one resource with the same value for the field: Email Address and Logon\"}";
+        String expectedMessageEmailAndLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon");
         assertTrue(actualMessageEmailAndLogon.contains(expectedMessageEmailAndLogon));
 
     }
@@ -370,8 +372,7 @@ public class UserServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedEmail() throws Exception {
-        String expectedMessageEmail = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Email Address\"}";
+        String expectedMessageEmail = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address");
 
         User u1 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName1",
                 "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon1",
@@ -411,8 +412,7 @@ public class UserServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedLogon() throws Exception {
-        String expectedMessageLogon = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Logon\"}";
+        String expectedMessageLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon");;
 
         User u1 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName1",
                 "testUpdateFailureDuplicatedLogonLastName1", "testUpdateFailureDuplicatedLogonLogon1",
@@ -478,8 +478,7 @@ public class UserServiceTest {
         Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
         System.out.println(exceptionEmailAndLogon.toString());
         String actualMessageEmailAndLogon = exceptionEmailAndLogon.getMessage();
-        String expectedMessageEmailAndLogon = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Email Address and Logon\"}";
+        String expectedMessageEmailAndLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon");;
         assertTrue(actualMessageEmailAndLogon.contains(expectedMessageEmailAndLogon));
     }
 

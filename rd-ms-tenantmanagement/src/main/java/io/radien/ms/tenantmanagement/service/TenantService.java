@@ -32,7 +32,12 @@ import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Order;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -202,7 +207,7 @@ public class TenantService implements TenantServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(tenant);
         } else {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
     }
 
@@ -219,7 +224,7 @@ public class TenantService implements TenantServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(tenant);
         } else {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
     }
 

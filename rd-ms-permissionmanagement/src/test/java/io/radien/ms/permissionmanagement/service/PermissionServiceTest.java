@@ -25,6 +25,7 @@ import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.api.service.permission.ResourceServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
@@ -139,8 +140,7 @@ public class PermissionServiceTest {
 
         Permission u2 = PermissionFactory.create("permissionNameXYZ", null,2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(u2));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");;
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -308,7 +308,7 @@ public class PermissionServiceTest {
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> permissionServiceAccess.save(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
 
     }
@@ -320,8 +320,7 @@ public class PermissionServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
-        String expectedMessageName = "{\"code\":101, \"key\":\"error.duplicated.field\", " +
-                "\"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
         Permission p1 = PermissionFactory.create("permissionNamePerm1", null, 2L);
         permissionServiceAccess.save(p1);
