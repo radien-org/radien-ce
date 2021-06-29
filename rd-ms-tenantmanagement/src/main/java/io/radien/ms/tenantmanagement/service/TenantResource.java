@@ -95,7 +95,7 @@ public class TenantResource implements TenantResourceClient {
 		try {
 			SystemTenant tenant = tenantService.get(id);
 			if(tenant == null){
-				return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 			}
 			return Response.ok(tenant).build();
 		}catch (Exception e){
@@ -177,7 +177,7 @@ public class TenantResource implements TenantResourceClient {
 		try {
 			return Response.ok(tenantService.exists(id)).build();
 		}catch (NotFoundException e){
-			return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		}
 	}
 }

@@ -15,15 +15,22 @@
  */
 package io.radien.ms.usermanagement.client.exceptions;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * User Management Testing criteria for the generic error code message
+ */
 public class ErrorCodeMessageTest {
 
+    /**
+     * Testing the generic error code messages for the user management
+     */
     @Test
     public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Email Address\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString());
+        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Email Address\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
     }
 }

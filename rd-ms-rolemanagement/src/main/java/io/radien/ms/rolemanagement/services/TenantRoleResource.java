@@ -15,10 +15,10 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(this.tenantRoleBusinessService.getAll(pageNo, pageSize)).build();
         }
         catch(Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -78,7 +78,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
         try {
             return Response.ok(tenantRoleBusinessService.getSpecific(tenantId, roleId, isLogicalConjunction)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -94,9 +94,9 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             log("Retrieving TenantRole association for id %d", id);
             return Response.ok().entity(tenantRoleBusinessService.getById(id)).build();
         } catch (TenantRoleException e) {
-            return getAssociationNotFoundException();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -113,9 +113,9 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             log("Deleting TenantRole association for id %d", id);
             return Response.ok().entity(tenantRoleBusinessService.delete(id)).build();
         } catch (TenantRoleException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -133,9 +133,9 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             tenantRoleBusinessService.save(new io.radien.ms.rolemanagement.entities.TenantRole(tenantRole));
             return Response.ok().build();
         } catch (UniquenessConstraintException | TenantRoleException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -152,7 +152,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
         try {
             return Response.ok().entity(tenantRoleBusinessService.existsAssociation(tenantId, roleId)).build();
         } catch(Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -170,7 +170,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(tenantRoleBusinessService.
                     getPermissions(tenantId, roleId, userId)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -187,7 +187,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(tenantRoleBusinessService.
                     getTenants(userId, roleId)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -210,7 +210,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(tenantRoleBusinessService.
                     isRoleExistentForUser(userId, roleName, tenantId)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -234,7 +234,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(tenantRoleBusinessService.
                     isAnyRoleExistentForUser(userId, roleNames, tenantId)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -257,7 +257,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(tenantRoleBusinessService.
                     isPermissionExistentForUser(userId, permissionId, tenantId)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -278,9 +278,9 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             tenantRoleBusinessService.assignUser(tenantId, roleId, userId);
             return Response.ok().build();
         } catch (TenantRoleException | UniquenessConstraintException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -300,9 +300,9 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             tenantRoleBusinessService.unassignUser(tenantId, roleId, userId);
             return Response.ok().build();
         } catch (TenantRoleException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -323,9 +323,9 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             tenantRoleBusinessService.assignPermission(tenantId, roleId, permissionId);
             return Response.ok().build();
         } catch (TenantRoleException | UniquenessConstraintException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -345,9 +345,9 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             tenantRoleBusinessService.unassignPermission(tenantId, roleId, permissionId);
             return Response.ok().build();
         } catch (TenantRoleException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -361,38 +361,5 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             String formattedMsg = params != null ? String.format(msg, params) : msg;
             log.error(formattedMsg);
         }
-    }
-
-    /**
-     * Generic error exception. Launches a 500 Error Code to the user.
-     * @param e exception to be throw
-     * @return code 500 message Generic Exception
-     */
-    private Response getGenericError(Exception e) {
-        String message = LinkedAuthorizationErrorCodeMessage.GENERIC_ERROR.toString();
-        log.error(message, e);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-    }
-
-    /**
-     * Generic error exception to when the Tenant Role association could not be found in DB.
-     * Launches a 404 Error Code to the user.
-     * @return code 100 message Resource not found.
-     */
-    private Response getAssociationNotFoundException() {
-        String message = LinkedAuthorizationErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
-        log.error(message);
-        return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-    }
-
-    /**
-     * Invalid Request error exception. Launches a 400 Error Code to the user.
-     * @param e exception to be throw
-     * @return code 400 message Generic Exception
-     */
-    private Response getInvalidRequestResponse(Exception e) {
-        String message = e.getMessage();
-        log.error(message);
-        return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }
 }

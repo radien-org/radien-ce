@@ -74,7 +74,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 		try {
 			SystemActiveTenant activeTenant = activeTenantServiceAccess.get(id);
 			if(activeTenant == null){
-				return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 			}
 			return Response.ok(activeTenant).build();
 		}catch (Exception e){
@@ -142,7 +142,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 		try {
 			return Response.ok(activeTenantServiceAccess.exists(id)).build();
 		}catch (NotFoundException e){
-			return GenericErrorMessagesToResponseMapper.getTenantResourceNotFoundException();
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		}
 	}
 }

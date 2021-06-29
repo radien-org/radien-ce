@@ -142,7 +142,7 @@ public class UserFactory {
         int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
 
-        ArrayList<User> pageResults = new ArrayList();
+        ArrayList<User> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){

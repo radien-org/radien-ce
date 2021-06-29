@@ -117,7 +117,7 @@ public class TenantRoleUserFactory {
         int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
 
-        ArrayList<TenantRoleUser> pageResults = new ArrayList();
+        ArrayList<TenantRoleUser> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){

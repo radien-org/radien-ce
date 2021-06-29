@@ -17,9 +17,9 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
-import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
 import io.radien.ms.permissionmanagement.model.Action;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class ActionResource implements ActionResourceClient {
 		try {
 			return Response.ok(actionServiceAccess.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class ActionResource implements ActionResourceClient {
 			return Response.ok(actionServiceAccess.getActions(new ActionSearchFilter(name,
 					isExact, isLogicalConjunction))).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -101,11 +101,11 @@ public class ActionResource implements ActionResourceClient {
 		try {
 			SystemAction systemAction = actionServiceAccess.get(id);
 			if(systemAction == null){
-				return getResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 			}
 			return Response.ok(systemAction).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -118,7 +118,7 @@ public class ActionResource implements ActionResourceClient {
 		try {
 			actionServiceAccess.delete(id);
 		} catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 		return Response.ok().build();
 	}
@@ -135,38 +135,9 @@ public class ActionResource implements ActionResourceClient {
 			actionServiceAccess.save(new Action(action));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
-			return getInvalidRequestResponse(e);
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
-	}
-
-	/**
-	 * Invalid Request error exception. Launches a 400 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 400 message Generic Exception
-	 */
-	private Response getInvalidRequestResponse(UniquenessConstraintException e) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-	}
-
-	/**
-	 * Generic error exception. Launches a 500 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 500 message Generic Exception
-	 */
-	private Response getGenericError(Exception e) {
-		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
-		log.error(message, e);
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-	}
-
-	/**
-	 * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
-	 * @return code 100 message Resource not found.
-	 */
-	private Response getResourceNotFoundException() {
-		return Response.status(Response.Status.NOT_FOUND).
-				entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
 	}
 }

@@ -16,11 +16,11 @@
 package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.tenant.SystemContract;
 
 import io.radien.api.service.tenant.ContractServiceAccess;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -36,7 +36,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Nuno Santana
@@ -101,8 +105,7 @@ public class ContractServiceTest {
         LocalDateTime end = LocalDateTime.now();
         SystemContract c = ContractFactory.create(name,start,end,1L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> contractServiceAccess.create(c));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -121,8 +124,7 @@ public class ContractServiceTest {
         LocalDateTime end = LocalDateTime.now();
         SystemContract c = ContractFactory.create(name,start,end,1L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> contractServiceAccess.update(c));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

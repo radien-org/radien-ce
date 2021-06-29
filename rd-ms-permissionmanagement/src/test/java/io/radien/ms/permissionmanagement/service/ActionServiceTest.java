@@ -18,6 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
+import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
@@ -133,8 +134,7 @@ public class ActionServiceTest {
 
         Action u2 = ActionFactory.create("actionNameXXX", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> actionServiceAccess.save(u2));
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than" +
-                " one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");;
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -290,7 +290,7 @@ public class ActionServiceTest {
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> actionServiceAccess.save(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
-        String expectedMessage = "{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
 
     }
@@ -302,8 +302,7 @@ public class ActionServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
-        String expectedMessageName = "{\"code\":101, \"key\":\"error.duplicated.field\", " +
-                "\"message\":\"There is more than one resource with the same value for the field: Name\"}";
+        String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
         Action p1 = ActionFactory.create("actionNamePerm1", 2L);
         actionServiceAccess.save(p1);

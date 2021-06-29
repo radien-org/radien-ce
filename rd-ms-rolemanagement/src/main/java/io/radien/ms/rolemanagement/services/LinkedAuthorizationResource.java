@@ -17,12 +17,12 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
-import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationErrorCodeMessage;
 import io.radien.ms.rolemanagement.client.services.LinkedAuthorizationResourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             log.info("Will get all the role information I can find!");
             return Response.ok(linkedAuthorizationBusinessService.getAll(pageNo, pageSize)).build();
         } catch(Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -81,7 +81,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             SystemLinkedAuthorizationSearchFilter filter = new LinkedAuthorizationSearchFilter(tenantId, permissionId, roleId, userId, isLogicalConjunction);
             return Response.ok(linkedAuthorizationBusinessService.getSpecificAssociation(filter)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -98,9 +98,9 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             SystemLinkedAuthorization systemAssociation = linkedAuthorizationBusinessService.getAssociationById(id);
             return Response.ok(systemAssociation).build();
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getAssociationNotFoundResponse();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -117,9 +117,9 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             linkedAuthorizationBusinessService.getAssociationById(id);
             linkedAuthorizationBusinessService.deleteAssociation(id);
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getAssociationNotFoundResponse();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (Exception e){
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
         return Response.ok().build();
     }
@@ -140,12 +140,12 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
                     tenantId, userId);
             boolean status = linkedAuthorizationBusinessService.deleteAssociations(tenantId, userId);
             if (!status) {
-                return getAssociationNotFoundResponse();
+                return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
             }
         } catch (LinkedAuthorizationException e) {
-            return getInvalidRequestResponse(e.getMessage());
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e){
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
         return Response.ok().build();
     }
@@ -164,11 +164,11 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             linkedAuthorizationBusinessService.save(new io.radien.ms.rolemanagement.entities.LinkedAuthorization(association));
             return Response.ok().build();
         } catch (LinkedAuthorizationNotFoundException e) {
-            return getAssociationNotFoundResponse();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (UniquenessConstraintException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -190,7 +190,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             boolean exist = linkedAuthorizationBusinessService.existsSpecificAssociation(filter);
             return exist ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -203,7 +203,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
         try {
             return Response.ok(linkedAuthorizationBusinessService.getTotalRecordsCount()).build();
         } catch(Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -222,7 +222,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
             return Response.ok(linkedAuthorizationBusinessService.getRolesByUserAndTenant(
                     userId, tenantId)).build();
         } catch(Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -242,7 +242,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
                     userId, tenantId, roleName)).build();
         }
         catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -262,48 +262,7 @@ public class LinkedAuthorizationResource implements LinkedAuthorizationResourceC
                     userId, tenantId, roleName)).build();
         }
         catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
-    }
-
-    /**
-     * Generic error exception. Launches a 500 Error Code to the user.
-     * @param e exception to be throw
-     * @return code 500 message Generic Exception
-     */
-    private Response getGenericError(Exception e) {
-        String message = LinkedAuthorizationErrorCodeMessage.GENERIC_ERROR.toString();
-        log.error(message, e);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-    }
-
-    /**
-     * Response to be used when the linked authorization could not be found in DB. Launches a 404 Error Code to the user.
-     * @return code 100 message Resource not found.
-     */
-    private Response getAssociationNotFoundResponse() {
-        String message = LinkedAuthorizationErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
-        log.error(message);
-        return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-    }
-
-    /**
-     * Invalid Request error exception. Launches a 400 Error Code to the user.
-     * @param e exception to be throw
-     * @return code 400 message Generic Exception
-     */
-    private Response getInvalidRequestResponse(UniquenessConstraintException e) {
-        String message = e.getMessage();
-        return getInvalidRequestResponse(message);
-    }
-
-    /**
-     * Invalid Request error exception. Launches a 400 Error Code to the user.
-     * @param message message regarding the detected issue (to be shown)
-     * @return code 400 message Generic Exception
-     */
-    private Response getInvalidRequestResponse(String message) {
-        log.error(message);
-        return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }
 }

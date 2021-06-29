@@ -108,7 +108,7 @@ public class ActionFactory {
         int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
 
-        ArrayList<Action> pageResults = new ArrayList();
+        ArrayList<Action> pageResults = new ArrayList<>();
         
         if(results != null){
             for(int i = 0;i<results.size();i++){

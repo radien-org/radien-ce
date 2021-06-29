@@ -25,18 +25,17 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.usermanagement.batch.BatchResponse;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
 
 import io.radien.ms.usermanagement.entities.User;
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		try {
 			Long id = userBusinessService.getUserId(sub);
 			if (id == null) {
-				return getResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 			}
 			return Response.ok(id).build();
 		} catch (Exception e) {
@@ -92,7 +91,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 						   List<String> sortBy, boolean isAscending) {
 		try {
 			if (!checkUserRoles()) {
-				return getForbiddenResponse();
+				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
@@ -127,7 +126,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	public Response getById(Long id) {
 		try {
 			if (!checkUserRoles()) {
-				return getForbiddenResponse();
+				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 			SystemUser systemUser = userBusinessService.get(id);
 			return Response.ok(systemUser).build();
@@ -144,7 +143,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	public Response delete(long id)  {
 		try {
 			if (!checkUserRoles()) {
-				return getForbiddenResponse();
+				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 			userBusinessService.delete(id);
 		}  catch (Exception e){
@@ -162,7 +161,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
 			if (!isSelfOnboard(user) && !checkUserRoles()) {
-				return getForbiddenResponse();
+				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 			userBusinessService.save(new User(user),user.isDelegatedCreation());
 		} catch (Exception e) {
@@ -199,35 +198,6 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	}
 
 	/**
-	 * Invalid Request error exception. Launches a 400 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 400 message Generic Exception
-	 */
-	private Response getInvalidRequestResponse(UniquenessConstraintException e) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-	}
-
-	/**
-	 * Generic error exception. Launches a 500 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 500 message Generic Exception
-	 */
-	private Response getGenericError(Exception e) {
-		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
-		log.error(message, e);
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-	}
-
-	/**
-	 * Returns Forbidden response type in case of missing certain user roles
-	 * @return code 403 message Forbidden response
-	 */
-	private Response getForbiddenResponse() {
-		return Response.status(HttpStatus.SC_FORBIDDEN).
-				entity("No Role available to perform this task").build();
-	}
-
-	/**
 	 * Validates if the requester user has one of the specific roles either
 	 * System Administrator or User Administrator
 	 * @return true in case of neither of the roles are matching the user ones
@@ -238,25 +208,6 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
 		roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 		return hasGrantMultipleRoles(roleNames);
-	}
-
-	/**
-	 * Generic error exception. Launches a 500 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 500 message Generic Exception
-	 */
-	private Response getRemoteResourceExceptionError(RemoteResourceException e) {
-		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
-		log.error(message, e);
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-	}
-
-	/**
-	 * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
-	 * @return code 100 message Resource not found.
-	 */
-	private Response getResourceNotFoundException() {
-		return Response.status(Response.Status.NOT_FOUND).entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
 	}
 
 	/**
@@ -295,13 +246,13 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 			log.error("ERROR: ",e);
 			throw e;
 		} catch (RemoteResourceException rre){
-			response = getRemoteResourceExceptionError(rre);
+			response = GenericErrorMessagesToResponseMapper.getGenericError(rre);
 		} catch (UserNotFoundException unfe){
-			response = getResourceNotFoundException();
+			response = GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		} catch (UniquenessConstraintException uce) {
-			return getInvalidRequestResponse(uce);
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(uce.getMessage());
 		}catch (Exception et){
-			response = getGenericError(et);
+			response = GenericErrorMessagesToResponseMapper.getGenericError(et);
 		}
 		return response;
 	}
@@ -332,7 +283,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		try {
 			return Response.ok(userBusinessService.refreshToken(refreshToken)).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 }
