@@ -555,14 +555,23 @@ public class UserServiceTest {
         userServiceAccess.save(testById2);
         userServiceAccess.save(testById3);
 
-        List<? extends SystemUser> usersAnd = userServiceAccess.getUsers(new UserSearchFilter("zz","zz@b.pt","zz",true,true));
+        List<? extends SystemUser> usersAnd = userServiceAccess.getUsers(new UserSearchFilter("zz","zz@b.pt","zz",null,true,true));
         assertEquals(1,usersAnd.size());
 
-        List<? extends SystemUser> usersOr = userServiceAccess.getUsers(new UserSearchFilter("aa","aa@b.pt","zz",true,false));
+        List<? extends SystemUser> usersOr = userServiceAccess.getUsers(new UserSearchFilter("aa","aa@b.pt","zz",new ArrayList(),true,false));
         assertEquals(2,usersOr.size());
 
-        List<? extends SystemUser> usersNotExact = userServiceAccess.getUsers(new UserSearchFilter("aa","aa","aa",false,true));
+        List<? extends SystemUser> usersNotExact = userServiceAccess.getUsers(new UserSearchFilter("aa","aa","aa",null,false,true));
         assertEquals(2,usersNotExact.size());
+
+        List<Long> ids = Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId());
+        List<? extends SystemUser> usersById = userServiceAccess.getUsers(
+                new UserSearchFilter(null,null,null,ids,false,false));
+        assertEquals(3,usersById.size());
+
+        usersById = userServiceAccess.getUsers(
+                new UserSearchFilter("zz",null,null,ids,false,true));
+        assertEquals(1,usersById.size());
     }
 
     /**

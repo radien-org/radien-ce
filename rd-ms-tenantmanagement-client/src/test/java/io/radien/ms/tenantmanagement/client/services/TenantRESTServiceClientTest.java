@@ -18,8 +18,12 @@ package io.radien.ms.tenantmanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
@@ -35,20 +39,30 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
+import javax.json.JsonArray;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Arrays;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Bruno Gama
@@ -64,7 +78,16 @@ public class TenantRESTServiceClientTest {
     @Mock
     OAFAccess oafAccess;
 
-    private Tenant dummyTenant = new Tenant();
+    @Mock
+    AuthorizationChecker authorizationChecker;
+
+    @Mock
+    UserClient userClient;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
+
+    private final Tenant dummyTenant = new Tenant();
 
     @Before
     public void before(){
@@ -83,7 +106,7 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testGetTenantById() throws MalformedURLException, ParseException, SystemException {
+    public void testGetTenantById() throws MalformedURLException, SystemException {
         InputStream is = new ByteArrayInputStream(TenantModelMapper.map(dummyTenant).toString().getBytes());
         Response response = Response.ok(is).build();
         TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
@@ -125,7 +148,7 @@ public class TenantRESTServiceClientTest {
 
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
 
-        when(tenantResourceClient.get(any(),any(),anyBoolean(),anyBoolean()))
+        when(tenantResourceClient.get(any(),any(),any(),anyBoolean(),anyBoolean()))
                 .thenReturn(response);
 
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
@@ -146,6 +169,124 @@ public class TenantRESTServiceClientTest {
         }
         assertTrue(success);
     }
+
+    /**
+     * Test for method getTenantById(id)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown due JWT expiration during the reattempt
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantByIdWithTokenException() throws MalformedURLException, SystemException {
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getById(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantById(1L);
+    }
+
+    /**
+     * Test for method getTenantsByIds(List ids)
+     * It corresponds to the successful situation where tenants are found and retrieved for
+     * the informed ids.
+     * Expected result (SUCCESS): Tenants retrieved
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetTenantsByIds() throws MalformedURLException, SystemException {
+        Tenant t1 = new Tenant();
+        t1.setId(1L);
+        t1.setTenantType(TenantType.ROOT_TENANT);
+
+        Tenant t2 = new Tenant();
+        t2.setId(2L);
+        t2.setTenantType(TenantType.SUB_TENANT);
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        jsonArrayBuilder.add(TenantModelMapper.map(t1));
+        jsonArrayBuilder.add(TenantModelMapper.map(t2));
+        JsonArray jsonArray = jsonArrayBuilder.build();
+
+        List<Long> ids = Arrays.asList(t1.getId(), t2.getId());
+
+        InputStream is = new ByteArrayInputStream(jsonArray.toString().getBytes());
+        Response response = Response.ok(is).build();
+
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.get(null, null, ids, true, true)).thenReturn(response);
+
+        List<? extends SystemTenant> outcome = target.getTenantsByIds(ids);
+        assertNotNull(outcome);
+        assertFalse(outcome.isEmpty());
+        assertEquals(2, outcome.size());
+    }
+
+    /**
+     * Test for method getTenantsByIds(List ids)
+     * It corresponds to the unsuccessful situation where exception occurs
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantsByIdsException() throws MalformedURLException, SystemException {
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenThrow(new MalformedURLException());
+        target.getTenantsByIds(Arrays.asList(3L, 4L));
+    }
+
+    /**
+     * Test for method getTenantsByIds(List ids)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantsByIdsTokenExpiration() throws MalformedURLException, SystemException {
+        List<Long> ids = Arrays.asList(1L, 2L);
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.get(null, null, ids, true, true)).
+                thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantsByIds(ids);
+    }
+
+    /**
+     * Test for method getTenantsByIds(List ids)
+     * It corresponds to the the case where is not possible to find Tenants
+     * Expected result (SUCCESS): Empty list. No Tenants found for the informed ids
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetTenantsByIdsNoResults() throws MalformedURLException, SystemException {
+        List<Long> ids = Arrays.asList(1L, 2L);
+        InputStream is = new ByteArrayInputStream("[]".getBytes());
+        Response response = Response.ok(is).build();
+
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.get(null, null, ids, true, true)).thenReturn(response);
+
+        List<? extends SystemTenant> outcome = target.getTenantsByIds(ids);
+        assertNotNull(outcome);
+        assertTrue(outcome.isEmpty());
+    }
+
 
     @Test
     public void testGetAll() throws MalformedURLException, SystemException {
@@ -188,6 +329,28 @@ public class TenantRESTServiceClientTest {
         assertTrue(success);
     }
 
+    /**
+     * Test for method getAll(search, page, size, sortBy, boolean)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetAllWithTokenException() throws MalformedURLException, SystemException {
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getAll(anyString(), anyInt(),anyInt(),anyList(), anyBoolean())).
+                thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getAll("toyota", 1, 10, new ArrayList<>(), true);
+    }
+
     @Test
     public void testCreate() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
@@ -217,6 +380,28 @@ public class TenantRESTServiceClientTest {
             success = true;
         }
         assertTrue(success);
+    }
+
+    /**
+     * Test for method create(tenant)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testCreateWithTokenException() throws MalformedURLException, SystemException {
+        Tenant toBeCreated = mock(Tenant.class);
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.create(toBeCreated)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.create(toBeCreated);
     }
 
     @Test
@@ -257,6 +442,27 @@ public class TenantRESTServiceClientTest {
         assertTrue(success);
     }
 
+    /**
+     * Test for method delete(tenantId)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testDeleteWithTokenException() throws MalformedURLException, SystemException {
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.delete(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.delete(1L);
+    }
+
     @Test
     public void testDeleteTenantHierarchy() throws MalformedURLException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
@@ -295,6 +501,27 @@ public class TenantRESTServiceClientTest {
         assertTrue(success);
     }
 
+    /**
+     * Test for method deleteTenantHierarchy(tenantId)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testDeleteHierarchyWithTokenException() throws MalformedURLException, SystemException {
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.deleteTenantHierarchy(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.deleteTenantHierarchy(1L);
+    }
+
     @Test
     public void testUpdate() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
@@ -328,6 +555,29 @@ public class TenantRESTServiceClientTest {
         assertTrue(success);
     }
 
+    /**
+     * Test for method update(tenant)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateWithTokenException() throws MalformedURLException, SystemException {
+        long id = 1L;
+        Tenant toBeUpdated = new Tenant();
+        toBeUpdated.setId(id);
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.update(id, toBeUpdated)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(toBeUpdated);
+    }
 
     @Test
     public void testIsTenantExistent() throws MalformedURLException, SystemException {
@@ -373,5 +623,28 @@ public class TenantRESTServiceClientTest {
             success = true;
         }
         assertTrue(success);
+    }
+
+    /**
+     * Test for method update(tenant)
+     * It corresponds to the unsuccessful situation where JWT expiration occurs and
+     * is not possible to recover from that
+     * Expected result (FAIL): SystemException thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testIsTenantExistentWithTokenException() throws MalformedURLException, SystemException {
+        Tenant toBeUpdated = mock(Tenant.class);
+        toBeUpdated.setId(1L);
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.exists(1L)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.isTenantExistent(1L);
     }
 }

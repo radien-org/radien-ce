@@ -59,5 +59,6 @@ public class JwtFilter implements Filter {
 
     @Override
     public void destroy() {
+        // empty
     }
 } 

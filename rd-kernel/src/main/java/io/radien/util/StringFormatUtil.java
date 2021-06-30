@@ -77,31 +77,39 @@ public class StringFormatUtil {
                     " use either all empty placeholders or placeholders with the corresponding index int values");
         } else {
             if (containsEmptyPlaceholder) {
-                List<String> temp = new ArrayList<>();
-                Matcher matcher = EMPTY_PLACEHOLDER.matcher(pattern);
-                while(matcher.find()) {
-                    temp.add(matcher.group());
-                }
-                if(temp.size() != arguments.length){
-                    throw new IllegalArgumentException("Number of arguments doesn't match placeholders in pattern");
-                }
+                emptyPLaceHolderValidator(pattern, arguments);
             } else if (containsValidPlaceholder){
-                List<String> temp = new ArrayList<>();
-                Matcher matcher = VALID_PLACEHOLDER.matcher(pattern);
-                while(matcher.find()) {
-                    temp.add(matcher.group());
-                }
-                Optional<Integer> max = temp.stream().map(s -> Integer.valueOf(s.replace("{", "").replace("}", ""))).max(Integer::compareTo);
-                assert max.isPresent();
-                if(max.get() != arguments.length - 1){
-                    throw new IllegalArgumentException("Number of arguments doesn't match placeholders in pattern");
-                }
+                validPlaceHolderValidator(pattern, arguments);
             } else {
                 if(arguments.length != 0) {
                     log.warn("No valid placeholder was detected in given pattern, but arguments where received," +
                             " as such this arguments will be ignored");
                 }
             }
+        }
+    }
+
+    private static void emptyPLaceHolderValidator(String pattern, Object[] arguments) {
+        List<String> temp = new ArrayList<>();
+        Matcher matcher = EMPTY_PLACEHOLDER.matcher(pattern);
+        while(matcher.find()) {
+            temp.add(matcher.group());
+        }
+        if(temp.size() != arguments.length){
+            throw new IllegalArgumentException("Number of arguments doesn't match placeholders in pattern");
+        }
+    }
+
+    private static void validPlaceHolderValidator(String pattern, Object[] arguments) {
+        List<String> temp = new ArrayList<>();
+        Matcher matcher = VALID_PLACEHOLDER.matcher(pattern);
+        while(matcher.find()) {
+            temp.add(matcher.group());
+        }
+        Optional<Integer> max = temp.stream().map(s -> Integer.valueOf(s.replace("{", "").replace("}", ""))).max(Integer::compareTo);
+        assert max.isPresent();
+        if(max.get() != arguments.length - 1){
+            throw new IllegalArgumentException("Number of arguments doesn't match placeholders in pattern");
         }
     }
 

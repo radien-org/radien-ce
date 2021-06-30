@@ -16,12 +16,14 @@
 
 package io.radien.api.model.user;
 
+import io.radien.api.search.SystemSearchableByIds;
+
 /**
  * System User search filter interface class
  * 
  * @author Bruno Gama
  */
-public interface SystemUserSearchFilter {
+public interface SystemUserSearchFilter extends SystemSearchableByIds {
 
     /**
      * System User Search filter subject getter

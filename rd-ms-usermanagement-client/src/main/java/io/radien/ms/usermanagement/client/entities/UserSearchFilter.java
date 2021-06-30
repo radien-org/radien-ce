@@ -15,14 +15,17 @@
  */
 package io.radien.ms.usermanagement.client.entities;
 
+import io.radien.api.search.SearchableByIds;
 import io.radien.api.model.user.SystemUserSearchFilter;
+
+import java.util.Collection;
 
 /**
  * Encapsulates the parameters applied to search for users
  *
  * @author Nuno Santana
  */
-public class UserSearchFilter implements SystemUserSearchFilter {
+public class UserSearchFilter extends SearchableByIds implements SystemUserSearchFilter {
     private String sub;
     private String email;
     private String logon;
@@ -39,10 +42,12 @@ public class UserSearchFilter implements SystemUserSearchFilter {
      * @param sub to be found
      * @param email to be found
      * @param logon to be found
+     * @param ids to be search
      * @param isExact should the requested value be exact to the given one
      * @param isLogicConjunction true in case search option is and conjunction
      */
-    public UserSearchFilter(String sub, String email, String logon, boolean isExact, boolean isLogicConjunction) {
+    public UserSearchFilter(String sub, String email, String logon, Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
+        super(ids);
         this.sub = sub;
         this.email = email;
         this.logon = logon;

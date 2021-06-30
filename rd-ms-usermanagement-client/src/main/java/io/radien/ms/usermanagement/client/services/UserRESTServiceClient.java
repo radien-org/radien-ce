@@ -119,6 +119,26 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
     }
 
     /**
+     * Gets the requested users searching for a list of ids
+     * @param ids to be searched
+     * @return a list containing system users
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    @Override
+    public List<? extends SystemUser> getUsersByIds(List<Long> ids) throws SystemException {
+        try {
+            return getSystemUsers(ids);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return getSystemUsers(ids);
+            } catch (TokenExpiredException expiredException) {
+                throw new SystemException(expiredException);
+            }
+        }
+    }
+
+    /**
      * Retrieves an user by its respective logon
      * @param logon user logon
      * @return Optional containing user
@@ -160,6 +180,24 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
     }
 
     /**
+     * Method to retrieve system users by its ids
+     * @param ids to be fetched and found
+     * @return a list containing the system users found by the informed ids
+     * @throws SystemException in case of any communication issue
+     * @throws TokenExpiredException in case of JWT token expiration
+     */
+    private List<? extends SystemUser> getSystemUsers(List<Long> ids) throws SystemException, TokenExpiredException {
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.getUsers(null, null, null, ids, true, true);
+            return ListUserModelMapper.map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Method to retrieve a specific system user by a given user subject
      * @param sub to be fetched and found
      * @return a optional list and if filled with the required system user
@@ -170,7 +208,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
-            Response response = client.getUsers(sub, null, null, true, true);
+            Response response = client.getUsers(sub, null, null, null,true, true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -194,7 +232,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
-            Response response = client.getUsers(null, null, logon, true, true);
+            Response response = client.getUsers(null, null, logon, null,true, true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
