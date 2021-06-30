@@ -45,10 +45,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -115,7 +122,7 @@ public class PermissionRESTServiceClientTest {
 
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
 
-        when(resourceClient.getPermissions(a,null,null,true,true)).thenReturn(response);
+        when(resourceClient.getPermissions(a,null,null,null,true,true)).thenReturn(response);
 
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
 
@@ -154,7 +161,7 @@ public class PermissionRESTServiceClientTest {
         Response response = Response.ok(is).build();
 
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
-        when(resourceClient.getPermissions(name,null,null, true,true))
+        when(resourceClient.getPermissions(name,null,null, null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
 
@@ -214,7 +221,7 @@ public class PermissionRESTServiceClientTest {
         Response response = Response.ok(is).build();
 
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
-        when(resourceClient.getPermissions(a,null,null,true,true))
+        when(resourceClient.getPermissions(a,null,null,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
         target.getPermissionByName(a);
@@ -238,7 +245,7 @@ public class PermissionRESTServiceClientTest {
     public void testGetPermissionByNameProcessingException() throws Exception {
         String a = "a";
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
-        when(resourceClient.getPermissions(a,null,null,true,true))
+        when(resourceClient.getPermissions(a,null,null,null,true,true))
                 .thenThrow(new ProcessingException(testValue));
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
 
@@ -348,7 +355,7 @@ public class PermissionRESTServiceClientTest {
 
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getPermissions(null, 1L, 2L, true, true)).
+        when(resourceClient.getPermissions(null, 1L, 2L, null,true, true)).
                 thenReturn(expectedResponse);
 
         List<? extends SystemPermission> result =
@@ -383,7 +390,7 @@ public class PermissionRESTServiceClientTest {
     public void testGetPermissionByActionAndResourceWithProcessingException() throws Exception {
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getPermissions(null, 1L, 2L, true, true))
+        when(resourceClient.getPermissions(null, 1L, 2L, null,true, true))
                 .thenThrow(new ProcessingException(new Exception()));
         SystemException se = assertThrows(SystemException.class,
                 () -> target.getPermissionByActionAndResource(1L, 2L));
@@ -725,7 +732,7 @@ public class PermissionRESTServiceClientTest {
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
 
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getPermissions(any(), anyLong(), anyLong(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException(testValue));
+        when(resourceClient.getPermissions(any(), anyLong(), anyLong(), any(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException(testValue));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn(testValue);
@@ -744,7 +751,7 @@ public class PermissionRESTServiceClientTest {
         PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
 
         when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getPermissions(anyString(), any(), any(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException(testValue));
+        when(resourceClient.getPermissions(anyString(), any(), any(), any(),anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException(testValue));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn(testValue);
@@ -829,4 +836,127 @@ public class PermissionRESTServiceClientTest {
 
         target.getTotalRecordsCount();
     }
+
+
+    /**
+     * Test to get multiple permissions by a list of ids
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetPermissionsByIdsWithResults() throws MalformedURLException, SystemException {
+        Permission permission1 = PermissionFactory.create("p1", null, null, null);
+        permission1.setId(1L);
+
+        Permission permission2 = PermissionFactory.create("p2", null, null, null);
+        permission2.setId(2L);
+
+        List<Long> ids = Arrays.asList(permission1.getId(), permission2.getId());
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(PermissionFactory.convertToJsonObject(permission1));
+        builder.add(PermissionFactory.convertToJsonObject(permission2));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(resourceClient.getPermissions(null,null,null,ids,true,true)).thenReturn(response);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+
+        List<? extends SystemPermission> outcome = target.getPermissionsByIds(ids);
+        assertNotNull(outcome);
+        assertEquals(2, outcome.size());
+    }
+
+    /**
+     * Test to get permissions by ids but extension exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetPermissionsByIdsExtensionException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        target.getPermissionsByIds(new ArrayList());
+    }
+
+    /**
+     * Test to get permissions by ids but processing exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetPermissionsByIdsProcessingException() throws MalformedURLException, SystemException {
+        List<Long> ids = new ArrayList();
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(resourceClient.getPermissions(null,null,null,ids,true,true))
+                .thenThrow(new ProcessingException("test"));
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        target.getPermissionsByIds(ids);
+    }
+
+    /**
+     * Method to attempt to get a list of permissions based on their ids but with token expired
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetPermissionsByIdsTokenExpiration() throws MalformedURLException, SystemException {
+        List<Long> ids = Arrays.asList(9L, 10L, 11L);
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getPermissions(null,null,null,ids,true,true)).thenThrow(new TokenExpiredException("teste"));
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        target.getPermissionsByIds(ids);
+    }
+
+    /**
+     * In this scenario the list of permissions is retrieved (based on their ids) by reattempt (retry)
+     * after a JWT token expires
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetPermissionsByIdsByReattempt() throws MalformedURLException, SystemException {
+        Permission permission3 = PermissionFactory.create("test", null, null, null);
+        permission3.setId(999L);
+
+        List<Long> ids = Collections.singletonList(permission3.getId());
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(PermissionFactory.convertToJsonObject(permission3));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getPermissions(null,null,null,ids,true,true)).
+                thenThrow(new TokenExpiredException("test")).
+                thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        List<? extends SystemPermission> outcome = target.getPermissionsByIds(ids);
+        assertNotNull(outcome);
+        assertEquals(1, outcome.size());
+    }
+
+
 }

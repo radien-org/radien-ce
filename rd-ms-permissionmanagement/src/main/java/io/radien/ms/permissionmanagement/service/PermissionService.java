@@ -282,6 +282,15 @@ public class PermissionService implements PermissionServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = permissionRoot.get("id").in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
+        }
+
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, permissionRoot, global);
         global = getFieldPredicate("actionId", filter.getActionId(),
                 filter, criteriaBuilder, permissionRoot, global);

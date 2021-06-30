@@ -139,7 +139,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testGetPermissionsBy() {
-        Response response = permissionResource.getPermissions("permission", 11L, 100L,true,true);
+        Response response = permissionResource.getPermissions("permission", 11L, 100L,null,true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -149,7 +149,7 @@ public class PermissionResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(permissionServiceAccess).getPermissions(any());
-        Response response = permissionResource.getPermissions("perm", 1L, 2L,true,true);
+        Response response = permissionResource.getPermissions("perm", 1L, 2L,null,true,true);
         assertEquals(500,response.getStatus());
     }
 

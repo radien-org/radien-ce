@@ -157,7 +157,7 @@ public class PermissionBusinessServiceTest {
         permissionServiceAccess.save(perm);
 
         List<? extends SystemPermission> list = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("adding-user", action.getId(), null, true, false));
+                new PermissionSearchFilter("adding-user", action.getId(), null, null,true, false));
 
         SystemPermission sp = list.get(0);
         Assert.assertNotNull(sp.getActionId());
@@ -166,7 +166,7 @@ public class PermissionBusinessServiceTest {
         Assert.assertTrue(associationStatus.isOK());
 
         list = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("adding-user", null, null,true, false));
+                new PermissionSearchFilter("adding-user", null, null,null,true, false));
 
         SystemPermission sp2 = list.get(0);
         Assert.assertNull(sp2.getActionId());
