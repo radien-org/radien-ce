@@ -201,6 +201,16 @@ public class RoleServiceTest {
 
         roleServiceAccess.delete(testUpdate1.getId());
         roleServiceAccess.delete(testUpdate2.getId());
+
+        Exception exception = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((testUpdate1.getId())));
+        Exception exception2 = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((testUpdate2.getId())));
+
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
+        String actualMessage1 = exception.getMessage();
+        String actualMessage2 = exception2.getMessage();
+
+        assertTrue(actualMessage1.contains(expectedMessage));
+        assertTrue(actualMessage2.contains(expectedMessage));
     }
 
     @Test
