@@ -206,7 +206,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(tenantRoleBusinessService.
                     getUsers(tenantRoleId, pageNo, pageSize)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
