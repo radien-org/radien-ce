@@ -48,6 +48,7 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 
 	@PostConstruct
 	private void init() {
+		// empty
 	}
 
 	/**

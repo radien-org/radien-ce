@@ -75,7 +75,7 @@ public class TenantConfiguration implements OAFAccess {
      */
     @Override
     public void fireEvent(Event event) {
-
+        // empty
     }
 
     /**
