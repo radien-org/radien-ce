@@ -26,13 +26,14 @@ import org.junit.jupiter.api.*;
 
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
 /**
+ * Tenant Role User Service rest requests and responses with access into the db
+ * {@link io.radien.ms.rolemanagement.services.TenantRoleServiceTest}
  * @author Newton Carvalho
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -45,8 +46,11 @@ public class TenantRoleUserServiceTest {
     static Long baseTenantRoleId = 222L;
     static EJBContainer container;
 
+    /**
+     * Method before test preparation
+     */
     @BeforeAll
-    public static void start() throws Exception {
+    public static void start() {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
@@ -59,12 +63,19 @@ public class TenantRoleUserServiceTest {
         container = EJBContainer.createEJBContainer(p);
     }
 
+    /**
+     * Injection method before starting the tests and data preparation
+     * @throws NamingException in case of naming injection value exception
+     */
     @BeforeEach
     public void inject() throws NamingException {
         String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleUserService";
         tenantRoleUserServiceAccess = (TenantRoleUserServiceAccess) container.getContext().lookup(lookupString);
     }
 
+    /**
+     * Method to stop the container after the testing classes have perform
+     */
     @AfterAll
     public static void stop() {
         if (container != null) {
@@ -232,7 +243,7 @@ public class TenantRoleUserServiceTest {
                 true, true);
         List<? extends SystemTenantRoleUser> list = tenantRoleUserServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 1);
+        Assertions.assertEquals(1, list.size());
     }
 
     /**
@@ -257,7 +268,7 @@ public class TenantRoleUserServiceTest {
                 true, false);
         List<? extends SystemTenantRoleUser> list = tenantRoleUserServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(list.size(), 2);
+        Assertions.assertEquals(2, list.size());
     }
 
     /**
@@ -290,7 +301,7 @@ public class TenantRoleUserServiceTest {
         Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(null,1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
-        Assertions.assertTrue(p.getTotalPages() ==  1);
+        Assertions.assertEquals(1, p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
     }

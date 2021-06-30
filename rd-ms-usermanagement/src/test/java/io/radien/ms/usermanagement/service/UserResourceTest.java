@@ -24,7 +24,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
@@ -49,9 +49,10 @@ import io.radien.api.service.batch.DataIssue;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 
 /**
+ * User Resource rest requests and responses
+ *
  * @author Nuno Santana
  * @author Bruno Gama
  */
@@ -72,6 +73,9 @@ public class UserResourceTest {
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
 
+    /**
+     * Method before test preparation
+     */
     @Before
     public void before(){
        MockitoAnnotations.initMocks(this);
@@ -85,7 +89,7 @@ public class UserResourceTest {
         when(userBusinessService.getUserId("login1")).thenReturn(1L);
         Response response = userResource.getUserIdBySub("login1");
         assertEquals(200, response.getStatus());
-        assertTrue(1L == response.readEntity(Long.class));
+        assertEquals(1L, (long) response.readEntity(Long.class));
     }
 
     /**
@@ -272,7 +276,7 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
                 1001L, roleList, null);
 
-        Response response = userResource.delete(1l);
+        Response response = userResource.delete(1L);
         assertEquals(200,response.getStatus());
     }
 
@@ -291,7 +295,7 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(linkedAuthorizationClient).checkPermissions(
                 1001L, roleList, null);
 
-        Response response = userResource.delete(1l);
+        Response response = userResource.delete(1L);
         assertEquals(403,response.getStatus());
     }
 
@@ -300,8 +304,8 @@ public class UserResourceTest {
      */
     @Test
     public void testDeleteGenericError() throws UserNotFoundException, RemoteResourceException {
-        doThrow(new RemoteResourceException()).when(userBusinessService).delete(1l);
-        Response response = userResource.delete(1l);
+        doThrow(new RemoteResourceException()).when(userBusinessService).delete(1L);
+        Response response = userResource.delete(1L);
         assertEquals(500,response.getStatus());
     }
 
@@ -495,7 +499,7 @@ public class UserResourceTest {
         assertEquals(response.getEntity().getClass(), BatchSummary.class);
         BatchSummary summary = (BatchSummary) response.getEntity();
         assertEquals(summary.getTotal(), users.size());
-        assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.SUCCESS);
+        assertEquals(BatchSummary.ProcessingStatus.SUCCESS, summary.getInternalStatus());
     }
 
     /**
@@ -515,13 +519,13 @@ public class UserResourceTest {
         }
         List<DataIssue> issuedItems = new ArrayList<>();
         issuedItems.add(new DataIssue(2,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(3,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(7,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(8,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         when(userBusinessService.create(anyList())).thenReturn(new BatchSummary(users.size(), issuedItems));
         Response response = userResource.create(users);
         assertEquals(200, response.getStatus());
@@ -530,7 +534,7 @@ public class UserResourceTest {
         BatchSummary summary = (BatchSummary) response.getEntity();
         assertEquals(summary.getTotalNonProcessed(), 4);
         assertEquals(summary.getTotalProcessed(), 6);
-        assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.PARTIAL_SUCCESS);
+        assertEquals(BatchSummary.ProcessingStatus.PARTIAL_SUCCESS, summary.getInternalStatus());
     }
 
     /**
@@ -544,22 +548,22 @@ public class UserResourceTest {
         }
         List<DataIssue> issuedItems = new ArrayList<>();
         issuedItems.add(new DataIssue(1,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(2,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(3,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         issuedItems.add(new DataIssue(4,
-                ErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
+                GenericErrorCodeMessage.DUPLICATED_FIELD.toString("email or logon")));
         when(userBusinessService.create(anyList())).thenReturn(new BatchSummary(4, issuedItems));
         Response response = userResource.create(users);
         assertEquals(400, response.getStatus());
         assertNotNull(response.getEntity());
         assertEquals(response.getEntity().getClass(), BatchSummary.class);
         BatchSummary summary = (BatchSummary) response.getEntity();
-        assertEquals(summary.getTotalNonProcessed(), 4);
-        assertEquals(summary.getTotalProcessed(), 0);
-        assertEquals(summary.getInternalStatus(), BatchSummary.ProcessingStatus.FAIL);
+        assertEquals(4, summary.getTotalNonProcessed());
+        assertEquals(0, summary.getTotalProcessed());
+        assertEquals(BatchSummary.ProcessingStatus.FAIL, summary.getInternalStatus());
     }
 
     /**

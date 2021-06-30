@@ -33,9 +33,11 @@ public class CorsFilter implements Filter {
 
     @Override
     public void init(FilterConfig config) {
+        // empty
     }
 
     @Override
     public void destroy() {
+        // empty
     }
 }

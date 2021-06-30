@@ -145,6 +145,12 @@ public class KeycloakServiceTest extends TestCase {
         doReturn(client).when(target,"getKeycloakClient");
         doNothing().when(client,"deleteUser", ArgumentMatchers.any());
 
-        target.deleteUser("");
+        boolean success = true;
+        try {
+            target.deleteUser("");
+        } catch (Exception e) {
+            success = false;
+        }
+        assertTrue(success);
     }
 }

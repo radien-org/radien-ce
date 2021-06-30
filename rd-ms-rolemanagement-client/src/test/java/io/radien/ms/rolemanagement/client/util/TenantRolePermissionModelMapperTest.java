@@ -23,19 +23,24 @@ import org.junit.Test;
 import javax.json.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
+ * Test the mapping information from and to a Json or a Tenant Role Permission object association
  * @author Newton Carvalho
  **/
 public class TenantRolePermissionModelMapperTest {
     Long tenantRoleId = 22L;
     Long permissionId = 25L;
+
+    /**
+     * Test the conversion from a input stream to a Tenant Role Permission Association
+     */
     @Test
-    public void testMapInputStream() throws ParseException {
+    public void testMapInputStream() {
         String example = "{\n" +
                 "\"tenantRoleId\": 1,\n" +
                 "\"permissionId\": 2\n" +
@@ -46,6 +51,9 @@ public class TenantRolePermissionModelMapperTest {
         assertEquals((Long) 2L, tenantRole.getPermissionId());
     }
 
+    /**
+     * Test the mapping conversion from a tenant role permission object into a json
+     */
     @Test
     public void testMapJsonObject() {
         TenantRolePermission tenantRole = TenantRolePermissionFactory.create(tenantRoleId, permissionId, 2L);
@@ -54,6 +62,9 @@ public class TenantRolePermissionModelMapperTest {
         assertEquals(tenantRole.getPermissionId(), (Long)jsonObject.getJsonNumber("permissionId").longValue());
     }
 
+    /**
+     * Test the conversion of a input stream page into a page of objects
+     */
     @Test
     public void testMapInputStreamToPage() {
         String example = "{\n" +
@@ -74,6 +85,9 @@ public class TenantRolePermissionModelMapperTest {
         assertEquals(4, tenantRolePermission.getTotalResults());
     }
 
+    /**
+     * Test the conversion of a collection of tenant roles permission
+     */
     @Test
     public void testConversionToCollection() {
         String example = "[\n" +
@@ -86,6 +100,6 @@ public class TenantRolePermissionModelMapperTest {
         InputStream in = new ByteArrayInputStream(example.getBytes());
         List<? extends TenantRolePermission> tenantRoles = TenantRolePermissionModelMapper.mapList(in);
         assertNotNull(tenantRoles);
-        assertTrue(tenantRoles.size() == 1);
+        assertEquals(1, tenantRoles.size());
     }
 }

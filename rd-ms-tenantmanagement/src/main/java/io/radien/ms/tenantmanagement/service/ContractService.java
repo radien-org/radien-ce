@@ -166,7 +166,7 @@ public class ContractService implements ContractServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(contract);
         } else {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
     }
 
@@ -182,7 +182,7 @@ public class ContractService implements ContractServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(contract);
         } else {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.TENANT_DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
     }
 

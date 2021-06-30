@@ -18,9 +18,9 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
-import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
 import io.radien.ms.permissionmanagement.model.Permission;
@@ -69,7 +69,7 @@ public class PermissionResource implements PermissionResourceClient {
 		try {
 			return Response.ok(permissionServiceAccess.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class PermissionResource implements PermissionResourceClient {
 			SystemPermissionSearchFilter filter = new PermissionSearchFilter(name,action,resource,isExact,isLogicalConjunction);
 			return Response.ok(permissionServiceAccess.getPermissions(filter)).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -106,11 +106,11 @@ public class PermissionResource implements PermissionResourceClient {
 		try {
 			SystemPermission systemPermission = permissionServiceAccess.get(id);
 			if(systemPermission == null){
-				return getResourceNotFoundException();
+				return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 			}
 			return Response.ok(systemPermission).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -123,7 +123,7 @@ public class PermissionResource implements PermissionResourceClient {
 		try {
 			permissionServiceAccess.delete(id);
 		} catch (Exception e){
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 		return Response.ok().build();
 	}
@@ -140,9 +140,9 @@ public class PermissionResource implements PermissionResourceClient {
 			permissionServiceAccess.save(new Permission(permission));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
-			return getInvalidRequestResponse(e);
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -167,7 +167,7 @@ public class PermissionResource implements PermissionResourceClient {
 			return Response.status(Response.Status.BAD_REQUEST).
 					entity(associationStatus.getMessage()).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -187,47 +187,8 @@ public class PermissionResource implements PermissionResourceClient {
 			}
 			return Response.status(Response.Status.BAD_REQUEST).entity(associationStatus.getMessage()).build();
 		} catch (Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
-	}
-
-	/**
-	 * Invalid Request error exception. Launches a 400 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 400 message Generic Exception
-	 */
-	private Response getInvalidRequestResponse(UniquenessConstraintException e) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-	}
-
-	/**
-	 * Generic error exception. Launches a 500 Error Code to the user.
-	 * @param e exception to be throw
-	 * @return code 500 message Generic Exception
-	 */
-	private Response getGenericError(Exception e) {
-		String message = ErrorCodeMessage.GENERIC_ERROR.toString();
-		log.error(message, e);
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-	}
-
-	/**
-	 * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
-	 * @return code 100 message Resource not found.
-	 */
-	private Response getResourceNotFoundException() {
-		return Response.status(Response.Status.NOT_FOUND).
-				entity(ErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
-	}
-
-	/**
-	 * Returns a Bad Request response when some mandatory parameter is not present
-	 * @param parameterName value that will indicate which field(s) have not been informed
-	 * @return code 400 message describing a not informed parameter
-	 */
-	private Response getNotInformedParametersResponse(String parameterName) {
-		String message = ErrorCodeMessage.PARAMETERS_NOT_INFORMED.toString(parameterName);
-		return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
 	}
 
 	/**
@@ -243,14 +204,14 @@ public class PermissionResource implements PermissionResourceClient {
 	public Response exists(Long id, String name) {
 		// At least one parameter is needed
 		if (id == null && (name == null || name.trim().length() == 0)) {
-			return getNotInformedParametersResponse("Id or Name");
+			return GenericErrorMessagesToResponseMapper.getNotInformedParametersResponse("Id or Name");
 		}
 
 		// Check if exists by Id (or alternatively by Name)
 		if (permissionServiceAccess.exists(id, name))
 			return Response.ok().build();
 
-		return getResourceNotFoundException();
+		return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 	}
 
 	/**
@@ -270,7 +231,7 @@ public class PermissionResource implements PermissionResourceClient {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
 		catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 
@@ -283,7 +244,7 @@ public class PermissionResource implements PermissionResourceClient {
 		try {
 			return Response.ok(permissionServiceAccess.getTotalRecordsCount()).build();
 		} catch(Exception e) {
-			return getGenericError(e);
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
 }

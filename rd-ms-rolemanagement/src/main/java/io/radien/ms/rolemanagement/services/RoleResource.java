@@ -17,11 +17,11 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
-import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ public class RoleResource implements RoleResourceClient {
             log.info("Will get all the role information I can find!");
             return Response.ok(roleBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
         } catch(Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -84,14 +84,14 @@ public class RoleResource implements RoleResourceClient {
      * if there is any error.
      */
     @Override
-    public Response getSpecificRoles(String name, String description, boolean isExact, boolean isLogicalConjunction) {
+    public Response getSpecificRoles(String name, String description, List<Long> ids, boolean isExact, boolean isLogicalConjunction) {
         try {
-            log.info("Will search for a specific role with the name {}, description {}. With the following criteria: " +
-                    "Values must be exact: {}; Is a logical conjunction: {}", name, description, isExact, isLogicalConjunction);
-            SystemRoleSearchFilter filter = new RoleSearchFilter(name, description, isExact, isLogicalConjunction);
+            log.info("Will search for a specific role with the name {}, description {}, ids {}. With the following criteria: " +
+                    "Values must be exact: {}; Is a logical conjunction: {}", name, description, ids, isExact, isLogicalConjunction);
+            SystemRoleSearchFilter filter = new RoleSearchFilter(name, description, ids, isExact, isLogicalConjunction);
             return Response.ok(roleBusinessService.getSpecificRoles(filter)).build();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -109,9 +109,9 @@ public class RoleResource implements RoleResourceClient {
             SystemRole systemRole = roleBusinessService.getById(id);
             return Response.ok(systemRole).build();
         } catch (RoleNotFoundException e) {
-            return getRoleNotFoundException();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -128,9 +128,9 @@ public class RoleResource implements RoleResourceClient {
             roleBusinessService.getById(id);
             roleBusinessService.delete(id);
         } catch (RoleNotFoundException e) {
-            return getRoleNotFoundException();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (Exception e){
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
         return Response.ok().build();
     }
@@ -150,11 +150,11 @@ public class RoleResource implements RoleResourceClient {
             roleBusinessService.save(new io.radien.ms.rolemanagement.entities.Role(role));
             return Response.ok().build();
         } catch (RoleNotFoundException e) {
-            return getRoleNotFoundException();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (UniquenessConstraintException e) {
-            return getInvalidRequestResponse(e);
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -172,9 +172,9 @@ public class RoleResource implements RoleResourceClient {
             if(roleBusinessService.exists(id, name)) {
                 return Response.ok().build();
             }
-            return getRoleNotFoundException();
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
@@ -187,39 +187,7 @@ public class RoleResource implements RoleResourceClient {
         try {
             return Response.ok(roleBusinessService.getTotalRecordsCount()).build();
         } catch(Exception e) {
-            return getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
-    }
-
-    /**
-     * Invalid Request error exception. Launches a 400 Error Code to the user.
-     * @param e exception to be throw
-     * @return code 400 message Generic Exception
-     */
-    private Response getInvalidRequestResponse(UniquenessConstraintException e) {
-        String message = e.getMessage();
-        log.error(message);
-        return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
-    }
-
-    /**
-     * Generic error exception. Launches a 500 Error Code to the user.
-     * @param e exception to be throw
-     * @return code 500 message Generic Exception
-     */
-    private Response getGenericError(Exception e) {
-        String message = RoleErrorCodeMessage.GENERIC_ERROR.toString();
-        log.error(message, e);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
-    }
-
-    /**
-     * Generic error exception to when the user could not be found in DB. Launches a 404 Error Code to the user.
-     * @return code 100 message Resource not found.
-     */
-    private Response getRoleNotFoundException() {
-        String message = RoleErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
-        log.error(message);
-        return Response.status(Response.Status.NOT_FOUND).entity(message).build();
     }
 }

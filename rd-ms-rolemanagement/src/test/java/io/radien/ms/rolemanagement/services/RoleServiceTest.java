@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
@@ -28,12 +29,12 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -125,7 +126,7 @@ public class RoleServiceTest {
     public void testGetByIdException() {
         Exception exception = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get(99L));
 
-        String expectedMessage = "{\"code\":100, \"key\":\"error.role.not.found\", \"message\":\"Role was not found.\"}";
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -139,7 +140,7 @@ public class RoleServiceTest {
         roleServiceAccess.delete(systemRole.getId());
 
         Exception exception = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((systemRole.getId())));
-        String expectedMessage = "{\"code\":100, \"key\":\"error.role.not.found\", \"message\":\"Role was not found.\"}";
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -155,14 +156,32 @@ public class RoleServiceTest {
         roleServiceAccess.save(testById2);
         roleServiceAccess.save(testById3);
 
-        List<? extends SystemRole> roleAnd = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("name1","description1",true,true));
+        List<? extends SystemRole> roleAnd = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("name1","description1",null,true,true));
         assertEquals(1,roleAnd.size());
 
-        List<? extends SystemRole> roleOr = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("name1","description2Find",true,false));
+        List<? extends SystemRole> roleOr = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("name1","description2Find",new ArrayList<>(),true,false));
         assertEquals(2,roleOr.size());
 
-        List<? extends SystemRole> rolesNotExact = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("Find","Find",false,true));
+        List<? extends SystemRole> rolesNotExact = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("Find","Find",null,false,true));
+
         assertEquals(2,rolesNotExact.size());
+
+        List<? extends SystemRole> rolesByIds = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter(null,null,
+                        Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId()),
+                        true,true));
+
+        assertEquals(3,rolesByIds.size());
+
+        rolesByIds = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("nonexistent","nonexistent",
+                        Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId()),
+                        true,false));
+
+        assertEquals(3,rolesByIds.size());
 
         roleServiceAccess.delete(testById1.getId());
         roleServiceAccess.delete(testById2.getId());
@@ -182,6 +201,16 @@ public class RoleServiceTest {
 
         roleServiceAccess.delete(testUpdate1.getId());
         roleServiceAccess.delete(testUpdate2.getId());
+
+        Exception exception = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((testUpdate1.getId())));
+        Exception exception2 = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((testUpdate2.getId())));
+
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
+        String actualMessage1 = exception.getMessage();
+        String actualMessage2 = exception2.getMessage();
+
+        assertTrue(actualMessage1.contains(expectedMessage));
+        assertTrue(actualMessage2.contains(expectedMessage));
     }
 
     @Test
@@ -204,6 +233,6 @@ public class RoleServiceTest {
     @Test
     public void testGetTotalRecordsCount() {
         long result = roleServiceAccess.getTotalRecordsCount();
-        assertEquals(1, result);
+        assertTrue(result >= 1);
     }
 }

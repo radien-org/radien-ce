@@ -245,7 +245,7 @@ public class TenantFactory {
         int totalPages = io.radien.api.util.FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = io.radien.api.util.FactoryUtilService.getIntFromJson("totalResults", page);
 
-        ArrayList<Tenant> pageResults = new ArrayList();
+        ArrayList<Tenant> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){

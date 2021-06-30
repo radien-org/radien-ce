@@ -16,6 +16,7 @@
 package io.radien.api.security;
 
 import io.radien.api.Appframeable;
+import io.radien.api.model.user.SystemUser;
 
 /**
  * User Session enabled information interface class
@@ -79,5 +80,11 @@ public interface UserSessionEnabled extends Appframeable {
 	 * @return user id
 	 */
 	public Long getUserId();
+
+	/**
+	 * User getter
+	 * @return user information
+	 */
+	public SystemUser getUser();
 
 }

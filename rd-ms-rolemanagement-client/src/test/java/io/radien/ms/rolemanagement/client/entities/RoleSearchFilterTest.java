@@ -18,12 +18,17 @@ package io.radien.ms.rolemanagement.client.entities;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Collections;
+
 public class RoleSearchFilterTest extends TestCase {
 
     private final RoleSearchFilter roleSearch;
+    private final List<Long> ids = Arrays.asList(1L, 2L);
 
     public RoleSearchFilterTest() {
-        roleSearch = new RoleSearchFilter("name", "description", true, true);
+        roleSearch = new RoleSearchFilter("name", "description", ids,true, true);
     }
 
     @Test
@@ -31,6 +36,7 @@ public class RoleSearchFilterTest extends TestCase {
         RoleSearchFilter roleSearchFilter = new RoleSearchFilter();
         assertNull(roleSearchFilter.getName());
         assertNull(roleSearchFilter.getDescription());
+        assertNull(roleSearchFilter.getIds());
         assertFalse(roleSearchFilter.isExact());
         assertFalse(roleSearchFilter.isLogicConjunction());
     }
@@ -59,6 +65,20 @@ public class RoleSearchFilterTest extends TestCase {
         roleSearch.setDescription("newDescription");
         assertNotNull(roleSearch.getDescription());
         assertEquals("newDescription", roleSearch.getDescription());
+    }
+
+    @Test
+    public void testGetIds() {
+        assertNotNull(roleSearch.getIds());
+        assertEquals(ids, roleSearch.getIds());
+    }
+
+    @Test
+    public void testSetIds() {
+        List<Long> identifiers = Collections.singletonList(99L);
+        roleSearch.setIds(identifiers);
+        assertNotNull(roleSearch.getIds());
+        assertEquals(identifiers, roleSearch.getIds());
     }
 
     @Test

@@ -37,6 +37,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,6 @@ import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
-import io.radien.ms.usermanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.usermanagement.entities.User;
 
 import java.util.stream.IntStream;
@@ -247,17 +247,17 @@ public class UserService implements UserServiceAccess{
 	 */
 	private void validateUniquenessRecords(List<User> alreadyExistentRecords, SystemUser newUserInformation) throws UniquenessConstraintException {
 		if (alreadyExistentRecords.size() == 2) {
-			throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
+			throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
 		} else if(!alreadyExistentRecords.isEmpty()) {
 			boolean isSameUserEmail = alreadyExistentRecords.get(0).getUserEmail().equals(newUserInformation.getUserEmail());
 			boolean isSameLogon = alreadyExistentRecords.get(0).getLogon().equals(newUserInformation.getLogon());
 
 			if(!isSameUserEmail && isSameLogon) {
-				throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
+				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
 			} else if(isSameUserEmail && !isSameLogon) {
-				throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
 			} else if(isSameUserEmail && isSameLogon) {
-				throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
+				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
 			}
 		}
 	}
@@ -321,8 +321,7 @@ public class UserService implements UserServiceAccess{
 		Root<User> userRoot = criteriaQuery.from(User.class);
 		criteriaQuery.select(userRoot);
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
-		List<? extends SystemUser> systemUsers = q.getResultList();
-		return systemUsers;
+		return q.getResultList();
 	}
 
 	/**
@@ -362,7 +361,7 @@ public class UserService implements UserServiceAccess{
 	 * @param value of the field to be search or compared in the query
 	 * @param filter complete requested filter for further validations
 	 * @param criteriaBuilder database query builder
-	 * @param actionRoot database table to search the information
+	 * @param userRoot database table to search the information
 	 * @param global complete where clause to be merged into the constructed information
 	 * @return a constructed predicate with the fields needed to be search
 	 */
@@ -467,7 +466,7 @@ public class UserService implements UserServiceAccess{
 
 		if (!parameterSet.add(value)){
 			addNewFoundIssue(index, issuesByRow,
-					ErrorCodeMessage.DUPLICATED_FIELD.toString(field));
+					GenericErrorCodeMessage.DUPLICATED_FIELD.toString(field));
 		}
 	}
 
@@ -487,7 +486,7 @@ public class UserService implements UserServiceAccess{
 
 		if (searchArea.contains(value)){
 			addNewFoundIssue(index, issuesByRow,
-					ErrorCodeMessage.DUPLICATED_FIELD.toString(field));
+					GenericErrorCodeMessage.DUPLICATED_FIELD.toString(field));
 		}
 	}
 

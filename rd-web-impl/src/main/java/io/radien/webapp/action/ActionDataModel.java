@@ -24,7 +24,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -35,7 +35,7 @@ import java.io.Serializable;
  * @author Bruno Gama
  */
 @Model
-@ApplicationScoped
+@SessionScoped
 public class ActionDataModel extends AbstractManager implements Serializable {
 
     @Inject

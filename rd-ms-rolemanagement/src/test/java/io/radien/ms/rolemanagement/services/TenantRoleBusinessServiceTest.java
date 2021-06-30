@@ -54,6 +54,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
+ * Tenant Role Business Service rest requests and responses into the db access
+ * {@link io.radien.ms.rolemanagement.services.TenantRoleBusinessService}
+ *
  * @author Newton Carvalho
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -75,6 +78,10 @@ public class TenantRoleBusinessServiceTest {
     static RoleServiceAccess roleServiceAccess;
     static EJBContainer container;
 
+    /**
+     * Method before test preparation
+     * @throws NamingException in case of injection naming exception
+     */
     @BeforeAll
     public static void start() throws NamingException {
         p = new Properties();
@@ -106,11 +113,18 @@ public class TenantRoleBusinessServiceTest {
 
     }
 
+    /**
+     * Injection method
+     * @throws NamingException in case of injection naming exception
+     */
     @BeforeEach
     public void inject() throws NamingException {
         container.getContext().bind("inject", this);
     }
 
+    /**
+     * Method to stop the container after the testing classes have perform
+     */
     @AfterAll
     public static void stop() {
         if (container != null) {
@@ -118,6 +132,11 @@ public class TenantRoleBusinessServiceTest {
         }
     }
 
+    /**
+     * Method to get a specific role by specific given name
+     * @param name to be found
+     * @return the requested system role
+     */
     protected SystemRole getRoleByName(String name) {
         SystemRoleSearchFilter filter = new RoleSearchFilter();
         filter.setName(name);
@@ -125,6 +144,13 @@ public class TenantRoleBusinessServiceTest {
         return roles.isEmpty() ? null : roles.get(0);
     }
 
+    /**
+     * Method to create a requested role
+     * @param name of the role to be created
+     * @return the newly created system role
+     * @throws RoleNotFoundException in case the role could not be found
+     * @throws UniquenessConstraintException in case of duplicated name
+     */
     protected SystemRole createRole(String name) throws RoleNotFoundException, UniquenessConstraintException {
         SystemRole sr = getRoleByName(name);
         if (sr == null) {
@@ -135,6 +161,15 @@ public class TenantRoleBusinessServiceTest {
         return sr;
     }
 
+    /**
+     * Method to create a specific tenant role
+     * @param roleId to be associated
+     * @param tenantId to be associated
+     * @return the newly created system tenant role
+     * @throws SystemException in case of token expiration
+     * @throws UniquenessConstraintException in case of duplicated fields
+     * @throws TenantRoleException in case of issue while creating the newly tenant role
+     */
     protected SystemTenantRole createTenantRole(Long roleId, Long tenantId) throws
             SystemException, UniquenessConstraintException, TenantRoleException {
 
@@ -159,15 +194,19 @@ public class TenantRoleBusinessServiceTest {
         return tenantRole;
     }
 
-
-
+    /**
+     * Test to create tenant role administrator
+     */
     @Test
     @Order(2)
-    public void createRoleAdmin() throws RoleNotFoundException, UniquenessConstraintException, NamingException {
+    public void createRoleAdmin() {
         SystemRole roleAdmin = assertDoesNotThrow(() -> createRole(roleNameForTenantAdministrator));
         assertNotNull(roleAdmin);
     }
 
+    /**
+     * Test to create a tenant role
+     */
     @Test
     @Order(3)
     public void save() {
@@ -214,6 +253,9 @@ public class TenantRoleBusinessServiceTest {
                 save(tenantRoleWithInvalidRole));
     }
 
+    /**
+     * Test to validate the get by id
+     */
     @Test
     @Order(4)
     public void getById() {
@@ -228,6 +270,9 @@ public class TenantRoleBusinessServiceTest {
         assertEquals(retrievedById.getId(), tenantRole.getId());
     }
 
+    /**
+     * Test to validate the get by id with not found exception
+     */
     @Test
     @Order(5)
     public void getByIdNotFoundCase() {
@@ -236,16 +281,22 @@ public class TenantRoleBusinessServiceTest {
                 tenantRoleBusinessService.getById(notExistentTenantRoleId));
     }
 
+    /**
+     * Test to validate if requested association already exists
+     */
     @Test
     @Order(6)
     public void existAssociation() {
         SystemRole roleAdmin = assertDoesNotThrow(() -> createRole(roleNameForTenantAdministrator));
-        SystemTenantRole tenantRole = assertDoesNotThrow(() ->
+        assertDoesNotThrow(() ->
                 createTenantRole(roleAdmin.getId(), tenantId));
         assertTrue(this.tenantRoleBusinessService.
                 existsAssociation(tenantId, roleAdmin.getId()));
     }
 
+    /**
+     * Test to validate if requested association already exists but without any to be found
+     */
     @Test
     @Order(7)
     public void existAssociationNegativeCase() {
@@ -253,6 +304,9 @@ public class TenantRoleBusinessServiceTest {
                 existsAssociation(1111L, 1000L));
     }
 
+    /**
+     * Test to assign user into association
+     */
     @Test
     @Order(8)
     public void assignUser() {
@@ -262,6 +316,9 @@ public class TenantRoleBusinessServiceTest {
                 roleAdmin.getId(), user1Id));
     }
 
+    /**
+     * Test to assign user into association but with an invalid association
+     */
     @Test
     @Order(9)
     public void assignUserInvalidCase() {
@@ -276,6 +333,9 @@ public class TenantRoleBusinessServiceTest {
                 roleAdmin.getId(), user1Id));
     }
 
+    /**
+     * Test to validate if given role is existent for specific user
+     */
     @Test
     @Order(10)
     public void isRoleExistentForUser() {
@@ -288,6 +348,9 @@ public class TenantRoleBusinessServiceTest {
 
     }
 
+    /**
+     * Test to validate if given role is existent for specific user but without anything to be found
+     */
     @Test
     @Order(11)
     public void isRoleExistentForUserNegativeCases() {
@@ -300,7 +363,9 @@ public class TenantRoleBusinessServiceTest {
                 "super admin", tenantId));
     }
 
-
+    /**
+     * Test to validate if user has any role
+     */
     @Test
     @Order(12)
     public void isAnyRoleExistentForUser() {
@@ -367,6 +432,9 @@ public class TenantRoleBusinessServiceTest {
                         null, 99999L));
     }
 
+    /**
+     * Test get tenants
+     */
     @Test
     @Order(13)
     public void getTenants() {
@@ -406,15 +474,18 @@ public class TenantRoleBusinessServiceTest {
         List<SystemTenant> tenants = assertDoesNotThrow(() ->
                 tenantRoleBusinessService.getTenants(user1Id, null));
         assertNotNull(tenants);
-        assertTrue(tenants.size() == 3);
+        assertEquals(3, tenants.size());
 
         // User is associated in one single tenant For the role guest
         tenants = assertDoesNotThrow(() ->
                 tenantRoleBusinessService.getTenants(user1Id, guest.getId()));
         assertNotNull(tenants);
-        assertTrue(tenants.size() == 1);
+        assertEquals(1, tenants.size());
     }
 
+    /**
+     * Test to get invalid tenants
+     */
     @Test
     @Order(14)
     public void getTenantsInvalidCase() {
@@ -426,6 +497,9 @@ public class TenantRoleBusinessServiceTest {
         assertTrue(tenants.isEmpty());
     }
 
+    /**
+     * Test to un-assign a user from the association
+     */
     @Test
     @Order(15)
     public void unassignUser() {
@@ -444,6 +518,10 @@ public class TenantRoleBusinessServiceTest {
         assertFalse(tenantRoleBusinessService.isRoleExistentForUser(user1Id,
                 guest.getName(), tenantId2));
     }
+
+    /**
+     * Test to un-assign user form a non existent association
+     */
     @Test
     @Order(16)
     public void unassignUserInvalidCaseNoTenantRoleAssociated() {
@@ -453,6 +531,9 @@ public class TenantRoleBusinessServiceTest {
                 unassignUser(notAssociatedTenant, notAssociatedRole, user1Id));
     }
 
+    /**
+     * Test to un-assign user from tenant that he is not assigned
+     */
     @Test
     @Order(17)
     public void unassignUserInvalidCaseUserNotAssigned() {
@@ -464,6 +545,9 @@ public class TenantRoleBusinessServiceTest {
                 unassignUser(tenantId2, guest.getId(), user1Id));
     }
 
+    /**
+     * Test to assign permission to tenatn role association
+     */
     @Test
     @Order(18)
     public void assignPermission() {
@@ -509,6 +593,9 @@ public class TenantRoleBusinessServiceTest {
                         publisher.getId(), deleteDocument.getId()));
     }
 
+    /**
+     * Test to assign permissions into a invalid non existent tenant role association
+     */
     @Test
     @Order(19)
     public void assignPermissionInvalidCaseNoTenantRole() {
@@ -535,6 +622,9 @@ public class TenantRoleBusinessServiceTest {
                         11111L, assemblyDocument.getId()));
     }
 
+    /**
+     * Test to assign permission into an already assigned permission existent in a tenant role association
+     */
     @Test
     @Order(20)
     public void assignPermissionInvalidCaseAssignmentAlreadyPerformed() {
@@ -569,6 +659,9 @@ public class TenantRoleBusinessServiceTest {
 
     }
 
+    /**
+     * Test to validate the retrieval of the permissions
+     */
     @Test
     @Order(21)
     public void getPermissions() {
@@ -606,23 +699,26 @@ public class TenantRoleBusinessServiceTest {
                 tenantId3, publisher.getId(), null));
 
         assertNotNull(permissions);
-        assertEquals(permissions.size(), 3);
+        assertEquals(3, permissions.size());
 
         // Permissions were not assigned to the following user
         Long nonRegisteredUser = 22222L;
         permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
                 tenantId3, publisher.getId(), nonRegisteredUser));
         assertNotNull(permissions);
-        assertEquals(permissions.size(), 0);
+        assertEquals(0, permissions.size());
 
         // But were automatically assigned to user user1Id, since he is assigned to
         // correspondent role
         permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
                 tenantId3, publisher.getId(), user1Id));
         assertNotNull(permissions);
-        assertEquals(permissions.size(), 3);
+        assertEquals(3, permissions.size());
     }
 
+    /**
+     * Test to validate which permission is existent for the given user
+     */
     @Test
     @Order(22)
     public void isPermissionExistentForUser() {
@@ -674,6 +770,9 @@ public class TenantRoleBusinessServiceTest {
 
     }
 
+    /**
+     * Test to un-assign permission
+     */
     @Test
     @Order(23)
     public void unAssignPermission() {
@@ -706,6 +805,9 @@ public class TenantRoleBusinessServiceTest {
 
     }
 
+    /**
+     * Test to un-assign permission that are not valid
+     */
     @Test
     @Order(24)
     public void unAssignPermissionInvalidCase() {
@@ -721,6 +823,9 @@ public class TenantRoleBusinessServiceTest {
                 unassignPermission(tenantId, publisher.getId(), readDocument.getId()));
     }
 
+    /**
+     * Test to get all the tenant role associations
+     */
     @Test
     @Order(25)
     public void getAll() {
@@ -733,6 +838,9 @@ public class TenantRoleBusinessServiceTest {
         assertTrue(page.getTotalResults() > 0);
     }
 
+    /**
+     * Test to delete a specific association that does not exist
+     */
     @Test
     @Order(26)
     public void deleteTenantRoleInvalidCaseNotExistentAssociation() {
@@ -741,6 +849,9 @@ public class TenantRoleBusinessServiceTest {
                 delete(10000L));
     }
 
+    /**
+     * Test to delete tenant roles that are invalid
+     */
     @Test
     @Order(27)
     public void deleteTenantRoleInvalidCase() {
@@ -786,6 +897,9 @@ public class TenantRoleBusinessServiceTest {
         assertDoesNotThrow(() -> tenantRoleBusinessService.delete(tenantRole.getId()));
     }
 
+    /**
+     * Test to check the permission in the association parameters that do not exist
+     */
     @Test
     @Order(28)
     public void checkParamPermissionNotExists() {
@@ -821,6 +935,9 @@ public class TenantRoleBusinessServiceTest {
 
     }
 
+    /**
+     * Test to check the tenant in the association parameters that do not exist
+     */
     @Test
     @Order(29)
     public void checkParamTenantNotExists() {
@@ -850,6 +967,9 @@ public class TenantRoleBusinessServiceTest {
                 save(systemTenantRole));
     }
 
+    /**
+     * Test to validate if we can retrieve the correct tenant rest service access
+     */
     @Test
     @Order(30)
     public void getTenantRESTServiceAccess() {
@@ -859,6 +979,9 @@ public class TenantRoleBusinessServiceTest {
         assertEquals(tenantRESTServiceAccess, tenantRoleBusinessService.getTenantRESTServiceAccess());
     }
 
+    /**
+     * Test to validate if we can retrieve the correct permission rest service access
+     */
     @Test
     @Order(31)
     public void getPermissionRESTServiceAccess() {

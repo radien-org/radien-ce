@@ -20,8 +20,8 @@ import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.client.exceptions.ErrorCodeMessage;
 import io.radien.ms.permissionmanagement.model.Action;
 
 import javax.ejb.Stateless;
@@ -34,7 +34,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Order;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -163,7 +162,7 @@ public class ActionService implements ActionServiceAccess {
         EntityManager em = getEntityManager();
         List<Action> alreadyExistentRecords = searchDuplicatedName(action, em);
         if (!alreadyExistentRecords.isEmpty()) {
-            throw new UniquenessConstraintException(ErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
         if(action.getId() == null) {
             em.persist(action);

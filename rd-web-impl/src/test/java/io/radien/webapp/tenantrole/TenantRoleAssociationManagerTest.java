@@ -90,6 +90,9 @@ TenantRoleAssociationManagerTest {
 
     private FacesContext facesContext;
 
+    /**
+     * Method variables preparation
+     */
     @Before
     public void before(){
         MockitoAnnotations.initMocks(this);
@@ -215,7 +218,7 @@ TenantRoleAssociationManagerTest {
         String urlMapping = tenantRoleAssociationManager.associateUser(userId);
 
         assertNotNull(urlMapping);
-        assertEquals(urlMapping, "pretty:userTenantAssociation");
+        assertEquals("pretty:userTenantAssociation", urlMapping);
     }
 
     /**

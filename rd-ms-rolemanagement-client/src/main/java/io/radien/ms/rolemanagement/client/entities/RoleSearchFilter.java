@@ -17,6 +17,8 @@ package io.radien.ms.rolemanagement.client.entities;
 
 import io.radien.api.model.role.SystemRoleSearchFilter;
 
+import java.util.Collection;
+
 /**
  * Role search object constructor
  *
@@ -26,6 +28,7 @@ public class RoleSearchFilter implements SystemRoleSearchFilter {
 
     private String name;
     private String description;
+    private Collection<Long> ids;
 
     private boolean isExact;
     private boolean isLogicConjunction;
@@ -39,12 +42,14 @@ public class RoleSearchFilter implements SystemRoleSearchFilter {
      * Role search filter constructor with specified fields
      * @param name to be search
      * @param description to be search
+     * @param ids to be search
      * @param isExact to be search
      * @param isLogicConjunction true in case search option is and conjunction
      */
-    public RoleSearchFilter(String name, String description, boolean isExact, boolean isLogicConjunction) {
+    public RoleSearchFilter(String name, String description, Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
         this.name = name;
         this.description = description;
+        this.ids = ids;
         this.isExact = isExact;
         this.isLogicConjunction = isLogicConjunction;
     }
@@ -119,5 +124,23 @@ public class RoleSearchFilter implements SystemRoleSearchFilter {
     @Override
     public void setLogicConjunction(boolean logicConjunction) {
         isLogicConjunction = logicConjunction;
+    }
+
+    /**
+     * Role search filter get ids
+     * @return ids for search filter
+     */
+    @Override
+    public Collection<Long> getIds() {
+        return ids;
+    }
+
+    /**
+     * Role search filter ids setter
+     * @param ids to be set and replace
+     */
+    @Override
+    public void setIds(Collection<Long> ids) {
+        this.ids = ids;
     }
 }

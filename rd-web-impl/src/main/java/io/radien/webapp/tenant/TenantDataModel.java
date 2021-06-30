@@ -28,7 +28,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -46,7 +46,7 @@ import java.util.List;
  * @author Bruno Gama
  */
 @Model
-@ApplicationScoped
+@SessionScoped
 public class TenantDataModel extends AbstractManager implements Serializable {
 
     @Inject
@@ -163,29 +163,78 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     private void validateMandatoryFields(SystemTenant r) throws Exception {
         if(r != null && r.getTenantType().equals(TenantType.CLIENT_TENANT)) {
-            if(r.getClientAddress() == null || r.getClientAddress().equals("")) {
-                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_address_is_mandatory"));
-            }
+            clientAddressValidation(r);
+            clientZipCodeValidation(r);
+            clientCityValidation(r);
+            clientCountryValidation(r);
+            clientPhoneNumberValidation(r);
+            clientEmailValidation(r);
+        }
+    }
 
-            if(r.getClientZipCode() == null || r.getClientZipCode().equals("")) {
-                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_zip_code_is_mandatory"));
-            }
+    /**
+     * Check if in the given client tenant the client email is filled
+     * @param r system tenant to be validated
+     * @throws Exception to be throw in case of client email is not filled
+     */
+    private void clientEmailValidation(SystemTenant r) throws Exception {
+        if(r.getClientEmail() == null) {
+            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_email_is_mandatory"));
+        }
+    }
 
-            if(r.getClientCity() == null || r.getClientCity().equals("")) {
-                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_city_is_mandatory"));
-            }
+    /**
+     * Check if in the given client tenant the client phone number is filled
+     * @param r system tenant to be validated
+     * @throws Exception to be throw in case of client phone number is not filled
+     */
+    private void clientPhoneNumberValidation(SystemTenant r) throws Exception {
+        if(r.getClientPhoneNumber() == null) {
+            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_phone_is_mandatory"));
+        }
+    }
 
-            if(r.getClientCountry() == null || r.getClientCountry().equals("")) {
-                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_country_is_mandatory"));
-            }
+    /**
+     * Check if in the given client tenant the client country is filled
+     * @param r system tenant to be validated
+     * @throws Exception to be throw in case of client country is not filled
+     */
+    private void clientCountryValidation(SystemTenant r) throws Exception {
+        if(r.getClientCountry() == null || r.getClientCountry().equals("")) {
+            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_country_is_mandatory"));
+        }
+    }
 
-            if(r.getClientPhoneNumber() == null || r.getClientPhoneNumber().equals("")) {
-                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_phone_is_mandatory"));
-            }
+    /**
+     * Check if in the given client tenant the client city is filled
+     * @param r system tenant to be validated
+     * @throws Exception to be throw in case of client city is not filled
+     */
+    private void clientCityValidation(SystemTenant r) throws Exception {
+        if(r.getClientCity() == null || r.getClientCity().equals("")) {
+            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_city_is_mandatory"));
+        }
+    }
 
-            if(r.getClientEmail() == null) {
-                sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_email_is_mandatory"));
-            }
+    /**
+     * Check if in the given client tenant the client zip code is filled
+     * @param r system tenant to be validated
+     * @throws Exception to be throw in case of client zip code is not filled
+     */
+    private void clientZipCodeValidation(SystemTenant r) throws Exception {
+        if(r.getClientZipCode() == null || r.getClientZipCode().equals("")) {
+            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_zip_code_is_mandatory"));
+        }
+    }
+
+    /**
+     * Check if in the given client tenant the client address is filled
+     * @param r system tenant to be validated
+     * @throws Exception to be throw in case of client address is not filled
+     */
+    private void clientAddressValidation(SystemTenant r) throws Exception {
+        if(r.getClientAddress() == null || r.getClientAddress().equals("")) {
+            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_address_is_mandatory"));
         }
     }
 

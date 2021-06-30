@@ -19,9 +19,9 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
 import io.radien.api.service.role.RoleServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.rolemanagement.client.exception.RoleErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,6 +146,15 @@ public class RoleService implements RoleServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = roleRoot.get("id").in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
+        }
+
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, roleRoot, global);
         global = getFieldPredicate("description", filter.getDescription(), filter, criteriaBuilder, roleRoot, global);
 
@@ -220,7 +229,7 @@ public class RoleService implements RoleServiceAccess {
     @Override
     public SystemRole get(Long roleId) throws RoleNotFoundException {
         if(entityManager.find(Role.class, roleId) == null) {
-            throw new RoleNotFoundException(RoleErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+            throw new RoleNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
         }
 
         log.info("I found the record!");
@@ -274,7 +283,7 @@ public class RoleService implements RoleServiceAccess {
             boolean isSameName = alreadyExistentRecords.get(0).getName().equals(newRoleInformation.getName());
 
             if(isSameName) {
-                throw new UniquenessConstraintException(RoleErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
+                throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
             }
         }
     }
