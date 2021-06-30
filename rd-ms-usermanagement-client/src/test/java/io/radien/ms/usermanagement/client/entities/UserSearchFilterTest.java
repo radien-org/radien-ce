@@ -18,15 +18,19 @@ package io.radien.ms.usermanagement.client.entities;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Bruno Gama
  **/
 public class UserSearchFilterTest extends TestCase {
 
     private final UserSearchFilter userSearchFilter;
+    private final List<Long> ids = Arrays.asList(1L, 2L);
 
     public UserSearchFilterTest() {
-        userSearchFilter = new UserSearchFilter("sub", "email", "logon", false, false);
+        userSearchFilter = new UserSearchFilter("sub", "email", "logon", ids, false, false);
     }
 
     @Test
@@ -35,6 +39,7 @@ public class UserSearchFilterTest extends TestCase {
         assertNull(userSearchFilter1.getSub());
         assertNull(userSearchFilter1.getEmail());
         assertNull(userSearchFilter1.getLogon());
+        assertNull(userSearchFilter1.getIds());
         assertFalse(userSearchFilter1.isExact());
         assertFalse(userSearchFilter1.isLogicConjunction());
     }
@@ -77,6 +82,21 @@ public class UserSearchFilterTest extends TestCase {
         assertNotNull(userSearchFilter.getLogon());
         assertEquals("newLogon", userSearchFilter.getLogon());
     }
+
+    @Test
+    public void testGetIds() {
+        assertNotNull(userSearchFilter.getIds());
+        assertEquals(ids, userSearchFilter.getIds());
+    }
+
+    @Test
+    public void testSetIds() {
+        List<Long> identifiers = Arrays.asList(1L, 2L, 3L);
+        userSearchFilter.setIds(identifiers);
+        assertNotNull(userSearchFilter.getIds());
+        assertEquals(identifiers, userSearchFilter.getIds());
+    }
+
 
     @Test
     public void testIsExact() {

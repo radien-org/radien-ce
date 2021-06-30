@@ -16,12 +16,26 @@
 
 package io.radien.api.model.user;
 
+import java.util.Collection;
+
 /**
  * System User search filter interface class
  * 
  * @author Bruno Gama
  */
 public interface SystemUserSearchFilter {
+
+    /**
+     * User search filter get ids
+     * @return ids for search filter
+     */
+    Collection<Long> getIds();
+
+    /**
+     * User search filter ids setter
+     * @param ids to be set and replace
+     */
+    void setIds(Collection<Long> ids);
 
     /**
      * System User Search filter subject getter
