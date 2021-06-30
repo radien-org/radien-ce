@@ -118,8 +118,9 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 			HttpSession session = getSession(false, request, response);
 			if (session != null) {
 				return (SystemUser) session.getAttribute(ATTR_USER);
-			} else
-			throw new UserNotFoundException("User has not been in session");
+			} else {
+				throw new UserNotFoundException("User has not been in session");
+			}
 
 		} catch (UserNotFoundException e) {
 			log.info("user not found in session",e);
