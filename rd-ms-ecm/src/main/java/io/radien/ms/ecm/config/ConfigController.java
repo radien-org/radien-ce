@@ -73,7 +73,7 @@ public class ConfigController implements OAFAccess {
      */
     @Override
     public void fireEvent(Event event) {
-
+        // empty
     }
 
     /**
