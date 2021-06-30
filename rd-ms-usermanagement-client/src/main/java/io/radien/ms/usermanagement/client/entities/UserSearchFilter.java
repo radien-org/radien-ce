@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.entities;
 
+import io.radien.api.search.SearchableByIds;
 import io.radien.api.model.user.SystemUserSearchFilter;
 
 import java.util.Collection;
@@ -24,11 +25,10 @@ import java.util.Collection;
  *
  * @author Nuno Santana
  */
-public class UserSearchFilter implements SystemUserSearchFilter {
+public class UserSearchFilter extends SearchableByIds implements SystemUserSearchFilter {
     private String sub;
     private String email;
     private String logon;
-    private Collection<Long> ids;
     private boolean isExact;
     private boolean isLogicConjunction;
 
@@ -47,10 +47,10 @@ public class UserSearchFilter implements SystemUserSearchFilter {
      * @param isLogicConjunction true in case search option is and conjunction
      */
     public UserSearchFilter(String sub, String email, String logon, Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
+        super(ids);
         this.sub = sub;
         this.email = email;
         this.logon = logon;
-        this.ids = ids;
         this.isExact = isExact;
         this.isLogicConjunction = isLogicConjunction;
     }
@@ -144,18 +144,4 @@ public class UserSearchFilter implements SystemUserSearchFilter {
     public void setLogicConjunction(boolean logicConjunction) {
         isLogicConjunction = logicConjunction;
     }
-
-    /**
-     * User search filter get ids
-     * @return ids for search filter
-     */
-    @Override
-    public Collection<Long> getIds() { return ids; }
-
-    /**
-     * User search filter ids setter
-     * @param ids to be set and replace
-     */
-    @Override
-    public void setIds(Collection<Long> ids) { this.ids = ids; }
 }
