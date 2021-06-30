@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test class to infer the behaviour of {@link SearchableByIds}
