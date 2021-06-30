@@ -348,6 +348,15 @@ public class UserService implements UserServiceAccess{
 			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
 		}
 
+		if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+			Predicate in = userRoot.get("id").in(filter.getIds());
+			if(filter.isLogicConjunction()) {
+				global = criteriaBuilder.and(global, in);
+			} else {
+				global = criteriaBuilder.or(global, in);
+			}
+		}
+
 		global = getFieldPredicate("sub", filter.getSub(), filter, criteriaBuilder, userRoot, global);
 		global = getFieldPredicate("userEmail", filter.getEmail(), filter, criteriaBuilder, userRoot, global);
 		global = getFieldPredicate("logon", filter.getLogon(), filter, criteriaBuilder, userRoot, global);

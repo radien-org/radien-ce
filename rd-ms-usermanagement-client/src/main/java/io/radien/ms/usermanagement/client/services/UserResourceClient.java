@@ -69,6 +69,7 @@ public interface UserResourceClient {
      * @param sub to be found
      * @param email to be found
      * @param logon to be found
+     * @param ids to be found
      * @param isExact should the search fields be exact or not as given
      * @param isLogicalConjunction should the query use a and or a or criteria
      * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
@@ -78,6 +79,7 @@ public interface UserResourceClient {
     public Response getUsers(@QueryParam("sub") String sub,
                              @QueryParam("userEmail") String email,
                              @QueryParam("logon") String logon,
+                             @QueryParam("ids") List<Long> ids,
                              @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                              @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
