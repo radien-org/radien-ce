@@ -18,15 +18,20 @@ package io.radien.ms.tenantmanagement.client.entities;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Bruno Gama
  */
 public class TenantSearchFilterTest extends TestCase {
 
     private final TenantSearchFilter searchFilter;
+    private final List<Long> ids = Arrays.asList(3L, 4L);
 
     public TenantSearchFilterTest() {
-        this.searchFilter = new TenantSearchFilter("name", "root", true, true);
+        this.searchFilter = new TenantSearchFilter("name", "root", ids,true, true);
     }
 
     @Test
@@ -55,6 +60,20 @@ public class TenantSearchFilterTest extends TestCase {
         assertEquals(TenantType.CLIENT_TENANT, searchFilter.getTenantType());
     }
 
+    @Test
+    public void testGetIds() {
+        assertNotNull(searchFilter.getIds());
+        assertEquals(ids, searchFilter.getIds());
+    }
+
+    @Test
+    public void testSetIds() {
+        List<Long> identifiers = Collections.singletonList(99L);
+        searchFilter.setIds(identifiers);
+        assertNotNull(searchFilter.getIds());
+        assertEquals(identifiers, searchFilter.getIds());
+    }
+    
     @Test
     public void testIsExact() {
         assertTrue(searchFilter.isExact());

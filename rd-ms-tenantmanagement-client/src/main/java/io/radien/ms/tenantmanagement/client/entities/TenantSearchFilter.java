@@ -18,6 +18,8 @@ package io.radien.ms.tenantmanagement.client.entities;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenantType;
 
+import java.util.Collection;
+
 /**
  * Encapsulates the parameters applied to search for tenants
  * @author Bruno Gama
@@ -26,6 +28,7 @@ public class TenantSearchFilter implements SystemTenantSearchFilter {
 
     private String name;
     private SystemTenantType tenantType;
+    private Collection<Long> ids;
     private boolean isExact;
     private boolean isLogicConjunction;
 
@@ -33,13 +36,15 @@ public class TenantSearchFilter implements SystemTenantSearchFilter {
      * Tenant search filter constructor
      * @param name of the tenant to be found
      * @param type of the tenant to be found
+     * @param ids to be search
      * @param isExact true in case search option should be exact
      * @param isLogicalConjunction true in case search option is and conjunction
      */
-    public TenantSearchFilter(String name, String type, boolean isExact, boolean isLogicalConjunction) {
+    public TenantSearchFilter(String name, String type, Collection<Long> ids, boolean isExact, boolean isLogicalConjunction) {
         this.name = name;
         SystemTenantType tenantType = TenantType.getByName(type);
         this.tenantType = tenantType;
+        this.ids = ids;
         this.isExact = isExact;
         this.isLogicConjunction = isLogicalConjunction;
     }
@@ -79,6 +84,20 @@ public class TenantSearchFilter implements SystemTenantSearchFilter {
     public void setTenantType(SystemTenantType tenantType) {
         this.tenantType = tenantType;
     }
+
+    /**
+     * Tenant search filter get ids
+     * @return ids for search filter
+     */
+    @Override
+    public Collection<Long> getIds() { return ids; }
+
+    /**
+     * Tenant search filter ids setter
+     * @param ids to be set and replace
+     */
+    @Override
+    public void setIds(Collection<Long> ids) { this.ids = ids; }
 
     /**
      * Tenant search filter get is exact search
