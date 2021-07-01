@@ -141,6 +141,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      * @return list containing tenants
      * @throws SystemException in case of token expiration or any issue on the application
      */
+    @Override
     public List<? extends SystemTenant> getTenantsByIds(List<Long> ids) throws SystemException {
         try {
             return getSystemTenants(ids);

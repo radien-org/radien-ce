@@ -238,6 +238,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @return list containing roles
      * @throws SystemException in case of token expiration or any issue on the application
      */
+    @Override
     public List<? extends SystemRole> getRolesByIds(List<Long> ids) throws SystemException {
         try {
             return getSystemRoles(ids);

@@ -68,6 +68,14 @@ public interface RoleRESTServiceAccess extends Appframeable{
     public List<? extends SystemRole> getRolesByDescription(String description) throws SystemException ;
 
     /**
+     * Gets the roles in the DB searching based in a given list of ids.
+     * @param ids to be looked after
+     * @return list containing roles
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public List<? extends SystemRole> getRolesByIds(List<Long> ids) throws SystemException ;
+
+    /**
      * Creates given role
      * @param role to be created
      * @return true if role has been created with success or false if not
