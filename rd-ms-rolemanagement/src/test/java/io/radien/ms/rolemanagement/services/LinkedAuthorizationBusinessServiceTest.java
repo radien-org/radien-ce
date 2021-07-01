@@ -19,16 +19,21 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorizationSearchFilter;
 import io.radien.ms.rolemanagement.factory.LinkedAuthorizationFactory;
+import io.radien.ms.tenantmanagement.client.entities.Tenant;
 
 
 import org.junit.jupiter.api.BeforeEach;
@@ -46,11 +51,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 
 /**
  * @author Bruno Gama
@@ -68,6 +77,9 @@ public class LinkedAuthorizationBusinessServiceTest {
 
     @Mock
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
+
+    @Mock
+    private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     @Mock
     private RoleServiceAccess roleServiceAccess;
@@ -103,6 +115,16 @@ public class LinkedAuthorizationBusinessServiceTest {
     @Test
     public void testSave() throws Exception {
         LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L);
+
+        SystemTenant tenant = new Tenant();
+        tenant.setId(2L);
+        tenant.setName("test");
+        Optional<SystemTenant> optional = Optional.of(tenant);
+
+        doReturn(optional).when(tenantRESTServiceAccess).getTenantById(anyLong());
+
+        doReturn(true).when(activeTenantRESTServiceAccess).create(any());
+
         doReturn(true).when(linkedAuthorizationBusinessService).checkIfFieldsAreValid(any());
         linkedAuthorizationBusinessService.save(u);
     }
@@ -150,14 +172,20 @@ public class LinkedAuthorizationBusinessServiceTest {
     }
 
     @Test
-    public void testDeleteAssociationException() throws LinkedAuthorizationNotFoundException {
+    public void testDeleteAssociationException() throws LinkedAuthorizationNotFoundException, SystemException {
         LinkedAuthorization u = LinkedAuthorizationFactory.create(4L, 4L, 4L, 4L, 4L);
         u.setId(10L);
+        List<? extends SystemActiveTenant> list = new ArrayList<>();
+        SystemLinkedAuthorization linkedAuthorizationInfoToDelete = new LinkedAuthorization();
+        linkedAuthorizationInfoToDelete.setUserId(2L);
+        linkedAuthorizationInfoToDelete.setTenantId(2L);
+        doReturn(linkedAuthorizationInfoToDelete).when(linkedAuthorizationServiceAccess).getAssociationById(anyLong());
+        doReturn(list).when(activeTenantRESTServiceAccess).getActiveTenantByUserAndTenant(anyLong(), anyLong());
         doThrow(new LinkedAuthorizationNotFoundException("")).when(linkedAuthorizationServiceAccess).deleteAssociation(u.getId());
         boolean success = false;
         try{
             linkedAuthorizationBusinessService.deleteAssociation(u.getId());
-        } catch (LinkedAuthorizationNotFoundException e){
+        } catch (LinkedAuthorizationNotFoundException | SystemException e){
             success = true;
         }
         assertTrue(success);
@@ -241,6 +269,4 @@ public class LinkedAuthorizationBusinessServiceTest {
         assertThrows(LinkedAuthorizationException.class, ()->
                 linkedAuthorizationBusinessService.deleteAssociations(1L, null));
     }
-
-
-    }
+}

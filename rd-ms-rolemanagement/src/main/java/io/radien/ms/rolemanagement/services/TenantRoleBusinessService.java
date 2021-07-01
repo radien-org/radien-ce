@@ -380,10 +380,6 @@ public class TenantRoleBusinessService implements Serializable {
     }
 
     public TenantRESTServiceAccess getTenantRESTServiceAccess() {
-        if (tenantRESTServiceAccess == null) {
-            CDI<Object> cdi = CDI.current();
-            tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
-        }
         return tenantRESTServiceAccess;
     }
 
@@ -392,14 +388,42 @@ public class TenantRoleBusinessService implements Serializable {
     }
 
     public PermissionRESTServiceAccess getPermissionRESTServiceAccess() {
-        if (permissionRESTServiceAccess == null) {
-            CDI<Object> cdi = CDI.current();
-            permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
-        }
         return permissionRESTServiceAccess;
     }
 
     public void setPermissionRESTServiceAccess(PermissionRESTServiceAccess permissionRESTServiceAccess) {
         this.permissionRESTServiceAccess = permissionRESTServiceAccess;
+    }
+
+    public TenantRoleServiceAccess getTenantRoleServiceAccess() {
+        return tenantRoleServiceAccess;
+    }
+
+    public void setTenantRoleServiceAccess(TenantRoleServiceAccess tenantRoleServiceAccess) {
+        this.tenantRoleServiceAccess = tenantRoleServiceAccess;
+    }
+
+    public TenantRoleUserServiceAccess getTenantRoleUserServiceAccess() {
+        return tenantRoleUserServiceAccess;
+    }
+
+    public void setTenantRoleUserServiceAccess(TenantRoleUserServiceAccess tenantRoleUserServiceAccess) {
+        this.tenantRoleUserServiceAccess = tenantRoleUserServiceAccess;
+    }
+
+    public TenantRolePermissionServiceAccess getTenantRolePermissionService() {
+        return tenantRolePermissionService;
+    }
+
+    public void setTenantRolePermissionService(TenantRolePermissionServiceAccess tenantRolePermissionService) {
+        this.tenantRolePermissionService = tenantRolePermissionService;
+    }
+
+    public RoleServiceAccess getRoleServiceAccess() {
+        return roleServiceAccess;
+    }
+
+    public void setRoleServiceAccess(RoleServiceAccess roleServiceAccess) {
+        this.roleServiceAccess = roleServiceAccess;
     }
 }

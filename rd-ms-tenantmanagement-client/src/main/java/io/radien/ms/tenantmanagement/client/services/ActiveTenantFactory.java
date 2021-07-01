@@ -65,7 +65,7 @@ public class ActiveTenantFactory {
         Long userId = FactoryUtilService.getLongFromJson("userId", jsonTenant);
         Long tenantId = FactoryUtilService.getLongFromJson("tenantId", jsonTenant);
         String tenantName = FactoryUtilService.getStringFromJson("tenantName", jsonTenant);
-        boolean isTenantActive = Boolean.parseBoolean(FactoryUtilService.getStringFromJson("isTenantActive", jsonTenant));
+        boolean isTenantActive = FactoryUtilService.getBooleanFromJson("isTenantActive", jsonTenant);
 
         ActiveTenant activeTenant = create(userId, tenantId, tenantName, isTenantActive);
         activeTenant.setId(id);
@@ -86,7 +86,7 @@ public class ActiveTenantFactory {
         FactoryUtilService.addValueLong(builder, "userId", activeTenant.getUserId());
         FactoryUtilService.addValueLong(builder, "tenantId", activeTenant.getTenantId());
         FactoryUtilService.addValue(builder, "tenantName", activeTenant.getTenantName());
-        FactoryUtilService.addValue(builder, "isTenantActive", activeTenant.getIsTenantActive());
+        FactoryUtilService.addValueBoolean(builder, "isTenantActive", activeTenant.getIsTenantActive());
 
         return  builder.build();
     }
