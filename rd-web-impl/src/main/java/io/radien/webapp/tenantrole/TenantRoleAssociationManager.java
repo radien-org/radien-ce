@@ -38,10 +38,15 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import io.radien.webapp.cache.CacheFactory;
+import io.radien.webapp.cache.RoleCache;
+import io.radien.webapp.cache.TenantCache;
+import io.radien.webapp.cache.UserCache;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 
 
+import javax.cache.Cache;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
@@ -73,6 +78,22 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
     private UserRESTServiceAccess userRESTServiceAccess;
+
+    @Inject
+    private CacheFactory cacheFactory;
+
+//    @Inject
+//    @UserCache
+//    private Cache<Long, SystemUser> userCache;
+//
+//    @Inject
+//    @TenantCache
+//    private Cache<Long, SystemTenant> tenantCache;
+//
+//    @Inject
+//    @RoleCache
+//    private Cache<Long, SystemRole> roleCache;
+
 
     private SystemTenant tenant = new Tenant();
     private SystemRole role = new Role();
@@ -206,8 +227,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             List<? extends SystemTenantRole> tenantRoles = tenantRoleRESTServiceAccess.
                     getTenantRoles(tenant.getId(), role.getId(), true);
-            return tenantRoles != null && !tenantRoles.isEmpty() ?
-                    tenantRoles.get(0).getId() : null;
+            return !tenantRoles.isEmpty() ? tenantRoles.get(0).getId() : null;
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
@@ -629,56 +649,21 @@ public class TenantRoleAssociationManager extends AbstractManager {
     }
 
     /**
-     * Retrieve logon information from a user
-     * @param userId user identifier
-     * @return user logon
+     * Getter for the property that corresponds to the User Previously selected for
+     * doing the dissociation
+     * @return Previous User for which the dissociation was performed
      */
-    public String getLogon(Long userId) {
-        try {
-            Optional<SystemUser> optional = this.userRESTServiceAccess.
-                    getUserById(userId);
-            return optional.isPresent() ? optional.get().getLogon() :
-                    String.valueOf(userId);
-        }
-        catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_user"));
-            return String.valueOf(userId);
-        }
+    public SystemTenantRoleUser getPreviousSelectedUserToUnAssign() {
+        return previousSelectedUserToUnAssign;
     }
 
     /**
-     * Retrieve name from a tenant
-     * @param tenantId tenant identifier
-     * @return tenant name
+     * Setter for the property that corresponds to the User Previously selected for
+     * doing the dissociation
+     * @param previousSelectedPermissionToUnAssign Previous User for which the dissociation was performed
      */
-    public String getTenantName(Long tenantId) {
-        try {
-            Optional<SystemTenant> opt = tenantRESTServiceAccess.getTenantById(tenantId);
-            return opt.isPresent() ? opt.get().getName() : String.valueOf(tenantId);
-        }
-        catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_tenant"));
-            return String.valueOf(tenantId);
-        }
-    }
-
-    /**
-     * Retrieve name from a Role
-     * @param roleId role identifier
-     * @return role name
-     */
-    public String getRoleName(Long roleId) {
-        try {
-            Optional<SystemRole> opt = roleRESTServiceAccess.getRoleById(roleId);
-            return opt.isPresent() ? opt.get().getName() : String.valueOf(roleId);
-        }
-        catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_role"));
-            return String.valueOf(roleId);
-        }
+    public void setPreviousSelectedUserToUnAssign(SystemTenantRoleUser previousSelectedPermissionToUnAssign) {
+        this.previousSelectedUserToUnAssign = previousSelectedPermissionToUnAssign;
     }
 
 }

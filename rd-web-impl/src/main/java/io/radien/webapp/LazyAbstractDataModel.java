@@ -72,6 +72,6 @@ public abstract class LazyAbstractDataModel<T extends Model> extends LazyDataMod
 
         setRowCount(Math.toIntExact(rowCount));
 
-        return new ArrayList<>(datasource);
+        return datasource != null ? new ArrayList<>(datasource) : null;
     }
 }

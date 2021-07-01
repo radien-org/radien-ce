@@ -23,15 +23,12 @@ import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.LazyAbstractDataModel;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.SortMeta;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,20 +46,26 @@ import java.util.stream.Collectors;
  */
 public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<SystemTenantRole> {
 
-    private static final long serialVersionUID = -8405561198062161809L;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-    private TenantRoleRESTServiceAccess service;
+    private static final long serialVersionUID = -8033465113875345606L;
 
-    private RoleRESTServiceAccess roleService;
-    private TenantRESTServiceAccess tenantService;
+    private final TenantRoleRESTServiceAccess service;
+    private final RoleRESTServiceAccess roleService;
+    private final TenantRESTServiceAccess tenantService;
 
-    private Map<Long, SystemTenant> tenantMapRef;
-    private Map<Long, SystemRole> roleMapRef;
+    private final Map<Long, SystemTenant> tenantMapRef;
+    private final Map<Long, SystemRole> roleMapRef;
+
+    private static final SystemTenant EMPTY_TENANT = new Tenant();
+    private static final SystemRole EMPTY_ROLE = new Role();
 
     /**
-     * Main constructor
-     * @param service TenantRoleRESTServiceAccess rest client to perform the role of a DataService,
-     *                providing data to assembly the datasource
+     * Injects the core components necessary to retrieve the information to be shown
+     * on the data table. Due the fact that {@link SystemTenantRole} only contains ids referring
+     * Tenant and Role, we need auxiliary components to retrieve (textual) information regarding
+     * Tenant and Role as well
+     * @param service Rest client responsible for retrieving {@link SystemTenantRole} instances.
+     * @param tenantService auxiliary rest client to provide information regarding tenant
+     * @param roleRESTServiceAccess auxiliary rest client to provide information regarding role.     *
      */
     public LazyTenantRoleAssociationDataModel(TenantRoleRESTServiceAccess service,
                                               TenantRESTServiceAccess tenantService,
@@ -74,6 +77,25 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
         this.tenantMapRef = new HashMap<>();
     }
 
+    /**
+     * Core method responsible for retrieving a page containing {@link SystemTenantRole} instances
+     * accordingly to the following parameters.
+     *
+     * Due the nature of {@link SystemTenantRole} - which only contains ids - once the page
+     * is retrieved, the information regarding the related tenants and roles must be retrieved
+     * as well (And stored in internal cache to avoid multiple requests to the backend).
+     *
+     * @param offset corresponds to the page number or page index
+     * @param pageSize corresponds to page length or page size
+     * @param sortBy map that contains references for {@link SortMeta} instances,
+     *               parameters to be used to perform sorting operations for the existent rows
+     * @param filterBy map that contains references for {@link FilterMeta} instances,
+     *                 parameters to be used to perform filtering operation over the
+     *                 existent rows.
+     * @return Page containing {@link SystemTenantRole} instances, or an empty page
+     * (in case of no objects found).
+     * @throws SystemException in case of issues during the request processing
+     */
     @Override
     public Page<? extends SystemTenantRole> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
         Page<? extends SystemTenantRole> page = service.getAll((offset/pageSize)+1, pageSize);
@@ -89,8 +111,8 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
     }
 
     /**
-     * If necessary, retrieve the Roles that will be shown
-     * in the data grid for the current page
+     * Check if the roles are already mapped in the internal cache.
+     * If not, retrieve the Roles that will be shown in the data grid for the current page
      * @param roleIds List containing role identifiers (Obtained from TenantRole pagination)
      */
     protected void updateRoleReferencesForExhibition(List<Long> roleIds) throws SystemException {
@@ -98,7 +120,7 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
         List<Long> ids = roleIds.stream().filter(id -> !roleMapRef.containsKey(id)).
                 collect(Collectors.toList());
         if (!ids.isEmpty()) {
-            // TODO: Necessary service to retrieve Roles based on a list of Ids
+            // TODO: Is necessary to replace by one service call based on as list of ids
             for (Long id: ids) {
                 try {
                     roleService.getRoleById(id).ifPresent(r -> roleMapRef.put(id, r));
@@ -111,15 +133,15 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
     }
 
     /**
-     * If necessary, retrieve the Tenants that will be shown
-     * in the data grid for the current page
+     * Check if the tenants are already mapped in the internal cache.
+     * If not, retrieve the Tenants that will be shown in the data grid for the current page
      * @param tenantIds List containing tenant identifiers (Obtained from TenantRole pagination)
      */
     protected void updateTenantReferencesForExhibition(List<Long> tenantIds) throws SystemException {
         // Filtering non mapped role ids
         List<Long> ids = getNonMappedIds(tenantIds, tenantMapRef);
         if (!ids.isEmpty()) {
-            // TODO: Necessary service to retrieve Tenants based on a list of Ids
+            // TODO: Is necessary to replace by one service call based on as list of ids
             for (Long id: ids) {
                 tenantService.getTenantById(id).ifPresent(t -> tenantMapRef.put(id, t));
             }
@@ -137,14 +159,13 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
                 collect(Collectors.toList());
     }
 
-
     /**
      * Retrieve the tenant name taking in consideration a tenant identifier
      * @param tenantId tenant identifier
      * @return the tenant name (if the tenant exists), otherwise returns null
      */
     public String getTenantName(Long tenantId) {
-        return tenantMapRef.containsKey(tenantId) ? tenantMapRef.get(tenantId).getName() : "";
+        return tenantMapRef.getOrDefault(tenantId, EMPTY_TENANT).getName();
     }
 
     /**
@@ -153,6 +174,6 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
      * @return the role name (if the role exists), otherwise returns null
      */
     public String getRoleName(Long roleId) {
-        return roleMapRef.containsKey(roleId) ? roleMapRef.get(roleId).getName() : "";
+        return roleMapRef.getOrDefault(roleId, EMPTY_ROLE).getName();
     }
 }

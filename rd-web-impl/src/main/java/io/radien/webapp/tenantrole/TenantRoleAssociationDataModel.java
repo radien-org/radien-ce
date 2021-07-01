@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.radien.webapp.tenantrole;
 
 import io.radien.api.model.tenantrole.SystemTenantRole;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
@@ -48,7 +46,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
 
     private LazyDataModel<? extends SystemTenantRole> lazyModel;
 
-    private SystemTenantRoleUser selectedAssociation;
+    private SystemTenantRole selectedAssociation;
 
     @Inject
     private TenantRoleRESTServiceAccess service;
@@ -65,12 +63,25 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
     @PostConstruct
     public void init() {
         try {
-            lazyModel = new LazyTenantRoleAssociationDataModel(service,
-                    tenantRESTServiceAccess, roleRESTServiceAccess);
+            lazyModel = buildLazyModel(service, tenantRESTServiceAccess, roleRESTServiceAccess);
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_generic_error_message"),
                     JSFUtil.getMessage("tenant_role_associations"));
         }
+    }
+
+    /**
+     * Assembly method to LazyTenantRoleAssociationDataModel
+     * @param tenantRoleRESTServiceAccess instance of {@link TenantRoleRESTServiceAccess}
+     * @param tenantRESTServiceAccess instance of {@link TenantRESTServiceAccess}
+     * @param roleRESTServiceAccess instance of {@link RoleRESTServiceAccess}
+     * @return assembled {@link LazyTenantRoleAssociationDataModel}
+     */
+    protected LazyTenantRoleAssociationDataModel buildLazyModel(TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess,
+                                                             TenantRESTServiceAccess tenantRESTServiceAccess,
+                                                             RoleRESTServiceAccess roleRESTServiceAccess) {
+        return new LazyTenantRoleAssociationDataModel(tenantRoleRESTServiceAccess,
+                tenantRESTServiceAccess, roleRESTServiceAccess);
     }
 
     /**
@@ -100,7 +111,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
      * Getter for the property that corresponds to the TenantRole object selected as row in a DataGrid
      * @return reference for the selected TenantRole association
      */
-    public SystemTenantRoleUser getSelectedAssociation() {
+    public SystemTenantRole getSelectedAssociation() {
         return selectedAssociation;
     }
 
@@ -108,7 +119,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
      * Setter for the property that corresponds to the TenantRole object selected as row in a DataGrid
      * @param selectedAssociation reference for the selected TenantRole association
      */
-    public void setSelectedAssociation(SystemTenantRoleUser selectedAssociation) {
+    public void setSelectedAssociation(SystemTenantRole selectedAssociation) {
         this.selectedAssociation = selectedAssociation;
     }
 
@@ -122,10 +133,40 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
 
     /**
      * Setter for the property that corresponds to the TenantRole Rest client
-     * @param service  instance of TenantRoleRESTServiceAccess rest client
+     * @param service instance of TenantRoleRESTServiceAccess rest client
      */
     public void setService(TenantRoleRESTServiceAccess service) {
         this.service = service;
+    }
+
+    /**
+     * Getter for the property that corresponds to the Role Rest client
+     * @return instance of RoleRESTServiceAccess rest client
+     */
+    public RoleRESTServiceAccess getRoleRESTServiceAccess() { return roleRESTServiceAccess; }
+
+    /**
+     * Setter for the property that corresponds to the Role Rest client
+     * @param roleRESTServiceAccess instance of RoleRESTServiceAccess rest client
+     */
+    public void setRoleRESTServiceAccess(RoleRESTServiceAccess roleRESTServiceAccess) {
+        this.roleRESTServiceAccess = roleRESTServiceAccess;
+    }
+
+    /**
+     * Getter for the property that corresponds to the Tenant Rest client
+     * @return instance of TenantRESTServiceAccess rest client
+     */
+    public TenantRESTServiceAccess getTenantRESTServiceAccess() {
+        return tenantRESTServiceAccess;
+    }
+
+    /**
+     * Getter for the property that corresponds to the Tenant Rest client
+     * @param tenantRESTServiceAccess instance of TenantRESTServiceAccess rest client
+     */
+    public void setTenantRESTServiceAccess(TenantRESTServiceAccess tenantRESTServiceAccess) {
+        this.tenantRESTServiceAccess = tenantRESTServiceAccess;
     }
 
     /**

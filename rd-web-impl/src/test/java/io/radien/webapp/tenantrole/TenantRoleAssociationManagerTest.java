@@ -19,15 +19,20 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.junit.Before;
@@ -70,8 +75,7 @@ import java.util.Optional;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
-public class
-TenantRoleAssociationManagerTest {
+public class TenantRoleAssociationManagerTest {
 
     @InjectMocks
     private TenantRoleAssociationManager tenantRoleAssociationManager;
@@ -84,6 +88,9 @@ TenantRoleAssociationManagerTest {
 
     @Mock
     private RoleRESTServiceAccess roleRESTServiceAccess;
+
+    @Mock
+    private UserRESTServiceAccess userRESTServiceAccess;
 
     @Mock
     private TenantRESTServiceAccess tenantRESTServiceAccess;
@@ -297,7 +304,33 @@ TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setPreviousSelectedPermissionToUnAssign(p);
         assertEquals(p, tenantRoleAssociationManager.getPreviousSelectedPermissionToUnAssign());
     }
-
+    /**
+     * Test for getters and setter methods regarding selectedUserToUnAssign attribute
+     */
+    @Test
+    public void testGetterSetterSelectedUserToUnAssign() {
+        TenantRoleUser u = new TenantRoleUser();
+        tenantRoleAssociationManager.setSelectedUserToUnAssign(u);
+        assertEquals(u, tenantRoleAssociationManager.getSelectedUserToUnAssign());
+    }
+    /**
+     * Test for getters and setter methods regarding selectedUserToUnAssign attribute
+     */
+    @Test
+    public void testGetterSetterPreviousSelectedUserToUnAssign() {
+        TenantRoleUser u = new TenantRoleUser();
+        tenantRoleAssociationManager.setPreviousSelectedUserToUnAssign(u);
+        assertEquals(u, tenantRoleAssociationManager.getPreviousSelectedUserToUnAssign());
+    }
+    /**
+     * Test for getters and setter methods regarding user attribute
+     */
+    @Test
+    public void testGetterSetterUser() {
+        User user = new User();
+        tenantRoleAssociationManager.setUser(user);
+        assertEquals(user, tenantRoleAssociationManager.getUser());
+    }
     /**
      * Test for method getInitialRolesAllowedForAssociation().
      * The original method returns a list containing Pre-Defined roles (Not administrative ones)
@@ -405,7 +438,7 @@ TenantRoleAssociationManagerTest {
     /**
      * Test for method edit(SystemTenantRole), which prepares the frontend gui
      * to expose the information related to the TenantRole that wil be edited.
-     * Return uri mapping referring the value <b>tenantrole</b>
+     * Return uri mapping referring the value tenantrole
      */
     @Test
     public void testEditTenantRole() throws Exception {
@@ -446,7 +479,7 @@ TenantRoleAssociationManagerTest {
      * This particular case will simulate an exception occurs while
      * retrieving role.
      *
-     * Expected Return uri mapping referring the value <b>tenantrole</b>
+     * Expected Return uri mapping referring the value tenantrole
      */
     @Test
     public void testEditTenantRoleWhenExceptionOccursForRoleRetrieval() throws Exception {
@@ -479,7 +512,7 @@ TenantRoleAssociationManagerTest {
      * This particular case will simulate an exception occurs while
      * retrieving tenant.
      *
-     * Expected Return uri mapping referring the value <b>tenantrole</b>
+     * Expected Return uri mapping referring the value tenantrole
      */
     @Test
     public void testEditTenantRoleWhenExceptionOccursForTenantRetrieval() throws Exception {
@@ -515,7 +548,7 @@ TenantRoleAssociationManagerTest {
      * This particular case will simulate an exception occurs while
      * retrieving the assigned permissions.
      *
-     * Expected Return uri mapping referring the value <b>tenantrole</b>
+     * Expected Return uri mapping referring the value tenantrole
      */
     @Test
     public void testEditTenantRoleExceptionOccursWhenCalculateAssignedPermissions() throws Exception {
@@ -776,4 +809,364 @@ TenantRoleAssociationManagerTest {
         assertNull(tenantRoleAssociationManager.getPreviousSelectedPermissionToUnAssign().getId());
         assertNull(tenantRoleAssociationManager.getSelectedPermissionToUnAssign().getId());
     }
+
+    /**
+     * This method mocks the tenant Role id retrieval process
+     * @throws SystemException thrown to describe communication issues with endpoint
+     */
+    protected void mockTenantRoleIdRetrieval(TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess,
+                                             SystemTenant tenant, SystemRole role,
+                                             Long mockedTenantRoleId) throws SystemException {
+        TenantRole tenantRole = new TenantRole();
+        tenantRole.setTenantId(tenant.getId());
+        tenantRole.setRoleId(role.getId());
+        tenantRole.setId(mockedTenantRoleId);
+
+        List<TenantRole> tenantRoles = new ArrayList<>();
+        tenantRoles.add(tenantRole);
+
+        when(tenantRoleRESTServiceAccess.getTenantRoles(tenant.getId(),
+                role.getId(), true)).then(i -> tenantRoles);
+    }
+
+    /**
+     * Test the method assignUser(): the one which does/perform user assignment
+     * Perform the association between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     * @throws SystemException in case of any issue with endpoint communication
+     */
+    @Test
+    public void testAssignUser() throws SystemException {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemUser user = new User(); user.setId(3L); user.setLogon("test");
+
+        tenantRoleAssociationManager.setUser(user);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        mockTenantRoleIdRetrieval(tenantRoleRESTServiceAccess,
+                tenantRoleAssociationManager.getTenant(),
+                tenantRoleAssociationManager.getRole(), 111L);
+
+        when(userRESTServiceAccess.getUserByLogon(user.getLogon())).thenReturn(Optional.of(user));
+
+        when(tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId())).
+                then(i -> Boolean.TRUE);
+
+        String returnUriMappingId = tenantRoleAssociationManager.assignUser();
+
+        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals("rd_tenant_role_user_association_success",
+                captured.getSummary());
+        assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
+    }
+
+    /**
+     * Test the method assignUser(): the one which does/perform user assignment
+     * Perform the association between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     *
+     * Corresponds to scenario/case in which a User was not selected
+     */
+    @Test
+    public void testAssignUserWithNoUserSelected() {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemUser user = new User();
+        tenantRoleAssociationManager.setUser(user);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        String returnUriMappingId = tenantRoleAssociationManager.assignUser();
+
+        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_tenant_role_user_association_error",
+                captured.getSummary());
+        assertEquals("rd_tenant_role_user_association_no_user_select", captured.getDetail());
+        assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
+    }
+
+    /**
+     * Test the method assignUser(): the one which does/perform user assignment
+     * Perform the association between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     *
+     * Corresponds to scenario/case in which a Exception occurs during assigment process
+     */
+    @Test
+    public void testAssignUserWithException() throws SystemException {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemUser user = new User(); user.setId(3L);
+        tenantRoleAssociationManager.setUser(user);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        Exception e = new RuntimeException("Error assigning user");
+        when(tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId())).
+                thenThrow(e);
+
+        String returnUriMappingId = tenantRoleAssociationManager.assignUser();
+
+        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_tenant_role_user_association_error",
+                captured.getSummary());
+        assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
+    }
+
+    /**
+     * Test the method (un)assignUser(): the one which does/perform user (un)assignment
+     * Perform the dissociation between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     */
+    @Test
+    public void testUnAssignUser() throws SystemException {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemUser userToBeDissociated = new User(); userToBeDissociated.setId(3L);
+        SystemTenantRoleUser tenantRoleUserToBeDissociated = new TenantRoleUser();
+        tenantRoleUserToBeDissociated.setUserId(userToBeDissociated.getId());
+
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+        tenantRoleAssociationManager.setSelectedUserToUnAssign(tenantRoleUserToBeDissociated);
+
+        when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(),
+                userToBeDissociated.getId())).then(i -> Boolean.TRUE);
+
+        String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
+
+        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals("rd_tenant_role_user_dissociation_success",
+                captured.getSummary());
+        assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
+    }
+
+    /**
+     * Test the method (un)assignUser(): the one which does/perform user (un)assignment
+     * Perform the dissociation between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     *
+     * Corresponds to scenario/case in which a User was not selected
+     */
+    @Test
+    public void testUnAssignUserWithNoUserSelected() {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemUser userToBeDissociated = new User(); userToBeDissociated.setId(3L);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
+
+        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_tenant_role_user_dissociation_error",
+                captured.getSummary());
+        assertEquals("rd_tenant_role_user_dissociation_no_user_select", captured.getDetail());
+        assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
+    }
+
+    /**
+     * Test the method assignUser(): the one which does/perform user assignment
+     * Perform the association between user, tenant and role (Tenant and Role are required
+     * and must be previously selected from a GUI)
+     *
+     * Corresponds to scenario/case in which a Exception occurs during assigment process
+     */
+    @Test
+    public void testUnAssignUserWithException() throws SystemException {
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemUser user = new User(); user.setId(3L);
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        tenantRoleUser.setUserId(user.getId());
+
+        tenantRoleAssociationManager.setSelectedUserToUnAssign(tenantRoleUser);
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+
+        Exception e = new RuntimeException("Error (un)assigning user");
+        when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(), user.getId())).
+                thenThrow(e);
+
+        String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
+
+        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_tenant_role_user_dissociation_error",
+                captured.getSummary());
+        assertEquals(e.getMessage(), captured.getDetail());
+        assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
+    }
+
+    /**
+     * Tests the method responsible for store the information regarding a selected user
+     */
+    @Test
+    public void testOnUserSelect() {
+        TenantRoleUser selectedTenantRoleUserOnDataGrid = new TenantRoleUser();
+        selectedTenantRoleUserOnDataGrid.setId(1111L);
+        selectedTenantRoleUserOnDataGrid.setUserId(12121L);
+        SelectEvent<SystemTenantRoleUser> event = mock(SelectEvent.class);
+        when(event.getObject()).thenReturn(selectedTenantRoleUserOnDataGrid);
+
+        tenantRoleAssociationManager.onUserSelect(event);
+
+        assertEquals(selectedTenantRoleUserOnDataGrid,
+                tenantRoleAssociationManager.getPreviousSelectedUserToUnAssign());
+
+        tenantRoleAssociationManager.onUserSelect(event);
+
+        assertNull(tenantRoleAssociationManager.getPreviousSelectedPermissionToUnAssign().getId());
+        assertNull(tenantRoleAssociationManager.getSelectedPermissionToUnAssign().getId());
+    }
+
+    /**
+     * Test for getter method {@link TenantRoleAssociationManager#getLazyModel()}
+     */
+    @Test
+    public void testGetLazyModel() {
+        tenantRoleAssociationManager.prepareUserDataTable();
+        assertNotNull(tenantRoleAssociationManager.getLazyModel());
+    }
+
+
+    /**
+     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
+     * Corresponds the success case in which was able to retrieve the id given a tenant and a role
+     * @throws SystemException in case of any communication with an endpoint
+     */
+    @Test
+    public void testGetTenantRoleId() throws SystemException{
+        SystemTenant tenant = new Tenant(); tenant.setId(55L);
+        SystemRole role = new Role(); role.setId(88L);
+
+        TenantRole tenantRole = new TenantRole();
+        tenantRole.setTenantId(tenant.getId());
+        tenantRole.setRoleId(role.getId());
+        tenantRole.setId(11111L);
+
+        List<TenantRole> retrieved = new ArrayList<>();
+        retrieved.add(tenantRole);
+
+        when(tenantRoleRESTServiceAccess.getTenantRoles(tenant.getId(),
+                    role.getId(), true)).then(i -> retrieved);
+
+        tenantRoleAssociationManager.setTenant(tenant);
+        tenantRoleAssociationManager.setRole(role);
+        assertEquals(tenantRole.getId(), tenantRoleAssociationManager.getTenantRoleId());
+    }
+
+    /**
+     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
+     * Corresponds the unsuccessful case in which was not able to retrieve the id given a tenant and a role
+     * @throws SystemException in case of any communication with an endpoint
+     */
+    @Test
+    public void testGetTenantRoleIdWithNoResults() throws SystemException{
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemRole role = new Role(); role.setId(1L);
+
+        when(tenantRoleRESTServiceAccess.getTenantRoles(tenant.getId(),
+                role.getId(), true)).then(i -> new ArrayList<>());
+
+        tenantRoleAssociationManager.setTenant(tenant);
+        tenantRoleAssociationManager.setRole(role);
+        assertNull(tenantRoleAssociationManager.getTenantRoleId());
+    }
+
+    /**
+     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
+     * Corresponds the unsuccessful case in which an exception occurs in the middle of process
+     * @throws SystemException in case of any communication with an endpoint
+     */
+    @Test
+    public void testGetTenantRoleIdWithException() throws SystemException{
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemRole role = new Role(); role.setId(1L);
+
+        tenantRoleAssociationManager.setTenant(tenant);
+        tenantRoleAssociationManager.setRole(role);
+
+        when(tenantRoleRESTServiceAccess.getTenantRoles(tenant.getId(),
+                role.getId(), true)).thenThrow(new SystemException("error"));
+
+        assertNull(tenantRoleAssociationManager.getTenantRoleId());
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_retrieve_error", captured.getSummary());
+    }
+
+    /**
+     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
+     * Corresponds the unsuccessful case in which is not possible to retrieve the tenant role id
+     * due insufficient params
+     * @throws SystemException in case of any communication with an endpoint
+     */
+    @Test
+    public void testGetTenantRoleIdWithInsufficientParams() throws SystemException{
+        tenantRoleAssociationManager.setTenant(null);
+        assertNull(tenantRoleAssociationManager.getTenantRoleId());
+
+        SystemTenant tenant = new Tenant();
+        tenantRoleAssociationManager.setTenant(tenant);
+        assertNull(tenantRoleAssociationManager.getTenantRoleId());
+
+        tenant.setId(1L);
+        tenantRoleAssociationManager.setTenant(tenant);
+        tenantRoleAssociationManager.setRole(null);
+        assertNull(tenantRoleAssociationManager.getTenantRoleId());
+
+        SystemRole role = new Role();
+        tenantRoleAssociationManager.setRole(role);
+        assertNull(tenantRoleAssociationManager.getTenantRoleId());
+    }
 }
+/*
+getRoles()	29	0%		n/a	1	1	6	6	1	1
+getTenants()	29	0%		n/a	1	1	6	6	1	1
+getTenantRoleId()	2332	58%	66	50%	6	7	5	10	0	1
+lambda$assignUser$2()	15	0%		n/a	1	1	2	2	1	1
+lambda$edit$1()	15	0%		n/a	1	1	2	2	1	1
+lambda$edit$0()	15	0%		n/a	1	1	2	2	1	1
+*/

@@ -26,9 +26,9 @@ import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.SortMeta;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -43,11 +43,15 @@ import java.util.stream.Collectors;
  */
 public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTenantRoleUser> {
 
-    private TenantRoleRESTServiceAccess service;
-    private UserRESTServiceAccess userService;
+    private static final long serialVersionUID = 7026624480203201435L;
+
+    private final TenantRoleRESTServiceAccess service;
+    private final UserRESTServiceAccess userService;
+    private final Map<Long, SystemUser> userMapRef;
+
     private Long tenantRoleId = null;
-    private Map<Long, SystemUser> userMapRef;
-    private static final SystemUser EMPTY_USER = new User();
+
+    private static final SystemUser DEFAULT_USER = new User();
 
     /**
      * The idea for this constructor is to allow fetching TenantRoleUser relations
@@ -63,24 +67,6 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
         this.userService = userRESTServiceAccess;
         this.userMapRef = new HashMap<>();
     }
-
-//    /**
-//     * Retrieves a SystemTenantRoleUser that corresponds to a DataTable row.
-//     * @param rowKey id or index that refers a row (presented in a data table)
-//     * @return SystemTenantRole instance that corresponds to the selected datatable row
-//     */
-//    @Override
-//    public SystemTenantRoleUser getRowData(String rowKey) {
-//        if (rowKey != null && !rowKey.equals("null")) {
-//            for (SystemTenantRoleUser association : datasource) {
-//                if (association.getId() == Integer.parseInt(rowKey)) {
-//                    return association;
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
 
     @Override
     public SystemTenantRoleUser getRowData(String rowKey) {
@@ -126,7 +112,7 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
         // Filtering non mapped user ids
         List<Long> ids = getNonMappedIds(userIds, userMapRef);
         if (!ids.isEmpty()) {
-            // TODO: Necessary service to retrieve Users based on a list of Ids
+            // TODO: Is necessary to replace by one service call based on as list of ids
             for (Long id: ids) {
                 userService.getUserById(id).ifPresent(u -> userMapRef.put(id, u));
             }
@@ -139,7 +125,7 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
      * @return the user (if it exists), otherwise returns an empty pojo
      */
     public SystemUser getUser(Long userId) {
-        return userMapRef.containsKey(userId) ? userMapRef.get(userId) : EMPTY_USER;
+        return userMapRef.getOrDefault(userId, DEFAULT_USER);
     }
 
     /**
