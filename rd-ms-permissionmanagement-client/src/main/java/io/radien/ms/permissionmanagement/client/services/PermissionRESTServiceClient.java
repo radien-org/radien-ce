@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -214,7 +215,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
         try {
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-            Response response = client.getPermissions(null, actionId, resourceId, true, true);
+            Response response = client.getPermissions(null, actionId, resourceId, null,true, true);
             return ListPermissionModelMapper.map((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
@@ -253,7 +254,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
-            Response response = client.getPermissions(name,null,null,true,true);
+            Response response = client.getPermissions(name,null,null,null,true,true);
             List<? extends SystemPermission> list = ListPermissionModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -424,6 +425,43 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             return Long.parseLong(response.readEntity(String.class));
 
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Calls the requester to retrieve from DB a collection containing permissions. The retrieval process will be
+     * based on a list containing permission identifiers. In case of JWT expiration, the process will be attempt once more
+     * @param ids list of permission identifiers
+     * @return a list of permissions found (matching the identifiers)
+     * @throws SystemException in case of any found error
+     */
+    public List<? extends SystemPermission> getPermissionsByIds(List<Long> ids) throws SystemException {
+        try {
+            return getPermissionsByIdsRequester(ids);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getPermissionsByIdsRequester(ids);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Retrieves from DB a collection containing permissions. The retrieval process will be based on a list of idenfitiers
+     * @param ids list of idenfitiers
+     * @throws SystemException in case of any eorr
+     */
+    private List<? extends SystemPermission> getPermissionsByIdsRequester(List<Long> ids) throws SystemException {
+        try {
+            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getPermissions(null, null, null, ids,true, true);
+            return ListPermissionModelMapper.map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
             throw new SystemException(e);
         }
     }

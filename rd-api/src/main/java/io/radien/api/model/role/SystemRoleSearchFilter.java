@@ -16,6 +16,7 @@
 package io.radien.api.model.role;
 
 import io.radien.api.search.SystemSearchableByIds;
+import java.util.Collection;
 
 /**
  * System Role search filter interface class
