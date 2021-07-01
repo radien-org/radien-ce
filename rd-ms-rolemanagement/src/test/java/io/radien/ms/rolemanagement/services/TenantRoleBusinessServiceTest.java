@@ -1009,6 +1009,6 @@ public class TenantRoleBusinessServiceTest {
 
         assertNotNull(page);
         assertTrue(page.getResults().isEmpty());
-        assertTrue(page.getTotalResults() == 0);
+        assertEquals(0, page.getTotalResults());
     }
 }

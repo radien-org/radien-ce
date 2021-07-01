@@ -47,6 +47,8 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
+import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
+
 /**
  * Tenant Role REST Service Client
  *
@@ -64,6 +66,7 @@ import java.util.Optional;
 public class TenantRoleRESTServiceClient extends AuthorizationChecker implements TenantRoleRESTServiceAccess {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleRESTServiceClient.class);
+    private static final long serialVersionUID = -3294029074149507760L;
 
     @Inject
     private OAFAccess oaf;
@@ -89,7 +92,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getAllCore(pageNo, pageSize);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -133,7 +136,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getTenantRoleByIdCore(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -179,7 +182,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return saveCore(tenantRole);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -220,7 +223,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return existsCore(tenantId, roleId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -267,7 +270,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getPermissionsCore(tenantId, roleId, userId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -310,7 +313,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getTenantsCore(userId, roleId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -355,7 +358,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return assignUserCore(tenantId, roleId, userId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -401,7 +404,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return unassignUserCore(tenantId, roleId, userId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -449,7 +452,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return assignPermissionCore(tenantId, roleId, permissionId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -495,7 +498,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return unassignPermissionCore(tenantId, roleId, permissionId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -541,7 +544,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getTenantRolesCore(tenantId, roleId, isLogicalConjunction);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -586,7 +589,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getUsersCore(tenantRoleId, pageNo, pageSize);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }

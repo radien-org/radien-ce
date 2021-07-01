@@ -49,6 +49,9 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleUserService.class);
 
+    private static final String K_FIELD_TENANT_ROLE_ID = "tenantRoleId";
+    private static final String K_FIELD_USER_ID = "userId";
+
     /**
      * Gets the System Tenant Role User searching by the PK (id).
      * @param tenantRoleUserId to be searched.
@@ -78,7 +81,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
         if (tenantRole != null && tenantRole.longValue() > 0) {
-            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get("tenantRoleId"), tenantRole));
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(K_FIELD_TENANT_ROLE_ID), tenantRole));
             criteriaQuery.where(global);
         }
 
@@ -159,9 +162,9 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("tenantRoleId", filter.getTenantRoleId(), filter, criteriaBuilder,
+        global = getFieldPredicate(K_FIELD_TENANT_ROLE_ID, filter.getTenantRoleId(), filter, criteriaBuilder,
                 tenantRoleUserRoot, global);
-        global = getFieldPredicate("userId", filter.getUserId(), filter, criteriaBuilder,
+        global = getFieldPredicate(K_FIELD_USER_ID, filter.getUserId(), filter, criteriaBuilder,
                 tenantRoleUserRoot, global);
 
         return global;
@@ -249,8 +252,8 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
         sc.select(cb.count(root)).
                 where(
-                        cb.equal(root.get("userId"),userId),
-                        cb.equal(root.get("tenantRoleId"),tenantRoleId)
+                        cb.equal(root.get(K_FIELD_USER_ID),userId),
+                        cb.equal(root.get(K_FIELD_TENANT_ROLE_ID),tenantRoleId)
                 );
 
         List<Long> count = em.createQuery(sc).getResultList();
@@ -294,8 +297,8 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
         sc.select(root.get("id")).
                 where(
-                        cb.equal(root.get("userId"),user),
-                        cb.equal(root.get("tenantRoleId"),tenantRole)
+                        cb.equal(root.get(K_FIELD_USER_ID),user),
+                        cb.equal(root.get(K_FIELD_TENANT_ROLE_ID),tenantRole)
                 );
 
         List<Long> list = em.createQuery(sc).getResultList();

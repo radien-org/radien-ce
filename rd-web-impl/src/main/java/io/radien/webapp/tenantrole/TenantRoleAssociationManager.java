@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * JSF manager bean that will handle all associations regarding TenantRole domain
@@ -93,6 +92,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     private Long tabIndex = 0L;
 
     public static final String K_TENANT_ROLE_SCREEN = "tenantrole";
+    public static final String K_MSG_KEY_RETRIEVE_ERROR = "rd_retrieve_error";
 
     /**
      * This method is effectively invoke to create Tenant role association
@@ -187,7 +187,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     getPermissions(tenant.getId(), role.getId(), null);
             return assignedPermissions;
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
                     JSFUtil.getMessage("rd_permissions"));
             return new ArrayList<>();
         }
@@ -208,7 +208,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return !tenantRoles.isEmpty() ? tenantRoles.get(0).getId() : null;
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
                     JSFUtil.getMessage("tenant_role_association_id"));
             return null;
         }
@@ -541,7 +541,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return roles;
         }
         catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
                     JSFUtil.getMessage("rd_roles"));
             return new ArrayList<>();
         }
@@ -559,7 +559,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage("rd_roles"));
             return new ArrayList<>();
         }
     }
@@ -577,7 +577,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage("rd_roles"));
             return new ArrayList<>();
         }
     }
@@ -593,7 +593,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     getCurrentUserId(), null);
         }
         catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
                     JSFUtil.getMessage("rd_tenants_from_user"));
             return new ArrayList<>();
         }

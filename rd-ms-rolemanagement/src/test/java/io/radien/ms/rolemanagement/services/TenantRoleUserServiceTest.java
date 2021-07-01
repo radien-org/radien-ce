@@ -318,7 +318,7 @@ public class TenantRoleUserServiceTest {
                 1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
-        Assertions.assertTrue(p.getTotalPages() ==  1);
+        Assertions.assertEquals(1, p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
     }
@@ -334,8 +334,8 @@ public class TenantRoleUserServiceTest {
         Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(10000L,
                 1, 100);
         Assertions.assertNotNull(p);
-        Assertions.assertTrue(p.getTotalResults() == 0);
-        Assertions.assertTrue(p.getTotalPages() ==  0);
+        Assertions.assertEquals(0,p.getTotalResults());
+        Assertions.assertEquals(0,p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertTrue(p.getResults().isEmpty());
     }

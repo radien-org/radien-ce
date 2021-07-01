@@ -460,8 +460,8 @@ public class TenantRoleRESTServiceClientTest {
         Page<? extends SystemTenantRoleUser> result = assertDoesNotThrow(() ->
                 target.getUsers(2L, 1, 3));
         assertNotNull(result);
-        assertTrue(result.getTotalPages() == 1);
-        assertTrue(result.getResults().size() == 3);
+        assertEquals(1, result.getTotalPages());
+        assertEquals(3,result.getResults().size());
     }
 
     @Test
@@ -512,8 +512,8 @@ public class TenantRoleRESTServiceClientTest {
         Page<? extends SystemTenantRole> result = assertDoesNotThrow(() ->
                 target.getAll(1, 3));
         assertNotNull(result);
-        assertTrue(result.getTotalPages() == 1);
-        assertTrue(result.getResults().size() == 3);
+        assertEquals(1,result.getTotalPages());
+        assertEquals(3,result.getResults().size());
     }
 
     @Test

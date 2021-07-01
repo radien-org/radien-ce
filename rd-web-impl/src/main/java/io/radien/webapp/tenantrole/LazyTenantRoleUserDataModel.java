@@ -45,8 +45,8 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
 
     private static final long serialVersionUID = 7026624480203201435L;
 
-    private final TenantRoleRESTServiceAccess service;
-    private final UserRESTServiceAccess userService;
+    private final transient TenantRoleRESTServiceAccess service;
+    private final transient UserRESTServiceAccess userService;
     private final Map<Long, SystemUser> userMapRef;
 
     private Long tenantRoleId = null;
