@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleRESTServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -89,7 +90,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -131,7 +132,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return getRoleByIdRequester(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -167,7 +168,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return getRoleByNameRequester(name);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -208,7 +209,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return getRolesByDescriptionRequester(description);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -283,7 +284,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return createRequester(role);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -305,7 +306,8 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException e) {
@@ -327,7 +329,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return getTotalRecordsCountRequester();
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -363,7 +365,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             try{
                 return deleteRequester(roleId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -385,7 +387,8 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException e) {

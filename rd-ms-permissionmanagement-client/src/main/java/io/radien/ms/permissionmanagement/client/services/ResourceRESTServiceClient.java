@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceRESTServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -80,7 +81,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             try{
                 return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -121,7 +122,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             try{
                 return getResourceByIdRequester(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -162,7 +163,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             try{
                 return getResourceByNameRequester(name);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -205,7 +206,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             try{
                 return createRequester(action);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -225,7 +226,8 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException | MalformedURLException e) {
@@ -247,7 +249,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             try{
                 return deleteRequester(resourceId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -267,7 +269,8 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException | MalformedURLException e) {

@@ -559,4 +559,48 @@ public class RoleRESTServiceClientTest {
         assertNotNull(outcome);
         assertTrue(outcome.isEmpty());
     }
+
+    @Test
+    public void testDelete() throws MalformedURLException, SystemException {
+        RoleResourceClient resourceClient = Mockito.mock(RoleResourceClient.class);
+        when(resourceClient.delete(anyLong())).thenReturn(Response.ok().build());
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        assertTrue(target.delete(2L));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteMalformedException() throws MalformedURLException, SystemException {
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
+        assertTrue(target.delete(2L));
+    }
+
+    @Test
+    public void testDeleteFail() throws MalformedURLException, SystemException {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+        when(roleResourceClient.delete(anyLong())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        assertFalse(target.delete(2L));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteProcessingException() throws MalformedURLException, SystemException {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+        when(roleResourceClient.delete(anyLong())).thenThrow(new ProcessingException(""));
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        target.delete(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteTokenExpiration() throws Exception {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.delete(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.delete(2L);
+    }
 }
