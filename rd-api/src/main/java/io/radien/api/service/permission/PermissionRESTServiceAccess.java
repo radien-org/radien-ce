@@ -67,6 +67,15 @@ public interface PermissionRESTServiceAccess extends Appframeable {
     public List<? extends SystemPermission> getPermissionByActionAndResource(Long actionId, Long resourceId) throws SystemException;
 
     /**
+     * Retrieves from DB a collection containing permissions. The retrieval process will be
+     * based on a list containing identifiers
+     * @param ids list containing permission identifiers
+     * @return a list of permissions found using the informed identifiers
+     * @throws SystemException in case of any found error
+     */
+    public List<? extends SystemPermission> getPermissionsByIds(List<Long> ids) throws SystemException;
+
+    /**
      * Retrieves a Permission by Id
      * @param id to be searched
      * @return Optional of permissions

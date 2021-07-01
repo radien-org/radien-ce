@@ -78,6 +78,9 @@ public class TenantRoleBusinessServiceTest {
     static RoleServiceAccess roleServiceAccess;
     static EJBContainer container;
 
+
+    static String lookupString;
+
     /**
      * Method before test preparation
      * @throws NamingException in case of injection naming exception
@@ -92,12 +95,10 @@ public class TenantRoleBusinessServiceTest {
         p.put("appframeDatabase.password", "");
         p.put("openejb.deployments.classpath.include",".*role.*");
         p.put("openejb.deployments.classpath.exclude",".*client.*");
+        p.put("openejb.cdi.activated-on-ejb", "false");
 
         container = EJBContainer.createEJBContainer(p);
         final Context context = container.getContext();
-
-        String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleBusinessService";
-        tenantRoleBusinessService = (TenantRoleBusinessService) context.lookup(lookupString);
 
         lookupString = "java:global/rd-ms-rolemanagement//TenantRoleService";
         tenantRoleServiceAccess = (TenantRoleServiceAccess) context.lookup(lookupString);
@@ -111,6 +112,11 @@ public class TenantRoleBusinessServiceTest {
         lookupString = "java:global/rd-ms-rolemanagement//RoleService";
         roleServiceAccess = (RoleServiceAccess) context.lookup(lookupString);
 
+        tenantRoleBusinessService = new TenantRoleBusinessService();
+        tenantRoleBusinessService.setRoleServiceAccess(roleServiceAccess);
+        tenantRoleBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
+        tenantRoleBusinessService.setTenantRolePermissionService(tenantRolePermissionServiceAccess);
+        tenantRoleBusinessService.setTenantRoleUserServiceAccess(tenantRoleUserServiceAccess);
     }
 
     /**
@@ -617,9 +623,10 @@ public class TenantRoleBusinessServiceTest {
         }
 
         // Assigning permission to the Tenant Role
-        assertThrows(TenantRoleException.class,  () ->
+        TenantRoleException e = assertThrows(TenantRoleException.class,  () ->
                 tenantRoleBusinessService.assignPermission(tenantId3,
                         11111L, assemblyDocument.getId()));
+        assertNotNull(e.getMessage());
     }
 
     /**
@@ -929,10 +936,6 @@ public class TenantRoleBusinessServiceTest {
 
         assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
                 assignPermission(1L, 2L, permissionTestCase1));
-
-        assertThrows(SystemException.class, () -> tenantRoleBusinessService.
-                assignPermission(1L, 2L, permissionTestCase2));
-
     }
 
     /**
@@ -954,16 +957,7 @@ public class TenantRoleBusinessServiceTest {
         systemTenantRole.setTenantId(tenantTestCase1);
         systemTenantRole.setRoleId(role.getId());
 
-        // Setting mocked REST Client for positive test cases
-        try {
-            doThrow(new SystemException("Communication issue")).
-                    when(tenantRESTServiceAccess).isTenantExistent(tenantTestCase1);
-        }
-        catch (SystemException se) {
-            fail("unexpected");
-        }
-
-        assertThrows(SystemException.class, ()-> tenantRoleBusinessService.
+        assertThrows(TenantRoleException.class, ()-> tenantRoleBusinessService.
                 save(systemTenantRole));
     }
 

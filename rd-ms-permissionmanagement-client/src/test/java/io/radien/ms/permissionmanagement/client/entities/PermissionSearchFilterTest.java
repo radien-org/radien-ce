@@ -75,7 +75,7 @@ public class PermissionSearchFilterTest {
     @Test
     public void testConstruct() {
         SystemPermissionSearchFilter filter =
-                new PermissionSearchFilter(perm1, null, null, true, true);
+                new PermissionSearchFilter(perm1, null, null, null,true, true);
         Assert.assertTrue(filter.isLogicConjunction());
         Assert.assertTrue(filter.isExact());
         filter.setName(perm1);
@@ -83,6 +83,7 @@ public class PermissionSearchFilterTest {
         Assert.assertEquals(perm1, filter.getName());
         Assert.assertNull(filter.getActionId());
         Assert.assertNull(filter.getResourceId());
+        Assert.assertNull(filter.getIds());
     }
 
 

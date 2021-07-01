@@ -24,8 +24,11 @@ import javax.json.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Active Tenant Model Mapper Test
@@ -44,7 +47,9 @@ public class ActiveTenantModelMapperTest {
         String result = "{\"" +
                 "id\":null," +
                 "\"userId\": 2," +
-                "\"tenantId\": 2" +
+                "\"tenantId\": 2," +
+                "\"tenantName\": \"test\"," +
+                "\"isTenantActive\": true" +
                 "}";
         InputStream in = new ByteArrayInputStream(result.getBytes());
         ActiveTenant activeTenant = ActiveTenantModelMapper.map(in);
@@ -74,7 +79,9 @@ public class ActiveTenantModelMapperTest {
                 "{\n" +
                 "\"id\": null,\n" +
                 "\"userId\": 2,\n" +
-                "\"tenantId\": 2 \n" +
+                "\"tenantId\": 2,\n" +
+                "\"tenantName\": \"test\"\n," +
+                "\"isTenantActive\": true\n" +
                 "}\n" +
                 "],\n" +
                 "\"totalPages\": 1,\n" +
@@ -85,5 +92,26 @@ public class ActiveTenantModelMapperTest {
         assertEquals(0, activeTenantPage.getCurrentPage());
         assertEquals(1, activeTenantPage.getTotalPages());
         assertEquals(4, activeTenantPage.getTotalResults());
+    }
+
+    /**
+     * Tests the conversion from a input stream into a list of active tenants
+     * @throws ParseException in case of issue while parsing the inputted stream
+     */
+    @Test
+    public void testConversionToList() throws ParseException {
+        String result = "[\n" +
+                "{\n" +
+                "\"id\": null,\n" +
+                "\"userId\": 2,\n" +
+                "\"tenantId\": 2,\n" +
+                "\"tenantName\": \"test\"\n," +
+                "\"isTenantActive\": true\n" +
+                "}\n" +
+                "]";
+        InputStream in = new ByteArrayInputStream(result.getBytes());
+        List<? extends ActiveTenant> activeTenants = ActiveTenantModelMapper.mapList(in);
+        assertNotNull(activeTenants);
+        assertEquals(1, activeTenants.size());
     }
 }

@@ -16,13 +16,16 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
+import io.radien.api.search.SearchableByIds;
+
+import java.util.Collection;
 
 /**
  * Encapsulates the parameters applied to search for actions
  *
  * @author Newton Carvalho
  */
-public class PermissionSearchFilter implements SystemPermissionSearchFilter {
+public class PermissionSearchFilter extends SearchableByIds implements SystemPermissionSearchFilter {
 
     private String name;
     private Long actionId;
@@ -42,11 +45,13 @@ public class PermissionSearchFilter implements SystemPermissionSearchFilter {
      * @param name               to be searched and found
      * @param actionId           to be searched and found
      * @param resourceId         to be searched and found
+     * @param ids                to be searched and found
      * @param isExact            should the requested value be exact to the given one
      * @param isLogicConjunction true in case search option is and conjunction
      */
-    public PermissionSearchFilter(String name, Long actionId, Long resourceId,
+    public PermissionSearchFilter(String name, Long actionId, Long resourceId, Collection<Long> ids,
                                   boolean isExact, boolean isLogicConjunction) {
+        super(ids);
         this.name = name;
         this.actionId = actionId;
         this.resourceId = resourceId;

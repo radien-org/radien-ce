@@ -70,6 +70,8 @@ public class ActiveTenantFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("userId", 2L);
         builder.add("tenantId", 2L);
+        builder.add("tenantName", "test");
+        builder.add("isTenantActive", true);
 
         json = builder.build();
         ActiveTenant newJsonActiveTenant = ActiveTenantFactory.convert(json);
@@ -131,7 +133,7 @@ public class ActiveTenantFactoryTest extends TestCase {
         builder.add("userId", 2L);
         builder.add("tenantId", 2L);
         builder.addNull("tenantName");
-        builder.add("isTenantActive", "false");
+        builder.add("isTenantActive", false);
 
         json = builder.build();
 

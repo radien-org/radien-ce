@@ -30,9 +30,9 @@ public class ErrorCodeMessageTest {
      */
     @Test
     public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}",
+        assertEquals("{\"code\":G2, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}",
                 GenericErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: name\"}",
+        assertEquals("{\"code\":G2, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: name\"}",
                 GenericErrorCodeMessage.DUPLICATED_FIELD.toString("name"));
     }
 }

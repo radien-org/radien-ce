@@ -46,6 +46,14 @@ public interface TenantRESTServiceAccess {
     public List<? extends SystemTenant> getTenantByName(String name) throws SystemException ;
 
     /**
+     * Gets the tenants in the DB searching based in a given list of ids.
+     * @param ids to be looked after
+     * @return list containing tenants
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public List<? extends SystemTenant> getTenantsByIds(List<Long> ids) throws SystemException;
+
+    /**
      * Fetches all the existent tenants
      * @param search specific value to be found
      * @param pageNo where the user currently is

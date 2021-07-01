@@ -26,46 +26,61 @@ public enum GenericErrorCodeMessage {
     /**
      * Generic Business Error Code Messages
      */
-    RESOURCE_NOT_FOUND(100, "error.resource.not.found","Resource not found."),
+    RESOURCE_NOT_FOUND("G1", "error.resource.not.found","Resource not found."),
 
-    DUPLICATED_FIELD(101, "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
+    DUPLICATED_FIELD("G2", "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
 
     /**
      * Tenant Business Error Code Messages
      */
-    TENANT_FIELD_NOT_INFORMED(102, "error.tenant.field.not.informed", "Tenant %s was not informed."),
+    TENANT_FIELD_NOT_INFORMED("T1", "error.tenant.field.not.informed", "Tenant %s was not informed."),
+    TENANT_PARENT_NOT_INFORMED("T2", "error.tenant.parent.not.informed", "Parent information not informed."),
+    TENANT_CLIENT_NOT_INFORMED("T3", "error.tenant.client.not.informed", "Client information not informed."),
+    TENANT_PARENT_NOT_FOUND("T4", "error.tenant.parent.not.found", "Parent registry not found."),
+    TENANT_CLIENT_NOT_FOUND("T5", "error.tenant.client.not.found", "Client registry not found."),
+    TENANT_PARENT_TYPE_IS_INVALID("T6", "error.tenant.parent.type.invalid", "Parent type is invalid."),
+    TENANT_END_DATE_IS_IS_INVALID("T7", "error.tenant.end.date.invalid", "End date is invalid."),
+    TENANT_ROOT_ALREADY_INSERTED("T8", "error.tenant.root.already.inserted", "There must be only one Root Tenant."),
+    TENANT_ROOT_WITH_PARENT("T9", "error.tenant.root.with.parent", "Tenant root cannot have parent associated."),
+    TENANT_ROOT_WITH_CLIENT("T10", "error.tenant.root.with.client", "Tenant root cannot have client associated."),
 
-    TENANT_PARENT_NOT_INFORMED(103, "error.tenant.parent.not.informed", "Parent information not informed."),
-    TENANT_CLIENT_NOT_INFORMED(104, "error.tenant.client.not.informed", "Client information not informed."),
+    /**
+     * Tenant Role Error Code Messages
+     */
 
-    TENANT_PARENT_NOT_FOUND(105, "error.tenant.parent.not.found", "Parent registry not found."),
-    TENANT_CLIENT_NOT_FOUND(106, "error.tenant.client.not.found", "Client registry not found."),
-
-    TENANT_PARENT_TYPE_IS_INVALID(107, "error.tenant.parent.type.invalid", "Parent type is invalid."),
-
-    TENANT_END_DATE_IS_IS_INVALID(108, "error.tenant.end.date.invalid", "End date is invalid."),
-
-    TENANT_ROOT_ALREADY_INSERTED(109, "error.tenant.root.already.inserted", "There must be only one Root Tenant."),
-    TENANT_ROOT_WITH_PARENT(110, "error.tenant.root.with.parent", "Tenant root cannot have parent associated."),
-    TENANT_ROOT_WITH_CLIENT(111, "error.tenant.root.with.client", "Tenant root cannot have client associated."),
+    TENANT_ROLE_NO_TENANT_ROLE_FOUND("TR1", "error.no.tenant.role.found.id", "No Tenant Role found for id %s."),
+    TENANT_ROLE_FIELD_MANDATORY("TR2", "error.tenant.role.field.mandatory", "Tenant Role %s is mandatory."),
+    TENANT_ROLE_ASSOCIATION_TENANT_ROLE("TR3", "error.no.association.tenant.role", "There is no association between tenant %s and role %s."),
+    TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED("TR4", "error.user.already.associated", "User is already associated with tenant %s and role %s."),
+    TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER("TR5", "error.no.association.found.for.user", "No association found for user %s."),
+    TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE("TR6", "error.permission.already.associated", "Permission is already associated with tenant %s and role %s."),
+    TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION("TR7", "error.no.permission.found", "No association found for permission %s."),
 
     /**
      * Permission Business Error Code Messages
      */
-    PERMISSION_PARAMETERS_NOT_INFORMED(112, "error.mandatory.parameters.not.informed", "Mandatory parameters not informed: %s"),
+
+    PERMISSION_PARAMETERS_NOT_INFORMED("P1", "error.mandatory.parameters.not.informed", "Mandatory parameters not informed: %s."),
 
     /**
      * Linked Authorization Business Error Code Messages
      */
-    NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION(113, "error.dissociation.no.params", "Parameters for dissociation not informed"),
+
+    NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION("LA1", "error.dissociation.no.params", "Parameters for dissociation not informed."),
+
+    /**
+     * User Business Error Code Messages
+     */
+    USER_FIELD_MANDATORY("U1", "error.user.field.mandatory", "User %s is mandatory."),
 
     /**
      * System Error Code Messages
      */
-    EXPIRED_ACCESS_TOKEN(499, "error.unable.recover.expired.token", "Unable to recover expired token"),
-    GENERIC_ERROR(500, "error.generic.error", "Generic Error.");
+    EXPIRED_ACCESS_TOKEN("SYS1", "error.expired.token", "Unable to recover expiredToken."),
+    GENERIC_ERROR("SYS2", "error.generic.error", "Generic Error."),
+    AUTHORIZATION_ERROR("SYS3", "error.authorization.checker", "Error checking authorization");
 
-    private final int code;
+    private final String code;
     private final String key;
     private final String fallBackMessage;
 
@@ -76,7 +91,7 @@ public enum GenericErrorCodeMessage {
      * @param key of the error message
      * @param fallBackMessage of the error message
      */
-    GenericErrorCodeMessage(int code, String key, String fallBackMessage) {
+    GenericErrorCodeMessage(String code, String key, String fallBackMessage) {
         this.code = code;
         this.key=key;
         this.fallBackMessage = fallBackMessage;
@@ -107,5 +122,4 @@ public enum GenericErrorCodeMessage {
                 ", \"message\":\"" + message + "\"" +
                 "}";
     }
-
 }

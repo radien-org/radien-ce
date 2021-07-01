@@ -228,7 +228,7 @@ public class ActiveTenantServiceTest {
     public void testExists() throws UniquenessConstraintException, NotFoundException, ActiveTenantException {
         SystemActiveTenant c = new ActiveTenant(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(10L, 2L, 2L, null, false));
         activeTenantServiceAccess.create(c);
-        assertTrue(activeTenantServiceAccess.exists(10L));
+        assertTrue(activeTenantServiceAccess.exists(2L, 2L));
     }
 
     /**

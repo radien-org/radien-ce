@@ -21,7 +21,6 @@ import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
 import io.radien.ms.tenantmanagement.entities.ActiveTenant;
-import io.radien.ms.tenantmanagement.entities.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +45,10 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     @Inject
     private EntityManagerHolder emh;
 
+    private final String userIdTableNaming="userId";
+    private final String tenantIdTableNaming="tenantId";
+    private final String tenantNameTableNaming="tenantName";
+
     private static final Logger log = LoggerFactory.getLogger(ActiveTenantService.class);
 
     /**
@@ -60,6 +63,29 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     }
 
     /**
+     * Gets the System Active Tenant searching by the user and tenant id
+     *
+     * @param userId to be searched.
+     * @param tenantId to be searched
+     * @return the system active tenant requested to be found.
+     */
+    @Override
+    public List<? extends SystemActiveTenant> getByUserAndTenant(Long userId, Long tenantId) {
+        EntityManager em = emh.getEm();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<ActiveTenant> criteriaQuery = criteriaBuilder.createQuery(ActiveTenant.class);
+        Root<ActiveTenant> root = criteriaQuery.from(ActiveTenant.class);
+
+        criteriaQuery.select(root);
+
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(userIdTableNaming), userId),
+                criteriaBuilder.equal(root.get(tenantIdTableNaming), tenantId)));
+        TypedQuery<ActiveTenant> q = em.createQuery(criteriaQuery);
+
+        return q.getResultList();
+    }
+
+    /**
      * Gets all the active tenants into a pagination mode.
      * @param search name description for some active tenants
      * @param pageNo of the requested information. Where the active tenant is.
@@ -70,8 +96,6 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      */
     @Override
     public Page<SystemActiveTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
-
-        log.info("Going to create a new pagination!");
         EntityManager entityManager = emh.getEm();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<ActiveTenant> criteriaQuery = criteriaBuilder.createQuery(ActiveTenant.class);
@@ -80,7 +104,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
         criteriaQuery.select(activeTenantRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get("tenantName"), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get(tenantNameTableNaming), search));
             criteriaQuery.where(global);
         }
         if(sortBy != null && !sortBy.isEmpty()){
@@ -101,8 +125,6 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
         int totalRecords = Math.toIntExact(getCount(global, activeTenantRoot));
         int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
-
-        log.info("New pagination ready to be showed!");
 
         return new Page<SystemActiveTenant>(systemActiveTenants, pageNo, totalRecords, totalPages);
     }
@@ -151,8 +173,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("userId", filter.getUserId(), filter, criteriaBuilder, activeTenantRoot, global);
-        global = getFieldPredicate("tenantId", filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot, global);
+        global = getFieldPredicate(userIdTableNaming, filter.getUserId(), filter, criteriaBuilder, activeTenantRoot, global);
+        global = getFieldPredicate(tenantIdTableNaming, filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot, global);
 
         return global;
     }
@@ -230,29 +252,32 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
     /**
      * Validates if specific requested Active Tenant exists
-     * @param activeTenantId to be searched
+     * @param userId to be searched
+     * @param tenantId to be search
      * @return response true if it exists
      */
     @Override
-    public boolean exists(Long activeTenantId) {
+    public boolean exists(Long userId, Long tenantId) {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<ActiveTenant> contractRoot = criteriaQuery.from(ActiveTenant.class);
 
         criteriaQuery.select(criteriaBuilder.count(contractRoot));
-        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), activeTenantId));
+
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(contractRoot.get(userIdTableNaming), userId),
+                criteriaBuilder.equal(contractRoot.get(tenantIdTableNaming), tenantId)));
 
         Long size = em.createQuery(criteriaQuery).getSingleResult();
 
         return size != 0;
     }
+
     /**
      * Count the number of active tenants existent in the DB.
      * @return the count of active tenants
      */
     private long getCount(Predicate global, Root<ActiveTenant> userRoot) {
-        log.info("Going to count the existent records.");
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

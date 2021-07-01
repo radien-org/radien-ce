@@ -56,6 +56,14 @@ public interface UserRESTServiceAccess extends Appframeable{
 	public Optional<SystemUser> getUserById(Long id) throws SystemException;
 
     /**
+     * Gets the requested users searching for a list of ids
+     * @param ids to be searched
+     * @return a list containing system users
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public List<? extends SystemUser> getUsersByIds(List<Long> ids) throws SystemException;
+
+    /**
      * Creates given user
      * @param user to be created
      * @return true if user has been created with success or false if not

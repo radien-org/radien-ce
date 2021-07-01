@@ -18,6 +18,7 @@ package io.radien.webapp.authz;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.service.PrincipalFactory;
@@ -31,9 +32,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Web Authorization checker validator
+ */
 @SessionScoped
 @Named("authzChecker")
 public class WebAuthorizationChecker extends AuthorizationChecker {
+
     @Inject
     HttpServletRequest servletRequest;
 
@@ -82,7 +87,7 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
             return super.hasGrant(tenantId, roleName);
         }
         catch (Exception e) {
-            log.error("Error checking authorization", e);
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
             return false;
         }
     }
@@ -100,7 +105,7 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
             return super.hasGrantMultipleRoles(roleNames);
         }
         catch (Exception e) {
-            log.error("Error checking authorization", e);
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
             return false;
         }
     }
@@ -121,7 +126,7 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
             return super.hasGrantMultipleRoles(roleNames);
         }
         catch (Exception e) {
-            log.error("Error checking authorization", e);
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
             return false;
         }
     }

@@ -54,7 +54,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testGet() {
-        Response response = tenantResource.get(null, null, true, true);
+        Response response = tenantResource.get(null, null, null,true, true);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -64,7 +64,7 @@ public class TenantResourceTest {
     @Test
     public void testGetGenericException() {
         doThrow(new RuntimeException()).when(tenantServiceAccess).get((SystemTenantSearchFilter) any());
-        Response response = tenantResource.get(null, null, true, true);
+        Response response = tenantResource.get(null, null, null,true, true);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 
@@ -122,7 +122,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testGetContractByName() {
-        Response response = tenantResource.get("subj", null, true, true);
+        Response response = tenantResource.get("subj", null, null,true, true);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 

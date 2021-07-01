@@ -136,7 +136,7 @@ public class PermissionServiceTest {
         permissionServiceAccess.save(permission);
 
         List<? extends SystemPermission> permissions = permissionServiceAccess.
-                getPermissions(new PermissionSearchFilter(name, 111L, 1L, true, true));
+                getPermissions(new PermissionSearchFilter(name, 111L, 1L, null,true, true));
 
         assertNotNull(permissions);
         assertEquals(1, permissions.size());
@@ -421,15 +421,15 @@ public class PermissionServiceTest {
         permissionServiceAccess.save(testById4);
 
         List<? extends SystemPermission> permissionsAnd = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("zz",null, null,true,true));
+                new PermissionSearchFilter("zz",null, null,null,true,true));
         assertEquals(1, permissionsAnd.size());
 
         List<? extends SystemPermission> permissionsOr = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("aa",null, null,true,false));
+                new PermissionSearchFilter("aa",null, null,null,true,false));
         assertEquals(1, permissionsOr.size());
 
         List<? extends SystemPermission> permissionsNotExact = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("aa",null,null,false,true));
+                new PermissionSearchFilter("aa",null,null,null,false,true));
         assertEquals(3, permissionsNotExact.size());
     }
 
@@ -520,19 +520,19 @@ public class PermissionServiceTest {
 
         // Retrieving permissions by actionId3
         SystemPermissionSearchFilter filter = new PermissionSearchFilter(null, actionId3,
-                null, true, true);
+                null, null,true, true);
         List<? extends SystemPermission> systemPermissions = permissionServiceAccess.getPermissions(filter);
         assertEquals(3, systemPermissions.size());
 
         // Retrieving permissions by actionId2
         filter = new PermissionSearchFilter(null, actionId2,
-                null, true, true);
+                null, null,true, true);
         systemPermissions = permissionServiceAccess.getPermissions(filter);
         assertEquals(2, systemPermissions.size());
 
         // Retrieving permissions by actionId1
         filter = new PermissionSearchFilter(null, actionId1,
-                null, true, true);
+                null, null, true, true);
         systemPermissions = permissionServiceAccess.getPermissions(filter);
         assertEquals(1, systemPermissions.size());
     }
@@ -574,7 +574,7 @@ public class PermissionServiceTest {
         assertThrows(Exception.class, () -> permissionServiceAccess.save(p4));
 
         SystemPermissionSearchFilter filter = new PermissionSearchFilter("perm3",
-                actionId3, resourceId2, true, true);
+                actionId3, resourceId2, null,true, true);
         List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(filter);
         assertEquals(1, permissions.size());
         assertEquals(permissions.get(0).getId(), p3.getId());
@@ -582,7 +582,7 @@ public class PermissionServiceTest {
         assertEquals(permissions.get(0).getResourceId(), p3.getResourceId());
 
         filter = new PermissionSearchFilter("perm",
-                actionId3, resourceId2, false, true);
+                actionId3, resourceId2, null,false, true);
         permissions = permissionServiceAccess.getPermissions(filter);
         assertEquals(1, permissions.size());
 
@@ -592,7 +592,7 @@ public class PermissionServiceTest {
         assertTrue(p3AndP4);
 
         filter = new PermissionSearchFilter("perm",
-                null, resourceId2, false, true);
+                null, resourceId2, null,false, true);
         permissions = permissionServiceAccess.getPermissions(filter);
         assertEquals(2, permissions.size());
 
@@ -600,6 +600,21 @@ public class PermissionServiceTest {
         boolean p2AndP3AndP4 = permissions.stream().
                 allMatch( p -> p.getId().equals(p2.getId()) || p.getId().equals(p3.getId()) || p.getId().equals(p4.getId()));
         assertTrue(p2AndP3AndP4);
+
+        // Retrieve by ids
+        List<Long> ids = Arrays.asList(p2.getId(), p3.getId(), 9999L, 11111L, 2222L);
+        filter = new PermissionSearchFilter();
+        filter.setIds(ids);
+        filter.setLogicConjunction(true);
+        permissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(2, permissions.size());
+
+        // Retrieving by id and modifying logic conjunction
+        ids = Arrays.asList(p2.getId(), p3.getId());
+        filter = new PermissionSearchFilter(p1.getName(),
+                null, null, ids,true, false);
+        permissions = permissionServiceAccess.getPermissions(filter);
+        assertEquals(3, permissions.size());
     }
 
     /**

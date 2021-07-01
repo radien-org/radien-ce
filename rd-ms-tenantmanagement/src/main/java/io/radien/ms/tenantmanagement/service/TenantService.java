@@ -159,6 +159,15 @@ public class TenantService implements TenantServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = tenantRoot.get("id").in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
+        }
+
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, tenantRoot, global);
         global = getFieldPredicate("tenantType", filter.getTenantType(), filter, criteriaBuilder, tenantRoot, global);
 
@@ -290,7 +299,7 @@ public class TenantService implements TenantServiceAccess {
         }
 
         // There must only exist one Root Tenant
-        List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getName(), false, false));
+        List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getName(), null,false, false));
         if (!list.isEmpty()) {
             if (tenant.getId() == null || list.size() > 1 || !list.get(0).getId().equals(tenant.getId())) {
                 throw new TenantException(GenericErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString());
