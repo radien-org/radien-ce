@@ -30,8 +30,8 @@ public class LinkedAuthorizationErrorCodeMessageTest extends TestCase {
      */
     @Test
     public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Tenant ID\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant ID"));
-        assertEquals("{\"code\":113, \"key\":\"error.dissociation.no.params\", \"message\":\"Parameters for dissociation not informed\"}", GenericErrorCodeMessage.NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
+        assertEquals("{\"code\":G2, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString());
+        assertEquals("{\"code\":G2, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Tenant ID\"}", GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Tenant ID"));
+        assertEquals("{\"code\":LA1, \"key\":\"error.dissociation.no.params\", \"message\":\"Parameters for dissociation not informed.\"}", GenericErrorCodeMessage.NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
     }
 }

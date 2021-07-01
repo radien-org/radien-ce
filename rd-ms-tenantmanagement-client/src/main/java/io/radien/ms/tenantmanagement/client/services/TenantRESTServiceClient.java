@@ -75,7 +75,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return getSystemTenant(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
 
@@ -112,7 +112,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return getTenantsByName(name);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -195,7 +195,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return getTenantPage(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -235,7 +235,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return createTenant((Tenant) tenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -257,7 +257,8 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException pe) {
@@ -280,7 +281,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return deleteRequester(tenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -302,7 +303,8 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException pe) {
@@ -325,7 +327,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return delTenantHierarchy(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -347,7 +349,8 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException pe) {
@@ -370,7 +373,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return updateTenant(tenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -392,7 +395,8 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                String entity = response.readEntity(String.class);
+                log.error(entity);
                 return false;
             }
         } catch (ProcessingException pe) {
@@ -415,7 +419,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
             try{
                 return isTenantExistentRequester(tenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }

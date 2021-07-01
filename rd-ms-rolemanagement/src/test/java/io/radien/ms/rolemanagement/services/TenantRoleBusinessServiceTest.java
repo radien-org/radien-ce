@@ -936,10 +936,6 @@ public class TenantRoleBusinessServiceTest {
 
         assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
                 assignPermission(1L, 2L, permissionTestCase1));
-
-        assertThrows(SystemException.class, () -> tenantRoleBusinessService.
-                assignPermission(1L, 2L, permissionTestCase2));
-
     }
 
     /**
@@ -961,16 +957,7 @@ public class TenantRoleBusinessServiceTest {
         systemTenantRole.setTenantId(tenantTestCase1);
         systemTenantRole.setRoleId(role.getId());
 
-        // Setting mocked REST Client for positive test cases
-        try {
-            doThrow(new SystemException("Communication issue")).
-                    when(tenantRESTServiceAccess).isTenantExistent(tenantTestCase1);
-        }
-        catch (SystemException se) {
-            fail("unexpected");
-        }
-
-        assertThrows(SystemException.class, ()-> tenantRoleBusinessService.
+        assertThrows(TenantRoleException.class, ()-> tenantRoleBusinessService.
                 save(systemTenantRole));
     }
 

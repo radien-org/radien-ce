@@ -76,9 +76,6 @@ public class TenantRESTServiceClientTest {
     ClientServiceUtil tenantServiceUtil;
 
     @Mock
-    OAFAccess oafAccess;
-
-    @Mock
     AuthorizationChecker authorizationChecker;
 
     @Mock
@@ -86,6 +83,9 @@ public class TenantRESTServiceClientTest {
 
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
+
+    @Mock
+    OAFAccess oafAccess;
 
     private final Tenant dummyTenant = new Tenant();
 
@@ -646,5 +646,120 @@ public class TenantRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.isTenantExistent(1L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetTenantByIdTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.getById(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantById(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetTenantByNameTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.get(anyString(), any(), any(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantByName("name");
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetAllTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.getAll(anyString(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getAll("name", 1, 10, null, false);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testCreateTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.create(any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.create(new Tenant());
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.delete(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.delete(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteHierarchyTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.deleteTenantHierarchy(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.deleteTenantHierarchy(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testUpdateTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.update(anyLong(), any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        Tenant tenant = new Tenant();
+        tenant.setId(2L);
+
+        target.update(tenant);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testExistsTokenExpiration() throws Exception {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        when(tenantResourceClient.exists(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.isTenantExistent(2L);
     }
 }

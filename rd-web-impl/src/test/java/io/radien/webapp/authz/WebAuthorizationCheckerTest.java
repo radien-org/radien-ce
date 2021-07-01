@@ -174,4 +174,36 @@ public class WebAuthorizationCheckerTest {
 
         assertFalse(webAuthorizationChecker.hasUserAdministratorRoleAccess());
     }
+
+    /**
+     * Test to validate if a specific current user has the correct role access for
+     * system administrator or tenant administrator
+     * @throws SystemException in case of any issue while validating the roles
+     */
+    @Test
+    public void testHasTenantAdministratorRoleAccess() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.TENANT_ADMINISTRATOR.getRoleName(), null);
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.CLIENT_TENANT_ADMINISTRATOR.getRoleName(), null);
+        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SUB_TENANT_ADMINISTRATOR.getRoleName(), null);
+
+        assertFalse(webAuthorizationChecker.hasTenantAdministratorRoleAccess());
+    }
 }

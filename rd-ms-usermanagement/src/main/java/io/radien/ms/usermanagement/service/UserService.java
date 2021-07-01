@@ -37,6 +37,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import io.radien.api.SystemVariables;
 import io.radien.exception.GenericErrorCodeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public Long getUserId(String userSub) {
 		if (userSub == null || userSub.trim().length() == 0) {
-			throw new IllegalArgumentException("User sub cannot be empty");
+			throw new IllegalArgumentException(GenericErrorCodeMessage.USER_FIELD_MANDATORY.toString("user subject"));
 		}
 		String query = "Select u.id From User u where u.sub = :pUserSub";
 		TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
@@ -121,7 +122,7 @@ public class UserService implements UserServiceAccess{
 		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 		Root<User> userRoot = criteriaQuery.from(User.class);
 		criteriaQuery.select(userRoot);
-		criteriaQuery.where(userRoot.get("id").in(userIds));
+		criteriaQuery.where(userRoot.get(SystemVariables.ID.getFieldName()).in(userIds));
 
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
 
@@ -148,7 +149,9 @@ public class UserService implements UserServiceAccess{
 
 		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 		if(search!= null) {
-			global = criteriaBuilder.and(criteriaBuilder.or(criteriaBuilder.like(userRoot.get("logon"), search), criteriaBuilder.like(userRoot.get("userEmail"), search)));
+			global = criteriaBuilder.and(criteriaBuilder.or(criteriaBuilder.like(
+					userRoot.get(SystemVariables.LOGON.getFieldName()), search),
+					criteriaBuilder.like(userRoot.get(SystemVariables.USER_EMAIL.getFieldName()), search)));
 			criteriaQuery.where(global);
 		}
 
@@ -227,10 +230,10 @@ public class UserService implements UserServiceAccess{
 		Root<User> userRoot = criteriaQuery.from(User.class);
 		criteriaQuery.select(userRoot);
 		Predicate global = criteriaBuilder.or(
-				criteriaBuilder.equal(userRoot.get("logon"), user.getLogon()),
-				criteriaBuilder.equal(userRoot.get("userEmail"), user.getUserEmail()));
+				criteriaBuilder.equal(userRoot.get(SystemVariables.LOGON.getFieldName()), user.getLogon()),
+				criteriaBuilder.equal(userRoot.get(SystemVariables.USER_EMAIL.getFieldName()), user.getUserEmail()));
 		if(user.getId()!= null) {
-			global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get("id"), user.getId()));
+			global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get(SystemVariables.ID.getFieldName()), user.getId()));
 		}
 		criteriaQuery.where(global);
 		TypedQuery<User> q = em.createQuery(criteriaQuery);
@@ -272,7 +275,7 @@ public class UserService implements UserServiceAccess{
 		CriteriaDelete<User> criteriaDelete = cb.createCriteriaDelete(User.class);
 		Root<User> userRoot = criteriaDelete.from(User.class);
 
-		criteriaDelete.where(cb.equal(userRoot.get("id"),userId));
+		criteriaDelete.where(cb.equal(userRoot.get(SystemVariables.ID.getFieldName()),userId));
 		em.createQuery(criteriaDelete).executeUpdate();
 	}
 
@@ -286,7 +289,7 @@ public class UserService implements UserServiceAccess{
 		CriteriaDelete<User> criteriaDelete = cb.createCriteriaDelete(User.class);
 		Root<User> userRoot = criteriaDelete.from(User.class);
 
-		criteriaDelete.where(userRoot.get("id").in(userIds));
+		criteriaDelete.where(userRoot.get(SystemVariables.ID.getFieldName()).in(userIds));
 		em.createQuery(criteriaDelete).executeUpdate();
 	}
 
@@ -357,9 +360,9 @@ public class UserService implements UserServiceAccess{
 			}
 		}
 
-		global = getFieldPredicate("sub", filter.getSub(), filter, criteriaBuilder, userRoot, global);
-		global = getFieldPredicate("userEmail", filter.getEmail(), filter, criteriaBuilder, userRoot, global);
-		global = getFieldPredicate("logon", filter.getLogon(), filter, criteriaBuilder, userRoot, global);
+		global = getFieldPredicate(SystemVariables.SUB.getFieldName(), filter.getSub(), filter, criteriaBuilder, userRoot, global);
+		global = getFieldPredicate(SystemVariables.USER_EMAIL.getFieldName(), filter.getEmail(), filter, criteriaBuilder, userRoot, global);
+		global = getFieldPredicate(SystemVariables.LOGON.getFieldName(), filter.getLogon(), filter, criteriaBuilder, userRoot, global);
 
 		return global;
 	}
@@ -436,24 +439,24 @@ public class UserService implements UserServiceAccess{
 		// Searching for repeated elements and gathering params for Query
 		for (int index=0; index<insertionUsers.size(); index++) {
 			SystemUser u = insertionUsers.get(index);
-			populateParametersAndFindIssues("logon", u.getLogon(), index, issuesByRow, logonsAsParameter);
-			populateParametersAndFindIssues("sub", u.getSub(), index, issuesByRow, subsAsParameter);
-			populateParametersAndFindIssues("userEmail", u.getUserEmail(), index, issuesByRow, emailsAsParameter);
+			populateParametersAndFindIssues(SystemVariables.LOGON.getFieldName(), u.getLogon(), index, issuesByRow, logonsAsParameter);
+			populateParametersAndFindIssues(SystemVariables.SUB.getFieldName(), u.getSub(), index, issuesByRow, subsAsParameter);
+			populateParametersAndFindIssues(SystemVariables.USER_EMAIL.getFieldName(), u.getUserEmail(), index, issuesByRow, emailsAsParameter);
 		}
 
 		// Search for already inserted elements (sub, userEmail and logon) on the database
 		Set<String> emailsAlreadyInserted = new HashSet<>(
-				retrieveDataFromDB("userEmail", emailsAsParameter));
+				retrieveDataFromDB(SystemVariables.USER_EMAIL.getFieldName(), emailsAsParameter));
 		Set<String> logonsAlreadyInserted = new HashSet<>(
-				retrieveDataFromDB("logon", logonsAsParameter));
+				retrieveDataFromDB(SystemVariables.LOGON.getFieldName(), logonsAsParameter));
 		Set<String> subsAlreadyInserted = new HashSet<>(
-				retrieveDataFromDB("sub", subsAsParameter));
+				retrieveDataFromDB(SystemVariables.SUB.getFieldName(), subsAsParameter));
 
 		for (int index=0; index<insertionUsers.size(); index++) {
 			SystemUser u = insertionUsers.get(index);
-			seekForIssue("logon", u.getLogon(), index, issuesByRow, logonsAlreadyInserted);
-			seekForIssue("userEmail", u.getUserEmail(), index, issuesByRow, emailsAlreadyInserted);
-			seekForIssue("sub", u.getSub(), index, issuesByRow, subsAlreadyInserted);
+			seekForIssue(SystemVariables.LOGON.getFieldName(), u.getLogon(), index, issuesByRow, logonsAlreadyInserted);
+			seekForIssue(SystemVariables.USER_EMAIL.getFieldName(),  u.getUserEmail(), index, issuesByRow, emailsAlreadyInserted);
+			seekForIssue(SystemVariables.SUB.getFieldName(),  u.getSub(), index, issuesByRow, subsAlreadyInserted);
 		}
 
 		return issuesByRow;

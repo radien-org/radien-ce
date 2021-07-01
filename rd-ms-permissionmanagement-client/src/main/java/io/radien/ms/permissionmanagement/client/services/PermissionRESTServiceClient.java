@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -77,7 +78,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -118,7 +119,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getPermissionRequester(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -156,7 +157,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getPermissionByIdRequester(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -197,7 +198,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getPermissionByActionAndResourceRequester(actionId, resourceId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -237,7 +238,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getPermissionByNameRequester(name);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -280,7 +281,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return deleteRequester(permissionId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -322,7 +323,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return createRequester(permission);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -365,7 +366,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return isPermissionExistentRequester(permissionId, permissionName);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -406,7 +407,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             try{
                 return getTotalRecordsCountRequester();
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException("Unable to recover expiredToken");
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
