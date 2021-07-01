@@ -93,6 +93,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     public static final String K_TENANT_ROLE_SCREEN = "tenantrole";
     public static final String K_MSG_KEY_RETRIEVE_ERROR = "rd_retrieve_error";
+    public static final String K_MSG_KEY_ROLES = "rd_roles";
 
     /**
      * This method is effectively invoke to create Tenant role association
@@ -542,7 +543,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         }
         catch(Exception e) {
             handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
-                    JSFUtil.getMessage("rd_roles"));
+                    JSFUtil.getMessage(K_MSG_KEY_ROLES));
             return new ArrayList<>();
         }
     }
@@ -559,7 +560,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage(K_MSG_KEY_ROLES));
             return new ArrayList<>();
         }
     }
@@ -577,7 +578,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage(K_MSG_KEY_ROLES));
             return new ArrayList<>();
         }
     }
