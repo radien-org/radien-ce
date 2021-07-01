@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -88,17 +89,21 @@ public class LazyTenantRoleUserDataModelTest {
     }
 
     /**
-     * Assemblies a mocked user
-     * @param userId parameter that corresponds to the tenant id, and will be used to create others
-     *                 attribute values as well
-     * @return mocked tenant
+     * Assemblies a mocked user list
+     * @param ids parameter that corresponds to a list containing tenant identifiers,
+     *            and will be used to create others attribute values as well
+     * @return a mocked list containing user
      */
-    protected SystemUser setupMockedUser(Long userId) {
-        String valueAsString = String.valueOf(userId);
-        SystemUser user = UserFactory.create(valueAsString, valueAsString, valueAsString, valueAsString,
-                valueAsString, null);
-        user.setId(userId);
-        return user;
+    protected List<SystemUser> setupMockedUsers(List<Long> ids) {
+        List<SystemUser> users = new ArrayList<>();
+        ids.forEach(id -> {
+            String valueAsString = String.valueOf(id);
+            SystemUser user = UserFactory.create(valueAsString, valueAsString, valueAsString,
+                        valueAsString, valueAsString, null);
+            user.setId(id);
+            users.add(user);
+        });
+        return users;
     }
 
     /**
@@ -119,15 +124,15 @@ public class LazyTenantRoleUserDataModelTest {
         int pageNo = 0;
         int pageSize = 10;
         Long tenantRoleId = 111L;
+        List<Long> ids = LongStream.rangeClosed(1, pageSize).boxed().collect(Collectors.toList());
+
         when(service.getUsers(tenantRoleId, pageNo+1, pageSize)).then(i -> setupMockedPage(pageSize));
-        for (long id=1; id<=pageSize; id++) {
-            long finalId = id;
-            when(userService.getUserById(id)).then(i -> Optional.of(setupMockedUser(finalId)));
-        }
+        when(userService.getUsersByIds(ids)).then(i -> setupMockedUsers(ids));
+
         LazyTenantRoleUserDataModel lazyModel = new LazyTenantRoleUserDataModel(service, userService);
         lazyModel.setTenantRoleId(tenantRoleId);
-
-        List<SystemTenantRoleUser> toBeShown = lazyModel.load(pageNo, pageSize, sortMetaMap, filterMetaMap);
+        List<SystemTenantRoleUser> toBeShown = lazyModel.load(pageNo, pageSize,
+                sortMetaMap, filterMetaMap);
 
         // Evaluating collection retrieved
         assertNotNull(toBeShown);

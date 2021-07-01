@@ -439,9 +439,11 @@ public class TenantRoleAssociationManagerTest {
      * Test for method edit(SystemTenantRole), which prepares the frontend gui
      * to expose the information related to the TenantRole that wil be edited.
      * Return uri mapping referring the value tenantrole
+     * @throws SystemException in case of any rest client communication issue
+     * @Exception still thrown by role rest client
      */
     @Test
-    public void testEditTenantRole() throws Exception {
+    public void testEditTenantRole() throws SystemException, Exception {
         SystemTenantRole tenantRoleToBeEdited = new TenantRole();
         tenantRoleToBeEdited.setTenantId(1L);
         tenantRoleToBeEdited.setRoleId(2L);
@@ -480,6 +482,7 @@ public class TenantRoleAssociationManagerTest {
      * retrieving role.
      *
      * Expected Return uri mapping referring the value tenantrole
+     * @throws Exception thrown by role rest client
      */
     @Test
     public void testEditTenantRoleWhenExceptionOccursForRoleRetrieval() throws Exception {
@@ -513,9 +516,11 @@ public class TenantRoleAssociationManagerTest {
      * retrieving tenant.
      *
      * Expected Return uri mapping referring the value tenantrole
+     * @throws SystemException in case of any rest client communication issue
+     * @throws Exception thrown by role rest client
      */
     @Test
-    public void testEditTenantRoleWhenExceptionOccursForTenantRetrieval() throws Exception {
+    public void testEditTenantRoleWhenExceptionOccursForTenantRetrieval() throws SystemException, Exception {
         SystemTenantRole tenantRoleToBeEdited = new TenantRole();
         tenantRoleToBeEdited.setTenantId(1L);
         tenantRoleToBeEdited.setRoleId(2L);
@@ -549,9 +554,11 @@ public class TenantRoleAssociationManagerTest {
      * retrieving the assigned permissions.
      *
      * Expected Return uri mapping referring the value tenantrole
+     * @throws SystemException in case of any rest client communication issue
+     * @throws Exception thrown by role rest client
      */
     @Test
-    public void testEditTenantRoleExceptionOccursWhenCalculateAssignedPermissions() throws Exception {
+    public void testEditTenantRoleExceptionOccursWhenCalculateAssignedPermissions() throws SystemException, Exception {
         SystemTenantRole tenantRoleToBeEdited = new TenantRole();
         tenantRoleToBeEdited.setTenantId(1L);
         tenantRoleToBeEdited.setRoleId(2L);
@@ -663,6 +670,7 @@ public class TenantRoleAssociationManagerTest {
      * and must be previously selected from a GUI)
      *
      * Corresponds to scenario/case in which a Exception occurs during assigment process
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testAssignPermissionWithException() throws SystemException {
@@ -696,6 +704,7 @@ public class TenantRoleAssociationManagerTest {
      * Test the method (un)assignPermission(): the one which does/perform permission (un)assignment
      * Perform the dissociation between permission, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testUnAssignPermission() throws SystemException {
@@ -760,6 +769,7 @@ public class TenantRoleAssociationManagerTest {
      * and must be previously selected from a GUI)
      *
      * Corresponds to scenario/case in which a Exception occurs during assigment process
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testUnAssignPermissionWithException() throws SystemException {
@@ -833,7 +843,7 @@ public class TenantRoleAssociationManagerTest {
      * Test the method assignUser(): the one which does/perform user assignment
      * Perform the association between user, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
-     * @throws SystemException in case of any issue with endpoint communication
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testAssignUser() throws SystemException {
@@ -905,6 +915,7 @@ public class TenantRoleAssociationManagerTest {
      * and must be previously selected from a GUI)
      *
      * Corresponds to scenario/case in which a Exception occurs during assigment process
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testAssignUserWithException() throws SystemException {
@@ -937,6 +948,7 @@ public class TenantRoleAssociationManagerTest {
      * Test the method (un)assignUser(): the one which does/perform user (un)assignment
      * Perform the dissociation between user, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testUnAssignUser() throws SystemException {
@@ -1003,6 +1015,7 @@ public class TenantRoleAssociationManagerTest {
      * and must be previously selected from a GUI)
      *
      * Corresponds to scenario/case in which a Exception occurs during assigment process
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testUnAssignUserWithException() throws SystemException {
@@ -1162,11 +1175,3 @@ public class TenantRoleAssociationManagerTest {
         assertNull(tenantRoleAssociationManager.getTenantRoleId());
     }
 }
-/*
-getRoles()	29	0%		n/a	1	1	6	6	1	1
-getTenants()	29	0%		n/a	1	1	6	6	1	1
-getTenantRoleId()	2332	58%	66	50%	6	7	5	10	0	1
-lambda$assignUser$2()	15	0%		n/a	1	1	2	2	1	1
-lambda$edit$1()	15	0%		n/a	1	1	2	2	1	1
-lambda$edit$0()	15	0%		n/a	1	1	2	2	1	1
-*/

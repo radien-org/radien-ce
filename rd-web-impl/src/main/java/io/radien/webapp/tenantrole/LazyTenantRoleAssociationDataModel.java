@@ -120,15 +120,7 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
         List<Long> ids = roleIds.stream().filter(id -> !roleMapRef.containsKey(id)).
                 collect(Collectors.toList());
         if (!ids.isEmpty()) {
-            // TODO: Is necessary to replace by one service call based on as list of ids
-            for (Long id: ids) {
-                try {
-                    roleService.getRoleById(id).ifPresent(r -> roleMapRef.put(id, r));
-                }
-                catch(Exception e) {
-                    throw new SystemException(e);
-                }
-            }
+            roleService.getRolesByIds(ids).forEach(r -> roleMapRef.put(r.getId(), r));
         }
     }
 
@@ -141,10 +133,7 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
         // Filtering non mapped role ids
         List<Long> ids = getNonMappedIds(tenantIds, tenantMapRef);
         if (!ids.isEmpty()) {
-            // TODO: Is necessary to replace by one service call based on as list of ids
-            for (Long id: ids) {
-                tenantService.getTenantById(id).ifPresent(t -> tenantMapRef.put(id, t));
-            }
+            tenantService.getTenantsByIds(ids).forEach(t -> tenantMapRef.put(t.getId(), t));
         }
     }
 

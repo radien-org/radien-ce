@@ -112,10 +112,7 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
         // Filtering non mapped user ids
         List<Long> ids = getNonMappedIds(userIds, userMapRef);
         if (!ids.isEmpty()) {
-            // TODO: Is necessary to replace by one service call based on as list of ids
-            for (Long id: ids) {
-                userService.getUserById(id).ifPresent(u -> userMapRef.put(id, u));
-            }
+            userService.getUsersByIds(ids).forEach(u -> userMapRef.put(u.getId(), u));
         }
     }
 

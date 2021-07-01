@@ -49,11 +49,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /**
  * Class that aggregates UnitTest cases for {@link LazyTenantRoleAssociationDataModel}
@@ -101,29 +99,38 @@ public class LazyTenantRoleAssociationDataModelTest {
     }
 
     /**
-     * Assemblies a mocked tenant
-     * @param tenantId parameter that corresponds to the tenant id, and will be used to create others
-     *                 attribute values as well
-     * @return mocked tenant
+     * Assemblies a mocked role collection for a given id list
+     * @param ids parameter that corresponds to the role ids, and will be used to create
+     *               others attribute values as well
+     * @return a mocked tenant list
      */
-    protected SystemTenant setupMockedTenant(Long tenantId) {
-        SystemTenant tenant = TenantFactory.create(String.valueOf(tenantId), String.valueOf(tenantId),
-                TenantType.SUB_TENANT, null, null, null, null, null,
-                null, null, null, null, null, null);
-        tenant.setId(tenantId);
-        return tenant;
+    protected List<SystemRole> setupMockedRoleList(List<Long> ids) {
+        List<SystemRole> roles = new ArrayList<>();
+        ids.forEach(id -> {
+            SystemRole systemRole = RoleFactory.create(String.valueOf(id), String.valueOf(id), null);
+            systemRole.setId(id);
+            roles.add(systemRole);
+        });
+        return roles;
     }
 
     /**
-     * Assemblies a mocked role
-     * @param roleId parameter that corresponds to the role id, and will be used to create
+     * Assemblies a mocked tenant collection for a given id list
+     * @param ids parameter that corresponds to the role ids, and will be used to create
      *               others attribute values as well
-     * @return mocked tenant
+     * @return a mocked tenant list
      */
-    protected SystemRole setupMockedRole(Long roleId) {
-        SystemRole systemRole = RoleFactory.create(String.valueOf(roleId), String.valueOf(roleId), null);
-        systemRole.setId(roleId);
-        return systemRole;
+    protected List<SystemTenant> setupMockedTenantList(List<Long> ids) {
+        List<SystemTenant> tenants = new ArrayList<>();
+        ids.forEach(id -> {
+            SystemTenant tenant = TenantFactory.create(String.valueOf(id), String.valueOf(id),
+                    TenantType.SUB_TENANT, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null);
+            tenant.setId(id);
+            tenants.add(tenant);
+        });
+        return tenants;
     }
 
     /**
@@ -143,20 +150,22 @@ public class LazyTenantRoleAssociationDataModelTest {
     public void testGetData() throws SystemException, Exception {
         int pageNo = 0;
         int pageSize = 10;
+
+        List<Long> ids = LongStream.rangeClosed(1, pageSize)
+                .boxed().collect(Collectors.toList());
+
         when(service.getAll(pageNo+1, pageSize)).then(i -> setupMockedPage(pageSize));
-        for (long id=1; id<=pageSize; id++) {
-            long finalId = id;
-            when(roleService.getRoleById(id)).then(i -> Optional.of(setupMockedRole(finalId)));
-            when(tenantService.getTenantById(id)).then(i -> Optional.of(setupMockedTenant(finalId)));
-        }
-        LazyTenantRoleAssociationDataModel lazyModel = new
-                LazyTenantRoleAssociationDataModel(service, tenantService, roleService);
+        when(roleService.getRolesByIds(ids)).then(i -> setupMockedRoleList(ids));
+        when(tenantService.getTenantsByIds(ids)).then(i -> setupMockedTenantList(ids));
+
+        LazyTenantRoleAssociationDataModel lazyModel = new LazyTenantRoleAssociationDataModel(service,
+                tenantService, roleService);
         List<SystemTenantRole> toBeShown = lazyModel.load(pageNo, pageSize, sortMetaMap, filterMetaMap);
 
         // Evaluating collection retrieved
         assertNotNull(toBeShown);
         assertFalse(toBeShown.isEmpty());
-        assertEquals(toBeShown.size(), pageSize);
+        assertEquals(pageSize, toBeShown.size());
 
         // Evaluating information stored into the caches
         assertEquals(lazyModel.getRoleName(1L), String.valueOf(1L));
@@ -200,9 +209,10 @@ public class LazyTenantRoleAssociationDataModelTest {
         lazyDataModelLogger.addAppender(listAppender);
 
         // Mocking the processing
+        List<Long> ids = Arrays.asList(1L);
         when(service.getAll(pageNo+1, pageSize)).then(i -> setupMockedPage(pageSize));
-        when(tenantService.getTenantById(1L)).then(i -> Optional.of(setupMockedTenant(1L)));
-        when(roleService.getRoleById(1L)).thenThrow(new ProcessingException(msgError));
+        when(tenantService.getTenantsByIds(ids)).then(i -> setupMockedTenantList(ids));
+        when(roleService.getRolesByIds(ids)).thenThrow(new SystemException(msgError));
 
         LazyTenantRoleAssociationDataModel lazyModel = new
                 LazyTenantRoleAssociationDataModel(service, tenantService, roleService);
@@ -210,7 +220,8 @@ public class LazyTenantRoleAssociationDataModelTest {
         // Retrieving the outcome
         List<SystemTenantRole> listToBeLoaded = lazyModel.load(pageNo, pageSize, sortMetaMap, filterMetaMap);
 
-        assertNull(listToBeLoaded);
+        assertNotNull(listToBeLoaded);
+        assertTrue(listToBeLoaded.isEmpty());
 
         // JUnit assertions
         List<ILoggingEvent> logsList = listAppender.list;
