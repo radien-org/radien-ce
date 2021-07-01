@@ -38,15 +38,9 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import io.radien.webapp.cache.CacheFactory;
-import io.radien.webapp.cache.RoleCache;
-import io.radien.webapp.cache.TenantCache;
-import io.radien.webapp.cache.UserCache;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 
-
-import javax.cache.Cache;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
@@ -78,22 +72,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
     private UserRESTServiceAccess userRESTServiceAccess;
-
-    @Inject
-    private CacheFactory cacheFactory;
-
-//    @Inject
-//    @UserCache
-//    private Cache<Long, SystemUser> userCache;
-//
-//    @Inject
-//    @TenantCache
-//    private Cache<Long, SystemTenant> tenantCache;
-//
-//    @Inject
-//    @RoleCache
-//    private Cache<Long, SystemRole> roleCache;
-
 
     private SystemTenant tenant = new Tenant();
     private SystemRole role = new Role();
