@@ -1,5 +1,6 @@
 package io.radien.webapp.linkedAuthorization;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
@@ -169,7 +170,9 @@ public class LinkedAuthorizationManager extends AbstractManager {
 
     public String getLogon(Long userId) {
         try {
-            return this.userRESTServiceAccess.getUserById(userId).get().getLogon();
+            return this.userRESTServiceAccess.getUserById(userId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage("rd_user_not_found"), userId))).
+                    getLogon();
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
@@ -180,7 +183,9 @@ public class LinkedAuthorizationManager extends AbstractManager {
 
     public String getTenantName(Long tenantId) {
         try {
-            return this.tenantRESTServiceAccess.getTenantById(tenantId).get().getName();
+            return this.tenantRESTServiceAccess.getTenantById(tenantId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage("rd_tenant_not_found"), tenantId))).
+                    getName();
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
@@ -191,7 +196,9 @@ public class LinkedAuthorizationManager extends AbstractManager {
 
     public String getRoleName(Long roleId) {
         try {
-            return this.roleRESTServiceAccess.getRoleById(roleId).get().getName();
+            return this.roleRESTServiceAccess.getRoleById(roleId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage("rd_role_not_found"), roleId))).
+                    getName();
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
@@ -202,7 +209,9 @@ public class LinkedAuthorizationManager extends AbstractManager {
 
     public String getPermissionName(Long permissionId) {
         try {
-            return this.permissionRESTServiceAccess.getPermissionById(permissionId).get().getName();
+            return this.permissionRESTServiceAccess.getPermissionById(permissionId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage("rd_permission_not_found"), permissionId))).
+                    getName();
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"),

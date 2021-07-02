@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JSF manager bean that will handle all associations regarding TenantRole domain
@@ -304,6 +305,19 @@ public class TenantRoleAssociationManager extends AbstractManager {
     }
 
     /**
+     * Auxiliary method to search a role by its name and add it into a collection
+     * @param roleBag collection to store the retrieve role
+     * @param roleName parameter to guide the search process
+     * @throws Exception thrown to describe any issue with role rest client
+     */
+    private void addRoleByName(List<SystemRole> roleBag, String roleName) throws Exception {
+        Optional<SystemRole> o = roleRESTServiceAccess.getRoleByName(SystemRolesEnum.GUEST.getRoleName());
+        if (o.isPresent()) {
+            roleBag.add(o.get());
+        }
+    }
+
+    /**
      * Return a list containing Pre-Defined roles (Not administrative ones)
      * that can be use to do the association between (user - tenant - role)
      * @return list containing Roles
@@ -311,10 +325,10 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public List<SystemRole> getInitialRolesAllowedForAssociation() {
         try {
             List<SystemRole> roles = new ArrayList<>();
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.GUEST.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.APPROVER.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.AUTHOR.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.PUBLISHER.getRoleName()).get());
+            addRoleByName(roles, SystemRolesEnum.GUEST.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.APPROVER.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.AUTHOR.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.PUBLISHER.getRoleName());
             return roles;
         }
         catch(Exception e) {
