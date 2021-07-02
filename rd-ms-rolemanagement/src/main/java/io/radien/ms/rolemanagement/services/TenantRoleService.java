@@ -23,6 +23,7 @@ import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
@@ -126,7 +127,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         criteriaQuery.select(root);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+        Predicate global = getFilteredPredicate((TenantRoleSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
         TypedQuery<TenantRole> q = em.createQuery(criteriaQuery);
@@ -147,7 +148,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @param tenantRoleRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(SystemTenantRoleSearchFilter filter, CriteriaBuilder criteriaBuilder,
+    private Predicate getFilteredPredicate(TenantRoleSearchFilter filter, CriteriaBuilder criteriaBuilder,
                                            Root<TenantRole> tenantRoleRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
@@ -174,7 +175,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @param global predicate to be added
      * @return a constructed predicate
      */
-    private Predicate getFieldPredicate(String name, Object value, SystemTenantRoleSearchFilter filter,
+    private Predicate getFieldPredicate(String name, Object value, TenantRoleSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder, Root<TenantRole> tenantRoleRoot,
                                         Predicate global) {
         if(value != null) {

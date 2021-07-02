@@ -143,7 +143,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
 
         criteriaQuery.select(tenancyRoot);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, tenancyRoot);
+        Predicate global = getFilteredPredicate((LinkedAuthorizationSearchFilter) filter, criteriaBuilder, tenancyRoot);
 
         criteriaQuery.where(global);
         TypedQuery<LinkedAuthorization> q= entityManager.createQuery(criteriaQuery);
@@ -167,7 +167,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
      * @param roleRoot table to search the information.
      * @return a completed predicate to be used in the search criteria.
      */
-    private Predicate getFilteredPredicate(SystemLinkedAuthorizationSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<LinkedAuthorization> roleRoot) {
+    private Predicate getFilteredPredicate(LinkedAuthorizationSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<LinkedAuthorization> roleRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -194,7 +194,7 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
      * @param global global predicate to be used.
      * @return a where predicate to be used in the search criteria.
      */
-    private Predicate getFieldPredicate(String name, Long value, SystemLinkedAuthorizationSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<LinkedAuthorization> userRoot, Predicate global) {
+    private Predicate getFieldPredicate(String name, Long value, LinkedAuthorizationSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<LinkedAuthorization> userRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate;
 
@@ -320,17 +320,19 @@ public class LinkedAuthorizationService implements LinkedAuthorizationServiceAcc
         Root<LinkedAuthorization> linkedAuthorizationRoot = criteriaQuery.from(LinkedAuthorization.class);
         criteriaQuery.select(criteriaBuilder.count(linkedAuthorizationRoot));
 
+        LinkedAuthorizationSearchFilter searchFilter = (LinkedAuthorizationSearchFilter) filter;
+
         Predicate global;
-        if(filter.isLogicConjunction()) {
+        if(searchFilter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         } else {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate(FIELD_TENANT_ID, filter.getTenantId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
-        global = getFieldPredicate(FIELD_PERMISSION_ID, filter.getPermissionId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
-        global = getFieldPredicate(FIELD_ROLE_ID, filter.getRoleId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
-        global = getFieldPredicate(FIELD_USER_ID, filter.getUserId(), filter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_TENANT_ID, searchFilter.getTenantId(), searchFilter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_PERMISSION_ID, searchFilter.getPermissionId(), searchFilter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_ROLE_ID, searchFilter.getRoleId(), searchFilter, criteriaBuilder, linkedAuthorizationRoot, global);
+        global = getFieldPredicate(FIELD_USER_ID, searchFilter.getUserId(), searchFilter, criteriaBuilder, linkedAuthorizationRoot, global);
 
         criteriaQuery.where(global);
 

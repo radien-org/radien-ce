@@ -129,7 +129,7 @@ public class TenantService implements TenantServiceAccess {
 
         criteriaQuery.select(root);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+        Predicate global = getFilteredPredicate((TenantSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
         TypedQuery<Tenant> q = em.createQuery(criteriaQuery);
@@ -151,7 +151,7 @@ public class TenantService implements TenantServiceAccess {
      * @param tenantRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(SystemTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot) {
+    private Predicate getFilteredPredicate(TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -184,7 +184,7 @@ public class TenantService implements TenantServiceAccess {
      * @param global predicate to be added
      * @return a constructed predicate
      */
-    private Predicate getFieldPredicate(String name, Object value, SystemTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot, Predicate global) {
+    private Predicate getFieldPredicate(String name, Object value, TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate;
             if (value instanceof String && !filter.isExact()) {
