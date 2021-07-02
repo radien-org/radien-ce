@@ -115,6 +115,8 @@ public class TenantDataModelTest {
         tenant.setName("name");
         tenant.setTenantKey("key");
         tenant.setTenantType(TenantType.ROOT_TENANT);
+        tenantDataModel.setTenantStartDate(new Date());
+        tenantDataModel.setTenantEndDate(new Date());
 
         tenantDataModel.setTenant(tenant);
         tenantDataModel.setSelectedTenant(tenant);
@@ -439,7 +441,7 @@ public class TenantDataModelTest {
 
     @Test
     public void testGetSelectedTenant() {
-        SystemTenant tenantReceived = tenantDataModel.getTenant();
+        SystemTenant tenantReceived = tenantDataModel.getSelectedTenant();
         assertEquals(tenant.getName(), tenantReceived.getName());
         assertEquals(tenant.getTenantKey(), tenantReceived.getTenantKey());
     }
