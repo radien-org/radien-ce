@@ -31,7 +31,7 @@ public enum DataModelEnum {
     SAVE_ERROR_MESSAGE("rd_save_error"),
     EDIT_ERROR_MESSAGE("rd_edit_error"),
     SAVE_SUCCESS_MESSAGE("rd_save_success"),
-    LINKED_AUTHORIZATION_MESSAGE("rd_linkedauthorization"),
+    RETRIEVE_ERROR_MESSAGE("rd_retrieve_error"),
 
     /**
      * Active Tenant Messages and redirects
@@ -43,26 +43,31 @@ public enum DataModelEnum {
     /**
      * Permission Messages and redirects
      */
+    PERMISSION_MESSAGE("rd_permission"),
     PERMISSION_NOT_FOUND_MESSAGE("rd_permission_not_found"),
 
     /**
      * Role Messages and redirects
      */
+    ROLE_MESSAGE("rd_role"),
     ROLE_NOT_FOUND_MESSAGE("rd_role_not_found"),
 
     /**
      * Tenant Messages and redirects
      */
+    TENANT_MESSAGE("rd_tenant"),
     TENANT_NOT_FOUND_MESSAGE("rd_tenant_not_found"),
 
     /**
      * User Messages and redirects
      */
+    USER_MESSAGE("rd_user"),
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
 
     /**
      * Linked Authorization Messages and redirects
      */
+    LINKED_AUTHORIZATION_MESSAGE("rd_linkedauthorization"),
     LINKED_AUTHORIZATION_PATH("linkedauthorization");
 
     private String value;
