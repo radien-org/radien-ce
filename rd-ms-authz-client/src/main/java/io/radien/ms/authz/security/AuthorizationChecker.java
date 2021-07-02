@@ -93,7 +93,6 @@ public abstract class AuthorizationChecker implements Serializable {
         }
     }
 
-
     /**
      * Check if the current logged user has (grant to) some role (under a specific tenant - optionally)
      * @param tenantId Tenant identifier (Optional parameter)
@@ -118,7 +117,8 @@ public abstract class AuthorizationChecker implements Serializable {
                     return response.readEntity(Boolean.class);
                 }
                 return false;
-        } catch (Exception e) {
+
+        } catch (SystemException e) {
             throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
@@ -163,7 +163,7 @@ public abstract class AuthorizationChecker implements Serializable {
         catch (NotFoundException e) {
            return false;
         }
-        catch (Exception e) {
+        catch (SystemException e) {
             throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
@@ -225,9 +225,9 @@ public abstract class AuthorizationChecker implements Serializable {
             return response.readEntity(Long.class);
         }
         catch (NotFoundException e) {
-            throw new SystemException("Could Not find User id for sub=" + sub);
+            throw new NotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString(), e);
         }
-        catch(Exception e) {
+        catch(SystemException e) {
             throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }

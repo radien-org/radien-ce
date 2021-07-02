@@ -32,7 +32,15 @@ public enum GenericErrorCodeMessage {
 
     ERROR_SAVING_ENTITY("G3", "error.saving.entity", "Error saving entity: %s"),
 
-    ERROR_DELETING_ENTITY("G3", "error.deleting.entity", "Error deleting entity: %s"),
+    ERROR_DELETING_ENTITY("G4", "error.deleting.entity", "Error deleting entity: %s"),
+
+    ERROR_IN_CONFIGURE("G5", "error.in.configure", "Error in configure: %s"),
+
+    RESOURCE_URL_PATH("G6", "resource.url.path", "Resource URL path: %s"),
+
+    HTTP_SESSION_INITIATED("G7", "http.session.initiated", "HTTP session initiated: %s"),
+
+    INFO_CORS_FILTER("G8", "Cors.filter.method", "Cors filter method: %s"),
 
     /**
      * Tenant Business Error Code Messages

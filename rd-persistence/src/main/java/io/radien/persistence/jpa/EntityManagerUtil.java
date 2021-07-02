@@ -37,7 +37,6 @@ public class EntityManagerUtil {
 	private static final String ENTITY_SAVED = "An entity of class {} was persisted in the DB";
 	private static final String ENTITY_LIST_SAVED = "A List of entities of class {} was persisted in the DB";
 	public static final String ENTITY_DELETED = "An entity of class {} was deleted from the DB";
-	public static final String ERROR_DELETING_ENTITY = "Error deleting entity: {}";
 
 	/**
 	 * Persists a {@link Model} implementation in the target database
@@ -47,7 +46,7 @@ public class EntityManagerUtil {
 	 * @param em
 	 *                   the entityManager that gets injected bia the CDI
 	 */
-	public static void save(Model entity, EntityManager em) throws SystemException {
+	public static void save(Model entity, EntityManager em) {
 		EntityTransaction transaction = em.getTransaction();
 		boolean hadPreviousTransaction = true;
 		try {
@@ -62,7 +61,7 @@ public class EntityManagerUtil {
 			}
 		} catch (Exception e) {
 			transaction.rollback();
-			throw new SystemException(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
 		}
 	}
 
@@ -76,7 +75,7 @@ public class EntityManagerUtil {
 	 *                   the entityManager injected by the CDI
 	 */
 	//TODO: Check if transactions are working
-	public static Long saveOrUpdate(Model entity, EntityManager em) throws SystemException {
+	public static Long saveOrUpdate(Model entity, EntityManager em) {
 		try {
 			if (entity.getId() == null) {
 				em.persist(entity);
@@ -87,11 +86,12 @@ public class EntityManagerUtil {
 			em.flush();
 			return entity.getId();
 		} catch (Exception e) {
-			throw new SystemException(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			return null;
 		}
 	}
 
-	public static void saveOrUpdate(List<? extends Model> entities, EntityManager em) throws SystemException {
+	public static void saveOrUpdate(List<? extends Model> entities, EntityManager em) {
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			boolean hadTransaction = true;
@@ -121,11 +121,11 @@ public class EntityManagerUtil {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			throw new SystemException(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
 		}
 	}
 
-	public static <T extends Model> T saveOrUpdateAndReturn(Model entity, EntityManager em) throws SystemException {
+	public static <T extends Model> T saveOrUpdateAndReturn(Model entity, EntityManager em) {
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
@@ -141,7 +141,8 @@ public class EntityManagerUtil {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			throw new SystemException(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			return null;
 		}
 	}
 
@@ -153,7 +154,7 @@ public class EntityManagerUtil {
 	 * @param em
 	 *                   the entityManager injected by the CDI
 	 */
-	public static void delete(Model entity, EntityManager em) throws SystemException {
+	public static void delete(Model entity, EntityManager em) {
 		if (entity != null && entity.getId() == null) {
 			return;
 		}
@@ -175,7 +176,7 @@ public class EntityManagerUtil {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			throw new SystemException(GenericErrorCodeMessage.ERROR_DELETING_ENTITY.toString(e.getMessage()));
+			log.error(GenericErrorCodeMessage.ERROR_DELETING_ENTITY.toString(e.getMessage()), e);
 		}
 		assert entity != null;
 		log.info(ENTITY_DELETED, entity.getClass().getSimpleName());

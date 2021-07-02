@@ -52,44 +52,4 @@ public class FacesApplicationInitialisationListener implements SystemEventListen
 	public boolean isListenerForSource(Object source) {
 		return source instanceof Application;
 	}
-
-	// @Override
-	// public void contextInitialized(ServletContextEvent sce) {
-	//
-
-	//
-	// BeanManager beanManager = lookUpBeanManager();
-	// if (beanManager != null) {
-	// beanManager.fireEvent(new AppStartupEvent());
-	// log.info("beanManager fired AppStartupEvent.");
-	// } else {
-	// log.error("beanManager is null. Cannot fire startup event.");
-	// }
-	//
-	// }
-	//
-	// public BeanManager lookUpBeanManager() {
-	// try {
-	// // See reference below about how I came up with this
-	// InitialContext iniCtx = new InitialContext();
-	// BeanManager result = (BeanManager)
-	// iniCtx.lookup("java:comp/env/BeanManager");
-	// return result;
-	// } catch (NamingException e) {
-	// log.error("Could not construct BeanManager.", e);
-	// return null;
-	// }
-	// }
-	//
-	// public static class AppStartupEvent implements Serializable {
-	//
-	// private static final long serialVersionUID = 1L;
-	// }
-	//
-	// @Override
-	// public void contextDestroyed(ServletContextEvent sce) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-
 }
