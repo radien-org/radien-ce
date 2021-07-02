@@ -90,12 +90,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Data reload method
      */
     public void onload() {
-        try {
-            init();
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnumValues.TENANT_GENERIC_ERROR_MESSAGE.request()),
-                    JSFUtil.getMessage(DataModelEnumValues.TENANT_RD_TENANT.request()));
-        }
+        init();
     }
 
     /**
@@ -131,7 +126,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Automatically fill the parent id and client id if necessary
      * @param systemTenantToSave system tenant to be updated
      */
-    public void fillParentClientId(SystemTenant systemTenantToSave) {
+    private void fillParentClientId(SystemTenant systemTenantToSave) {
         if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT)) {
             retrieveParentTenantId(systemTenantToSave);
         } else if(systemTenantToSave.getTenantType().equals(TenantType.SUB_TENANT)) {
