@@ -28,14 +28,42 @@ public enum DataModelEnum {
      */
     GENERIC_ERROR_MESSAGE("rd_generic_error_message"),
     PUBLIC_INDEX_PATH("/public/index"),
+    SAVE_ERROR_MESSAGE("rd_save_error"),
+    EDIT_ERROR_MESSAGE("rd_edit_error"),
+    SAVE_SUCCESS_MESSAGE("rd_save_success"),
+    LINKED_AUTHORIZATION_MESSAGE("rd_linkedauthorization"),
 
     /**
      * Active Tenant Messages and redirects
      */
     NO_ACTIVE_TENANT_MESSAGE("rd_no_active_tenant"),
     ACTIVE_TENANT_CHANGED_TO_NULL_VALUE("rd_active_tenant_changed_value_to_null"),
-    ACTIVE_TENANT_CHANGED_VALUE("rd_active_tenant_changed_value");
+    ACTIVE_TENANT_CHANGED_VALUE("rd_active_tenant_changed_value"),
 
+    /**
+     * Permission Messages and redirects
+     */
+    PERMISSION_NOT_FOUND_MESSAGE("rd_permission_not_found"),
+
+    /**
+     * Role Messages and redirects
+     */
+    ROLE_NOT_FOUND_MESSAGE("rd_role_not_found"),
+
+    /**
+     * Tenant Messages and redirects
+     */
+    TENANT_NOT_FOUND_MESSAGE("rd_tenant_not_found"),
+
+    /**
+     * User Messages and redirects
+     */
+    USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
+
+    /**
+     * Linked Authorization Messages and redirects
+     */
+    LINKED_AUTHORIZATION_PATH("linkedauthorization");
 
     private String value;
 

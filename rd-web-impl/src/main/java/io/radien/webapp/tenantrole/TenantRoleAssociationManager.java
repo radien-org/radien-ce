@@ -305,13 +305,13 @@ public class TenantRoleAssociationManager extends AbstractManager {
     }
 
     /**
-     * Auxiliary method to search a role by its name and add it into a collection
+     * Auxiliary method to search a role (by its name) and add it into a collection
      * @param roleBag collection to store the retrieve role
      * @param roleName parameter to guide the search process
      * @throws Exception thrown to describe any issue with role rest client
      */
     private void addRoleByName(List<SystemRole> roleBag, String roleName) throws Exception {
-        Optional<SystemRole> o = roleRESTServiceAccess.getRoleByName(SystemRolesEnum.GUEST.getRoleName());
+        Optional<SystemRole> o = roleRESTServiceAccess.getRoleByName(roleName);
         if (o.isPresent()) {
             roleBag.add(o.get());
         }

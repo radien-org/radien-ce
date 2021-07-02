@@ -113,17 +113,17 @@ public class LinkedAuthorizationManager extends AbstractManager {
         return filter;
     }
 
-    public List<? extends SystemTenant> filterTenantsByName(String name) throws Exception{
+    public List<? extends SystemTenant> filterTenantsByName(String name) throws SystemException{
         return this.tenantRESTServiceAccess.getAll(prepareFilterParam(name),
                 1, 10, null, false).getResults();
     }
 
-    public List<? extends SystemPermission> filterPermissionsByName(String name) throws Exception{
+    public List<? extends SystemPermission> filterPermissionsByName(String name) throws SystemException{
         return this.permissionRESTServiceAccess.getAll(prepareFilterParam(name),
                 1, 10, null, false).getResults();
     }
 
-    public List<? extends SystemRole> filterRolesByName(String name) throws Exception{
+    public List<? extends SystemRole> filterRolesByName(String name) throws SystemException{
         return this.roleRESTServiceAccess.getAll(prepareFilterParam(name),
                 1, 10, null, false).getResults();
     }
