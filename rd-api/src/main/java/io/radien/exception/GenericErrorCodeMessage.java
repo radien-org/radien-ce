@@ -30,6 +30,10 @@ public enum GenericErrorCodeMessage {
 
     DUPLICATED_FIELD("G2", "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
 
+    ERROR_SAVING_ENTITY("G3", "error.saving.entity", "Error saving entity: %s"),
+
+    ERROR_DELETING_ENTITY("G3", "error.deleting.entity", "Error deleting entity: %s"),
+
     /**
      * Tenant Business Error Code Messages
      */

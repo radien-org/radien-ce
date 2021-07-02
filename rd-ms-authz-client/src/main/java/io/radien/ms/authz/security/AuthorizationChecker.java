@@ -19,6 +19,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
@@ -118,8 +119,7 @@ public abstract class AuthorizationChecker implements Serializable {
                 }
                 return false;
         } catch (Exception e) {
-            this.log.error("Error checking authorization", e);
-            throw new SystemException(e);
+            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
 
@@ -164,8 +164,7 @@ public abstract class AuthorizationChecker implements Serializable {
            return false;
         }
         catch (Exception e) {
-            this.log.error("Error checking authorization", e);
-            throw new SystemException(e);
+            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
 
@@ -229,8 +228,7 @@ public abstract class AuthorizationChecker implements Serializable {
             throw new SystemException("Could Not find User id for sub=" + sub);
         }
         catch(Exception e) {
-            log.error("Error trying to obtain user id", e);
-            throw new SystemException("Error trying to obtain user id", e);
+            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
 

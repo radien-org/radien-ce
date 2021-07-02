@@ -16,6 +16,7 @@
 
 package io.radien.webapp;
 
+import io.radien.exception.SystemException;
 import java.io.Serializable;
 
 import javax.faces.context.ExternalContext;
@@ -71,7 +72,7 @@ public interface SessionHandler extends Serializable {
      * @return the system user requesting session
      * @throws UserNotFoundException in case of user was not beeing able to be found or does not exist
      */
-    SystemUser getUser(HttpServletRequest request, HttpServletResponse response) throws UserNotFoundException;
+    SystemUser getUser(HttpServletRequest request, HttpServletResponse response) throws UserNotFoundException, SystemException;
 
     /**
      * Registration of the system user

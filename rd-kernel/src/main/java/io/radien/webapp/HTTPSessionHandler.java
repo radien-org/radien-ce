@@ -15,6 +15,8 @@
  */
 package io.radien.webapp;
 
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.SystemException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
@@ -114,7 +116,7 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 	 * @throws UserNotFoundException in case of user was not beeing able to be found or does not exist
 	 */
 	@Override
-	public SystemUser getUser(HttpServletRequest request, HttpServletResponse response) throws UserNotFoundException {
+	public SystemUser getUser(HttpServletRequest request, HttpServletResponse response) throws UserNotFoundException, SystemException {
 		try {
 			HttpSession session = getSession(false, request, response);
 			if (session != null) {
@@ -124,11 +126,9 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 			}
 
 		} catch (UserNotFoundException e) {
-			log.info("user not found in session",e);
-			throw e;
+			throw new UserNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
 		}catch (Exception e) {
-			log.info(e.getMessage(),e);
-			throw e;
+			throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString(e.getMessage()));
 		}
 	}
 
