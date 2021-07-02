@@ -59,7 +59,9 @@ public class TenantRoleBusinessService implements Serializable {
     @Inject
     private TenantRolePermissionServiceAccess tenantRolePermissionService;
 
+    @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
+    @Inject
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Inject
