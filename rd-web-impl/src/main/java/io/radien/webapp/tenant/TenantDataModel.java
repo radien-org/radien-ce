@@ -126,7 +126,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Automatically fill the parent id and client id if necessary
      * @param systemTenantToSave system tenant to be updated
      */
-    private void fillParentClientId(SystemTenant systemTenantToSave) {
+    private void fillParentClientId(SystemTenant systemTenantToSave) throws SystemException {
         if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT)) {
             retrieveParentTenantId(systemTenantToSave);
         } else if(systemTenantToSave.getTenantType().equals(TenantType.SUB_TENANT)) {
@@ -139,7 +139,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * By a given tenant will calculate the previous one the given belongs to (parent tenant)
      * @param systemTenantToSave to be verified
      */
-    private void retrieveParentTenantId(SystemTenant systemTenantToSave) {
+    private void retrieveParentTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
             List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
                             userSession.getUserId(), null, null, true);
@@ -151,6 +151,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         } catch (SystemException e) {
             handleError(e, JSFUtil.getMessage(DataModelEnumValues.TENANT_SAVE_ERROR_MESSAGE.request()),
                     JSFUtil.getMessage(DataModelEnumValues.TENANT_RD_TENANT.request()));
+            throw e;
         }
     }
 
@@ -158,7 +159,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * By a given tenant will calculate the previous client one the given belongs to (client tenant)
      * @param systemTenantToSave to be verified
      */
-    private void retrieveClientTenantId(SystemTenant systemTenantToSave) {
+    private void retrieveClientTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
             List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
                     userSession.getUserId(), null, null, true);
@@ -170,6 +171,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         } catch (SystemException e) {
             handleError(e, JSFUtil.getMessage(DataModelEnumValues.TENANT_SAVE_ERROR_MESSAGE.request()),
                     JSFUtil.getMessage(DataModelEnumValues.TENANT_RD_TENANT.request()));
+            throw e;
         }
     }
 
@@ -206,20 +208,14 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @return the correct page to where the user should be redirected
      */
     public String editRecords() {
-        try {
-            if (selectedTenant != null) {
-                return DataModelEnumValues.TENANT_DETAIL_PAGE.request();
-            } else {
-                handleMessage(FacesMessage.SEVERITY_WARN,
-                        JSFUtil.getMessage(DataModelEnumValues.TENANT_SELECT_RECORD_FIRST.request()),
-                        JSFUtil.getMessage(DataModelEnumValues.TENANT_RD_TENANT.request()));
-            }
-            return DataModelEnumValues.TENANT_MAIN_PAGE.request();
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnumValues.TENANT_GENERIC_ERROR_MESSAGE.request()),
-                    JSFUtil.getMessage(DataModelEnumValues.TENANT_RD_TENANT.request()));
+        if (selectedTenant != null) {
             return DataModelEnumValues.TENANT_DETAIL_PAGE.request();
+        } else {
+            handleMessage(FacesMessage.SEVERITY_WARN,
+                    JSFUtil.getMessage(DataModelEnumValues.TENANT_SELECT_RECORD_FIRST.request()),
+                    JSFUtil.getMessage(DataModelEnumValues.TENANT_RD_TENANT.request()));
         }
+        return DataModelEnumValues.TENANT_MAIN_PAGE.request();
     }
 
     /**

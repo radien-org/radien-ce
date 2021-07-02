@@ -51,15 +51,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.nullable;
-import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.*;
 
 /**
  * Active Tenant Data Model Manager Test
@@ -336,7 +328,23 @@ public class TenantDataModelTest {
         doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
 
         assertEquals(DataModelEnumValues.TENANT_MAIN_PAGE.request(), tenantDataModel.save(clientTenant));
+    }
 
+    @Test
+    public void testSaveSubTenantException() throws SystemException {
+        Tenant clientTenant = new Tenant();
+        clientTenant.setName("name");
+        clientTenant.setTenantKey("key");
+        clientTenant.setTenantType(TenantType.SUB_TENANT);
+
+        ActiveTenant activeTenant = new ActiveTenant();
+        activeTenant.setIsTenantActive(true);
+        activeTenant.setTenantId(2L);
+
+        doThrow(new SystemException()).when(activeTenantRESTServiceAccess).
+                getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+
+        assertEquals(DataModelEnumValues.TENANT_CREATION_PAGE.request(), tenantDataModel.save(clientTenant));
     }
 
     @Test
@@ -395,6 +403,34 @@ public class TenantDataModelTest {
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
         assertEquals(DataModelEnumValues.TENANT_DELETE_SUCCESS.request(), captured.getSummary());
+    }
+
+    @Test
+    public void testDeleteTenantHierarchyException() throws SystemException {
+        Tenant clientTenant = new Tenant();
+        clientTenant.setName("name");
+        clientTenant.setTenantKey("key");
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setClientCity("city");
+        clientTenant.setClientAddress("address");
+        clientTenant.setClientCountry("country");
+        clientTenant.setClientEmail("email");
+        clientTenant.setClientPhoneNumber(123L);
+        clientTenant.setClientZipCode("zipCode");
+        clientTenant.setId(2L);
+
+        tenantDataModel.setSelectedTenant(clientTenant);
+
+        doThrow(new SystemException()).when(service).deleteTenantHierarchy(anyLong());
+
+        tenantDataModel.deleteTenantHierarchy();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals(DataModelEnumValues.TENANT_DELETE_ERROR.request(), captured.getSummary());
     }
 
     @Test
