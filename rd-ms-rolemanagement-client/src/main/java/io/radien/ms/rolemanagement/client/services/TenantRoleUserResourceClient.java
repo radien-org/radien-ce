@@ -16,13 +16,16 @@
 package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
-import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Tenant Role User REST requests and services

@@ -21,7 +21,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
@@ -31,7 +30,6 @@ import io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRoleModelMapper;
-import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
@@ -48,7 +46,6 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
-import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
 
 /**
  * Tenant Role REST Service Client
