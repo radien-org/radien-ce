@@ -28,8 +28,7 @@ import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.LinkedAuthorizationModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
-import org.junit.Before;
-import org.junit.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,11 +45,12 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -397,19 +397,23 @@ public class LinkedAuthorizationRESTServiceClientTest {
     /**
      * Test for method dissociateTenantUser(Long tenant, Long user)
      * Expected outcome: Success. Communication with endpoint performing well. Receive the expected response
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
      */
     @Test
-    public void dissociateTenantUser()  {
+    public void dissociateTenantUser() throws MalformedURLException, SystemException {
         LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorizationResourceClient.deleteAssociations(1L, 1L)).thenReturn(Response.ok().build());
-        assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
-                getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient));
-        assertTrue(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L)));
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(
+                getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        assertTrue(target.deleteAssociations(1L, 1L));
     }
 
     /**
      * Test for method dissociateTenantUser(Long tenant, Long user)
      * Expected outcome: Fail. Communication fail due MalformedURLException
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
      */
     @Test(expected = SystemException.class)
     public void testDissociateTenantUserMalformedException() throws SystemException, MalformedURLException {
@@ -421,21 +425,25 @@ public class LinkedAuthorizationRESTServiceClientTest {
     /**
      * Test for method dissociateTenantUser(Long tenant, Long user)
      * Expected outcome: Fail due response server error
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
      */
     @Test
-    public void testDissociateTenantUserFail() {
+    public void testDissociateTenantUserFail() throws MalformedURLException, SystemException {
         LinkedAuthorizationResourceClient linkedAuthorization = Mockito.mock(LinkedAuthorizationResourceClient.class);
         when(linkedAuthorization.deleteAssociations(1L, 1L)).thenReturn(
                 Response.serverError().entity("test error msg").build());
-        assertDoesNotThrow(() -> when(linkedAuthorizationServiceUtil.
+        when(linkedAuthorizationServiceUtil.
                 getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).
-                thenReturn(linkedAuthorization));
-        assertFalse(assertDoesNotThrow(() -> target.deleteAssociations(1L, 1L)));
+                thenReturn(linkedAuthorization);
+        assertFalse(target.deleteAssociations(1L, 1L));
     }
 
     /**
      * Test for method dissociateTenantUser(Long tenant, Long user)
      * Expected outcome: Fail due Processing exception
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
      */
     @Test(expected = SystemException.class)
     public void testDissociateTenantUserProcessingException() throws SystemException, MalformedURLException {

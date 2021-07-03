@@ -64,7 +64,10 @@ public class TenantRoleBusinessService implements Serializable {
     @Inject
     private TenantRolePermissionServiceAccess tenantRolePermissionService;
 
+    @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
+
+    @Inject
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Inject
@@ -184,18 +187,6 @@ public class TenantRoleBusinessService implements Serializable {
             opt.ifPresent(list::add);
         }
         return list;
-    }
-
-    /**
-     * Retrieves TenantRole User associations using pagination approach
-     * @param tenantRoleId tenant role id
-     * @param pageNumber page number
-     * @param pageSize page size
-     * @return Page containing TenantRoleUser associations (Chunk/Portion compatible
-     * with parameter Page number and Page size)
-     */
-    public Page<SystemTenantRoleUser> getUsers(Long tenantRoleId, int pageNumber, int pageSize) {
-        return this.tenantRoleUserServiceAccess.getAll(tenantRoleId, pageNumber, pageSize);
     }
 
     /**

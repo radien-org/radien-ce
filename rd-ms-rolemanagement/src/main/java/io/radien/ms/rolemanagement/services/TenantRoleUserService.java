@@ -78,7 +78,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         criteriaQuery.select(tenantRoleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
-        if (tenantRole != null && tenantRole.longValue() > 0) {
+        if (tenantRole != null) {
             global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRole));
             criteriaQuery.where(global);
         }

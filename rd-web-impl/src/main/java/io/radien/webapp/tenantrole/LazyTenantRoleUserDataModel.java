@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -45,7 +46,7 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
 
     private static final long serialVersionUID = 7026624480203201435L;
 
-    private final transient TenantRoleRESTServiceAccess service;
+    private final transient TenantRoleUserRESTServiceAccess service;
     private final transient UserRESTServiceAccess userService;
     private final Map<Long, SystemUser> userMapRef;
 
@@ -56,14 +57,14 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
     /**
      * The idea for this constructor is to allow fetching TenantRoleUser relations
      * existent for a tenantRole id
-     * @param tenantRoleRESTServiceAccess TenantRoleRESTServiceAccess rest client to perform the role of a
+     * @param tenantRoleUserRESTServiceAccess TenantRoleUserRESTServiceAccess rest client to perform the role of a
      *                DataService, providing (or retrieving) data to assembly the datasource
      * @param userRESTServiceAccess auxiliary service that must be use to retrieve information
      *                              regarding the user contained in the TenantRoleUser collection
      */
-    public LazyTenantRoleUserDataModel(TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess,
+    public LazyTenantRoleUserDataModel(TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess,
                                        UserRESTServiceAccess userRESTServiceAccess) {
-        this.service = tenantRoleRESTServiceAccess;
+        this.service = tenantRoleUserRESTServiceAccess;
         this.userService = userRESTServiceAccess;
         this.userMapRef = new HashMap<>();
     }

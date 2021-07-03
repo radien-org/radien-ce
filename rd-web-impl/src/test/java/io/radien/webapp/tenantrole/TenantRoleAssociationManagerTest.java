@@ -33,12 +33,16 @@ import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.mockito.ArgumentCaptor;
 
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -174,7 +178,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_save_success", captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
     }
 
@@ -198,7 +202,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_save_error", captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_ERROR_MESSAGE.getValue(), captured.getSummary());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
     }
 
@@ -443,7 +447,7 @@ public class TenantRoleAssociationManagerTest {
      * @Exception still thrown by role rest client
      */
     @Test
-    public void testEditTenantRole() throws SystemException, Exception {
+    public void testEditTenantRole() throws Exception {
         SystemTenantRole tenantRoleToBeEdited = new TenantRole();
         tenantRoleToBeEdited.setTenantId(1L);
         tenantRoleToBeEdited.setRoleId(2L);
@@ -505,7 +509,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_edit_error", captured.getSummary());
+        assertEquals(DataModelEnum.EDIT_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
     /**
@@ -543,7 +547,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_edit_error", captured.getSummary());
+        assertEquals(DataModelEnum.EDIT_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
     /**
@@ -593,7 +597,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_retrieve_error", captured.getSummary());
+        assertEquals(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue(), captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
     }
 
@@ -628,7 +632,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_success",
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_SUCCESS_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
     }
@@ -658,9 +662,9 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_error",
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
-        assertEquals("rd_tenant_role_permission_association_no_permission_select", captured.getDetail());
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue(), captured.getDetail());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
     }
 
@@ -694,7 +698,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_error",
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
         assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
@@ -727,7 +731,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_dissociation_success",
+        assertEquals(DataModelEnum.TRP_DISSOCIATION_SUCCESS_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
     }
@@ -757,9 +761,10 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_dissociation_error",
+        assertEquals(DataModelEnum.TRP_DISSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
-        assertEquals("rd_tenant_role_permission_dissociation_no_permission_select", captured.getDetail());
+        assertEquals(DataModelEnum.TRP_DISSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue(),
+                captured.getDetail());
         assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
     }
 
@@ -793,7 +798,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_dissociation_error",
+        assertEquals(DataModelEnum.TRP_DISSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
         assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
@@ -873,7 +878,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_tenant_role_user_association_success",
+        assertEquals(DataModelEnum.TRU_ASSOCIATION_SUCCESS_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
     }
@@ -903,9 +908,10 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_user_association_error",
+        assertEquals(DataModelEnum.TRU_ASSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
-        assertEquals("rd_tenant_role_user_association_no_user_select", captured.getDetail());
+        assertEquals(DataModelEnum.TRU_ASSOCIATION_NO_USER_SELECT_MESSAGE.getValue(),
+                captured.getDetail());
         assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
     }
 
@@ -939,7 +945,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_user_association_error",
+        assertEquals(DataModelEnum.TRU_ASSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
     }
@@ -974,7 +980,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_tenant_role_user_dissociation_success",
+        assertEquals(DataModelEnum.TRU_DISSOCIATION_SUCCESS_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
     }
@@ -1003,9 +1009,10 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_user_dissociation_error",
+        assertEquals(DataModelEnum.TRU_DISSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
-        assertEquals("rd_tenant_role_user_dissociation_no_user_select", captured.getDetail());
+        assertEquals(DataModelEnum.TRU_DISSOCIATION_NO_USER_SELECT_MESSAGE.getValue(),
+                captured.getDetail());
         assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
     }
 
@@ -1042,7 +1049,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_user_dissociation_error",
+        assertEquals(DataModelEnum.TRU_DISSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
         assertEquals(2L, tenantRoleAssociationManager.getTabIndex().longValue());
@@ -1147,7 +1154,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_retrieve_error", captured.getSummary());
+        assertEquals(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
     /**

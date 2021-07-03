@@ -984,25 +984,4 @@ public class TenantRoleBusinessServiceTest {
         tenantRoleBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         assertEquals(permissionRESTServiceAccess, tenantRoleBusinessService.getPermissionRESTServiceAccess());
     }
-
-    /**
-     * Test for method TenantRoleBusinessService.getUsers(tenantRoleId, pageNumber, pageSize)
-     */
-    @Test
-    @Order(31)
-    public void getUsers() {
-        // Retrieving all User associations
-        Page<SystemTenantRoleUser> page = tenantRoleBusinessService.getUsers(null,
-                1, 10);
-        assertNotNull(page);
-        assertFalse(page.getResults().isEmpty());
-        assertTrue(page.getTotalResults() > 0);
-
-        // Try to retrieve for a non existent TenantRole association
-        page = tenantRoleBusinessService.getUsers(111111L, 1, 10);
-
-        assertNotNull(page);
-        assertTrue(page.getResults().isEmpty());
-        assertEquals(0, page.getTotalResults());
-    }
 }

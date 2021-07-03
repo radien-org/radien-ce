@@ -26,6 +26,7 @@ import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
@@ -36,6 +37,7 @@ import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +50,8 @@ import javax.inject.Inject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.radien.webapp.DataModelEnum.*;
 
 /**
  * JSF manager bean that will handle all associations regarding TenantRole domain
@@ -62,6 +66,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+
+    @Inject
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     @Inject
     private RoleRESTServiceAccess roleRESTServiceAccess;
@@ -91,9 +98,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     private Long tabIndex = 0L;
 
-    public static final String K_TENANT_ROLE_SCREEN = "tenantrole";
-    public static final String K_MSG_KEY_RETRIEVE_ERROR = "rd_retrieve_error";
-    public static final String K_MSG_KEY_ROLES = "rd_roles";
+    public static final String K_TENANT_ROLE_SCREEN = DataModelEnum.TR_PATH.getValue();
+    public static final String K_MSG_KEY_RETRIEVE_ERROR = DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue();
+    public static final String K_MSG_KEY_ROLES = DataModelEnum.ROLES_MESSAGE.getValue();
 
     /**
      * This method is effectively invoke to create Tenant role association
@@ -108,12 +115,12 @@ public class TenantRoleAssociationManager extends AbstractManager {
                 tenantRoleAssociationCreated = true;
             }
             this.prepareUserDataTable();
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
-                    JSFUtil.getMessage("tenant_role_association"));
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(SAVE_SUCCESS_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_save_error"),
-                    JSFUtil.getMessage("tenant_role_association"));
+            handleError(e, JSFUtil.getMessage(SAVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
         return K_TENANT_ROLE_SCREEN;
     }
@@ -153,17 +160,17 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             this.role = this.roleRESTServiceAccess.getRoleById(this.tenantRole.getRoleId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_role_not_found"), this.tenantRole.getRoleId())));
+                            ROLE_NOT_FOUND_MESSAGE.getValue()), this.tenantRole.getRoleId())));
 
             this.tenant = this.tenantRESTServiceAccess.getTenantById(this.tenantRole.getTenantId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_tenant_not_found"), this.tenantRole.getTenantId())));
+                            TENANT_NOT_FOUND_MESSAGE.getValue()), this.tenantRole.getTenantId())));
             this.calculatePermissions();
             this.prepareUserDataTable();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"),
-                    JSFUtil.getMessage("rd_tenant_role_association"));
+            handleError(e, JSFUtil.getMessage(EDIT_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
         return K_TENANT_ROLE_SCREEN;
     }
@@ -189,7 +196,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return assignedPermissions;
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
-                    JSFUtil.getMessage("rd_permissions"));
+                    JSFUtil.getMessage(PERMISSIONS_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -210,7 +217,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
-                    JSFUtil.getMessage("tenant_role_association_id"));
+                    JSFUtil.getMessage(TR_ASSOCIATION_ID.getValue()));
             return null;
         }
     }
@@ -220,7 +227,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      */
     public void prepareUserDataTable() {
         if (this.lazyModel == null) {
-            this.lazyModel = new LazyTenantRoleUserDataModel(tenantRoleRESTServiceAccess,
+            this.lazyModel = new LazyTenantRoleUserDataModel(tenantRoleUserRESTServiceAccess,
                     userRESTServiceAccess);
         }
         this.lazyModel.setTenantRoleId(getTenantRoleId());
@@ -235,14 +242,14 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             if (permission == null || permission.getId() == null) {
                 throw new IllegalArgumentException(JSFUtil.
-                        getMessage("rd_tenant_role_permission_association_no_permission_select"));
+                        getMessage(TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue()));
             }
             this.tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), permission.getId());
             this.calculatePermissions();
             handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_role_permission_association_success"));
+                    JSFUtil.getMessage(TRP_ASSOCIATION_SUCCESS_MESSAGE.getValue()));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_association_error"));
+            handleError(e, JSFUtil.getMessage(TRP_ASSOCIATION_ERROR_MESSAGE.getValue()));
         }
         return K_TENANT_ROLE_SCREEN;
     }
@@ -256,16 +263,16 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             if (selectedPermissionToUnAssign == null || selectedPermissionToUnAssign.getId() == null) {
                 throw new IllegalArgumentException(JSFUtil.
-                        getMessage("rd_tenant_role_permission_dissociation_no_permission_select"));
+                        getMessage(TRP_DISSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue()));
             }
             this.tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(),
                     selectedPermissionToUnAssign.getId());
             this.calculatePermissions();
             handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_role_permission_dissociation_success"));
+                    JSFUtil.getMessage(TRP_DISSOCIATION_SUCCESS_MESSAGE.getValue()));
             this.selectedPermissionToUnAssign = new Permission();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_dissociation_error"));
+            handleError(e, JSFUtil.getMessage(TRP_DISSOCIATION_ERROR_MESSAGE.getValue()));
         }
         return K_TENANT_ROLE_SCREEN;
     }
@@ -301,18 +308,18 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             if (user == null || StringUtils.isBlank(user.getLogon())) {
                 throw new IllegalArgumentException(JSFUtil.
-                        getMessage("rd_tenant_role_user_association_no_user_select"));
+                        getMessage(TRU_ASSOCIATION_NO_USER_SELECT_MESSAGE.getValue()));
             }
             user = userRESTServiceAccess.getUserByLogon(user.getLogon()).orElseThrow
                         (() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                        "rd_user_not_found"), this.user.getLogon())));
+                        USER_NOT_FOUND_MESSAGE.getValue()), this.user.getLogon())));
 
             this.tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId());
             this.prepareUserDataTable();
             handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_role_user_association_success"));
+                    JSFUtil.getMessage(TRU_ASSOCIATION_SUCCESS_MESSAGE.getValue()));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_role_user_association_error"));
+            handleError(e, JSFUtil.getMessage(TRU_ASSOCIATION_ERROR_MESSAGE.getValue()));
         }
         return K_TENANT_ROLE_SCREEN;
     }
@@ -326,17 +333,17 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             if (selectedUserToUnAssign == null || selectedUserToUnAssign.getUserId() == null) {
                 throw new IllegalArgumentException(JSFUtil.
-                        getMessage("rd_tenant_role_user_dissociation_no_user_select"));
+                        getMessage(TRU_DISSOCIATION_NO_USER_SELECT_MESSAGE.getValue()));
             }
             this.tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(),
                     selectedUserToUnAssign.getUserId());
             this.prepareUserDataTable();
             this.selectedUserToUnAssign = new TenantRoleUser();
             handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_role_user_dissociation_success"));
+                    JSFUtil.getMessage(TRU_DISSOCIATION_SUCCESS_MESSAGE.getValue()));
             this.selectedPermissionToUnAssign = new Permission();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_role_user_dissociation_error"));
+            handleError(e, JSFUtil.getMessage(TRU_DISSOCIATION_ERROR_MESSAGE.getValue()));
         }
         return K_TENANT_ROLE_SCREEN;
     }
