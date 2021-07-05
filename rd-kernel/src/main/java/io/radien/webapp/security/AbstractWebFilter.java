@@ -146,7 +146,7 @@ public abstract class AbstractWebFilter implements Filter, Appframeable {
 	 * @return string value of page
 	 */
 	protected String getExtension() {
-		if (Boolean.valueOf(getOAF().getProperty(OAFProperties.SYS_PRETTY_FACES_ENABLED))) {
+		if (Boolean.parseBoolean(getOAF().getProperty(OAFProperties.SYS_PRETTY_FACES_ENABLED))) {
 			return "";
 		}
 		return "." + getOAF().getProperty(OAFProperties.SYS_CFG_JSF_MAPPING);
