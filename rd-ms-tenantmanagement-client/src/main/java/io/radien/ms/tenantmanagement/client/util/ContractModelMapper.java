@@ -35,7 +35,7 @@ import java.util.List;
  * @author Santana
  */
 public class ContractModelMapper {
-    protected final static Logger log = LoggerFactory.getLogger(ContractModelMapper.class);
+    protected static final Logger log = LoggerFactory.getLogger(ContractModelMapper.class);
 
     /**
      * Maps into a Json Object a Contract

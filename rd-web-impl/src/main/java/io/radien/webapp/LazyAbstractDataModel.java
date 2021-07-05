@@ -38,7 +38,7 @@ public abstract class LazyAbstractDataModel<T extends Model> extends LazyDataMod
 
     protected List<? extends T> datasource;
 
-    private transient static final Logger log = LoggerFactory.getLogger(LazyAbstractDataModel.class);
+    private static final transient Logger log = LoggerFactory.getLogger(LazyAbstractDataModel.class);
 
     @Override
     public T getRowData(String rowKey) {

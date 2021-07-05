@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PrivateService {
-	private final static String PRIVATE_SERVICE_RESPONSE_TEXT = "This service available just for authenticated users.\n"
+	private static final String PRIVATE_SERVICE_RESPONSE_TEXT = "This service available just for authenticated users.\n"
 			+ "You signed in as %s";
 
 	public String privateService() {

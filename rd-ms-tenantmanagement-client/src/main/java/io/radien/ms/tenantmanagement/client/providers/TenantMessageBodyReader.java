@@ -40,7 +40,7 @@ import java.text.ParseException;
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class TenantMessageBodyReader implements MessageBodyReader<Tenant> {
-	protected final static Logger log = LoggerFactory.getLogger(TenantMessageBodyReader.class);
+	protected static final Logger log = LoggerFactory.getLogger(TenantMessageBodyReader.class);
 
 	/**
 	 * Checks if the given JSON object can be read into a tenant one

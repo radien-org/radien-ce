@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class TenantModelMapper {
 
-    protected final static Logger log = LoggerFactory.getLogger(TenantModelMapper.class);
+    protected static final Logger log = LoggerFactory.getLogger(TenantModelMapper.class);
 
     /**
      * Maps into a Json Object a Tenant

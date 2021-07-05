@@ -33,7 +33,7 @@ import java.util.Date;
  * @author Nuno Santana
  */
 public class FactoryUtilService implements Serializable {
-    private final static String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    private static final String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     private static final long serialVersionUID = -6560813510881461316L;
 
