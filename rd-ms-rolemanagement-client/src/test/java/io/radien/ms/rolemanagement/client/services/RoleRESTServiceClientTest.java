@@ -571,7 +571,7 @@ public class RoleRESTServiceClientTest {
     @Test(expected = SystemException.class)
     public void testDeleteMalformedException() throws MalformedURLException, SystemException {
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
-        assertTrue(target.delete(2L));
+        target.delete(2L);
     }
 
     @Test
