@@ -69,10 +69,9 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
      */
     @Override
     protected SystemUser getInvokerUser() {
-        SystemUser user = PrincipalFactory.create(userSession.getUserFirstName(),
+        return PrincipalFactory.create(userSession.getUserFirstName(),
                 userSession.getUserLastName(), userSession.getPreferredUserName(),
                 userSession.getUserIdSubject(), userSession.getEmail(), null);
-        return user;
     }
 
     /**
