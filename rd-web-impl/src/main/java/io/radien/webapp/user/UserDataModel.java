@@ -15,18 +15,11 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.model.role.SystemRole;
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
-import io.radien.api.service.role.RoleRESTServiceAccess;
-import io.radien.api.service.role.SystemRolesEnum;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.Role;
-import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;

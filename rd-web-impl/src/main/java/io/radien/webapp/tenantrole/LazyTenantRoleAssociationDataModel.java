@@ -22,7 +22,6 @@ import io.radien.exception.SystemException;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * LazyDataModel implemented specifically to attend the exhibition of TenantRole associations

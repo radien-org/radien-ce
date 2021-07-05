@@ -17,10 +17,7 @@ package io.radien.webapp;
 
 import io.radien.api.Model;
 import io.radien.api.entity.Page;
-import io.radien.api.model.role.SystemRole;
-import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.kernel.OAF;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -30,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public abstract class LazyAbstractDataModel<T extends Model> extends LazyDataModel<T> {
 

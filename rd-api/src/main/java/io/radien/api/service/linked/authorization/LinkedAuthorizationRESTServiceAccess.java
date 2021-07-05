@@ -18,8 +18,6 @@ package io.radien.api.service.linked.authorization;
 import io.radien.api.Appframeable;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.exception.SystemException;
-
-import java.net.MalformedURLException;
 import java.util.List;
 
 /**

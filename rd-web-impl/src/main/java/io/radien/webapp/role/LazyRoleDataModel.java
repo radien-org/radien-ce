@@ -21,10 +21,9 @@ import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.webapp.LazyAbstractDataModel;
 import org.primefaces.model.FilterMeta;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @author Bruno Gama
