@@ -40,6 +40,7 @@ import javax.persistence.criteria.Root;
 import io.radien.api.SystemVariables;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
+import io.radien.persistencelib.PredicateMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -353,7 +354,7 @@ public class UserService implements UserServiceAccess{
 		}
 
 		if (filter.getIds() != null && !filter.getIds().isEmpty()) {
-			Predicate in = userRoot.get("id").in(filter.getIds());
+			Predicate in = userRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds());
 			if(filter.isLogicConjunction()) {
 				global = criteriaBuilder.and(global, in);
 			} else {
@@ -361,38 +362,10 @@ public class UserService implements UserServiceAccess{
 			}
 		}
 
-		global = getFieldPredicate(SystemVariables.SUB.getFieldName(), filter.getSub(), filter, criteriaBuilder, userRoot, global);
-		global = getFieldPredicate(SystemVariables.USER_EMAIL.getFieldName(), filter.getEmail(), filter, criteriaBuilder, userRoot, global);
-		global = getFieldPredicate(SystemVariables.LOGON.getFieldName(), filter.getLogon(), filter, criteriaBuilder, userRoot, global);
+		global = PredicateMapper.getFieldPredicate(SystemVariables.SUB.getFieldName(), filter.getSub(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, userRoot, global);
+		global = PredicateMapper.getFieldPredicate(SystemVariables.USER_EMAIL.getFieldName(), filter.getEmail(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, userRoot, global);
+		global = PredicateMapper.getFieldPredicate(SystemVariables.LOGON.getFieldName(), filter.getLogon(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, userRoot, global);
 
-		return global;
-	}
-
-	/**
-	 * Method that will create in the database query where clause each and single search
-	 * @param name of the field to be search in the query
-	 * @param value of the field to be search or compared in the query
-	 * @param filter complete requested filter for further validations
-	 * @param criteriaBuilder database query builder
-	 * @param userRoot database table to search the information
-	 * @param global complete where clause to be merged into the constructed information
-	 * @return a constructed predicate with the fields needed to be search
-	 */
-	private Predicate getFieldPredicate(String name, String value, UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global) {
-		if(value != null) {
-			Predicate subPredicate;
-			if (filter.isExact()) {
-				subPredicate = criteriaBuilder.equal(userRoot.get(name), value);
-			} else {
-				subPredicate = criteriaBuilder.like(userRoot.get(name),"%"+value+"%");
-			}
-
-			if(filter.isLogicConjunction()) {
-				global = criteriaBuilder.and(global, subPredicate);
-			} else {
-				global = criteriaBuilder.or(global, subPredicate);
-			}
-		}
 		return global;
 	}
 

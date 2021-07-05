@@ -23,6 +23,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
+import io.radien.persistencelib.PredicateMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,44 +104,11 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate(SystemVariables.TENANT_ROLE_ID.getFieldName(), filter.getTenantRoleId(), filter, criteriaBuilder,
+        global = PredicateMapper.getFieldPredicate(SystemVariables.TENANT_ROLE_ID.getFieldName(), filter.getTenantRoleId(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder,
                 tenantRolePermissionRoot, global);
-        global = getFieldPredicate(SystemVariables.PERMISSION_ID.getFieldName(), filter.getPermissionId(), filter, criteriaBuilder,
+        global = PredicateMapper.getFieldPredicate(SystemVariables.PERMISSION_ID.getFieldName(), filter.getPermissionId(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder,
                 tenantRolePermissionRoot, global);
 
-        return global;
-    }
-
-    /**
-     * Puts the requested fields into a predicate line
-     * @param name of the field
-     * @param value of the field
-     * @param filter complete filter
-     * @param criteriaBuilder to be used
-     * @param tenantRolePermissionRoot table to be used
-     * @param global predicate to be added
-     * @return a constructed predicate
-     */
-    private Predicate getFieldPredicate(String name, Object value,
-                                        TenantRolePermissionSearchFilter filter,
-                                        CriteriaBuilder criteriaBuilder,
-                                        Root<TenantRolePermission> tenantRolePermissionRoot,
-                                        Predicate global) {
-        if(value != null) {
-            Predicate subPredicate;
-            if (value instanceof String && !filter.isExact()) {
-                subPredicate = criteriaBuilder.like(tenantRolePermissionRoot.get(name),"%"+value+"%");
-            }
-            else {
-                subPredicate = criteriaBuilder.equal(tenantRolePermissionRoot.get(name), value);
-            }
-
-            if(filter.isLogicConjunction()) {
-                global = criteriaBuilder.and(global, subPredicate);
-            } else {
-                global = criteriaBuilder.or(global, subPredicate);
-            }
-        }
         return global;
     }
 

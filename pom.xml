@@ -12,6 +12,7 @@
 	<modules>
 		<module>rd-api</module>
 		<module>rd-persistence</module>
+		<module>rd-persistence-lib</module>
 		<module>rd-openid</module>
 		<module>rd-kernel</module>
 		<module>rd-web-api</module>
@@ -150,6 +151,11 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-persistence</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-persistence-lib</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
