@@ -34,9 +34,6 @@ import io.radien.api.Model;
  */
 public class EntityManagerUtil {
 	private static final Logger log = LoggerFactory.getLogger(EntityManagerUtil.class);
-	private static final String ENTITY_SAVED = "An entity of class {} was persisted in the DB";
-	private static final String ENTITY_LIST_SAVED = "A List of entities of class {} was persisted in the DB";
-	public static final String ENTITY_DELETED = "An entity of class {} was deleted from the DB";
 
 	/**
 	 * Persists a {@link Model} implementation in the target database
@@ -57,7 +54,7 @@ public class EntityManagerUtil {
 			em.persist(entity);
 			if(!hadPreviousTransaction) {
 				transaction.commit();
-				log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
+				log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
 			}
 		} catch (Exception e) {
 			transaction.rollback();
@@ -113,9 +110,9 @@ public class EntityManagerUtil {
 				transaction.commit();
 			}
 			if(entities.size()>1) {
-				log.info(ENTITY_LIST_SAVED, entities.get(0).getClass().getSimpleName());
+				log.info(GenericErrorCodeMessage.LIST_ENTITY_SAVED.toString(), entities.get(0).getClass().getSimpleName());
 			}else if(entities.size() == 1){
-				log.info(ENTITY_SAVED, entities.get(0).getClass().getSimpleName());
+				log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entities.get(0).getClass().getSimpleName());
 			}
 		} catch (Exception e) {
 			if (transaction.isActive()) {
@@ -135,7 +132,7 @@ public class EntityManagerUtil {
 				entity = em.merge(entity);
 			}
 			transaction.commit();
-			log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
+			log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
 			return (T) entity;
 		} catch (Exception e) {
 			if (transaction.isActive()) {
@@ -179,7 +176,7 @@ public class EntityManagerUtil {
 			log.error(GenericErrorCodeMessage.ERROR_DELETING_ENTITY.toString(e.getMessage()), e);
 		}
 		assert entity != null;
-		log.info(ENTITY_DELETED, entity.getClass().getSimpleName());
+		log.info(GenericErrorCodeMessage.INFO_ENTITY_DELETED.toString(), entity.getClass().getSimpleName());
 	}
 
 	/**

@@ -42,6 +42,12 @@ public enum GenericErrorCodeMessage {
 
     INFO_CORS_FILTER("G8", "cors.filter.method", "Cors filter method: %s"),
 
+    INFO_ENTITY_SAVED("G9", "info.entity.saved", "An entity of class {0} was persisted in the DB"),
+
+    LIST_ENTITY_SAVED("G10", "list.entity.saved", "A List of entities of class {0} was persisted in the DB"),
+
+    INFO_ENTITY_DELETED("G11", "info.entity.deleted", "An entity of class {0} was deleted in the DB"),
+
     /**
      * Tenant Business Error Code Messages
      */
