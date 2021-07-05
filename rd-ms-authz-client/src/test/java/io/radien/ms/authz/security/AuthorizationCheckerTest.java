@@ -219,10 +219,8 @@ public class AuthorizationCheckerTest {
             fail("unexpected failure");
         }
 
-        SystemException se = assertThrows(SystemException.class,
+        TokenExpiredException se = assertThrows(TokenExpiredException.class,
                 () -> authorizationChecker.hasGrant(tenantId, roleName));
-
-        assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
     }
 
     @Test
@@ -333,8 +331,7 @@ public class AuthorizationCheckerTest {
                 thenThrow(NotFoundException.class).
                 thenThrow(RuntimeException.class);
 
-        assertThrows(SystemException.class, () -> authorizationChecker.hasGrant(tenantId, roleName));
-        assertThrows(SystemException.class, () -> authorizationChecker.hasGrant(tenantId, roleName));
+        assertThrows(NotFoundException.class, () -> authorizationChecker.hasGrant(tenantId, roleName));
     }
 
     @Test
@@ -370,10 +367,9 @@ public class AuthorizationCheckerTest {
 
         assertEquals(userId, authorizationChecker.getCurrentUserIdBySub(principal.getSub()));
 
-        SystemException se = assertThrows(SystemException.class,
+        TokenExpiredException se = assertThrows(TokenExpiredException.class,
                 () -> authorizationChecker.getCurrentUserIdBySub(principal.getSub()));
 
-        assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
     }
 
     @Test
@@ -473,7 +469,7 @@ public class AuthorizationCheckerTest {
                 thenThrow(RuntimeException.class);
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
-        assertThrows(SystemException.class, () -> authorizationChecker.hasGrant(permissionId, tenantId));
+        assertThrows(RuntimeException.class, () -> authorizationChecker.hasGrant(permissionId, tenantId));
     }
 
     @Test
