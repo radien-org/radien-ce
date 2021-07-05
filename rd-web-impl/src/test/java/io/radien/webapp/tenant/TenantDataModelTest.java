@@ -25,7 +25,7 @@ import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
-import io.radien.webapp.DataModelEnumValues;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.security.UserSession;
@@ -150,7 +150,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnumValues.TENANT_SAVE_SUCCESS.request(), captured.getSummary());
+        assertEquals(DataModelEnum.TENANT_SAVE_SUCCESS.getValue(), captured.getSummary());
     }
 
     @Test
@@ -164,7 +164,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnumValues.TENANT_SAVE_SUCCESS.request(), captured.getSummary());
+        assertEquals(DataModelEnum.TENANT_SAVE_SUCCESS.getValue(), captured.getSummary());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnumValues.TENANT_SAVE_ERROR_MESSAGE.request(), captured.getSummary());
+        assertEquals(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
     @Test
@@ -207,7 +207,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnumValues.TENANT_SAVE_SUCCESS.request(), captured.getSummary());
+        assertEquals(DataModelEnum.TENANT_SAVE_SUCCESS.getValue(), captured.getSummary());
     }
 
     @Test
@@ -249,7 +249,7 @@ public class TenantDataModelTest {
         activeTenants.add(activeTenant);
         doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
 
-        assertEquals(DataModelEnumValues.TENANT_CREATION_PAGE.request(), tenantDataModel.save(clientTenant));
+        assertEquals(DataModelEnum.TENANT_CREATION_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
 
     @Test
@@ -327,7 +327,7 @@ public class TenantDataModelTest {
         activeTenants.add(activeTenant);
         doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
 
-        assertEquals(DataModelEnumValues.TENANT_MAIN_PAGE.request(), tenantDataModel.save(clientTenant));
+        assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
 
     @Test
@@ -344,7 +344,7 @@ public class TenantDataModelTest {
         doThrow(new SystemException()).when(activeTenantRESTServiceAccess).
                 getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
 
-        assertEquals(DataModelEnumValues.TENANT_CREATION_PAGE.request(), tenantDataModel.save(clientTenant));
+        assertEquals(DataModelEnum.TENANT_CREATION_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
 
     @Test
@@ -362,19 +362,19 @@ public class TenantDataModelTest {
         activeTenants.add(activeTenant);
         doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
 
-        assertEquals(DataModelEnumValues.TENANT_MAIN_PAGE.request(), tenantDataModel.save(clientTenant));
+        assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
 
 
     @Test
     public void testEditRecordsEmptySelectedRecord() {
-        assertEquals(DataModelEnumValues.TENANT_DETAIL_PAGE.request(), tenantDataModel.editRecords());
+        assertEquals(DataModelEnum.TENANT_DETAIL_PAGE.getValue(), tenantDataModel.editRecords());
     }
 
     @Test
     public void testEditRecords() {
         tenantDataModel.setSelectedTenant(null);
-        assertEquals(DataModelEnumValues.TENANT_MAIN_PAGE.request(), tenantDataModel.editRecords());
+        assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.editRecords());
     }
 
     @Test
@@ -402,7 +402,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnumValues.TENANT_DELETE_SUCCESS.request(), captured.getSummary());
+        assertEquals(DataModelEnum.TENANT_DELETE_SUCCESS.getValue(), captured.getSummary());
     }
 
     @Test
@@ -430,12 +430,12 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnumValues.TENANT_DELETE_ERROR.request(), captured.getSummary());
+        assertEquals(DataModelEnum.TENANT_DELETE_ERROR.getValue(), captured.getSummary());
     }
 
     @Test
     public void testReturnHome() {
-        assertEquals(DataModelEnumValues.TENANT_MAIN_PAGE.request(), tenantDataModel.returnHome());
+        assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.returnHome());
     }
 
     @Test
@@ -454,7 +454,7 @@ public class TenantDataModelTest {
 
         doReturn(true).when(service).update(any());
 
-        assertEquals(DataModelEnumValues.TENANT_MAIN_PAGE.request(), tenantDataModel.edit(clientTenant));
+        assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.edit(clientTenant));
     }
 
     @Test
