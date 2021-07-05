@@ -37,6 +37,7 @@ import static io.radien.webapp.DataModelEnum.USER_MESSAGE;
 import static io.radien.webapp.DataModelEnum.USER_NOT_FOUND_MESSAGE;
 import static io.radien.webapp.DataModelEnum.SAVE_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.SAVE_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.EDIT_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.LINKED_AUTHORIZATION_MESSAGE;
 import static io.radien.webapp.DataModelEnum.LINKED_AUTHORIZATION_PATH;
 import static io.radien.webapp.DataModelEnum.RETRIEVE_ERROR_MESSAGE;
@@ -113,7 +114,7 @@ public class LinkedAuthorizationManager extends AbstractManager {
                             USER_NOT_FOUND_MESSAGE.getValue()), l.getUserId())));
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), 
+            handleError(e, JSFUtil.getMessage(EDIT_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(LINKED_AUTHORIZATION_MESSAGE.getValue()));
         }
         return LINKED_AUTHORIZATION_PATH.getValue();

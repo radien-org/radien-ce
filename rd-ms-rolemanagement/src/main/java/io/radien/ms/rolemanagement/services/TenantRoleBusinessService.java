@@ -243,9 +243,7 @@ public class TenantRoleBusinessService implements Serializable {
     public void assignUser(Long tenant, Long role, Long user) throws TenantRoleException,
             UniquenessConstraintException {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
-                orElseThrow(() -> new TenantRoleException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
-                        tenant.toString(), role.toString())));
+        Long tenantRoleId = getTenantRoleId(tenant, role);
         if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user, tenantRoleId)) {
             throwInformingInconsistencyFound(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
                     toString(tenant.toString(), role.toString()), tenant, role);
@@ -258,6 +256,19 @@ public class TenantRoleBusinessService implements Serializable {
     }
 
     /**
+     * Given a tenant and a role, retrieves the existent id for such association
+     * @param tenant tenant identifier (id)
+     * @param role role identifier (id)
+     * @return the association id (if exists), otherwise throws a exception
+     * @throws TenantRoleException thrown if association does not exists
+     */
+    private Long getTenantRoleId(Long tenant, Long role) throws TenantRoleException{
+        return this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
+                orElseThrow(() -> new TenantRoleException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
+                        tenant.toString(), role.toString())));
+    }
+
+    /**
      * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
      * @param tenant Tenant identifier (Mandatory)
      * @param role Role identifier (Mandatory)
@@ -266,9 +277,7 @@ public class TenantRoleBusinessService implements Serializable {
      */
     public void unassignUser(Long tenant, Long role, Long user) throws TenantRoleException {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
-                orElseThrow(() -> new TenantRoleException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.
-                        toString(tenant.toString(), role.toString())));
+        Long tenantRoleId = getTenantRoleId(tenant, role);
         Long tenantRoleUserId = this.tenantRoleUserServiceAccess.getTenantRoleUserId(tenantRoleId, user).
                 orElseThrow(() -> new TenantRoleException(TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER.
                         toString(user.toString())));
@@ -290,9 +299,7 @@ public class TenantRoleBusinessService implements Serializable {
 
         checkIfMandatoryParametersWereInformed(tenant, role, permission);
         checkIfParamsExists(null, null, permission);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
-                orElseThrow(() -> new TenantRoleException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.
-                        toString(tenant.toString(), role.toString())));
+        Long tenantRoleId = getTenantRoleId(tenant, role);
         if (this.tenantRolePermissionService.isAssociationAlreadyExistent(permission, tenantRoleId)) {
             throw new TenantRoleException(TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE.
                     toString(tenant.toString(), role.toString()));
@@ -313,9 +320,7 @@ public class TenantRoleBusinessService implements Serializable {
      */
     public void unassignPermission(Long tenant, Long role, Long permission) throws TenantRoleException{
         checkIfMandatoryParametersWereInformed(tenant, role, permission);
-        Long tenantRoleId = this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
-                orElseThrow(() -> new TenantRoleException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.
-                        toString(tenant.toString(), role.toString())));
+        Long tenantRoleId = getTenantRoleId(tenant, role);
         Long tenantRolePermissionId = this.tenantRolePermissionService.
                 getTenantRolePermissionId(tenantRoleId, permission).orElseThrow(() -> new TenantRoleException(
                         TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION.toString(permission.toString())));
