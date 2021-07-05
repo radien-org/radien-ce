@@ -35,7 +35,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.*;
+import javax.json.JsonObjectBuilder;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonWriter;
+import javax.json.JsonObject;
+
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -153,6 +158,77 @@ public class LinkedAuthorizationRESTServiceClientTest {
         when(linkedAuthorizationResourceClient.saveAssociation(any())).thenThrow(new ProcessingException(""));
         when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
         target.create(new LinkedAuthorization());
+    }
+
+    /**
+     * Test scenario to delete linked authorization by passing
+     * SystemLinked Authorization object Id
+     * @throws MalformedURLException if incorrect url
+     * @throws SystemException if any error
+     */
+    @Test
+    public void delete() throws MalformedURLException, SystemException {
+        Long linkedAuthorizationId = 1L;
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorizationResourceClient.deleteAssociation(anyLong())).thenReturn(Response.ok().build());
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        assertTrue(target.delete(linkedAuthorizationId));
+    }
+
+    /**
+     * Test scenario to get systemException error while deletion of linked authorization
+     * if method throw MalformedURLException
+     * @throws MalformedURLException if incorrect url
+     * @throws SystemException if any error
+     */
+    @Test(expected = SystemException.class)
+    public void testDeleteMalformedException() throws MalformedURLException, SystemException {
+        Long linkedAuthorizationId = 2L;
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenThrow(new MalformedURLException());
+        target.delete(linkedAuthorizationId);
+    }
+
+    /**
+     * Test scenario to get server exception while deletion of linked authorization
+     * @throws MalformedURLException if incorrect url
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testDeleteFail() throws MalformedURLException, SystemException {
+        Long linkedAuthorizationId = 3L;
+        LinkedAuthorizationResourceClient linkedAuthorization = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorization.deleteAssociation(anyLong())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorization);
+        assertFalse(target.delete(linkedAuthorizationId));
+    }
+
+    /**
+     * Test scenario to get systemException error while deletion of linked authorization
+     * if method throw ProcessingException
+     * @throws SystemException if any error
+     * @throws MalformedURLException if incorrect url
+     */
+    @Test(expected = SystemException.class)
+    public void testDeleteProcessingException() throws SystemException, MalformedURLException {
+        Long linkedAuthorizationId = 4L;
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+        when(linkedAuthorizationResourceClient.deleteAssociation(anyLong())).thenThrow(new ProcessingException(""));
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        target.delete(linkedAuthorizationId);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteTokenExpiration() throws Exception {
+        Long linkedAuthorizationId = 5L;
+        LinkedAuthorizationResourceClient linkedAuthorizationResourceClient = Mockito.mock(LinkedAuthorizationResourceClient.class);
+
+        when(linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getLinkedAuthorizationManagementUrl())).thenReturn(linkedAuthorizationResourceClient);
+        when(linkedAuthorizationResourceClient.deleteAssociation(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+        target.delete(linkedAuthorizationId);
     }
 
     @Test(expected = SystemException.class)

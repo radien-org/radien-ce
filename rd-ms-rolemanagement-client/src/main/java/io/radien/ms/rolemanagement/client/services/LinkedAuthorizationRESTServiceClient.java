@@ -19,6 +19,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -288,6 +289,48 @@ public class LinkedAuthorizationRESTServiceClient extends AuthorizationChecker i
             }
         } catch (ProcessingException | MalformedURLException e) {
             throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Deletes a request to delete given linked authorization, if not possible will refresh the access token and retry
+     * @param linkedAuthorizationId to be deleted
+     * @return true if linked authorization has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean delete(Long linkedAuthorizationId) throws SystemException {
+        try {
+            return deleteRequester(linkedAuthorizationId);
+        } catch (TokenExpiredException tokenExpiredException1) {
+            refreshToken();
+            try{
+                return deleteRequester(linkedAuthorizationId);
+            } catch (TokenExpiredException tokenExpiredException2){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Deletes given linked authorization
+     * @param linkedAuthorizationId to be deleted
+     * @return true if linked authorization has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private boolean deleteRequester(Long linkedAuthorizationId) throws SystemException {
+        LinkedAuthorizationResourceClient client;
+        try {
+            client = linkedAuthorizationServiceUtil.getLinkedAuthorizationResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.deleteAssociation(linkedAuthorizationId);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                String responseMessage = response.readEntity(String.class);
+                log.error(responseMessage);
+                return false;
+            }
+        } catch (ProcessingException | MalformedURLException e) {
+            throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString());
         }
     }
 
