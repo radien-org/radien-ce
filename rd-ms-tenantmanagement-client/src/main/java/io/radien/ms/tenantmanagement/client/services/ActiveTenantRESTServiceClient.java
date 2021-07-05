@@ -328,6 +328,50 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     }
 
     /**
+     * Asks the requester to delete an active tenant taking in consideration
+     * @param tenant tenant id
+     * @param user user id
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public boolean deleteByTenantAndUser(long tenant, long user) throws SystemException {
+        try {
+            return deleteByTenantAndUserRequester(tenant, user);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteByTenantAndUserRequester(tenant, user);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(unableToRecoverExpiredToken);
+            }
+        }
+    }
+
+    /**
+     * Deletes active tenant by informed tenant id and user id
+     * @param tenant tenant identifier
+     * @param user user identifier
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private boolean deleteByTenantAndUserRequester(long tenant, long user) throws SystemException {
+        try {
+            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.delete(tenant, user);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
+            log.error(response.readEntity(String.class));
+            return false;
+        }
+        catch (MalformedURLException | ExtensionException | ProcessingException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Asks the requester update a given active tenant
      * @param activeTenant to be updated
      * @return true if user has been updated with success or false if not

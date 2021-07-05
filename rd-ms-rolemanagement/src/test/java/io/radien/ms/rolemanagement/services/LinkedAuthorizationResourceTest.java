@@ -446,7 +446,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 200
      */
     @Test
-    public void testDissociation() throws LinkedAuthorizationException {
+    public void testDissociation() throws LinkedAuthorizationException, SystemException {
         doReturn(Boolean.TRUE).when(linkedAuthorizationBusinessService).
                 deleteAssociations(anyLong(), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
@@ -459,7 +459,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 400
      */
     @Test
-    public void testDissociationInvalidRequest() throws LinkedAuthorizationException {
+    public void testDissociationInvalidRequest() throws LinkedAuthorizationException, SystemException {
         doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(nullable(Long.class), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(null,1L);
@@ -476,7 +476,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 404
      */
     @Test
-    public void testDissociationAssociationsNotFound() throws LinkedAuthorizationException {
+    public void testDissociationAssociationsNotFound() throws LinkedAuthorizationException, SystemException {
         doReturn(Boolean.FALSE).when(linkedAuthorizationBusinessService).
                 deleteAssociations(anyLong(), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
@@ -488,7 +488,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 500
      */
     @Test
-    public void testDissociateTenantGenericError() throws LinkedAuthorizationException {
+    public void testDissociateTenantGenericError() throws LinkedAuthorizationException, SystemException {
         doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(1L, 1L);
         Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);

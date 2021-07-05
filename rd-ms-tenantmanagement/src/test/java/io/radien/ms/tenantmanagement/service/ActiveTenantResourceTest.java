@@ -173,6 +173,27 @@ public class ActiveTenantResourceTest {
     }
 
     /**
+     * Deletion of the record with success, should return a 200 code message
+     */
+    @Test
+    public void testDeleteByTenantAndUser() {
+        Response response = activeTenantResource.delete(1L,1L);
+        assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Deletion of the record with error, should return a generic 500 error code message
+     */
+    @Test
+    public void testDeleteByTenantAndUserGenericError() {
+        doThrow(new RuntimeException()).when(activeTenantServiceAccess).delete(1L,1L);
+        Response response = activeTenantResource.delete(1L,1L);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
+    }
+
+
+
+    /**
      * Creation with success of a record. Should return a 200 code message
      */
     @Test

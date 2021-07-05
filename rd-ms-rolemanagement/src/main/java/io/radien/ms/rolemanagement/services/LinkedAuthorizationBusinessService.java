@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
@@ -164,14 +165,20 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @param tenantId Tenant identifier
      * @param userId User identifier
      * @throws LinkedAuthorizationException if either tenant id or user id were not informed
+     * @throws SystemException in case of any error during communication with active tenant endpoint
      * @return true in case of success (elements found and deleted), otherwise false
      */
-    public boolean deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException {
+    public boolean deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException, SystemException {
         if (tenantId == null || userId == null) {
             throw new LinkedAuthorizationException(GenericErrorCodeMessage.
                     NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
         }
-        return linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
+
+        boolean status = linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
+        if (status) {
+            activeTenantRESTServiceAccess.deleteByTenantAndUser(tenantId, userId);
+        }
+        return status;
     }
 
     /**

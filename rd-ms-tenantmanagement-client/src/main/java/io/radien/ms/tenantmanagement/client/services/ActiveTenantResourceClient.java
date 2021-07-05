@@ -106,6 +106,17 @@ public interface ActiveTenantResourceClient {
     public Response delete(@NotNull @PathParam("id") long id);
 
     /**
+     * Requests to delete active tenants taking in account the following parameters
+     * @param tenantId tenant id of the active tenant to be deleted
+     * @param userId user id of the active tenant to be deleted
+     * @return a response with true or false based on the success or failure of the deletion
+     */
+    @DELETE
+    @Path("/{tenantId}/{userId}")
+    public Response delete(@NotNull @PathParam("tenantId") long tenantId,
+                           @NotNull @PathParam("userId") long userId);
+
+    /**
      * Method to request a creation of a active tenant
      * @param activeTenant information to be created
      * @return a response with true or false based on the success or failure of the creation

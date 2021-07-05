@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -143,6 +144,37 @@ public class ActiveTenantServiceTest {
     }
 
     /**
+     * Deletes active tenants using tenant (id) and user (id) as parameter
+     * Will create a new active tenant, save it into the DB and delete it after using the specific
+     * tenant and user Ids.
+     * Expected result: will return null when retrieving the active tenant.
+     * Tested methods: delete(Long tenantId, Long userId)
+     *
+     * @throws UniquenessConstraintException in case of requested action is not well constructed
+     */
+    @Test
+    public void testDeleteByUserIdAndTenantId() throws UniquenessConstraintException, ActiveTenantException {
+        Long tenantId = 1111L, userId = 222L;
+        SystemActiveTenant activeTenant = createActiveTenant(tenantId, userId);
+        SystemActiveTenant result = activeTenantServiceAccess.get(activeTenant.getId());
+        assertNotNull(result);
+
+        assertEquals(userId, activeTenant.getUserId());
+        assertEquals(tenantId, activeTenant.getTenantId());
+        assertEquals(activeTenant.getUserId(), result.getUserId());
+        assertEquals(activeTenant.getTenantId(), result.getTenantId());
+
+        assertTrue(activeTenantServiceAccess.delete(tenantId, userId));
+        result = activeTenantServiceAccess.get(activeTenant.getId());
+        assertNull(result);
+
+        // Testing with non existent values
+        assertFalse(activeTenantServiceAccess.delete(100000L, 1000000L));
+    }
+
+
+
+    /**
      * Test updates the active tenant information.
      * @throws Exception in case of active tenant to be updated not found
      */
@@ -168,6 +200,22 @@ public class ActiveTenantServiceTest {
         activeTenant.setId(id);
         activeTenant.setUserId(2L);
         activeTenant.setTenantId(2L);
+        activeTenantServiceAccess.create(activeTenant);
+        return activeTenant;
+    }
+
+    /**
+     * Test of creation of active tenants (using tenant id and user id as parameters)
+     * @param tenantId tenant identifier
+     * @param userId user identifier
+     * @return system active tenant
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws ActiveTenantException in case of any issue in the data
+     */
+    private SystemActiveTenant createActiveTenant(Long tenantId, Long userId) throws UniquenessConstraintException, ActiveTenantException {
+        SystemActiveTenant activeTenant = new ActiveTenant();
+        activeTenant.setTenantId(tenantId);
+        activeTenant.setUserId(userId);
         activeTenantServiceAccess.create(activeTenant);
         return activeTenant;
     }

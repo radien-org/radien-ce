@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
@@ -45,9 +46,10 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     @Inject
     private EntityManagerHolder emh;
 
-    private final String userIdTableNaming="userId";
-    private final String tenantIdTableNaming="tenantId";
-    private final String tenantNameTableNaming="tenantName";
+    private final String id = SystemVariables.ID.getFieldName();
+    private final String userIdTableNaming = SystemVariables.USER_ID.getFieldName();
+    private final String tenantIdTableNaming = SystemVariables.TENANT_ID.getFieldName();
+    private final String tenantNameTableNaming = SystemVariables.TENANT_NAME.getFieldName();
 
     private static final Logger log = LoggerFactory.getLogger(ActiveTenantService.class);
 
@@ -232,6 +234,24 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     public boolean delete(Long activeTenantId) {
         EntityManager em = emh.getEm();
         return delete(activeTenantId, em);
+    }
+
+    /**
+     * Delete ActiveTenants that exist for following parameters
+     * @param tenantId tenant identifier
+     * @param userId user identifier
+     * @return true in case of success (records founds and removed), otherwise false
+     */
+    public boolean delete(Long tenantId, Long userId) {
+        EntityManager em = emh.getEm();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
+        Root<ActiveTenant> activeTenantRoot = criteriaDelete.from(ActiveTenant.class);
+        criteriaDelete.where(
+                cb.equal(activeTenantRoot.get(tenantIdTableNaming), tenantId),
+                cb.equal(activeTenantRoot.get(userIdTableNaming), userId)
+        );
+        return em.createQuery(criteriaDelete).executeUpdate() > 0;
     }
 
     /**
