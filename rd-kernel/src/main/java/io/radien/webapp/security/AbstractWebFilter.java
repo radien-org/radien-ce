@@ -105,8 +105,7 @@ public abstract class AbstractWebFilter implements Filter, Appframeable {
 	 * Redirects the user into the requested page
 	 * @return string value of the requested page path
 	 */
-	protected String getRedirect(ServletRequest req, ServletResponse res, FilterChain chain)
-			throws IOException, ServletException {
+	protected String getRedirect(ServletRequest req, ServletResponse res, FilterChain chain) {
 		return RedirectUtil.combineURLSegment(((HttpServletRequest) req).getContextPath(), getFullLandingPageName());
 	}
 

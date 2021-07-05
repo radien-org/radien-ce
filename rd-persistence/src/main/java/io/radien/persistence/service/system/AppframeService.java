@@ -34,15 +34,15 @@ public class AppframeService {
 	@PersistenceContext(unitName = "persistenceUnitLocal", type = PersistenceContextType.EXTENDED)
     private EntityManager entityManager;
 
-    public void addAppframe(Appframe appframe) throws Exception {
+    public void addAppframe(Appframe appframe) {
         entityManager.persist(appframe);
     }
 
-    public void deleteAppframe(Appframe appframe) throws Exception {
+    public void deleteAppframe(Appframe appframe) {
         entityManager.remove(appframe);
     }
 
-    public List<Appframe> getAppframes() throws Exception {
+    public List<Appframe> getAppframes() {
         Query query = entityManager.createQuery("SELECT a from Appframe as a");
         return query.getResultList();
     }
