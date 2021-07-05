@@ -32,6 +32,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Order;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
@@ -41,6 +42,7 @@ import io.radien.exception.UniquenessConstraintException;
 
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.model.Permission;
+import io.radien.persistencelib.PredicateMapper;
 
 /**
  * Permission DB connection requests
@@ -105,7 +107,7 @@ public class PermissionService implements PermissionServiceAccess {
         CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
         Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
         criteriaQuery.select(permissionRoot);
-        criteriaQuery.where(permissionRoot.get("id").in(permissionId));
+        criteriaQuery.where(permissionRoot.get(SystemVariables.ID.getFieldName()).in(permissionId));
 
         TypedQuery<Permission> q=em.createQuery(criteriaQuery);
 
@@ -133,7 +135,7 @@ public class PermissionService implements PermissionServiceAccess {
 
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(permissionRoot.get("name"), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(permissionRoot.get(SystemVariables.NAME.getFieldName()), search));
             criteriaQuery.where(global);
         }
 
@@ -194,9 +196,9 @@ public class PermissionService implements PermissionServiceAccess {
         CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
         Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
         criteriaQuery.select(permissionRoot);
-        Predicate global = criteriaBuilder.equal(permissionRoot.get("name"), permission.getName());
+        Predicate global = criteriaBuilder.equal(permissionRoot.get(SystemVariables.NAME.getFieldName()), permission.getName());
         if(permission.getId()!= null) {
-            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(permissionRoot.get("id"), permission.getId()));
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(permissionRoot.get(SystemVariables.ID.getFieldName()), permission.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<Permission> q = em.createQuery(criteriaQuery);
@@ -215,7 +217,7 @@ public class PermissionService implements PermissionServiceAccess {
         CriteriaDelete<Permission> criteriaDelete = cb.createCriteriaDelete(Permission.class);
         Root<Permission> permissionRoot = criteriaDelete.from(Permission.class);
 
-        criteriaDelete.where(cb.equal(permissionRoot.get("id"),permissionId));
+        criteriaDelete.where(cb.equal(permissionRoot.get(SystemVariables.ID.getFieldName()),permissionId));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -233,7 +235,7 @@ public class PermissionService implements PermissionServiceAccess {
         CriteriaDelete<Permission> criteriaDelete = cb.createCriteriaDelete(Permission.class);
         Root<Permission> permissionRoot = criteriaDelete.from(Permission.class);
 
-        criteriaDelete.where(permissionRoot.get("id").in(permissionIds));
+        criteriaDelete.where(permissionRoot.get(SystemVariables.ID.getFieldName()).in(permissionIds));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -284,7 +286,7 @@ public class PermissionService implements PermissionServiceAccess {
         }
 
         if (filter.getIds() != null && !filter.getIds().isEmpty()) {
-            Predicate in = permissionRoot.get("id").in(filter.getIds());
+            Predicate in = permissionRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds());
             if(filter.isLogicConjunction()) {
                 global = criteriaBuilder.and(global, in);
             } else {
@@ -292,32 +294,11 @@ public class PermissionService implements PermissionServiceAccess {
             }
         }
 
-        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, permissionRoot, global);
-        global = getFieldPredicate("actionId", filter.getActionId(),
-                filter, criteriaBuilder, permissionRoot, global);
-        global = getFieldPredicate("resourceId", filter.getResourceId(),
-                filter, criteriaBuilder, permissionRoot, global);
-        return global;
-    }
-
-    private Predicate getFieldPredicate(String name, Object value, PermissionSearchFilter filter,
-                                        CriteriaBuilder criteriaBuilder, Root<Permission> permissionRoot,
-                                        Predicate global) {
-        if(value != null) {
-            Predicate subPredicate;
-            if (value instanceof String && !filter.isExact()) {
-                subPredicate = criteriaBuilder.like(permissionRoot.get(name),"%"+value+"%");
-            }
-            else {
-                subPredicate = criteriaBuilder.equal(permissionRoot.get(name), value);
-            }
-
-            if(filter.isLogicConjunction()) {
-                global = criteriaBuilder.and(global, subPredicate);
-            } else {
-                global = criteriaBuilder.or(global, subPredicate);
-            }
-        }
+        global = PredicateMapper.getFieldPredicate(SystemVariables.NAME.getFieldName(), filter.getName(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, permissionRoot, global);
+        global = PredicateMapper.getFieldPredicate(SystemVariables.ACTION_ID.getFieldName(), filter.getActionId(),
+                filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, permissionRoot, global);
+        global = PredicateMapper.getFieldPredicate(SystemVariables.RESOURCE_ID.getFieldName(), filter.getResourceId(),
+                filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, permissionRoot, global);
         return global;
     }
 
@@ -349,10 +330,10 @@ public class PermissionService implements PermissionServiceAccess {
 
         criteriaQuery.select(criteriaBuilder.count(permissionRoot));
         if (permissionId !=  null) {
-            criteriaQuery.where(criteriaBuilder.equal(permissionRoot.get("id"), permissionId));
+            criteriaQuery.where(criteriaBuilder.equal(permissionRoot.get(SystemVariables.ID.getFieldName()), permissionId));
         }
         else {
-            criteriaQuery.where(criteriaBuilder.equal(permissionRoot.get("name"), permissionName));
+            criteriaQuery.where(criteriaBuilder.equal(permissionRoot.get(SystemVariables.NAME.getFieldName()), permissionName));
         }
 
         Long size = em.createQuery(criteriaQuery).getSingleResult();
@@ -394,11 +375,11 @@ public class PermissionService implements PermissionServiceAccess {
 
         Predicate global = null;
 
-        global = criteriaBuilder.equal(permissionRoot.get("resourceId"), p.getResourceId());
-        global=criteriaBuilder.and(global, criteriaBuilder.equal(permissionRoot.get("actionId"), p.getActionId()));
+        global = criteriaBuilder.equal(permissionRoot.get(SystemVariables.RESOURCE_ID.getFieldName()), p.getResourceId());
+        global=criteriaBuilder.and(global, criteriaBuilder.equal(permissionRoot.get(SystemVariables.ACTION_ID.getFieldName()), p.getActionId()));
 
         if(p.getId() != null) {
-            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(permissionRoot.get("id"), p.getId()));
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(permissionRoot.get(SystemVariables.ID.getFieldName()), p.getId()));
         }
         criteriaQuery.where(global);
 

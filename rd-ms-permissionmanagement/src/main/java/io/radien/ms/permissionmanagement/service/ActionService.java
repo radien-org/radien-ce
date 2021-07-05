@@ -24,6 +24,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.persistencelib.PredicateMapper;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -239,75 +240,15 @@ public class ActionService implements ActionServiceAccess {
 
         criteriaQuery.select(actionRoot);
 
-        Predicate global = getFilteredPredicate((ActionSearchFilter) filter, criteriaBuilder, actionRoot);
+        ActionSearchFilter actionSearchFilter = (ActionSearchFilter) filter;
+
+        Predicate global = PredicateMapper.getFilteredSingleNamePredicate(actionSearchFilter.getName(),
+                actionSearchFilter.isExact(), actionSearchFilter.isLogicConjunction(), criteriaBuilder, actionRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
-    }
-
-    /**
-     * Will filter all the fields given in the criteria builder and in the filter and create the
-     * where clause for the query
-     * @param filter fields to be searched for
-     * @param criteriaBuilder database query builder
-     * @param actionRoot database table to search the information
-     * @return a constructed predicate with the fields needed to be search
-     */
-    private Predicate getFilteredPredicate(ActionSearchFilter filter,
-                                           CriteriaBuilder criteriaBuilder,
-                                           Root<Action> actionRoot) {
-        Predicate global;
-
-        // is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
-        // the predicate is build with the logic (start,operator,newPredicate)
-        // where start represents the already joined predicates
-        // operator is "and" or "or"
-        // depending on the operator the start may need to be true or false
-        // true and predicate1 and predicate2
-        // false or predicate1 or predicate2
-        if(filter.isLogicConjunction()) {
-            global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        } else {
-            global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
-        }
-
-        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, actionRoot, global);
-
-        return global;
-    }
-
-    /**
-     * Method that will create in the database query where clause each and single search
-     * @param name of the field to be search in the query
-     * @param value of the field to be search or compared in the query
-     * @param filter complete requested filter for further validations
-     * @param criteriaBuilder database query builder
-     * @param actionRoot database table to search the information
-     * @param global complete where clause to be merged into the constructed information
-     * @return a constructed predicate with the fields needed to be search
-     */
-    private Predicate getFieldPredicate(String name, Object value,
-                                        ActionSearchFilter filter,
-                                        CriteriaBuilder criteriaBuilder,
-                                        Root<Action> actionRoot,
-                                        Predicate global) {
-        if(value != null) {
-            Predicate subPredicate;
-
-            if (filter.isExact()) {
-                subPredicate = criteriaBuilder.equal(actionRoot.get(name), value);
-            } else {
-                subPredicate = criteriaBuilder.like(actionRoot.get(name), "%" + value + "%");
-            }
-            if(filter.isLogicConjunction()) {
-                global = criteriaBuilder.and(global, subPredicate);
-            } else {
-                global = criteriaBuilder.or(global, subPredicate);
-            }
-        }
-        return global;
     }
 
     /**

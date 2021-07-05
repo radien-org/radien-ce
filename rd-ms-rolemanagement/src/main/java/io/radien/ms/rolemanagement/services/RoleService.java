@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
@@ -24,6 +25,7 @@ import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.persistencelib.PredicateMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,12 @@ import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.CriteriaDelete;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +78,7 @@ public class RoleService implements RoleServiceAccess {
         criteriaQuery.select(roleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(roleRoot.get("name"), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(roleRoot.get(SystemVariables.NAME.getFieldName()), search));
             criteriaQuery.where(global);
         }
         if(sortBy != null && !sortBy.isEmpty()){
@@ -148,7 +155,7 @@ public class RoleService implements RoleServiceAccess {
         }
 
         if (filter.getIds() != null && !filter.getIds().isEmpty()) {
-            Predicate in = roleRoot.get("id").in(filter.getIds());
+            Predicate in = roleRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds());
             if(filter.isLogicConjunction()) {
                 global = criteriaBuilder.and(global, in);
             } else {
@@ -156,38 +163,9 @@ public class RoleService implements RoleServiceAccess {
             }
         }
 
-        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, roleRoot, global);
-        global = getFieldPredicate("description", filter.getDescription(), filter, criteriaBuilder, roleRoot, global);
+        global = PredicateMapper.getFieldPredicate(SystemVariables.NAME.getFieldName(), filter.getName(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, roleRoot, global);
+        global = PredicateMapper.getFieldPredicate(SystemVariables.DESCRIPTION.getFieldName(), filter.getDescription(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, roleRoot, global);
 
-        return global;
-    }
-
-    /**
-     * Creates the where clause in the query predicate.
-     *
-     * @param name string of the value name
-     * @param value value to be searched for
-     * @param filter complete information to be filtered.
-     * @param criteriaBuilder query to be worked on.
-     * @param userRoot table to search the information.
-     * @param global global predicate to be used.
-     * @return a where predicate to be used in the search criteria.
-     */
-    private Predicate getFieldPredicate(String name, String value, RoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> userRoot, Predicate global) {
-        if(value != null) {
-            Predicate subPredicate;
-            if (filter.isExact()) {
-                subPredicate = criteriaBuilder.equal(userRoot.get(name), value);
-            } else {
-                subPredicate = criteriaBuilder.like(userRoot.get(name),"%"+value+"%");
-            }
-
-            if(filter.isLogicConjunction()) {
-                global = criteriaBuilder.and(global, subPredicate);
-            } else {
-                global = criteriaBuilder.or(global, subPredicate);
-            }
-        }
         return global;
     }
 
@@ -303,9 +281,9 @@ public class RoleService implements RoleServiceAccess {
         CriteriaQuery<Role> criteriaQuery = criteriaBuilder.createQuery(Role.class);
         Root<Role> userRoot = criteriaQuery.from(Role.class);
         criteriaQuery.select(userRoot);
-        Predicate global = criteriaBuilder.equal(userRoot.get("name"), role.getName());
+        Predicate global = criteriaBuilder.equal(userRoot.get(SystemVariables.NAME.getFieldName()), role.getName());
         if(role.getId()!= null) {
-            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get("id"), role.getId()));
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get(SystemVariables.ID.getFieldName()), role.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<Role> q = entityManager.createQuery(criteriaQuery);
@@ -326,7 +304,7 @@ public class RoleService implements RoleServiceAccess {
         CriteriaDelete<Role> criteriaDelete = cb.createCriteriaDelete(Role.class);
         Root<Role> roleRoot = criteriaDelete.from(Role.class);
 
-        criteriaDelete.where(cb.equal(roleRoot.get("id"),roleId));
+        criteriaDelete.where(cb.equal(roleRoot.get(SystemVariables.ID.getFieldName()),roleId));
         entityManager.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -344,9 +322,9 @@ public class RoleService implements RoleServiceAccess {
             criteriaQuery.select(criteriaBuilder.count(contractRoot));
 
             if (roleId != null) {
-                criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), roleId));
+                criteriaQuery.where(criteriaBuilder.equal(contractRoot.get(SystemVariables.ID.getFieldName()), roleId));
             } else if (name != null) {
-                criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("name"), name));
+                criteriaQuery.where(criteriaBuilder.equal(contractRoot.get(SystemVariables.NAME.getFieldName()), name));
             }
 
             Long size = entityManager.createQuery(criteriaQuery).getSingleResult();

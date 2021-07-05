@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+  ~ <p>
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~ <p>
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~ <p>
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration>
+<!-- 
+    <if condition='isDefined("catalina.base")'>
+        <then>
+            <property name="LOGFILE_APP_PATH" value="${catalina.base}/logs/oaf-web.log"/>
+            <property name="LOGFILE_AUDIT_PATH" value="${catalina.base}/logs/oaf-audit.log"/>
+        </then>
+        <else>
+            <property name="LOGFILE_APP_PATH" value="./target/logs/oaf-web.log"/>
+            <property name="LOGFILE_AUDIT_PATH" value="./target/logs/oaf-audit.log"/>
+        </else>
+    </if>
+ -->
+    
+    <property name="DEFAULT_PATTERN" value="[%thread] %highlight([%-5level]) | %d{HH:mm:ss} | %-60(%cyan(%class{36}.%M))  [%F:%L] - %msg%n"/>
+
+<!-- 
+    <appender name="FILE-APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGFILE_APP_PATH}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/archived/oaf-web.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>${LOG_FILE_SIZE:-10MB}</maxFileSize>
+            <totalSizeCap>${LOG_ARCHIVE_SIZE:-20GB}</totalSizeCap>
+            <maxHistory>${LOG_DAYS:-90}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+ 
+    <appender name="FILE-AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGFILE_AUDIT_PATH}</file>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>AUDIT</marker>
+            </evaluator>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/archived/oaf-audit.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>${LOG_FILE_SIZE:-10MB}</maxFileSize>
+            <totalSizeCap>${LOG_ARCHIVE_SIZE:-20GB}</totalSizeCap>
+            <maxHistory>${LOG_DAYS:-90}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+-->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="io.radien" level="error" additivity="false">
+        <!-- 
+        <appender-ref ref="FILE-AUDIT"/>
+        <appender-ref ref="FILE-APP"/>
+         -->
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="error">
+        <!-- 
+        <appender-ref ref="FILE-AUDIT"/>
+        <appender-ref ref="FILE-APP"/>
+         -->
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
