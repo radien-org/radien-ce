@@ -149,10 +149,7 @@ public class FactoryUtilService implements Serializable {
      */
     private static boolean isValueNotNull(String key, JsonObject json) {
         JsonValue val = json.get(key);
-        if (val != null && !val.toString().equalsIgnoreCase("null")) {
-            return true;
-        }
-        return false;
+        return val != null && !val.toString().equalsIgnoreCase("null");
     }
 
     /**
