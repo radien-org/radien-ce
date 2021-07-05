@@ -237,7 +237,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         }
 
         List<Long> count = em.createQuery(sc).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**
@@ -287,7 +287,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         sc.where(cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),tenantRoleId));
 
         List<Long> count = em.createQuery(sc).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**
@@ -305,7 +305,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         sc.where(cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),tenantRoleId));
         List<Long> count = em.createQuery(sc).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**
@@ -421,7 +421,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
         List<Long> count = em.createQuery(cq).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**
@@ -455,7 +455,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
         List<Long> count = em.createQuery(cq).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**

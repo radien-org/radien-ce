@@ -218,7 +218,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
                 );
 
         List<Long> count = em.createQuery(sc).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**
