@@ -22,6 +22,7 @@ import io.radien.api.service.permission.ActionServiceAccess;
 
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.model.Action;
 
 import javax.ejb.Stateless;
@@ -238,7 +239,7 @@ public class ActionService implements ActionServiceAccess {
 
         criteriaQuery.select(actionRoot);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, actionRoot);
+        Predicate global = getFilteredPredicate((ActionSearchFilter) filter, criteriaBuilder, actionRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Action> q=em.createQuery(criteriaQuery);
@@ -254,7 +255,7 @@ public class ActionService implements ActionServiceAccess {
      * @param actionRoot database table to search the information
      * @return a constructed predicate with the fields needed to be search
      */
-    private Predicate getFilteredPredicate(SystemActionSearchFilter filter,
+    private Predicate getFilteredPredicate(ActionSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder,
                                            Root<Action> actionRoot) {
         Predicate global;
@@ -288,7 +289,7 @@ public class ActionService implements ActionServiceAccess {
      * @return a constructed predicate with the fields needed to be search
      */
     private Predicate getFieldPredicate(String name, Object value,
-                                        SystemActionSearchFilter filter,
+                                        ActionSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
                                         Root<Action> actionRoot,
                                         Predicate global) {

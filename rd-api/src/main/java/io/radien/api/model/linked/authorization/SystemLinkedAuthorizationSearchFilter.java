@@ -69,16 +69,4 @@ public interface SystemLinkedAuthorizationSearchFilter {
      * @param userId to be set
      */
     void setUserId(Long userId);
-
-    /**
-     * System Linked Authorization is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    boolean isLogicConjunction();
-
-    /**
-     * System Linked Authorization filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    void setLogicConjunction(boolean logicConjunction);
 }

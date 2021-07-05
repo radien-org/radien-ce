@@ -21,6 +21,7 @@ import io.radien.api.model.permission.SystemResourceSearchFilter;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.model.Resource;
 
 import javax.ejb.Stateless;
@@ -236,7 +237,7 @@ public class ResourceService implements ResourceServiceAccess {
 
         criteriaQuery.select(resourceRoot);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, resourceRoot);
+        Predicate global = getFilteredPredicate((ResourceSearchFilter) filter, criteriaBuilder, resourceRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
@@ -252,7 +253,7 @@ public class ResourceService implements ResourceServiceAccess {
      * @param resourceRoot database table to search the information
      * @return a constructed predicate with the fields needed to be search
      */
-    private Predicate getFilteredPredicate(SystemResourceSearchFilter filter,
+    private Predicate getFilteredPredicate(ResourceSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder,
                                            Root<Resource> resourceRoot) {
         Predicate global;
@@ -286,7 +287,7 @@ public class ResourceService implements ResourceServiceAccess {
      * @return a constructed predicate with the fields needed to be search
      */
     private Predicate getFieldPredicate(String name, Object value,
-                                        SystemResourceSearchFilter filter,
+                                        ResourceSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
                                         Root<Resource> resourceRoot,
                                         Predicate global) {
