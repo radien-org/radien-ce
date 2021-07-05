@@ -40,18 +40,42 @@ import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import org.apache.commons.lang3.StringUtils;
-import org.primefaces.event.SelectEvent;
-
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.primefaces.event.SelectEvent;
 
-import static io.radien.webapp.DataModelEnum.*;
+import static io.radien.webapp.DataModelEnum.EDIT_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.PERMISSIONS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.ROLE_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.SAVE_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.SAVE_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TENANT_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_DISSOCIATION_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_DISSOCIATION_NO_PERMISSION_SELECT_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_DISSOCIATION_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRU_ASSOCIATION_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRU_ASSOCIATION_NO_USER_SELECT_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRU_ASSOCIATION_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_NO_USER_SELECT_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TR_ASSOCIATION;
+import static io.radien.webapp.DataModelEnum.TR_ASSOCIATION_ID;
+import static io.radien.webapp.DataModelEnum.USERS_PATH;
+import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH;
+import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ERROR;
+import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_SUCCESS;
+import static io.radien.webapp.DataModelEnum.USER_NOT_FOUND_MESSAGE;
+
 
 /**
  * JSF manager bean that will handle all associations regarding TenantRole domain
@@ -290,12 +314,12 @@ public class TenantRoleAssociationManager extends AbstractManager {
                 tenantRoleRESTServiceAccess.save(tr);
             }
             tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), userId);
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_tenant_association_creation_success"));
-            return "pretty:users";
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(USER_ASSIGNING_TENANT_SUCCESS.getValue()));
+            return USERS_PATH.getValue();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_association_creation_error"));
-            return "pretty:userTenantAssociation";
+            handleError(e, JSFUtil.getMessage(USER_ASSIGNING_TENANT_ERROR.getValue()));
+            return USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
         }
     }
 
@@ -535,6 +559,16 @@ public class TenantRoleAssociationManager extends AbstractManager {
     }
 
     /**
+     * Auxiliary method to search a role (by its name) and add it into a collection
+     * @param roleBag collection to store the retrieve role
+     * @param roleName parameter to guide the search process
+     * @throws Exception thrown to describe any issue with role rest client
+     */
+    private void addRoleByName(List<SystemRole> roleBag, String roleName) throws Exception {
+        roleRESTServiceAccess.getRoleByName(roleName).ifPresent(roleBag::add);
+    }
+
+    /**
      * Return a list containing Pre-Defined roles (Not administrative ones)
      * that can be use to do the association between (user - tenant - role)
      * @return list containing Roles
@@ -542,10 +576,10 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public List<SystemRole> getInitialRolesAllowedForAssociation() {
         try {
             List<SystemRole> roles = new ArrayList<>();
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.GUEST.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.APPROVER.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.AUTHOR.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.PUBLISHER.getRoleName()).get());
+            addRoleByName(roles, SystemRolesEnum.GUEST.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.APPROVER.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.AUTHOR.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.PUBLISHER.getRoleName());
             return roles;
         }
         catch(Exception e) {
@@ -560,7 +594,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing roles
      * @throws SystemException in case of any error
      */
-    public List<SystemRole> getRoles() throws SystemException {
+    public List<SystemRole> getRoles() {
         try {
             Page pagedInformation =
                     roleRESTServiceAccess.getAll(null, 1, 30, null, true);
@@ -578,7 +612,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing tenants
      * @throws SystemException in case of any error
      */
-    public List<SystemTenant> getTenants() throws SystemException {
+    public List<SystemTenant> getTenants() {
         try {
             Page pagedInformation =
                     tenantRESTServiceAccess.getAll(null, 1, 30, null, true);
@@ -595,7 +629,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * has Administrative roles
      * @return list containing tenants
      */
-    public List<? extends SystemTenant> getTenantsFromCurrentUser() throws SystemException {
+    public List<? extends SystemTenant> getTenantsFromCurrentUser() {
         try {
             return this.tenantRoleRESTServiceAccess.getTenants(this.webAuthorizationChecker.
                     getCurrentUserId(), null);

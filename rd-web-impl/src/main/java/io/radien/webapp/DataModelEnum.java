@@ -94,8 +94,15 @@ public enum DataModelEnum {
 
     TR_ASSOCIATION("tenant_role_association"),
     TR_ASSOCIATION_ID("tenant_role_association_id"),
-    TR_PATH("tenantrole");
+    TR_PATH("tenantrole"),
 
+    /**
+     * User messages and redirects
+     */
+    USERS_PATH("pretty:users"),
+    USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
+    USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
+    USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error");
 
     private String value;
 
