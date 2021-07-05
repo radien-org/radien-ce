@@ -40,7 +40,7 @@ public enum GenericErrorCodeMessage {
 
     HTTP_SESSION_INITIATED("G7", "http.session.initiated", "HTTP session initiated: %s"),
 
-    INFO_CORS_FILTER("G8", "Cors.filter.method", "Cors filter method: %s"),
+    INFO_CORS_FILTER("G8", "cors.filter.method", "Cors filter method: %s"),
 
     /**
      * Tenant Business Error Code Messages
