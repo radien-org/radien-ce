@@ -77,7 +77,6 @@ public class UserFactory implements Serializable {
 		String logon = FactoryUtilService.getStringFromJson("logon", person);
 		String userEmail = FactoryUtilService.getStringFromJson("userEmail", person);
 		Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
-		Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", person);
 		String sub = FactoryUtilService.getStringFromJson("sub", person);
 		String firstname = FactoryUtilService.getStringFromJson("firstname", person);
 		String lastname = FactoryUtilService.getStringFromJson("lastname",person);

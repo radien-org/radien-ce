@@ -247,7 +247,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case it founds multiple users or if URL is malformed
      */
     public boolean create(SystemUser user, boolean skipKeycloak) throws SystemException {
-        UserResourceClient client;
         try {
             return createUser(user, skipKeycloak);
         } catch (TokenExpiredException e) {
