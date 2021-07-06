@@ -93,8 +93,7 @@ public interface ActiveTenantResourceClient {
      * @return 200 code message in case of success or 500 in case of any error
      */
     @GET
-    @Path("/{userId}/{tenantId}")
-    public Response getByUserAndTenant(@NotNull @PathParam("userId") Long userId, @NotNull @PathParam("tenantId") Long tenantId);
+    public Response getByUserAndTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
 
     /**
      * Requests to a active tenant be deleted by given his id

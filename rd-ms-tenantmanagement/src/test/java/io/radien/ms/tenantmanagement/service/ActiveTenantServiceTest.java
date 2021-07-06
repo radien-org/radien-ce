@@ -19,10 +19,12 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
 import io.radien.ms.tenantmanagement.entities.ActiveTenant;
+import javax.ejb.EJBException;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -35,6 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -164,6 +167,7 @@ public class ActiveTenantServiceTest {
         assertEquals(activeTenant.getUserId(), result.getUserId());
         assertEquals(activeTenant.getTenantId(), result.getTenantId());
 
+        // Now try to remove correctly
         assertTrue(activeTenantServiceAccess.delete(tenantId, userId));
         result = activeTenantServiceAccess.get(activeTenant.getId());
         assertNull(result);
@@ -172,7 +176,21 @@ public class ActiveTenantServiceTest {
         assertFalse(activeTenantServiceAccess.delete(100000L, 1000000L));
     }
 
-
+    /**
+     * Try to Delete active tenants without informing tenant (id) and user (id) as parameters
+     * Will raise exception EJBException informing the issue
+     * Expected result: will return null when retrieving the active tenant.
+     * Tested methods: delete(Long tenantId, Long userId)
+     */
+    @Test
+    public void testDeleteByUserAndTenantWithoutInformingThem() {
+        Long tenantId = null, userId = null;
+        EJBException e = assertThrows(EJBException.class, () ->
+                activeTenantServiceAccess.delete(tenantId, userId));
+        assertNotNull(e.getCausedByException());
+        assertEquals(GenericErrorCodeMessage.ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER.toString(),
+                e.getCausedByException().getMessage());
+    }
 
     /**
      * Test updates the active tenant information.

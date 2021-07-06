@@ -20,7 +20,9 @@ import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.tenantmanagement.entities.ActiveTenant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -246,14 +248,23 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      * @return true in case of success (records founds and removed), otherwise false
      */
     public boolean delete(Long tenantId, Long userId) {
+        if (tenantId == null && userId == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.
+                    ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER.toString());
+        }
         EntityManager em = emh.getEm();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
         Root<ActiveTenant> activeTenantRoot = criteriaDelete.from(ActiveTenant.class);
-        criteriaDelete.where(
-                cb.equal(activeTenantRoot.get(TENANT_ID.getFieldName()), tenantId),
-                cb.equal(activeTenantRoot.get(USER_ID.getFieldName()), userId)
-        );
+
+        List<Predicate> predicates = new ArrayList<>();
+        if (tenantId != null) {
+            predicates.add(cb.equal(activeTenantRoot.get(TENANT_ID.getFieldName()), tenantId));
+        }
+        if (userId != null) {
+            predicates.add(cb.equal(activeTenantRoot.get(USER_ID.getFieldName()), userId));
+        }
+        criteriaDelete.where(cb.and(predicates.toArray(new Predicate[0])));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
     }
 

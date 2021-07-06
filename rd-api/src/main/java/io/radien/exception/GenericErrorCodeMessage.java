@@ -56,6 +56,13 @@ public enum GenericErrorCodeMessage {
     TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE("TR6", "error.permission.already.associated", "Permission is already associated with tenant %s and role %s."),
     TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION("TR7", "error.no.permission.found", "No association found for permission %s."),
 
+
+    /**
+     * Active Tenant Error Code messages
+     */
+    ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER("AC", "error.delete.without.tenant.and.user",
+            "Insufficient params to perform delete. Is necessary at least tenant or user id"),
+
     /**
      * Permission Business Error Code Messages
      */
