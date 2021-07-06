@@ -22,6 +22,7 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.apache.commons.lang3.StringUtils;
@@ -256,6 +257,24 @@ public class UserDataModel extends AbstractManager implements Serializable {
         }
         return "pretty:users";
     }
+
+    /**
+     * Redirects to user roles page
+     * when it invoke
+     * @return users HTML page
+     */
+    public String userRoles() {
+        try {
+            if(selectedUser != null) {
+                return DataModelEnum.USER_ROLES_PAGE.getValue();
+            }
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.USER_RD_USERS.getValue()));
+        }
+        return DataModelEnum.USER_MAIN_PAGE.getValue();
+    }
+
 
     /**
      * Redirects user to the home page

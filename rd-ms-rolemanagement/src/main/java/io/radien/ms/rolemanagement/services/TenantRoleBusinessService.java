@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
@@ -27,6 +28,7 @@ import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
@@ -188,6 +190,24 @@ public class TenantRoleBusinessService implements Serializable {
         for (Long id:ids) {
             Optional<SystemTenant> opt = getTenantRESTServiceAccess().getTenantById(id);
             opt.ifPresent(list::add);
+        }
+        return list;
+    }
+
+    /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing roles
+     * @throws RoleNotFoundException in case of error finding roles
+     */
+    public List<SystemRole> getRoles(Long userId, Long tenantId) throws RoleNotFoundException {
+        checkIfMandatoryParametersWereInformed(userId);
+        List<SystemRole> list = new ArrayList<>();
+        List<Long> ids = this.tenantRoleServiceAccess.getRoles(userId, tenantId);
+        for (Long id:ids) {
+            SystemRole systemRole = getRoleServiceAccess().get(id);
+            list.add(systemRole);
         }
         return list;
     }

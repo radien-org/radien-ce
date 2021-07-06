@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
@@ -187,6 +188,22 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok().entity(tenantRoleBusinessService.
                     getTenants(userId, roleId)).build();
         } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Retrieves the Roles for which a User is associated under a Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return Response OK with List containing roles. Response 500 in case of any other error.
+     */
+    @Override
+    public Response getRoles(Long userId, Long tenantId) {
+        log("Retrieving Roles for user %d and tenant %d", userId, tenantId);
+        try {
+            return Response.ok().entity(tenantRoleBusinessService.getRoles(userId, tenantId)).build();
+        } catch (RoleNotFoundException e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }

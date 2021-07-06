@@ -54,6 +54,8 @@ public enum DataModelEnum {
     ROLE_MESSAGE("rd_role"),
     ROLES_MESSAGE("rd_roles"),
     ROLE_NOT_FOUND_MESSAGE("rd_role_not_found"),
+    ROLE_MAIN_PAGE("roles"),
+    ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error"),
 
     /**
      * User Messages and redirects
@@ -144,10 +146,23 @@ public enum DataModelEnum {
     USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR("rd_user_active_tenant_role_permission_unassigned_error"),
 
     /**
-     * Role Messages and redirects
+     * User Tenant Role Messages
      */
-    ROLE_MAIN_PAGE("roles"),
-    ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error");
+
+    USER_RD_TENANT_ROLE("rd_user_tenant_roles"),
+    USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS("rd_user_tenant_roles_association_assigned_success"),
+    USER_RD_TENANT_ROLE_ASSIGNED_ERROR("rd_user_tenant_roles_association_assigned_error"),
+    USER_RD_TENANT_ROLE_UNASSIGNED_SUCCESS("rd_user_tenant_roles_association_unassigned_success"),
+    USER_RD_TENANT_ROLE_UNASSIGNED_ERROR("rd_user_tenant_roles_association_unassigned_error"),
+
+    /**
+     * User Management Pages
+     */
+    USER_MAIN_PAGE("users"),
+    USER_ROLES_PAGE("userRoles"),
+    USER_PROFILE_PAGE("userProfile"),
+    USER_RD_USERS("rd_users");
+
     
     private String value;
 

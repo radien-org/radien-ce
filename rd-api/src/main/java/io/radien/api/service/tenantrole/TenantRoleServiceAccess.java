@@ -95,6 +95,14 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
     List<Long> getTenants(Long userId, Long roleId);
 
     /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing role ids
+     */
+    List<Long> getRoles(Long userId, Long tenantId);
+
+    /**
      * Check if a User has some Role (Optionally for a specific Tenant)
      * @param userId User identifier
      * @param roleNames Role name identifier

@@ -19,6 +19,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 
 import org.junit.Before;
@@ -204,5 +205,16 @@ public class UserDataModelTest {
         SystemUser user = new User(); user.setId(8L);
         this.userDataModel.setUserForTenantAssociation(user);
         assertEquals(this.userDataModel.getUserForTenantAssociation(), user);
+    }
+
+    @Test
+    public void testUserRoles(){
+        SystemUser user = new User(); user.setId(2L);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USER_ROLES_PAGE.getValue(), userDataModel.userRoles());
+
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USER_MAIN_PAGE.getValue(), userDataModel.userRoles());
+
     }
 }

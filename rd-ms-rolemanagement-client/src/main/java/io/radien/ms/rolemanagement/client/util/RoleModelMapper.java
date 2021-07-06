@@ -25,6 +25,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonReader;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -83,6 +84,18 @@ public class RoleModelMapper {
             JsonObject jsonObject = jsonReader.readObject();
 
             return RoleFactory.convertJsonToPage(jsonObject);
+        }
+    }
+
+    /**
+     * Converts Input Stream (JSON array) into List
+     * @param is inputted information to be converted into the object List
+     * @return a list of roles with the requested information
+     */
+    public static List<Role> mapList(InputStream is) throws ParseException {
+        try(JsonReader jsonReader = Json.createReader(is)) {
+            JsonArray jsonArray = jsonReader.readArray();
+            return RoleFactory.convert(jsonArray);
         }
     }
 }

@@ -19,6 +19,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
@@ -29,6 +30,7 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
+import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import io.radien.ms.rolemanagement.client.util.TenantRoleModelMapper;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
@@ -332,6 +334,48 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             return TenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ParseException | ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Retrieves the existent Roles for a User of specific associated Tenant
+     * For this, it Invokes the core method counterpart and handles TokenExpiration error
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing Roles
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public List<? extends SystemRole> getRoles(Long userId, Long tenantId) throws SystemException {
+        try {
+            return getRolesCore(userId, tenantId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getRolesCore(userId, tenantId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that retrieves the existent Roles for a User of specific associated Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing Roles
+     * @throws TokenExpiredException if JWT token expires
+     * @throws SystemException in case of any error
+     */
+    private List<? extends SystemRole> getRolesCore(Long userId, Long tenantId) throws SystemException {
+        try {
+            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getRoles(userId, tenantId);
+            return RoleModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch (MalformedURLException | ParseException e) {
             throw new SystemException(e);
         }
     }

@@ -36,6 +36,10 @@
 		<pattern value="/module/users/userTenantAssociation" />
 		<view-id value="/module/users/userTenantAssociation.oaf" />
 	</url-mapping>
+	<url-mapping id="userRoles">
+		<pattern value="/module/users/userRoles" />
+		<view-id value="/module/users/userRoles.oaf" />
+	</url-mapping>
 
 	<!-- Rolesmanagement -->
 	<url-mapping id="roles">

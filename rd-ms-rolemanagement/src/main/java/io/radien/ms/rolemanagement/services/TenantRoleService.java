@@ -406,6 +406,38 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     }
 
     /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing role ids
+     */
+    @Override
+    public List<Long> getRoles(Long userId, Long tenantId) {
+        if (userId == null && tenantId == null) {
+            throw new IllegalArgumentException( "User & Tenant id's are mandatory" );
+        }
+
+        EntityManager em = getEntityManager();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery( Long.class );
+        Root<TenantRole> tenantRoleRoot = cq.from( TenantRole.class );
+        Root<TenantRoleUser> tenantRoleUserRoot = cq.from( TenantRoleUser.class );
+
+        cq.select( tenantRoleRoot.get( "roleId" ) );
+        cq.distinct( true );
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add( cb.equal( tenantRoleRoot.get( "id" ), tenantRoleUserRoot.get( "tenantRoleId" ) ) );
+        predicates.add( cb.equal( tenantRoleRoot.get( "tenantId" ), tenantId ) );
+        predicates.add( cb.equal( tenantRoleUserRoot.get( "userId" ), userId ) );
+
+        cq.where( cb.and( predicates.toArray( new Predicate[0] ) ) );
+
+        TypedQuery<Long> query = em.createQuery( cq );
+        return query.getResultList();
+    }
+
+    /**
      * Check if a User has some Role (Optionally for a specific Tenant)
      * @param userId User identifier
      * @param roleNames Role name identifier
