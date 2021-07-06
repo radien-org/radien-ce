@@ -41,7 +41,6 @@ public enum DataModelEnum {
     ACTIVE_TENANT_CHANGED_VALUE("rd_active_tenant_changed_value"),
 
     /**
-<<<<<<< HEAD
      * Permission Messages and redirects
      */
     PERMISSION_MESSAGE("rd_permission"),
@@ -87,6 +86,7 @@ public enum DataModelEnum {
     TRU_DISSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_user_dissociation_success"),
     TRU_DISSOCIATION_ERROR_MESSAGE( "rd_tenant_role_user_dissociation_error"),
 
+    TR_TENANTS_FROM_USER("rd_tenants_from_user"),
     TR_ASSOCIATION("tenant_role_association"),
     TR_ASSOCIATION_ID("tenant_role_association_id"),
     TR_PATH("tenantrole"),
@@ -106,6 +106,7 @@ public enum DataModelEnum {
     TENANT_CREATION_PAGE("tenant"),
     TENANT_DETAIL_PAGE("tenantDetails"),
     TENANT_RD_TENANT("rd_tenant"),
+    TENANT_RD_TENANTS("rd_tenants"),
     TENANT_NOT_FOUND_MESSAGE("rd_tenant_not_found"),
 
     /**
