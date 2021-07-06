@@ -37,7 +37,6 @@ import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
-import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import java.text.MessageFormat;
@@ -70,7 +69,11 @@ import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_NO_USER_SELECT_MES
 import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_SUCCESS_MESSAGE;
 import static io.radien.webapp.DataModelEnum.TR_ASSOCIATION;
 import static io.radien.webapp.DataModelEnum.TR_ASSOCIATION_ID;
+import static io.radien.webapp.DataModelEnum.TR_TENANTS_FROM_USER;
 import static io.radien.webapp.DataModelEnum.USERS_PATH;
+import static io.radien.webapp.DataModelEnum.TR_PATH;
+import static io.radien.webapp.DataModelEnum.ROLES_MESSAGE;
+import static io.radien.webapp.DataModelEnum.RETRIEVE_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH;
 import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ERROR;
 import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_SUCCESS;
@@ -122,10 +125,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     private Long tabIndex = 0L;
 
-    public static final String K_TENANT_ROLE_SCREEN = DataModelEnum.TR_PATH.getValue();
-    public static final String K_MSG_KEY_RETRIEVE_ERROR = DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue();
-    public static final String K_MSG_KEY_ROLES = DataModelEnum.ROLES_MESSAGE.getValue();
-
     /**
      * This method is effectively invoke to create Tenant role association
      * @return mapping id that refers the tenant role creation/edition gui
@@ -146,7 +145,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage(SAVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -163,7 +162,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenant = new Tenant();
         this.tenantRoleAssociationCreated = Boolean.FALSE;
         this.tabIndex = 0L;
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -196,7 +195,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage(EDIT_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -219,7 +218,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     getPermissions(tenant.getId(), role.getId(), null);
             return assignedPermissions;
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(PERMISSIONS_MESSAGE.getValue()));
             return new ArrayList<>();
         }
@@ -240,7 +239,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return !tenantRoles.isEmpty() ? tenantRoles.get(0).getId() : null;
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(TR_ASSOCIATION_ID.getValue()));
             return null;
         }
@@ -275,7 +274,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(TRP_ASSOCIATION_ERROR_MESSAGE.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -298,7 +297,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(TRP_DISSOCIATION_ERROR_MESSAGE.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -345,7 +344,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(TRU_ASSOCIATION_ERROR_MESSAGE.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -369,7 +368,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(TRU_DISSOCIATION_ERROR_MESSAGE.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -583,8 +582,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return roles;
         }
         catch(Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
-                    JSFUtil.getMessage(K_MSG_KEY_ROLES));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(ROLES_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -601,7 +600,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage(K_MSG_KEY_ROLES));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(ROLES_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -619,7 +618,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR), JSFUtil.getMessage(K_MSG_KEY_ROLES));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(ROLES_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -635,8 +634,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     getCurrentUserId(), null);
         }
         catch(Exception e) {
-            handleError(e, JSFUtil.getMessage(K_MSG_KEY_RETRIEVE_ERROR),
-                    JSFUtil.getMessage("rd_tenants_from_user"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_TENANTS_FROM_USER.getValue()));
             return new ArrayList<>();
         }
     }

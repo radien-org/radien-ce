@@ -49,7 +49,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.primefaces.event.SelectEvent;
 
-import static io.radien.webapp.tenantrole.TenantRoleAssociationManager.K_TENANT_ROLE_SCREEN;
+//import static io.radien.webapp.tenantrole.TenantRoleAssociationManager.DataModelEnum.TR_PATH.getValue();
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -436,7 +436,7 @@ public class TenantRoleAssociationManagerTest {
         assertNull(tenantRoleAssociationManager.getTenant().getId());
 
         assertFalse(tenantRoleAssociationManager.isExistsTenantRoleCreated());
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUri);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUri);
     }
 
     /**
@@ -475,7 +475,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(),
                 expectedAssociatedPermissions);
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
     }
 
     /**
@@ -501,7 +501,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
         
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -539,7 +539,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -589,7 +589,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getRole(), expectedRole);
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertTrue(tenantRoleAssociationManager.getAssignedPermissions().isEmpty());
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -625,7 +625,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(), expectedAssociatedPermissions);
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -655,7 +655,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -691,7 +691,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -724,7 +724,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -754,7 +754,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -791,7 +791,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -871,7 +871,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignUser();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -901,7 +901,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignUser();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -938,7 +938,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignUser();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -973,7 +973,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -1002,7 +1002,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -1042,7 +1042,7 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
