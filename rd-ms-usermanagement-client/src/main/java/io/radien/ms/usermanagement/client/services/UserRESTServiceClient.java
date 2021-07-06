@@ -281,9 +281,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                if(log.isErrorEnabled()){
-                    log.error(response.readEntity(String.class));
-                }
+                logErrorEnabledResponse(response);
                 return false;
             }
         } catch (ProcessingException e) {
@@ -376,9 +374,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                if(log.isErrorEnabled()){
-                    log.error(response.readEntity(String.class));
-                }
+                logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -420,9 +416,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 deleteUser = true;
             } else {
-                if(log.isErrorEnabled()){
-                    log.error(response.readEntity(String.class));
-                }
+                logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -463,9 +457,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                if(log.isErrorEnabled()){
-                    log.error(response.readEntity(String.class));
-                }
+                logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -522,13 +514,21 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                     response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
                 return Optional.of(response.readEntity(BatchSummary.class));
             } else {
-                if(log.isErrorEnabled()){
-                    log.error(response.readEntity(String.class));
-                }
+                logErrorEnabledResponse(response);
                 return Optional.empty();
             }
         } catch (ProcessingException pe) {
             throw new ProcessingException(pe);
+        }
+    }
+
+    /**
+     * Invoke when Response error is to be logged
+     * @param response object info
+     */
+    private void logErrorEnabledResponse(Response response) {
+        if(log.isErrorEnabled()){
+            log.error(response.readEntity(String.class));
         }
     }
 
