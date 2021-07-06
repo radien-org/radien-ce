@@ -15,6 +15,7 @@
  */
 package io.radien.kernel.interceptor;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
@@ -49,18 +50,19 @@ public class MethodRuntimeInterceptor {
 			long start = 0;
 
 			start = System.currentTimeMillis();
-			log.info("START ID: " + counter + "|Class: |" + ctx.getMethod().getDeclaringClass().getName()
-					+ "| Method: |" + ctx.getMethod().getName());
+			log.info(GenericErrorCodeMessage.INFO_SYSTEM_START.toString(String.valueOf(counter),
+					ctx.getMethod().getDeclaringClass().getName(), ctx.getMethod().getName()));
 
 			result = ctx.proceed();
 
 			long end = System.currentTimeMillis();
 			long duration = end - start;
-			log.info("END ID: " + counter + "|Class: |" + ctx.getMethod().getDeclaringClass().getName() + "| Method: |"
-					+ ctx.getMethod().getName() + "| Milliseconds: |" + duration + "| Result: |" + result);
+			log.info(GenericErrorCodeMessage.INFO_SYSTEM_END.toString(String.valueOf(counter),
+					ctx.getMethod().getDeclaringClass().getName(), ctx.getMethod().getName(), String.valueOf(duration),
+					String.valueOf(result)));
 
 		} catch (Exception e) {
-			log.error("exception during method interception: " + e);
+			log.error(GenericErrorCodeMessage.ERROR_METHOD_INTERCEPTION.toString(), e);
 		}
 		return result;
 	}

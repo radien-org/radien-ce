@@ -247,7 +247,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case it founds multiple users or if URL is malformed
      */
     public boolean create(SystemUser user, boolean skipKeycloak) throws SystemException {
-        UserResourceClient client;
         try {
             return createUser(user, skipKeycloak);
         } catch (TokenExpiredException e) {
@@ -282,7 +281,9 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                if(log.isErrorEnabled()){
+                    log.error(response.readEntity(String.class));
+                }
                 return false;
             }
         } catch (ProcessingException e) {
@@ -333,9 +334,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             //WEB APPLICATION EXCEPTION jax rs
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
 
-            //JsonArray jsonArray = (JsonArray) Json.createReader(new StringReader(response.readEntity(String.class))).readObject().get("results");
-            //listUsers = UserFactory.convert(jsonArray);
-           page = UserModelMapper.mapToPage((InputStream) response.getEntity());
+            page = UserModelMapper.mapToPage((InputStream) response.getEntity());
 
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -377,7 +376,9 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                if(log.isErrorEnabled()){
+                    log.error(response.readEntity(String.class));
+                }
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -419,7 +420,9 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 deleteUser = true;
             } else {
-                log.error(response.readEntity(String.class));
+                if(log.isErrorEnabled()){
+                    log.error(response.readEntity(String.class));
+                }
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -460,7 +463,9 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                if(log.isErrorEnabled()){
+                    log.error(response.readEntity(String.class));
+                }
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -517,7 +522,9 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                     response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
                 return Optional.of(response.readEntity(BatchSummary.class));
             } else {
-                log.error(response.readEntity(String.class));
+                if(log.isErrorEnabled()){
+                    log.error(response.readEntity(String.class));
+                }
                 return Optional.empty();
             }
         } catch (ProcessingException pe) {

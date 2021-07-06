@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.factory;
 
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.rolemanagement.entities.LinkedAuthorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +61,8 @@ public class LinkedAuthorizationFactory implements Serializable {
         tenancyCtrl.setLastUpdate(now);
         tenancyCtrl.setCreateDate(now);
 
-        log.info("Will begin to create a new Linked Authorization object with the specific values" +
-                " Tenant Id: {}, Permission Id: {}, Role Id: {}" +
-                " User Id: {}" + tenantId, permissionId, roleId, userId);
+        log.info(GenericErrorCodeMessage.INFO_CREATE_NEW_LINKED_AUTHORIZATION.toString(String.valueOf(tenantId),
+                String.valueOf(permissionId), String.valueOf(roleId), String.valueOf(userId)));
 
         return tenancyCtrl;
     }
@@ -91,9 +91,8 @@ public class LinkedAuthorizationFactory implements Serializable {
         tenancyCtrl.setCreateDate(date);
         tenancyCtrl.setLastUpdate(date);
 
-        log.info("Will begin to create a new Linked Authorization object with the specific values" +
-                " Id: {}, Tenant Id {}, Permission Id: {}, Role Id: {}" +
-                " User Id: {}" + id, tenantId, permissionId, roleId, userId);
+        log.info(GenericErrorCodeMessage.INFO_COVERT_JSON_OBJECT_TO_LINKED_AUTHORIZATION.toString(String.valueOf(id),
+                String.valueOf(tenantId), String.valueOf(permissionId), String.valueOf(roleId), String.valueOf(userId)));
 
         return tenancyCtrl;
     }
