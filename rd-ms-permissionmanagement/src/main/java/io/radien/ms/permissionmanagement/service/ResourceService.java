@@ -15,7 +15,6 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
-import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
@@ -24,7 +23,6 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.model.Resource;
-import io.radien.persistencelib.PredicateMapper;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -96,7 +94,7 @@ public class ResourceService implements ResourceServiceAccess {
         CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
         Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
         criteriaQuery.select(resourceRoot);
-        criteriaQuery.where(resourceRoot.get(SystemVariables.ID.getFieldName()).in(resourceId));
+        criteriaQuery.where(resourceRoot.get("id").in(resourceId));
 
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
@@ -126,7 +124,7 @@ public class ResourceService implements ResourceServiceAccess {
 
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(resourceRoot.get(SystemVariables.NAME.getFieldName()), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(resourceRoot.get("name"), search));
             criteriaQuery.where(global);
         }
 
@@ -183,9 +181,9 @@ public class ResourceService implements ResourceServiceAccess {
         CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
         Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
         criteriaQuery.select(resourceRoot);
-        Predicate global = criteriaBuilder.equal(resourceRoot.get(SystemVariables.NAME.getFieldName()), resource.getName());
+        Predicate global = criteriaBuilder.equal(resourceRoot.get("name"), resource.getName());
         if(resource.getId()!= null) {
-            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(resourceRoot.get(SystemVariables.ID.getFieldName()), resource.getId()));
+            global=criteriaBuilder.and(global, criteriaBuilder.notEqual(resourceRoot.get("id"), resource.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<Resource> q = em.createQuery(criteriaQuery);
@@ -204,7 +202,7 @@ public class ResourceService implements ResourceServiceAccess {
         CriteriaDelete<Resource> criteriaDelete = cb.createCriteriaDelete(Resource.class);
         Root<Resource> resourceRoot = criteriaDelete.from(Resource.class);
 
-        criteriaDelete.where(cb.equal(resourceRoot.get(SystemVariables.ID.getFieldName()),resourceId));
+        criteriaDelete.where(cb.equal(resourceRoot.get("id"),resourceId));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -222,7 +220,7 @@ public class ResourceService implements ResourceServiceAccess {
         CriteriaDelete<Resource> criteriaDelete = cb.createCriteriaDelete(Resource.class);
         Root<Resource> resourceRoot = criteriaDelete.from(Resource.class);
 
-        criteriaDelete.where(resourceRoot.get(SystemVariables.ID.getFieldName()).in(resourceIds));
+        criteriaDelete.where(resourceRoot.get("id").in(resourceIds));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -238,15 +236,76 @@ public class ResourceService implements ResourceServiceAccess {
         Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
 
         criteriaQuery.select(resourceRoot);
-        ResourceSearchFilter resourceSearchFilter = (ResourceSearchFilter) filter;
 
-        Predicate global = PredicateMapper.getFilteredSingleNamePredicate(resourceSearchFilter.getName(),
-                resourceSearchFilter.isExact(), resourceSearchFilter.isLogicConjunction(), criteriaBuilder, resourceRoot);
+        Predicate global = getFilteredPredicate((ResourceSearchFilter) filter, criteriaBuilder, resourceRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Resource> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
+    }
+
+    /**
+     * Will filter all the fields given in the criteria builder and in the filter and create the
+     * where clause for the query
+     * @param filter fields to be searched for
+     * @param criteriaBuilder database query builder
+     * @param resourceRoot database table to search the information
+     * @return a constructed predicate with the fields needed to be search
+     */
+    private Predicate getFilteredPredicate(ResourceSearchFilter filter,
+                                           CriteriaBuilder criteriaBuilder,
+                                           Root<Resource> resourceRoot) {
+        Predicate global;
+
+        // is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
+        // the predicate is build with the logic (start,operator,newPredicate)
+        // where start represents the already joined predicates
+        // operator is "and" or "or"
+        // depending on the operator the start may need to be true or false
+        // true and predicate1 and predicate2
+        // false or predicate1 or predicate2
+        if(filter.isLogicConjunction()) {
+            global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        } else {
+            global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
+        }
+
+        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, resourceRoot, global);
+
+        return global;
+    }
+
+    /**
+     * Method that will create in the database query where clause each and single search
+     * @param name of the field to be search in the query
+     * @param value of the field to be search or compared in the query
+     * @param filter complete requested filter for further validations
+     * @param criteriaBuilder database query builder
+     * @param resourceRoot database table to search the information
+     * @param global complete where clause to be merged into the constructed information
+     * @return a constructed predicate with the fields needed to be search
+     */
+    private Predicate getFieldPredicate(String name, Object value,
+                                        ResourceSearchFilter filter,
+                                        CriteriaBuilder criteriaBuilder,
+                                        Root<Resource> resourceRoot,
+                                        Predicate global) {
+        if(value != null) {
+            Predicate subPredicate;
+
+            if (filter.isExact()) {
+                subPredicate = criteriaBuilder.equal(resourceRoot.get(name), value);
+            } else {
+                subPredicate = criteriaBuilder.like(resourceRoot.get(name), "%" + value + "%");
+            }
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, subPredicate);
+            } else {
+                global = criteriaBuilder.or(global, subPredicate);
+            }
+        }
+        return global;
     }
 
     /**

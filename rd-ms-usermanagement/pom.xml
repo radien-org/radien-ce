@@ -225,9 +225,5 @@
 			<version>2.0.9</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>io.radien</groupId>
-            <artifactId>rd-persistence-lib</artifactId>
-        </dependency>
-    </dependencies>
+	</dependencies>
 </project>
