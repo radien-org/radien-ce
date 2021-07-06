@@ -19,7 +19,11 @@ import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.MethodOrderer;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,6 +38,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 /**
+ * TenantRole resource requests test
+ * {@link io.radien.ms.rolemanagement.services.TenantRoleResource}
+ *
  * @author Newton Carvalho
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -515,5 +522,4 @@ public class TenantRoleResourceTest {
                 2L, 3L);
         assertEquals(500, response.getStatus());
     }
-
 }

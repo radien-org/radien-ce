@@ -31,7 +31,7 @@ import java.util.Optional;
 public interface TenantRoleRESTServiceAccess {
 
     /**
-     * Retrieves TenantRoleUser association using pagination approach
+     * Retrieves TenantRole association using pagination approach
      * @param pageNo page number
      * @param pageSize page size
      * @return Page containing TenantRole User associations (Chunk/Portion compatible

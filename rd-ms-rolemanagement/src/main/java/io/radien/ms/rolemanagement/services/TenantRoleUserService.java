@@ -63,12 +63,13 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
     /**
      * Gets all the tenant role user associations into a pagination mode.
+     * @param tenantRole search param that corresponds to the TenantRole id (Optional)
      * @param pageNo of the requested information. Where the tenant is.
      * @param pageSize total number of pages returned in the request.
      * @return a page containing system tenant role user associations.
      */
     @Override
-    public Page<SystemTenantRoleUser> getAll(int pageNo, int pageSize) {
+    public Page<SystemTenantRoleUser> getAll(Long tenantRole, int pageNo, int pageSize) {
         log.info("Retrieving tenant role user associations using pagination mode");
         EntityManager entityManager = getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -77,6 +78,11 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
         criteriaQuery.select(tenantRoleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+
+        if (tenantRole != null) {
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRole));
+            criteriaQuery.where(global);
+        }
 
         TypedQuery<TenantRoleUser> q= entityManager.createQuery(criteriaQuery);
 

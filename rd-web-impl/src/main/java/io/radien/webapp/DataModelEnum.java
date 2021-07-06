@@ -32,6 +32,7 @@ public enum DataModelEnum {
     EDIT_ERROR_MESSAGE("rd_edit_error"),
     SAVE_SUCCESS_MESSAGE("rd_save_success"),
     RETRIEVE_ERROR_MESSAGE("rd_retrieve_error"),
+    ROW_SELECTED("rowSelected"),
 
     /**
      * Active Tenant Messages and redirects
@@ -88,6 +89,7 @@ public enum DataModelEnum {
 
     TR_TENANTS_FROM_USER("rd_tenants_from_user"),
     TR_ASSOCIATION("tenant_role_association"),
+    TR_ASSOCIATIONS("tenant_role_associations"),
     TR_ASSOCIATION_ID("tenant_role_association_id"),
     TR_PATH("tenantrole"),
 
