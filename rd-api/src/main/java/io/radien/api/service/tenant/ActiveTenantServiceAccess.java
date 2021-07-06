@@ -90,6 +90,14 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
     public boolean delete(Long activeTenantId);
 
     /**
+     * Delete ActiveTenants that exist for following parameters
+     * @param tenantId tenant identifier
+     * @param userId user identifier
+     * @return true in case of success (records founds and removed), otherwise false
+     */
+    public boolean delete(Long tenantId, Long userId);
+
+    /**
      * Deletes a collection of active tenants
      * @param activeTenantIds to be deleted
      */

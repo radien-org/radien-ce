@@ -90,6 +90,15 @@ public interface ActiveTenantRESTServiceAccess {
     public boolean delete(long activeTenantId) throws SystemException;
 
     /**
+     * Delete active tenant taking in consideration
+     * @param tenant tenant id
+     * @param user user id
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean deleteByTenantAndUser(long tenant, long user) throws SystemException;
+
+    /**
      * Updates given active tenant
      * @param activeTenant to be updated
      * @return true if active tenant has been updated with success or false if not

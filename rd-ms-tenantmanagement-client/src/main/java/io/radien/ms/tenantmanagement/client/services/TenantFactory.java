@@ -17,6 +17,7 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import org.apache.cxf.common.util.StringUtils;
@@ -171,15 +172,15 @@ public class TenantFactory {
         TenantType tenantType = TenantType.getByName(typeAsString);
         // TODO @Newton: Necessary to understand why TenantMessageBodyWriter is not being invoked
         if (tenantType == null) {
-            log.error("No tenant type found for " + typeAsString);
+            log.error(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString(), typeAsString);
             try {
                 tenantType = TenantType.valueOf(typeAsString);
             } catch (IllegalArgumentException i) {
-                log.error("No tenant type found for " + typeAsString + " via valueOf");
+                log.error(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString(), typeAsString);
             }
         }
         if (tenantType == null) {
-            throw new IllegalStateException("No tenant type could be found");
+            throw new IllegalStateException(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString());
         }
         return tenantType;
     }

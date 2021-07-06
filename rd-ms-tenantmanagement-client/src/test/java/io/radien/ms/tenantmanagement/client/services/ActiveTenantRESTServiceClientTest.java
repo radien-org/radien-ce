@@ -357,6 +357,79 @@ public class ActiveTenantRESTServiceClientTest {
     }
 
     /**
+     * Tests the access into the db and deletion of a active tenant (by tenant and user)
+     * @throws MalformedURLException in case of issue connecting to the client
+     */
+    @Test
+    public void testDeleteByTenantAndUser() throws MalformedURLException {
+        ActiveTenantResourceClient activeTenantResourceClient = Mockito.mock(ActiveTenantResourceClient.class);
+        when(activeTenantResourceClient.delete(2L, 2L)).thenReturn(Response.ok(Boolean.TRUE).build());
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(activeTenantResourceClient);
+        boolean success = false;
+        try {
+            assertTrue(target.deleteByTenantAndUser(2L, 2L));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    /**
+     * Tests the access into the db and deletion of a active tenant (by tenant and user) but without success
+     * @throws MalformedURLException in case of issue connecting to the client
+     */
+    @Test
+    public void testDeleteByTenantAndUserReturnFalse() throws MalformedURLException, SystemException {
+        ActiveTenantResourceClient activeTenantResourceClient = Mockito.mock(ActiveTenantResourceClient.class);
+        when(activeTenantResourceClient.delete(2L,2L)).thenReturn(Response.serverError().entity("teste").build());
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(activeTenantResourceClient);
+        assertFalse(target.deleteByTenantAndUser(2L,2L));
+    }
+
+    /**
+     * Tests the access into the db and deletion of a active tenant (by tenant and user) but this with an issue so that
+     * we can validate the exception capture
+     * @throws Exception in case of issue
+     */
+    @Test(expected = SystemException.class)
+    public void testDeleteByTenantAndUserException() throws Exception {
+        ActiveTenantResourceClient activeTenantResourceClient = Mockito.mock(ActiveTenantResourceClient.class);
+        when(activeTenantResourceClient.delete(2L,2L)).thenThrow(new ProcessingException("teste"));
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(activeTenantResourceClient);
+        target.deleteByTenantAndUser(2L,2L);
+    }
+
+    /**
+     * Tests the access into the db and deletion of a active tenant (by tenant and user) but this with an issue so that
+     * we can validate the exception capture of the malformed URL exception
+     * @throws Exception in case of issue
+     */
+    @Test(expected = SystemException.class)
+    public void testDeleteByTenantAndUserMalformedUrlException() throws Exception {
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(new MalformedURLException());
+        target.deleteByTenantAndUser(2L,2L);
+    }
+
+    /**
+     * Test to delete the active tenant (by tenant and user) with token exception being throw
+     * @throws Exception in case o token exception
+     */
+    @Test(expected = SystemException.class)
+    public void testDeleteByTenantAndUserTokenExpiration() throws Exception {
+        ActiveTenantResourceClient client = Mockito.mock(ActiveTenantResourceClient.class);
+
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(client);
+        when(client.delete(anyLong(),anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.deleteByTenantAndUser(2L,2L);
+    }
+
+
+    /**
      * Tests the access into the db and update of a active tenant
      * @throws MalformedURLException in case of issue connecting to the client
      * @throws SystemException in case of token expiration or any other issue for the system

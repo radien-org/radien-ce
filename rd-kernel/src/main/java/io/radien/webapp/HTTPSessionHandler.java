@@ -44,7 +44,9 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 	private static final Logger log = LoggerFactory.getLogger(HTTPSessionHandler.class);
 
 	public HTTPSessionHandler() {
-		log.debug(GenericErrorCodeMessage.HTTP_SESSION_INITIATED.toString());
+		if(log.isDebugEnabled()){
+			log.debug(GenericErrorCodeMessage.HTTP_SESSION_INITIATED.toString());
+		}
 	}
 
 	@PostConstruct

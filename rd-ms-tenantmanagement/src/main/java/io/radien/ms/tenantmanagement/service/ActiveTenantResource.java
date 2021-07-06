@@ -135,6 +135,21 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	}
 
 	/**
+	 * Requests to delete active tenants taking in account the following parameters
+	 * @param tenantId tenant id of the active tenant to be deleted
+	 * @param userId user id of the active tenant to be deleted
+	 * @return a response with true or false based on the success or failure of the deletion
+	 */
+	@Override
+	public Response delete(long tenantId, long userId) {
+		try {
+			return Response.ok(activeTenantServiceAccess.delete(tenantId, userId)).build();
+		}catch (Exception e){
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
+	/**
 	 * Method to request a creation of a active tenant
 	 * @param activeTenant information to be created
 	 * @return a response with true or false based on the success or failure of the creation

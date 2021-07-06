@@ -28,6 +28,7 @@ public enum SystemVariables {
     USER_EMAIL("userEmail"),
     SUB("sub"),
     TENANT_ID("tenantId"),
+    TENANT_NAME("tenantName"),
     ROLE_ID("roleId"),
     USER_ID("userId"),
     TENANT_ROLE_ID("tenantRoleId"),
