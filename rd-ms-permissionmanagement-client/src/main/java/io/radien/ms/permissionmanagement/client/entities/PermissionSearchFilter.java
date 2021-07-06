@@ -30,8 +30,6 @@ public class PermissionSearchFilter extends SearchableByIds implements SystemPer
     private String name;
     private Long actionId;
     private Long resourceId;
-    private boolean isExact;
-    private boolean isLogicConjunction;
 
     /**
      * Permission search filter empty constructor
@@ -51,12 +49,10 @@ public class PermissionSearchFilter extends SearchableByIds implements SystemPer
      */
     public PermissionSearchFilter(String name, Long actionId, Long resourceId, Collection<Long> ids,
                                   boolean isExact, boolean isLogicConjunction) {
-        super(ids);
+        super(ids, isExact, isLogicConjunction);
         this.name = name;
         this.actionId = actionId;
         this.resourceId = resourceId;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicConjunction;
     }
 
     /**
@@ -117,45 +113,5 @@ public class PermissionSearchFilter extends SearchableByIds implements SystemPer
     @Override
     public void setResourceId(Long resourceId) {
         this.resourceId = resourceId;
-    }
-
-    /**
-     * Permission search filter is search to be exact getter
-     *
-     * @return the Permission search filter value that indicates if the search should be exact or not
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * Permission search filter is search to be exact setter
-     *
-     * @param exact to be set
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * Permission search filter is logical conjunction getter
-     *
-     * @return Permission search filter is logical conjunction
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Permission search filter is logical conjunction setter
-     *
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

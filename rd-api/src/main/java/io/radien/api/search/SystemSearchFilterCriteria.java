@@ -13,38 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.model.role;
 
-import io.radien.api.search.SystemSearchableByIds;
+package io.radien.api.search;
 
 /**
- * System Role search filter interface class
+ * Generic search filter criteria for searching clauses
+ * is exact, is logical conjunction
  *
  * @author Bruno Gama
- */
-public interface SystemRoleSearchFilter extends SystemSearchableByIds {
+ **/
+public interface SystemSearchFilterCriteria {
 
     /**
-     * System role search filter name getter
-     * @return the system role search filter name
+     * Tenant search filter get is exact search
+     * @return true or false value
      */
-    String getName();
+    boolean isExact();
 
     /**
-     * System Role search filter name setter
-     * @param name to be set
+     * Tenant search filter set exact
+     * @param exact to be set and updated
      */
-    void setName(String name);
+    void setExact(boolean exact);
 
     /**
-     * System role search filter description getter
-     * @return the system role search filter description
+     * Tenant search filter get is logical conjunction
+     * @return true or false value
      */
-    String getDescription();
+    boolean isLogicConjunction();
 
     /**
-     * System role search filter description setter
-     * @param description to be set
+     * Tenant search filter set is logic conjunction
+     * @param logicConjunction to be set and updated
      */
-    void setDescription(String description);
+    void setLogicConjunction(boolean logicConjunction);
 }

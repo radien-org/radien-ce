@@ -69,16 +69,4 @@ public interface SystemActiveTenantSearchFilter {
      * @param isTenantActive to be set
      */
     public void setIsTenantActive(boolean isTenantActive);
-
-    /**
-     * System tenant search filter is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    public boolean isLogicConjunction();
-
-    /**
-     * System tenant search filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    public void setLogicConjunction(boolean logicConjunction);
 }

@@ -15,6 +15,7 @@
  */
 package io.radien.webapp;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
@@ -43,7 +44,9 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 	private static final Logger log = LoggerFactory.getLogger(HTTPSessionHandler.class);
 
 	public HTTPSessionHandler() {
-		log.debug(this + " initialized");
+		if(log.isDebugEnabled()){
+			log.debug(GenericErrorCodeMessage.HTTP_SESSION_INITIATED.toString());
+		}
 	}
 
 	@PostConstruct
@@ -124,11 +127,10 @@ public @RequestScoped class HTTPSessionHandler implements SessionHandler {
 			}
 
 		} catch (UserNotFoundException e) {
-			log.info("user not found in session",e);
-			throw e;
-		}catch (Exception e) {
-			log.info(e.getMessage(),e);
-			throw e;
+			throw new UserNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+		} catch (Exception e) {
+			log.error(GenericErrorCodeMessage.GENERIC_ERROR.toString(), e);
+			return null;
 		}
 	}
 

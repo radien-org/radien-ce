@@ -16,6 +16,7 @@
 
 package io.radien.util;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -96,8 +97,7 @@ public class HttpConnectionUtil {
             log.debug("HTTPConnectionUtil.post method : Processing done.");
 
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            log.error(e.getMessage());
-            throw new IOException(e);
+            throw new IOException(GenericErrorCodeMessage.GENERIC_ERROR.toString(e.getMessage()));
         }
         return response;
 

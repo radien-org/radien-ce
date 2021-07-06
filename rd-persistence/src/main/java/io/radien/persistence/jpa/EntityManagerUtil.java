@@ -15,6 +15,8 @@
  */
 package io.radien.persistence.jpa;
 
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.SystemException;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -32,11 +34,6 @@ import io.radien.api.Model;
  */
 public class EntityManagerUtil {
 	private static final Logger log = LoggerFactory.getLogger(EntityManagerUtil.class);
-	private static final String ERROR_SAVING_ENTITY = "Error saving entity: {}";
-	private static final String ENTITY_SAVED = "An entity of class {} was persisted in the DB";
-	private static final String ENTITY_LIST_SAVED = "A List of entities of class {} was persisted in the DB";
-	public static final String ENTITY_DELETED = "An entity of class {} was deleted from the DB";
-	public static final String ERROR_DELETING_ENTITY = "Error deleting entity: {}";
 
 	/**
 	 * Persists a {@link Model} implementation in the target database
@@ -57,12 +54,13 @@ public class EntityManagerUtil {
 			em.persist(entity);
 			if(!hadPreviousTransaction) {
 				transaction.commit();
-				log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
+				if(log.isInfoEnabled()){
+					log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
+				}
 			}
 		} catch (Exception e) {
 			transaction.rollback();
-			log.error(ERROR_SAVING_ENTITY, e.getMessage());
-			throw e;
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
 		}
 	}
 
@@ -87,8 +85,8 @@ public class EntityManagerUtil {
 			em.flush();
 			return entity.getId();
 		} catch (Exception e) {
-			log.error(ERROR_SAVING_ENTITY, e.getMessage());
-			throw e;
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			return null;
 		}
 	}
 
@@ -114,16 +112,17 @@ public class EntityManagerUtil {
 				transaction.commit();
 			}
 			if(entities.size()>1) {
-				log.info(ENTITY_LIST_SAVED, entities.get(0).getClass().getSimpleName());
-			}else if(entities.size() == 1){
-				log.info(ENTITY_SAVED, entities.get(0).getClass().getSimpleName());
+				if(log.isInfoEnabled()){
+					log.info(GenericErrorCodeMessage.LIST_ENTITY_SAVED.toString(), entities.get(0).getClass().getSimpleName());
+				}
+			}else if(entities.size() == 1 && log.isInfoEnabled()){
+				log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entities.get(0).getClass().getSimpleName());
 			}
 		} catch (Exception e) {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			log.error(ERROR_SAVING_ENTITY, e.getMessage());
-			throw e;
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
 		}
 	}
 
@@ -137,14 +136,16 @@ public class EntityManagerUtil {
 				entity = em.merge(entity);
 			}
 			transaction.commit();
-			log.info(ENTITY_SAVED, entity.getClass().getSimpleName());
+			if(log.isInfoEnabled()){
+				log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
+			}
 			return (T) entity;
 		} catch (Exception e) {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			log.error(ERROR_SAVING_ENTITY, e.getMessage());
-			throw e;
+			log.error(GenericErrorCodeMessage.ERROR_SAVING_ENTITY.toString(e.getMessage()));
+			return null;
 		}
 	}
 
@@ -178,11 +179,11 @@ public class EntityManagerUtil {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			log.error(ERROR_DELETING_ENTITY, e.getMessage());
-			throw e;
+			log.error(GenericErrorCodeMessage.ERROR_DELETING_ENTITY.toString(e.getMessage()), e);
 		}
-		assert entity != null;
-		log.info(ENTITY_DELETED, entity.getClass().getSimpleName());
+		if(entity != null && log.isInfoEnabled()) {
+			log.info(GenericErrorCodeMessage.INFO_ENTITY_DELETED.toString(), entity.getClass().getSimpleName());
+		}
 	}
 
 	/**
@@ -193,7 +194,7 @@ public class EntityManagerUtil {
 	 * @param em
 	 *                   the entityManager injected by the CDI
 	 */
-	public static void delete(List<? extends Model> entities, EntityManager em) {
+	public static void delete(List<? extends Model> entities, EntityManager em) throws SystemException {
 		if (entities == null || entities.isEmpty()) {
 			return;
 		}
@@ -208,8 +209,8 @@ public class EntityManagerUtil {
 				transaction.begin();
 			}
 			for(Model entity: entities) {
-				if(entity.getId() == null){
-					log.warn(entity.toString() + "id was null. Skipped");
+				if(entity.getId() == null && log.isWarnEnabled()){
+					log.warn(GenericErrorCodeMessage.ENTITY_ID_NULL.toString(entity.toString()));
 					continue;
 				}
 				if (isDetached(entity,em)) {
@@ -224,8 +225,7 @@ public class EntityManagerUtil {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			log.error(ERROR_DELETING_ENTITY, e.getMessage());
-			throw e;
+			throw new SystemException(GenericErrorCodeMessage.ERROR_DELETING_ENTITY.toString(e.getMessage()));
 		}
 	}
 	public static boolean isDetached(Model entity, EntityManager em) {
