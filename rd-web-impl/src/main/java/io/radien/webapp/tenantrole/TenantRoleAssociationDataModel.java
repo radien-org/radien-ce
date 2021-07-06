@@ -176,7 +176,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
      *              presented in a DataGrid
      */
     public void onRowSelect(SelectEvent<SystemTenantRole> event) {
-        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rowSelected"), String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage(DataModelEnum.ROW_SELECTED.getValue()), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }
