@@ -37,6 +37,38 @@ public enum DataModelEnum {
     ACTIVE_TENANT_CHANGED_VALUE("rd_active_tenant_changed_value"),
 
     /**
+     * Tenant Management Pages
+     */
+    TENANT_MAIN_PAGE("tenants"),
+    TENANT_CREATION_PAGE("tenant"),
+    TENANT_DETAIL_PAGE("tenantDetails"),
+    TENANT_RD_TENANT("rd_tenant"),
+
+    /**
+     * Tenant Management Info Messages
+     */
+    TENANT_SELECTED_TENANT("rd_tenantSelected"),
+    TENANT_DELETE_SUCCESS("rd_delete_success"),
+    TENANT_SAVE_SUCCESS("rd_save_success"),
+
+    /**
+     * Tenant Management Error Messages
+     */
+    TENANT_CLIENT_ADDRESS_IS_MANDATORY("rd_tenant_client_address_is_mandatory"),
+    TENANT_CLIENT_ZIP_CODE_IS_MANDATORY("rd_tenant_client_zip_code_is_mandatory"),
+    TENANT_CLIENT_CITY_IS_MANDATORY("rd_tenant_client_city_is_mandatory"),
+    TENANT_CLIENT_COUNTRY_IS_MANDATORY("rd_tenant_client_country_is_mandatory"),
+    TENANT_CLIENT_PHONE_IS_MANDATORY("rd_tenant_client_phone_is_mandatory"),
+    TENANT_CLIENT_EMAIL_IS_MANDATORY("rd_tenant_client_email_is_mandatory"),
+    TENANT_EDIT_ERROR("rd_edit_error"),
+    TENANT_DELETE_ERROR("rd_delete_error"),
+    TENANT_SELECT_RECORD_FIRST("rd_select_record_first"),
+    TENANT_NOT_FOUND("rd_tenant_tenant_not_found"),
+    TENANT_USER_SESSION("rd_tenant_user_session"),
+    TENANT_SAVE_ERROR_MESSAGE("rd_save_error"),
+    TENANT_GENERIC_ERROR_MESSAGE("rd_generic_error_message"),
+
+    /**
      * User Active Tenant Role Permission Messages and redirects
      */
     USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_assigned_success"),
