@@ -42,6 +42,27 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.radien.webapp.DataModelEnum.EDIT_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.PERMISSIONS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.ROLE_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.SAVE_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.SAVE_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TENANT_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TENANT_RD_TENANTS;
+import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TR_ASSOCIATION;
+import static io.radien.webapp.DataModelEnum.TR_TENANTS_FROM_USER;
+import static io.radien.webapp.DataModelEnum.USERS_PATH;
+import static io.radien.webapp.DataModelEnum.TR_PATH;
+import static io.radien.webapp.DataModelEnum.ROLES_MESSAGE;
+import static io.radien.webapp.DataModelEnum.RETRIEVE_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH;
+import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ERROR;
+import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_SUCCESS;
+
+
 /**
  * JSF manager bean that will handle all associations regarding TenantRole domain
  * @author Newton Carvalho
@@ -73,8 +94,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     private Long tabIndex = 0L;
 
-    public static final String K_TENANT_ROLE_SCREEN = "tenantrole";
-
     /**
      * This method is effectively invoke to create Tenant role association
      * @return mapping id that refers the tenant role creation/edition gui
@@ -87,14 +106,14 @@ public class TenantRoleAssociationManager extends AbstractManager {
             if (tenantRole.getId() == null) {
                 tenantRoleAssociationCreated = true;
             }
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
-                    JSFUtil.getMessage("tenant_role_association"));
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(SAVE_SUCCESS_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_save_error"),
-                    JSFUtil.getMessage("tenant_role_association"));
+            handleError(e, JSFUtil.getMessage(SAVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -108,7 +127,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tenant = new Tenant();
         this.tenantRoleAssociationCreated = Boolean.FALSE;
         this.tabIndex = 0L;
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -124,18 +143,18 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             this.role = this.roleRESTServiceAccess.getRoleById(this.tenantRole.getRoleId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_role_not_found"), this.tenantRole.getRoleId())));
+                            ROLE_NOT_FOUND_MESSAGE.getValue()), this.tenantRole.getRoleId())));
 
             this.tenant = this.tenantRESTServiceAccess.getTenantById(this.tenantRole.getTenantId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_tenant_not_found"), this.tenantRole.getTenantId())));
+                            TENANT_NOT_FOUND_MESSAGE.getValue()), this.tenantRole.getTenantId())));
             this.calculatePermissions();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"),
-                    JSFUtil.getMessage("rd_tenant_role_association"));
+            handleError(e, JSFUtil.getMessage(EDIT_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_ASSOCIATION.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -158,8 +177,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
                     getPermissions(tenant.getId(), role.getId(), null);
             return assignedPermissions;
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_permissions"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(PERMISSIONS_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -172,16 +191,17 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.tabIndex = 1L;
         try {
             if (permission == null || permission.getId() == null) {
-                throw new IllegalArgumentException(JSFUtil.getMessage("rd_permission_is_mandatory"));
+                throw new IllegalArgumentException(JSFUtil.
+                        getMessage(TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue()));
             }
             this.tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), permission.getId());
             this.calculatePermissions();
             handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_role_permission_association_creation_success"));
+                    JSFUtil.getMessage(TRP_ASSOCIATION_SUCCESS_MESSAGE.getValue()));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_role_permission_association_creation_error"));
+            handleError(e, JSFUtil.getMessage(TRP_ASSOCIATION_ERROR_MESSAGE.getValue()));
         }
-        return K_TENANT_ROLE_SCREEN;
+        return TR_PATH.getValue();
     }
 
     /**
@@ -197,12 +217,12 @@ public class TenantRoleAssociationManager extends AbstractManager {
                 tenantRoleRESTServiceAccess.save(tr);
             }
             tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), userId);
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_tenant_association_creation_success"));
-            return "pretty:users";
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(USER_ASSIGNING_TENANT_SUCCESS.getValue()));
+            return USERS_PATH.getValue();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_tenant_association_creation_error"));
-            return "pretty:userTenantAssociation";
+            handleError(e, JSFUtil.getMessage(USER_ASSIGNING_TENANT_ERROR.getValue()));
+            return USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
         }
     }
 
@@ -304,6 +324,16 @@ public class TenantRoleAssociationManager extends AbstractManager {
     }
 
     /**
+     * Auxiliary method to search a role (by its name) and add it into a collection
+     * @param roleBag collection to store the retrieve role
+     * @param roleName parameter to guide the search process
+     * @throws Exception thrown to describe any issue with role rest client
+     */
+    private void addRoleByName(List<SystemRole> roleBag, String roleName) throws Exception {
+        roleRESTServiceAccess.getRoleByName(roleName).ifPresent(roleBag::add);
+    }
+
+    /**
      * Return a list containing Pre-Defined roles (Not administrative ones)
      * that can be use to do the association between (user - tenant - role)
      * @return list containing Roles
@@ -311,15 +341,15 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public List<SystemRole> getInitialRolesAllowedForAssociation() {
         try {
             List<SystemRole> roles = new ArrayList<>();
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.GUEST.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.APPROVER.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.AUTHOR.getRoleName()).get());
-            roles.add(roleRESTServiceAccess.getRoleByName(SystemRolesEnum.PUBLISHER.getRoleName()).get());
+            addRoleByName(roles, SystemRolesEnum.GUEST.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.APPROVER.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.AUTHOR.getRoleName());
+            addRoleByName(roles, SystemRolesEnum.PUBLISHER.getRoleName());
             return roles;
         }
         catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(ROLES_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -329,14 +359,14 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing roles
      * @throws SystemException in case of any error
      */
-    public List<SystemRole> getRoles() throws SystemException {
+    public List<SystemRole> getRoles() {
         try {
             Page pagedInformation =
                     roleRESTServiceAccess.getAll(null, 1, 30, null, true);
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(ROLES_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -347,14 +377,14 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @return List containing tenants
      * @throws SystemException in case of any error
      */
-    public List<SystemTenant> getTenants() throws SystemException {
+    public List<SystemTenant> getTenants() {
         try {
             Page pagedInformation =
                     tenantRESTServiceAccess.getAll(null, 1, 30, null, true);
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(TENANT_RD_TENANTS.getValue()));
             return new ArrayList<>();
         }
     }
@@ -364,14 +394,14 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * has Administrative roles
      * @return list containing tenants
      */
-    public List<? extends SystemTenant> getTenantsFromCurrentUser() throws SystemException {
+    public List<? extends SystemTenant> getTenantsFromCurrentUser() {
         try {
             return this.tenantRoleRESTServiceAccess.getTenants(this.webAuthorizationChecker.
                     getCurrentUserId(), null);
         }
         catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_tenants_from_user"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TR_TENANTS_FROM_USER.getValue()));
             return new ArrayList<>();
         }
     }

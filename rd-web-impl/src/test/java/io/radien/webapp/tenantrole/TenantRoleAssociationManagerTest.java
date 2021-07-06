@@ -28,40 +28,41 @@ import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import static io.radien.webapp.tenantrole.TenantRoleAssociationManager.K_TENANT_ROLE_SCREEN;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.nullable;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.nullable;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Class that aggregates UnitTest cases for TenantRoleAssociationManager
@@ -165,7 +166,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_save_success", captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
     }
 
@@ -189,7 +190,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_save_error", captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_ERROR_MESSAGE.getValue(), captured.getSummary());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
     }
 
@@ -379,13 +380,15 @@ public class TenantRoleAssociationManagerTest {
         assertNull(tenantRoleAssociationManager.getTenant().getId());
 
         assertFalse(tenantRoleAssociationManager.isExistsTenantRoleCreated());
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUri);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUri);
     }
 
     /**
      * Test for method edit(SystemTenantRole), which prepares the frontend gui
      * to expose the information related to the TenantRole that wil be edited.
-     * Return uri mapping referring the value <b>tenantrole</b>
+     * Return uri mapping referring the value tenantrole
+     * @throws SystemException in case of any rest client communication issue
+     * @Exception still thrown by role rest client
      */
     @Test
     public void testEditTenantRole() throws Exception {
@@ -416,7 +419,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(),
                 expectedAssociatedPermissions);
-        assertEquals("tenantrole", returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
     }
 
     /**
@@ -426,7 +429,8 @@ public class TenantRoleAssociationManagerTest {
      * This particular case will simulate an exception occurs while
      * retrieving role.
      *
-     * Expected Return uri mapping referring the value <b>tenantrole</b>
+     * Expected Return uri mapping referring the value tenantrole
+     * @throws Exception thrown by role rest client
      */
     @Test
     public void testEditTenantRoleWhenExceptionOccursForRoleRetrieval() throws Exception {
@@ -441,7 +445,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
         
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -449,7 +453,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_edit_error", captured.getSummary());
+        assertEquals(DataModelEnum.EDIT_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
     /**
@@ -459,10 +463,12 @@ public class TenantRoleAssociationManagerTest {
      * This particular case will simulate an exception occurs while
      * retrieving tenant.
      *
-     * Expected Return uri mapping referring the value <b>tenantrole</b>
+     * Expected Return uri mapping referring the value tenantrole
+     * @throws SystemException in case of any rest client communication issue
+     * @throws Exception thrown by role rest client
      */
     @Test
-    public void testEditTenantRoleWhenExceptionOccursForTenantRetrieval() throws Exception {
+    public void testEditTenantRoleWhenExceptionOccursForTenantRetrieval() throws SystemException, Exception {
         SystemTenantRole tenantRoleToBeEdited = new TenantRole();
         tenantRoleToBeEdited.setTenantId(1L);
         tenantRoleToBeEdited.setRoleId(2L);
@@ -477,7 +483,7 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = this.tenantRoleAssociationManager.
                 edit(tenantRoleToBeEdited);
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -485,7 +491,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_edit_error", captured.getSummary());
+        assertEquals(DataModelEnum.EDIT_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
     /**
@@ -495,10 +501,12 @@ public class TenantRoleAssociationManagerTest {
      * This particular case will simulate an exception occurs while
      * retrieving the assigned permissions.
      *
-     * Expected Return uri mapping referring the value <b>tenantrole</b>
+     * Expected Return uri mapping referring the value tenantrole
+     * @throws SystemException in case of any rest client communication issue
+     * @throws Exception thrown by role rest client
      */
     @Test
-    public void testEditTenantRoleExceptionOccursWhenCalculateAssignedPermissions() throws Exception {
+    public void testEditTenantRoleExceptionOccursWhenCalculateAssignedPermissions() throws SystemException, Exception {
         SystemTenantRole tenantRoleToBeEdited = new TenantRole();
         tenantRoleToBeEdited.setTenantId(1L);
         tenantRoleToBeEdited.setRoleId(2L);
@@ -525,7 +533,7 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getRole(), expectedRole);
         assertEquals(tenantRoleAssociationManager.getTenant(), expectedTenant);
         assertTrue(tenantRoleAssociationManager.getAssignedPermissions().isEmpty());
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -533,7 +541,7 @@ public class TenantRoleAssociationManagerTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_retrieve_error", captured.getSummary());
+        assertEquals(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue(), captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
     }
 
@@ -561,16 +569,16 @@ public class TenantRoleAssociationManagerTest {
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
         assertEquals(tenantRoleAssociationManager.getAssignedPermissions(), expectedAssociatedPermissions);
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_creation_success",
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_SUCCESS_MESSAGE.getValue(),
                 captured.getSummary());
-        assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
+        assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
     }
 
     /**
@@ -591,16 +599,16 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals(K_TENANT_ROLE_SCREEN, returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_creation_error",
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
-        assertEquals("rd_permission_is_mandatory", captured.getDetail());
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue(), captured.getDetail());
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
     }
 
@@ -610,6 +618,7 @@ public class TenantRoleAssociationManagerTest {
      * and must be previously selected from a GUI)
      *
      * Corresponds to scenario/case in which a Exception occurs during assigment process
+     * @throws SystemException in case of any rest client communication issue
      */
     @Test
     public void testAssignPermissionWithException() throws SystemException {
@@ -626,17 +635,17 @@ public class TenantRoleAssociationManagerTest {
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
 
-        assertEquals("tenantrole", returnUriMappingId);
+        assertEquals(DataModelEnum.TR_PATH.getValue(), returnUriMappingId);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals("rd_tenant_role_permission_association_creation_error",
+        assertEquals(DataModelEnum.TRP_ASSOCIATION_ERROR_MESSAGE.getValue(),
                 captured.getSummary());
         assertEquals(e.getMessage(), captured.getDetail());
-        assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(1L));
+        assertEquals(new Long(1L), tenantRoleAssociationManager.getTabIndex());
     }
 
 }
