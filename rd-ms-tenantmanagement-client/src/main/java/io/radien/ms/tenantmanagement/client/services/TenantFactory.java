@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class TenantFactory {
 
-    private final static String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    private static final String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     private static Logger log = LoggerFactory.getLogger(TenantFactory.class);
 

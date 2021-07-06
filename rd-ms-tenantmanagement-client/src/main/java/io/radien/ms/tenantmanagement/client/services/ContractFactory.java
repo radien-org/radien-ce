@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class ContractFactory {
 
-    private final static String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    private static final String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     /**
      * Create a Contract with already predefine fields.

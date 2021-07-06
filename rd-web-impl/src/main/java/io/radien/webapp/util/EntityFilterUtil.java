@@ -74,9 +74,8 @@ public class EntityFilterUtil extends AbstractManager {
      */
     public List<? extends SystemRole> filterRolesByName(String name) {
         try {
-            List<? extends SystemRole> list = roleRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
+            return roleRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
                     1, 10, null, false).getResults();
-            return list;
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
             return new ArrayList<>();

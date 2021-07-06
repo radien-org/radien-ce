@@ -18,7 +18,6 @@ package io.radien.webapp.linkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public class LazyLinkedAuthorizationDataModel extends LazyDataModel<SystemLinkedAuthorization> {
 
-    protected transient final static Logger log = LoggerFactory.getLogger(LazyLinkedAuthorizationDataModel.class);
+    protected static final transient Logger log = LoggerFactory.getLogger(LazyLinkedAuthorizationDataModel.class);
     private static final long serialVersionUID = 5374304621678901012L;
     private LinkedAuthorizationRESTServiceAccess service;
 

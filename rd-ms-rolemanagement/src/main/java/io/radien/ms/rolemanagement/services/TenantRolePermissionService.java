@@ -196,7 +196,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
                         cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),tenantRoleId)
                 );
         List<Long> count = em.createQuery(sc).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**

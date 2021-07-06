@@ -58,9 +58,8 @@ public class ActiveTenantFactory {
      *
      * @param jsonTenant the JSONObject to convert
      * @return the Active Tenant Object
-     * @throws ParseException in case of any issue while parsing the JSON
      */
-    public static ActiveTenant convert(JsonObject jsonTenant) throws ParseException {
+    public static ActiveTenant convert(JsonObject jsonTenant) {
         Long id = FactoryUtilService.getLongFromJson("id", jsonTenant);
         Long userId = FactoryUtilService.getLongFromJson("userId", jsonTenant);
         Long tenantId = FactoryUtilService.getLongFromJson("tenantId", jsonTenant);

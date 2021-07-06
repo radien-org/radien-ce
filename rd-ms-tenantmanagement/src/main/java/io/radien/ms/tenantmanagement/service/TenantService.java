@@ -278,10 +278,7 @@ public class TenantService implements TenantServiceAccess {
      * @return true in case that given field is null or empty ("")
      */
     private boolean validateIfFieldsAreEmpty(String field) {
-        if(field != null && !field.trim().isEmpty()) {
-            return false;
-        }
-        return true;
+        return field == null || field.trim().isEmpty();
     }
 
     /**

@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -57,9 +58,6 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     @Inject
     private OAFAccess oafAccess;
 
-    private final String unableToRecoverExpiredToken = "Unable to recover expiredToken";
-
-
     /**
      * Gets requester to get the active tenant in the DB searching for the field Id
      *
@@ -77,7 +75,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getActiveTenantByUserAndTenantRequester(userId, tenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -116,7 +114,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getSystemActiveTenant(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -140,7 +138,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -207,7 +205,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getActiveTenantPage(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -248,7 +246,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return createActiveTenant((ActiveTenant) activeTenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -295,7 +293,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return deleteRequester(activeTenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -343,7 +341,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return deleteByTenantAndUserRequester(tenant, user);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -387,7 +385,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return updateActiveTenant(activeTenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -435,7 +433,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return isActiveTenantExistentRequester(userId, tenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }

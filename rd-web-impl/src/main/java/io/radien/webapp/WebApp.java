@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
-import io.radien.webapp.AbstractWebapp;
 
 /**
  * @author Marco Weiland

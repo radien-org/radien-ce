@@ -258,8 +258,6 @@ public class UserServiceTest {
     @Test(expected = UserNotFoundException.class)
     public void testDeleteById() throws UserNotFoundException {
         SystemUser result = userServiceAccess.get(uTest.getId());
-        assertNotNull(result);
-        assertEquals(uTest.getUserEmail(), result.getUserEmail());
         userServiceAccess.delete(uTest.getId());
         userServiceAccess.get(uTest.getId());
     }

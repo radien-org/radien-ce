@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PublicService {
-	private final static String PUBLIC_SERVICE_RESPONSE_TEXT = "This service available for all users including unauthorized";
+	private static final String PUBLIC_SERVICE_RESPONSE_TEXT = "This service available for all users including unauthorized";
 
 	public String shared() {
 		return PUBLIC_SERVICE_RESPONSE_TEXT;

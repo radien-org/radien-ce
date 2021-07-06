@@ -138,12 +138,9 @@ public class LinkedAuthorizationBusinessService implements Serializable {
         boolean isPermissionExistent = getPermissionRESTServiceAccess().isPermissionExistent(association.getPermissionId(), null);
         boolean isRoleExistent = roleServiceAccess.checkIfRolesExist(association.getRoleId(), null);
 
-        if(!isTenantExistent ||
-                !isPermissionExistent ||
-                !isRoleExistent) {
-            return false;
-        }
-        return true;
+        return isTenantExistent &&
+                isPermissionExistent &&
+                isRoleExistent;
     }
 
     /**

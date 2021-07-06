@@ -15,9 +15,7 @@
  */
 package io.radien.webapp.tenant;
 
-import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.service.permission.ActionRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.webapp.JSFUtil;
