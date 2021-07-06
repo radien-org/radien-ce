@@ -363,7 +363,8 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return response.readEntity(Boolean.class);
             }
-            log.error(response.readEntity(String.class));
+            String issue = response.readEntity(String.class);
+            log.error(issue);
             return false;
         }
         catch (MalformedURLException | ExtensionException | ProcessingException e) {

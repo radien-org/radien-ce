@@ -19,7 +19,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.model.role.SystemRole;
-import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
