@@ -22,6 +22,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +131,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
         criteriaQuery.select(root);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+        Predicate global = getFilteredPredicate((TenantRoleUserSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
         TypedQuery<TenantRoleUser> q = em.createQuery(criteriaQuery);
@@ -151,7 +152,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * @param tenantRoleUserRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(SystemTenantRoleUserSearchFilter filter, CriteriaBuilder criteriaBuilder,
+    private Predicate getFilteredPredicate(TenantRoleUserSearchFilter filter, CriteriaBuilder criteriaBuilder,
                                            Root<TenantRoleUser> tenantRoleUserRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
@@ -179,7 +180,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * @return a constructed predicate
      */
     private Predicate getFieldPredicate(String name, Object value,
-                                        SystemTenantRoleUserSearchFilter filter,
+                                        TenantRoleUserSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
                                         Root<TenantRoleUser> tenantRoleUserRoot,
                                         Predicate global) {

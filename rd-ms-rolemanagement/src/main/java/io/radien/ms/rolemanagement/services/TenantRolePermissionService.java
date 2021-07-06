@@ -21,6 +21,7 @@ import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
 
         criteriaQuery.select(root);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+        Predicate global = getFilteredPredicate((TenantRolePermissionSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
         TypedQuery<TenantRolePermission> q = em.createQuery(criteriaQuery);
@@ -93,7 +94,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @param tenantRolePermissionRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(SystemTenantRolePermissionSearchFilter filter, CriteriaBuilder criteriaBuilder,
+    private Predicate getFilteredPredicate(TenantRolePermissionSearchFilter filter, CriteriaBuilder criteriaBuilder,
                                            Root<TenantRolePermission> tenantRolePermissionRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
@@ -121,7 +122,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @return a constructed predicate
      */
     private Predicate getFieldPredicate(String name, Object value,
-                                        SystemTenantRolePermissionSearchFilter filter,
+                                        TenantRolePermissionSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
                                         Root<TenantRolePermission> tenantRolePermissionRoot,
                                         Predicate global) {

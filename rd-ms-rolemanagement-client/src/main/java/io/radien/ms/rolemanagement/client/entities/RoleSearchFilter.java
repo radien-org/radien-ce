@@ -30,9 +30,6 @@ public class RoleSearchFilter extends SearchableByIds implements SystemRoleSearc
     private String name;
     private String description;
 
-    private boolean isExact;
-    private boolean isLogicConjunction;
-
     /**
      * Role search filter empty constructor
      */
@@ -47,11 +44,9 @@ public class RoleSearchFilter extends SearchableByIds implements SystemRoleSearc
      * @param isLogicConjunction true in case search option is and conjunction
      */
     public RoleSearchFilter(String name, String description, Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
-        super(ids);
+        super(ids, isExact, isLogicConjunction);
         this.name = name;
         this.description = description;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicConjunction;
     }
 
     /**
@@ -88,41 +83,5 @@ public class RoleSearchFilter extends SearchableByIds implements SystemRoleSearc
     @Override
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * Role search filter get is exact
-     * @return true or false
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * Role search filter is exact setter
-     * @param exact to be set and replace
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * Role search filter get is logical conjunction
-     * @return true or false
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Role search filter is logicConjunction setter
-     * @param logicConjunction to be set and replace
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

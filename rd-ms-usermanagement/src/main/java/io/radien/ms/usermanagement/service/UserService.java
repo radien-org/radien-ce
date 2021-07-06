@@ -39,6 +39,7 @@ import javax.persistence.criteria.Root;
 
 import io.radien.api.SystemVariables;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -305,7 +306,7 @@ public class UserService implements UserServiceAccess{
 
 		criteriaQuery.select(userRoot);
 
-		Predicate global = getFilteredPredicate(filter, criteriaBuilder, userRoot);
+		Predicate global = getFilteredPredicate((UserSearchFilter) filter, criteriaBuilder, userRoot);
 
 		criteriaQuery.where(global);
 		TypedQuery<User> q=em.createQuery(criteriaQuery);
@@ -335,7 +336,7 @@ public class UserService implements UserServiceAccess{
 	 * @param userRoot database table to search the information
 	 * @return a constructed predicate with the fields needed to be search
 	 */
-	private Predicate getFilteredPredicate(SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
+	private Predicate getFilteredPredicate(UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
 		Predicate global;
 
 		// is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
@@ -377,7 +378,7 @@ public class UserService implements UserServiceAccess{
 	 * @param global complete where clause to be merged into the constructed information
 	 * @return a constructed predicate with the fields needed to be search
 	 */
-	private Predicate getFieldPredicate(String name, String value, SystemUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global) {
+	private Predicate getFieldPredicate(String name, String value, UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global) {
 		if(value != null) {
 			Predicate subPredicate;
 			if (filter.isExact()) {

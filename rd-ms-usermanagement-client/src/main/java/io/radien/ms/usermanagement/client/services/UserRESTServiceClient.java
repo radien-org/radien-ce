@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -92,8 +93,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return getSystemUser(sub);
             } catch (TokenExpiredException expiredException) {
-                log.error(expiredException.getMessage(), expiredException);
-                throw new SystemException(expiredException);
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -112,8 +112,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return getSystemUser(id);
             } catch (TokenExpiredException expiredException) {
-                log.error(expiredException.getMessage(), expiredException);
-                throw new SystemException(expiredException);
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -152,8 +151,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return getSystemUserByLogon(logon);
             } catch (TokenExpiredException expiredException) {
-                log.error(expiredException.getMessage(), expiredException);
-                throw new SystemException(expiredException);
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -174,7 +172,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             return Optional.empty();
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
     }
@@ -216,7 +213,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e) {
-            log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
     }
@@ -240,7 +236,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
     }
@@ -260,8 +255,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return createUser(user, skipKeycloak);
             } catch (TokenExpiredException tokenExpiredException) {
-                log.error(tokenExpiredException.getMessage(), tokenExpiredException);
-                throw new SystemException(tokenExpiredException);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -279,7 +273,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
         } catch (MalformedURLException e) {
-            log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
         if (skipKeycloak) {
@@ -528,8 +521,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                 return Optional.empty();
             }
         } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
-            throw pe;
+            throw new ProcessingException(pe);
         }
     }
 

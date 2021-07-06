@@ -45,28 +45,4 @@ public interface SystemTenantRolePermissionSearchFilter {
      * @param permissionId to be set
      */
     void setPermissionId(Long permissionId);
-
-    /**
-     * System tenant role permission search filter is exact search getter
-     * @return the system tenant role permission search filter is exact value
-     */
-    public boolean isExact();
-
-    /**
-     * System tenant role permission search filter is exact setter
-     * @param exact if true the search needs to be exactly as the given parameters
-     */
-    public void setExact(boolean exact);
-
-    /**
-     * System tenant role permission search filter is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    public boolean isLogicConjunction();
-
-    /**
-     * System tenant role permission search filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    public void setLogicConjunction(boolean logicConjunction);
 }

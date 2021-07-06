@@ -38,16 +38,6 @@
 								   itemValue="#{tenantType}" itemLabel="#{tenantType.name}"/>
 				</b:selectOneMenu>
 
-				<b:row id="#{msg.rd_nonRootInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT' || tenantDataModel.tenant.tenantType == 'SUB_TENANT'}" value="#{tenantDataModel.tenant.parentId}">
-					<b:selectOneMenu id="#{msg.rd_tenantParentId}" value="#{tenantDataModel.tenant.parentId}"
-									 label="#{msg.rd_tenant_parent}" select2="true">
-						<f:selectItem value="#{null}" itemLabel="#{msg.rd_tenant_remind_select_parent}"/>
-						<f:selectItems value="#{tenantDataModel.parents}" var="#{msg.rd_tenantParent}"
-									   itemValue="#{tenantParent.id}"
-									   itemLabel="#{tenantParent.name} - #{tenantParent.tenantKey} - #{tenantParent.tenantType.name}"/>
-					</b:selectOneMenu>
-				</b:row>
-
 				<b:row id="#{msg.rd_clientInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT'}">
 					<b:inputText id="#{msg.rd_tenantClientAddress}" value="#{tenantDataModel.tenant.clientAddress}"
 								 label="#{msg.address}"/>
@@ -61,16 +51,6 @@
 								 label="#{msg.phoneNumber}"/>
 					<b:inputText id="#{msg.rd_tenantClientEmail}" value="#{tenantDataModel.tenant.clientEmail}"
 								 label="#{msg.email}"/>
-				</b:row>
-
-				<b:row id="#{msg.rd_tenant_subInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'SUB_TENANT'}">
-					<b:selectOneMenu id="#{msg.rd_tenantClientId}" value="#{tenantDataModel.tenant.clientId}"
-									 label="#{msg.rd_tenant_client}" select2="true">
-						<f:selectItem value="#{null}" itemLabel="#{msg.rd_tenant_remind_select_client}"/>
-						<f:selectItems value="#{tenantDataModel.parents}" var="#{msg.rd_tenant_clientParent}"
-									   itemValue="#{tenanClientParent.id}"
-									   itemLabel="#{tenanClientParent.name} - #{tenanClientParent.tenantKey} - #{tenanClientParent.tenantType.name}"/>
-					</b:selectOneMenu>
 				</b:row>
 
 			<b:buttonGroup>

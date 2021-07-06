@@ -16,17 +16,16 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.SystemResourceSearchFilter;
+import io.radien.api.search.SearchFilterCriteria;
 
 /**
  * Encapsulates the parameters applied to search for actions
  *
  * @author Newton Carvalho
  */
-public class ResourceSearchFilter implements SystemResourceSearchFilter {
+public class ResourceSearchFilter extends SearchFilterCriteria implements SystemResourceSearchFilter {
 
     private String name;
-    private boolean isExact;
-    private boolean isLogicConjunction;
 
     /**
      * Resource search filter empty constructor
@@ -41,9 +40,8 @@ public class ResourceSearchFilter implements SystemResourceSearchFilter {
      */
     public ResourceSearchFilter(String name,
                                 boolean isExact, boolean isLogicConjunction) {
+        super(isExact, isLogicConjunction);
         this.name = name;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicConjunction;
     }
 
     /**
@@ -59,40 +57,4 @@ public class ResourceSearchFilter implements SystemResourceSearchFilter {
      */
     @Override
     public void setName(String name) { this.name = name; }
-
-    /**
-     * Resource search filter is search to be exact getter
-     * @return the resource search filter value that indicates if the search should be exact or not
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * Resource search filter is search to be exact setter
-     * @param exact to be set
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * Resource search filter is logical conjunction getter
-     * @return Resource search filter is logical conjunction
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Resource search filter is logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
-    }
 }
