@@ -20,6 +20,7 @@ import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
@@ -65,8 +66,8 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
         try {
             lazyModel = buildLazyModel(service, tenantRESTServiceAccess, roleRESTServiceAccess);
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"),
-                    JSFUtil.getMessage("tenant_role_associations"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TR_ASSOCIATIONS.getValue()));
         }
     }
 

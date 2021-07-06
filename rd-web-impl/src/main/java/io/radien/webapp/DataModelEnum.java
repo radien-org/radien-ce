@@ -94,6 +94,7 @@ public enum DataModelEnum {
 
     TR_TENANTS_FROM_USER("rd_tenants_from_user"),
     TR_ASSOCIATION("tenant_role_association"),
+    TR_ASSOCIATIONS("tenant_role_associations"),
     TR_ASSOCIATION_ID("tenant_role_association_id"),
     TR_PATH("tenantrole"),
 
