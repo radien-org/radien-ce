@@ -93,8 +93,7 @@ public interface ActiveTenantResourceClient {
      * @return 200 code message in case of success or 500 in case of any error
      */
     @GET
-    @Path("/{userId}/{tenantId}")
-    public Response getByUserAndTenant(@NotNull @PathParam("userId") Long userId, @NotNull @PathParam("tenantId") Long tenantId);
+    public Response getByUserAndTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
 
     /**
      * Requests to a active tenant be deleted by given his id
@@ -104,6 +103,17 @@ public interface ActiveTenantResourceClient {
     @DELETE
     @Path("/{id}")
     public Response delete(@NotNull @PathParam("id") long id);
+
+    /**
+     * Requests to delete active tenants taking in account the following parameters
+     * @param tenantId tenant id of the active tenant to be deleted
+     * @param userId user id of the active tenant to be deleted
+     * @return a response with true or false based on the success or failure of the deletion
+     */
+    @DELETE
+    @Path("/{tenantId}/{userId}")
+    public Response delete(@NotNull @PathParam("tenantId") long tenantId,
+                           @NotNull @PathParam("userId") long userId);
 
     /**
      * Method to request a creation of a active tenant
