@@ -28,7 +28,6 @@ import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
-import io.radien.persistencelib.PredicateMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,11 +157,35 @@ public class TenantRoleService implements TenantRoleServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = PredicateMapper.getFieldPredicate(SystemVariables.TENANT_ID.getFieldName(), filter.getTenantId(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder,
+        global = getFieldPredicate(SystemVariables.TENANT_ID.getFieldName(), filter.getTenantId(), filter, criteriaBuilder,
                 tenantRoleRoot, global);
-        global = PredicateMapper.getFieldPredicate(SystemVariables.ROLE_ID.getFieldName(), filter.getRoleId(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder,
+        global = getFieldPredicate(SystemVariables.ROLE_ID.getFieldName(), filter.getRoleId(), filter, criteriaBuilder,
                 tenantRoleRoot, global);
 
+        return global;
+    }
+
+    /**
+     * Puts the requested fields into a predicate line
+     * @param name of the field
+     * @param value of the field
+     * @param filter complete filter
+     * @param criteriaBuilder to be used
+     * @param tenantRoleRoot table to be used
+     * @param global predicate to be added
+     * @return a constructed predicate
+     */
+    private Predicate getFieldPredicate(String name, Object value, TenantRoleSearchFilter filter,
+                                        CriteriaBuilder criteriaBuilder, Root<TenantRole> tenantRoleRoot,
+                                        Predicate global) {
+        if(value != null) {
+            Predicate subPredicate = criteriaBuilder.equal(tenantRoleRoot.get(name), value);
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, subPredicate);
+            } else {
+                global = criteriaBuilder.or(global, subPredicate);
+            }
+        }
         return global;
     }
 

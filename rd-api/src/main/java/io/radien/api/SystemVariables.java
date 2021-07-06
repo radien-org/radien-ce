@@ -28,15 +28,9 @@ public enum SystemVariables {
     USER_EMAIL("userEmail"),
     SUB("sub"),
     TENANT_ID("tenantId"),
-    DESCRIPTION("description"),
-    ACTION_ID("actionId"),
-    RESOURCE_ID("resourceId"),
     ROLE_ID("roleId"),
     USER_ID("userId"),
     TENANT_ROLE_ID("tenantRoleId"),
-    TENANT_NAME("tenantName"),
-    TENANT_TYPE("tenantType"),
-    PARENT_ID("parentId"),
     PERMISSION_ID("permissionId");
 
     private final String fieldName;

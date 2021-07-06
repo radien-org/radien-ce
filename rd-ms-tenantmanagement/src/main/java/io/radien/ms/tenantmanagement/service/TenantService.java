@@ -15,7 +15,6 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
@@ -26,7 +25,6 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.entities.Tenant;
-import io.radien.persistencelib.PredicateMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +88,7 @@ public class TenantService implements TenantServiceAccess {
         criteriaQuery.select(tenantRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(tenantRoot.get(SystemVariables.NAME.getFieldName()), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(tenantRoot.get("name"), search));
             criteriaQuery.where(global);
         }
         if(sortBy != null && !sortBy.isEmpty()){
@@ -162,7 +160,7 @@ public class TenantService implements TenantServiceAccess {
         }
 
         if (filter.getIds() != null && !filter.getIds().isEmpty()) {
-            Predicate in = tenantRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds());
+            Predicate in = tenantRoot.get("id").in(filter.getIds());
             if(filter.isLogicConjunction()) {
                 global = criteriaBuilder.and(global, in);
             } else {
@@ -170,9 +168,38 @@ public class TenantService implements TenantServiceAccess {
             }
         }
 
-        global = PredicateMapper.getFieldPredicate(SystemVariables.NAME.getFieldName(), filter.getName(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, tenantRoot, global);
-        global = PredicateMapper.getFieldPredicate(SystemVariables.TENANT_TYPE.getFieldName(), filter.getTenantType(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, tenantRoot, global);
+        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, tenantRoot, global);
+        global = getFieldPredicate("tenantType", filter.getTenantType(), filter, criteriaBuilder, tenantRoot, global);
 
+        return global;
+    }
+
+    /**
+     * Puts the requested fields into a predicate line
+     * @param name of the field
+     * @param value of the field
+     * @param filter complete filter
+     * @param criteriaBuilder to be used
+     * @param tenantRoot table to be used
+     * @param global predicate to be added
+     * @return a constructed predicate
+     */
+    private Predicate getFieldPredicate(String name, Object value, TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot, Predicate global) {
+        if(value != null) {
+            Predicate subPredicate;
+            if (value instanceof String && !filter.isExact()) {
+                subPredicate = criteriaBuilder.like(tenantRoot.get(name),"%"+value+"%");
+            }
+            else {
+                subPredicate = criteriaBuilder.equal(tenantRoot.get(name), value);
+            }
+
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, subPredicate);
+            } else {
+                global = criteriaBuilder.or(global, subPredicate);
+            }
+        }
         return global;
     }
 
@@ -336,9 +363,9 @@ public class TenantService implements TenantServiceAccess {
         Root<Tenant> root = criteriaQuery.from(Tenant.class);
         criteriaQuery.select(root);
         Predicate global =
-                criteriaBuilder.equal(root.get(SystemVariables.NAME.getFieldName()), tenant.getName());
+                criteriaBuilder.equal(root.get("name"), tenant.getName());
         if (tenant.getId() != null) {
-            global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get(SystemVariables.ID.getFieldName()), tenant.getId()));
+            global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), tenant.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<Tenant> q = em.createQuery(criteriaQuery);
@@ -369,7 +396,7 @@ public class TenantService implements TenantServiceAccess {
         CriteriaDelete<Tenant> criteriaDelete = cb.createCriteriaDelete(Tenant.class);
         Root<Tenant> userRoot = criteriaDelete.from(Tenant.class);
 
-        criteriaDelete.where(userRoot.get(SystemVariables.ID.getFieldName()).in(contractIds));
+        criteriaDelete.where(userRoot.get("id").in(contractIds));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -386,7 +413,7 @@ public class TenantService implements TenantServiceAccess {
         Root<Tenant> contractRoot = criteriaQuery.from(Tenant.class);
 
         criteriaQuery.select(criteriaBuilder.count(contractRoot));
-        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get(SystemVariables.ID.getFieldName()), tenantId));
+        criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), tenantId));
 
         Long size = em.createQuery(criteriaQuery).getSingleResult();
 
@@ -422,8 +449,8 @@ public class TenantService implements TenantServiceAccess {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Tenant> tenantRoot = criteriaQuery.from(Tenant.class);
-        Predicate predicate = criteriaBuilder.equal(tenantRoot.get(SystemVariables.PARENT_ID.getFieldName()), tenantId);
-        criteriaQuery.select(tenantRoot.get(SystemVariables.ID.getFieldName())).where(predicate);
+        Predicate predicate = criteriaBuilder.equal(tenantRoot.get("parentId"), tenantId);
+        criteriaQuery.select(tenantRoot.get("id")).where(predicate);
         TypedQuery<Long> q= em.createQuery(criteriaQuery);
         return q.getResultList();
     }
@@ -456,7 +483,7 @@ public class TenantService implements TenantServiceAccess {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<Tenant> criteriaDelete = cb.createCriteriaDelete(Tenant.class);
         Root<Tenant> userRoot = criteriaDelete.from(Tenant.class);
-        criteriaDelete.where(cb.equal(userRoot.get(SystemVariables.ID.getFieldName()), tenantId));
+        criteriaDelete.where(cb.equal(userRoot.get("id"), tenantId));
         int ret = entityManager.createQuery(criteriaDelete).executeUpdate();
         return ret > 0;
     }
