@@ -66,8 +66,22 @@ public enum DataModelEnum {
     TENANT_NOT_FOUND("rd_tenant_tenant_not_found"),
     TENANT_USER_SESSION("rd_tenant_user_session"),
     TENANT_SAVE_ERROR_MESSAGE("rd_save_error"),
-    TENANT_GENERIC_ERROR_MESSAGE("rd_generic_error_message");
+    TENANT_GENERIC_ERROR_MESSAGE("rd_generic_error_message"),
 
+    /**
+     * User Active Tenant Role Permission Messages and redirects
+     */
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_assigned_success"),
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_ERROR("rd_user_active_tenant_role_permission_assigned_error"),
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_unassigned_success"),
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR("rd_user_active_tenant_role_permission_unassigned_error"),
+
+    /**
+     * Role Messages and redirects
+     */
+    ROLE_MAIN_PAGE("roles"),
+    ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error");
+    
     private String value;
 
     /**
