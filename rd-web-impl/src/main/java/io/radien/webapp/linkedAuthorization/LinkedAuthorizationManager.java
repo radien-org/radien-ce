@@ -27,6 +27,21 @@ import javax.inject.Inject;
 import java.text.MessageFormat;
 import java.util.List;
 
+import static io.radien.webapp.DataModelEnum.PERMISSION_MESSAGE;
+import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.ROLE_MESSAGE;
+import static io.radien.webapp.DataModelEnum.ROLE_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TENANT_RD_TENANT;
+import static io.radien.webapp.DataModelEnum.TENANT_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.USER_MESSAGE;
+import static io.radien.webapp.DataModelEnum.USER_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.SAVE_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.SAVE_SUCCESS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.EDIT_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.LINKED_AUTHORIZATION_MESSAGE;
+import static io.radien.webapp.DataModelEnum.LINKED_AUTHORIZATION_PATH;
+import static io.radien.webapp.DataModelEnum.RETRIEVE_ERROR_MESSAGE;
+
 /**
  * @author Newton Carvalho
  */
@@ -59,8 +74,9 @@ public class LinkedAuthorizationManager extends AbstractManager {
     public String save(SystemLinkedAuthorization l) {
         try {
             this.selectedUser = this.userRESTServiceAccess.getUserByLogon(
-                    this.selectedUser.getLogon()).orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                    "rd_user_not_found"), selectedUser.getLogon())));
+                    this.selectedUser.getLogon()).orElseThrow(() -> new SystemException(
+                            MessageFormat.format(JSFUtil.getMessage(USER_NOT_FOUND_MESSAGE.getValue()), 
+                                    selectedUser.getLogon())));
 
             l.setTenantId(this.selectedTenant.getId());
             l.setRoleId(this.selectedRole.getId());
@@ -69,12 +85,13 @@ public class LinkedAuthorizationManager extends AbstractManager {
 
             this.linkedAuthorizationRESTServiceAccess.create(l);
 
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
-                    JSFUtil.getMessage("rd_linkedauthorization"));
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(SAVE_SUCCESS_MESSAGE.getValue()),
+                    JSFUtil.getMessage(LINKED_AUTHORIZATION_MESSAGE.getValue()));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_linkedauthorization"));
+            handleError(e, JSFUtil.getMessage(SAVE_ERROR_MESSAGE.getValue()), 
+                    JSFUtil.getMessage(LINKED_AUTHORIZATION_MESSAGE.getValue()));
         }
-        return "linkedauthorization";
+        return LINKED_AUTHORIZATION_PATH.getValue();
     }
 
     public String edit(SystemLinkedAuthorization l) {
@@ -82,24 +99,25 @@ public class LinkedAuthorizationManager extends AbstractManager {
         try {
             this.selectedPermission = this.permissionRESTServiceAccess.getPermissionById(l.getPermissionId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_permission_not_found"), l.getPermissionId())));
+                            PERMISSION_NOT_FOUND_MESSAGE.getValue()), l.getPermissionId())));
 
             this.selectedRole = this.roleRESTServiceAccess.getRoleById(l.getRoleId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                    "rd_role_not_found"), l.getRoleId())));
+                    ROLE_NOT_FOUND_MESSAGE.getValue()), l.getRoleId())));
 
             this.selectedTenant = this.tenantRESTServiceAccess.getTenantById(l.getTenantId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_tenant_not_found"), l.getTenantId())));
+                            TENANT_NOT_FOUND_MESSAGE.getValue()), l.getTenantId())));
 
             this.selectedUser = this.userRESTServiceAccess.getUserById(l.getRoleId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_user_not_found"), l.getUserId())));
+                            USER_NOT_FOUND_MESSAGE.getValue()), l.getUserId())));
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_linkedauthorization"));
+            handleError(e, JSFUtil.getMessage(EDIT_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(LINKED_AUTHORIZATION_MESSAGE.getValue()));
         }
-        return "linkedauthorization";
+        return LINKED_AUTHORIZATION_PATH.getValue();
     }
 
     protected String prepareFilterParam(String filter) {
@@ -112,17 +130,17 @@ public class LinkedAuthorizationManager extends AbstractManager {
         return filter;
     }
 
-    public List<? extends SystemTenant> filterTenantsByName(String name) throws Exception{
+    public List<? extends SystemTenant> filterTenantsByName(String name) throws SystemException{
         return this.tenantRESTServiceAccess.getAll(prepareFilterParam(name),
                 1, 10, null, false).getResults();
     }
 
-    public List<? extends SystemPermission> filterPermissionsByName(String name) throws Exception{
+    public List<? extends SystemPermission> filterPermissionsByName(String name) throws SystemException{
         return this.permissionRESTServiceAccess.getAll(prepareFilterParam(name),
                 1, 10, null, false).getResults();
     }
 
-    public List<? extends SystemRole> filterRolesByName(String name) throws Exception{
+    public List<? extends SystemRole> filterRolesByName(String name) throws SystemException{
         return this.roleRESTServiceAccess.getAll(prepareFilterParam(name),
                 1, 10, null, false).getResults();
     }
@@ -169,44 +187,52 @@ public class LinkedAuthorizationManager extends AbstractManager {
 
     public String getLogon(Long userId) {
         try {
-            return this.userRESTServiceAccess.getUserById(userId).get().getLogon();
+            return this.userRESTServiceAccess.getUserById(userId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage(USER_NOT_FOUND_MESSAGE.getValue()), userId))).
+                    getLogon();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_user"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(USER_MESSAGE.getValue()));
             return null;
         }
     }
 
     public String getTenantName(Long tenantId) {
         try {
-            return this.tenantRESTServiceAccess.getTenantById(tenantId).get().getName();
+            return this.tenantRESTServiceAccess.getTenantById(tenantId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage(TENANT_NOT_FOUND_MESSAGE.getValue()), tenantId))).
+                    getName();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_tenant"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(TENANT_RD_TENANT.getValue()));
             return null;
         }
     }
 
     public String getRoleName(Long roleId) {
         try {
-            return this.roleRESTServiceAccess.getRoleById(roleId).get().getName();
+            return this.roleRESTServiceAccess.getRoleById(roleId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage(ROLE_NOT_FOUND_MESSAGE.getValue()), roleId))).
+                    getName();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_role"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(ROLE_MESSAGE.getValue()));
             return null;
         }
     }
 
     public String getPermissionName(Long permissionId) {
         try {
-            return this.permissionRESTServiceAccess.getPermissionById(permissionId).get().getName();
+            return this.permissionRESTServiceAccess.getPermissionById(permissionId).orElseThrow(() -> new SystemException(
+                    MessageFormat.format(JSFUtil.getMessage(PERMISSION_NOT_FOUND_MESSAGE.getValue()), permissionId))).
+                    getName();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"),
-                    JSFUtil.getMessage("rd_permission"));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(PERMISSION_MESSAGE.getValue()));
             return null;
         }
     }

@@ -59,7 +59,7 @@ public class EntityFilterUtil extends AbstractManager {
     public List<? extends SystemTenant> filterTenantsByName(String name) {
         try {
             return this.tenantRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
-                    1, 10, null, false).getResults();
+                    1, 100, null, false).getResults();
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_tenants"));
             return new ArrayList<>();

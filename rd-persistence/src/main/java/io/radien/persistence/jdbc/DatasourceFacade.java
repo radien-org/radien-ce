@@ -15,6 +15,7 @@
  */
 package io.radien.persistence.jdbc;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
@@ -55,8 +56,8 @@ public @RequestScoped class DatasourceFacade extends AbstractDatasourceFacade {
 				log.error("Error on init conenction", e);
 				error = true;
 			} finally {
-				if (!error) {
-					log.info(String.format("%s connection was opened " + getInitCount() + " times since last reboot",
+				if (!error && log.isInfoEnabled()) {
+					log.info(GenericErrorCodeMessage.INIT_CONNECTION_TIME_REBOOT.toString(String.valueOf(getInitCount()),
 							this.getClass().getSimpleName()));
 				}
 			}

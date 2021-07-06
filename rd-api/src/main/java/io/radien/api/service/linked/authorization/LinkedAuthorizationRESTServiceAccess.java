@@ -18,6 +18,7 @@ package io.radien.api.service.linked.authorization;
 import io.radien.api.Appframeable;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.exception.SystemException;
+
 import java.util.List;
 
 /**
@@ -63,6 +64,14 @@ public interface LinkedAuthorizationRESTServiceAccess extends Appframeable {
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public boolean create(SystemLinkedAuthorization linkedAuthorization) throws SystemException;
+
+    /**
+     * Deletes given linked authorization by id
+     * @param linkedAuthorizationId to be deleted
+     * @return true if linked authorization has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean delete(Long linkedAuthorizationId) throws SystemException;
 
     /**
      * Will calculate how many records are existent in the db

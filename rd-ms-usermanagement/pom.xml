@@ -187,7 +187,7 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
-			<version>11.0.2</version>
+			<version>14.0.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.resteasy</groupId>
@@ -225,9 +225,5 @@
 			<version>2.0.9</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>io.radien</groupId>
-            <artifactId>rd-persistence-lib</artifactId>
-        </dependency>
-    </dependencies>
+	</dependencies>
 </project>

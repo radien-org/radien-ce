@@ -164,9 +164,5 @@
 			<artifactId>cxf-rt-rs-mp-client</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>io.radien</groupId>
-            <artifactId>rd-persistence-lib</artifactId>
-        </dependency>
-    </dependencies>
+	</dependencies>
 </project>

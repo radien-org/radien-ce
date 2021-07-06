@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>5.3.1</version>
+			<version>5.3.8</version>
 		</dependency>
 
 		<!-- Spring Security -->

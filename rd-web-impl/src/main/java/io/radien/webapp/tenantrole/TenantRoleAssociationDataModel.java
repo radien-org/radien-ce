@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.radien.webapp.tenantrole;
 
 import io.radien.api.model.tenantrole.SystemTenantRole;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.service.role.RoleRESTServiceAccess;
+import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
@@ -30,7 +31,6 @@ import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import java.io.Serializable;
 
 /**
  * JSF DataModel that will allow a first page (i.e tenantroles.xhtml)
@@ -43,14 +43,20 @@ import java.io.Serializable;
  */
 @Model
 @SessionScoped
-public class TenantRoleAssociationDataModel extends AbstractManager implements Serializable {
+public class TenantRoleAssociationDataModel extends AbstractManager {
 
     private LazyDataModel<? extends SystemTenantRole> lazyModel;
 
-    private SystemTenantRoleUser selectedAssociation;
+    private SystemTenantRole selectedAssociation;
 
     @Inject
     private TenantRoleRESTServiceAccess service;
+
+    @Inject
+    private RoleRESTServiceAccess roleRESTServiceAccess;
+
+    @Inject
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
 
     /**
      * The most import stuff. Initializes the LazyDataModel component
@@ -58,11 +64,25 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
     @PostConstruct
     public void init() {
         try {
-            lazyModel = new LazyTenantRoleAssociationDataModel(service);
+            lazyModel = buildLazyModel(service, tenantRESTServiceAccess, roleRESTServiceAccess);
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"),
-                    JSFUtil.getMessage("tenant_role_associations"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TR_ASSOCIATIONS.getValue()));
         }
+    }
+
+    /**
+     * Assembly method to LazyTenantRoleAssociationDataModel
+     * @param tenantRoleRESTServiceAccess instance of {@link TenantRoleRESTServiceAccess}
+     * @param tenantRESTServiceAccess instance of {@link TenantRESTServiceAccess}
+     * @param roleRESTServiceAccess instance of {@link RoleRESTServiceAccess}
+     * @return assembled {@link LazyTenantRoleAssociationDataModel}
+     */
+    protected LazyTenantRoleAssociationDataModel buildLazyModel(TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess,
+                                                             TenantRESTServiceAccess tenantRESTServiceAccess,
+                                                             RoleRESTServiceAccess roleRESTServiceAccess) {
+        return new LazyTenantRoleAssociationDataModel(tenantRoleRESTServiceAccess,
+                tenantRESTServiceAccess, roleRESTServiceAccess);
     }
 
     /**
@@ -92,7 +112,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
      * Getter for the property that corresponds to the TenantRole object selected as row in a DataGrid
      * @return reference for the selected TenantRole association
      */
-    public SystemTenantRoleUser getSelectedAssociation() {
+    public SystemTenantRole getSelectedAssociation() {
         return selectedAssociation;
     }
 
@@ -100,7 +120,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
      * Setter for the property that corresponds to the TenantRole object selected as row in a DataGrid
      * @param selectedAssociation reference for the selected TenantRole association
      */
-    public void setSelectedAssociation(SystemTenantRoleUser selectedAssociation) {
+    public void setSelectedAssociation(SystemTenantRole selectedAssociation) {
         this.selectedAssociation = selectedAssociation;
     }
 
@@ -114,10 +134,40 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
 
     /**
      * Setter for the property that corresponds to the TenantRole Rest client
-     * @param service  instance of TenantRoleRESTServiceAccess rest client
+     * @param service instance of TenantRoleRESTServiceAccess rest client
      */
     public void setService(TenantRoleRESTServiceAccess service) {
         this.service = service;
+    }
+
+    /**
+     * Getter for the property that corresponds to the Role Rest client
+     * @return instance of RoleRESTServiceAccess rest client
+     */
+    public RoleRESTServiceAccess getRoleRESTServiceAccess() { return roleRESTServiceAccess; }
+
+    /**
+     * Setter for the property that corresponds to the Role Rest client
+     * @param roleRESTServiceAccess instance of RoleRESTServiceAccess rest client
+     */
+    public void setRoleRESTServiceAccess(RoleRESTServiceAccess roleRESTServiceAccess) {
+        this.roleRESTServiceAccess = roleRESTServiceAccess;
+    }
+
+    /**
+     * Getter for the property that corresponds to the Tenant Rest client
+     * @return instance of TenantRESTServiceAccess rest client
+     */
+    public TenantRESTServiceAccess getTenantRESTServiceAccess() {
+        return tenantRESTServiceAccess;
+    }
+
+    /**
+     * Getter for the property that corresponds to the Tenant Rest client
+     * @param tenantRESTServiceAccess instance of TenantRESTServiceAccess rest client
+     */
+    public void setTenantRESTServiceAccess(TenantRESTServiceAccess tenantRESTServiceAccess) {
+        this.tenantRESTServiceAccess = tenantRESTServiceAccess;
     }
 
     /**
@@ -126,7 +176,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager implements S
      *              presented in a DataGrid
      */
     public void onRowSelect(SelectEvent<SystemTenantRole> event) {
-        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rowSelected"), String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage(DataModelEnum.ROW_SELECTED.getValue()), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }

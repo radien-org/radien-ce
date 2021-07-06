@@ -15,26 +15,35 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
 import io.radien.ms.tenantmanagement.entities.ActiveTenant;
-import io.radien.persistencelib.PredicateMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static io.radien.api.SystemVariables.ID;
+import static io.radien.api.SystemVariables.TENANT_ID;
+import static io.radien.api.SystemVariables.TENANT_NAME;
+import static io.radien.api.SystemVariables.USER_ID;
 
 /**
  * Active Tenant requests to be performed into the DB and actions to take place
@@ -77,8 +86,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
         criteriaQuery.select(root);
 
-        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(SystemVariables.USER_ID.getFieldName()), userId),
-                criteriaBuilder.equal(root.get(SystemVariables.TENANT_ID.getFieldName()), tenantId)));
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(USER_ID.getFieldName()), userId),
+                criteriaBuilder.equal(root.get(TENANT_ID.getFieldName()), tenantId)));
         TypedQuery<ActiveTenant> q = em.createQuery(criteriaQuery);
 
         return q.getResultList();
@@ -103,7 +112,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
         criteriaQuery.select(activeTenantRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get(SystemVariables.TENANT_NAME.getFieldName()), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get(TENANT_NAME.getFieldName()), search));
             criteriaQuery.where(global);
         }
         if(sortBy != null && !sortBy.isEmpty()){
@@ -172,9 +181,33 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = PredicateMapper.getFieldPredicate(SystemVariables.USER_ID.getFieldName(), filter.getUserId(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, activeTenantRoot, global);
-        global = PredicateMapper.getFieldPredicate(SystemVariables.TENANT_ID.getFieldName(), filter.getTenantId(), filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, activeTenantRoot, global);
+        global = getFieldPredicate(USER_ID.getFieldName(), filter.getUserId(), filter, criteriaBuilder, activeTenantRoot, global);
+        global = getFieldPredicate(TENANT_ID.getFieldName(), filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot, global);
 
+        return global;
+    }
+
+    /**
+     * Puts the requested fields into a predicate line
+     * @param name of the field
+     * @param value of the field
+     * @param filter complete filter
+     * @param criteriaBuilder to be used
+     * @param activeTenantRoot table to be used
+     * @param global predicate to be added
+     * @return a constructed predicate
+     */
+    private Predicate getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot, Predicate global) {
+        if(value != null) {
+            Predicate subPredicate;
+            subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");
+
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, subPredicate);
+            } else {
+                global = criteriaBuilder.or(global, subPredicate);
+            }
+        }
         return global;
     }
 
@@ -210,6 +243,33 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     }
 
     /**
+     * Delete ActiveTenants that exist for following parameters
+     * @param tenantId tenant identifier
+     * @param userId user identifier
+     * @return true in case of success (records founds and removed), otherwise false
+     */
+    public boolean delete(Long tenantId, Long userId) {
+        if (tenantId == null && userId == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.
+                    ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER.toString());
+        }
+        EntityManager em = emh.getEm();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
+        Root<ActiveTenant> activeTenantRoot = criteriaDelete.from(ActiveTenant.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        if (tenantId != null) {
+            predicates.add(cb.equal(activeTenantRoot.get(TENANT_ID.getFieldName()), tenantId));
+        }
+        if (userId != null) {
+            predicates.add(cb.equal(activeTenantRoot.get(USER_ID.getFieldName()), userId));
+        }
+        criteriaDelete.where(cb.and(predicates.toArray(new Predicate[0])));
+        return em.createQuery(criteriaDelete).executeUpdate() > 0;
+    }
+
+    /**
      * Deletes a list of active tenants selected by his id.
      *
      * @param activeTenantId to be deleted.
@@ -221,7 +281,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
         CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
         Root<ActiveTenant> userRoot = criteriaDelete.from(ActiveTenant.class);
 
-        criteriaDelete.where(userRoot.get(SystemVariables.ID.getFieldName()).in(activeTenantId));
+        criteriaDelete.where(userRoot.get(ID.getFieldName()).in(activeTenantId));
         em.createQuery(criteriaDelete).executeUpdate();
     }
 
@@ -240,8 +300,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
         criteriaQuery.select(criteriaBuilder.count(contractRoot));
 
-        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(contractRoot.get(SystemVariables.USER_ID.getFieldName()), userId),
-                criteriaBuilder.equal(contractRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenantId)));
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(contractRoot.get(USER_ID.getFieldName()), userId),
+                criteriaBuilder.equal(contractRoot.get(TENANT_ID.getFieldName()), tenantId)));
 
         Long size = em.createQuery(criteriaQuery).getSingleResult();
 
@@ -276,7 +336,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
         Root<ActiveTenant> userRoot = criteriaDelete.from(ActiveTenant.class);
-        criteriaDelete.where(cb.equal(userRoot.get(SystemVariables.ID.getFieldName()), activeTenant));
+        criteriaDelete.where(cb.equal(userRoot.get(ID.getFieldName()), activeTenant));
         int ret = entityManager.createQuery(criteriaDelete).executeUpdate();
         return ret > 0;
     }

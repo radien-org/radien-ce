@@ -80,10 +80,14 @@ public @RequestScoped class SecurityConfig extends WebSecurityConfigurerAdapter 
 	public void configure(WebSecurity web) {
 		RequestMatcher requestMatcher = request -> {
 			String reqURI = request.getRequestURI();
-			log.debug(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(), request.getRequestURL());
+			if(log.isDebugEnabled()){
+				log.debug(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(), request.getRequestURL());
+			}
 			try {
 				if (reqURI.contains(ResourceHandler.RESOURCE_IDENTIFIER)) {
-					log.info(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(), reqURI);
+					if(log.isInfoEnabled()){
+						log.info(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(), reqURI);
+					}
 					return true;
 				}
 			} catch (Exception e) {

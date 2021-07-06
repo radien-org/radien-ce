@@ -28,6 +28,11 @@ public enum DataModelEnum {
      */
     GENERIC_ERROR_MESSAGE("rd_generic_error_message"),
     PUBLIC_INDEX_PATH("/public/index"),
+    SAVE_ERROR_MESSAGE("rd_save_error"),
+    EDIT_ERROR_MESSAGE("rd_edit_error"),
+    SAVE_SUCCESS_MESSAGE("rd_save_success"),
+    RETRIEVE_ERROR_MESSAGE("rd_retrieve_error"),
+    ROW_SELECTED("rowSelected"),
 
     /**
      * Active Tenant Messages and redirects
@@ -37,12 +42,74 @@ public enum DataModelEnum {
     ACTIVE_TENANT_CHANGED_VALUE("rd_active_tenant_changed_value"),
 
     /**
+     * Permission Messages and redirects
+     */
+    PERMISSION_MESSAGE("rd_permission"),
+    PERMISSIONS_MESSAGE("rd_permissions"),
+    PERMISSION_NOT_FOUND_MESSAGE("rd_permission_not_found"),
+
+    /**
+     * Role Messages and redirects
+     */
+    ROLE_MESSAGE("rd_role"),
+    ROLES_MESSAGE("rd_roles"),
+    ROLE_NOT_FOUND_MESSAGE("rd_role_not_found"),
+
+    /**
+     * User Messages and redirects
+     */
+    USER_MESSAGE("rd_user"),
+    USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
+
+    /**
+     * Linked Authorization Messages and redirects
+     */
+    LINKED_AUTHORIZATION_MESSAGE("rd_linkedauthorization"),
+    LINKED_AUTHORIZATION_PATH("linkedauthorization"),
+
+    /**
+     * TenantRole associations domain Messages and redirects
+     */
+    TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE("rd_tenant_role_permission_association_no_permission_select"),
+    TRP_ASSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_permission_association_success"),
+    TRP_ASSOCIATION_ERROR_MESSAGE("rd_tenant_role_permission_association_error"),
+    TRP_DISSOCIATION_NO_PERMISSION_SELECT_MESSAGE("rd_tenant_role_permission_dissociation_no_permission_select"),
+
+    TRP_DISSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_permission_dissociation_success"),
+    TRP_DISSOCIATION_ERROR_MESSAGE("rd_tenant_role_permission_dissociation_error"),
+
+    TRU_ASSOCIATION_NO_USER_SELECT_MESSAGE("rd_tenant_role_user_association_no_user_select"),
+
+    TRU_ASSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_user_association_success"),
+    TRU_ASSOCIATION_ERROR_MESSAGE( "rd_tenant_role_user_association_error"),
+
+    TRU_DISSOCIATION_NO_USER_SELECT_MESSAGE("rd_tenant_role_user_dissociation_no_user_select"),
+    TRU_DISSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_user_dissociation_success"),
+    TRU_DISSOCIATION_ERROR_MESSAGE( "rd_tenant_role_user_dissociation_error"),
+
+    TR_TENANTS_FROM_USER("rd_tenants_from_user"),
+    TR_ASSOCIATION("tenant_role_association"),
+    TR_ASSOCIATIONS("tenant_role_associations"),
+    TR_ASSOCIATION_ID("tenant_role_association_id"),
+    TR_PATH("tenantrole"),
+
+    /**
+     * User messages and redirects
+     */
+    USERS_PATH("pretty:users"),
+    USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
+    USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
+    USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),
+
+    /*
      * Tenant Management Pages
      */
     TENANT_MAIN_PAGE("tenants"),
     TENANT_CREATION_PAGE("tenant"),
     TENANT_DETAIL_PAGE("tenantDetails"),
     TENANT_RD_TENANT("rd_tenant"),
+    TENANT_RD_TENANTS("rd_tenants"),
+    TENANT_NOT_FOUND_MESSAGE("rd_tenant_not_found"),
 
     /**
      * Tenant Management Info Messages
@@ -66,8 +133,22 @@ public enum DataModelEnum {
     TENANT_NOT_FOUND("rd_tenant_tenant_not_found"),
     TENANT_USER_SESSION("rd_tenant_user_session"),
     TENANT_SAVE_ERROR_MESSAGE("rd_save_error"),
-    TENANT_GENERIC_ERROR_MESSAGE("rd_generic_error_message");
+    TENANT_GENERIC_ERROR_MESSAGE("rd_generic_error_message"),
 
+    /**
+     * User Active Tenant Role Permission Messages and redirects
+     */
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_assigned_success"),
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_ERROR("rd_user_active_tenant_role_permission_assigned_error"),
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_unassigned_success"),
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR("rd_user_active_tenant_role_permission_unassigned_error"),
+
+    /**
+     * Role Messages and redirects
+     */
+    ROLE_MAIN_PAGE("roles"),
+    ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error");
+    
     private String value;
 
     /**

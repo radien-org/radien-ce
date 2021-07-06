@@ -54,7 +54,9 @@ public class EntityManagerUtil {
 			em.persist(entity);
 			if(!hadPreviousTransaction) {
 				transaction.commit();
-				log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
+				if(log.isInfoEnabled()){
+					log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
+				}
 			}
 		} catch (Exception e) {
 			transaction.rollback();
@@ -110,8 +112,10 @@ public class EntityManagerUtil {
 				transaction.commit();
 			}
 			if(entities.size()>1) {
-				log.info(GenericErrorCodeMessage.LIST_ENTITY_SAVED.toString(), entities.get(0).getClass().getSimpleName());
-			}else if(entities.size() == 1){
+				if(log.isInfoEnabled()){
+					log.info(GenericErrorCodeMessage.LIST_ENTITY_SAVED.toString(), entities.get(0).getClass().getSimpleName());
+				}
+			}else if(entities.size() == 1 && log.isInfoEnabled()){
 				log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entities.get(0).getClass().getSimpleName());
 			}
 		} catch (Exception e) {
@@ -132,7 +136,9 @@ public class EntityManagerUtil {
 				entity = em.merge(entity);
 			}
 			transaction.commit();
-			log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
+			if(log.isInfoEnabled()){
+				log.info(GenericErrorCodeMessage.INFO_ENTITY_SAVED.toString(), entity.getClass().getSimpleName());
+			}
 			return (T) entity;
 		} catch (Exception e) {
 			if (transaction.isActive()) {
@@ -175,8 +181,9 @@ public class EntityManagerUtil {
 			}
 			log.error(GenericErrorCodeMessage.ERROR_DELETING_ENTITY.toString(e.getMessage()), e);
 		}
-		assert entity != null;
-		log.info(GenericErrorCodeMessage.INFO_ENTITY_DELETED.toString(), entity.getClass().getSimpleName());
+		if(entity != null && log.isInfoEnabled()) {
+			log.info(GenericErrorCodeMessage.INFO_ENTITY_DELETED.toString(), entity.getClass().getSimpleName());
+		}
 	}
 
 	/**
@@ -202,8 +209,8 @@ public class EntityManagerUtil {
 				transaction.begin();
 			}
 			for(Model entity: entities) {
-				if(entity.getId() == null){
-					log.warn(entity.toString() + "id was null. Skipped");
+				if(entity.getId() == null && log.isWarnEnabled()){
+					log.warn(GenericErrorCodeMessage.ENTITY_ID_NULL.toString(entity.toString()));
 					continue;
 				}
 				if (isDetached(entity,em)) {

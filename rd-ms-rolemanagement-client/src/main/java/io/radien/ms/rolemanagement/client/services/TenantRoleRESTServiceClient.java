@@ -46,6 +46,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
+
 /**
  * Tenant Role REST Service Client
  *
@@ -63,6 +64,7 @@ import java.util.Optional;
 public class TenantRoleRESTServiceClient extends AuthorizationChecker implements TenantRoleRESTServiceAccess {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleRESTServiceClient.class);
+    private static final long serialVersionUID = -3294029074149507760L;
 
     @Inject
     private OAFAccess oaf;
