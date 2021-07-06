@@ -17,7 +17,6 @@
 package io.radien.webapp;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -134,10 +133,6 @@ public @Model @RequestScoped class RedirectUtil implements RedirectHandler {
 	 */
 	@Override
 	public void redirectToErrorPage(Exception exp) {
-		Map<String, Object> infos = JSFUtil.getExternalContext().getSessionMap();
-//		infos.put(OafExceptionHandler.ERROR_EXCEPTION, exp);
-//		infos.put(OafExceptionHandler.ERROR_MESSAGE, exp.getMessage());
-//		infos.put(OafExceptionHandler.ERROR_REQUEST_URI, JSFUtil.getRequest(JSFUtil.getFacesContext()).getRequestURI());
 		redirectTo("/public/error");
 	}
 }

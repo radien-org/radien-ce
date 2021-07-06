@@ -31,7 +31,7 @@ import static io.radien.webapp.DataModelEnum.PERMISSION_MESSAGE;
 import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_MESSAGE;
 import static io.radien.webapp.DataModelEnum.ROLE_MESSAGE;
 import static io.radien.webapp.DataModelEnum.ROLE_NOT_FOUND_MESSAGE;
-import static io.radien.webapp.DataModelEnum.TENANT_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TENANT_RD_TENANT;
 import static io.radien.webapp.DataModelEnum.TENANT_NOT_FOUND_MESSAGE;
 import static io.radien.webapp.DataModelEnum.USER_MESSAGE;
 import static io.radien.webapp.DataModelEnum.USER_NOT_FOUND_MESSAGE;
@@ -206,7 +206,7 @@ public class LinkedAuthorizationManager extends AbstractManager {
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
-                    JSFUtil.getMessage(TENANT_MESSAGE.getValue()));
+                    JSFUtil.getMessage(TENANT_RD_TENANT.getValue()));
             return null;
         }
     }

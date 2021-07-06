@@ -1,5 +1,6 @@
 package io.radien.security.openid.config;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import java.util.Arrays;
 
 import javax.enterprise.context.RequestScoped;
@@ -79,18 +80,14 @@ public @RequestScoped class SecurityConfig extends WebSecurityConfigurerAdapter 
 	public void configure(WebSecurity web) {
 		RequestMatcher requestMatcher = request -> {
 			String reqURI = request.getRequestURI();
-			log.debug("complete path: {}",request.getRequestURL().toString());
+			log.debug(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(), request.getRequestURL());
 			try {
-				if (
-//						reqURI.contains(request.getContextPath() + "/public")
-//						|| 
-						reqURI.contains(ResourceHandler.RESOURCE_IDENTIFIER)
-				) {
-					log.info("entering public url pattern: " + reqURI);
+				if (reqURI.contains(ResourceHandler.RESOURCE_IDENTIFIER)) {
+					log.info(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(), reqURI);
 					return true;
 				}
 			} catch (Exception e) {
-				log.error("Error configuring spring security",e);
+				log.error(GenericErrorCodeMessage.ERROR_IN_CONFIGURE.toString(), e);
 			}
 			return false;
 		};
@@ -112,7 +109,7 @@ public @RequestScoped class SecurityConfig extends WebSecurityConfigurerAdapter 
 					return true;
 				}
 			} catch (Exception e) {
-				log.error("Error configuring spring security",e);
+				log.error(GenericErrorCodeMessage.ERROR_IN_CONFIGURE.toString(), e);
 			}
 			return false;
 		};
@@ -124,11 +121,7 @@ public @RequestScoped class SecurityConfig extends WebSecurityConfigurerAdapter 
 				.authenticationEntryPoint(this.authenticationEntryPoint())
 				.and().authorizeRequests().requestMatchers(requestMatcher).authenticated()
 				.and().exceptionHandling().authenticationEntryPoint(this.authenticationEntryPoint())
-				.and().requiresChannel().requestMatchers(httpsRequestMatcher).requiresSecure()
-				;
-//		if ( !logoutRedirectUri.isEmpty()) {
-//			http.logout().clearAuthentication(true).logoutSuccessUrl(logoutRedirectUri);
-//		}
+				.and().requiresChannel().requestMatchers(httpsRequestMatcher).requiresSecure();
 	}
 
 	@Bean

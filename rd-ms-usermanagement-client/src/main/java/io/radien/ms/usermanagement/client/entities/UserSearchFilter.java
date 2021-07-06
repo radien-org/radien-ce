@@ -29,8 +29,6 @@ public class UserSearchFilter extends SearchableByIds implements SystemUserSearc
     private String sub;
     private String email;
     private String logon;
-    private boolean isExact;
-    private boolean isLogicConjunction;
 
     /**
      * User search filter empty constructor
@@ -47,12 +45,10 @@ public class UserSearchFilter extends SearchableByIds implements SystemUserSearc
      * @param isLogicConjunction true in case search option is and conjunction
      */
     public UserSearchFilter(String sub, String email, String logon, Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
-        super(ids);
+        super(ids, isExact, isLogicConjunction);
         this.sub = sub;
         this.email = email;
         this.logon = logon;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicConjunction;
     }
 
     /**
@@ -107,41 +103,5 @@ public class UserSearchFilter extends SearchableByIds implements SystemUserSearc
     @Override
     public void setLogon(String logon) {
         this.logon = logon;
-    }
-
-    /**
-     * User search filter is to be search exact
-     * @return is to be exact value
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * User search filter is to be search exact
-     * @param exact to be set
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * User is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * User filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

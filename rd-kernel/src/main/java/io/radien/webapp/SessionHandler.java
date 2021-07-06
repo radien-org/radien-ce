@@ -16,6 +16,7 @@
 
 package io.radien.webapp;
 
+import io.radien.exception.SystemException;
 import java.io.Serializable;
 
 import javax.faces.context.ExternalContext;

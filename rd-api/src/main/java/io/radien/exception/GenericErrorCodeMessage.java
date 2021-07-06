@@ -30,6 +30,24 @@ public enum GenericErrorCodeMessage {
 
     DUPLICATED_FIELD("G2", "error.duplicated.field", "There is more than one resource with the same value for the field: %s"),
 
+    ERROR_SAVING_ENTITY("G3", "error.saving.entity", "Error saving entity: %s"),
+
+    ERROR_DELETING_ENTITY("G4", "error.deleting.entity", "Error deleting entity: %s"),
+
+    ERROR_IN_CONFIGURE("G5", "error.in.configure", "Error in configure: %s"),
+
+    RESOURCE_URL_PATH("G6", "resource.url.path", "Resource URL path: %s"),
+
+    HTTP_SESSION_INITIATED("G7", "http.session.initiated", "HTTP session initiated: %s"),
+
+    INFO_CORS_FILTER("G8", "cors.filter.method", "Cors filter method: %s"),
+
+    INFO_ENTITY_SAVED("G9", "info.entity.saved", "An entity of class {0} was persisted in the DB"),
+
+    LIST_ENTITY_SAVED("G10", "list.entity.saved", "A List of entities of class {0} was persisted in the DB"),
+
+    INFO_ENTITY_DELETED("G11", "info.entity.deleted", "An entity of class {0} was deleted in the DB"),
+
     /**
      * Tenant Business Error Code Messages
      */
