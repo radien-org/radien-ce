@@ -341,7 +341,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return deleteByTenantAndUserRequester(tenant, user);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
