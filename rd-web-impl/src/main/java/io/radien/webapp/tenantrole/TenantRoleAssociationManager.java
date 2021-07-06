@@ -55,6 +55,7 @@ import static io.radien.webapp.DataModelEnum.ROLE_NOT_FOUND_MESSAGE;
 import static io.radien.webapp.DataModelEnum.SAVE_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.SAVE_SUCCESS_MESSAGE;
 import static io.radien.webapp.DataModelEnum.TENANT_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.TENANT_RD_TENANTS;
 import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE;
 import static io.radien.webapp.DataModelEnum.TRP_ASSOCIATION_SUCCESS_MESSAGE;
@@ -618,7 +619,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             return pagedInformation.getResults();
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(ROLES_MESSAGE.getValue()));
+            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(TENANT_RD_TENANTS.getValue()));
             return new ArrayList<>();
         }
     }

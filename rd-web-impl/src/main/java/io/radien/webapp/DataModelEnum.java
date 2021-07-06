@@ -108,6 +108,7 @@ public enum DataModelEnum {
     TENANT_CREATION_PAGE("tenant"),
     TENANT_DETAIL_PAGE("tenantDetails"),
     TENANT_RD_TENANT("rd_tenant"),
+    TENANT_RD_TENANTS("rd_tenants"),
     TENANT_NOT_FOUND_MESSAGE("rd_tenant_not_found"),
 
     /**

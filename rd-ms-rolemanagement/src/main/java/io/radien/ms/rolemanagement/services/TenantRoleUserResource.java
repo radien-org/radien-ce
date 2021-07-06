@@ -51,24 +51,13 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
      */
     @Override
     public Response getAll(Long tenantRoleId, int pageNo, int pageSize) {
-        log("Retrieving tenant role users");
+        log.info("Retrieving tenant role users. TenantRole Id {}, pageNumber {} and pageSize{}",
+                tenantRoleId, pageNo, pageSize);
         try {
             return Response.ok().entity(tenantRoleUserServiceAccess.
                     getAll(tenantRoleId, pageNo, pageSize)).build();
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * Utility method to log messages (in a cleaner approach)
-     * @param msg message to be logged
-     * @param params message params
-     */
-    private void log(String msg, Object... params) {
-        if (msg != null) {
-            String formattedMsg = params != null ? String.format(msg, params) : msg;
-            log.error(formattedMsg);
         }
     }
 }

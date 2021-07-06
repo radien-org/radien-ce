@@ -49,7 +49,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.primefaces.event.SelectEvent;
 
-//import static io.radien.webapp.tenantrole.TenantRoleAssociationManager.DataModelEnum.TR_PATH.getValue();
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
