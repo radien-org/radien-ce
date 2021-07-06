@@ -868,4 +868,111 @@ public class TenantRoleServiceTest {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("role name")));
         }
     }
+
+    /**
+     * Test method for getRoles(Long userId, Long tenantId)
+     */
+    @Test
+    public void testGetRoles() {
+        SystemRole role1 = new Role();
+        roleObject(role1, "role1");
+
+        SystemRole role2 = new Role();
+        roleObject(role2, "role2");
+
+        SystemRole role3 = new Role();
+        roleObject(role3, "role3");
+
+
+        Long tenant1=444L, tenant2=445L, tenant3 = 446L;
+        SystemTenantRole tenant1Role1 = new TenantRole();
+        tenantRoleObject(tenant1Role1, tenant1, role1);
+
+        SystemTenantRole tenant1Role2 = new TenantRole();
+        tenantRoleObject(tenant1Role2, tenant1, role2);
+
+        SystemTenantRole tenant2Role1 = new TenantRole();
+        tenantRoleObject(tenant2Role1, tenant2, role1);
+
+        SystemTenantRole tenant2Role3 = new TenantRole();
+        tenantRoleObject(tenant2Role3, tenant2, role3);
+
+        SystemTenantRole tenant3Role3 = new TenantRole();
+        tenantRoleObject(tenant3Role3, tenant3, role3);
+
+
+        Long user1 = 100000000L, user2 = 100000011L;
+        SystemTenantRoleUser tenant1Role1User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant1Role1User1,user1,tenant1Role1);
+
+        SystemTenantRoleUser tenant1Role2User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant1Role2User1,user1,tenant1Role2);
+
+        SystemTenantRoleUser tenant2Role1User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant2Role1User1,user1,tenant2Role1);
+
+        SystemTenantRoleUser tenant3Role3User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant3Role3User1,user1,tenant3Role3);
+
+        SystemTenantRoleUser tenant1Role2User2 = new TenantRoleUser();
+        userTenantRoleObject(tenant1Role2User2,user2,tenant1Role2);
+
+        SystemTenantRoleUser tenant2Role3User2 = new TenantRoleUser();
+        userTenantRoleObject(tenant2Role3User2,user2,tenant2Role3);
+
+
+        List<Long> ids = tenantRoleServiceAccess.getRoles(user1, tenant1);
+        Assertions.assertTrue(ids.contains(role1.getId()) && ids.contains(role2.getId()));
+        Assertions.assertEquals(5, ids.size());
+
+        ids = tenantRoleServiceAccess.getRoles(user2, tenant2);
+        Assertions.assertTrue(ids.contains(role3.getId()));
+        Assertions.assertEquals(3, ids.size());
+
+        ids = tenantRoleServiceAccess.getRoles(99999999L, tenant3);
+        Assertions.assertTrue(ids.isEmpty());
+    }
+
+    /**
+     * Test method getRoles(Long userId, Long tenantId)
+     * without informing the mandatory field Role
+     */
+    @Test
+    public void testGetRolesWithoutMandatoryFieldUser() {
+        EJBException e = Assertions.assertThrows(EJBException.class, () ->
+                tenantRoleServiceAccess.getRoles(null, null));
+        Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
+    }
+
+    /**
+     * This method construct role object
+     * @param role reference role object
+     * @param roleName Role name
+     */
+    private void roleObject(SystemRole role, String roleName){
+        role.setName(roleName);
+        Assertions.assertDoesNotThrow(() -> this.roleServiceAccess.save(role));
+    }
+
+    /**
+     * This method construct tenantRole object
+     * @param tenantRole reference tenantRole object
+     * @param tenantId Tenant Identifier
+     * @param role reference role object
+     */
+    private void tenantRoleObject(SystemTenantRole tenantRole, Long tenantId, SystemRole role){
+        tenantRole.setTenantId(tenantId); tenantRole.setRoleId(role.getId());
+        Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.save(tenantRole));
+    }
+
+    /**
+     * This method construct systemTenantRoleUser object
+     * @param systemTenantRoleUser reference systemTenantRoleUser object
+     * @param userId User Identifier
+     * @param tenantRole reference tenantRole object
+     */
+    private void userTenantRoleObject(SystemTenantRoleUser systemTenantRoleUser, Long userId, SystemTenantRole tenantRole){
+        systemTenantRoleUser.setUserId(userId); systemTenantRoleUser.setTenantRoleId(tenantRole.getId());
+        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(systemTenantRoleUser));
+    }
 }
