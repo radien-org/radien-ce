@@ -48,6 +48,12 @@ public enum GenericErrorCodeMessage {
 
     INFO_ENTITY_DELETED("G11", "info.entity.deleted", "An entity of class {0} was deleted in the DB"),
 
+    INFO_SYSTEM_START("G12", "info.system.start", "START ID: {0} |Class: | {1} | Method: | {2}"),
+    INFO_SYSTEM_END("G13", "info.system.end", "END ID: {0} |Class: | {1} | Method: | {2} | Milliseconds: | {3} | Result: | {4}"),
+    ERROR_METHOD_INTERCEPTION("G14", "error.method.interception", "Exception during method interception: %s"),
+    INIT_CONNECTION_TIME_REBOOT("G15", "init.connection.time.reboot", "Connection was opened {0} since last reboot {1}"),
+    ENTITY_ID_NULL("G16", "entity.id.null", "{0} id was null. Skipped"),
+
     /**
      * Tenant Business Error Code Messages
      */
@@ -61,6 +67,7 @@ public enum GenericErrorCodeMessage {
     TENANT_ROOT_ALREADY_INSERTED("T8", "error.tenant.root.already.inserted", "There must be only one Root Tenant."),
     TENANT_ROOT_WITH_PARENT("T9", "error.tenant.root.with.parent", "Tenant root cannot have parent associated."),
     TENANT_ROOT_WITH_CLIENT("T10", "error.tenant.root.with.client", "Tenant root cannot have client associated."),
+    TENANT_TYPE_NOT_FOUND("T11", "tenant.type.not.found", "No tenant type found: %s"),
 
     /**
      * Tenant Role Error Code Messages
@@ -85,6 +92,10 @@ public enum GenericErrorCodeMessage {
      */
 
     NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION("LA1", "error.dissociation.no.params", "Parameters for dissociation not informed."),
+    INFO_CREATE_NEW_LINKED_AUTHORIZATION("LA2", "info.create.new.linked.authorization",
+            "Create a new Linked Authorization with the values of Tenant Id: {0}, Permission Id: {1}, Role Id: {2}, User Id: {3}."),
+    INFO_COVERT_JSON_OBJECT_TO_LINKED_AUTHORIZATION("LA3", "info.convert.json.object.to.linked.authorization",
+            "Convert JSON object to Linked Authorization with the values of id: {0} Tenant Id: {1}, Permission Id: {2}, Role Id: {3}, User Id: {4}."),
 
     /**
      * User Business Error Code Messages
