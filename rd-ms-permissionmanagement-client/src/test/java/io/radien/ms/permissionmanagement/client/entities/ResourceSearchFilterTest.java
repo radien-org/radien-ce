@@ -33,7 +33,7 @@ public class ResourceSearchFilterTest {
      */
     @Test
     public void testEmptyFilter() {
-        SystemResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter();
+        ResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter();
         Assert.assertFalse(resourceSearchFilter.isExact());
         Assert.assertFalse(resourceSearchFilter.isLogicConjunction());
         Assert.assertNull(resourceSearchFilter.getName());
@@ -44,7 +44,7 @@ public class ResourceSearchFilterTest {
      */
     @Test
     public void testSettingValues() {
-        SystemResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter();
+        ResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter();
         Assert.assertFalse(resourceSearchFilter.isExact());
         Assert.assertFalse(resourceSearchFilter.isLogicConjunction());
         Assert.assertNull(resourceSearchFilter.getName());
@@ -62,7 +62,7 @@ public class ResourceSearchFilterTest {
      */
     @Test
     public void testConstructor() {
-        SystemResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter(act1,true, true);
+        ResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter(act1,true, true);
         Assert.assertTrue(resourceSearchFilter.isExact());
         Assert.assertTrue(resourceSearchFilter.isLogicConjunction());
         Assert.assertNotNull(resourceSearchFilter.getName());

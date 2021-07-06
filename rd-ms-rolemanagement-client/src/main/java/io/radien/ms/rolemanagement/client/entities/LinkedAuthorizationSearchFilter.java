@@ -16,20 +16,19 @@
 package io.radien.ms.rolemanagement.client.entities;
 
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
+import io.radien.api.search.SearchFilterCriteria;
 
 /**
  * Linked Authorization Search filter object for searching criteria
  *
  * @author Bruno Gama
  */
-public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizationSearchFilter {
+public class LinkedAuthorizationSearchFilter extends SearchFilterCriteria implements SystemLinkedAuthorizationSearchFilter {
 
     private Long tenantId;
     private Long permissionId;
     private Long roleId;
     private Long userId;
-
-    private boolean isLogicConjunction;
 
     /**
      * Linked Authorization search filter empty constructor
@@ -45,11 +44,11 @@ public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizatio
      * @param isLogicConjunction true in case search option is and conjunction
      */
     public LinkedAuthorizationSearchFilter(Long tenantId, Long permissionId, Long roleId, Long userId, boolean isLogicConjunction) {
+        super(isLogicConjunction);
         this.tenantId = tenantId;
         this.permissionId = permissionId;
         this.roleId = roleId;
         this.userId = userId;
-        this.isLogicConjunction = isLogicConjunction;
     }
 
     /**
@@ -104,24 +103,6 @@ public class LinkedAuthorizationSearchFilter implements SystemLinkedAuthorizatio
     @Override
     public void setRoleId(Long roleId) {
         this.roleId=roleId;
-    }
-
-    /**
-     * Linked Authorization search filter get is logical conjunction
-     * @return true or false value
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Linked Authorization is logical conjunction set
-     * @param logicConjunction to be set and replace
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction=logicConjunction;
     }
 
     /**

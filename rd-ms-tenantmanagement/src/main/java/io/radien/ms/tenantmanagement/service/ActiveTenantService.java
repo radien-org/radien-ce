@@ -20,6 +20,7 @@ import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
 import io.radien.ms.tenantmanagement.entities.ActiveTenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +144,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
         criteriaQuery.select(root);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+        Predicate global = getFilteredPredicate((ActiveTenantSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
         TypedQuery<ActiveTenant> q = em.createQuery(criteriaQuery);
@@ -165,7 +166,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      * @param activeTenantRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(SystemActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot) {
+    private Predicate getFilteredPredicate(ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -189,7 +190,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      * @param global predicate to be added
      * @return a constructed predicate
      */
-    private Predicate getFieldPredicate(String name, Object value, SystemActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot, Predicate global) {
+    private Predicate getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate;
             subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");

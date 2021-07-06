@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.client.entities;
 
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
+import io.radien.api.search.SearchFilterCriteria;
 
 /**
  * Filter bean that encapsulates the necessary parameters to search/retrieve
@@ -23,12 +24,10 @@ import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
  *
  * @author Newton Carvalho
  */
-public class TenantRolePermissionSearchFilter implements SystemTenantRolePermissionSearchFilter {
+public class TenantRolePermissionSearchFilter extends SearchFilterCriteria implements SystemTenantRolePermissionSearchFilter {
 
     private Long tenantRoleId;
     private Long permissionId;
-    private boolean isExact;
-    private boolean isLogicConjunction;
 
     /**
      * Tenant Role Permission Search Filter empty constructor
@@ -43,10 +42,9 @@ public class TenantRolePermissionSearchFilter implements SystemTenantRolePermiss
      * @param isLogicalConjunction true in case search option is and conjunction
      */
     public TenantRolePermissionSearchFilter(Long tenantRoleId, Long permissionId, boolean isExact, boolean isLogicalConjunction) {
+        super(isExact, isLogicalConjunction);
         this.tenantRoleId = tenantRoleId;
         this.permissionId = permissionId;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicalConjunction;
     }
 
     /**
@@ -83,41 +81,5 @@ public class TenantRolePermissionSearchFilter implements SystemTenantRolePermiss
     @Override
     public void setPermissionId(Long permissionId) {
         this.permissionId = permissionId;
-    }
-
-    /**
-     * Tenant Role Permission search filter get is exact search
-     * @return true or false value
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * Tenant Role Permission set exact
-     * @param exact to be set and updated
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * Tenant Role Permission search filter get is logical conjunction
-     * @return true or false value
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Tenant Role Permission set is logic conjunction
-     * @param logicConjunction to be set and updated
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

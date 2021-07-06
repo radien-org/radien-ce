@@ -39,7 +39,6 @@ public abstract class AbstractNavigation implements Serializable {
 	private static final String TRUE_STRING = "true";
 	private static final String PREFIX_PRETTY = "pretty:";
 	private static final String BLANK = "";
-	private static final String WEB_ACTION = "webAction";
 
 	private String paramNavigationNode;
 	private String defaultLandingPage;
@@ -54,7 +53,6 @@ public abstract class AbstractNavigation implements Serializable {
 		request.getRequestURI();
 
 		defaultLandingPage = getOAF().getProperty(OAFProperties.SYS_CFG_DEFAULT_LANDING_PAGE);
-		//getOAF().getProperty(OAFProperties.SYS_CFG_JSF_MAPPING);
 		activeNavigationNode = defaultLandingPage;
 		paramNavigationNode = "navigationNode";
 
@@ -85,58 +83,6 @@ public abstract class AbstractNavigation implements Serializable {
 		setActiveNavigationNode(navigationNode);
 	}
 
-//	public void processCMSAction(AjaxBehaviorEvent event) {
-//		navigationAction(event);
-//		String webAction = JSFUtil.getString(event, WEB_ACTION, "");
-//		processCMSAction(webAction);
-//
-//	}
-//
-//	public void processCMSAction(ActionEvent event) {
-//		navigationAction(event);
-//		String webAction = JSFUtil.getString(event, WEB_ACTION, "");
-//		processCMSAction(webAction);
-//	}
-
-//	private void processCMSAction(String webAction) {
-//		switch (webAction) {
-//		case "save":
-//			getCMS().save();
-//			break;
-//		case "close":
-//			getCMS().close();
-//			break;
-//		case "delete":
-//			getCMS().delete();
-//			break;
-//		case "add":
-//			getCMS().load();
-//			break;
-//		default:
-//			log.info("no webaction");
-//			break;
-//		}
-//
-//	}
-//
-//	protected void processDMSAction(String webAction) {
-//		switch (webAction) {
-//		case "save":
-//			getDMS().save();
-//			break;
-//		case "close":
-//			getDMS().close();
-//			break;
-//		case "delete":
-//			getDMS().delete();
-//			break;
-//		default:
-//			getDMS().load();
-//			break;
-//		}
-//
-//	}
-
 	public void updateNavigationNode(String path) {
 		this.activeNavigationNode = path;
 	}
@@ -150,9 +96,5 @@ public abstract class AbstractNavigation implements Serializable {
 	}
 
 	protected abstract OAFAccess getOAF();
-
-//	protected abstract ContentManager getCMS();
-//
-//	protected abstract DocumentManager getDMS();
 
 }

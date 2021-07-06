@@ -16,18 +16,17 @@
 package io.radien.ms.rolemanagement.client.entities;
 
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
+import io.radien.api.search.SearchFilterCriteria;
 
 /**
  * Filter bean that encapsulates the necessary parameters to search/retrieve
  * Tenant role user Associations
  * @author Newton Carvalho
  */
-public class TenantRoleUserSearchFilter implements SystemTenantRoleUserSearchFilter {
+public class TenantRoleUserSearchFilter extends SearchFilterCriteria implements SystemTenantRoleUserSearchFilter {
 
     private Long tenantRoleId;
     private Long userId;
-    private boolean isExact;
-    private boolean isLogicConjunction;
 
     /**
      * Tenant Role User Search Filter empty constructor
@@ -42,10 +41,9 @@ public class TenantRoleUserSearchFilter implements SystemTenantRoleUserSearchFil
      * @param isLogicalConjunction true in case search option is and conjunction
      */
     public TenantRoleUserSearchFilter(Long tenantRoleId, Long userId, boolean isExact, boolean isLogicalConjunction) {
+        super(isExact, isLogicalConjunction);
         this.tenantRoleId = tenantRoleId;
         this.userId = userId;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicalConjunction;
     }
 
     /**
@@ -82,41 +80,5 @@ public class TenantRoleUserSearchFilter implements SystemTenantRoleUserSearchFil
     @Override
     public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    /**
-     * Tenant Role User Search Filter get is exact
-     * @return true or false
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * Tenant Role User Search Filter is exact setter
-     * @param exact to be set and replace
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * Tenant Role User Search Filter get is logical conjunction
-     * @return true or false
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Tenant Role User Search Filter is logicConjunction setter
-     * @param logicConjunction to be set and replace
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

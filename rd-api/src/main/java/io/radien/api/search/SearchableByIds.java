@@ -22,7 +22,7 @@ import java.util.Collection;
  * regarding the common fields replicated (in this case ids) around filter
  * implementations
  */
-public class SearchableByIds implements SystemSearchableByIds {
+public class SearchableByIds extends SearchFilterCriteria implements SystemSearchableByIds {
     private Collection<Long> ids;
 
     /**
@@ -35,6 +35,17 @@ public class SearchableByIds implements SystemSearchableByIds {
      * @param ids list of ids
      */
     public SearchableByIds(Collection<Long> ids) {
+        this.ids = ids;
+    }
+
+    /**
+     * Constructor where is possible to inform a list of ids
+     * @param ids list of ids
+     * @param isExact should the search only look for exact values
+     * @param isLogicConjunction should the search criteria be with a and or a or
+     */
+    public SearchableByIds(Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
+        super(isExact, isLogicConjunction);
         this.ids = ids;
     }
 

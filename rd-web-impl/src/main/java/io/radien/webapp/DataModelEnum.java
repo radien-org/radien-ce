@@ -81,8 +81,7 @@ public enum DataModelEnum {
      */
     ROLE_MAIN_PAGE("roles"),
     ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error");
-
-
+    
     private String value;
 
     /**

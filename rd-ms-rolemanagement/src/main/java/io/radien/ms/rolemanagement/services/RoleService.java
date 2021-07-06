@@ -22,6 +22,7 @@ import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +115,7 @@ public class RoleService implements RoleServiceAccess {
 
         criteriaQuery.select(roleRoot);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, roleRoot);
+        Predicate global = getFilteredPredicate((RoleSearchFilter) filter, criteriaBuilder, roleRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Role> q= entityManager.createQuery(criteriaQuery);
@@ -138,7 +139,7 @@ public class RoleService implements RoleServiceAccess {
      * @param roleRoot table to search the information.
      * @return a completed predicate to be used in the search criteria.
      */
-    private Predicate getFilteredPredicate(SystemRoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> roleRoot) {
+    private Predicate getFilteredPredicate(RoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> roleRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -172,7 +173,7 @@ public class RoleService implements RoleServiceAccess {
      * @param global global predicate to be used.
      * @return a where predicate to be used in the search criteria.
      */
-    private Predicate getFieldPredicate(String name, String value, SystemRoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> userRoot, Predicate global) {
+    private Predicate getFieldPredicate(String name, String value, RoleSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Role> userRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate;
             if (filter.isExact()) {

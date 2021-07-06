@@ -31,4 +31,7 @@ curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/linkedauthorizat
 curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantId":1,"permissionId":3, "roleId":1, "userId":1}'
 curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantId":1,"permissionId":4, "roleId":1, "userId":1}'
 
+curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantId":2,"permissionId":4, "roleId":1, "userId":1}'
+curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/linkedauthorization' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantId":3,"permissionId":4, "roleId":1, "userId":1}'
+
 echo "-----------------------------------------------------------------------------------------------------------------"

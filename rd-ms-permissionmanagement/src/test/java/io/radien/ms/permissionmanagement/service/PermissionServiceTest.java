@@ -448,14 +448,14 @@ public class PermissionServiceTest {
         actionServiceAccess.save(sa);
 
         // Retrieve the permission
-        SystemPermissionSearchFilter permissionFilter = new PermissionSearchFilter();
+        PermissionSearchFilter permissionFilter = new PermissionSearchFilter();
         permissionFilter.setName("perm-radien-1");
         permissionFilter.setExact(true);
         List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(permissionFilter);
         Permission permission = (Permission) permissions.get(0);
 
         // Retrieve the action
-        SystemActionSearchFilter filter = new ActionSearchFilter();
+        ActionSearchFilter filter = new ActionSearchFilter();
         filter.setName("read-contract");
         filter.setLogicConjunction(true);
         List<? extends SystemAction> actions = actionServiceAccess.getActions(filter);
@@ -573,7 +573,7 @@ public class PermissionServiceTest {
         p4.setResourceId(resourceId2);
         assertThrows(Exception.class, () -> permissionServiceAccess.save(p4));
 
-        SystemPermissionSearchFilter filter = new PermissionSearchFilter("perm3",
+        PermissionSearchFilter filter = new PermissionSearchFilter("perm3",
                 actionId3, resourceId2, null,true, true);
         List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(filter);
         assertEquals(1, permissions.size());

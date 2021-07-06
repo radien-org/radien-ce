@@ -45,28 +45,4 @@ public interface SystemTenantRoleUserSearchFilter {
      * @param userId to be set
      */
     void setUserId(Long userId);
-
-    /**
-     * System tenant role user search filter is exact search getter
-     * @return the System tenant role user search filter is exact value
-     */
-    boolean isExact();
-
-    /**
-     * System tenant role user search filter is exact setter
-     * @param exact if true the search needs to be exactly as the given parameters
-     */
-    void setExact(boolean exact);
-
-    /**
-     * System tenant role user search filter is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    boolean isLogicConjunction();
-
-    /**
-     * System tenant role user search filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    void setLogicConjunction(boolean logicConjunction);
 }

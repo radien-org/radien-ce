@@ -16,14 +16,18 @@
 
 package io.radien.webapp.tenant;
 
+import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantType;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.security.UserSession;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -38,6 +42,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Tenant Interface Data Model. Class responsible for managing and maintaining
@@ -51,6 +56,12 @@ public class TenantDataModel extends AbstractManager implements Serializable {
 
     @Inject
     private TenantRESTServiceAccess service;
+
+    @Inject
+    private UserSession userSession;
+
+    @Inject
+    private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     private LazyDataModel<? extends SystemTenant> lazyModel;
 
@@ -70,7 +81,8 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         try {
             lazyModel = new LazyTenantDataModel(service);
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_tenants"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_GENERIC_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
     }
 
@@ -78,37 +90,117 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Data reload method
      */
     public void onload() {
-        try {
-            init();
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_tenants"));
-        }
+        init();
     }
 
     /**
      * Tenant creation or update save method that will validate all the mandatory fields and convert the
      * given dates from text to date format
-     * @param r system tenant to be saved
+     * @param systemTenantToSave system tenant to be saved
      * @return a string value to redirect the user into the correct page either send him to the table in case of success,
      * or into the edit menu in case of error
      */
-    public String save(SystemTenant r) {
+    public String save(SystemTenant systemTenantToSave) {
         try {
-            validateMandatoryFields(r);
-            convertAndSetDates(r, this.tenantStartDate, this.tenantEndDate);
-            if (r.getId() == null) {
-                this.service.create(r);
+            fillParentClientId(systemTenantToSave);
+            validateMandatoryFields(systemTenantToSave);
+            convertAndSetDates(systemTenantToSave, this.tenantStartDate, this.tenantEndDate);
+            if (systemTenantToSave.getId() == null) {
+                this.service.create(systemTenantToSave);
             } else {
-                this.service.update(r);
+                this.service.update(systemTenantToSave);
             }
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
-                    JSFUtil.getMessage("rd_tenant"));
+            handleMessage(FacesMessage.SEVERITY_INFO,
+                    JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_SUCCESS.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_tenant"));
-            return "tenant";
+            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
+            return DataModelEnum.TENANT_CREATION_PAGE.getValue();
         }
         tenant = new Tenant();
-        return "tenants";
+        return DataModelEnum.TENANT_MAIN_PAGE.getValue();
+    }
+
+    /**
+     * Automatically fill the parent id and client id if necessary
+     * @param systemTenantToSave system tenant to be updated
+     */
+    private void fillParentClientId(SystemTenant systemTenantToSave) throws SystemException {
+        if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT)) {
+            retrieveParentTenantId(systemTenantToSave);
+        } else if(systemTenantToSave.getTenantType().equals(TenantType.SUB_TENANT)) {
+            retrieveParentTenantId(systemTenantToSave);
+            retrieveClientTenantId(systemTenantToSave);
+        }
+    }
+
+    /**
+     * By a given tenant will calculate the previous one the given belongs to (parent tenant)
+     * @param systemTenantToSave to be verified
+     */
+    private void retrieveParentTenantId(SystemTenant systemTenantToSave) throws SystemException {
+        try {
+            List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
+                            userSession.getUserId(), null, null, true);
+            for(SystemActiveTenant aCt : activeTenants) {
+                if(aCt.getIsTenantActive()) {
+                    systemTenantToSave.setParentId(aCt.getTenantId());
+                }
+            }
+        } catch (SystemException e) {
+            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
+            throw e;
+        }
+    }
+
+    /**
+     * By a given tenant will calculate the previous client one the given belongs to (client tenant)
+     * @param systemTenantToSave to be verified
+     */
+    private void retrieveClientTenantId(SystemTenant systemTenantToSave) throws SystemException {
+        try {
+            List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
+                    userSession.getUserId(), null, null, true);
+            for(SystemActiveTenant aCt : activeTenants) {
+                if(aCt.getIsTenantActive()) {
+                    requestUpperTenant(systemTenantToSave, aCt.getTenantId());
+                }
+            }
+        } catch (SystemException e) {
+            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
+            throw e;
+        }
+    }
+
+    /**
+     * Recursive method that if the upper tenant is not a client tenant the following method will continue searching
+     * until he finds one that is client tenant and the requested one belongs to
+     * @param systemTenantToSave to be verified
+     * @param tenantId of the last upper tenant
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    private void requestUpperTenant(SystemTenant systemTenantToSave, Long tenantId) throws SystemException {
+        try {
+            Optional<SystemTenant> tenantToBeSearch = service.getTenantById(tenantId);
+
+            if(tenantToBeSearch.isPresent()) {
+                if(tenantToBeSearch.get().getTenantType().equals(TenantType.CLIENT_TENANT)) {
+                    systemTenantToSave.setClientId(tenantToBeSearch.get().getId());
+                } else {
+                    requestUpperTenant(systemTenantToSave, tenantToBeSearch.get().getParentId());
+                }
+            } else {
+                handleMessage(FacesMessage.SEVERITY_ERROR,
+                        JSFUtil.getMessage(DataModelEnum.TENANT_NOT_FOUND.getValue()),
+                        JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
+            }
+        } catch (SystemException e) {
+            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
+        }
     }
 
     /**
@@ -116,17 +208,14 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @return the correct page to where the user should be redirected
      */
     public String editRecords() {
-        try {
-            if (selectedTenant != null) {
-                return "tenantDetails";
-            } else {
-                handleMessage(FacesMessage.SEVERITY_WARN, JSFUtil.getMessage("rd_select_record_first"), JSFUtil.getMessage("rd_tenants"));
-            }
-            return "tenants";
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_tenants"));
-            return "tenantDetails";
+        if (selectedTenant != null) {
+            return DataModelEnum.TENANT_DETAIL_PAGE.getValue();
+        } else {
+            handleMessage(FacesMessage.SEVERITY_WARN,
+                    JSFUtil.getMessage(DataModelEnum.TENANT_SELECT_RECORD_FIRST.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
+        return DataModelEnum.TENANT_MAIN_PAGE.getValue();
     }
 
     /**
@@ -136,11 +225,13 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         try {
             if (selectedTenant != null) {
                 service.deleteTenantHierarchy(selectedTenant.getId());
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_delete_success"),
-                        JSFUtil.getMessage("rd_user"));
+                handleMessage(FacesMessage.SEVERITY_INFO,
+                        JSFUtil.getMessage(DataModelEnum.TENANT_DELETE_SUCCESS.getValue()),
+                        JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
             }
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_delete_error"), JSFUtil.getMessage("rd_user"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_DELETE_ERROR.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
 
         tenant = new Tenant();
@@ -153,7 +244,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     public String returnHome() {
         tenant = new Tenant();
         selectedTenant=null;
-        return "tenants";
+        return DataModelEnum.TENANT_MAIN_PAGE.getValue();
     }
 
     /**
@@ -179,7 +270,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     private void clientEmailValidation(SystemTenant r) throws Exception {
         if(r.getClientEmail() == null) {
-            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_email_is_mandatory"));
+            sendErrorMessage(JSFUtil.getMessage(DataModelEnum.TENANT_CLIENT_EMAIL_IS_MANDATORY.getValue()));
         }
     }
 
@@ -190,7 +281,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     private void clientPhoneNumberValidation(SystemTenant r) throws Exception {
         if(r.getClientPhoneNumber() == null) {
-            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_phone_is_mandatory"));
+            sendErrorMessage(JSFUtil.getMessage(DataModelEnum.TENANT_CLIENT_PHONE_IS_MANDATORY.getValue()));
         }
     }
 
@@ -201,7 +292,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     private void clientCountryValidation(SystemTenant r) throws Exception {
         if(r.getClientCountry() == null || r.getClientCountry().equals("")) {
-            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_country_is_mandatory"));
+            sendErrorMessage(JSFUtil.getMessage(DataModelEnum.TENANT_CLIENT_COUNTRY_IS_MANDATORY.getValue()));
         }
     }
 
@@ -212,7 +303,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     private void clientCityValidation(SystemTenant r) throws Exception {
         if(r.getClientCity() == null || r.getClientCity().equals("")) {
-            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_city_is_mandatory"));
+            sendErrorMessage(JSFUtil.getMessage(DataModelEnum.TENANT_CLIENT_CITY_IS_MANDATORY.getValue()));
         }
     }
 
@@ -223,7 +314,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     private void clientZipCodeValidation(SystemTenant r) throws Exception {
         if(r.getClientZipCode() == null || r.getClientZipCode().equals("")) {
-            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_zip_code_is_mandatory"));
+            sendErrorMessage(JSFUtil.getMessage(DataModelEnum.TENANT_CLIENT_ZIP_CODE_IS_MANDATORY.getValue()));
         }
     }
 
@@ -234,7 +325,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     private void clientAddressValidation(SystemTenant r) throws Exception {
         if(r.getClientAddress() == null || r.getClientAddress().equals("")) {
-            sendErrorMessage(JSFUtil.getMessage("rd_tenant_client_address_is_mandatory"));
+            sendErrorMessage(JSFUtil.getMessage(DataModelEnum.TENANT_CLIENT_ADDRESS_IS_MANDATORY.getValue()));
         }
     }
 
@@ -244,7 +335,8 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @throws Exception to be throw
      */
     private void sendErrorMessage(String message) throws Exception {
-        handleMessage(FacesMessage.SEVERITY_ERROR, message, JSFUtil.getMessage("rd_tenant"));
+        handleMessage(FacesMessage.SEVERITY_ERROR, message,
+                JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         throw new Exception();
     }
 
@@ -257,9 +349,10 @@ public class TenantDataModel extends AbstractManager implements Serializable {
         try {
             this.service.update(t);
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_user"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_EDIT_ERROR.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
-        return "tenants";
+        return DataModelEnum.TENANT_MAIN_PAGE.getValue();
     }
 
     /**
@@ -392,7 +485,8 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     public void onRowSelect(SelectEvent<SystemTenant> event) {
         this.selectedTenant= event.getObject();
-        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rd_tenantSelected"), String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage(DataModelEnum.TENANT_SELECTED_TENANT.getValue()),
+                String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }

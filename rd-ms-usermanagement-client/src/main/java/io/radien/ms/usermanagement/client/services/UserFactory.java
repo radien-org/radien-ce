@@ -74,7 +74,6 @@ public class UserFactory {
         String logon = FactoryUtilService.getStringFromJson("logon", person);
         String userEmail = FactoryUtilService.getStringFromJson("userEmail", person);
         Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
-        Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", person);
         String sub = FactoryUtilService.getStringFromJson("sub", person);
         String firstname = FactoryUtilService.getStringFromJson("firstname", person);
         String lastname = FactoryUtilService.getStringFromJson("lastname",person);
@@ -88,7 +87,7 @@ public class UserFactory {
         user.setUserEmail(userEmail);
         user.setCreateUser(createUser);
         // TODO: Set password protected
-//		user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        // TODO: user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()))
         user.setCreateDate(new Date());
         user.setLastUpdate(new Date());
         user.setSub(sub);
