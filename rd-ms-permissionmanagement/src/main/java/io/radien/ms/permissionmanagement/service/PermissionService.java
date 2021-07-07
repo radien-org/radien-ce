@@ -39,6 +39,7 @@ import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 
+import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.model.Permission;
 
 /**
@@ -249,7 +250,7 @@ public class PermissionService implements PermissionServiceAccess {
 
         criteriaQuery.select(permissionRoot);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, permissionRoot);
+        Predicate global = getFilteredPredicate((PermissionSearchFilter) filter, criteriaBuilder, permissionRoot);
 
         criteriaQuery.where(global);
         TypedQuery<Permission> q=em.createQuery(criteriaQuery);
@@ -265,7 +266,7 @@ public class PermissionService implements PermissionServiceAccess {
      * @param permissionRoot database table to search the information
      * @return a constructed predicate with the fields needed to be search
      */
-    private Predicate getFilteredPredicate(SystemPermissionSearchFilter filter,
+    private Predicate getFilteredPredicate(PermissionSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder, Root<Permission> permissionRoot) {
         Predicate global;
 
@@ -282,6 +283,15 @@ public class PermissionService implements PermissionServiceAccess {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = permissionRoot.get("id").in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
+        }
+
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, permissionRoot, global);
         global = getFieldPredicate("actionId", filter.getActionId(),
                 filter, criteriaBuilder, permissionRoot, global);
@@ -290,7 +300,7 @@ public class PermissionService implements PermissionServiceAccess {
         return global;
     }
 
-    private Predicate getFieldPredicate(String name, Object value, SystemPermissionSearchFilter filter,
+    private Predicate getFieldPredicate(String name, Object value, PermissionSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder, Root<Permission> permissionRoot,
                                         Predicate global) {
         if(value != null) {

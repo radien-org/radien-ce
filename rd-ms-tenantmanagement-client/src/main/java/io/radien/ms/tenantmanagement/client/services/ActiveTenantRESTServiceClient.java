@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -57,8 +58,46 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     @Inject
     private OAFAccess oafAccess;
 
-    private final String unableToRecoverExpiredToken = "Unable to recover expiredToken";
-    
+    /**
+     * Gets requester to get the active tenant in the DB searching for the field Id
+     *
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @return list of active tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public List<? extends SystemActiveTenant> getActiveTenantByUserAndTenant(Long userId, Long tenantId) throws SystemException {
+        try {
+            return getActiveTenantByUserAndTenantRequester(userId, tenantId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getActiveTenantByUserAndTenantRequester(userId, tenantId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Gets the active tenant in the DB searching for the field Id
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @return list of tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private List<? extends SystemActiveTenant> getActiveTenantByUserAndTenantRequester(Long userId, Long tenantId) throws SystemException {
+        try {
+            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.getByUserAndTenant(userId, tenantId);
+            return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
+        }  catch (ExtensionException | ProcessingException | MalformedURLException| ParseException es){
+            throw new SystemException(es.getMessage());
+        }
+    }
+
     /**
      * Gets requester to get the active tenant in the DB searching for the field Id
      *
@@ -75,10 +114,55 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getSystemActiveTenant(id);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
+    }
 
+    /**
+     * Gets the requester to get the active tenant in the DB searching for the user
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @param tenantName to be looked after
+     * @param isTenantActive to be looked after
+     * @return list of active tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId,
+                                                                      String tenantName, boolean isTenantActive) throws SystemException {
+        try {
+            return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Gets the active tenant in the DB searching for the user
+     * @param userId to be looked after
+     * @param tenantId to be looked after
+     * @param tenantName to be looked after
+     * @param isTenantActive to be looked after
+     * @return list of active tenant
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private List<? extends ActiveTenant> getActiveTenantByFilterRequester(Long userId, Long tenantId,
+                                                                          String tenantName, boolean isTenantActive) throws SystemException {
+        try {
+            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(
+                    oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.get(userId, tenantId, tenantName, isTenantActive, false);
+            return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
+            throw new SystemException(es.getMessage());
+        }
     }
 
     /**
@@ -121,7 +205,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return getActiveTenantPage(search, pageNo, pageSize, sortBy, isAscending);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -162,7 +246,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return createActiveTenant((ActiveTenant) activeTenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -209,7 +293,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return deleteRequester(activeTenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -242,6 +326,51 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     }
 
     /**
+     * Asks the requester to delete an active tenant taking in consideration
+     * @param tenant tenant id
+     * @param user user id
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    @Override
+    public boolean deleteByTenantAndUser(long tenant, long user) throws SystemException {
+        try {
+            return deleteByTenantAndUserRequester(tenant, user);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteByTenantAndUserRequester(tenant, user);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Deletes active tenant by informed tenant id and user id
+     * @param tenant tenant identifier
+     * @param user user identifier
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private boolean deleteByTenantAndUserRequester(long tenant, long user) throws SystemException {
+        try {
+            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+            Response response = client.delete(tenant, user);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
+            String issue = response.readEntity(String.class);
+            log.error(issue);
+            return false;
+        }
+        catch (MalformedURLException | ExtensionException | ProcessingException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Asks the requester update a given active tenant
      * @param activeTenant to be updated
      * @return true if user has been updated with success or false if not
@@ -256,7 +385,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             try{
                 return updateActiveTenant(activeTenant);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -290,31 +419,33 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     /**
      * Gets the requester to see if a specific active tenant exists
-     * @param activeTenantId to be found
+     * @param userId to be found
+     * @param tenantId to be found
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public boolean isActiveTenantExistent(Long activeTenantId) throws SystemException {
+    public boolean isActiveTenantExistent(Long userId, Long tenantId) throws SystemException {
         try {
-            return isActiveTenantExistentRequester(activeTenantId);
+            return isActiveTenantExistentRequester(userId, tenantId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return isActiveTenantExistentRequester(activeTenantId);
+                return isActiveTenantExistentRequester(userId, tenantId);
             } catch (TokenExpiredException expiredException1){
-                throw new SystemException(unableToRecoverExpiredToken);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
 
     /**
      * Sends a request to the active tenant client to validate if a specific active tenant exists
-     * @param activeTenantId to be found
+     * @param userId to be found
+     * @param tenantId to be found
      * @return true in case of success response
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private boolean isActiveTenantExistentRequester(Long activeTenantId) throws SystemException {
+    private boolean isActiveTenantExistentRequester(Long userId, Long tenantId) throws SystemException {
         ActiveTenantResourceClient client;
         try {
             client = clientServiceUtil.
@@ -324,7 +455,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
         }
 
         try {
-            Response response = client.exists(activeTenantId);
+            Response response = client.exists(userId, tenantId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return response.readEntity(Boolean.class);
             }
@@ -333,5 +464,4 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
         }
         return false;
     }
-
 }

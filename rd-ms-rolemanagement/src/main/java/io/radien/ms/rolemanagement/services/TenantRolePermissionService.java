@@ -15,11 +15,13 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +73,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
 
         criteriaQuery.select(root);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+        Predicate global = getFilteredPredicate((TenantRolePermissionSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
         TypedQuery<TenantRolePermission> q = em.createQuery(criteriaQuery);
@@ -92,7 +94,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @param tenantRolePermissionRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(SystemTenantRolePermissionSearchFilter filter, CriteriaBuilder criteriaBuilder,
+    private Predicate getFilteredPredicate(TenantRolePermissionSearchFilter filter, CriteriaBuilder criteriaBuilder,
                                            Root<TenantRolePermission> tenantRolePermissionRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
@@ -101,9 +103,9 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
         }
 
-        global = getFieldPredicate("tenantRoleId", filter.getTenantRoleId(), filter, criteriaBuilder,
+        global = getFieldPredicate(SystemVariables.TENANT_ROLE_ID.getFieldName(), filter.getTenantRoleId(), filter, criteriaBuilder,
                 tenantRolePermissionRoot, global);
-        global = getFieldPredicate("permissionId", filter.getPermissionId(), filter, criteriaBuilder,
+        global = getFieldPredicate(SystemVariables.PERMISSION_ID.getFieldName(), filter.getPermissionId(), filter, criteriaBuilder,
                 tenantRolePermissionRoot, global);
 
         return global;
@@ -120,7 +122,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @return a constructed predicate
      */
     private Predicate getFieldPredicate(String name, Object value,
-                                        SystemTenantRolePermissionSearchFilter filter,
+                                        TenantRolePermissionSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
                                         Root<TenantRolePermission> tenantRolePermissionRoot,
                                         Predicate global) {
@@ -179,10 +181,10 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      */
     protected boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId, EntityManager em) {
         if (permissionId == null) {
-            throw new IllegalArgumentException("Permission Id is mandatory");
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id"));
         }
         if (tenantRoleId == null) {
-            throw new IllegalArgumentException("Tenant Role Id is mandatory");
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"));
         }
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
@@ -190,11 +192,11 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
 
         sc.select(cb.count(root)).
                 where(
-                        cb.equal(root.get("permissionId"),permissionId),
-                        cb.equal(root.get("tenantRoleId"),tenantRoleId)
+                        cb.equal(root.get(SystemVariables.PERMISSION_ID.getFieldName()),permissionId),
+                        cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),tenantRoleId)
                 );
         List<Long> count = em.createQuery(sc).getResultList();
-        return !count.isEmpty() ? count.get(0) > 0 : false;
+        return !count.isEmpty() && count.get(0) > 0;
     }
 
     /**
@@ -205,13 +207,13 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
     @Override
     public boolean delete(Long tenantRolePermissionId)  {
         if (tenantRolePermissionId == null) {
-            throw new IllegalArgumentException("Tenant Role Permission Id is mandatory");
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id"));
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<TenantRolePermission> criteriaDelete = cb.createCriteriaDelete(TenantRolePermission.class);
         Root<TenantRolePermission> tenantRolePermissionRoot = criteriaDelete.from(TenantRolePermission.class);
-        criteriaDelete.where(cb.equal(tenantRolePermissionRoot.get("id"),tenantRolePermissionId));
+        criteriaDelete.where(cb.equal(tenantRolePermissionRoot.get(SystemVariables.ID.getFieldName()),tenantRolePermissionId));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
     }
 
@@ -227,19 +229,22 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      */
     @Override
     public Optional<Long> getTenantRolePermissionId(Long tenantRole, Long permission) {
-        if (tenantRole == null || permission == null) {
-            throw new IllegalArgumentException("TenantRole and permission are mandatory");
+        if (tenantRole == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant role id"));
+        }
+        if(permission == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id"));
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
         Root<TenantRolePermission> root = criteriaQuery.from(TenantRolePermission.class);
 
-        criteriaQuery.select(root.get("id"));
+        criteriaQuery.select(root.get(SystemVariables.ID.getFieldName()));
 
         criteriaQuery.where(
-                cb.equal(root.get("tenantRoleId"),tenantRole),
-                cb.equal(root.get("permissionId"),permission)
+                cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),tenantRole),
+                cb.equal(root.get(SystemVariables.PERMISSION_ID.getFieldName()),permission)
         );
 
         TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);

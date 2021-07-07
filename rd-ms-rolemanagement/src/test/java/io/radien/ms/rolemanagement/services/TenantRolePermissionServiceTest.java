@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
@@ -59,7 +60,7 @@ public class TenantRolePermissionServiceTest {
         p.put("appframeDatabase.password", "");
         p.put("openejb.deployments.classpath.include",".*role.*");
         p.put("openejb.deployments.classpath.exclude",".*client.*");
-
+        p.put("openejb.cdi.activated-on-ejb", "false");
         container = EJBContainer.createEJBContainer(p);
         final Context context = container.getContext();
 
@@ -176,7 +177,7 @@ public class TenantRolePermissionServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(basePermissionId, null));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains("Tenant Role Id is mandatory"));
+        Assertions.assertEquals(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"), ejbException.getCausedByException().getMessage());
     }
 
     /**
@@ -190,7 +191,7 @@ public class TenantRolePermissionServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(null, baseTenantRoleId));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains("Permission Id is mandatory"));
+        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id")));
     }
 
     /**
@@ -308,5 +309,39 @@ public class TenantRolePermissionServiceTest {
 
         id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 202L);
         Assertions.assertFalse(id.isPresent());
+
+        try{
+            this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(null, 202L);
+        } catch (Exception e) {
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant role id")));
+        }
+    }
+
+    /**
+     * Test for method getTenantRolePermissionId(Long tenantRoleId, Long permissionId)
+     */
+    @Test
+    @Order(16)
+    public void testGetTenantRoleUserIdPermissionNull() {
+        SystemTenantRolePermission sru = new TenantRolePermission();
+        sru.setTenantRoleId(201010L);
+        sru.setPermissionId(101L);
+        Assertions.assertDoesNotThrow(() -> this.tenantRolePermissionServiceAccess.create(sru));
+
+        Long expectedId = sru.getId();
+        Assertions.assertNotNull(expectedId);
+
+        Optional<Long> id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, 101L);
+        Assertions.assertTrue(id.isPresent());
+        Assertions.assertEquals(expectedId, id.get());
+
+        id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, 202L);
+        Assertions.assertFalse(id.isPresent());
+
+        try{
+            this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, null);
+        } catch (Exception e) {
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id")));
+        }
     }
 }

@@ -58,14 +58,13 @@ public class ActiveTenantFactory {
      *
      * @param jsonTenant the JSONObject to convert
      * @return the Active Tenant Object
-     * @throws ParseException in case of any issue while parsing the JSON
      */
-    public static ActiveTenant convert(JsonObject jsonTenant) throws ParseException {
+    public static ActiveTenant convert(JsonObject jsonTenant) {
         Long id = FactoryUtilService.getLongFromJson("id", jsonTenant);
         Long userId = FactoryUtilService.getLongFromJson("userId", jsonTenant);
         Long tenantId = FactoryUtilService.getLongFromJson("tenantId", jsonTenant);
         String tenantName = FactoryUtilService.getStringFromJson("tenantName", jsonTenant);
-        boolean isTenantActive = Boolean.parseBoolean(FactoryUtilService.getStringFromJson("isTenantActive", jsonTenant));
+        boolean isTenantActive = FactoryUtilService.getBooleanFromJson("isTenantActive", jsonTenant);
 
         ActiveTenant activeTenant = create(userId, tenantId, tenantName, isTenantActive);
         activeTenant.setId(id);
@@ -86,7 +85,7 @@ public class ActiveTenantFactory {
         FactoryUtilService.addValueLong(builder, "userId", activeTenant.getUserId());
         FactoryUtilService.addValueLong(builder, "tenantId", activeTenant.getTenantId());
         FactoryUtilService.addValue(builder, "tenantName", activeTenant.getTenantName());
-        FactoryUtilService.addValue(builder, "isTenantActive", activeTenant.getIsTenantActive());
+        FactoryUtilService.addValueBoolean(builder, "isTenantActive", activeTenant.getIsTenantActive());
 
         return  builder.build();
     }

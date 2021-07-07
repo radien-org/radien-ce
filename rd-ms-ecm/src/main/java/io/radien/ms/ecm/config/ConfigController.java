@@ -73,7 +73,7 @@ public class ConfigController implements OAFAccess {
      */
     @Override
     public void fireEvent(Event event) {
-
+        // empty
     }
 
     /**
@@ -114,7 +114,6 @@ public class ConfigController implements OAFAccess {
     @Override
     public ResourceBundle getResourceBundle(String bundleName) {
         Locale locale = Locale.getDefault();
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         return ResourceBundle.getBundle(bundleName, locale);
     }
 

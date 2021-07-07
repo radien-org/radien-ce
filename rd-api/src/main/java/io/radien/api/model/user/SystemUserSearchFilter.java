@@ -16,12 +16,14 @@
 
 package io.radien.api.model.user;
 
+import io.radien.api.search.SystemSearchableByIds;
+
 /**
  * System User search filter interface class
  * 
  * @author Bruno Gama
  */
-public interface SystemUserSearchFilter {
+public interface SystemUserSearchFilter extends SystemSearchableByIds {
 
     /**
      * System User Search filter subject getter
@@ -58,28 +60,4 @@ public interface SystemUserSearchFilter {
      * @param logon to be set
      */
     void setLogon(String logon);
-
-    /**
-     * System User search filter is exact search getter
-     * @return the System User search filter is exact value
-     */
-    boolean isExact();
-
-    /**
-     * System User search filter is exact setter
-     * @param exact if true the search needs to be exactly as the given parameters
-     */
-    void setExact(boolean exact);
-
-    /**
-     * System User search filter is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    boolean isLogicConjunction();
-
-    /**
-     * System User search filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    void setLogicConjunction(boolean logicConjunction);
 }

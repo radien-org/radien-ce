@@ -63,8 +63,11 @@ public interface PermissionResourceClient {
                            @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     /**
-     * Finds all permissions that matches a name
+     * Finds all permissions that matches a search filter
      * @param name permission name
+     * @param action action id
+     * @param resource resource id
+     * @param ids permission ids to be found
      * @param isExact indicates if the match is for approximated value or not
      * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
      * @return In case of successful operation returns 200 (http status) and the collection (filled or not).
@@ -75,6 +78,7 @@ public interface PermissionResourceClient {
     public Response getPermissions(@QueryParam("name") String name,
                              @QueryParam("action") Long action,
                              @QueryParam("resource") Long resource,
+                             @QueryParam("ids") List<Long> ids,
                              @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                              @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 

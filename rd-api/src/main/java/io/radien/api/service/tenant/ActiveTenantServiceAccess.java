@@ -49,7 +49,15 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
      * @param activeTenantId to be searched for
      * @return the requested system active tenant
      */
-    public SystemActiveTenant get(Long activeTenantId) ;
+    public SystemActiveTenant get(Long activeTenantId);
+
+    /**
+     * Gets specific active tenant by the user id and tenant id
+     * @param userId to be searched for
+     * @param tenantId to be searched for
+     * @return the requested system active tenant
+     */
+    public List<? extends SystemActiveTenant> getByUserAndTenant(Long userId, Long tenantId);
 
     /**
      * Gets a list of system active tenants requested by a search filter
@@ -82,6 +90,14 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
     public boolean delete(Long activeTenantId);
 
     /**
+     * Delete ActiveTenants that exist for following parameters
+     * @param tenantId tenant identifier
+     * @param userId user identifier
+     * @return true in case of success (records founds and removed), otherwise false
+     */
+    public boolean delete(Long tenantId, Long userId);
+
+    /**
      * Deletes a collection of active tenants
      * @param activeTenantIds to be deleted
      */
@@ -89,9 +105,9 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
 
     /**
      * Validates if specific requested active tenant exists
-     * @param activeTenantId to be searched
+     * @param userId to be searched
+     * @param tenantId to be searched
      * @return response true if it exists
      */
-    public boolean exists(Long activeTenantId) throws NotFoundException;
-
+    public boolean exists(Long userId, Long tenantId) throws NotFoundException;
 }

@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.entities.Role;
@@ -75,7 +76,7 @@ public class LinkedAuthorizationResourceTest {
     }
 
     /**
-     * Test reposnse of the get all method
+     * Test response of the get all method
      */
     @Test
     public void testGetAllAssociations() {
@@ -160,7 +161,7 @@ public class LinkedAuthorizationResourceTest {
      * @throws LinkedAuthorizationNotFoundException in case object was not found
      */
     @Test
-    public void testDeleteGenericError() throws LinkedAuthorizationNotFoundException {
+    public void testDeleteGenericError() throws LinkedAuthorizationNotFoundException, SystemException {
         doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).deleteAssociation(any());
         Response response = linkedAuthorizationResource.deleteAssociation(1L);
         assertEquals(500,response.getStatus());
@@ -445,7 +446,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 200
      */
     @Test
-    public void testDissociation() throws LinkedAuthorizationException {
+    public void testDissociation() throws LinkedAuthorizationException, SystemException {
         doReturn(Boolean.TRUE).when(linkedAuthorizationBusinessService).
                 deleteAssociations(anyLong(), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
@@ -458,7 +459,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 400
      */
     @Test
-    public void testDissociationInvalidRequest() throws LinkedAuthorizationException {
+    public void testDissociationInvalidRequest() throws LinkedAuthorizationException, SystemException {
         doThrow(new LinkedAuthorizationException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(nullable(Long.class), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(null,1L);
@@ -475,7 +476,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 404
      */
     @Test
-    public void testDissociationAssociationsNotFound() throws LinkedAuthorizationException {
+    public void testDissociationAssociationsNotFound() throws LinkedAuthorizationException, SystemException {
         doReturn(Boolean.FALSE).when(linkedAuthorizationBusinessService).
                 deleteAssociations(anyLong(), anyLong());
         Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);
@@ -487,7 +488,7 @@ public class LinkedAuthorizationResourceTest {
      * Expected: Http Status 500
      */
     @Test
-    public void testDissociateTenantGenericError() throws LinkedAuthorizationException {
+    public void testDissociateTenantGenericError() throws LinkedAuthorizationException, SystemException {
         doThrow(new RuntimeException()).when(linkedAuthorizationBusinessService).
                 deleteAssociations(1L, 1L);
         Response response = linkedAuthorizationResource.deleteAssociations(1L,1L);

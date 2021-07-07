@@ -29,6 +29,7 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -61,6 +62,7 @@ public class RoleServiceTest {
         p.put("openejb.exclude-include.order", "include-exclude"); // Defines the processing order
         p.put("openejb.deployments.classpath.include", ".*rolemanagement.*");
         p.put("openejb.deployments.classpath.exclude", ".*client.*");
+        p.put("openejb.cdi.activated-on-ejb", "false");
         container = EJBContainer.createEJBContainer(p);
 
         final Context context = container.getContext();
@@ -155,14 +157,32 @@ public class RoleServiceTest {
         roleServiceAccess.save(testById2);
         roleServiceAccess.save(testById3);
 
-        List<? extends SystemRole> roleAnd = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("name1","description1",true,true));
+        List<? extends SystemRole> roleAnd = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("name1","description1",null,true,true));
         assertEquals(1,roleAnd.size());
 
-        List<? extends SystemRole> roleOr = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("name1","description2Find",true,false));
+        List<? extends SystemRole> roleOr = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("name1","description2Find",new ArrayList<>(),true,false));
         assertEquals(2,roleOr.size());
 
-        List<? extends SystemRole> rolesNotExact = roleServiceAccess.getSpecificRoles(new RoleSearchFilter("Find","Find",false,true));
+        List<? extends SystemRole> rolesNotExact = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("Find","Find",null,false,true));
+
         assertEquals(2,rolesNotExact.size());
+
+        List<? extends SystemRole> rolesByIds = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter(null,null,
+                        Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId()),
+                        true,true));
+
+        assertEquals(3,rolesByIds.size());
+
+        rolesByIds = roleServiceAccess.getSpecificRoles(
+                new RoleSearchFilter("nonexistent","nonexistent",
+                        Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId()),
+                        true,false));
+
+        assertEquals(3,rolesByIds.size());
 
         roleServiceAccess.delete(testById1.getId());
         roleServiceAccess.delete(testById2.getId());
@@ -182,6 +202,16 @@ public class RoleServiceTest {
 
         roleServiceAccess.delete(testUpdate1.getId());
         roleServiceAccess.delete(testUpdate2.getId());
+
+        Exception exception = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((testUpdate1.getId())));
+        Exception exception2 = assertThrows(RoleNotFoundException.class, () -> roleServiceAccess.get((testUpdate2.getId())));
+
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
+        String actualMessage1 = exception.getMessage();
+        String actualMessage2 = exception2.getMessage();
+
+        assertTrue(actualMessage1.contains(expectedMessage));
+        assertTrue(actualMessage2.contains(expectedMessage));
     }
 
     @Test

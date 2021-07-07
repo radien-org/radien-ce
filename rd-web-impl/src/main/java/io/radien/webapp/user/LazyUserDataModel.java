@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.ws.rs.WebApplicationException;
-import java.net.MalformedURLException;
 
 import java.util.ArrayList;
 import java.util.List;

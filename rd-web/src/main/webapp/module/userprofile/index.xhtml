@@ -10,7 +10,6 @@
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
 		<h:form id="userProfileManager" styleClass="tableContainer">
 			<b:growl id="message" showDetail="true" allowDismiss="true" delay="0"/>
-			<!--@elvariable id="userSession" type="io.radien.webapp.security.UserSession"-->
 			<b:container>
 				<b:row>
 					<h:panelGroup layout="block" styleClass="headerInformation">
@@ -25,25 +24,46 @@
 							<b:row><h1/></b:row>
 							<b:panelGrid colSpans="2,10">
 								<h:outputLabel for="userFirstName" value="#{msg.firstname}"/>
-								<b:inputText id="userFirstName" value="#{userSession.userFirstName}" disabled="true" span="6"/>
+								<b:inputText id="userFirstName" value="#{userProfileManager.clonedLogInUser.firstname}" span="6"/>
 
 								<h:outputLabel for="userLastName" value="#{msg.lastname}"/>
-								<b:inputText id="userLastName" value="#{userSession.userLastName}" disabled="true" span="6"/>
+								<b:inputText id="userLastName" value="#{userProfileManager.clonedLogInUser.lastname}" span="6"/>
 
 								<h:outputLabel value="#{msg.logon}"/>
-								<b:inputText id="userLogon" value="#{userSession.preferredUserName}" disabled="true" span="6"/>
+								<b:inputText id="userLogon" value="#{userProfileManager.clonedLogInUser.logon}" disabled="true" span="6"/>
 
 								<h:outputLabel value="#{msg.email}"/>
-								<b:inputText id="userEmail" value="#{userSession.email}" disabled="true" span="6"/>
+								<b:inputText id="userEmail" value="#{userProfileManager.clonedLogInUser.userEmail}" disabled="true" span="6"/>
 
 								<h:outputLabel value="#{msg.sub}"/>
-								<b:inputText id="userSub" value="#{userSession.userIdSubject}" disabled="true" span="6"/>
+								<b:inputText id="userSub" value="#{userProfileManager.clonedLogInUser.sub}" disabled="true" span="6"/>
 							</b:panelGrid>
 
 							<b:commandButton value="#{msg.rd_home_page}"
 											 tooltip="#{msg.returnToHomePage}"
 											 iconAwesome="fa-home"
-											 action="#{userProfileManager.redirectToHomePage}"/>
+											 immediate="true"
+											 action="#{userProfileManager.getHomeGui}"/>
+
+							<b:button id="updateUserProfile"
+									  onclick="$('.formValidationModalUserProfileUpdate').modal('show')"
+									  value="#{msg.save}" tooltip="#{msg.rd_user_profile_update}"
+									  iconAwesome="fa-save"/>
+							<b:modal id="model"
+									 title="#{msg.confirmation}"
+									 styleClass="formValidationModalUserProfileUpdate"
+									 closable="false"
+									 close-on-escape="false" backdrop="false">
+								<p>#{msg.userProfileUpdateConfirmation}</p>
+								<f:facet name="footer">
+									<b:commandButton value="#{msg.returnButton}"
+													 type="reset"
+													 onclick="{ $('.formValidationModalUserProfileUpdate').modal('hide') } "/>
+									<b:commandButton value="#{msg.yes}" look="warning"
+													 action="#{userProfileManager.updateProfile(userProfileManager.clonedLogInUser)}"
+													 oncomplete="{ $('.formValidationModalUserProfileUpdate').modal('hide') } "/>
+								</f:facet>
+							</b:modal>
 
 						</b:container>
 					</b:tab>
@@ -71,8 +91,7 @@
 												 tooltip="#{msg.returnToHomePage}"
 												 iconAwesome="fa-home"
 												 immediate="true"
-												 action="#{userProfileManager.redirectToHomePage}"/>
-
+												 action="#{userProfileManager.homeGui}"/>
 								<b:button id="userTenantDissociation"
 										  value="#{msg.dissociate}"
 										  tooltip="#{msg.dissociate} #{msg.rd_user} #{msg.rd_tenant}"

@@ -160,8 +160,7 @@ public class UserBusinessService implements Serializable {
 	 * @return a batch summary with the resumed information with success or failure
 	 */
 	public BatchSummary create(List<? extends SystemUser> users) {
-		BatchSummary summary = userServiceAccess.create(users);
-		return summary;
+		return userServiceAccess.create(users);
 	}
 
 	/**

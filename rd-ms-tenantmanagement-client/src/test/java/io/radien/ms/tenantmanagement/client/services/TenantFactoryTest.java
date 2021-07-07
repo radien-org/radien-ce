@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import junit.framework.TestCase;
@@ -216,6 +217,6 @@ public class TenantFactoryTest extends TestCase {
         json = builder.build();
 
         Exception exception = assertThrows(IllegalStateException.class, () -> TenantFactory.convert(json));
-        assertEquals(exception.getMessage(), "No tenant type could be found");
+        assertEquals(exception.getMessage(), GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString());
     }
 }

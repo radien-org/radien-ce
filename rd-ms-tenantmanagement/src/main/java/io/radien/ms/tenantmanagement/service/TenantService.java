@@ -129,7 +129,7 @@ public class TenantService implements TenantServiceAccess {
 
         criteriaQuery.select(root);
 
-        Predicate global = getFilteredPredicate(filter, criteriaBuilder, root);
+        Predicate global = getFilteredPredicate((TenantSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
         TypedQuery<Tenant> q = em.createQuery(criteriaQuery);
@@ -151,12 +151,21 @@ public class TenantService implements TenantServiceAccess {
      * @param tenantRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(SystemTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot) {
+    private Predicate getFilteredPredicate(TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         } else {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
+        }
+
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = tenantRoot.get("id").in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
         }
 
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, tenantRoot, global);
@@ -175,7 +184,7 @@ public class TenantService implements TenantServiceAccess {
      * @param global predicate to be added
      * @return a constructed predicate
      */
-    private Predicate getFieldPredicate(String name, Object value, SystemTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot, Predicate global) {
+    private Predicate getFieldPredicate(String name, Object value, TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<Tenant> tenantRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate;
             if (value instanceof String && !filter.isExact()) {
@@ -269,10 +278,7 @@ public class TenantService implements TenantServiceAccess {
      * @return true in case that given field is null or empty ("")
      */
     private boolean validateIfFieldsAreEmpty(String field) {
-        if(field != null && !field.trim().isEmpty()) {
-            return false;
-        }
-        return true;
+        return field == null || field.trim().isEmpty();
     }
 
     /**
@@ -290,7 +296,7 @@ public class TenantService implements TenantServiceAccess {
         }
 
         // There must only exist one Root Tenant
-        List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getName(), false, false));
+        List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getName(), null,false, false));
         if (!list.isEmpty()) {
             if (tenant.getId() == null || list.size() > 1 || !list.get(0).getId().equals(tenant.getId())) {
                 throw new TenantException(GenericErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString());

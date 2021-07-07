@@ -287,7 +287,13 @@ public class UserBusinessServiceTest extends TestCase {
         User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
         doNothing().when(keycloakService,"sendUpdatePasswordEmail", ArgumentMatchers.any());
-        userBusinessService.sendUpdatePasswordEmail(user);
+        boolean success = true;
+        try {
+            userBusinessService.sendUpdatePasswordEmail(user);
+        } catch (Exception e) {
+            success = false;
+        }
+        assertTrue(success);
     }
 
     @Test

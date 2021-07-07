@@ -16,18 +16,18 @@
 package io.radien.ms.tenantmanagement.client.entities;
 
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
+import io.radien.api.search.SearchFilterCriteria;
 
 /**
  * Encapsulates the parameters applied to search for active tenants
  * @author Bruno Gama
  */
-public class ActiveTenantSearchFilter implements SystemActiveTenantSearchFilter {
+public class ActiveTenantSearchFilter extends SearchFilterCriteria implements SystemActiveTenantSearchFilter {
 
     private Long userId;
     private Long tenantId;
     private String tenantName;
     private boolean isTenantActive;
-    private boolean isLogicConjunction;
 
     /**
      * Active Tenant search filter constructor
@@ -38,11 +38,11 @@ public class ActiveTenantSearchFilter implements SystemActiveTenantSearchFilter 
      * @param isLogicalConjunction true in case search option is and conjunction
      */
     public ActiveTenantSearchFilter(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isLogicalConjunction) {
+        super(isLogicalConjunction);
         this.userId = userId;
         this.tenantId = tenantId;
         this.tenantName = tenantName;
         this.isTenantActive = isTenantActive;
-        this.isLogicConjunction = isLogicalConjunction;
     }
 
     /**
@@ -114,23 +114,5 @@ public class ActiveTenantSearchFilter implements SystemActiveTenantSearchFilter 
     @Override
     public void setIsTenantActive(boolean isTenantActive) {
         this.isTenantActive = isTenantActive;
-    }
-
-    /**
-     * Active Tenant search filter get is logical conjunction
-     * @return true or false value
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Active Tenant search filter set is logic conjunction
-     * @param logicConjunction to be set and updated
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

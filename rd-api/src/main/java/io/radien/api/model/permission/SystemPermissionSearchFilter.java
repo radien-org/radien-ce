@@ -15,12 +15,14 @@
  */
 package io.radien.api.model.permission;
 
+import io.radien.api.search.SystemSearchableByIds;
+
 /**
  * Contract description for permissions search filter
  *
  * @author Newton Carvalho
  */
-public interface SystemPermissionSearchFilter {
+public interface SystemPermissionSearchFilter extends SystemSearchableByIds {
 
     /**
      * System permission search filter name getter
@@ -57,28 +59,4 @@ public interface SystemPermissionSearchFilter {
      * @param resourceId to be set
      */
     void setResourceId(Long resourceId);
-
-    /**
-     * System permission search filter is exact search getter
-     * @return the system permission search filter is exact value
-     */
-    boolean isExact();
-
-    /**
-     * System permission search filter is exact setter
-     * @param exact if true the search needs to be exactly as the given parameters
-     */
-    void setExact(boolean exact);
-
-    /**
-     * System Permission search filter is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    boolean isLogicConjunction();
-
-    /**
-     * System Permission search filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    void setLogicConjunction(boolean logicConjunction);
 }

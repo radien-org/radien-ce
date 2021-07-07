@@ -16,12 +16,14 @@
 package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
+import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantResourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,26 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	}
 
 	/**
+	 * Gets a list of requested active tenants based on some filtered information
+	 * @param userId to be searched for
+	 * @param tenantId to be search for
+	 * @param tenantName to be search for
+	 * @param isTenantActive to be search for
+	 * @param isLogicalConjunction in case of true query will use an and in case of false query will use a or
+	 * @return 200 response code in case of success or 500 in case of any issue
+	 */
+	@Override
+	public Response get(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isLogicalConjunction) {
+		try {
+			SystemActiveTenantSearchFilter filter = new ActiveTenantSearchFilter(userId, tenantId, tenantName, isTenantActive, isLogicalConjunction);
+			List<? extends SystemActiveTenant> list= activeTenantServiceAccess.get(filter);
+			return Response.ok(list).build();
+		}catch (Exception e){
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
+	/**
 	 * Gets active tenant based on the given id
 	 * @param id to be searched for
 	 * @return 200 code message in case of success or 500 in case of any error
@@ -83,6 +105,22 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	}
 
 	/**
+	 * Gets active tenant based on the given id
+	 * @param userId to be searched for
+	 * @param tenantId to be searched for
+	 * @return 200 code message in case of success or 500 in case of any error
+	 */
+	@Override
+	public Response getByUserAndTenant(Long userId, Long tenantId) {
+		try {
+			List<? extends SystemActiveTenant> list= activeTenantServiceAccess.getByUserAndTenant(userId, tenantId);
+			return Response.ok(list).build();
+		}catch (Exception e){
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
+	/**
 	 * Requests to a active tenant be deleted by given his id
 	 * @param id of the active tenant to be deleted
 	 * @return a response with true or false based on the success or failure of the deletion
@@ -91,6 +129,21 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	public Response delete(long id) {
 		try {
 			return Response.ok(activeTenantServiceAccess.delete(id)).build();
+		}catch (Exception e){
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
+	/**
+	 * Requests to delete active tenants taking in account the following parameters
+	 * @param tenantId tenant id of the active tenant to be deleted
+	 * @param userId user id of the active tenant to be deleted
+	 * @return a response with true or false based on the success or failure of the deletion
+	 */
+	@Override
+	public Response delete(long tenantId, long userId) {
+		try {
+			return Response.ok(activeTenantServiceAccess.delete(tenantId, userId)).build();
 		}catch (Exception e){
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
@@ -134,13 +187,14 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 
 	/**
 	 * Validates if specific requested active Tenant exists
-	 * @param id to be searched
+	 * @param userId to be found
+	 * @param tenantId to be found
 	 * @return response true if it exists
 	 */
 	@Override
-	public Response exists(Long id) {
+	public Response exists(Long userId, Long tenantId) {
 		try {
-			return Response.ok(activeTenantServiceAccess.exists(id)).build();
+			return Response.ok(activeTenantServiceAccess.exists(userId, tenantId)).build();
 		}catch (NotFoundException e){
 			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		}

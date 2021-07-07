@@ -117,7 +117,7 @@ public class EntityFilterUtilTest {
         String filter = "sub%";
 
         when(tenantRESTServiceAccess.getAll(filter,
-                1, 10, null, false)).then(i -> page);
+                1, 100, null, false)).then(i -> page);
 
         List<? extends SystemTenant> output = target.filterTenantsByName("sub");
         assertNotNull(output);
@@ -135,7 +135,7 @@ public class EntityFilterUtilTest {
     public void testFilterTenantsByNameWithException() throws SystemException {
         String filterName = "sub%";
         Exception e = new RuntimeException("Error retrieving tenants");
-        when(tenantRESTServiceAccess.getAll(filterName, 1, 10, null,
+        when(tenantRESTServiceAccess.getAll(filterName, 1, 100, null,
                 false)).thenThrow(e);
 
         List<? extends SystemTenant> output = target.filterTenantsByName(filterName);

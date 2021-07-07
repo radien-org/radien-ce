@@ -87,22 +87,22 @@
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-core</artifactId>
-			<version>1.36</version>
+			<version>1.40.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-jcr</artifactId>
-			<version>1.36</version>
+			<version>1.40.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-run</artifactId>
-			<version>1.36</version>
+			<version>1.40.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-pojosr</artifactId>
-			<version>1.36</version>
+			<version>1.40.0</version>
 		</dependency>
 
 <!-- 
@@ -165,7 +165,7 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.25</version>
+			<version>1.26</version>
 		</dependency>
 
 		<!-- -->

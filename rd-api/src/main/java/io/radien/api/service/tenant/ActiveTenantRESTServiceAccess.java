@@ -32,10 +32,30 @@ public interface ActiveTenantRESTServiceAccess {
     /**
      * Search for a active tenant with given id
      * @param id of the active tenant to be retrieved
-     * @return true if contract has been created with success or false if not
+     * @return a optional list of the requested active tenant
      * @throws SystemException in case of token expiration or any issue on the application
      */
     public Optional<SystemActiveTenant> getActiveTenantById(Long id) throws SystemException;
+
+    /**
+     * Search for a active tenant with user id and tenant id
+     * @param userId of the active tenant to be retrieved
+     * @param tenantId of the active tenant to be retrieved
+     * @return list of the requested active tenant
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public List<? extends SystemActiveTenant> getActiveTenantByUserAndTenant(Long userId, Long tenantId) throws SystemException;
+
+    /**
+     * Search for a active tenant for a given user
+     * @param userId to be search
+     * @param tenantId to be search
+     * @param tenantName to be search
+     * @param isTenantActive to be search
+     * @return a list of all the possible active tenants
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId, String tenantName, boolean isTenantActive) throws SystemException;
 
     /**
      * Fetches all the existent active tenants
@@ -70,6 +90,15 @@ public interface ActiveTenantRESTServiceAccess {
     public boolean delete(long activeTenantId) throws SystemException;
 
     /**
+     * Delete active tenant taking in consideration
+     * @param tenant tenant id
+     * @param user user id
+     * @return true if user has been deleted with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean deleteByTenantAndUser(long tenant, long user) throws SystemException;
+
+    /**
      * Updates given active tenant
      * @param activeTenant to be updated
      * @return true if active tenant has been updated with success or false if not
@@ -79,10 +108,11 @@ public interface ActiveTenantRESTServiceAccess {
 
     /**
      * Checks if active tenant is existent in the db
-     * @param activeTenantId to be found
+     * @param userId to be found
+     * @param tenantId to be found
      * @return true in case of success
      * @throws SystemException in case of token expiration or any issue on the application
      */
-    public boolean isActiveTenantExistent(Long activeTenantId) throws  SystemException;
+    public boolean isActiveTenantExistent(Long userId, Long tenantId) throws SystemException;
 
 }

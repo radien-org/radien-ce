@@ -30,7 +30,6 @@ public abstract class AbstractWebapp implements Appframeable {
 
 	private static final long serialVersionUID = 6930919846980181399L;
 	protected static final Logger log = LoggerFactory.getLogger(AbstractWebapp.class);
-	private static final String SNAPSHOT = "SNAPSHOT";
 
 	/**
 	 * Gets the current OAF access
@@ -45,11 +44,7 @@ public abstract class AbstractWebapp implements Appframeable {
 	 * @return the string value of the requested version
 	 */
 	public String getVersion() {
-		String version = getProperty(OAFProperties.SYS_MF_APP_VERSION);
-//		if ( version != null &&  version.contains(SNAPSHOT) &&   getBuildNumber() != null && getBuildNumber().equalsIgnoreCase("")) {
-//			version += ("-"+getBuildNumber());
-//		}
-		return version;
+		return getProperty(OAFProperties.SYS_MF_APP_VERSION);
 	}
 
 	/**
@@ -57,11 +52,7 @@ public abstract class AbstractWebapp implements Appframeable {
 	 * @return the web app version
 	 */
 	public String getWebappVersion() {
-		String version = getProperty(OAFProperties.SYS_MF_WEBAPP_VERSION);
-//		if ( version != null && version.contains(SNAPSHOT)) {
-//			version += ("-"+getBuildNumber());
-//		}
-		return version;
+		return getProperty(OAFProperties.SYS_MF_WEBAPP_VERSION);
 	}
 
 	/**

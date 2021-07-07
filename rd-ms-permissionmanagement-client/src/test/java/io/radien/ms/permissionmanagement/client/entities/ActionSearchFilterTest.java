@@ -33,7 +33,7 @@ public class ActionSearchFilterTest {
      */
     @Test
     public void testEmptyFilter() {
-        SystemActionSearchFilter actionSearchFilter = new ActionSearchFilter();
+        ActionSearchFilter actionSearchFilter = new ActionSearchFilter();
         Assert.assertFalse(actionSearchFilter.isExact());
         Assert.assertFalse(actionSearchFilter.isLogicConjunction());
         Assert.assertNull(actionSearchFilter.getName());
@@ -44,7 +44,7 @@ public class ActionSearchFilterTest {
      */
     @Test
     public void testSettingValues() {
-        SystemActionSearchFilter actionSearchFilter = new ActionSearchFilter();
+        ActionSearchFilter actionSearchFilter = new ActionSearchFilter();
         Assert.assertFalse(actionSearchFilter.isExact());
         Assert.assertFalse(actionSearchFilter.isLogicConjunction());
         Assert.assertNull(actionSearchFilter.getName());
@@ -62,7 +62,7 @@ public class ActionSearchFilterTest {
      */
     @Test
     public void testConstructor() {
-        SystemActionSearchFilter actionSearchFilter = new ActionSearchFilter(act1,true, true);
+        ActionSearchFilter actionSearchFilter = new ActionSearchFilter(act1,true, true);
         Assert.assertTrue(actionSearchFilter.isExact());
         Assert.assertTrue(actionSearchFilter.isLogicConjunction());
         Assert.assertNotNull(actionSearchFilter.getName());

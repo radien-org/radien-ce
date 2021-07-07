@@ -47,7 +47,9 @@ public class ActiveTenantMessageBodyReaderTest extends TestCase {
         String result = "{\"" +
                 "id\":null," +
                 "\"userId\": 2," +
-                "\"tenantId\": 2" +
+                "\"tenantId\": 2," +
+                "\"tenantName\": \"test\"," +
+                "\"isTenantActive\": true" +
                 "}";
         ActiveTenantMessageBodyReader target = new ActiveTenantMessageBodyReader();
         InputStream in = new ByteArrayInputStream(result.getBytes());
@@ -65,7 +67,9 @@ public class ActiveTenantMessageBodyReaderTest extends TestCase {
         String result = "{\"" +
                 "id\":null," +
                 "\"userId\": 2," +
-                "\"tenantId\": 2" +
+                "\"tenantId\": 2," +
+                "\"tenantName\": \"test\"," +
+                "\"isTenantActive\": true" +
                 "}";
         ActiveTenantMessageBodyReader target = new ActiveTenantMessageBodyReader();
         InputStream in = new ByteArrayInputStream(result.getBytes());

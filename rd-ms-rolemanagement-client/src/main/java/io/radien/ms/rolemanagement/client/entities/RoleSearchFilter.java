@@ -16,19 +16,19 @@
 package io.radien.ms.rolemanagement.client.entities;
 
 import io.radien.api.model.role.SystemRoleSearchFilter;
+import io.radien.api.search.SearchableByIds;
+
+import java.util.Collection;
 
 /**
  * Role search object constructor
  *
  * @author Bruno Gama
  */
-public class RoleSearchFilter implements SystemRoleSearchFilter {
+public class RoleSearchFilter extends SearchableByIds implements SystemRoleSearchFilter {
 
     private String name;
     private String description;
-
-    private boolean isExact;
-    private boolean isLogicConjunction;
 
     /**
      * Role search filter empty constructor
@@ -39,14 +39,14 @@ public class RoleSearchFilter implements SystemRoleSearchFilter {
      * Role search filter constructor with specified fields
      * @param name to be search
      * @param description to be search
+     * @param ids to be search
      * @param isExact to be search
      * @param isLogicConjunction true in case search option is and conjunction
      */
-    public RoleSearchFilter(String name, String description, boolean isExact, boolean isLogicConjunction) {
+    public RoleSearchFilter(String name, String description, Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
+        super(ids, isExact, isLogicConjunction);
         this.name = name;
         this.description = description;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicConjunction;
     }
 
     /**
@@ -83,41 +83,5 @@ public class RoleSearchFilter implements SystemRoleSearchFilter {
     @Override
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * Role search filter get is exact
-     * @return true or false
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * Role search filter is exact setter
-     * @param exact to be set and replace
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * Role search filter get is logical conjunction
-     * @return true or false
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * Role search filter is logicConjunction setter
-     * @param logicConjunction to be set and replace
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

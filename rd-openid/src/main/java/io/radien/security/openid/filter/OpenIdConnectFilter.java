@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package io.radien.security.openid.filter;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
@@ -74,9 +75,7 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 		try {
 			token = restTemplate.getAccessToken();
 		} catch (OAuth2Exception e) {
-			logger.error("Could not obtain access token", e);
-			System.out.println("Could not obtain access token");
-			throw new BadCredentialsException("Could not obtain access token", e);
+			throw new BadCredentialsException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
 		}
 
 		try {
@@ -97,17 +96,20 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 			session.setAttribute("refreshToken",token.getRefreshToken().getValue());
 			return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 		} catch (Exception e) {
-			logger.error("Could not obtain user details from token", e);
-			System.out.println("Could not obtain user details from token");
-			throw new BadCredentialsException("Could not obtain user details from token", e);
+			throw new BadCredentialsException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString(), e);
 		}
 	}
 
-	private RsaVerifier verifier(String kid) throws Exception {
-		final JwkProvider provider = new UrlJwkProvider(new URL(jwkUrl));
-		final Jwk jwk = provider.get(kid);
+	private RsaVerifier verifier(String kid) {
+		try{
+			final JwkProvider provider = new UrlJwkProvider(new URL(jwkUrl));
+			final Jwk jwk = provider.get(kid);
 
-		return new RsaVerifier((RSAPublicKey) jwk.getPublicKey());
+			return new RsaVerifier((RSAPublicKey) jwk.getPublicKey());
+		}catch (Exception exception){
+			logger.error(GenericErrorCodeMessage.GENERIC_ERROR.toString(), exception);
+			return null;
+		}
 	}
 
 	private void verifyClaims(Map<String, String> claims) {
@@ -116,9 +118,7 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 		final Date now = new Date();
 
 		if (expireDate.before(now) || !claims.get("iss").equals(issuer) || !claims.get("aud").equals(clientId)) {
-			logger.error("Invalid claims " + claims.toString());
-			System.out.println("Invalid claims " + claims.toString());
-			throw new RuntimeException("Invalid claims");
+			logger.error(GenericErrorCodeMessage.GENERIC_ERROR.toString());
 		}
 	}
 

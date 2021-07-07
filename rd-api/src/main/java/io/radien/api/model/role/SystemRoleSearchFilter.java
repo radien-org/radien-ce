@@ -15,12 +15,14 @@
  */
 package io.radien.api.model.role;
 
+import io.radien.api.search.SystemSearchableByIds;
+
 /**
  * System Role search filter interface class
  *
  * @author Bruno Gama
  */
-public interface SystemRoleSearchFilter {
+public interface SystemRoleSearchFilter extends SystemSearchableByIds {
 
     /**
      * System role search filter name getter
@@ -45,28 +47,4 @@ public interface SystemRoleSearchFilter {
      * @param description to be set
      */
     void setDescription(String description);
-
-    /**
-     * System role search filter is exact search getter
-     * @return the system role search filter is exact value
-     */
-    boolean isExact();
-
-    /**
-     * System role search filter is exact setter
-     * @param exact if true the search needs to be exactly as the given parameters
-     */
-    void setExact(boolean exact);
-
-    /**
-     * System role search filter is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    boolean isLogicConjunction();
-
-    /**
-     * System role search filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    void setLogicConjunction(boolean logicConjunction);
 }

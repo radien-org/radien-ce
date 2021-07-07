@@ -19,6 +19,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.LinkedAuthorizationClient;
@@ -30,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.ProcessingException;
@@ -92,7 +92,6 @@ public abstract class AuthorizationChecker implements Serializable {
         }
     }
 
-
     /**
      * Check if the current logged user has (grant to) some role (under a specific tenant - optionally)
      * @param tenantId Tenant identifier (Optional parameter)
@@ -117,9 +116,9 @@ public abstract class AuthorizationChecker implements Serializable {
                     return response.readEntity(Boolean.class);
                 }
                 return false;
-        } catch (Exception e) {
-            this.log.error("Error checking authorization", e);
-            throw new SystemException(e);
+
+        } catch (SystemException e) {
+            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
 
@@ -163,9 +162,8 @@ public abstract class AuthorizationChecker implements Serializable {
         catch (NotFoundException e) {
            return false;
         }
-        catch (Exception e) {
-            this.log.error("Error checking authorization", e);
-            throw new SystemException(e);
+        catch (SystemException e) {
+            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
 
@@ -226,11 +224,10 @@ public abstract class AuthorizationChecker implements Serializable {
             return response.readEntity(Long.class);
         }
         catch (NotFoundException e) {
-            throw new SystemException("Could Not find User id for sub=" + sub);
+            throw new NotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString(), e);
         }
-        catch(Exception e) {
-            log.error("Error trying to obtain user id", e);
-            throw new SystemException("Error trying to obtain user id", e);
+        catch(SystemException e) {
+            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
         }
     }
 

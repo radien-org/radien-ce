@@ -15,7 +15,6 @@
  */
 package io.radien.ms.usermanagement.service;
 
-import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.entities.User;
 import junit.framework.TestCase;
@@ -42,7 +41,7 @@ public class KeycloakClientTest extends TestCase {
         try {
             client.login();
             String id = client.createUser(KeycloakFactory.convertToUserRepresentation(u));
-            System.out.println(id);
+            assertNotNull(id);
         } catch (RemoteResourceException e){
             log.error(e.getMessage(),e);
         }

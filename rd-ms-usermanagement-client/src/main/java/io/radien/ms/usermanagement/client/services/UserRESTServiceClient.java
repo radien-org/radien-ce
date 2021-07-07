@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -92,8 +93,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return getSystemUser(sub);
             } catch (TokenExpiredException expiredException) {
-                log.error(expiredException.getMessage(), expiredException);
-                throw new SystemException(expiredException);
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -112,7 +112,26 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return getSystemUser(id);
             } catch (TokenExpiredException expiredException) {
-                log.error(expiredException.getMessage(), expiredException);
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Gets the requested users searching for a list of ids
+     * @param ids to be searched
+     * @return a list containing system users
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    @Override
+    public List<? extends SystemUser> getUsersByIds(List<Long> ids) throws SystemException {
+        try {
+            return getSystemUsers(ids);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return getSystemUsers(ids);
+            } catch (TokenExpiredException expiredException) {
                 throw new SystemException(expiredException);
             }
         }
@@ -132,8 +151,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return getSystemUserByLogon(logon);
             } catch (TokenExpiredException expiredException) {
-                log.error(expiredException.getMessage(), expiredException);
-                throw new SystemException(expiredException);
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -154,7 +172,24 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             return Optional.empty();
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            log.error(e.getMessage(), e);
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Method to retrieve system users by its ids
+     * @param ids to be fetched and found
+     * @return a list containing the system users found by the informed ids
+     * @throws SystemException in case of any communication issue
+     * @throws TokenExpiredException in case of JWT token expiration
+     */
+    private List<? extends SystemUser> getSystemUsers(List<Long> ids) throws SystemException, TokenExpiredException {
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.getUsers(null, null, null, ids, true, true);
+            return ListUserModelMapper.map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
         }
     }
@@ -170,7 +205,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
-            Response response = client.getUsers(sub, null, null, true, true);
+            Response response = client.getUsers(sub, null, null, null,true, true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -178,7 +213,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e) {
-            log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
     }
@@ -194,7 +228,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
 
-            Response response = client.getUsers(null, null, logon, true, true);
+            Response response = client.getUsers(null, null, logon, null,true, true);
             List<? extends SystemUser> list = ListUserModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -202,7 +236,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
     }
@@ -214,7 +247,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case it founds multiple users or if URL is malformed
      */
     public boolean create(SystemUser user, boolean skipKeycloak) throws SystemException {
-        UserResourceClient client;
         try {
             return createUser(user, skipKeycloak);
         } catch (TokenExpiredException e) {
@@ -222,8 +254,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             try {
                 return createUser(user, skipKeycloak);
             } catch (TokenExpiredException tokenExpiredException) {
-                log.error(tokenExpiredException.getMessage(), tokenExpiredException);
-                throw new SystemException(tokenExpiredException);
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
@@ -241,7 +272,6 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
         } catch (MalformedURLException e) {
-            log.error(e.getMessage(), e);
             throw new SystemException(e);
         }
         if (skipKeycloak) {
@@ -251,7 +281,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                logErrorEnabledResponse(response);
                 return false;
             }
         } catch (ProcessingException e) {
@@ -302,9 +332,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             //WEB APPLICATION EXCEPTION jax rs
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
 
-            //JsonArray jsonArray = (JsonArray) Json.createReader(new StringReader(response.readEntity(String.class))).readObject().get("results");
-            //listUsers = UserFactory.convert(jsonArray);
-           page = UserModelMapper.mapToPage((InputStream) response.getEntity());
+            page = UserModelMapper.mapToPage((InputStream) response.getEntity());
 
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -346,7 +374,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -388,7 +416,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 deleteUser = true;
             } else {
-                log.error(response.readEntity(String.class));
+                logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -429,7 +457,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
-                log.error(response.readEntity(String.class));
+                logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
@@ -486,12 +514,21 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
                     response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
                 return Optional.of(response.readEntity(BatchSummary.class));
             } else {
-                log.error(response.readEntity(String.class));
+                logErrorEnabledResponse(response);
                 return Optional.empty();
             }
         } catch (ProcessingException pe) {
-            log.error(pe.getMessage(), pe);
-            throw pe;
+            throw new ProcessingException(pe);
+        }
+    }
+
+    /**
+     * Invoke when Response error is to be logged
+     * @param response object info
+     */
+    private void logErrorEnabledResponse(Response response) {
+        if(log.isErrorEnabled()){
+            log.error(response.readEntity(String.class));
         }
     }
 

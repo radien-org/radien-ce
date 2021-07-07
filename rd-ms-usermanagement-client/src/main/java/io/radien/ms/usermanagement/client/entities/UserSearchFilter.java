@@ -15,19 +15,20 @@
  */
 package io.radien.ms.usermanagement.client.entities;
 
+import io.radien.api.search.SearchableByIds;
 import io.radien.api.model.user.SystemUserSearchFilter;
+
+import java.util.Collection;
 
 /**
  * Encapsulates the parameters applied to search for users
  *
  * @author Nuno Santana
  */
-public class UserSearchFilter implements SystemUserSearchFilter {
+public class UserSearchFilter extends SearchableByIds implements SystemUserSearchFilter {
     private String sub;
     private String email;
     private String logon;
-    private boolean isExact;
-    private boolean isLogicConjunction;
 
     /**
      * User search filter empty constructor
@@ -39,15 +40,15 @@ public class UserSearchFilter implements SystemUserSearchFilter {
      * @param sub to be found
      * @param email to be found
      * @param logon to be found
+     * @param ids to be search
      * @param isExact should the requested value be exact to the given one
      * @param isLogicConjunction true in case search option is and conjunction
      */
-    public UserSearchFilter(String sub, String email, String logon, boolean isExact, boolean isLogicConjunction) {
+    public UserSearchFilter(String sub, String email, String logon, Collection<Long> ids, boolean isExact, boolean isLogicConjunction) {
+        super(ids, isExact, isLogicConjunction);
         this.sub = sub;
         this.email = email;
         this.logon = logon;
-        this.isExact = isExact;
-        this.isLogicConjunction = isLogicConjunction;
     }
 
     /**
@@ -102,41 +103,5 @@ public class UserSearchFilter implements SystemUserSearchFilter {
     @Override
     public void setLogon(String logon) {
         this.logon = logon;
-    }
-
-    /**
-     * User search filter is to be search exact
-     * @return is to be exact value
-     */
-    @Override
-    public boolean isExact() {
-        return isExact;
-    }
-
-    /**
-     * User search filter is to be search exact
-     * @param exact to be set
-     */
-    @Override
-    public void setExact(boolean exact) {
-        isExact = exact;
-    }
-
-    /**
-     * User is logical conjunction getter
-     * @return the logical conjunction value if true is an and if false is a or
-     */
-    @Override
-    public boolean isLogicConjunction() {
-        return isLogicConjunction;
-    }
-
-    /**
-     * User filter logical conjunction setter
-     * @param logicConjunction the logical conjunction value if true is an and if false is a or
-     */
-    @Override
-    public void setLogicConjunction(boolean logicConjunction) {
-        isLogicConjunction = logicConjunction;
     }
 }

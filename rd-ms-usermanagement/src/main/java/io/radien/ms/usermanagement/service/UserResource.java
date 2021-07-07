@@ -104,14 +104,15 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @param sub to be found
 	 * @param email to be found
 	 * @param logon to be found
+	 * @param ids to be found
 	 * @param isExact should the search fields be exact or not as given
 	 * @param isLogicalConjunction should the query use a and or a or criteria
 	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
 	 */
 	@Override
-	public Response getUsers(String sub, String email, String logon, boolean isExact, boolean isLogicalConjunction) {
+	public Response getUsers(String sub, String email, String logon, List<Long> ids, boolean isExact, boolean isLogicalConjunction) {
 		try {
-			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,isExact,isLogicalConjunction);
+			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,ids,isExact,isLogicalConjunction);
 			return Response.ok(userBusinessService.getUsers(filter)).build();
 		} catch (Exception e) {
 			return getResponseFromException(e);

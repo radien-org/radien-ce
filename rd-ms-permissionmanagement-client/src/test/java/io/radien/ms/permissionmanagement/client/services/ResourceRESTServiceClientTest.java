@@ -443,4 +443,48 @@ public class ResourceRESTServiceClientTest {
         SystemResource systemResource = ResourceFactory.create("name", 2L);
         target.create(systemResource);
     }
+
+    @Test
+    public void testDelete() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.delete(anyLong())).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        assertTrue(target.delete(2L));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteMalformedException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenThrow(new MalformedURLException());
+        target.delete(2L);
+    }
+
+    @Test
+    public void testDeleteFail() throws SystemException, MalformedURLException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.delete(anyLong())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        assertFalse(target.delete(2L));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteProcessingException() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.delete(anyLong())).thenThrow(new ProcessingException(""));
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        target.delete(2L);
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteTokenExpiration() throws Exception {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.delete(anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.delete(2L);
+    }
 }

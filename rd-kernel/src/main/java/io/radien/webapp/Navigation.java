@@ -31,10 +31,6 @@ public @Model @RequestScoped class Navigation extends AbstractNavigation {
 
 	@Inject
 	private OAFAccess oaf;
-//	@Inject
-//	private ContentManager cms;
-//	@Inject
-//	private DocumentManager dms;
 
 	/**
 	 * Gets the current OAF access
@@ -44,15 +40,5 @@ public @Model @RequestScoped class Navigation extends AbstractNavigation {
 	protected OAFAccess getOAF() {
 		return oaf;
 	}
-
-//	@Override
-//	protected ContentManager getCMS() {
-//		return cms;
-//	}
-//
-//	@Override
-//	protected DocumentManager getDMS() {
-//		return dms;
-//	}
 
 }

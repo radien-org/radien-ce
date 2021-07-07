@@ -165,8 +165,6 @@ public class AuthenticationFilter implements Filter {
             Payload payload = jwsObject.getPayload();
             try (JsonReader reader = Json.createReader(new StringReader(payload.toString()))) {
                 JsonObject jsonObject = reader.readObject();
-                String[] scopes = jsonObject.getString("scope").split(" ");
-                //TODO: validate scopes
 
                 if (!issuer.equals(jsonObject.getString("iss"))) {
                     return false;

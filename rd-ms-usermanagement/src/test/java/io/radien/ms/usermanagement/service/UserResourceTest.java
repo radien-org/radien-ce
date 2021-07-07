@@ -247,7 +247,7 @@ public class UserResourceTest {
      */
     @Test
     public void testGetUsersBy() {
-        Response response = userResource.getUsers("subj","email@email.pt","logon",true,true);
+        Response response = userResource.getUsers("subj","email@email.pt","logon",null,true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -257,7 +257,7 @@ public class UserResourceTest {
     @Test
     public void testGetUsersByException() {
         doThrow(new RuntimeException()).when(userBusinessService).getUsers(any());
-        Response response = userResource.getUsers("subj","email@email.pt","logon",true,true);
+        Response response = userResource.getUsers("subj","email@email.pt","logon",null,true,true);
         assertEquals(500,response.getStatus());
     }
 

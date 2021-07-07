@@ -19,21 +19,27 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.linked.authorization.SystemLinkedAuthorizationSearchFilter;
 import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.linked.authorization.LinkedAuthorizationServiceAccess;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
-import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.LinkedAuthorizationNotFoundException;
-import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
+
+import io.radien.exception.SystemException;
+import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
+import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
+import io.radien.exception.LinkedAuthorizationException;
 import io.radien.exception.GenericErrorCodeMessage;
 
+
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Linked Authorization Business Service will communicate with the service to perform the requests in the db
@@ -49,9 +55,14 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     @Inject
     private LinkedAuthorizationServiceAccess linkedAuthorizationServiceAccess;
 
-
+    @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
+
+    @Inject
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
+
+    @Inject
+    private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     @Inject
     private RoleServiceAccess roleServiceAccess;
@@ -104,6 +115,16 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     public void save(SystemLinkedAuthorization association) throws Exception {
         if(checkIfFieldsAreValid(association)) {
             linkedAuthorizationServiceAccess.save(association);
+
+            if(!activeTenantRESTServiceAccess.isActiveTenantExistent(association.getUserId(), association.getTenantId())) {
+                Optional<SystemTenant> tenant = tenantRESTServiceAccess.getTenantById(association.getTenantId());
+
+                if(tenant.isPresent()) {
+                    ActiveTenant activeTenant = new ActiveTenantFactory().create(association.getUserId(),
+                            tenant.get().getId(), tenant.get().getName(), false);
+                    activeTenantRESTServiceAccess.create(activeTenant);
+                }
+            }
         }
     }
 
@@ -117,12 +138,9 @@ public class LinkedAuthorizationBusinessService implements Serializable {
         boolean isPermissionExistent = getPermissionRESTServiceAccess().isPermissionExistent(association.getPermissionId(), null);
         boolean isRoleExistent = roleServiceAccess.checkIfRolesExist(association.getRoleId(), null);
 
-        if(!isTenantExistent ||
-                !isPermissionExistent ||
-                !isRoleExistent) {
-            return false;
-        }
-        return true;
+        return isTenantExistent &&
+                isPermissionExistent &&
+                isRoleExistent;
     }
 
     /**
@@ -130,7 +148,10 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @param associationId to be deleted
      * @throws LinkedAuthorizationNotFoundException if object does not exist
      */
-    public void deleteAssociation(Long associationId) throws LinkedAuthorizationNotFoundException {
+    public void deleteAssociation(Long associationId) throws LinkedAuthorizationNotFoundException, SystemException {
+        SystemLinkedAuthorization linkedAuthorizationInfoToDelete = linkedAuthorizationServiceAccess.getAssociationById(associationId);
+        activeTenantRESTServiceAccess.getActiveTenantByUserAndTenant(linkedAuthorizationInfoToDelete.getUserId(), linkedAuthorizationInfoToDelete.getTenantId());
+
         linkedAuthorizationServiceAccess.deleteAssociation(associationId);
     }
 
@@ -140,14 +161,20 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      * @param tenantId Tenant identifier
      * @param userId User identifier
      * @throws LinkedAuthorizationException if either tenant id or user id were not informed
+     * @throws SystemException in case of any error during communication with active tenant endpoint
      * @return true in case of success (elements found and deleted), otherwise false
      */
-    public boolean deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException {
+    public boolean deleteAssociations(Long tenantId, Long userId) throws LinkedAuthorizationException, SystemException {
         if (tenantId == null || userId == null) {
             throw new LinkedAuthorizationException(GenericErrorCodeMessage.
                     NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION.toString());
         }
-        return linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
+
+        boolean status = linkedAuthorizationServiceAccess.deleteAssociations(tenantId, userId);
+        if (status) {
+            activeTenantRESTServiceAccess.deleteByTenantAndUser(tenantId, userId);
+        }
+        return status;
     }
 
     /**
@@ -192,18 +219,10 @@ public class LinkedAuthorizationBusinessService implements Serializable {
     }
 
     public PermissionRESTServiceAccess getPermissionRESTServiceAccess() {
-        if (permissionRESTServiceAccess == null) {
-            CDI<Object> cdi = CDI.current();
-            permissionRESTServiceAccess = cdi.select(PermissionRESTServiceAccess.class).get();
-        }
         return permissionRESTServiceAccess;
     }
 
     public TenantRESTServiceAccess getTenantRESTServiceAccess() {
-        if (tenantRESTServiceAccess == null) {
-            CDI<Object> cdi = CDI.current();
-            tenantRESTServiceAccess = cdi.select(TenantRESTServiceAccess.class).get();
-        }
         return tenantRESTServiceAccess;
     }
 }

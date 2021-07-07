@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
@@ -59,7 +60,7 @@ public class TenantRoleUserServiceTest {
         p.put("appframeDatabase.password", "");
         p.put("openejb.deployments.classpath.include",".*role.*");
         p.put("openejb.deployments.classpath.exclude",".*client.*");
-
+        p.put("openejb.cdi.activated-on-ejb", "false");
         container = EJBContainer.createEJBContainer(p);
     }
 
@@ -179,7 +180,7 @@ public class TenantRoleUserServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRoleUserServiceAccess.isAssociationAlreadyExistent(baseUserId, null));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains("Tenant Role Id is mandatory"));
+        Assertions.assertEquals(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"), ejbException.getCausedByException().getMessage());
     }
 
     /**
@@ -193,7 +194,7 @@ public class TenantRoleUserServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRoleUserServiceAccess.isAssociationAlreadyExistent(null, baseTenantRoleId));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains("User Id is mandatory"));
+        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id")));
     }
 
     /**
@@ -298,7 +299,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(14)
     public void testPagination() {
-        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(1, 100);
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(null,1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
         Assertions.assertEquals(1, p.getTotalPages());
@@ -307,10 +308,44 @@ public class TenantRoleUserServiceTest {
     }
 
     /**
-     * Test for method getTenantRoleUserId(Long tenantRoleId, Long userId)
+     * Retrieves all TenantRoleUsers (inserted during this test) under a pagination approach,
+     * but taking in account an specific tenantRole identifier
+     * Expected: SUCCESS (A page not empty)
      */
     @Test
     @Order(15)
+    public void testPaginationWithTenantRoleSpecified() {
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(baseTenantRoleId,
+                1, 100);
+        Assertions.assertNotNull(p);
+        Assertions.assertTrue(p.getTotalResults() > 0);
+        Assertions.assertEquals(1, p.getTotalPages());
+        Assertions.assertNotNull(p.getResults());
+        Assertions.assertFalse(p.getResults().isEmpty());
+    }
+
+    /**
+     * Try to retrieve TenantRoleUsers (under a pagination approach,
+     * but taking in account a tenantRole that does not exist
+     * Expected: An empty page
+     */
+    @Test
+    @Order(16)
+    public void testPaginationForNotExistentTenantRole() {
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(10000L,
+                1, 100);
+        Assertions.assertNotNull(p);
+        Assertions.assertEquals(0,p.getTotalResults());
+        Assertions.assertEquals(0,p.getTotalPages());
+        Assertions.assertNotNull(p.getResults());
+        Assertions.assertTrue(p.getResults().isEmpty());
+    }
+
+    /**
+     * Test for method getTenantRoleUserId(Long tenantRoleId, Long userId)
+     */
+    @Test
+    @Order(17)
     public void testGetTenantRoleUserId() {
         SystemTenantRoleUser sru = new TenantRoleUser();
         sru.setTenantRoleId(101010L);
@@ -326,5 +361,39 @@ public class TenantRoleUserServiceTest {
 
         id = this.tenantRoleUserServiceAccess.getTenantRoleUserId(101010L, 202L);
         Assertions.assertFalse(id.isPresent());
+
+        try{
+            this.tenantRoleUserServiceAccess.getTenantRoleUserId(null, 202L);
+        } catch (Exception e) {
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id")));
+        }
+    }
+
+    /**
+     * Test for method getTenantRoleUserId(Long tenantRoleId, Long userId)
+     */
+    @Test
+    @Order(16)
+    public void testGetTenantRoleUserIdNullUser() {
+        SystemTenantRoleUser sru = new TenantRoleUser();
+        sru.setTenantRoleId(301010L);
+        sru.setUserId(601L);
+        Assertions.assertDoesNotThrow(() -> this.tenantRoleUserServiceAccess.create(sru));
+
+        Long expectedId = sru.getId();
+        Assertions.assertNotNull(expectedId);
+
+        Optional<Long> id = this.tenantRoleUserServiceAccess.getTenantRoleUserId(301010L, 601L);
+        Assertions.assertTrue(id.isPresent());
+        Assertions.assertEquals(expectedId, id.get());
+
+        id = this.tenantRoleUserServiceAccess.getTenantRoleUserId(301010L, 602L);
+        Assertions.assertFalse(id.isPresent());
+
+        try{
+            this.tenantRoleUserServiceAccess.getTenantRoleUserId(301010L, null);
+        } catch (Exception e) {
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id")));
+        }
     }
 }
