@@ -70,8 +70,11 @@ body {
 
 a, .navbar-default .navbar-nav > li > a {
   color: #1d71b8;
-  padding: 1em 1em;
   text-decoration: none;
+}
+
+.spaced {
+	padding: 1em 1em;
 }
 
 a:hover, .navbar-default .navbar-nav > li > a:hover {

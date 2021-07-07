@@ -271,9 +271,6 @@ public class JSFUtil {
 			log.error("Null external context");
 			return;
 		}
-		Flash flash = externalContext.getFlash();
-		flash.setKeepMessages(true);
-		flash.setRedirect(true);
 		FacesContext.getCurrentInstance().addMessage(null, facesMsg);
 	}
 
