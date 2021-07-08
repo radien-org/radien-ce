@@ -27,6 +27,7 @@ import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
 import io.radien.ms.openid.entities.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -47,6 +48,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -207,7 +209,7 @@ public class AuthorizationCheckerTest {
     /**
      * Test for method {@link AuthorizationChecker#hasGrant(Long, String)
      * Scenario: While it verifies if user has access to a given role and tenant, the jwt access token expires.
-     * Then Refresh token operation is performed and the assessment is successfuly concluded
+     * Then Refresh token operation is performed and the assessment is successfully concluded
      * Expected outcome: TRUE
      * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrant(Long, String)}
      */
@@ -470,12 +472,11 @@ public class AuthorizationCheckerTest {
 
     /**
      * Test for method {@link AuthorizationChecker#getCurrentUserIdBySub(String)}
-     * Scenario: Given a sub, tries to retrieve User Id but jwt access token expires.
-     * But SystemException occurs in the middle of the process.
-     * Expected outcome: raise {@link TokenExpiredException}
+     * Scenario: Given a sub, tries to retrieve User Id but SystemException occurs in the middle of the process.
+     * Expected outcome: raise {@link SystemException}
      * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrant(Long, String)}
      */
-    @Test(expected = TokenExpiredException.class)
+    @Test
     public void testSystemExceptionWhenRetrievingUserId() throws SystemException {
         AuthorizationChecker authChecker = spy(authorizationChecker);
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -588,42 +589,42 @@ public class AuthorizationCheckerTest {
         assertFalse(authorizationChecker.hasGrant(permissionId, tenantId));
     }
 
-//    /**
-//     * Test for method {@link AuthorizationChecker#hasGrant(Long, Long)}
-//     * Scenario: User has NO access to an informed permission (id) in a given tenant (id)
-//     * Expected outcome: FALSE
-//     * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrant(Long, Long)}
-//     */
-//    @Test
-//    public void testFailureWhenCheckingGrantForPermission() {
-//        Long userId = 1001L;
-//        Long tenantId = 22L;
-//        Long permissionId = 1L;
-//
-//        HttpSession session = Mockito.mock(HttpSession.class);
-//        when(servletRequest.getSession()).thenReturn(session);
-//
-//        Principal principal = new Principal();
-//        principal.setSub("aaa-bbb-ccc-ddd");
-//
-//        when(servletRequest.getSession()).thenReturn(session);
-//        when(servletRequest.getSession(false)).thenReturn(session);
-//        when(session.getAttribute("USER")).thenReturn(principal);
-//
-//        when(this.userClient.getUserIdBySub(principal.getSub())).
-//                thenReturn(Response.ok().entity(userId).build());
-//
-//        when(this.tenantRoleClient.isPermissionExistentForUser(userId, permissionId, tenantId)).
-//                thenThrow(RuntimeException.class);
-//        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
-//
-//        assertThrows(RuntimeException.class, () -> authorizationChecker.hasGrant(permissionId, tenantId));
-//    }
+    /**
+     * Test for method {@link AuthorizationChecker#hasGrant(Long, Long)}
+     * Scenario: User has NO access to an informed permission (id) in a given tenant (id).
+     * Tenant Role API responds with some status different from success family (2xx)
+     * Expected outcome: FALSE
+     * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrant(Long, Long)}
+     */
+    @Test
+    public void testGrantForPermissionWhenResponseHttpStatusNOK() throws SystemException {
+        Long userId = 1001L;
+        Long tenantId = 22L;
+        Long permissionId = 1L;
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build());
+        when(this.tenantRoleClient.isPermissionExistentForUser(userId, permissionId, tenantId)).
+                thenReturn(Response.status(300).build());
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
+
+        assertFalse(authorizationChecker.hasGrant(permissionId, tenantId));
+    }
 
     /**
      * Test for method {@link AuthorizationChecker#hasGrant(Long, Long)
      * Scenario: While it verifies if user has access to a given permission and tenant, the jwt access token expires.
-     * Then Refresh token operation is performed and the assessment is successfuly concluded
+     * Then Refresh token operation is performed and the assessment is successfully concluded
      * Expected outcome: TRUE
      * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrant(Long, Long)}
      */
@@ -811,29 +812,14 @@ public class AuthorizationCheckerTest {
         assertNotNull(rcb);
     }
 
-//    @Test
-//    public void testRefreshTokenFalseResponse() throws SystemException {
-//        when(userClient.refreshToken(any())).thenReturn(Response.notModified().entity("test").build());
-//
-//        assertFalse(authorizationChecker.refreshToken());
-//    }
-
+    /**
+     * Test for method {@link AuthorizationChecker#hasGrantMultipleRoles(List)}
+     * Scenario: Given an informed role list, user has access to some of them
+     * Expected outcome: TRUE
+     * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrantMultipleRoles(List)}
+     */
     @Test
-    public void testRefreshTokenException() {
-        when(userClient.refreshToken(any())).thenThrow(new TokenExpiredException());
-
-        boolean success =false;
-        try {
-            authorizationChecker.refreshToken();
-        } catch (SystemException systemException) {
-            success = true;
-        }
-
-        assertTrue(success);
-    }
-
-    @Test
-    public void testHasGrantMultipleRolesReturnTrue() {
+    public void testHasGrantMultipleRolesReturnTrue() throws SystemException {
         Long userId = 1001L;
 
         List<String> roleList = new ArrayList<>();
@@ -856,16 +842,17 @@ public class AuthorizationCheckerTest {
                 thenReturn(Response.ok().entity(Boolean.TRUE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
-
-        try {
-            assertTrue(authorizationChecker.hasGrantMultipleRoles(roleList));
-        } catch (SystemException systemException) {
-            fail("unexpected failure");
-        }
+        assertTrue(authorizationChecker.hasGrantMultipleRoles(roleList));
     }
 
+    /**
+     * Test for method {@link AuthorizationChecker#hasGrantMultipleRoles(List)}
+     * Scenario: Given an informed role list, user has access to none of them
+     * Expected outcome: FALSE
+     * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrantMultipleRoles(List)}
+     */
     @Test
-    public void testHasGrantMultipleRolesReturnFalse() {
+    public void testHasGrantMultipleRolesReturnFalse() throws SystemException {
         Long userId = 1001L;
 
         List<String> roleList = new ArrayList<>();
@@ -888,14 +875,16 @@ public class AuthorizationCheckerTest {
                 thenReturn(Response.ok().entity(Boolean.FALSE).build());
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
-
-        try {
-            assertFalse(authorizationChecker.hasGrantMultipleRoles(roleList));
-        } catch (SystemException systemException) {
-            fail("unexpected failure");
-        }
+        assertFalse(authorizationChecker.hasGrantMultipleRoles(roleList));
     }
 
+    /**
+     * Test for method {@link AuthorizationChecker#hasGrantMultipleRoles(Long, List)}
+     * Scenario: While it verifies if user has access to some role (in a given list) and tenant, the jwt access token expires.
+     * Then Refresh token operation is performed and the assessment is successfully concluded
+     * Expected outcome: TRUE
+     * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrantMultipleRoles(Long, List)}
+     */
     @Test
     public void testHasGrantMultipleRoleWithTenantWhenTokenExpires() {
         Long userId = 1001L;
@@ -912,42 +901,101 @@ public class AuthorizationCheckerTest {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
 
-        when(servletRequest.getSession()).
-                thenReturn(session).
-                thenReturn(session);
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
 
-        when(servletRequest.getSession(false)).
-                thenReturn(session).
-                thenReturn(session);
-
-        when(session.getAttribute("USER")).
-                thenReturn(principal).
-                thenReturn(principal);
-
-        when(this.userClient.getUserIdBySub(principal.getSub())).
-                thenReturn(Response.ok().entity(userId).build()).
-                thenReturn(Response.ok().entity(userId).build());
+        when(this.userClient.getUserIdBySub(principal.getSub())).thenReturn(Response.ok().entity(userId).build());
 
         prepareMockParamForRefreshToken(tokensPlaceHolder, userClient);
 
-        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
-                thenReturn("token-yyz");
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
         when(this.tenantRoleClient.checkPermissions(userId, roleList, tenantId)).
                 thenThrow(new TokenExpiredException()).
-                thenReturn(Response.ok().entity(Boolean.TRUE).build()).
+                thenThrow(new TokenExpiredException());
+        SystemException se = assertThrows(SystemException.class,
+                () -> authorizationChecker.hasGrantMultipleRoles(tenantId, roleList));
+        assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
+    }
+
+    /**
+     * Test for method {@link AuthorizationChecker#hasGrantMultipleRoles(Long, List)}
+     * Scenario: While it verifies if user has access to some role (in a given list) and tenant, the jwt access token expires.
+     * When trying to perform refresh token operation (due some delay), the new access token expires.
+     * Expected outcome: raise {@link SystemException}
+     * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrantMultipleRoles(Long, List)}
+     */
+    @Test
+    public void testHasGrantMultipleRoleWithTenantWhenTokenExpiresTwice() {
+        Long userId = 1001L;
+        Long tenantId = 1111L;
+
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session).
+                thenReturn(session).thenReturn(session).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        when(this.userClient.getUserIdBySub(principal.getSub())).thenReturn(Response.ok().entity(userId).build());
+
+        prepareMockParamForRefreshToken(tokensPlaceHolder, userClient);
+
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").thenReturn("token-yyz");
+
+        when(this.tenantRoleClient.checkPermissions(userId, roleList, tenantId)).
                 thenThrow(new TokenExpiredException()).
                 thenThrow(new TokenExpiredException());
 
-        try {
-            assertTrue(authorizationChecker.hasGrantMultipleRoles(tenantId, roleList));
-        } catch (SystemException systemException) {
-            fail("unexpected failure");
-        }
-
         SystemException se = assertThrows(SystemException.class,
                 () -> authorizationChecker.hasGrantMultipleRoles(tenantId, roleList));
-
         assertTrue(se.getMessage().contains(TokenExpiredException.class.getName()));
     }
+
+    /**
+     * Test for method {@link AuthorizationChecker#hasGrantMultipleRoles(Long, List)}
+     * Scenario: User has NO access to any role contained in a list (absolutely none of them)
+     * Tenant Role API responds with some status different from success family (2xx)
+     * Expected outcome: FALSE
+     * @throws SystemException described on the signature for {@link AuthorizationChecker#hasGrant(Long, String)}
+     */
+    @Test
+    public void testHasGrantMultipleRoleWithTenantReturnFalseDueHttpStatusNOK() throws SystemException{
+        Long userId = 1001L;
+        Long tenantId = 1111L;
+
+        List<String> roleList = new ArrayList<>();
+        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session).
+                thenReturn(session).thenReturn(session).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        when(this.userClient.getUserIdBySub(principal.getSub())).thenReturn(Response.ok().entity(userId).build());
+
+        prepareMockParamForRefreshToken(tokensPlaceHolder, userClient);
+
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").thenReturn("token-yyz");
+
+        when(this.tenantRoleClient.checkPermissions(userId, roleList, tenantId)).
+                thenReturn(Response.status(300).build());
+
+        assertFalse(authorizationChecker.hasGrantMultipleRoles(tenantId, roleList));
+    }
+
 }
