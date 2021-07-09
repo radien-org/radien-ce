@@ -93,10 +93,6 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-usermanagement-client</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>io.radien</groupId>-->
-<!--			<artifactId>rd-ms-rolemanagement-client</artifactId>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-openid</artifactId>
