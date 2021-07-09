@@ -18,6 +18,7 @@ package io.radien.ms.usermanagement.service;
 import io.radien.api.SystemProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
+import io.radien.ms.usermanagement.config.KeycloakConfigs;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -43,16 +44,16 @@ public class KeycloakService {
      */
     private KeycloakClient getKeycloakClient() throws RemoteResourceException {
         KeycloakClient client = new KeycloakClient()
-                .clientId(ConfigProvider.getConfig().getValue("KEYCLOAK_CLIENT_ID", String.class))
-                .username(ConfigProvider.getConfig().getValue("KEYCLOAK_ADMIN", String.class))
-                .password(ConfigProvider.getConfig().getValue("KEYCLOAK_PASSWORD", String.class))
+                .clientId(getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
+                .username(getProperty(KeycloakConfigs.ADMIN_USER))
+                .password(getProperty(KeycloakConfigs.ADMIN_PASSWORD))
                 //TODO : ADD missing configurations
-                .idpUrl(ConfigProvider.getConfig().getValue("KEYCLOAK_IDP_URL", String.class))
-                .tokenPath(ConfigProvider.getConfig().getValue("KEYCLOAK_TOKEN_PATH", String.class))
-                .userPath(ConfigProvider.getConfig().getValue("KEYCLOAK_USER_PATH", String.class))
-                .radienClientId(ConfigProvider.getConfig().getValue("SCRIPT_CLIENT_ID_VALUE", String.class))
-                .radienSecret(ConfigProvider.getConfig().getValue("SCRIPT_CLIENT_SECRET_VALUE", String.class))
-                .radienTokenPath(ConfigProvider.getConfig().getValue("REALMS_TOKEN_PATH", String.class));
+                .idpUrl(getProperty(KeycloakConfigs.IDP_URL))
+                .tokenPath(getProperty(KeycloakConfigs.TOKEN_PATH))
+                .userPath(getProperty(KeycloakConfigs.USER_PATH))
+                .radienClientId(getProperty(KeycloakConfigs.RADIEN_CLIENT_ID))
+                .radienSecret(getProperty(KeycloakConfigs.RADIEN_SECRET))
+                .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH));
         client.login();
         return client;
     }
