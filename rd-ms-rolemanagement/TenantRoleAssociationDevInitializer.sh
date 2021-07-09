@@ -14,14 +14,14 @@ fi
 echo "-----------------------------------------------------------------------------------------------------------------"
 echo "---> I'm in the Tenant Role Associations Developer Initializer Script and getting the authentication"
 
-ACCESS_TOKEN=$(curl -L -X POST $KEYCLOAK_IDP_URL$REALMS_TOKEN_PATH \
+ACCESS_TOKEN=$(curl -L -X POST 'https://idp-int.radien.io/auth/realms/radien/protocol/openid-connect/token' \
 -H 'Content-Type: application/x-www-form-urlencoded' \
---data-urlencode $SCRIPT_CLIENT_ID=$SCRIPT_CLIENT_ID_VALUE \
---data-urlencode $SCRIPT_CLIENT_SECRET=$SCRIPT_CLIENT_SECRET_VALUE \
---data-urlencode $SCRIPT_REDIRECT_URL=$SCRIPT_REDIRECT_URL_VALUE \
---data-urlencode $SCRIPT_GRANT_TYPE=$SCRIPT_GRANT_TYPE_VALUE \
---data-urlencode $SCRIPT_USERNAME=$SCRIPT_USERNAME_VALUE \
---data-urlencode $SCRIPT_PASSWORD=$SCRIPT_PASSWORD_VALUE | jq -r '.access_token')
+--data-urlencode 'client_id=radien' \
+--data-urlencode 'client_secret=d8f67579-1a33-47be-ad6f-aef38269ed12' \
+--data-urlencode 'redirect_uri=https://localhost:8443/web/login' \
+--data-urlencode 'grant_type=password' \
+--data-urlencode 'username=n.santana-username' \
+--data-urlencode 'password=batata' | jq -r '.access_token')
 
 echo "---> Going to create association between Tenant Root and Role Admin"
 curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantId":1, "roleId":1}'
@@ -36,8 +36,6 @@ curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assig
 
 curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/permission/4/tenant/2/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
 curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/permission/4/tenant/3/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
-curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/permission/3/tenant/1/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
-curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/permission/4/tenant/1/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
 
 echo "---> Going to associate the first user"
 curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/user/1/tenant/1/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
