@@ -77,7 +77,7 @@ public enum GenericErrorCodeMessage {
     TENANT_ROLE_FIELD_MANDATORY("TR2", "error.tenant.role.field.mandatory", "Tenant Role %s is mandatory."),
     TENANT_ROLE_ASSOCIATION_TENANT_ROLE("TR3", "error.no.association.tenant.role", "There is no association between tenant %s and role %s."),
     TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED("TR4", "error.user.already.associated", "User is already associated with tenant %s and role %s."),
-    TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER("TR5", "error.no.association.found.for.user", "No association found for user %s."),
+    TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR("TR5", "error.no.association.found.for", "No user associations found for the given parameters: tenant %s role %s and user %s."),
     TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE("TR6", "error.permission.already.associated", "Permission is already associated with tenant %s and role %s."),
     TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION("TR7", "error.no.permission.found", "No association found for permission %s."),
     TENANT_ROLE_NO_TENANT_FOUND("TR8", "error.no.tenant.found", "No tenant found for %s."),

@@ -24,7 +24,12 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRole;
+import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import javax.persistence.criteria.Subquery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,30 +284,57 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
-     * Deletes tenant role user associations for given parameters
-     * @param tenant tenant identifier
+     * Gets Ids (of tenant role user associations) for the given parameters
+     * @param tenant tenant identifier (mandatory)
      * @param role role identifier
-     * @param user user identifier
-     * @return true in case of success false if not registers could be found
+     * @param user user identifier (mandatory)
+     * @return list containing ids
      */
-    public boolean delete(Long tenant, Long role, Long user) {
-        EntityManager em = getEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<TenantRoleUser> criteriaDelete = cb.createCriteriaDelete(TenantRoleUser.class);
-        Root<TenantRoleUser> tenantRoleUserRoot = criteriaDelete.from(TenantRoleUser.class);
-        criteriaDelete.where(cb.equal(tenantRoleUserRoot.get(SystemVariables.ID.getFieldName()),11111));
-        return em.createQuery(criteriaDelete).executeUpdate() > 0;
+    public Collection<Long> getIds(Long tenant, Long role, Long user) {
+        if (user == null || tenant == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString("user id and tenant id"));
+        }
 
-        /*
-        EntityManager em = getEntityManager();
-
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
         Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
 
+        cq.select(tenantRoleUserRoot.get(SystemVariables.ID.getFieldName()));
 
-        */
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenant));
+        if (role != null) {
+            predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()), role));
+        }
+        predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ID.getFieldName()),
+                tenantRoleUserRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName())));
+
+        predicates.add(cb.equal(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName()), user));
+
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        TypedQuery<Long> query = entityManager.createQuery(cq);
+        return query.getResultList();
+    }
+
+    /**
+     * Delete tenant role user associations for given parameters
+     * @param ids list containing tenant role user identifiers (mandatory)
+     * @return true in case of success, false if no registers could be fetch the informed ids
+     */
+    public boolean delete(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString("tenant role user ids"));
+        }
+        EntityManager em = getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaDelete<TenantRoleUser> criteriaDelete = cb.createCriteriaDelete(TenantRoleUser.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = criteriaDelete.from(TenantRoleUser.class);
+        criteriaDelete.where(tenantRoleUserRoot.get(SystemVariables.ID.getFieldName()).in(ids));
+        return em.createQuery(criteriaDelete).executeUpdate() > 0;
     }
 
     /**

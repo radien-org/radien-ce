@@ -21,6 +21,8 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,13 +72,20 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
     boolean delete(Long tenantRoleUserId);
 
     /**
-     * Deletes tenant role user associations for given parameters
-     * @param tenant tenant identifier
+     * Gets Ids (of tenant role user associations) for the given parameters
+     * @param tenant tenant identifier (mandatory)
      * @param role role identifier
-     * @param user user identifier
-     * @return true in case of success false if not registers could be found
+     * @param user user identifier (mandatory)
+     * @return list containing ids
      */
-    boolean delete(Long tenant, Long role, Long user);
+    Collection<Long> getIds(Long tenant, Long role, Long user);
+
+    /**
+     * Delete tenant role user associations for given parameters
+     * @param ids list containing tenant role user identifiers (mandatory)
+     * @return true in case of success, false if no registers could be fetch the informed ids
+     */
+    boolean delete(Collection<Long> ids);
 
     /**
      * Check if an user is already assigned/associated with a tenant role

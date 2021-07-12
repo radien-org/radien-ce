@@ -38,6 +38,7 @@ import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLE;
-import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER;
+import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE;
 
@@ -193,8 +194,9 @@ public class TenantRoleBusinessService implements Serializable {
         checkIfMandatoryParametersWereInformed(userId);
         List<SystemTenant> list = new ArrayList<>();
         List<Long> ids = this.tenantRoleServiceAccess.getTenants(userId, roleId);
-        if (!ids.isEmpty()) {
-            list.addAll(this.tenantRESTServiceAccess.getTenantsByIds(ids));
+        for (Long id:ids) {
+            Optional<SystemTenant> opt = getTenantRESTServiceAccess().getTenantById(id);
+            opt.ifPresent(list::add);
         }
         return list;
     }
@@ -272,22 +274,20 @@ public class TenantRoleBusinessService implements Serializable {
     public void assignUser(Long tenant, Long role, Long user) throws TenantRoleException,
             UniquenessConstraintException, SystemException {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
-
-        SystemTenant systemTenant = retrieveTenant(tenant);
-        Long tenantRoleId = getTenantRoleId(systemTenant.getId(), role);
+        Long tenantRoleId = getTenantRoleId(tenant, role);
         if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user, tenantRoleId)) {
             throwInformingInconsistencyFound(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
-                    toString(tenant.toString(), role.toString()), systemTenant.getId(), role);
+                    toString(tenant.toString(), role.toString()), tenant, role);
         }
         TenantRoleUser tru = new TenantRoleUser();
         tru.setTenantRoleId(tenantRoleId);
         tru.setUserId(user);
         tru.setCreateDate(new Date());
         this.tenantRoleUserServiceAccess.create(tru);
-
-        if(!activeTenantRESTServiceAccess.isActiveTenantExistent(user, systemTenant.getId())) {
+        if(!activeTenantRESTServiceAccess.isActiveTenantExistent(user, tenant)) {
+            SystemTenant retrievedTenant = retrieveTenant(tenant);
             ActiveTenant activeTenant = new ActiveTenantFactory().create(user,
-                    systemTenant.getId(), systemTenant.getName(), false);
+                    tenant, retrievedTenant.getName(), false);
             activeTenantRESTServiceAccess.create(activeTenant);
         }
     }
@@ -308,20 +308,25 @@ public class TenantRoleBusinessService implements Serializable {
     /**
      * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
      * @param tenant Tenant identifier (Mandatory)
-     * @param role Role identifier (Mandatory)
+     * @param role Role identifier
      * @param user User identifier (Mandatory)
      * @throws TenantRoleException for the case of any inconsistency found
      */
     public void unassignUser(Long tenant, Long role, Long user) throws TenantRoleException, SystemException {
-        checkIfMandatoryParametersWereInformed(tenant, user);
-        if (role != null) {
-            Long tenantRoleId = getTenantRoleId(tenant, role);
-            Long tenantRoleUserId = this.tenantRoleUserServiceAccess.getTenantRoleUserId(tenantRoleId, user).
-                    orElseThrow(() -> new TenantRoleException(TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER.
-                            toString(user.toString())));
-            this.tenantRoleUserServiceAccess.delete(tenantRoleUserId);
+        if (tenant == null) {
+            throw new TenantRoleException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
         }
-
+        if (user == null) {
+            throw new TenantRoleException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+        }
+        Collection<Long> ids = tenantRoleUserServiceAccess.getIds(tenant, role, user);
+        if (ids.isEmpty()) {
+            throw new TenantRoleException (TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR.
+                    toString(String.valueOf(tenant), String.valueOf(role), String.valueOf(user)));
+        }
+        tenantRoleUserServiceAccess.delete(ids);
         activeTenantRESTServiceAccess.deleteByTenantAndUser(tenant, user);
     }
 

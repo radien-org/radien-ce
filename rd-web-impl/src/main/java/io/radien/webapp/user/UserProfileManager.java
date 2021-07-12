@@ -15,10 +15,8 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
@@ -40,7 +38,6 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Class Responsible to update/save logged in user profile
@@ -201,8 +198,8 @@ public class UserProfileManager extends AbstractManager {
                 throw new ProcessingException(JSFUtil.getMessage("rd_tenant_not_selected"));
             }
             // Invoking backend method to delete tenant associations (once its approved and merged)
-//            linkedAuthorizationRESTServiceAccess.deleteAssociations(
-//                    selectedTenantToUnAssign.getId(), userSession.getUserId());
+            tenantRoleRESTServiceAccess.unassignUser(selectedTenantToUnAssign.getId(), null,
+                    userSession.getUserId());
             selectedTenantToUnAssign = null;
             this.assignedTenants = retrieveAssignedTenants();
             setTabIndex(0L);
