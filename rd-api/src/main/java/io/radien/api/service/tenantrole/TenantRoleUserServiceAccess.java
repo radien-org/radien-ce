@@ -70,6 +70,15 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
     boolean delete(Long tenantRoleUserId);
 
     /**
+     * Deletes tenant role user associations for given parameters
+     * @param tenant tenant identifier
+     * @param role role identifier
+     * @param user user identifier
+     * @return true in case of success false if not registers could be found
+     */
+    boolean delete(Long tenant, Long role, Long user);
+
+    /**
      * Check if an user is already assigned/associated with a tenant role
      * @param userId User identifier
      * @param tenantRoleId TenantRole Identifier

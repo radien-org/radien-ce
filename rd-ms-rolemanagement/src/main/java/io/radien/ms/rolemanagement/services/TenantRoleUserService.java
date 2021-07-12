@@ -23,6 +23,7 @@ import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
+import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -275,6 +276,33 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         Root<TenantRoleUser> tenantRoleUserRoot = criteriaDelete.from(TenantRoleUser.class);
         criteriaDelete.where(cb.equal(tenantRoleUserRoot.get(SystemVariables.ID.getFieldName()),tenantRoleUserId));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
+    }
+
+    /**
+     * Deletes tenant role user associations for given parameters
+     * @param tenant tenant identifier
+     * @param role role identifier
+     * @param user user identifier
+     * @return true in case of success false if not registers could be found
+     */
+    public boolean delete(Long tenant, Long role, Long user) {
+        EntityManager em = getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaDelete<TenantRoleUser> criteriaDelete = cb.createCriteriaDelete(TenantRoleUser.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = criteriaDelete.from(TenantRoleUser.class);
+        criteriaDelete.where(cb.equal(tenantRoleUserRoot.get(SystemVariables.ID.getFieldName()),11111));
+        return em.createQuery(criteriaDelete).executeUpdate() > 0;
+
+        /*
+        EntityManager em = getEntityManager();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+
+
+        */
     }
 
     /**

@@ -33,6 +33,8 @@ public enum DataModelEnum {
     SAVE_SUCCESS_MESSAGE("rd_save_success"),
     RETRIEVE_ERROR_MESSAGE("rd_retrieve_error"),
     ROW_SELECTED("rowSelected"),
+    PRETTY_PROFILE("pretty:profile"),
+    PRETTY_INDEX("pretty:index"),
 
     /**
      * Active Tenant Messages and redirects
