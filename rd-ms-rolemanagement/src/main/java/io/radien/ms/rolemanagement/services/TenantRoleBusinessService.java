@@ -39,6 +39,7 @@ import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
 import java.util.Collection;
+import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,6 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -210,7 +210,7 @@ public class TenantRoleBusinessService implements Serializable {
      */
     public boolean isRoleExistentForUser(Long userId, String roleName, Long tenantId) {
         checkIfMandatoryParametersWereInformed(userId, roleName);
-        return this.tenantRoleServiceAccess.hasAnyRole(userId, Arrays.asList(roleName), tenantId);
+        return this.tenantRoleServiceAccess.hasAnyRole(userId, Collections.singletonList(roleName), tenantId);
     }
 
     /**
@@ -286,7 +286,7 @@ public class TenantRoleBusinessService implements Serializable {
         this.tenantRoleUserServiceAccess.create(tru);
         if(!activeTenantRESTServiceAccess.isActiveTenantExistent(user, tenant)) {
             SystemTenant retrievedTenant = retrieveTenant(tenant);
-            ActiveTenant activeTenant = new ActiveTenantFactory().create(user,
+            ActiveTenant activeTenant = ActiveTenantFactory.create(user,
                     tenant, retrievedTenant.getName(), false);
             activeTenantRESTServiceAccess.create(activeTenant);
         }
@@ -382,29 +382,22 @@ public class TenantRoleBusinessService implements Serializable {
      * @throws TenantRoleException in case of inconsistency found
      */
     protected void checkIfParamsExists(Long tenantId, Long roleId, Long permissionId)
-            throws TenantRoleException {
-        String standardMsgError = "Param %s not found for id %d";
-        if (tenantId != null) {
-            try {
-                if (!tenantRESTServiceAccess.isTenantExistent(tenantId)) {
-                    throwInformingInconsistencyFound(standardMsgError, "Tenant", tenantId);
-                }
-            } catch (SystemException systemException) {
-                log.error("Error checking tenant existence", systemException);
-            }
+            throws SystemException, TenantRoleException {
+        if (tenantId != null && !tenantRESTServiceAccess.isTenantExistent(tenantId)) {
+            throw new TenantRoleException(GenericErrorCodeMessage.
+                    TENANT_ROLE_NO_TENANT_FOUND.toString(String.valueOf(tenantId)));
         }
         if (permissionId != null) {
             try {
                 permissionRESTServiceAccess.isPermissionExistent(permissionId, null);
-            } catch (SystemException systemException) {
-                if (systemException.getMessage().contains("HTTP 404 Not Found")) {
-                    throwInformingInconsistencyFound(standardMsgError, "Permission", permissionId);
-                }
-                log.error("Error checking permission existence", systemException);
+            } catch (NotFoundException nfe) {
+                throw new TenantRoleException(GenericErrorCodeMessage.
+                        TENANT_ROLE_NO_PERMISSION_FOUND.toString(String.valueOf(permissionId)));
             }
         }
         if (roleId != null && !this.roleServiceAccess.checkIfRolesExist(roleId, null) ) {
-            throwInformingInconsistencyFound(standardMsgError, "Role", roleId);
+            throw new TenantRoleException(GenericErrorCodeMessage.
+                    TENANT_ROLE_NO_ROLE_FOUND.toString(String.valueOf(roleId)));
         }
     }
 
@@ -417,18 +410,6 @@ public class TenantRoleBusinessService implements Serializable {
             if (o == null)
                 throw new IllegalArgumentException("One mandatory parameter not informed");
         }
-    }
-
-    /**
-     * This method just throw a TenantRoleException to inform that an inconsistency was found
-     * @param rawMsg Informative message describing the inconsistency
-     * @param params Parameters to be aggregated into the message
-     * @throws TenantRoleException in case of any inconsistency found
-     */
-    protected void throwInformingInconsistencyFound(String rawMsg, Object ... params) throws TenantRoleException {
-        String formattedMsg = params != null ? String.format(rawMsg, params) : rawMsg;
-        log.error(formattedMsg);
-        throw new TenantRoleException(formattedMsg);
     }
 
     public TenantRESTServiceAccess getTenantRESTServiceAccess() {

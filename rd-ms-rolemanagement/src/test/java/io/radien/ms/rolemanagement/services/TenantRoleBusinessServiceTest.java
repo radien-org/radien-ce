@@ -975,7 +975,7 @@ public class TenantRoleBusinessServiceTest {
         // Setting mocked REST Client for positive test cases
         tenantRoleBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         try {
-            doThrow(new SystemException("HTTP 404 Not Found")).
+            doThrow(new NotFoundException("HTTP 404 Not Found")).
                     when(permissionRESTServiceAccess).
                     isPermissionExistent(permissionTestCase1, null);
             doThrow(new SystemException("Communication breakdown")).

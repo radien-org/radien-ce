@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.permissionmanagement.client.exceptions;
+package io.radien.exception;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
-import io.radien.ms.permissionmanagement.client.exceptions.NotFoundException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import static org.junit.Assert.*;
-
-public class NotFoundExceptionTest extends TestCase {
+public class BadRequestExceptionTest {
 
     @Test
-    public void testNotFoundException(){
-        NotFoundException exception = new NotFoundException();
+    public void testBadRequestException(){
+        BadRequestException exception = new BadRequestException();
         assertNotNull(exception);
-        NotFoundException exception2 = new NotFoundException("message");
+        BadRequestException exception2 = new BadRequestException("message");
         assertEquals("message",exception2.getMessage());
     }
 

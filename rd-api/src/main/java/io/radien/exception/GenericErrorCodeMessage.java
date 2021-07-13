@@ -79,8 +79,10 @@ public enum GenericErrorCodeMessage {
     TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED("TR4", "error.user.already.associated", "User is already associated with tenant %s and role %s."),
     TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR("TR5", "error.no.association.found.for", "No user associations found for the given parameters: tenant %s role %s and user %s."),
     TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE("TR6", "error.permission.already.associated", "Permission is already associated with tenant %s and role %s."),
-    TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION("TR7", "error.no.permission.found", "No association found for permission %s."),
+    TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION("TR7", "error.no.association.found.for.permission", "No association found for permission %s."),
     TENANT_ROLE_NO_TENANT_FOUND("TR8", "error.no.tenant.found", "No tenant found for %s."),
+    TENANT_ROLE_NO_PERMISSION_FOUND("TR9", "error.no.permission.found", "No permission found for %s."),
+    TENANT_ROLE_NO_ROLE_FOUND("TR10", "error.no.role.found", "No role found for %s."),
 
     /**
      * Active Tenant Error Code messages

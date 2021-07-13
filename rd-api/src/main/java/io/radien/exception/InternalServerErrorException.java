@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.permissionmanagement.client.exceptions;
+package io.radien.exception;
 
 /**
  * Permission specific Internal server error exception
@@ -22,7 +22,7 @@ package io.radien.ms.permissionmanagement.client.exceptions;
  *
  * @author Newton Carvalho
  */
-public class InternalServerErrorException extends Exception {
+public class InternalServerErrorException extends RuntimeException {
 
 	private static final long serialVersionUID = 858909633422934639L;
 

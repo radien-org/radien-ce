@@ -15,12 +15,11 @@
  */
 package io.radien.ms.permissionmanagement.client;
 
+import io.radien.exception.BadRequestException;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
-
-import io.radien.ms.permissionmanagement.client.exceptions.BadRequestException;
-import io.radien.ms.permissionmanagement.client.exceptions.InternalServerErrorException;
-import io.radien.ms.permissionmanagement.client.exceptions.NotFoundException;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;

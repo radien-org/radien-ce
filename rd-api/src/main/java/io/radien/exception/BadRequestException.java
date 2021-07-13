@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.permissionmanagement.client.exceptions;
+package io.radien.exception;
 
 /**
- * Exception to be throw when no record has been found
+ * Permission specific Bad request exception
+ * this exception is to be thrown when the user requests something that will have wrong requested data
+ *
  * @author Newton Carvalho
  */
-public class NotFoundException extends Exception {
+public class BadRequestException extends RuntimeException {
 
-	private static final long serialVersionUID = 4865108199427159028L;
+    private static final long serialVersionUID = 5485575161734022041L;
 
     /**
-     * Not Found exception empty constructor
+     * Bad Request exception empty constructor
      */
-    public NotFoundException() {
+    public BadRequestException() {
         super();
     }
 
     /**
-     * Not found exception constructor by a given message
-     * @param message to create the not found exception with
+     * Bad Request exception message constructor
+     * @param message to be added into the bad request exception
      */
-    public NotFoundException(String message) {
+    public BadRequestException(String message) {
         super(message);
     }
 }
