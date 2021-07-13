@@ -24,12 +24,9 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRole;
-import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import javax.persistence.criteria.Subquery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
