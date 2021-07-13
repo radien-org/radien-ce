@@ -470,9 +470,9 @@ public class TenantRoleUserServiceTest {
         SystemTenantRoleUser tenant1Role3User2 = createTenantRoleUser(tenant1Role3, user2);
 
         // Delete
-        Collection<Long> ids = tenantRoleUserServiceAccess.getIds(tenant1, null, user1);
+        Collection<Long> ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant1, null, user1);
         assertTrue(tenantRoleUserServiceAccess.delete(ids));
-        ids = tenantRoleUserServiceAccess.getIds(tenant1, role1, user2);
+        ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant1, role1, user2);
         assertTrue(tenantRoleUserServiceAccess.delete(ids));
 
         // Check if association cannot be found for user1

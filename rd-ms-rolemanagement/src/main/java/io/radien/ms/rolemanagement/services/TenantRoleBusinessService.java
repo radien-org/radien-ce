@@ -122,7 +122,7 @@ public class TenantRoleBusinessService implements Serializable {
     public SystemTenantRole getById(Long id) throws TenantRoleException {
         SystemTenantRole systemTenantRole = this.tenantRoleServiceAccess.get(id);
         if (systemTenantRole == null) {
-            throwInformingInconsistencyFound(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
+            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
         }
         return systemTenantRole;
     }
@@ -137,7 +137,7 @@ public class TenantRoleBusinessService implements Serializable {
     public boolean delete(Long id) throws TenantRoleException {
         SystemTenantRole systemTenantRole = this.tenantRoleServiceAccess.get(id);
         if (systemTenantRole == null) {
-            throwInformingInconsistencyFound(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
+            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
         }
         return this.tenantRoleServiceAccess.delete(id);
     }
@@ -276,8 +276,8 @@ public class TenantRoleBusinessService implements Serializable {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
         Long tenantRoleId = getTenantRoleId(tenant, role);
         if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user, tenantRoleId)) {
-            throwInformingInconsistencyFound(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
-                    toString(tenant.toString(), role.toString()), tenant, role);
+            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
+                    toString(tenant.toString(), role.toString()));
         }
         TenantRoleUser tru = new TenantRoleUser();
         tru.setTenantRoleId(tenantRoleId);
@@ -321,7 +321,7 @@ public class TenantRoleBusinessService implements Serializable {
             throw new TenantRoleException(GenericErrorCodeMessage.
                     TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
         }
-        Collection<Long> ids = tenantRoleUserServiceAccess.getIds(tenant, role, user);
+        Collection<Long> ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant, role, user);
         if (ids.isEmpty()) {
             throw new TenantRoleException (TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR.
                     toString(String.valueOf(tenant), String.valueOf(role), String.valueOf(user)));

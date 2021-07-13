@@ -290,7 +290,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * @param user user identifier (mandatory)
      * @return list containing ids
      */
-    public Collection<Long> getIds(Long tenant, Long role, Long user) {
+    public Collection<Long> getTenantRoleUserIds(Long tenant, Long role, Long user) {
         if (user == null || tenant == null) {
             throw new IllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_FIELD_MANDATORY.toString("user id and tenant id"));

@@ -78,7 +78,7 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param user user identifier (mandatory)
      * @return list containing ids
      */
-    Collection<Long> getIds(Long tenant, Long role, Long user);
+    Collection<Long> getTenantRoleUserIds(Long tenant, Long role, Long user);
 
     /**
      * Delete tenant role user associations for given parameters
