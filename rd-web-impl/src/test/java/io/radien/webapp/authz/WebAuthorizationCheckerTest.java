@@ -20,9 +20,12 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
-import io.radien.ms.authz.client.LinkedAuthorizationClient;
+import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.openid.entities.Principal;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -30,12 +33,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Response;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Newton Carvalho
@@ -52,7 +55,7 @@ public class WebAuthorizationCheckerTest {
     private UserClient userClient;
 
     @Mock
-    private LinkedAuthorizationClient linkedAuthorizationClient;
+    private TenantRoleClient tenantRoleClient;
 
     @Mock
     private TokensPlaceHolder tokensPlaceHolder;
@@ -136,11 +139,11 @@ public class WebAuthorizationCheckerTest {
         when(this.tokensPlaceHolder.getAccessToken()).thenReturn("142517271828");
         when(this.userSession.getUserId()).thenReturn(userId);
 
-        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, role1, tenantId)).
+        when(this.tenantRoleClient.isRoleExistentForUser(userId, role1, tenantId)).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build()).
                 thenThrow(new RuntimeException("test"));
 
-        when(this.linkedAuthorizationClient.isRoleExistentForUser(userId, role2, tenantId)).
+        when(this.tenantRoleClient.isRoleExistentForUser(userId, role2, tenantId)).
                 thenReturn(Response.ok().entity(Boolean.FALSE).build());
 
         assertTrue(this.webAuthorizationChecker.hasGrant(tenantId, role1));
@@ -167,9 +170,9 @@ public class WebAuthorizationCheckerTest {
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
 
         assertFalse(webAuthorizationChecker.hasUserAdministratorRoleAccess());
@@ -195,13 +198,13 @@ public class WebAuthorizationCheckerTest {
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
 
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.TENANT_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.CLIENT_TENANT_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(linkedAuthorizationClient).isRoleExistentForUser(
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.SUB_TENANT_ADMINISTRATOR.getRoleName(), null);
 
         assertFalse(webAuthorizationChecker.hasTenantAdministratorRoleAccess());

@@ -22,7 +22,6 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
-import io.radien.ms.authz.client.LinkedAuthorizationClient;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
@@ -55,8 +54,6 @@ public abstract class AuthorizationChecker implements Serializable {
     private OAFAccess oafAccess;
 
     private UserClient userClient;
-
-    private LinkedAuthorizationClient linkedAuthorizationClient;
 
     private TenantRoleClient tenantRoleClient;
 
@@ -103,19 +100,19 @@ public abstract class AuthorizationChecker implements Serializable {
     public boolean hasGrant(Long tenantId, String roleName) throws SystemException{
         try {
             this.preProcess();
-            Response response = null;
-                try {
-                    response = getLinkedAuthorizationClient().
-                            isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
-                } catch (TokenExpiredException tee) {
-                    refreshToken();
-                    response = getLinkedAuthorizationClient().
-                            isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
-                }
-                if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return response.readEntity(Boolean.class);
-                }
-                return false;
+            Response response;
+            try {
+                response = getTenantRoleClient().
+                        isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+            } catch (TokenExpiredException tee) {
+                refreshToken();
+                response = getTenantRoleClient().
+                        isRoleExistentForUser(getCurrentUserId(), roleName, tenantId);
+            }
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
+            return false;
 
         } catch (SystemException e) {
             throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
@@ -145,22 +142,23 @@ public abstract class AuthorizationChecker implements Serializable {
     public boolean hasGrant(Long permissionId, Long tenantId) throws SystemException {
         try {
             this.preProcess();
-                try {
-                    getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
-                            permissionId, null, getCurrentUserId(), true);
-                } catch (TokenExpiredException e) {
-                    try{
-                        refreshToken();
-                        getLinkedAuthorizationClient().existsSpecificAssociation(tenantId,
-                                permissionId, null, getCurrentUserId(), true);
-                    } catch (TokenExpiredException tokenExpiredException){
-                        throw new SystemException(tokenExpiredException);
-                    }
+            Response response;
+            try {
+                response = getTenantRoleClient().isPermissionExistentForUser(getCurrentUserId(),
+                        permissionId, tenantId);
+            } catch (TokenExpiredException e) {
+                try{
+                    refreshToken();
+                    response = getTenantRoleClient().isPermissionExistentForUser(getCurrentUserId(),
+                            permissionId, tenantId);
+                } catch (TokenExpiredException tokenExpiredException){
+                    throw new SystemException(tokenExpiredException);
                 }
-            return true;
-        }
-        catch (NotFoundException e) {
-           return false;
+            }
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(Boolean.class);
+            }
+            return false;
         }
         catch (SystemException e) {
             throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
@@ -180,11 +178,11 @@ public abstract class AuthorizationChecker implements Serializable {
             this.preProcess();
             Response response = null;
             try {
-                response = getLinkedAuthorizationClient().
+                response = getTenantRoleClient().
                         checkPermissions(getCurrentUserId(), roleNames, tenantId);
             } catch (TokenExpiredException tee) {
                 refreshToken();
-                response = getLinkedAuthorizationClient().
+                response = getTenantRoleClient().
                         checkPermissions(getCurrentUserId(), roleNames, tenantId);
             }
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
@@ -239,7 +237,8 @@ public abstract class AuthorizationChecker implements Serializable {
     protected Long getCurrentUserId() throws SystemException {
         SystemUser user = getInvokerUser();
         if (user == null) {
-            throw new SystemException("No current user available");
+            throw new SystemException(GenericErrorCodeMessage.
+                    NO_CURRENT_USER_AVAILABLE.toString());
         }
         return getCurrentUserIdBySub(user.getSub());
     }
@@ -322,28 +321,6 @@ public abstract class AuthorizationChecker implements Serializable {
     }
 
     /**
-     * Gets linked authorization management client instance
-     * @return linked authorization client for user management instance
-     * @throws SystemException in case of any issue while retrieving the communication linked
-     * authorization client instance
-     */
-    public LinkedAuthorizationClient getLinkedAuthorizationClient() throws SystemException{
-        if (linkedAuthorizationClient == null) {
-            linkedAuthorizationClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
-                    LinkedAuthorizationClient.class);
-        }
-        return linkedAuthorizationClient;
-    }
-
-    /**
-     * Sets the linked authorization client as the given one
-     * @param linkedAuthorizationClient given linked authorization instance to be set
-     */
-    public void setLinkedAuthorizationClient(LinkedAuthorizationClient linkedAuthorizationClient) {
-        this.linkedAuthorizationClient = linkedAuthorizationClient;
-    }
-
-    /**
      * Sets the user management client instance as the given one
      * @param userClient given user client instance to be set
      */
@@ -356,7 +333,6 @@ public abstract class AuthorizationChecker implements Serializable {
      * @return the active token place holder
      */
     public TokensPlaceHolder getTokensPlaceHolder() {
-        //TODO: Understand why standard injection is not working on EJB Unit Tests (UserServiceTest)
         if (tokensPlaceHolder == null) {
             tokensPlaceHolder =  CDI.current().select(TokensPlaceHolder.class).get();
         }

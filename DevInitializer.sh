@@ -32,5 +32,5 @@ sh ./rd-ms-permissionmanagement/ActionDevInitializer.sh
 sh ./rd-ms-permissionmanagement/ResourceDevInitializer.sh
 sh ./rd-ms-permissionmanagement/PermissionDevInitializer.sh
 sh ./rd-ms-rolemanagement/RoleDevInitializer.sh
-sh ./rd-ms-rolemanagement/LinkedAuthorizationDevInitializer.sh
+sh ./rd-ms-rolemanagement/TenantRoleAssociationDevInitializer.sh
 echo "--> All done! Ready to start development!"

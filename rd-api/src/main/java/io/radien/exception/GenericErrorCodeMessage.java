@@ -114,7 +114,8 @@ public enum GenericErrorCodeMessage {
      */
     EXPIRED_ACCESS_TOKEN("SYS1", "error.expired.token", "Unable to recover expiredToken."),
     GENERIC_ERROR("SYS2", "error.generic.error", "Generic Error."),
-    AUTHORIZATION_ERROR("SYS3", "error.authorization.checker", "Error checking authorization");
+    AUTHORIZATION_ERROR("SYS3", "error.authorization.checker", "Error checking authorization"),
+    NO_CURRENT_USER_AVAILABLE("SYS4", "error.no.current.user.available", "No current user available");
 
     private final String code;
     private final String key;
