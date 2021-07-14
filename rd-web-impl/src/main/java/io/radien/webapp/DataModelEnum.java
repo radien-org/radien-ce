@@ -40,6 +40,7 @@ public enum DataModelEnum {
      * Active Tenant Messages and redirects
      */
     NO_ACTIVE_TENANT_MESSAGE("rd_no_active_tenant"),
+    CHOOSE_ACTIVE_TENANT_MESSAGE("choose_active_tenant"),
     ACTIVE_TENANT_CHANGED_TO_NULL_VALUE("rd_active_tenant_changed_value_to_null"),
     ACTIVE_TENANT_CHANGED_VALUE("rd_active_tenant_changed_value"),
 
@@ -76,6 +77,7 @@ public enum DataModelEnum {
     TRP_ASSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_permission_association_success"),
     TRP_ASSOCIATION_ERROR_MESSAGE("rd_tenant_role_permission_association_error"),
     TRP_DISSOCIATION_NO_PERMISSION_SELECT_MESSAGE("rd_tenant_role_permission_dissociation_no_permission_select"),
+    TRP_NO_ACTIVE_TENANT("rd_tenant_role_permission_no_active_tenant_selected"),
 
     TRP_DISSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_permission_dissociation_success"),
     TRP_DISSOCIATION_ERROR_MESSAGE("rd_tenant_role_permission_dissociation_error"),
