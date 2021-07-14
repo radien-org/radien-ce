@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.client.util;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.services.RoleFactory;
 
@@ -92,7 +93,7 @@ public class RoleModelMapper {
      * @param is inputted information to be converted into the object List
      * @return a list of roles with the requested information
      */
-    public static List<Role> mapList(InputStream is) throws ParseException {
+    public static List<? extends SystemRole> mapList(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
             return RoleFactory.convert(jsonArray);

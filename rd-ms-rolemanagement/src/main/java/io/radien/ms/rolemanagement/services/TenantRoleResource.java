@@ -15,12 +15,14 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,11 +202,11 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getRoles(Long userId, Long tenantId) {
-        log("Retrieving Roles for user %d and tenant %d", userId, tenantId);
+        log(GenericErrorCodeMessage.INFO_TENANT_USER.toString(String.valueOf(userId), String.valueOf(tenantId)));
         try {
             return Response.ok().entity(tenantRoleBusinessService.getRoles(userId, tenantId)).build();
         } catch (RoleNotFoundException e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         }
     }
 
@@ -315,6 +317,29 @@ public class TenantRoleResource implements TenantRoleResourceClient {
         try {
             log("Dissociating/removing user %d from tenant %d role %d", userId, tenantId, roleId);
             tenantRoleBusinessService.unassignUser(tenantId, roleId, userId);
+            return Response.ok().build();
+        } catch (TenantRoleException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Unassigned User Tenant Role(s)
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @param roleIds Collection Role ids
+     * @return @return Response OK if operation concludes with success
+     * Response status 400 in case of association already existing or other consistency issues found.
+     * Response 500 in case of any other error
+     */
+    @Override
+    public Response unAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) {
+        log(GenericErrorCodeMessage.INFO_TENANT_USER_ROLES.toString(String.valueOf(userId),
+                String.valueOf(tenantId), String.valueOf(roleIds.size())));
+        try {
+            tenantRoleBusinessService.unAssignedUserTenantRoles(userId ,tenantId, roleIds);
             return Response.ok().build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());

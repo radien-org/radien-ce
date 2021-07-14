@@ -34,6 +34,7 @@ import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import java.util.ArrayList;
 import org.junit.jupiter.api.*;
 
 import javax.ejb.EJBException;
@@ -44,6 +45,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tenant Role Service test
@@ -169,8 +172,8 @@ public class TenantRoleServiceTest {
 
         SystemTenantRole retrieved = this.tenantRoleServiceAccess.get(generatedId);
         Assertions.assertNotNull(retrieved);
-        Assertions.assertEquals(retrieved.getRoleId(), originalRoleId);
-        Assertions.assertEquals(retrieved.getTenantId(), originalTenantId);
+        assertEquals(retrieved.getRoleId(), originalRoleId);
+        assertEquals(retrieved.getTenantId(), originalTenantId);
 
         Long newRoleId = 44L, newTenantId = 45L;
         SystemTenantRole systemTenantRole1 = new TenantRole();
@@ -181,8 +184,8 @@ public class TenantRoleServiceTest {
 
         retrieved = this.tenantRoleServiceAccess.get(generatedId);
         Assertions.assertNotNull(retrieved.getId());
-        Assertions.assertEquals(retrieved.getRoleId(), newRoleId);
-        Assertions.assertEquals(retrieved.getTenantId(), newTenantId);
+        assertEquals(retrieved.getRoleId(), newRoleId);
+        assertEquals(retrieved.getTenantId(), newTenantId);
     }
 
     /**
@@ -374,7 +377,7 @@ public class TenantRoleServiceTest {
         Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
-        Assertions.assertEquals(1, p.getTotalPages());
+        assertEquals(1, p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
     }
@@ -392,7 +395,7 @@ public class TenantRoleServiceTest {
                 true, true);
         List<? extends SystemTenantRole> list = tenantRoleServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(1, list.size());
+        assertEquals(1, list.size());
     }
 
     /**
@@ -417,7 +420,7 @@ public class TenantRoleServiceTest {
                 true, false);
         List<? extends SystemTenantRole> list = tenantRoleServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(2, list.size());
+        assertEquals(2, list.size());
     }
 
     /**
@@ -456,7 +459,7 @@ public class TenantRoleServiceTest {
 
         Optional<Long> id = this.tenantRoleServiceAccess.getTenantRoleId(10000L, 10001L);
         Assertions.assertTrue(id.isPresent());
-        Assertions.assertEquals(expectedId, id.get());
+        assertEquals(expectedId, id.get());
 
         id = this.tenantRoleServiceAccess.getTenantRoleId(101010L, 202L);
         Assertions.assertFalse(id.isPresent());
@@ -942,6 +945,29 @@ public class TenantRoleServiceTest {
         EJBException e = Assertions.assertThrows(EJBException.class, () ->
                 tenantRoleServiceAccess.getRoles(null, null));
         Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
+    }
+
+    /**
+     * Test method getTenantRoleIds()
+     * asserts List TenantRoleIds
+     * @throws TenantRoleException
+     */
+    @Test
+    public void testGetTenantRoleIds() throws TenantRoleException {
+        SystemTenantRole str = new TenantRole();
+        str.setTenantId(10000L);
+        str.setRoleId(10000L);
+        Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.save(str));
+
+        ArrayList<Long> roleIds = new ArrayList<Long>();
+        roleIds.add(10000L);
+
+        Long expectedId = str.getId();
+        Assertions.assertNotNull(expectedId);
+
+        List<Long> ids = tenantRoleServiceAccess.getTenantRoleIds(10000L, roleIds);
+        Assertions.assertFalse(ids.isEmpty());
+        assertEquals(expectedId, ids.get(0));
     }
 
     /**

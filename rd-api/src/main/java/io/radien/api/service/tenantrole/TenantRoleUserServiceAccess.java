@@ -19,8 +19,10 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,6 +71,14 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      */
     boolean delete(Long tenantRoleUserId);
 
+
+    /**
+     * Delete tenant role user associations for given parameters
+     * @param ids list containing tenant role user identifiers (mandatory)
+     * @return true in case of success, false if no registers could be fetch the informed ids
+     */
+    boolean delete(Collection<Long> ids);
+
     /**
      * Check if an user is already assigned/associated with a tenant role
      * @param userId User identifier
@@ -84,4 +94,13 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @return TenantRoleUser id
      */
     Optional<Long> getTenantRoleUserId(Long tenantRole, Long user);
+
+    /**
+     * Retrieves strictly the TenantRoleUser ids based on tenantRoleIds and user
+     * @param tenantRoleIds TenantRoleIds
+     * @param userId User id
+     * @return List of TenantRoleUserIds
+     * @throws TenantRoleException if any exception
+     */
+    Collection<Long> getTenantRoleUserIds(List<Long> tenantRoleIds, Long userId) throws TenantRoleException;
 }

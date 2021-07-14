@@ -41,11 +41,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 
 import javax.annotation.PostConstruct;
 
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 
 import javax.faces.application.FacesMessage;
@@ -57,7 +57,7 @@ import javax.faces.event.ValueChangeEvent;
  * @author Rajesh Gavvala
  */
 @Model
-@SessionScoped
+@ViewScoped
 public class UserTenantRolesManager extends AbstractManager implements Serializable {
     private static final long serialVersionUID = 6413335452953713180L;
 
@@ -124,7 +124,8 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      */
     public void loadUserTenantRoles(SystemTenant systemTenant) throws SystemException {
         try{
-            assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleRESTServiceAccess.getRoles(userDataModel.getSelectedUser().getId(), systemTenant.getId()));
+            assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleRESTServiceAccess
+                    .getRoles(userDataModel.getSelectedUser().getId(), systemTenant.getId()));
 
             if(!assignedRolesForUserTenant.isEmpty()){
                 for(SystemRole systemRole : assignedRolesForUserTenant){
@@ -186,7 +187,6 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
 
         if(unassignedUserTenantRoles != null && !unassignedUserTenantRoles.isEmpty()) {
             doUnassignedRolesForUserTenant();
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_RD_TENANT_ROLE_UNASSIGNED_SUCCESS.getValue()));
         }
         clearAssignableOrUnAssignedRoles();
     }
@@ -199,10 +199,16 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     private void doAssignedRolesForUserTenant() {
         try {
             for(Long systemRoleId : assignableUserTenantRoles) {
+
+                boolean isTenantRoleAssociationExists = tenantRoleRESTServiceAccess.exists(tenant.getId(), systemRoleId);
+
+                boolean isTenantRoleSaved = false;
+                if(!isTenantRoleAssociationExists){
                     SystemTenantRole tenantRole = new TenantRole();
                     tenantRole.setTenantId(tenant.getId());
                     tenantRole.setRoleId(systemRoleId);
-                     boolean isTenantRoleSaved = tenantRoleRESTServiceAccess.save(tenantRole);
+                    isTenantRoleSaved = tenantRoleRESTServiceAccess.save(tenantRole);
+                }
 
                 if(isTenantRoleSaved){
                     tenantRoleRESTServiceAccess.assignUser(
@@ -223,11 +229,14 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      */
     private void doUnassignedRolesForUserTenant() {
         try {
-            for(Long systemRoleId : unassignedUserTenantRoles) {
-                tenantRoleRESTServiceAccess.unassignUser(
-                        tenant.getId(),
-                        systemRoleId,
-                        userDataModel.getSelectedUser().getId());
+            boolean isUnassignedRolesForUserTenant = tenantRoleRESTServiceAccess.unAssignedUserTenantRoles(
+                    userDataModel.getSelectedUser().getId(),
+                    tenant.getId(),
+                    unassignedUserTenantRoles);
+
+            if(isUnassignedRolesForUserTenant){
+                handleMessage(FacesMessage.SEVERITY_INFO,
+                        JSFUtil.getMessage(DataModelEnum.USER_RD_TENANT_ROLE_UNASSIGNED_SUCCESS.getValue()));
             }
         }
         catch (Exception e) {

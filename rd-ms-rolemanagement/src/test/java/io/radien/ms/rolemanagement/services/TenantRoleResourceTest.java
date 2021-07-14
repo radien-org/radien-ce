@@ -20,6 +20,7 @@ import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import java.util.HashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -546,6 +547,39 @@ public class TenantRoleResourceTest {
             fail("unexpected");
         }
         Response response = tenantRoleResource.getRoles(1L, 1L);
-        assertEquals(500, response.getStatus());
+        assertEquals(404, response.getStatus());
+    }
+
+    /**
+     * Test asserts Response from
+     * UnAssignedUserTenantRoles
+     */
+    @Test
+    public void testUnAssignedUserTenantRoles() {
+        Response response = tenantRoleResource.unAssignedUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Test asserts Response from
+     * UnAssignedUserTenantRoles
+     */
+    @Test
+    public void testUnAssignedUserTenantRolesException() {
+        try {
+            doThrow( new TenantRoleException( "error" ) ).
+                    doThrow( new RuntimeException( "error" ) ).
+                    when( tenantRoleBusinessService ).unAssignedUserTenantRoles( 1L,
+                    2L, new HashSet<>( Arrays.asList( 1L, 2L ) ) );
+        } catch (Exception e) {
+            fail( "unexpected" );
+        }
+        Response response = tenantRoleResource.unAssignedUserTenantRoles( 1L,
+                2L, new HashSet<>( Arrays.asList( 1L, 2L ) ) );
+        assertEquals( 400, response.getStatus() );
+
+        response = tenantRoleResource.unAssignedUserTenantRoles( 1L,
+                2L, new HashSet<>( Arrays.asList( 1L, 2L ) ) );
+        assertEquals(500, response.getStatus() );
     }
 }
