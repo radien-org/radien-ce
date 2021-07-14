@@ -101,4 +101,12 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @return TenantRoleUser id
      */
     Optional<Long> getTenantRoleUserId(Long tenantRole, Long user);
+
+    /**
+     * Check if a user is associated with a tenant
+     * @param userId User identifier
+     * @param tenantId Tenant Identifier
+     * @return true if already exists, otherwise returns false
+     */
+    boolean isAssociatedWithTenant(Long userId, Long tenantId);
 }

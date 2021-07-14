@@ -223,6 +223,36 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
+     * Check if a user is associated with a tenant
+     * @param userId User identifier
+     * @param tenantId Tenant Identifier
+     * @return true if already exists, otherwise returns false
+     */
+    @Override
+    public boolean isAssociatedWithTenant(Long userId, Long tenantId) {
+        if (userId == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+        }
+        if (tenantId == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
+        Root<TenantRole> tenantRoleRoot = sc.from(TenantRole.class);
+
+        sc.select(cb.count(root)).
+                where(
+                        cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),
+                                tenantRoleRoot.get(SystemVariables.ID.getFieldName())),
+                        cb.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenantId)
+                );
+        List<Long> count = entityManager.createQuery(sc).getResultList();
+        return !count.isEmpty() && count.get(0) > 0;
+    }
+
+    /**
      * Check if a user is already assigned/associated with a tenant role
      * @param userId User identifier
      * @param tenantRoleId TenantRole Identifier

@@ -327,7 +327,10 @@ public class TenantRoleBusinessService implements Serializable {
                     toString(String.valueOf(tenant), String.valueOf(role), String.valueOf(user)));
         }
         tenantRoleUserServiceAccess.delete(ids);
-        activeTenantRESTServiceAccess.deleteByTenantAndUser(tenant, user);
+        if (!tenantRoleUserServiceAccess.isAssociatedWithTenant(user, tenant)) {
+            // If user is no longer associated with the informed tenant, lets remove active tenant as well
+            activeTenantRESTServiceAccess.deleteByTenantAndUser(tenant, user);
+        }
     }
 
     /**
