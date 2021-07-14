@@ -28,6 +28,7 @@ import io.radien.webapp.JSFUtil;
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -49,6 +51,7 @@ import org.primefaces.event.ToggleEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -58,6 +61,8 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Class that aggregates UnitTest cases for RolePermissionManager
  *
@@ -130,6 +135,51 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     }
 
     /**
+     * Test for method {@link RolePermissionManager#loadRolePermissions(SystemRole)}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testOnLoadRolePermissions() throws SystemException {
+        SystemRole systemRole = new Role();
+        systemRole.setId(1L);
+        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+                then(i -> retrievedSystemPermissionList);
+        rolePermissionManager.loadRolePermissions(systemRole);
+        assertNotEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
+    }
+
+    /**
+     * Test for method {@link RolePermissionManager#loadRolePermissions(SystemRole)}
+     * when an exception occurs while trying to retrieve permission via TenantRole API
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testOnLoadRolePermissionsWithException() throws SystemException {
+        SystemRole systemRole = new Role();
+        systemRole.setId(1L);
+        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+                thenThrow(new SystemException("error while retrieving permissions"));
+        rolePermissionManager.loadRolePermissions(systemRole);
+        assertEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
+    }
+
+    /**
+     * Test for method {@link RolePermissionManager#loadRolePermissions(SystemRole)}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testOnLoadRolePermissionsWithNoSelectedActiveTenant() throws SystemException {
+        rolePermissionManager.setSystemActiveTenant(null);
+        when(rolePermissionManager.getSystemActiveTenant()).then(i -> null);
+        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+                then(i -> retrievedSystemPermissionList);
+        SystemRole role = new Role();
+        role.setId(1L);
+        rolePermissionManager.loadRolePermissions(role);
+        assertEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
+    }
+
+    /**
      * Test Method onRowExpand()
      * Expects runTimeException
      * @throws SystemException if any error
@@ -154,7 +204,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
         rolePermissionManager.setIsPermissionsAssigned(isPermissionsAssigned);
         rolePermissionManager.loadRolePermissions(systemRole);
 
-        assertEquals(TOTAL_LINKED_AUTHORIZATION_RESULTS, rolePermissionManager.getIsPermissionsAssigned().size());
+        assertEquals(TOTAL_PERMISSION_RESULTS, rolePermissionManager.getIsPermissionsAssigned().size());
     }
 
     /**
@@ -260,6 +310,64 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     }
 
     /**
+     * Test method assignOrUnassignedPermissionsToActiveUserTenant(), but without active tenant selected
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testAssignOrUnassignedPermissionsWithNoActiveUserTenant() throws SystemException {
+        rolePermissionManager.setAssignableRolePermissions(assignableRolePermissions);
+        rolePermissionManager.setUnassignedRolePermissions(unassignedRolePermissions);
+        assertEquals(assignableRolePermissions, rolePermissionManager.getAssignableRolePermissions());
+        assertEquals(unassignedRolePermissions, rolePermissionManager.getUnassignedRolePermissions());
+
+        doReturn(null).when(activeTenantDataModelManager).getActiveTenant();
+        rolePermissionManager.setSystemActiveTenant(null);
+
+        String roles_url = rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant();
+        assertEquals(DataModelEnum.ROLE_MAIN_PAGE.getValue(), roles_url);
+
+        assertNotEquals(0, rolePermissionManager.getAssignableRolePermissions().size());
+        assertNotEquals(0, rolePermissionManager.getUnassignedRolePermissions().size());
+    }
+
+
+    /**
+     * Test for method {@link RolePermissionManager#doAssignedPermissionsForRole()}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testDoAssignedPermissionsForRole() throws SystemException {
+        rolePermissionManager.setSystemPermissionsIdsList(retrievedSystemPermissionList.stream().
+                map(SystemPermission::getId).collect(Collectors.toList()));
+        rolePermissionManager.setAssignableRolePermissions(new HashSet<>(Arrays.asList(1L, 10000L, 10001L)));
+        when(tenantRoleRESTServiceAccess.exists(systemActiveTenant.getTenantId(), systemRole.getId())).
+                then(i -> Boolean.FALSE).then(i -> Boolean.TRUE);
+        when(tenantRoleRESTServiceAccess.save(any())).thenReturn(Boolean.TRUE);
+        when(tenantRoleRESTServiceAccess.assignPermission(anyLong(), anyLong(), anyLong())).then(i -> Boolean.TRUE);
+        rolePermissionManager.doAssignedPermissionsForRole();
+        assertEquals(0, rolePermissionManager.getAssignableRolePermissions().size());
+    }
+
+    /**
+     * Test for method {@link RolePermissionManager#doUnassignedPermissionsForRole()}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testDoUnassignedPermissionsForRole() throws SystemException {
+        rolePermissionManager.setSystemPermissionsIdsList(retrievedSystemPermissionList.stream().
+                map(SystemPermission::getId).collect(Collectors.toList()));
+        rolePermissionManager.setUnassignedRolePermissions(unassignedRolePermissions);
+        when(tenantRoleRESTServiceAccess.unassignPermission(anyLong(), anyLong(), anyLong())).then(i -> Boolean.TRUE);
+        rolePermissionManager.doUnassignedPermissionsForRole();
+        assertEquals(0, rolePermissionManager.getUnassignedRolePermissions().size());
+    }
+
+
+//protected void doAssignedPermissionsForRole() {
+//doAssignedPermissionsForRole
+
+
+    /**
      * Test Method refresh()
      * asserts isPermissionAssigned or
      * isPermissionUnassigned
@@ -292,11 +400,11 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
 
     /**
      * This method creates the list of Permissions for given size.
-     * A collection that represents the list of permissions retrived via {@link TenantRoleRESTServiceAccess} API
+     * A collection that represents the list of permissions retrieved via {@link TenantRoleRESTServiceAccess} API
      */
     private List<? extends SystemPermission> initRetrievedPermissionList() {
         List<SystemPermission> list = new ArrayList<>();
-        for (long i = 1; i <= RolePermissionManagerTest.TOTAL_LINKED_AUTHORIZATION_RESULTS; i++) {
+        for (long i = 1; i <= RolePermissionManagerTest.TOTAL_PERMISSION_RESULTS; i++) {
             SystemPermission systemPermission = new Permission();
             systemPermission.setId(i);
             systemPermission.setName(String.valueOf(i));

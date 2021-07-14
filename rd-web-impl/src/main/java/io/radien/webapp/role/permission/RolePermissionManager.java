@@ -171,7 +171,7 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * This method validates & creates association of
      * User tenant role permission(s)
      */
-    private void doAssignedPermissionsForRole() {
+    protected void doAssignedPermissionsForRole() {
         try {
             for(Long systemPermissionId : assignableRolePermissions) {
                 if (!systemPermissionsIdsList.contains(systemPermissionId)) {
@@ -195,7 +195,7 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * This method  disassociation of
      * User tenant role permission(s)
      */
-    private void doUnassignedPermissionsForRole() {
+    protected void doUnassignedPermissionsForRole() {
         try {
             List<Long> permissionsToUnSign = systemPermissionsIdsList.stream().
                     filter(p -> unassignedRolePermissions.contains(p)).collect(Collectors.toList());
