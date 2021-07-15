@@ -62,6 +62,6 @@ public interface TenantRoleUserResourceClient {
     @Path("/deletes/userTenantRoles")
     Response unAssignUserTenantRoles(@QueryParam("userId") Long userId,
                                        @QueryParam("tenantId") Long tenantId,
-                                       @QueryParam("roleIds") Collection<Long> roleIds) throws TenantRoleException, TenantRoleUserException;
+                                       @QueryParam("roleIds") Collection<Long> roleIds);
 
 }

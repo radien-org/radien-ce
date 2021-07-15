@@ -18,6 +18,8 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 
+import io.radien.api.util.CheckMandatoryParametersServiceUtil;
+
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleUserException;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 /**
@@ -56,6 +59,9 @@ public class TenantRoleUserBusinessServiceTest {
     @Mock
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
 
+    @Mock
+    private CheckMandatoryParametersServiceUtil checkMandatoryParametersServiceUtil;
+
     Long userId = 1L;
     Long tenantId = 2L;
     Collection<Long> roleIds;
@@ -74,6 +80,7 @@ public class TenantRoleUserBusinessServiceTest {
 
     @Test
     public void testUnAssignUserTenantRoles() throws TenantRoleException, TenantRoleUserException {
+        doNothing().when(checkMandatoryParametersServiceUtil).checkIfMandatoryParametersTenantRoleUser(anyLong(), anyLong(), anyCollection());
         when(tenantRoleServiceAccess.getTenantRoleIds(anyLong(), anyCollection())).thenReturn(tenantRoleIds);
         when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyList(), anyLong())).thenReturn(tenantRoleUserIds);
         doReturn(true).when(tenantRoleUserServiceAccess).delete(anyCollection());

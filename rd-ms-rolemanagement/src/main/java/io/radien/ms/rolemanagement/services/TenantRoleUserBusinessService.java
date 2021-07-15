@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.util.CheckMandatoryParametersServiceUtil;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
 
@@ -45,6 +46,9 @@ public class TenantRoleUserBusinessService implements Serializable {
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
 
+    @Inject
+    private CheckMandatoryParametersServiceUtil checkMandatoryParametersServiceUtil;
+
     /**
      * Given a tenant and a role ids, retrieves the existent Tenant Role ids
      * @param tenantId Tenant id
@@ -68,6 +72,8 @@ public class TenantRoleUserBusinessService implements Serializable {
      */
     public void unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws TenantRoleException, TenantRoleUserException
     {
+        checkMandatoryParametersServiceUtil.checkIfMandatoryParametersTenantRoleUser(userId, tenantId, roleIds);
+
         List<Long> tenantRoleIds = getTenantRoleIds(tenantId, roleIds);
         Collection<Long> tenantRoleUserIds = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, userId);
         if(tenantRoleUserIds.isEmpty()){

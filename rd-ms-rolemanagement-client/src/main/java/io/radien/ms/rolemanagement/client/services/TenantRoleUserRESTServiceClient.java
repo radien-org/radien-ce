@@ -151,7 +151,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.unAssignUserTenantRoles(userId, tenantId, roleIds);
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
-        } catch (ExtensionException | ProcessingException | MalformedURLException | TenantRoleException | TenantRoleUserException e) {
+        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
         }
     }

@@ -16,7 +16,6 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
-import io.radien.api.util.CheckMandatoryParametersServiceUtil;
 
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleUserException;
@@ -36,7 +35,6 @@ import javax.ws.rs.core.Response;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 /**
  * TenantRoleUser resource requests test
@@ -54,9 +52,6 @@ public class TenantRoleUserResourceTest {
 
     @Mock
     TenantRoleUserBusinessService tenantRoleUserBusinessService;
-
-    @Mock
-    private CheckMandatoryParametersServiceUtil checkMandatoryParametersServiceUtil;
 
     @BeforeEach
     public void before(){
@@ -103,7 +98,6 @@ public class TenantRoleUserResourceTest {
      */
     @Test
     public void testUnAssignUserTenantRolesException() throws TenantRoleException, TenantRoleUserException {
-        doNothing().when(checkMandatoryParametersServiceUtil).checkIfMandatoryParametersTenantRoleUser(anyLong(), anyLong(), anyCollection());
         doThrow(TenantRoleUserException.class).when(tenantRoleUserBusinessService).unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection());
         Response response = tenantRoleUserResource.unAssignUserTenantRoles(1L,
         1L, new HashSet<>( Arrays.asList(1L, 1L)));

@@ -50,9 +50,6 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
     @Inject
     private TenantRoleUserBusinessService tenantRoleUserBusinessService;
 
-    @Inject
-    private CheckMandatoryParametersServiceUtil checkMandatoryParametersServiceUtil;
-
     /**
      * Retrieves TenantRoleUser association using pagination approach
      * (in other words, retrieves the Users associations that exist for a TenantRole)
@@ -86,8 +83,7 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
      * Response 500 in case of any other error
      */
     @Override
-    public Response unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws TenantRoleUserException {
-        checkMandatoryParametersServiceUtil.checkIfMandatoryParametersTenantRoleUser(userId, tenantId, roleIds);
+    public Response unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) {
         if(log.isInfoEnabled()){
             log.info(GenericErrorCodeMessage.INFO_TENANT_USER_ROLES.toString(String.valueOf(userId),
                     String.valueOf(tenantId), String.valueOf(roleIds.size())));
