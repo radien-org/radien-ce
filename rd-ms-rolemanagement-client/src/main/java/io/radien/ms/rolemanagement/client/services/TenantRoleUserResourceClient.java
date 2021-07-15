@@ -16,6 +16,8 @@
 package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
+import java.util.Collection;
+import javax.ws.rs.DELETE;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.ws.rs.Path;
@@ -52,5 +54,12 @@ public interface TenantRoleUserResourceClient {
     Response getAll(@QueryParam("tenantRoleId") Long tenantRoleId,
                     @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                     @DefaultValue("10") @QueryParam("pageSize") int pageSize);
+
+
+    @DELETE
+    @Path("/deletes/userTenantRoles")
+    Response unAssignUserTenantRoles(@QueryParam("userId") Long userId,
+                                       @QueryParam("tenantId") Long tenantId,
+                                       @QueryParam("roleIds") Collection<Long> roleIds);
 
 }

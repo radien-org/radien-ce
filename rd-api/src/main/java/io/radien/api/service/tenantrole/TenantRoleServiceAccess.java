@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
+
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 
@@ -101,7 +102,7 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param tenantId Tenant identifier
      * @return List containing role ids
      */
-    List<Long> getRoles(Long userId, Long tenantId);
+    List<Long> getRoleIdsForUserTenant(Long userId, Long tenantId);
 
     /**
      * Check if a User has some Role (Optionally for a specific Tenant)

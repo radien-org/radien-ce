@@ -413,7 +413,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @return List containing role ids
      */
     @Override
-    public List<Long> getRoles(Long userId, Long tenantId) {
+    public List<Long> getRoleIdsForUserTenant(Long userId, Long tenantId) {
         if (userId == null && tenantId == null) {
             throw new IllegalArgumentException(GenericErrorCodeMessage.INFO_TENANT_AND_USER_ID.toString());
         }

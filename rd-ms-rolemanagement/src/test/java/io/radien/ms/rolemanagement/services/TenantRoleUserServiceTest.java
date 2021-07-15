@@ -21,6 +21,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleUserException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
@@ -405,7 +406,7 @@ public class TenantRoleUserServiceTest {
      * @throws TenantRoleException if any inconsistency of TenantRole
      */
     @Test
-    public void testGetTenantRoleUserIds() throws TenantRoleException {
+    public void testGetTenantRoleUserIds() throws TenantRoleUserException {
         SystemTenantRoleUser sru = new TenantRoleUser();
         sru.setTenantRoleId(117L);
         sru.setUserId(118L);
@@ -424,7 +425,7 @@ public class TenantRoleUserServiceTest {
         try{
             ids = (List<Long>) tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, 119L);
             Assertions.assertTrue(ids.isEmpty());
-        } catch (TenantRoleException e) {
+        } catch (TenantRoleUserException e) {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLES.toString()));
         }
     }

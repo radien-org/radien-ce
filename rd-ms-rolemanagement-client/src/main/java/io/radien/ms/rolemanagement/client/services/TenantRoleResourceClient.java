@@ -17,7 +17,6 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import java.util.Collection;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.ws.rs.Path;
@@ -150,8 +149,8 @@ public interface TenantRoleResourceClient {
      * Response 500 in case of error
      */
     @GET
-    @Path("/roles")
-    Response getRoles(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
+    @Path("/rolesUserTenant")
+    Response getRolesForUserTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
 
     /**
      * Check if Role exists for a User (Optionally under a Tenant)
@@ -229,12 +228,6 @@ public interface TenantRoleResourceClient {
     Response unassignUser(@PathParam("tenantId") Long tenantId,
                           @PathParam("roleId") Long roleId,
                           @PathParam("userId") Long userId);
-
-    @DELETE
-    @Path("/unassign/userTenantRoles")
-    Response unAssignedUserTenantRoles(@QueryParam("userId") Long userId,
-                          @QueryParam("tenantId") Long tenantId,
-                          @QueryParam("roleIds") Collection<Long> roleIds);
 
     /**
      * Assign/associate/add permission to a Tenant (TenantRole domain)

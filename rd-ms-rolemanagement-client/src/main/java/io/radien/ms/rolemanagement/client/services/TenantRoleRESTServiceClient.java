@@ -47,7 +47,6 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Collection;
 
 /**
  * Tenant Role REST Service Client
@@ -347,13 +346,13 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any error
      */
     @Override
-    public List<? extends SystemRole> getRoles(Long userId, Long tenantId) throws SystemException {
+    public List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws SystemException {
         try {
-            return getRolesCore(userId, tenantId);
+            return getRolesForUserTenantCore(userId, tenantId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return getRolesCore(userId, tenantId);
+                return getRolesForUserTenantCore(userId, tenantId);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -368,11 +367,11 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws TokenExpiredException if JWT token expires
      * @throws SystemException in case of any error
      */
-    private List<? extends SystemRole> getRolesCore(Long userId, Long tenantId) throws SystemException {
+    private List<? extends SystemRole> getRolesForUserTenantCore(Long userId, Long tenantId) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getRoles(userId, tenantId);
+            Response response = client.getRolesForUserTenant(userId, tenantId);
             return RoleModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (MalformedURLException | ProcessingException | ParseException e) {
@@ -470,48 +469,6 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            throw new SystemException(e);
-        }
-    }
-
-    /**
-     * Unassigned User Tenant Role(s)
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @param roleIds Collection of Role ids
-     * @return Boolean indicating if operation was concluded successfully
-     * @throws SystemException in case of any error
-     */
-    @Override
-    public Boolean unAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException{
-        try {
-            return unAssignedUserTenantRolesCore(userId, tenantId, roleIds);
-        } catch (TokenExpiredException tokenExpiredException) {
-            refreshToken();
-            try{
-                return unAssignedUserTenantRolesCore(userId, tenantId, roleIds);
-            } catch (TokenExpiredException tokenExpiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    /**
-     * Unassigned User Tenant Role(s) invoke via unAssignedUserTenantRolesCore()
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @param roleIds roleIds Collection of Role ids
-     * @return boolean value true if the unassigned User Tenant Role(s) successfully else false
-     * @throws TokenExpiredException if case of JWT expiration
-     * @throws SystemException in case of any error
-     */
-    private Boolean unAssignedUserTenantRolesCore(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException {
-        try {
-            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient( oaf.
-                    getProperty( OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT ) );
-            Response response = client.unAssignedUserTenantRoles(userId, tenantId, roleIds);
-            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
-        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
         }
     }

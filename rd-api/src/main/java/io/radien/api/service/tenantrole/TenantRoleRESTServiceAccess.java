@@ -21,7 +21,6 @@ import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.exception.SystemException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,7 +92,7 @@ public interface TenantRoleRESTServiceAccess {
      * @return List containing roles
      * @throws SystemException in case of any error
      */
-    List<? extends SystemRole> getRoles(Long userId, Long tenantId) throws SystemException;
+    List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws SystemException;
 
     /**
      * Retrieves TenantRole associations that met the following parameter
@@ -126,16 +125,6 @@ public interface TenantRoleRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean unassignUser(Long tenantId, Long roleId, Long userId) throws SystemException;
-
-    /**
-     *
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @param roleIds Collection of Role ids
-     * @return Boolean indicating if operation was concluded successfully
-     * @throws SystemException in case of any error
-     */
-    Boolean unAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException;
 
     /**
      * Assign/associate/add permission to a Tenant (TenantRole domain)

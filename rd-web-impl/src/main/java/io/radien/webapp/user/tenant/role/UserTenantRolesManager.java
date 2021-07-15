@@ -27,6 +27,7 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
@@ -63,6 +64,9 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
 
     @Inject
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+
+    @Inject
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     @Inject
     private UserDataModel userDataModel;
@@ -125,7 +129,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     public void loadUserTenantRoles(SystemTenant systemTenant) throws SystemException {
         try{
             assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleRESTServiceAccess
-                    .getRoles(userDataModel.getSelectedUser().getId(), systemTenant.getId()));
+                    .getRolesForUserTenant(userDataModel.getSelectedUser().getId(), systemTenant.getId()));
 
             if(!assignedRolesForUserTenant.isEmpty()){
                 for(SystemRole systemRole : assignedRolesForUserTenant){
@@ -210,7 +214,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
                     isTenantRoleSaved = tenantRoleRESTServiceAccess.save(tenantRole);
                 }
 
-                if(isTenantRoleSaved){
+                if(isTenantRoleAssociationExists || isTenantRoleSaved){
                     tenantRoleRESTServiceAccess.assignUser(
                             tenant.getId(),
                             systemRoleId,
@@ -229,10 +233,8 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      */
     private void doUnassignedRolesForUserTenant() {
         try {
-            boolean isUnassignedRolesForUserTenant = tenantRoleRESTServiceAccess.unAssignedUserTenantRoles(
-                    userDataModel.getSelectedUser().getId(),
-                    tenant.getId(),
-                    unassignedUserTenantRoles);
+            boolean isUnassignedRolesForUserTenant = tenantRoleUserRESTServiceAccess
+                    .unAssignUserTenantRoles(userDataModel.getSelectedUser().getId(), tenant.getId(), unassignedUserTenantRoles);
 
             if(isUnassignedRolesForUserTenant){
                 handleMessage(FacesMessage.SEVERITY_INFO,

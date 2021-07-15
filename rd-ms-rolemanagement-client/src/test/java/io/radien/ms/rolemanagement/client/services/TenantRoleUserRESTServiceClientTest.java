@@ -26,6 +26,9 @@ import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
+import java.util.Arrays;
+import java.util.HashSet;
+import javax.ws.rs.ProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -39,7 +42,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -157,4 +164,66 @@ public class TenantRoleUserRESTServiceClientTest {
 
         target.getUsers(33L, 1, 2);
     }
+
+    /**
+     * Test Unassigned User Tenant Role(s)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any error
+     */
+    @Test
+    public void testUnAssignedUserTenantRoles() throws MalformedURLException, SystemException {
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).
+                thenReturn(Response.ok(Boolean.TRUE).build());
+
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+
+        Boolean resultTrue = target.unAssignUserTenantRoles(1L, 2L, new HashSet<>( Arrays.asList(1L, 2L)));
+        assertNotNull(resultTrue);
+        assertTrue(resultTrue);
+
+        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenReturn(Response.status(303).build());
+        Boolean resultFalse = target.unAssignUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
+        assertFalse(resultFalse);
+    }
+
+    /**
+     * Test Unassigned User Tenant Role(s)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any error
+     */
+    @Test(expected = SystemException.class)
+    public void testUnAssignedUserTenantRolesTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenThrow(new TokenExpiredException("test"));
+
+        target.unAssignUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
+    }
+
+    /**
+     * Test Unassigned User Tenant Role(s)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any error
+     */
+    @Test(expected = SystemException.class)
+    public void testUnAssignedUserTenantRolesExpiration() throws MalformedURLException, SystemException {
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenThrow(new ProcessingException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+
+        target.unAssignUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
+    }
+
 }

@@ -16,8 +16,16 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+
+import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleUserException;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,8 +33,9 @@ import org.mockito.MockitoAnnotations;
 import javax.ws.rs.core.Response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
-
 /**
  * TenantRoleUser resource requests test
  * {@link io.radien.ms.rolemanagement.services.TenantRoleUserResource}
@@ -40,6 +49,9 @@ public class TenantRoleUserResourceTest {
 
     @Mock
     TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
+
+    @Mock
+    TenantRoleUserBusinessService tenantRoleUserBusinessService;
 
     @BeforeEach
     public void before(){
@@ -68,5 +80,32 @@ public class TenantRoleUserResourceTest {
         Response response = tenantRoleUserResource.getAll(1L,
                 2, 3);
         assertEquals(500, response.getStatus());
+    }
+
+    /**
+     * Test asserts Response from
+     * UnAssignedUserTenantRoles
+     */
+    @Test
+    public void testUnAssignUserTenantRoles() {
+        Response response = tenantRoleUserResource.unAssignUserTenantRoles(1L, 1L, new HashSet<>(Arrays.asList(1L, 2L)));
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Test asserts Response from
+     * UnAssignedUserTenantRoles
+     */
+    @Test
+    public void testUnAssignUserTenantRolesException() throws TenantRoleException, TenantRoleUserException {
+        doThrow(TenantRoleUserException.class).when(tenantRoleUserBusinessService).unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection());
+        Response response = tenantRoleUserResource.unAssignUserTenantRoles(1L,
+        1L, new HashSet<>( Arrays.asList(1L, 1L)));
+        assertEquals(400, response.getStatus());
+
+        doThrow(TenantRoleException.class).when(tenantRoleUserBusinessService).unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection());
+        Response response1 = tenantRoleUserResource.unAssignUserTenantRoles(1L,
+                1L, new HashSet<>( Arrays.asList(1L, 1L)));
+        assertEquals(500, response1.getStatus());
     }
 }

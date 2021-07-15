@@ -36,7 +36,6 @@ import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
-import java.util.Collection;
 import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,9 +203,9 @@ public class TenantRoleBusinessService implements Serializable {
      * @return List containing roles
      * @throws RoleNotFoundException in case of error finding roles
      */
-    public List<SystemRole> getRoles(Long userId, Long tenantId) throws RoleNotFoundException {
+    public List<SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws RoleNotFoundException {
         checkIfMandatoryParametersWereInformed(userId);
-        List<Long> ids = this.tenantRoleServiceAccess.getRoles(userId, tenantId);
+        List<Long> ids = this.tenantRoleServiceAccess.getRoleIdsForUserTenant(userId, tenantId);
 
         return Collections.unmodifiableList(getRoleServiceAccess().getSpecificRoles(new RoleSearchFilter(null,
                 null, ids, true,true)));
@@ -302,37 +301,6 @@ public class TenantRoleBusinessService implements Serializable {
                 orElseThrow(() -> new TenantRoleException(TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER.
                         toString(user.toString())));
         this.tenantRoleUserServiceAccess.delete(tenantRoleUserId);
-    }
-
-    /**
-     * Given a tenant and a role ids, retrieves the existent Tenant Role ids
-     * @param tenantId Tenant id
-     * @param roleIds Collection of Role ids
-     * @return Collection of TenantRole ids
-     */
-    private List<Long> getTenantRoleIds(Long tenantId, Collection<Long> roleIds) throws TenantRoleException {
-        List<Long> tenantRoleIds = tenantRoleServiceAccess.getTenantRoleIds(tenantId, roleIds);
-        if(tenantRoleIds.isEmpty()){
-            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLES.toString());
-        }
-        return tenantRoleIds;
-    }
-
-    /**
-     * Unassigned UserTenant Role(s)
-     * @param userId User id
-     * @param tenantId Tenant id
-     * @param roleIds Collection of Role ids
-     * @throws TenantRoleException if any error
-     */
-    public void unAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws TenantRoleException {
-        checkIfMandatoryParametersWereInformed(userId, tenantId, roleIds);
-        List<Long> tenantRoleIds = getTenantRoleIds(tenantId, roleIds);
-        Collection<Long> tenantRoleUserIds = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, userId);
-        if(tenantRoleUserIds.isEmpty()){
-            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLES.toString());
-        }
-        this.tenantRoleUserServiceAccess.delete(tenantRoleUserIds);
     }
 
     /**

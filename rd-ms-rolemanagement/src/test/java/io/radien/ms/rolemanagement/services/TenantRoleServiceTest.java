@@ -924,15 +924,15 @@ public class TenantRoleServiceTest {
         userTenantRoleObject(tenant2Role3User2,user2,tenant2Role3);
 
 
-        List<Long> ids = tenantRoleServiceAccess.getRoles(user1, tenant1);
+        List<Long> ids = tenantRoleServiceAccess.getRoleIdsForUserTenant(user1, tenant1);
         Assertions.assertTrue(ids.contains(role1.getId()) && ids.contains(role2.getId()));
         Assertions.assertEquals(5, ids.size());
 
-        ids = tenantRoleServiceAccess.getRoles(user2, tenant2);
+        ids = tenantRoleServiceAccess.getRoleIdsForUserTenant(user2, tenant2);
         Assertions.assertTrue(ids.contains(role3.getId()));
         Assertions.assertEquals(3, ids.size());
 
-        ids = tenantRoleServiceAccess.getRoles(99999999L, tenant3);
+        ids = tenantRoleServiceAccess.getRoleIdsForUserTenant(99999999L, tenant3);
         Assertions.assertTrue(ids.isEmpty());
     }
 
@@ -943,7 +943,7 @@ public class TenantRoleServiceTest {
     @Test
     public void testGetRolesWithoutMandatoryFieldUser() {
         EJBException e = Assertions.assertThrows(EJBException.class, () ->
-                tenantRoleServiceAccess.getRoles(null, null));
+                tenantRoleServiceAccess.getRoleIdsForUserTenant(null, null));
         Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
     }
 

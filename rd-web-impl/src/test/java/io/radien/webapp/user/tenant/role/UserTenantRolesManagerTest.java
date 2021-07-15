@@ -23,6 +23,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
@@ -54,17 +55,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -83,6 +86,9 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
 
     @Mock
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+
+    @Mock
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     @Mock
     private UserDataModel userDataModel;
@@ -168,7 +174,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         assertEquals(assignedUserTenantRoles, userTenantRolesManager.getAssignedRolesForUserTenant());
 
-        doReturn(assignedUserTenantRoles).when(this.tenantRoleRESTServiceAccess).getRoles(anyLong(), anyLong());
+        doReturn(assignedUserTenantRoles).when(this.tenantRoleRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
 
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         userTenantRolesManager.setIsRoleAssigned(isRoleAssigned);
@@ -177,6 +183,20 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
 
         assertEquals(assignedUserTenantRoles, userTenantRolesManager.getAssignedRolesForUserTenant());
         assertEquals(isRoleAssigned, userTenantRolesManager.getIsRoleAssigned());
+    }
+
+    /**
+     * Test case for loadUserTenantRoles() - failure
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testLoadUserTenantRolesException() throws SystemException {
+        userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
+        assertEquals(assignedUserTenantRoles, userTenantRolesManager.getAssignedRolesForUserTenant());
+
+        doThrow(RuntimeException.class).when(tenantRoleRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
+
+        userTenantRolesManager.loadUserTenantRoles(systemTenant);
     }
 
 
@@ -255,6 +275,31 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
 
         doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
         doReturn(true).when(tenantRoleRESTServiceAccess).assignUser(anyLong(), anyLong(), anyLong());
+        doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).unAssignUserTenantRoles(anyLong(), anyLong(), anySet());
+
+        userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
+    }
+
+    /**
+     * Test method assignOrUnassignedRolesToUserTenant()
+     * catch exception error handle message
+     * Unassigned Role(s) of User Tenant
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testAssignOrUnassignedPermissionsToActiveUserTenantException() throws SystemException {
+        userTenantRolesManager.setAssignableUserTenantRoles(assignableUserTenantRoles);
+        userTenantRolesManager.setUnassignedUserTenantRoles(unassignedUserTenantRoles);
+        assertEquals(assignableUserTenantRoles, userTenantRolesManager.getAssignableUserTenantRoles());
+        assertEquals(unassignedUserTenantRoles, userTenantRolesManager.getUnassignedUserTenantRoles());
+
+        SystemTenantRole systemTenantRole = new TenantRole();
+        systemTenantRole.setTenantId(1L);
+        systemTenantRole.setRoleId(1L);
+
+        doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
+        doThrow(RuntimeException.class).when(tenantRoleRESTServiceAccess).assignUser(anyLong(), anyLong(), anyLong());
+        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).unAssignUserTenantRoles(anyLong(), anyLong(), anySet());
 
         userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
     }
