@@ -21,6 +21,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
+import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleUserException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -171,7 +173,7 @@ public class TenantRoleUserRESTServiceClientTest {
      * @throws SystemException in case of any error
      */
     @Test
-    public void testUnAssignedUserTenantRoles() throws MalformedURLException, SystemException {
+    public void testUnAssignedUserTenantRoles() throws MalformedURLException, SystemException, TenantRoleException, TenantRoleUserException {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
         when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).
@@ -194,7 +196,7 @@ public class TenantRoleUserRESTServiceClientTest {
      * @throws SystemException in case of any error
      */
     @Test(expected = SystemException.class)
-    public void testUnAssignedUserTenantRolesTokenExpiration() throws MalformedURLException, SystemException {
+    public void testUnAssignedUserTenantRolesTokenExpiration() throws MalformedURLException, TenantRoleException, TenantRoleUserException, SystemException {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
@@ -212,7 +214,7 @@ public class TenantRoleUserRESTServiceClientTest {
      * @throws SystemException in case of any error
      */
     @Test(expected = SystemException.class)
-    public void testUnAssignedUserTenantRolesExpiration() throws MalformedURLException, SystemException {
+    public void testUnAssignedUserTenantRolesExpiration() throws MalformedURLException, TenantRoleException, TenantRoleUserException, SystemException {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);

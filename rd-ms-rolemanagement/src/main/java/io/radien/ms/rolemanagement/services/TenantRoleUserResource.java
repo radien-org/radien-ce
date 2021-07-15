@@ -17,8 +17,10 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleUserException;
 
+import io.radien.api.util.CheckMandatoryParametersServiceUtil;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
@@ -47,6 +49,9 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
 
     @Inject
     private TenantRoleUserBusinessService tenantRoleUserBusinessService;
+
+    @Inject
+    private CheckMandatoryParametersServiceUtil checkMandatoryParametersServiceUtil;
 
     /**
      * Retrieves TenantRoleUser association using pagination approach
@@ -81,7 +86,8 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
      * Response 500 in case of any other error
      */
     @Override
-    public Response unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) {
+    public Response unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws TenantRoleUserException {
+        checkMandatoryParametersServiceUtil.checkIfMandatoryParametersTenantRoleUser(userId, tenantId, roleIds);
         if(log.isInfoEnabled()){
             log.info(GenericErrorCodeMessage.INFO_TENANT_USER_ROLES.toString(String.valueOf(userId),
                     String.valueOf(tenantId), String.valueOf(roleIds.size())));
@@ -89,7 +95,7 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
         try {
             tenantRoleUserBusinessService.unAssignUserTenantRoles(userId ,tenantId, roleIds);
             return Response.ok().build();
-        } catch (TenantRoleUserException e) {
+        } catch (TenantRoleException | TenantRoleUserException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);

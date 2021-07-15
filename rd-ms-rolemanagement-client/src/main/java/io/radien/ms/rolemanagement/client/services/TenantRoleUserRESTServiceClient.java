@@ -22,6 +22,8 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
+import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleUserException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
@@ -149,7 +151,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.unAssignUserTenantRoles(userId, tenantId, roleIds);
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
-        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
+        } catch (ExtensionException | ProcessingException | MalformedURLException | TenantRoleException | TenantRoleUserException e) {
             throw new SystemException(e);
         }
     }

@@ -86,6 +86,7 @@ public enum GenericErrorCodeMessage {
      * Tenant User Role Error Code Messages
      */
     INFO_TENANT_USER_ROLES("TUR1","info.tenant.user.roles","Unassigning/removing userTenantRole(s) of userId: %s from tenantId: %s of no. of role(s): %s"),
+    HAVE_NULL_PARAMS_TENANT_USER_ROLES("TUR2","have.null.params.tenant.user.roles","Tenant User Role(s) have null parameters: %s"),
 
     /**
      * Tenant User Error Code Messages

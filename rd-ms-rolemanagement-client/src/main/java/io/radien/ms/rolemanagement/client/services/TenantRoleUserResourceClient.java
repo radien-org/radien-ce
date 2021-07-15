@@ -15,6 +15,8 @@
  */
 package io.radien.ms.rolemanagement.client.services;
 
+import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import java.util.Collection;
 import javax.ws.rs.DELETE;
@@ -60,6 +62,6 @@ public interface TenantRoleUserResourceClient {
     @Path("/deletes/userTenantRoles")
     Response unAssignUserTenantRoles(@QueryParam("userId") Long userId,
                                        @QueryParam("tenantId") Long tenantId,
-                                       @QueryParam("roleIds") Collection<Long> roleIds);
+                                       @QueryParam("roleIds") Collection<Long> roleIds) throws TenantRoleException, TenantRoleUserException;
 
 }
