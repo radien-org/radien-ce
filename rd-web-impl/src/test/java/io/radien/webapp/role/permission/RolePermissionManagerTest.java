@@ -362,11 +362,6 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
         assertEquals(0, rolePermissionManager.getUnassignedRolePermissions().size());
     }
 
-
-//protected void doAssignedPermissionsForRole() {
-//doAssignedPermissionsForRole
-
-
     /**
      * Test Method refresh()
      * asserts isPermissionAssigned or
