@@ -31,6 +31,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
@@ -117,12 +118,12 @@ public class TenantRoleBusinessService implements Serializable {
      * Gets the System Tenant Role association searched by the PK (id).
      * @param id to be searched.
      * @return the system Tenant Role Association requested to be found.
-     * @throws TenantRoleException if Tenant Role association could not be found
+     * @throws TenantRoleNotFoundException if Tenant Role association could not be found
      */
-    public SystemTenantRole getById(Long id) throws TenantRoleException {
+    public SystemTenantRole getById(Long id) throws TenantRoleNotFoundException {
         SystemTenantRole systemTenantRole = this.tenantRoleServiceAccess.get(id);
         if (systemTenantRole == null) {
-            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
+            throw new TenantRoleNotFoundException(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
         }
         return systemTenantRole;
     }
@@ -131,13 +132,13 @@ public class TenantRoleBusinessService implements Serializable {
      * Deletes a Tenant Role association
      * @param id Tenant Role association Identifier
      * @return If the association was found and the delete process was successfully performed
-     * @throws TenantRoleException If the Tenant Role association is linked
-     * with other Entities like Tenant Role Permission or Tenant Role User
+     * @throws TenantRoleException If does not exist Tenant Role for the given id, or Tenant Role exists but
+     * is linked with other Entities like Tenant Role Permission or Tenant Role User (so, it could not be removed)
      */
     public boolean delete(Long id) throws TenantRoleException {
         SystemTenantRole systemTenantRole = this.tenantRoleServiceAccess.get(id);
         if (systemTenantRole == null) {
-            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
+            throw new TenantRoleNotFoundException(GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(id.toString()));
         }
         return this.tenantRoleServiceAccess.delete(id);
     }
@@ -419,6 +420,10 @@ public class TenantRoleBusinessService implements Serializable {
         return tenantRESTServiceAccess;
     }
 
+    /**
+     * Setter for the property {@link TenantRoleBusinessService#tenantRESTServiceAccess}
+     * @param tenantRESTServiceAccess instance of TenantRESTServiceAccess to be set
+     */
     public void setTenantRESTServiceAccess(TenantRESTServiceAccess tenantRESTServiceAccess) {
         this.tenantRESTServiceAccess = tenantRESTServiceAccess;
     }
@@ -463,10 +468,18 @@ public class TenantRoleBusinessService implements Serializable {
         this.roleServiceAccess = roleServiceAccess;
     }
 
+    /**
+     * Getter for the property {@link TenantRoleBusinessService#activeTenantRESTServiceAccess}
+     * @return instance of ActiveTenantRESTServiceAccess
+     */
     public ActiveTenantRESTServiceAccess getActiveTenantRESTServiceAccess() {
         return activeTenantRESTServiceAccess;
     }
 
+    /**
+     * Setter for the property {@link TenantRoleBusinessService#activeTenantRESTServiceAccess}
+     * @param activeTenantRESTServiceAccess instance of ActiveTenantRESTServiceAccess to be set
+     */
     public void setActiveTenantRESTServiceAccess(ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess) {
         this.activeTenantRESTServiceAccess = activeTenantRESTServiceAccess;
     }

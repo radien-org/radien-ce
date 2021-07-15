@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,19 +114,16 @@ public class TenantRoleResourceTest {
 
     /**
      * Tests response from getById when exceptions occur during the processing
+     * @throws TenantRoleNotFoundException when thrown denotes a Tenant Role could not be found
+     * for a given identifier
      */
     @Test
     @Order(6)
-    public void testGetByIdWithExceptions() {
-        try {
-            doThrow(new TenantRoleException("No Tenant Role found for id")).
-                    when(tenantRoleBusinessService).getById(1L);
-            doThrow(new RuntimeException("error")).
-                    when(tenantRoleBusinessService).getById(2L);
-        }
-        catch (Exception e) {
-            fail("unexpected");
-        }
+    public void testGetByIdWithExceptions() throws TenantRoleNotFoundException {
+        doThrow(new TenantRoleNotFoundException("No Tenant Role found for id")).
+                when(tenantRoleBusinessService).getById(1L);
+        doThrow(new RuntimeException("error")).
+                when(tenantRoleBusinessService).getById(2L);
 
         // Association Not Found
         Response response = tenantRoleResource.getById(1L);
