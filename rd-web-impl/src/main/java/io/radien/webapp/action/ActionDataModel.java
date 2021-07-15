@@ -19,7 +19,9 @@ import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionRESTServiceAccess;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -32,6 +34,9 @@ import javax.inject.Inject;
 import java.io.Serializable;
 
 /**
+ * Action Interface Data Model. Class responsible for managing and maintaining
+ * the data between the front end and backend for the tenant tables.
+ *
  * @author Bruno Gama
  */
 @Model
@@ -47,130 +52,195 @@ public class ActionDataModel extends AbstractManager implements Serializable {
 
     private SystemAction action = new Action();
 
+    /**
+     * Initialization of the action data tables and models
+     */
     @PostConstruct
+    @ActiveTenantMandatory
     public void init() {
         try {
             lazyModel = new LazyActionsDataModel(service);
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_actions"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.ACTIONS_MESSAGE.getValue()));
         }
     }
 
+    /**
+     * Data reload method
+     */
     public void onload() {
-        try {
-            init();
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_actions"));
-        }
+        init();
     }
 
-    public String save(SystemAction a) {
+    /**
+     * Action creation or update save method
+     * @param systemAction system action to be saved
+     * @return a string value to redirect the user into the correct page either send him to the table in case of success,
+     * or into the edit menu in case of error
+     */
+    @ActiveTenantMandatory
+    public String save(SystemAction systemAction) {
         try {
-            this.service.create(a);
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
-                    JSFUtil.getMessage("rd_action"));
+            this.service.create(systemAction);
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
             action = new Action();
-            return "actions";
+            return DataModelEnum.ACTION_MAIN_PAGE.getValue();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_action"));
-            return "action";
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
+            return DataModelEnum.ACTION_CREATION_PAGE.getValue();
         }
     }
 
+    /**
+     * Action update edit record method
+     * @return the correct page to where the user should be redirected
+     */
+    @ActiveTenantMandatory
     public String editRecords() {
         try {
             if (selectedAction != null) {
-                return "actionDetails";
+                return DataModelEnum.ACTION_DETAIL_PAGE.getValue();
             } else {
-                handleMessage(FacesMessage.SEVERITY_WARN, JSFUtil.getMessage("rd_select_record_first"), JSFUtil.getMessage("rd_action"));
+                handleMessage(FacesMessage.SEVERITY_WARN, JSFUtil.getMessage(DataModelEnum.ERROR_SELECT_RECORD_TO_DELETE.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
             }
-            return "actions";
+            return DataModelEnum.ACTION_MAIN_PAGE.getValue();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_action"));
-            return "actionDetails";
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
+            return DataModelEnum.ACTION_DETAIL_PAGE.getValue();
         }
     }
 
+    /**
+     * Action record deletion method
+     */
+    @ActiveTenantMandatory
     public void delete(){
         try {
             if (selectedAction != null) {
                 service.delete(selectedAction.getId());
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_delete_success"),
-                        JSFUtil.getMessage("rd_action"));
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()),
+                        JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
             } else {
-                handleMessage(FacesMessage.SEVERITY_WARN, JSFUtil.getMessage("rd_delete_select_record_first"), JSFUtil.getMessage("rd_action"));
+                handleMessage(FacesMessage.SEVERITY_WARN, JSFUtil.getMessage(DataModelEnum.ERROR_SELECT_RECORD_TO_DELETE.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
             }
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_delete_error"), JSFUtil.getMessage("rd_action"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.DELETE_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
         }
 
         action = new Action();
         selectedAction = null;
     }
 
-    public String returnHome() {
+    /**
+     * Redirect user into action table page
+     */
+    @ActiveTenantMandatory
+    public String returnToDataTableRecords() {
         try {
             action = new Action();
             selectedAction = null;
-            return "actions";
+            return DataModelEnum.ACTION_MAIN_PAGE.getValue();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_delete_error"), JSFUtil.getMessage("rd_action"));
-            return "actions";
+            handleError(e, JSFUtil.getMessage(DataModelEnum.DELETE_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
+            return DataModelEnum.ACTION_MAIN_PAGE.getValue();
         }
     }
 
-    public String edit(SystemAction a) {
+    /**
+     * Method to update and edit the given system action
+     * @param systemAction to be edited and updated
+     * @return a string value to where the user should be redirected
+     */
+    @ActiveTenantMandatory
+    public String edit(SystemAction systemAction) {
         try {
-            if(a != null && !a.getName().isEmpty()) {
-                this.service.create(a);
+            if (systemAction != null && !systemAction.getName().isEmpty()) {
+                this.service.create(systemAction);
                 action = new Action();
                 selectedAction = null;
-                return "actions";
+                return DataModelEnum.ACTION_MAIN_PAGE.getValue();
             } else {
-                handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage("rd_action_name_is_mandatory"), JSFUtil.getMessage("rd_action"));
-                return "actionDetails";
+                handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.ACTION_NAME_IS_MANDATORY.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
+                return DataModelEnum.ACTION_DETAIL_PAGE.getValue();
             }
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_action"));
-            return "actionDetails";
+            handleError(e, JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.ACTION_MESSAGE.getValue()));
+            return DataModelEnum.ACTION_DETAIL_PAGE.getValue();
         }
     }
 
+    /**
+     * Get model action getter method
+     * @return the requested action
+     */
     public SystemAction getAction() {
         return action;
     }
 
+    /**
+     * Action setter method
+     * @param action to be set and used latter
+     */
     public void setAction(SystemAction action) {
         this.action = action;
     }
 
+    /**
+     * Lazy Model Data Table getter method
+     * @return the lazy data model
+     */
     public LazyDataModel<? extends SystemAction> getLazyModel() {
         return lazyModel;
     }
 
+    /**
+     * Lazy data model setter
+     * @param lazyModel to be set
+     */
     public void setLazyModel(LazyDataModel<? extends SystemAction> lazyModel) {
         this.lazyModel = lazyModel;
     }
 
+    /**
+     * Selected action getter method
+     * @return the actual selected action
+     */
     public SystemAction getSelectedAction() {
         return selectedAction;
     }
 
+    /**
+     * Selected action setter method
+     * @param selectedAction to be used or updated
+     */
     public void setSelectedAction(SystemAction selectedAction) {
         this.selectedAction = selectedAction;
     }
 
+    /**
+     * Action REST Service Access getter method to perform actions
+     * @return the current action rest service access
+     */
     public ActionRESTServiceAccess getService() {
         return service;
     }
 
+    /**
+     * Action REST Service Access setter method
+     * @param service to be used or set
+     */
     public void setService(ActionRESTServiceAccess service) {
         this.service = service;
     }
 
+    /**
+     * On Row Select is a action listener in case a record is selected
+     * @param event listen when row as been selected
+     */
     public void onRowSelect(SelectEvent<SystemAction> event) {
         this.selectedAction = event.getObject();
-        FacesMessage msg = new FacesMessage(JSFUtil.getMessage("rd_action_selected"), String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage(DataModelEnum.ACTION_SELECTED.getValue()), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 }

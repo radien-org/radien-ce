@@ -38,6 +38,7 @@ import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -130,6 +131,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * This method is effectively invoke to create Tenant role association
      * @return mapping id that refers the tenant role creation/edition gui
      */
+    @ActiveTenantMandatory
     public String associateTenantRole() {
         try {
             tenantRole.setTenantId(tenant.getId());
@@ -154,6 +156,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * regarding the TenantRole to be create (Set some flags to the necessary initial values)
      * return "pretty:tenantrole";
      */
+    @ActiveTenantMandatory
     public String prepareToCreateTenantRole() {
         this.tenantRole = new TenantRole();
         this.assignedPermissions = new ArrayList<>();
@@ -172,6 +175,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @param tenantRole Tenant role to be edited
      * return "pretty:tenantrole";
      */
+    @ActiveTenantMandatory
     public String edit(SystemTenantRole tenantRole) {
         this.tenantRole = tenantRole;
         this.tabIndex = 0L;
@@ -204,6 +208,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * created. It can be used by the GUI to able/disable some view parts
      * @return true if exists, false otherwise
      */
+    @ActiveTenantMandatory
     public boolean isExistsTenantRoleCreated() {
         return (this.tenantRole != null && tenantRole.getId() != null) ||
                 this.tenantRoleAssociationCreated;
@@ -213,6 +218,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Retrieve permissions for tenant role combination
      * @return list containing permissions
      */
+    @ActiveTenantMandatory
     public List<? extends SystemPermission> calculatePermissions() {
         try {
             this.assignedPermissions = tenantRoleRESTServiceAccess.
@@ -230,6 +236,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * relationship
      * @return Id (key) that must exist for a Tenant Role association
      */
+    @ActiveTenantMandatory
     protected Long getTenantRoleId() {
         if (tenant == null || tenant.getId() == null || role == null || role.getId() == null) {
             return null;
@@ -249,6 +256,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     /**
      * Retrieve users for tenant role combination
      */
+    @ActiveTenantMandatory
     public void prepareUserDataTable() {
         if (this.lazyModel == null) {
             this.lazyModel = new LazyTenantRoleUserDataModel(tenantRoleUserRESTServiceAccess,
@@ -261,6 +269,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Perform the association process between permission, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
      */
+    @ActiveTenantMandatory
     public String assignPermission() {
         this.tabIndex = 1L;
         try {
@@ -282,6 +291,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Perform the association process between permission, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
      */
+    @ActiveTenantMandatory
     public String unAssignPermission() {
         this.tabIndex = 1L;
         try {
@@ -306,6 +316,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * and must be previously selected from a GUI)
      * @param userId User identifier
      */
+    @ActiveTenantMandatory
     public String associateUser(Long userId) {
         try {
             if (!tenantRoleRESTServiceAccess.exists(tenant.getId(), role.getId())) {
@@ -327,6 +338,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Perform the association process between user, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
      */
+    @ActiveTenantMandatory
     public String assignUser() {
         this.tabIndex = 2L;
         try {
@@ -352,6 +364,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Perform the association process between user, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
      */
+    @ActiveTenantMandatory
     public String unAssignUser() {
         this.tabIndex = 2L;
         try {
@@ -450,7 +463,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     /**
      * Getter for the Initial entity to be persisted
-     * @return tenant role to be persisted
      */
     public void setTenantRole(SystemTenantRole tenantRole) {
         this.tenantRole = tenantRole;
@@ -528,6 +540,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Stores the information regarding a selected permission
      * @param event that will contain which permission has been selected
      */
+    @ActiveTenantMandatory
     public void onPermissionSelect(SelectEvent<SystemPermission> event) {
         if (previousSelectedPermissionToUnAssign != null && event.getObject().getId().
                 equals(previousSelectedPermissionToUnAssign.getId())) {
@@ -545,6 +558,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Stores the information regarding a selected user
      * @param event that will contain which user has been selected
      */
+    @ActiveTenantMandatory
     public void onUserSelect(SelectEvent<SystemTenantRoleUser> event) {
         if (previousSelectedUserToUnAssign != null && event.getObject().getId().
                 equals(previousSelectedUserToUnAssign.getId())) {
@@ -564,6 +578,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * @param roleName parameter to guide the search process
      * @throws Exception thrown to describe any issue with role rest client
      */
+    @ActiveTenantMandatory
     private void addRoleByName(List<SystemRole> roleBag, String roleName) throws Exception {
         roleRESTServiceAccess.getRoleByName(roleName).ifPresent(roleBag::add);
     }
@@ -573,6 +588,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * that can be use to do the association between (user - tenant - role)
      * @return list containing Roles
      */
+    @ActiveTenantMandatory
     public List<SystemRole> getInitialRolesAllowedForAssociation() {
         try {
             List<SystemRole> roles = new ArrayList<>();
@@ -592,8 +608,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
     /**
      * Retrieve all registered roles
      * @return List containing roles
-     * @throws SystemException in case of any error
      */
+    @ActiveTenantMandatory
     public List<SystemRole> getRoles() {
         try {
             Page pagedInformation =
@@ -610,8 +626,8 @@ public class TenantRoleAssociationManager extends AbstractManager {
     /**
      * Retrieve all registered tenants
      * @return List containing tenants
-     * @throws SystemException in case of any error
      */
+    @ActiveTenantMandatory
     public List<SystemTenant> getTenants() {
         try {
             Page pagedInformation =
@@ -629,6 +645,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * has Administrative roles
      * @return list containing tenants
      */
+    @ActiveTenantMandatory
     public List<? extends SystemTenant> getTenantsFromCurrentUser() {
         try {
             return this.tenantRoleRESTServiceAccess.getTenants(this.webAuthorizationChecker.

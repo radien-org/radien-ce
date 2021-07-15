@@ -29,46 +29,77 @@ public enum DataModelEnum {
     GENERIC_ERROR_MESSAGE("rd_generic_error_message"),
     PUBLIC_INDEX_PATH("/public/index"),
     SAVE_ERROR_MESSAGE("rd_save_error"),
+    EDIT_SUCCESS("rd_edit_success"),
     EDIT_ERROR_MESSAGE("rd_edit_error"),
     SAVE_SUCCESS_MESSAGE("rd_save_success"),
     RETRIEVE_ERROR_MESSAGE("rd_retrieve_error"),
     ROW_SELECTED("rowSelected"),
+    SELECT_RECORD_FIRST("rd_select_record_first"),
+    DELETE_SUCCESS("rd_delete_success"),
+    ERROR_SELECT_RECORD_TO_DELETE("rd_delete_select_record_first"),
+    DELETE_ERROR("rd_delete_error"),
+    ACTIVE_TENANT_HAS_BEEN_REMOVED("rd_removed_active_tenant"),
+    ERROR_REDIRECTING("rd_error_in_redirecting"),
 
     /**
-     * Active Tenant Messages and redirects
+     * Active Management
      */
     NO_ACTIVE_TENANT_MESSAGE("rd_no_active_tenant"),
     ACTIVE_TENANT_CHANGED_TO_NULL_VALUE("rd_active_tenant_changed_value_to_null"),
     ACTIVE_TENANT_CHANGED_VALUE("rd_active_tenant_changed_value"),
 
     /**
-     * Permission Messages and redirects
+     * Action Management
+     */
+    ACTION_MESSAGE("rd_action"),
+    ACTIONS_MESSAGE("rd_actions"),
+    ACTION_MAIN_PAGE("actions"),
+    ACTION_CREATION_PAGE("action"),
+    ACTION_DETAIL_PAGE("actionDetails"),
+    ACTION_NAME_IS_MANDATORY("rd_action_name_is_mandatory"),
+    ACTION_SELECTED("rd_action_selected"),
+
+    /**
+     * Permission Management
      */
     PERMISSION_MESSAGE("rd_permission"),
     PERMISSIONS_MESSAGE("rd_permissions"),
     PERMISSION_NOT_FOUND_MESSAGE("rd_permission_not_found"),
 
     /**
-     * Role Messages and redirects
+     * Role Management
      */
     ROLE_MESSAGE("rd_role"),
     ROLES_MESSAGE("rd_roles"),
+    ROLE_MAIN_PAGE("roles"),
+    ROLE_CREATION_PAGE("role"),
+    ROLE_DETAIL_PAGE("roleDetails"),
     ROLE_NOT_FOUND_MESSAGE("rd_role_not_found"),
+    ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error"),
+    ROLE_NAME_MANDATORY("rd_role_name_is_mandatory"),
+    ROLE_SELECTED("rd_role_selected"),
 
     /**
-     * User Messages and redirects
+     * User Management
      */
     USER_MESSAGE("rd_user"),
+    USERS_MESSAGE("rd_users"),
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
+    USERS_PATH("pretty:users"),
+    USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
+    USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
+    USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),
+    SENT_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
+    SENT_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
 
     /**
-     * Linked Authorization Messages and redirects
+     * Linked Authorization
      */
     LINKED_AUTHORIZATION_MESSAGE("rd_linkedauthorization"),
     LINKED_AUTHORIZATION_PATH("linkedauthorization"),
 
     /**
-     * TenantRole associations domain Messages and redirects
+     * Tenant Role
      */
     TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE("rd_tenant_role_permission_association_no_permission_select"),
     TRP_ASSOCIATION_SUCCESS_MESSAGE("rd_tenant_role_permission_association_success"),
@@ -92,17 +123,10 @@ public enum DataModelEnum {
     TR_ASSOCIATIONS("tenant_role_associations"),
     TR_ASSOCIATION_ID("tenant_role_association_id"),
     TR_PATH("tenantrole"),
+    TR_ERROR_RETRIEVING_USER("rd_tenant_association_error_retrieve_user"),
 
     /**
-     * User messages and redirects
-     */
-    USERS_PATH("pretty:users"),
-    USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
-    USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
-    USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),
-
-    /*
-     * Tenant Management Pages
+     * Tenant Management
      */
     TENANT_MAIN_PAGE("tenants"),
     TENANT_CREATION_PAGE("tenant"),
@@ -112,14 +136,22 @@ public enum DataModelEnum {
     TENANT_NOT_FOUND_MESSAGE("rd_tenant_not_found"),
 
     /**
-     * Tenant Management Info Messages
+     * Tenant Management
      */
     TENANT_SELECTED_TENANT("rd_tenantSelected"),
-    TENANT_DELETE_SUCCESS("rd_delete_success"),
-    TENANT_SAVE_SUCCESS("rd_save_success"),
 
     /**
-     * Tenant Management Error Messages
+     * Resource Management
+     */
+    RESOURCE_RD_TENANT("rd_resource"),
+    RESOURCE_DATA_TABLE_PAGE("resources"),
+    RESOURCE_CREATION_PAGE("resource"),
+    RESOURCE_DETAIL_PAGE("resourceDetails"),
+    RESOURCE_NAME_IS_MANDATORY("rd_resource_name_is_mandatory"),
+    RESOURCE_SELECTED("rd_resource_selection"),
+
+    /**
+     * Tenant Management
      */
     TENANT_CLIENT_ADDRESS_IS_MANDATORY("rd_tenant_client_address_is_mandatory"),
     TENANT_CLIENT_ZIP_CODE_IS_MANDATORY("rd_tenant_client_zip_code_is_mandatory"),
@@ -127,28 +159,17 @@ public enum DataModelEnum {
     TENANT_CLIENT_COUNTRY_IS_MANDATORY("rd_tenant_client_country_is_mandatory"),
     TENANT_CLIENT_PHONE_IS_MANDATORY("rd_tenant_client_phone_is_mandatory"),
     TENANT_CLIENT_EMAIL_IS_MANDATORY("rd_tenant_client_email_is_mandatory"),
-    TENANT_EDIT_ERROR("rd_edit_error"),
-    TENANT_DELETE_ERROR("rd_delete_error"),
-    TENANT_SELECT_RECORD_FIRST("rd_select_record_first"),
     TENANT_NOT_FOUND("rd_tenant_tenant_not_found"),
     TENANT_USER_SESSION("rd_tenant_user_session"),
-    TENANT_SAVE_ERROR_MESSAGE("rd_save_error"),
-    TENANT_GENERIC_ERROR_MESSAGE("rd_generic_error_message"),
 
     /**
-     * User Active Tenant Role Permission Messages and redirects
+     * User Active Tenant Role Permission
      */
     USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_assigned_success"),
     USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_ERROR("rd_user_active_tenant_role_permission_assigned_error"),
     USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_unassigned_success"),
-    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR("rd_user_active_tenant_role_permission_unassigned_error"),
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR("rd_user_active_tenant_role_permission_unassigned_error");
 
-    /**
-     * Role Messages and redirects
-     */
-    ROLE_MAIN_PAGE("roles"),
-    ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error");
-    
     private String value;
 
     /**
