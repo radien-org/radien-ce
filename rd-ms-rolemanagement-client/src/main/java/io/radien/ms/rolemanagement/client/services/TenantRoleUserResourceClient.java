@@ -37,22 +37,6 @@ import javax.ws.rs.core.Response;
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface TenantRoleUserResourceClient {
 
-//    /**
-//     * Retrieves TenantRoleUser association using pagination approach
-//     * (in other words, retrieves the Users associations that exist for a TenantRole)
-//     * @param tenantRoleId identifier for a TenantRole
-//     * @param pageNo page number
-//     * @param pageSize page size
-//     * @return In case of successful operation returns OK (http status 200)
-//     * and a Page containing TenantRole associations (Chunk/Portion compatible
-//     * with parameter Page number and Page size).<br>
-//     * Otherwise, in case of operational error, returns Internal Server Error (500)
-//     */
-//    @GET
-//    Response getAll(@QueryParam("tenantRoleId") Long tenantRoleId,
-//                    @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-//                    @DefaultValue("10") @QueryParam("pageSize") int pageSize);
-
     /**
      * Retrieves TenantRoleUser association using pagination approach
      * (in other words, retrieves the Users associations that exist for a TenantRole)
