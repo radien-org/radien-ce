@@ -39,7 +39,6 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import io.radien.webapp.interceptor.ActiveTenantMandatory;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -263,7 +262,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * Perform the association process between permission, tenant and role (Tenant and Role are required
      * and must be previously selected from a GUI)
      */
-    @ActiveTenantMandatory
     public String assignPermission() {
         this.tabIndex = 1L;
         try {
@@ -309,7 +307,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
      * and must be previously selected from a GUI)
      * @param userId User identifier
      */
-    @ActiveTenantMandatory
     public String associateUser(Long userId) {
         try {
             if (!tenantRoleRESTServiceAccess.exists(tenant.getId(), role.getId())) {
