@@ -85,7 +85,7 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
      */
     @Override
     public Page<? extends SystemTenantRoleUser> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
-        Page<? extends SystemTenantRoleUser> page = new Page<SystemTenantRoleUser>();
+        Page<? extends SystemTenantRoleUser> page = new Page<>();
         // Just retrieve if we have tenant or role information
         if (tenantId != null || roleId != null) {
             page = service.getUsers(tenantId, roleId,
