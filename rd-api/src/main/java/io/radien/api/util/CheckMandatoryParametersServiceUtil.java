@@ -16,7 +16,7 @@
 package io.radien.api.util;
 
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
 
 import java.io.Serializable;
 import java.util.Collection;

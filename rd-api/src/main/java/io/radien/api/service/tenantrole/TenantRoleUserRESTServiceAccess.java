@@ -45,5 +45,5 @@ public interface TenantRoleUserRESTServiceAccess {
      * @return Boolean indicating if operation was concluded successfully
      * @throws SystemException in case of any error
      */
-    Boolean unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException;
+    Boolean deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException;
 }

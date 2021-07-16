@@ -18,7 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 
 import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -87,8 +87,8 @@ public class TenantRoleUserResourceTest {
      * UnAssignedUserTenantRoles
      */
     @Test
-    public void testUnAssignUserTenantRoles() throws TenantRoleException, TenantRoleUserException {
-        Response response = tenantRoleUserResource.unAssignUserTenantRoles(1L, 1L, new HashSet<>(Arrays.asList(1L, 2L)));
+    public void testUnAssignUserTenantRoles() {
+        Response response = tenantRoleUserResource.deleteUnAssignedUserTenantRoles(1L, 1L, new HashSet<>(Arrays.asList(1L, 2L)));
         assertEquals(200, response.getStatus());
     }
 
@@ -98,14 +98,14 @@ public class TenantRoleUserResourceTest {
      */
     @Test
     public void testUnAssignUserTenantRolesException() throws TenantRoleException, TenantRoleUserException {
-        doThrow(TenantRoleUserException.class).when(tenantRoleUserBusinessService).unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection());
-        Response response = tenantRoleUserResource.unAssignUserTenantRoles(1L,
+        doThrow(TenantRoleUserException.class).when(tenantRoleUserBusinessService).deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anyCollection());
+        Response response = tenantRoleUserResource.deleteUnAssignedUserTenantRoles(1L,
         1L, new HashSet<>( Arrays.asList(1L, 1L)));
-        assertEquals(400, response.getStatus());
+        assertEquals(500, response.getStatus());
 
-        doThrow(TenantRoleException.class).when(tenantRoleUserBusinessService).unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection());
-        Response response1 = tenantRoleUserResource.unAssignUserTenantRoles(1L,
+        doThrow(TenantRoleException.class).when(tenantRoleUserBusinessService).deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anyCollection());
+        Response response1 = tenantRoleUserResource.deleteUnAssignedUserTenantRoles(1L,
                 1L, new HashSet<>( Arrays.asList(1L, 1L)));
-        assertEquals(400, response1.getStatus());
+        assertEquals(500, response1.getStatus());
     }
 }

@@ -21,13 +21,13 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
-import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
 import io.radien.exception.TokenExpiredException;
+
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import javax.ws.rs.ProcessingException;
@@ -173,20 +173,20 @@ public class TenantRoleUserRESTServiceClientTest {
      * @throws SystemException in case of any error
      */
     @Test
-    public void testUnAssignedUserTenantRoles() throws MalformedURLException, SystemException, TenantRoleException, TenantRoleUserException {
+    public void testUnAssignedUserTenantRoles() throws MalformedURLException, SystemException {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
-        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).
+        when(client.deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anyCollection())).
                 thenReturn(Response.ok(Boolean.TRUE).build());
 
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
 
-        Boolean resultTrue = target.unAssignUserTenantRoles(1L, 2L, new HashSet<>( Arrays.asList(1L, 2L)));
+        Boolean resultTrue = target.deleteUnAssignedUserTenantRoles(1L, 2L, new HashSet<>( Arrays.asList(1L, 2L)));
         assertNotNull(resultTrue);
         assertTrue(resultTrue);
 
-        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenReturn(Response.status(303).build());
-        Boolean resultFalse = target.unAssignUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
+        when(client.deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenReturn(Response.status(303).build());
+        Boolean resultFalse = target.deleteUnAssignedUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
         assertFalse(resultFalse);
     }
 
@@ -196,16 +196,16 @@ public class TenantRoleUserRESTServiceClientTest {
      * @throws SystemException in case of any error
      */
     @Test(expected = SystemException.class)
-    public void testUnAssignedUserTenantRolesTokenExpiration() throws MalformedURLException, TenantRoleException, TenantRoleUserException, SystemException {
+    public void testUnAssignedUserTenantRolesTokenExpiration() throws MalformedURLException, SystemException {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenThrow(new TokenExpiredException("test"));
+        when(client.deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenThrow(new TokenExpiredException("test"));
 
-        target.unAssignUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
+        target.deleteUnAssignedUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
     }
 
     /**
@@ -214,18 +214,18 @@ public class TenantRoleUserRESTServiceClientTest {
      * @throws SystemException in case of any error
      */
     @Test(expected = SystemException.class)
-    public void testUnAssignedUserTenantRolesExpiration() throws MalformedURLException, TenantRoleException, TenantRoleUserException, SystemException {
+    public void testUnAssignedUserTenantRolesExpiration() throws MalformedURLException, SystemException {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.unAssignUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenThrow(new ProcessingException("test"));
+        when(client.deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anyCollection())).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
 
-        target.unAssignUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
+        target.deleteUnAssignedUserTenantRoles(1L, 2L, new HashSet<>(Arrays.asList(1L, 2L)));
     }
 
 }

@@ -21,7 +21,8 @@ import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.api.util.CheckMandatoryParametersServiceUtil;
 
 import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -79,7 +80,7 @@ public class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    public void testUnAssignUserTenantRoles() throws TenantRoleException, TenantRoleUserException {
+    public void testUnAssignUserTenantRoles() throws TenantRoleException, TenantRoleUserException, TenantRoleUserNotFoundException {
         doNothing().when(checkMandatoryParametersServiceUtil).checkIfMandatoryParametersTenantRoleUser(anyLong(), anyLong(), anyCollection());
         when(tenantRoleServiceAccess.getTenantRoleIds(anyLong(), anyCollection())).thenReturn(tenantRoleIds);
         when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyList(), anyLong())).thenReturn(tenantRoleUserIds);
@@ -88,7 +89,7 @@ public class TenantRoleUserBusinessServiceTest {
         Assertions.assertEquals(tenantRoleIds, tenantRoleServiceAccess.getTenantRoleIds(tenantId, roleIds));
         Assertions.assertEquals(tenantRoleUserIds, tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, userId));
 
-        tenantRoleUserBusinessService.unAssignUserTenantRoles(userId, tenantId, roleIds);
+        tenantRoleUserBusinessService.deleteUnAssignedUserTenantRoles(userId, tenantId, roleIds);
     }
 
     @Test

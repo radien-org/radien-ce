@@ -20,8 +20,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
 
-import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -102,7 +101,7 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param tenantRoleIds TenantRoleIds
      * @param userId User id
      * @return List of TenantRoleUserIds
-     * @throws TenantRoleException if any exception
+     * @throws TenantRoleUserException if any exception
      */
     Collection<Long> getTenantRoleUserIds(List<Long> tenantRoleIds, Long userId) throws TenantRoleUserException;
 

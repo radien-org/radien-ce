@@ -22,7 +22,9 @@ import io.radien.exception.TenantRoleException;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 
-import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.TenantRoleNotFoundException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
+
 import java.io.Serializable;
 
 import java.util.Collection;
@@ -58,26 +60,26 @@ public class TenantRoleUserBusinessService implements Serializable {
     private List<Long> getTenantRoleIds(Long tenantId, Collection<Long> roleIds) throws TenantRoleException {
         List<Long> tenantRoleIds = tenantRoleServiceAccess.getTenantRoleIds(tenantId, roleIds);
         if(tenantRoleIds.isEmpty()){
-            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLES.toString());
+            throw new TenantRoleNotFoundException(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_EXISTS.toString());
         }
         return tenantRoleIds;
     }
 
     /**
-     * Unassigned UserTenant Role(s)
+     * Delete unassigned UserTenant Role(s)
      * @param userId User id
      * @param tenantId Tenant id
      * @param roleIds Collection of Role ids
      * @throws TenantRoleException if any error
      */
-    public void unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws TenantRoleException, TenantRoleUserException
+    public void deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws TenantRoleException, TenantRoleUserException
     {
         checkMandatoryParametersServiceUtil.checkIfMandatoryParametersTenantRoleUser(userId, tenantId, roleIds);
 
         List<Long> tenantRoleIds = getTenantRoleIds(tenantId, roleIds);
         Collection<Long> tenantRoleUserIds = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, userId);
         if(tenantRoleUserIds.isEmpty()){
-            throw new TenantRoleUserException(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLES.toString());
+            throw new TenantRoleUserException(GenericErrorCodeMessage.TENANT_ROLE_USER_ASSOCIATION_EXISTS.toString());
         }
         this.tenantRoleUserServiceAccess.delete(tenantRoleUserIds);
     }

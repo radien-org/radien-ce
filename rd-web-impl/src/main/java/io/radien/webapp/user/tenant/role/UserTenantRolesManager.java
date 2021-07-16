@@ -87,19 +87,12 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     /**
      * This method initializes and constructs
      * the User Tenant(s) and SystemRoles
+     * Retrieves list of Tenants associated with the User
      * @throws SystemException if error occurs
      * while retrieving User Tenant(s)
      */
     @PostConstruct
     public void init() throws SystemException {
-        loadUserTenants();
-    }
-
-    /**
-     * Retrieves list of Tenants associated with the User
-     * @throws SystemException if any error
-     */
-    public void loadUserTenants() throws SystemException {
         try{
             userTenants = Collections.unmodifiableList(tenantRoleRESTServiceAccess.getTenants(userDataModel.getSelectedUser().getId(),null));
         } catch(Exception e) {
@@ -180,8 +173,6 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      * This Method gathers unique set of assignable/unassailable roles
      * for an User of Tenant. Validates & creates Tenant Role association
      * and performs assignable/unassailable association among User Tenant Role(s)
-     * @return the Users list HTML page if any error, refreshes and stays
-     * working HTML page of userRoles
      */
     public void assignOrUnassignedRolesToUserTenant() {
         if(assignableUserTenantRoles != null && !assignableUserTenantRoles.isEmpty()) {
@@ -234,7 +225,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     private void doUnassignedRolesForUserTenant() {
         try {
             boolean isUnassignedRolesForUserTenant = tenantRoleUserRESTServiceAccess
-                    .unAssignUserTenantRoles(userDataModel.getSelectedUser().getId(), tenant.getId(), unassignedUserTenantRoles);
+                    .deleteUnAssignedUserTenantRoles(userDataModel.getSelectedUser().getId(), tenant.getId(), unassignedUserTenantRoles);
 
             if(isUnassignedRolesForUserTenant){
                 handleMessage(FacesMessage.SEVERITY_INFO,
@@ -401,7 +392,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      * Redirects user to the home page
      * @return a new HTML page
      */
-    public String returnHome() {
+    public String returnBackToUsersTable() {
         try {
             tenant = null;
             userDataModel.setSelectedUser(null);

@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.exception;
+package io.radien.exception.tenantroleuser;
 
 /**
- * Exception to express inconsistencies regarding TenantRoleUser domain object
+ * Exception to express if not found TenantRoleUser domain object
  *
  * @author Rajesh Gavvala
  */
-public class TenantRoleUserException extends Exception {
+public class TenantRoleUserNotFoundException extends TenantRoleUserException {
 
     /**
      * TenantRoleUser exception constructor by a given message
      * @param message to create the TenantRoleUser exception with
      */
-    public TenantRoleUserException(String message) {
+    public TenantRoleUserNotFoundException(String message) {
         super(message);
     }
 }
+

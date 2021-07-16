@@ -22,8 +22,6 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
-import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
@@ -115,7 +113,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
     }
 
     /**
-     * Unassigned User Tenant Role(s)
+     * Delete unassigned User Tenant Role(s)
      * @param userId User identifier
      * @param tenantId Tenant identifier
      * @param roleIds Collection of Role ids
@@ -123,13 +121,13 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      * @throws SystemException in case of any error
      */
     @Override
-    public Boolean unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException{
+    public Boolean deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException{
         try {
-            return unAssignUserTenantRolesCore(userId, tenantId, roleIds);
+            return deleteUnAssignedUserTenantRolesCore(userId, tenantId, roleIds);
         } catch (TokenExpiredException tokenExpiredException) {
             refreshToken();
             try{
-                return unAssignUserTenantRolesCore(userId, tenantId, roleIds);
+                return deleteUnAssignedUserTenantRolesCore(userId, tenantId, roleIds);
             } catch (TokenExpiredException tokenExpiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -145,11 +143,11 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      * @throws TokenExpiredException if case of JWT expiration
      * @throws SystemException in case of any error
      */
-    private Boolean unAssignUserTenantRolesCore(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException {
+    private Boolean deleteUnAssignedUserTenantRolesCore(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException {
         try {
             TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.unAssignUserTenantRoles(userId, tenantId, roleIds);
+            Response response = client.deleteUnAssignedUserTenantRoles(userId, tenantId, roleIds);
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
         } catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);

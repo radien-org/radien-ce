@@ -275,7 +275,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
 
         doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
         doReturn(true).when(tenantRoleRESTServiceAccess).assignUser(anyLong(), anyLong(), anyLong());
-        doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).unAssignUserTenantRoles(anyLong(), anyLong(), anySet());
+        doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anySet());
 
         userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
     }
@@ -299,7 +299,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
 
         doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
         doThrow(RuntimeException.class).when(tenantRoleRESTServiceAccess).assignUser(anyLong(), anyLong(), anyLong());
-        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).unAssignUserTenantRoles(anyLong(), anyLong(), anySet());
+        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anySet());
 
         userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
     }
@@ -330,24 +330,24 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
     }
 
     /**
-     * Test case for the method returnHome()
+     * Test case for the method returnBackToUsersTable()
      *  asserts user url page
      */
     @Test
     public void testReturnHome(){
         SystemUser systemUser = new User();
         doNothing().when(userDataModel).setSelectedUser(systemUser);
-        assertEquals(DataModelEnum.USER_MAIN_PAGE.getValue(),userTenantRolesManager.returnHome());
+        assertEquals(DataModelEnum.USER_MAIN_PAGE.getValue(),userTenantRolesManager.returnBackToUsersTable());
     }
 
     /**
-     * Test case for the method returnHome()
+     * Test case for the method returnBackToUsersTable()
      * failure scenario throws exception
      */
     @Test
     public void testReturnHomeThrowsException(){
         doThrow(new RuntimeException()).when(userDataModel).setSelectedUser(null);
-        assertNotNull(userTenantRolesManager.returnHome());
+        assertNotNull(userTenantRolesManager.returnBackToUsersTable());
     }
 
     /**

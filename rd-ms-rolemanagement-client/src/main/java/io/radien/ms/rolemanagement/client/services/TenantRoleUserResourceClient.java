@@ -15,17 +15,16 @@
  */
 package io.radien.ms.rolemanagement.client.services;
 
-import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import java.util.Collection;
-import javax.ws.rs.DELETE;
+
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -59,8 +58,7 @@ public interface TenantRoleUserResourceClient {
 
 
     @DELETE
-    @Path("/deletes/userTenantRoles")
-    Response unAssignUserTenantRoles(@QueryParam("userId") Long userId,
+    Response deleteUnAssignedUserTenantRoles(@QueryParam("userId") Long userId,
                                        @QueryParam("tenantId") Long tenantId,
                                        @QueryParam("roleIds") Collection<Long> roleIds);
 

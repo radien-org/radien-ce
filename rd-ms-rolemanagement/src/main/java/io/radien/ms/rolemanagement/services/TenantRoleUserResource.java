@@ -17,12 +17,8 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
-import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
 
-import io.radien.api.util.CheckMandatoryParametersServiceUtil;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
-
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 
 import java.util.Collection;
@@ -74,7 +70,7 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
     }
 
     /**
-     * Unassigned User Tenant Role(s)
+     * Delete unassigned User Tenant Role(s)
      * @param userId User identifier
      * @param tenantId Tenant identifier
      * @param roleIds Collection Role ids
@@ -83,16 +79,14 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
      * Response 500 in case of any other error
      */
     @Override
-    public Response unAssignUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) {
+    public Response deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) {
         if(log.isInfoEnabled()){
             log.info(GenericErrorCodeMessage.INFO_TENANT_USER_ROLES.toString(String.valueOf(userId),
                     String.valueOf(tenantId), String.valueOf(roleIds.size())));
         }
         try {
-            tenantRoleUserBusinessService.unAssignUserTenantRoles(userId ,tenantId, roleIds);
+            tenantRoleUserBusinessService.deleteUnAssignedUserTenantRoles(userId ,tenantId, roleIds);
             return Response.ok().build();
-        } catch (TenantRoleException | TenantRoleUserException e) {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
