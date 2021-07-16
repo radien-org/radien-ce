@@ -31,8 +31,13 @@ public enum DataModelEnum {
     SAVE_ERROR_MESSAGE("rd_save_error"),
     EDIT_ERROR_MESSAGE("rd_edit_error"),
     SAVE_SUCCESS_MESSAGE("rd_save_success"),
+    EDIT_SUCCESS_MESSAGE("rd_edit_success"),
     RETRIEVE_ERROR_MESSAGE("rd_retrieve_error"),
     ROW_SELECTED("rowSelected"),
+    DELETE_SUCCESS_MESSAGE("rd_delete_success"),
+    DELETE_ERROR_MESSAGE("rd_delete_error"),
+    UPDATE_SUCCESS_MESSAGE("rd_update_success"),
+    UPDATE_ERROR_MESSAGE("rd_update_error"),
 
     /**
      * Active Tenant Messages and redirects
@@ -59,7 +64,11 @@ public enum DataModelEnum {
      * User Messages and redirects
      */
     USER_MESSAGE("rd_user"),
+    USERS_MESSAGE("rd_users"),
+    USERS_SELECTED_MESSAGE("rd_user_selected"),
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
+    USER_SEND_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
+    USER_SEND_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
 
     /**
      * Linked Authorization Messages and redirects
@@ -96,7 +105,9 @@ public enum DataModelEnum {
     /**
      * User messages and redirects
      */
+    USER_PATH("pretty:user"),
     USERS_PATH("pretty:users"),
+    USERS_PROFILE_PATH("pretty:userProfile"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
     USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),

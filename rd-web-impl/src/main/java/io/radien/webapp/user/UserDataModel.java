@@ -15,15 +15,21 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import io.radien.webapp.tenantrole.LazyTenantRoleUserDataModel;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
@@ -57,10 +63,17 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @Inject
     private WebAuthorizationChecker webAuthorizationChecker;
 
-    private LazyDataModel<? extends SystemUser> lazyUserDataModel;
+    @Inject
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
+
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
+    private LazyDataModel<? extends SystemTenantRoleUser> lazyUserDataModel;
     private SystemUser selectedUser;
     private SystemUser userForTenantAssociation;
     private SystemUser user = new User();
+    private SystemTenantRoleUser selectedTenantRoleUser = new TenantRoleUser();
 
     private boolean hasUserAdministratorRoleAccess = false;
     private boolean hasTenantAdministratorRoleAccess = false;
@@ -71,7 +84,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * that are nonfatal and recoverable by user programs.
      */
     @PostConstruct
-    public void init() throws SystemException {
+    public void init() {
         try {
             if (!hasUserAdministratorRoleAccess) {
                 hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
@@ -81,10 +94,16 @@ public class UserDataModel extends AbstractManager implements Serializable {
             }
 
             if (hasUserAdministratorRoleAccess) {
-                lazyUserDataModel = new LazyUserDataModel(service);
+                // Must retrieve user compatible with the Active Tenant
+                Long tenantId = activeTenantDataModelManager.getActiveTenant() != null ?
+                        activeTenantDataModelManager.getActiveTenant().getTenantId() : null;
+                lazyUserDataModel = new LazyTenantRoleUserDataModel(tenantRoleUserRESTServiceAccess,
+                        service);
+                ((LazyTenantRoleUserDataModel) lazyUserDataModel).setTenantId(tenantId);
             }
         } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
         }
     }
 
@@ -105,7 +124,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Loads in a lazy loading system all the records for the user management
      * @return a lazy loading list of system users
      */
-    public LazyDataModel<? extends SystemUser> getLazyUserDataModel() {
+    public LazyDataModel<? extends SystemTenantRoleUser> getLazyUserDataModel() {
         return lazyUserDataModel;
     }
 
@@ -113,7 +132,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Sets a Lazy Loading list with a given object
      * @param lazyUserDataModel to be set
      */
-    public void setLazyUserDataModel(LazyDataModel<? extends SystemUser> lazyUserDataModel) {
+    public void setLazyUserDataModel(LazyDataModel<? extends SystemTenantRoleUser> lazyUserDataModel) {
         this.lazyUserDataModel = lazyUserDataModel;
     }
 
@@ -218,14 +237,10 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String editRecord() {
-        try {
-            if (selectedUser != null) {
-                return "pretty:user";
-            }
-        } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+        if (selectedUser != null) {
+            return DataModelEnum.USER_PATH.getValue();
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
@@ -233,13 +248,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String createRecord() {
-        try {
-            user = new User();
-            user.setEnabled(true);
-        } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
-        }
-        return "pretty:user";
+        user = new User();
+        user.setEnabled(true);
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
@@ -247,14 +258,10 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String userProfile() {
-        try {
-            if(selectedUser != null) {
-                return "pretty:userProfile";
-            }
-        } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+        if(selectedUser != null) {
+            return DataModelEnum.USERS_PROFILE_PATH.getValue();
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
@@ -262,22 +269,19 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return a new HTML page
      */
     public String returnHome() {
-        try {
-            user = new User();
-            selectedUser=null;
-        } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
-        }
-        return "pretty:users";
+        user = new User();
+        selectedUser=null;
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
      * Stores the information selected by the current user to be used for later
      * @param event that will contain which user has been selected
      */
-    public void onRowSelect(SelectEvent<SystemUser> event) {
-        this.selectedUser=event.getObject();
-        FacesMessage msg = new FacesMessage("User Selected", String.valueOf(event.getObject().getLogon()));
+    public void onRowSelect(SelectEvent<SystemTenantRoleUser> event) {
+        this.selectedTenantRoleUser=event.getObject();
+        this.selectedUser=((LazyTenantRoleUserDataModel) lazyUserDataModel).getUser(selectedTenantRoleUser.getUserId());
+        FacesMessage msg = new FacesMessage(DataModelEnum.USERS_SELECTED_MESSAGE.getValue(), String.valueOf(selectedUser.getLogon()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
@@ -330,7 +334,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return url mapping that refers Tenant association screen
      */
     public String prepareTenantAssociation() {
-        return "pretty:userTenantAssociation";
+        return DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
     }
 
     /**
@@ -379,5 +383,13 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     public void setUserForTenantAssociation(SystemUser userForTenantAssociation) {
         this.userForTenantAssociation = userForTenantAssociation;
+    }
+
+    public SystemTenantRoleUser getSelectedTenantRoleUser() {
+        return selectedTenantRoleUser;
+    }
+
+    public void setSelectedTenantRoleUser(SystemTenantRoleUser selectedTenantRoleUser) {
+        this.selectedTenantRoleUser = selectedTenantRoleUser;
     }
 }
