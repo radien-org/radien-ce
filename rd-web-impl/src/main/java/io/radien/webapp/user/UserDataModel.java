@@ -281,7 +281,8 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public void onRowSelect(SelectEvent<SystemTenantRoleUser> event) {
         this.selectedTenantRoleUser=event.getObject();
         this.selectedUser=((LazyTenantRoleUserDataModel) lazyUserDataModel).getUser(selectedTenantRoleUser.getUserId());
-        FacesMessage msg = new FacesMessage(DataModelEnum.USERS_SELECTED_MESSAGE.getValue(), String.valueOf(selectedUser.getLogon()));
+        FacesMessage msg = new FacesMessage(JSFUtil.getMessage(DataModelEnum.USERS_SELECTED_MESSAGE.getValue()),
+                String.valueOf(selectedUser.getLogon()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
