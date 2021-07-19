@@ -31,7 +31,9 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
+import io.radien.exception.TenantRoleUserDuplicationException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
@@ -277,7 +279,7 @@ public class TenantRoleBusinessService implements Serializable {
         checkIfMandatoryParametersWereInformed(tenant, role, user);
         Long tenantRoleId = getTenantRoleId(tenant, role);
         if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user, tenantRoleId)) {
-            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
+            throw new TenantRoleUserDuplicationException(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
                     toString(tenant.toString(), role.toString()));
         }
         TenantRoleUser tru = new TenantRoleUser();
@@ -298,11 +300,11 @@ public class TenantRoleBusinessService implements Serializable {
      * @param tenant tenant identifier (id)
      * @param role role identifier (id)
      * @return the association id (if exists), otherwise throws a exception
-     * @throws TenantRoleException thrown if association does not exists
+     * @throws TenantRoleNotFoundException thrown if association does not exists
      */
-    private Long getTenantRoleId(Long tenant, Long role) throws TenantRoleException{
+    private Long getTenantRoleId(Long tenant, Long role) throws TenantRoleNotFoundException{
         return this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
-                orElseThrow(() -> new TenantRoleException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
+                orElseThrow(() -> new TenantRoleNotFoundException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
                         tenant.toString(), role.toString())));
     }
 
@@ -315,16 +317,16 @@ public class TenantRoleBusinessService implements Serializable {
      */
     public void unassignUser(Long tenant, Long role, Long user) throws TenantRoleException, SystemException {
         if (tenant == null) {
-            throw new TenantRoleException(GenericErrorCodeMessage.
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
         }
         if (user == null) {
-            throw new TenantRoleException(GenericErrorCodeMessage.
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
         }
         Collection<Long> ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant, role, user);
         if (ids.isEmpty()) {
-            throw new TenantRoleException (TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR.
+            throw new TenantRoleNotFoundException (TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR.
                     toString(String.valueOf(tenant), String.valueOf(role), String.valueOf(user)));
         }
         tenantRoleUserServiceAccess.delete(ids);
@@ -383,24 +385,24 @@ public class TenantRoleBusinessService implements Serializable {
      * @param roleId Role identifier
      * @param permissionId Permission identifier
      * @throws SystemException in case of error during communication process using REST Clients
-     * @throws TenantRoleException in case of inconsistency found
+     * @throws TenantRoleIllegalArgumentException in case of any inconsistency (ex: tenant not found for the informed id)
      */
     protected void checkIfParamsExists(Long tenantId, Long roleId, Long permissionId)
             throws SystemException, TenantRoleException {
         if (tenantId != null && !tenantRESTServiceAccess.isTenantExistent(tenantId)) {
-            throw new TenantRoleException(GenericErrorCodeMessage.
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_NO_TENANT_FOUND.toString(String.valueOf(tenantId)));
         }
         if (permissionId != null) {
             try {
                 permissionRESTServiceAccess.isPermissionExistent(permissionId, null);
             } catch (NotFoundException nfe) {
-                throw new TenantRoleException(GenericErrorCodeMessage.
+                throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                         TENANT_ROLE_NO_PERMISSION_FOUND.toString(String.valueOf(permissionId)));
             }
         }
         if (roleId != null && !this.roleServiceAccess.checkIfRolesExist(roleId, null) ) {
-            throw new TenantRoleException(GenericErrorCodeMessage.
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_NO_ROLE_FOUND.toString(String.valueOf(roleId)));
         }
     }

@@ -213,10 +213,10 @@ public interface TenantRoleResourceClient {
      * Response 500 in case of any other error (i.e communication issue with REST client services)
      */
     @DELETE
-    @Path("/unassign/user/{userId}/tenant/{tenantId}")
-    Response unassignUser(@PathParam("tenantId") Long tenantId,
+    @Path("/unassign/user")
+    Response unassignUser(@QueryParam("tenantId") Long tenantId,
                           @QueryParam("roleId") Long roleId,
-                          @PathParam("userId") Long userId);
+                          @QueryParam("userId") Long userId);
 
     /**
      * Assign/associate/add permission to a Tenant (TenantRole domain)

@@ -20,6 +20,7 @@ import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
+import javax.ejb.EJBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,7 +300,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             log("Dissociating/removing user %d from tenant %d role %d", userId, tenantId, roleId);
             tenantRoleBusinessService.unassignUser(tenantId, roleId, userId);
             return Response.ok().build();
-        } catch (TenantRoleException e) {
+        } catch (TenantRoleException | EJBException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
