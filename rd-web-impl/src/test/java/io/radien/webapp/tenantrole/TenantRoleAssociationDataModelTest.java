@@ -20,6 +20,7 @@ import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,9 @@ public class TenantRoleAssociationDataModelTest {
     private RoleRESTServiceAccess roleRESTServiceAccess;
 
     @Mock
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
+    @Mock
     private TenantRESTServiceAccess tenantRESTServiceAccess;
 
     private FacesContext facesContext;
@@ -89,6 +93,7 @@ public class TenantRoleAssociationDataModelTest {
      */
     @Test
     public void testInit() {
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(true);
         tenantRoleAssociationDataModel.init();
         assertNotNull(tenantRoleAssociationDataModel.getLazyModel());
     }
@@ -98,6 +103,7 @@ public class TenantRoleAssociationDataModelTest {
      */
     @Test
     public void testOnLoad() {
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(true);
         tenantRoleAssociationDataModel.onload();
         assertNotNull(tenantRoleAssociationDataModel.getLazyModel());
     }

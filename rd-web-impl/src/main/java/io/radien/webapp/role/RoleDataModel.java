@@ -21,7 +21,9 @@ import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
+import io.radien.webapp.resource.LazyResourcesDataModel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -46,6 +48,9 @@ public class RoleDataModel extends AbstractManager implements Serializable {
     @Inject
     private RoleRESTServiceAccess service;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     private LazyDataModel<? extends SystemRole> lazyModel;
 
     private SystemRole selectedRole;
@@ -56,10 +61,13 @@ public class RoleDataModel extends AbstractManager implements Serializable {
      * Initialization of the tenant data tables and models
      */
     @PostConstruct
-    @ActiveTenantMandatory
     public void init() {
         try {
-            lazyModel = new LazyRoleDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                lazyModel = new LazyRoleDataModel(service);
+            } else {
+                redirectToHomePage();
+            }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.ROLE_MESSAGE.getValue()));
         }
@@ -68,6 +76,7 @@ public class RoleDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }

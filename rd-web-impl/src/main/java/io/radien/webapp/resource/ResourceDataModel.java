@@ -21,7 +21,9 @@ import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
+import io.radien.webapp.permission.LazyPermissionDataModel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -46,6 +48,9 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
     @Inject
     private ResourceRESTServiceAccess service;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     private LazyDataModel<? extends SystemResource> lazyModel;
 
     private SystemResource selectedResource;
@@ -56,10 +61,13 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
      * Initialization of the resource data tables and models
      */
     @PostConstruct
-    @ActiveTenantMandatory
     public void init() {
         try {
-            lazyModel = new LazyResourcesDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                lazyModel = new LazyResourcesDataModel(service);
+            } else {
+                redirectToHomePage();
+            }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.RESOURCE_RD_TENANT.getValue()));
         }
@@ -68,6 +76,7 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }

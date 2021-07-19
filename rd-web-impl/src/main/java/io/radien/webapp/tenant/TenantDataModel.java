@@ -27,7 +27,9 @@ import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
+import io.radien.webapp.role.LazyRoleDataModel;
 import io.radien.webapp.security.UserSession;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
@@ -65,6 +67,9 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     @Inject
     private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     private LazyDataModel<? extends SystemTenant> lazyModel;
 
     private SystemTenant selectedTenant;
@@ -78,10 +83,13 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Initialization of the tenant data tables and models
      */
     @PostConstruct
-    @ActiveTenantMandatory
     public void init() {
         try {
-            lazyModel = new LazyTenantDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                lazyModel = new LazyTenantDataModel(service);
+            } else {
+                redirectToHomePage();
+            }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
@@ -91,6 +99,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }

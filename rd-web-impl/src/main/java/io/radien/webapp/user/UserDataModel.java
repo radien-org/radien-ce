@@ -24,6 +24,7 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +60,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @Inject
     private WebAuthorizationChecker webAuthorizationChecker;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
     private SystemUser selectedUser;
     private SystemUser userForTenantAssociation;
@@ -73,17 +77,20 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * that are nonfatal and recoverable by user programs.
      */
     @PostConstruct
-    @ActiveTenantMandatory
     public void init() throws SystemException {
         try {
-            if (!hasUserAdministratorRoleAccess) {
-                hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
-            }
-            if (!hasTenantAdministratorRoleAccess) {
-                hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
-            }
-            if (hasUserAdministratorRoleAccess) {
-                lazyUserDataModel = new LazyUserDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                if (!hasUserAdministratorRoleAccess) {
+                    hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
+                }
+                if (!hasTenantAdministratorRoleAccess) {
+                    hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
+                }
+                if (hasUserAdministratorRoleAccess) {
+                    lazyUserDataModel = new LazyUserDataModel(service);
+                }
+            } else {
+                redirectToHomePage();
             }
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
@@ -95,6 +102,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @throws SystemException SystemException is thrown by the common language runtime when errors occur
      * that are nonfatal and recoverable by user programs.
      */
+    @ActiveTenantMandatory
     public void onload() throws SystemException {
         init();
     }

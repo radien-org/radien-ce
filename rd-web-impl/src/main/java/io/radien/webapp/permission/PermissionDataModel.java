@@ -20,7 +20,9 @@ import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
+import io.radien.webapp.linkedAuthorization.LazyLinkedAuthorizationDataModel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -49,14 +51,20 @@ public class PermissionDataModel extends AbstractManager implements Serializable
     @Inject
     private PermissionRESTServiceAccess service;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     /**
      * Initialization of the permission data tables and models
      */
     @PostConstruct
-    @ActiveTenantMandatory
     public void init() {
         try {
-            lazyModel = new LazyPermissionDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                lazyModel = new LazyPermissionDataModel(service);
+            } else {
+                redirectToHomePage();
+            }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.PERMISSIONS_MESSAGE.getValue()));
         }
@@ -65,6 +73,7 @@ public class PermissionDataModel extends AbstractManager implements Serializable
     /**
      * Data reload method
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }

@@ -22,6 +22,8 @@ import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTService
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.action.LazyActionsDataModel;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
@@ -52,14 +54,20 @@ public class LinkedAuthorizationDataModel extends AbstractManager implements Ser
     @Inject
     private LinkedAuthorizationRESTServiceAccess service;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     /**
      * Initialization of the linked authorization data tables and models
      */
     @PostConstruct
-    @ActiveTenantMandatory
     public void init() {
         try {
-            lazyModel = new LazyLinkedAuthorizationDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                lazyModel = new LazyLinkedAuthorizationDataModel(service);
+            } else {
+                redirectToHomePage();
+            }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.LINKED_AUTHORIZATION_MESSAGE.getValue()));
         }
@@ -68,6 +76,7 @@ public class LinkedAuthorizationDataModel extends AbstractManager implements Ser
     /**
      * Data reload/refresh method
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }
