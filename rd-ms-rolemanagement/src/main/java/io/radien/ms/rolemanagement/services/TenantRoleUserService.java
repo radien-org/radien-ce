@@ -70,9 +70,6 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * @return a list containing ids
      */
     protected List<Long> getTenantRoleIds(EntityManager em, Long tenant, Long role) {
-        if (tenant == null && role == null) {
-            return new ArrayList<>();
-        }
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<TenantRole> root = criteriaQuery.from(TenantRole.class);

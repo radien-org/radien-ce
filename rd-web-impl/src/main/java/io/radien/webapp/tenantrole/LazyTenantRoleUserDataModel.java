@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * LazyDataModel implemented specifically to attend the exhibition of TenantRoleUser
@@ -51,6 +53,8 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
 
     private Long tenantId = null;
     private Long roleId = null;
+
+    private static Logger log = LoggerFactory.getLogger(LazyTenantRoleUserDataModel.class);
 
     private static final SystemUser DEFAULT_USER = new User();
 
@@ -127,7 +131,11 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
      * @return the user (if it exists), otherwise returns an empty pojo
      */
     public SystemUser getUser(Long userId) {
-        return userMapRef.getOrDefault(userId, DEFAULT_USER);
+        if (!userMapRef.containsKey(userId)) {
+            log.warn("User not found for id {}", userId);
+            return DEFAULT_USER;
+        }
+        return userMapRef.get(userId);
     }
 
     /**
