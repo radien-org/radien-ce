@@ -37,7 +37,9 @@ import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import java.text.MessageFormat;
@@ -107,6 +109,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
     private UserRESTServiceAccess userRESTServiceAccess;
+
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
 
     private SystemTenant tenant = new Tenant();
     private SystemRole role = new Role();
@@ -372,6 +377,10 @@ public class TenantRoleAssociationManager extends AbstractManager {
                 throw new IllegalArgumentException(JSFUtil.
                         getMessage(TRU_DISSOCIATION_NO_USER_SELECT_MESSAGE.getValue()));
             }
+
+            boolean isSameUser = selectedUserToUnAssign.getUserId().equals(webAuthorizationChecker.getCurrentUserId());
+            boolean isSameTenant = tenant.getId().equals(activeTenantDataModelManager.getActiveTenant().getTenantId());
+
             this.tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(),
                     selectedUserToUnAssign.getUserId());
             this.prepareUserDataTable();
@@ -379,6 +388,11 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleMessage(FacesMessage.SEVERITY_INFO,
                     JSFUtil.getMessage(TRU_DISSOCIATION_SUCCESS_MESSAGE.getValue()));
             this.selectedPermissionToUnAssign = new Permission();
+
+            if(isSameUser && isSameTenant) {
+                redirectToHomePage();
+                return DataModelEnum.PUBLIC_INDEX_PATH.getValue();
+            }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(TRU_DISSOCIATION_ERROR_MESSAGE.getValue()));
         }

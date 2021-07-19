@@ -19,6 +19,7 @@ package io.radien.webapp.activeTenant;
 
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
@@ -43,7 +44,13 @@ public class ActiveTenantInterceptor extends AbstractManager implements Serializ
     public Object manage(InvocationContext ctx) throws Exception {
         try {
             if (!activeTenantDataModelManager.isTenantActive()) {
-                redirectToHomePage();
+                if (ctx.getMethod().getReturnType().equals(void.class)) {
+                    redirectToHomePage();
+                    return null;
+                }
+                else {
+                    return DataModelEnum.PUBLIC_INDEX_PATH.getValue();
+                }
             }
             return ctx.proceed();
         }
