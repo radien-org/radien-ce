@@ -81,7 +81,7 @@ public enum GenericErrorCodeMessage {
     TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE("TR6", "error.permission.already.associated", "Permission is already associated with tenant %s and role %s."),
     TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION("TR7", "error.no.permission.found", "No association found for permission %s."),
     TENANT_ROLE_ASSOCIATION_EXISTS("TR8", "error.no.association.tenant.roles", "There is no association between tenant %s and roles %s."),
-    TENANT_ROLE_USER_ASSOCIATION_EXISTS("TR8", "error.no.association.tenant.roles", "There is no association between tenant %s , user % and roles %s."),
+    TENANT_ROLE_USER_ASSOCIATION_EXISTS("TR9", "error.no.association.tenant.roles", "There is no association between tenant %s , user % and roles %s."),
 
     /**
      * Tenant User Role Error Code Messages
@@ -93,7 +93,7 @@ public enum GenericErrorCodeMessage {
      * Tenant User Error Code Messages
      */
     INFO_TENANT_AND_USER_ID("TU1", "info.tenant.user", "User and Tenant id's are mandatory"),
-    INFO_TENANT_USER("TU1","info.tenant.user.roles","Retrieving Roles for user %s and tenant %s"),
+    INFO_TENANT_USER("TU2","info.tenant.user.roles","Retrieving Roles for user %s and tenant %s"),
 
     /**
      * Active Tenant Error Code messages

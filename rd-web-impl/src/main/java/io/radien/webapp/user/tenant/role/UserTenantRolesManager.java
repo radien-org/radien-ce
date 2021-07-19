@@ -115,9 +115,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     /**
      * This method retrieves the assigned Roles for an User
      * that corresponds to the selected Tenant
-     * @return and refresh the current state of HTML page
      * @throws SystemException is thrown when error occurs
-     * and shows corresponding handle message to the respective UI page
      */
     public void loadUserTenantRoles(SystemTenant systemTenant) throws SystemException {
         try{
