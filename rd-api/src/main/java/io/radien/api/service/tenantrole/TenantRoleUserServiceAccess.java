@@ -72,6 +72,14 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      */
     boolean delete(Long tenantRoleUserId);
 
+    /**
+     * Gets Ids (of tenant role user associations) for the given parameters
+     * @param tenant tenant identifier (mandatory)
+     * @param role role identifier
+     * @param user user identifier (mandatory)
+     * @return list containing ids
+     */
+    Collection<Long> getTenantRoleUserIds(Long tenant, Long role, Long user);
 
     /**
      * Delete tenant role user associations for given parameters
@@ -97,6 +105,14 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
     Optional<Long> getTenantRoleUserId(Long tenantRole, Long user);
 
     /**
+     * Check if a user is associated with a tenant
+     * @param userId User identifier
+     * @param tenantId Tenant Identifier
+     * @return true if already exists, otherwise returns false
+     */
+    boolean isAssociatedWithTenant(Long userId, Long tenantId);
+
+    /**
      * Retrieves strictly the TenantRoleUser ids based on tenantRoleIds and user
      * @param tenantRoleIds TenantRoleIds
      * @param userId User id
@@ -104,6 +120,4 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @throws TenantRoleUserException if any exception
      */
     Collection<Long> getTenantRoleUserIds(List<Long> tenantRoleIds, Long userId) throws TenantRoleUserException;
-
-
 }

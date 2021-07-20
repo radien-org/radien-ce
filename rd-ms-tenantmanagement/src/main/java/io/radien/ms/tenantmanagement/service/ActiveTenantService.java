@@ -195,9 +195,10 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      */
     private Predicate getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot, Predicate global) {
         if(value != null) {
-            Predicate subPredicate;
-            subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");
-
+            Predicate subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
+            if (value instanceof String && !filter.isExact()) {
+                subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");
+            }
             if(filter.isLogicConjunction()) {
                 global = criteriaBuilder.and(global, subPredicate);
             } else {

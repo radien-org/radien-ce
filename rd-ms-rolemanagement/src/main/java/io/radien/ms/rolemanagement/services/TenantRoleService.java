@@ -403,6 +403,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
         TypedQuery<Long> query = em.createQuery(cq);
+
         return query.getResultList();
     }
 

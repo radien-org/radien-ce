@@ -22,7 +22,6 @@ import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -306,7 +305,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     /**
      * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
      * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
+     * @param roleId Role identifier
      * @param userId User identifier (Mandatory)
      * @return Response OK if operation concludes with success.
      * Response status 400 in case of association already existing or other consistency issues found.

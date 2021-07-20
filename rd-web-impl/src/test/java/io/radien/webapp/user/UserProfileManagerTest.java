@@ -17,8 +17,8 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
@@ -27,6 +27,7 @@ import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +46,6 @@ import javax.faces.context.Flash;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -53,9 +53,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
-import static io.radien.ms.rolemanagement.client.services.LinkedAuthorizationFactory.create;
 import static io.radien.ms.tenantmanagement.client.services.TenantFactory.create;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
@@ -85,7 +85,7 @@ public class UserProfileManagerTest {
     private TenantRESTServiceAccess tenantRESTServiceAccess;
 
     @Mock
-    private LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     private FacesContext facesContext;
 
@@ -118,17 +118,23 @@ public class UserProfileManagerTest {
     }
 
     /**
-     * Auxiliary method that creates an Optional containing a Tenant
-     * @param tenantId tenant identifier that will be used to created a dummy tenant (for test purposes)
-     * @return Optional containing a tenant
+     * Auxiliary method that creates an list containing Tenants
+     * @param tenantIds tenant identifiers that will be used to created a dummy tenant list(for test purposes)
+     * @return list containing tenants
      */
-    protected Optional<Tenant> getTenantOptional(Long tenantId) {
-        String description = "tenant-" + tenantId;
-        Tenant tenant = create(description, description, TenantType.SUB_TENANT, null,
-                null, null,null, null, null,
-                null, null, null, null, null);
-        return Optional.of(tenant);
+    protected List<? extends SystemTenant> getMockedTenants(List<Long> tenantIds) {
+        List<SystemTenant> tenants = new ArrayList<>();
+        String description = null;
+        for (Long tenantId:tenantIds) {
+            description = "tenant-" + tenantId;
+            Tenant tenant = create(description, description, TenantType.SUB_TENANT, null,
+                    null, null,null, null, null,
+                    null, null, null, null, null);
+            tenants.add(tenant);
+        }
+        return tenants;
     }
+
 
     /**
      * Test for method retrieveAssignedTenants
@@ -140,22 +146,8 @@ public class UserProfileManagerTest {
         Long userId = 111L;
         when(userSession.getUserId()).then(i -> userId);
 
-        List<LinkedAuthorization> linkedAuthorizations = new ArrayList<>();
-
-        // Expected LinkedAuthorization beans
-        linkedAuthorizations.add(create(1L, 1L, 1L, userId, null));
-        linkedAuthorizations.add(create(1L, 1L, 2L, userId, null));
-        linkedAuthorizations.add(create(2L, 1L, 3L, userId, null));
-        linkedAuthorizations.add(create(3L, 1L, 1L, userId, null));
-        linkedAuthorizations.add(create(3L, 1L, 1L, userId, null));
-
-        when(linkedAuthorizationRESTServiceAccess.getSpecificAssociationByUserId(userId)).
-                then(i -> linkedAuthorizations);
-
         // Expected tenants
-        when(tenantRESTServiceAccess.getTenantById(1L)).then(i -> getTenantOptional(1L));
-        when(tenantRESTServiceAccess.getTenantById(2L)).then(i -> getTenantOptional(2L));
-        when(tenantRESTServiceAccess.getTenantById(3L)).then(i -> getTenantOptional(3L));
+        when(tenantRoleRESTServiceAccess.getTenants(userId, null)).then(i -> getMockedTenants(Arrays.asList(1L, 2L, 3L)));
 
         List<? extends SystemTenant> retrieved = this.userProfileManager.retrieveAssignedTenants();
         assertNotNull(retrieved);
@@ -165,17 +157,16 @@ public class UserProfileManagerTest {
     /**
      * Test for method retrieveAssignedTenants
      * Expected (FAIL): Could not retrieve tenants due error with communication with the endpoint
-     * responsible for retrieve linked authorizations
+     * responsible for retrieve tenants (through TenantRole)
      * @throws SystemException states that an issue occurred during the communication with the endpoint
      */
     @Test
     public void testRetrieveAssignedTenantsWhenSystemExceptionOccurs() throws SystemException {
-        String error = "error retrieving linked authorizations";
+        String error = "error retrieving assigned tenants";
         Long userId = 111L;
         when(userSession.getUserId()).then(i -> userId);
 
-        when(linkedAuthorizationRESTServiceAccess.getSpecificAssociationByUserId(userId)).
-                thenThrow(new SystemException(error));
+        when(tenantRoleRESTServiceAccess.getTenants(userId, null)).thenThrow(new SystemException(error));
 
         List<? extends SystemTenant> retrieved = this.userProfileManager.retrieveAssignedTenants();
         assertNotNull(retrieved);
@@ -248,18 +239,10 @@ public class UserProfileManagerTest {
 
         List<LinkedAuthorization> linkedAuthorizations = new ArrayList<>();
 
-        // Expected LinkedAuthorization beans
-        linkedAuthorizations.add(create(1000L, 1L, 1L, userId, null));
-        try {
-            when(linkedAuthorizationRESTServiceAccess.getSpecificAssociationByUserId(userId)).
-                    then(i -> linkedAuthorizations);
-        } catch (SystemException s) {
-            fail("not expected");
-        }
-
         // Expected tenants
         try {
-            when(tenantRESTServiceAccess.getTenantById(1000L)).then(i -> getTenantOptional(1000L));
+            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
+                    then(i -> getMockedTenants(Arrays.asList(3L)));
         } catch (SystemException s) {
             fail("not expected");
         }
@@ -283,7 +266,7 @@ public class UserProfileManagerTest {
         Long userId = 99L;
         when(userSession.getUserId()).then(i -> userId);
         try {
-            when(linkedAuthorizationRESTServiceAccess.getSpecificAssociationByUserId(userId)).
+            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
                     then(i -> new ArrayList<>());
         } catch (SystemException s) {
             fail("not expected");
@@ -304,7 +287,7 @@ public class UserProfileManagerTest {
         String errorMsg = "error retrieving linked authorizations";
         when(userSession.getUserId()).then(i -> userId);
         try {
-            when(linkedAuthorizationRESTServiceAccess.getSpecificAssociationByUserId(userId)).
+            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
                     thenThrow(new SystemException(errorMsg));
         } catch (SystemException s) {
             fail("not expected");
@@ -335,17 +318,8 @@ public class UserProfileManagerTest {
         when(userSession.getUserId()).then(i -> userId);
 
         // Expected LinkedAuthorization beans
-        List<LinkedAuthorization> linkedAuthorizations = new ArrayList<>();
-        linkedAuthorizations.add(create(tenantId, 1L, 1L, userId, null));
         try {
-            when(linkedAuthorizationRESTServiceAccess.getSpecificAssociationByUserId(userId)).
-                    then(i -> linkedAuthorizations);
-        } catch (SystemException s) {
-            fail("unexpected");
-        }
-
-        try {
-            when(tenantRESTServiceAccess.getTenantById(tenantId)).
+            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
                     thenThrow(new SystemException(errorMsg));
         } catch (SystemException s) {
             fail("unexpected");
@@ -440,7 +414,7 @@ public class UserProfileManagerTest {
         String errorMsg = "dissociation fail";
 
         try {
-            when(linkedAuthorizationRESTServiceAccess.deleteAssociations(tenant.getId(), userId)).
+            when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), null, userId)).
                     thenThrow(new SystemException(errorMsg));
         } catch (SystemException s) {
             fail("unexpected");
@@ -471,7 +445,7 @@ public class UserProfileManagerTest {
         Tenant tenant = new Tenant(); tenant.setId(1111L);
         userProfileManager.setSelectedTenantToUnAssign(tenant);
         try {
-            when(linkedAuthorizationRESTServiceAccess.deleteAssociations(tenant.getId(), userId)).
+            when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), null, userId)).
                     thenReturn(Boolean.TRUE);
         } catch (SystemException s) {
             fail("unexpected");

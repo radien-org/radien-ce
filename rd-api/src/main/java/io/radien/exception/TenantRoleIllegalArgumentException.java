@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.permissionmanagement.client.exceptions;
+package io.radien.exception;
 
-import junit.framework.TestCase;
-import org.junit.Test;
+/**
+ * Describes that invalid parameters were applied to perform Tenant Role operation
+ */
+public class TenantRoleIllegalArgumentException extends TenantRoleException{
 
-import io.radien.ms.permissionmanagement.client.exceptions.BadRequestException;
-
-public class BadRequestExceptionTest extends TestCase {
-
-    @Test
-    public void testBadRequestException(){
-        BadRequestException exception = new BadRequestException();
-        assertNotNull(exception);
-        BadRequestException exception2 = new BadRequestException("message");
-        assertEquals("message",exception2.getMessage());
+    /**
+     * Tenant Role exception constructor by a given message
+     *
+     * @param message to create the tenant role exception with
+     */
+    public TenantRoleIllegalArgumentException(String message) {
+        super(message);
     }
-
 }

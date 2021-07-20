@@ -18,9 +18,9 @@ package io.radien.ms.permissionmanagement.client;
 import io.radien.exception.TokenExpiredException;
 import org.junit.Test;
 
-import io.radien.ms.permissionmanagement.client.exceptions.BadRequestException;
-import io.radien.ms.permissionmanagement.client.exceptions.InternalServerErrorException;
-import io.radien.ms.permissionmanagement.client.exceptions.NotFoundException;
+import io.radien.exception.BadRequestException;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;

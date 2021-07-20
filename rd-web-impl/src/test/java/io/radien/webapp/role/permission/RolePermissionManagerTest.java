@@ -15,59 +15,54 @@
  */
 package io.radien.webapp.role.permission;
 
-import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemActiveTenant;
-import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
-
 import io.radien.ms.permissionmanagement.client.entities.Permission;
-import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
-
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
-
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.primefaces.event.ToggleEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Class that aggregates UnitTest cases for RolePermissionManager
  *
@@ -81,7 +76,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     private RolePermissionManager rolePermissionManager;
 
     @Mock
-    private LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
@@ -93,7 +88,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     private SystemActiveTenant systemActiveTenant;
 
     private List<SystemPermission> systemPermissionList;
-    private List<SystemLinkedAuthorization> systemLinkedAuthorizationList;
+    private List<? extends SystemPermission> retrievedSystemPermissionList;
 
     private final Map<Long, Boolean> isPermissionsAssigned = new HashMap<>();
 
@@ -120,8 +115,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
         assignableRolePermissions = systemPermissionList.subList(0,2).stream().map(SystemPermission::getId).collect(Collectors.toSet());
         unassignedRolePermissions = systemPermissionList.subList(2,4).stream().map(SystemPermission::getId).collect(Collectors.toSet());
 
-        systemLinkedAuthorizationList = initLinkedAuthorizationData();
-        rolePermissionManager.setSystemLinkedAuthorizationList(systemLinkedAuthorizationList);
+        retrievedSystemPermissionList = initRetrievedPermissionList();
 
         systemActiveTenant = new ActiveTenant();
         systemActiveTenant.setTenantId(1L);
@@ -138,6 +132,51 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     public void testOnRowExpand() throws SystemException {
         assertNull(toggleEvent.getData());
         rolePermissionManager.onRowExpand(toggleEvent);
+    }
+
+    /**
+     * Test for method {@link RolePermissionManager#loadRolePermissions(SystemRole)}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testOnLoadRolePermissions() throws SystemException {
+        SystemRole systemRole = new Role();
+        systemRole.setId(1L);
+        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+                then(i -> retrievedSystemPermissionList);
+        rolePermissionManager.loadRolePermissions(systemRole);
+        assertNotEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
+    }
+
+    /**
+     * Test for method {@link RolePermissionManager#loadRolePermissions(SystemRole)}
+     * when an exception occurs while trying to retrieve permission via TenantRole API
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testOnLoadRolePermissionsWithException() throws SystemException {
+        SystemRole systemRole = new Role();
+        systemRole.setId(1L);
+        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+                thenThrow(new SystemException("error while retrieving permissions"));
+        rolePermissionManager.loadRolePermissions(systemRole);
+        assertEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
+    }
+
+    /**
+     * Test for method {@link RolePermissionManager#loadRolePermissions(SystemRole)}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testOnLoadRolePermissionsWithNoSelectedActiveTenant() throws SystemException {
+        rolePermissionManager.setSystemActiveTenant(null);
+        when(rolePermissionManager.getSystemActiveTenant()).then(i -> null);
+        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+                then(i -> retrievedSystemPermissionList);
+        SystemRole role = new Role();
+        role.setId(1L);
+        rolePermissionManager.loadRolePermissions(role);
+        assertEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
     }
 
     /**
@@ -159,13 +198,13 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
      */
     @Test
     public void testLoadRolePermissions() throws SystemException {
-        doReturn(systemLinkedAuthorizationList).when(linkedAuthorizationRESTServiceAccess).getLinkedAuthorizationByRoleId(anyLong());
+        doReturn(retrievedSystemPermissionList).when(tenantRoleRESTServiceAccess).
+                getPermissions(anyLong(), anyLong(), anyLong());
 
         rolePermissionManager.setIsPermissionsAssigned(isPermissionsAssigned);
         rolePermissionManager.loadRolePermissions(systemRole);
 
-        assertNotNull(rolePermissionManager.getSystemLinkedAuthorizationList());
-        assertEquals(TOTAL_LINKED_AUTHORIZATION_RESULTS, rolePermissionManager.getIsPermissionsAssigned().size());
+        assertEquals(TOTAL_PERMISSION_RESULTS, rolePermissionManager.getIsPermissionsAssigned().size());
     }
 
     /**
@@ -175,7 +214,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
      */
     @Test(expected = NullPointerException.class)
     public void testLoadRolePermissionsException() throws SystemException {
-        doThrow(SystemException.class).when(linkedAuthorizationRESTServiceAccess).getLinkedAuthorizationByRoleId(anyLong());
+        doThrow(SystemException.class).when(tenantRoleRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
         rolePermissionManager.loadRolePermissions(systemRole);
     }
 
@@ -261,14 +300,66 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
 
         doReturn(systemActiveTenant).when(activeTenantDataModelManager).getActiveTenant();
         assertEquals(systemActiveTenant, rolePermissionManager.getSystemActiveTenant());
-        doReturn(false).when(linkedAuthorizationRESTServiceAccess)
-                .checkIfLinkedAuthorizationExists(anyLong(), anyLong(), anyLong(), anyLong());
-        doReturn(true).when(linkedAuthorizationRESTServiceAccess).create(any());
-        doReturn(true).when(linkedAuthorizationRESTServiceAccess).delete(anyLong());
 
+        doReturn(retrievedSystemPermissionList).when(tenantRoleRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
+        doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(true).when(tenantRoleRESTServiceAccess).unassignPermission(anyLong(), anyLong(), anyLong());
 
         String roles_url = rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant();
         assertEquals(DataModelEnum.ROLE_MAIN_PAGE.getValue(), roles_url);
+    }
+
+    /**
+     * Test method assignOrUnassignedPermissionsToActiveUserTenant(), but without active tenant selected
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testAssignOrUnassignedPermissionsWithNoActiveUserTenant() throws SystemException {
+        rolePermissionManager.setAssignableRolePermissions(assignableRolePermissions);
+        rolePermissionManager.setUnassignedRolePermissions(unassignedRolePermissions);
+        assertEquals(assignableRolePermissions, rolePermissionManager.getAssignableRolePermissions());
+        assertEquals(unassignedRolePermissions, rolePermissionManager.getUnassignedRolePermissions());
+
+        doReturn(null).when(activeTenantDataModelManager).getActiveTenant();
+        rolePermissionManager.setSystemActiveTenant(null);
+
+        String roles_url = rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant();
+        assertEquals(DataModelEnum.ROLE_MAIN_PAGE.getValue(), roles_url);
+
+        assertNotEquals(0, rolePermissionManager.getAssignableRolePermissions().size());
+        assertNotEquals(0, rolePermissionManager.getUnassignedRolePermissions().size());
+    }
+
+
+    /**
+     * Test for method {@link RolePermissionManager#doAssignedPermissionsForRole()}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testDoAssignedPermissionsForRole() throws SystemException {
+        rolePermissionManager.setSystemPermissionsIdsList(retrievedSystemPermissionList.stream().
+                map(SystemPermission::getId).collect(Collectors.toList()));
+        rolePermissionManager.setAssignableRolePermissions(new HashSet<>(Arrays.asList(1L, 10000L, 10001L)));
+        when(tenantRoleRESTServiceAccess.exists(systemActiveTenant.getTenantId(), systemRole.getId())).
+                then(i -> Boolean.FALSE).then(i -> Boolean.TRUE);
+        when(tenantRoleRESTServiceAccess.save(any())).thenReturn(Boolean.TRUE);
+        when(tenantRoleRESTServiceAccess.assignPermission(anyLong(), anyLong(), anyLong())).then(i -> Boolean.TRUE);
+        rolePermissionManager.doAssignedPermissionsForRole();
+        assertEquals(0, rolePermissionManager.getAssignableRolePermissions().size());
+    }
+
+    /**
+     * Test for method {@link RolePermissionManager#doUnassignedPermissionsForRole()}
+     * @throws SystemException in case of any error thrown by TenantRole Rest client
+     */
+    @Test
+    public void testDoUnassignedPermissionsForRole() throws SystemException {
+        rolePermissionManager.setSystemPermissionsIdsList(retrievedSystemPermissionList.stream().
+                map(SystemPermission::getId).collect(Collectors.toList()));
+        rolePermissionManager.setUnassignedRolePermissions(unassignedRolePermissions);
+        when(tenantRoleRESTServiceAccess.unassignPermission(anyLong(), anyLong(), anyLong())).then(i -> Boolean.TRUE);
+        rolePermissionManager.doUnassignedPermissionsForRole();
+        assertEquals(0, rolePermissionManager.getUnassignedRolePermissions().size());
     }
 
     /**
@@ -303,23 +394,21 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     }
 
     /**
-     * This method creates the
-     * list of Linked Authorization for given size
+     * This method creates the list of Permissions for given size.
+     * A collection that represents the list of permissions retrieved via {@link TenantRoleRESTServiceAccess} API
      */
-    private List<SystemLinkedAuthorization> initLinkedAuthorizationData() {
-        systemLinkedAuthorizationList = new ArrayList<>();
-        for (int i = 0; i < RolePermissionManagerTest.TOTAL_LINKED_AUTHORIZATION_RESULTS; i++) {
-            SystemLinkedAuthorization systemLinkedAuthorization = new LinkedAuthorization();
-            systemLinkedAuthorization.setId((long) i);
-            systemLinkedAuthorization.setUserId((long) i);
-            systemLinkedAuthorization.setPermissionId((long) i);
-            systemLinkedAuthorization.setTenantId((long) i);
-            systemLinkedAuthorization.setRoleId((long) i);
-
-            systemLinkedAuthorizationList.add(systemLinkedAuthorization);
-            isPermissionsAssigned.put(systemLinkedAuthorization.getPermissionId(), true);
+    private List<? extends SystemPermission> initRetrievedPermissionList() {
+        List<SystemPermission> list = new ArrayList<>();
+        for (long i = 1; i <= RolePermissionManagerTest.TOTAL_PERMISSION_RESULTS; i++) {
+            SystemPermission systemPermission = new Permission();
+            systemPermission.setId(i);
+            systemPermission.setName(String.valueOf(i));
+            systemPermission.setResourceId(i);
+            systemPermission.setActionId(i);
+            list.add(systemPermission);
+            isPermissionsAssigned.put(systemPermission.getId(), true);
         }
-        return  systemLinkedAuthorizationList;
+        return list;
     }
 
 }

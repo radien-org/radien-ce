@@ -15,17 +15,17 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.ProcessingException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 
@@ -38,7 +38,6 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Class Responsible to update/save logged in user profile
@@ -62,12 +61,9 @@ public class UserProfileManager extends AbstractManager {
     private TenantRESTServiceAccess tenantRESTServiceAccess;
 
     @Inject
-    private LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     private List<SystemTenant> assignedTenants;
-
-    private static final String URL_MAPPING_ID_LOGGED_USER_PROFILE = "pretty:profile";
-    private static final String URL_MAPPING_ID_HOME = "pretty:index";
 
     private SystemTenant selectedTenantToUnAssign;
     private Long tabIndex = 0L;
@@ -136,9 +132,9 @@ public class UserProfileManager extends AbstractManager {
                     JSFUtil.getMessage("rd_user"),
                     updateUserProfile.getLogon());
 
-            return URL_MAPPING_ID_LOGGED_USER_PROFILE;
+            return DataModelEnum.PRETTY_PROFILE.getValue();
         }
-        return URL_MAPPING_ID_HOME;
+        return DataModelEnum.PRETTY_INDEX.getValue();
     }
 
     /**
@@ -164,14 +160,7 @@ public class UserProfileManager extends AbstractManager {
     protected List<SystemTenant> retrieveAssignedTenants() {
         List<SystemTenant> assignedOnes = new ArrayList<>();
         try {
-            // Retrieve tenant ids
-            List<Long> tenantIds = linkedAuthorizationRESTServiceAccess.
-                    getSpecificAssociationByUserId(userSession.getUserId()).
-                    stream().map(SystemLinkedAuthorization::getTenantId).distinct().collect(Collectors.toList());
-            // Retrieve tenant
-            for (Long tId: tenantIds) {
-                tenantRESTServiceAccess.getTenantById(tId).ifPresent(assignedOnes::add);
-            }
+            assignedOnes.addAll(tenantRoleRESTServiceAccess.getTenants(userSession.getUserId(), null));
             this.tabIndex = 1L;
         }
         catch (Exception e) {
@@ -209,8 +198,8 @@ public class UserProfileManager extends AbstractManager {
                 throw new ProcessingException(JSFUtil.getMessage("rd_tenant_not_selected"));
             }
             // Invoking backend method to delete tenant associations (once its approved and merged)
-            linkedAuthorizationRESTServiceAccess.deleteAssociations(
-                    selectedTenantToUnAssign.getId(), userSession.getUserId());
+            tenantRoleRESTServiceAccess.unassignUser(selectedTenantToUnAssign.getId(), null,
+                    userSession.getUserId());
             selectedTenantToUnAssign = null;
             this.assignedTenants = retrieveAssignedTenants();
             setTabIndex(0L);
@@ -220,9 +209,9 @@ public class UserProfileManager extends AbstractManager {
         catch (Exception e) {
             setTabIndex(1L);
             handleError(e, JSFUtil.getMessage("rd_tenant_user_dissociation_error"));
-            return URL_MAPPING_ID_LOGGED_USER_PROFILE;
+            return DataModelEnum.PRETTY_PROFILE.getValue();
         }
-        return URL_MAPPING_ID_HOME;
+        return DataModelEnum.PRETTY_INDEX.getValue();
     }
 
     /**
@@ -264,7 +253,7 @@ public class UserProfileManager extends AbstractManager {
      * @return String value that corresponds to an JSF mapping URL
      */
     public String getLoggerUserGui() {
-        return URL_MAPPING_ID_LOGGED_USER_PROFILE;
+        return DataModelEnum.PRETTY_PROFILE.getValue();
     }
 
     /**
@@ -272,6 +261,6 @@ public class UserProfileManager extends AbstractManager {
      * @return String value that corresponds to an JSF mapping URL
      */
     public String getHomeGui() {
-        return URL_MAPPING_ID_HOME;
+        return DataModelEnum.PRETTY_INDEX.getValue();
     }
 }

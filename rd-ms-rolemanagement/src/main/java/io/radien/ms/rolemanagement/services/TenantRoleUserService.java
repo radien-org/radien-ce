@@ -254,6 +254,36 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
+     * Check if a user is associated with a tenant
+     * @param userId User identifier
+     * @param tenantId Tenant Identifier
+     * @return true if already exists, otherwise returns false
+     */
+    @Override
+    public boolean isAssociatedWithTenant(Long userId, Long tenantId) {
+        if (userId == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+        }
+        if (tenantId == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
+        Root<TenantRole> tenantRoleRoot = sc.from(TenantRole.class);
+
+        sc.select(cb.count(root)).
+                where(
+                        cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),
+                                tenantRoleRoot.get(SystemVariables.ID.getFieldName())),
+                        cb.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenantId)
+                );
+        List<Long> count = entityManager.createQuery(sc).getResultList();
+        return !count.isEmpty() && count.get(0) > 0;
+    }
+
+    /**
      * Check if a user is already assigned/associated with a tenant role
      * @param userId User identifier
      * @param tenantRoleId TenantRole Identifier
@@ -312,16 +342,54 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
+<<<<<<< HEAD
+     * Gets Ids (of tenant role user associations) for the given parameters
+     * @param tenant tenant identifier (mandatory)
+     * @param role role identifier
+     * @param user user identifier (mandatory)
+     * @return list containing ids
+     */
+    public Collection<Long> getTenantRoleUserIds(Long tenant, Long role, Long user) {
+        if (user == null || tenant == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString("user id and tenant id"));
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+
+        cq.select(tenantRoleUserRoot.get(SystemVariables.ID.getFieldName()));
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenant));
+        if (role != null) {
+            predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()), role));
+        }
+        predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ID.getFieldName()),
+                tenantRoleUserRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName())));
+
+        predicates.add(cb.equal(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName()), user));
+
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        TypedQuery<Long> query = entityManager.createQuery(cq);
+        return query.getResultList();
+    }
+
+    /**
+=======
+>>>>>>> main
      * Delete tenant role user associations for given parameters
      * @param ids list containing tenant role user identifiers (mandatory)
      * @return true in case of success, false if no registers could be fetch the informed ids
      */
     public boolean delete(Collection<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage
-                    .TENANT_ROLE_FIELD_MANDATORY.toString("tenant role user ids"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString("tenant role user ids"));
         }
-
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<TenantRoleUser> criteriaDelete = cb.createCriteriaDelete(TenantRoleUser.class);

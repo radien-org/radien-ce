@@ -157,7 +157,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
         try {
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(
                     oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.get(userId, tenantId, tenantName, isTenantActive, false);
+            Response response = client.get(userId, tenantId, tenantName, isTenantActive, true);
             return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){

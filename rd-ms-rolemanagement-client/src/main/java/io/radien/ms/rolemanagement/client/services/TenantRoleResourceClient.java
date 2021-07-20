@@ -217,17 +217,17 @@ public interface TenantRoleResourceClient {
     /**
      * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
      * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
+     * @param roleId Role identifier
      * @param userId User identifier (Mandatory)
      * @return Response OK if operation concludes with success.
      * Response status 400 in case of association already existing or other consistency issues found.
      * Response 500 in case of any other error (i.e communication issue with REST client services)
      */
     @DELETE
-    @Path("/unassign/user/{userId}/tenant/{tenantId}/role/{roleId}")
-    Response unassignUser(@PathParam("tenantId") Long tenantId,
-                          @PathParam("roleId") Long roleId,
-                          @PathParam("userId") Long userId);
+    @Path("/unassign/user")
+    Response unassignUser(@QueryParam("tenantId") Long tenantId,
+                          @QueryParam("roleId") Long roleId,
+                          @QueryParam("userId") Long userId);
 
     /**
      * Assign/associate/add permission to a Tenant (TenantRole domain)

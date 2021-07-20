@@ -15,39 +15,29 @@
  */
 package io.radien.webapp.role.permission;
 
-import io.radien.exception.SystemException;
-
-import io.radien.api.model.tenant.SystemActiveTenant;
-import io.radien.api.model.linked.authorization.SystemLinkedAuthorization;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
-
-import io.radien.api.service.linked.authorization.LinkedAuthorizationRESTServiceAccess;
-
-import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
-
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
-
 import java.io.Serializable;
-
-import java.util.stream.Collectors;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
-
 import org.primefaces.event.ToggleEvent;
 /**
  * JSF Manager bean that constructs an association of assignable/unassigned
@@ -64,12 +54,12 @@ public class RolePermissionManager extends AbstractManager implements Serializab
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
     @Inject
-    private LinkedAuthorizationRESTServiceAccess linkedAuthorizationRESTServiceAccess;
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     private SystemRole systemRole;
     private SystemActiveTenant systemActiveTenant;
 
-    private List<SystemLinkedAuthorization> systemLinkedAuthorizationList;
+    private List<Long> systemPermissionsIdsList;
     private Map<Long, Boolean> isPermissionsAssigned = new HashMap<>();
 
     private Set<Long> assignableRolePermissions = new HashSet<>();
@@ -103,13 +93,18 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * @throws SystemException is thrown when error occurs
      */
     public void loadRolePermissions(SystemRole systemRole) throws SystemException {
+        if (getSystemActiveTenant() == null) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.TRP_NO_ACTIVE_TENANT.getValue()));
+            return;
+        }
         try{
-            systemLinkedAuthorizationList = Collections.unmodifiableList(linkedAuthorizationRESTServiceAccess
-                    .getLinkedAuthorizationByRoleId(systemRole.getId()));
+            systemPermissionsIdsList = tenantRoleRESTServiceAccess.getPermissions(
+                    getSystemActiveTenant().getTenantId(), systemRole.getId(), null).stream().
+                    map(SystemPermission::getId).collect(Collectors.toList());
 
-            if(!systemLinkedAuthorizationList.isEmpty()){
-                for(SystemLinkedAuthorization systemLinkedAuthorization : systemLinkedAuthorizationList){
-                    isPermissionsAssigned.put(systemLinkedAuthorization.getPermissionId(), true);
+            if (!systemPermissionsIdsList.isEmpty()) {
+                for (Long permissionId : systemPermissionsIdsList) {
+                    isPermissionsAssigned.put(permissionId, true);
                 }
             }
 
@@ -159,16 +154,15 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * @return working HTML page of roles
      */
     public String assignOrUnassignedPermissionsToActiveUserTenant() {
+        if (getSystemActiveTenant() == null) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.TRP_NO_ACTIVE_TENANT.getValue()));
+            return DataModelEnum.ROLE_MAIN_PAGE.getValue();
+        }
         if(assignableRolePermissions != null && !assignableRolePermissions.isEmpty()) {
             doAssignedPermissionsForRole();
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_SUCCESS.getValue()));
-            assignableRolePermissions.clear();
         }
-
         if(unassignedRolePermissions != null && !unassignedRolePermissions.isEmpty()) {
             doUnassignedPermissionsForRole();
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_SUCCESS.getValue()));
-            unassignedRolePermissions.clear();
         }
         return DataModelEnum.ROLE_MAIN_PAGE.getValue();
     }
@@ -177,22 +171,21 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * This method validates & creates association of
      * User tenant role permission(s)
      */
-    private void doAssignedPermissionsForRole() {
+    protected void doAssignedPermissionsForRole() {
         try {
             for(Long systemPermissionId : assignableRolePermissions) {
-                boolean isExists = linkedAuthorizationRESTServiceAccess.checkIfLinkedAuthorizationExists(
-                        getSystemActiveTenant().getTenantId(), systemPermissionId,
-                        systemRole.getId(), systemActiveTenant.getUserId());
-                if (!isExists) {
-                    SystemLinkedAuthorization systemLinkedAuthorization = new LinkedAuthorization();
-                    systemLinkedAuthorization.setTenantId(getSystemActiveTenant().getTenantId());
-                    systemLinkedAuthorization.setPermissionId(systemPermissionId);
-                    systemLinkedAuthorization.setRoleId(systemRole.getId());
-                    systemLinkedAuthorization.setUserId(getSystemActiveTenant().getUserId());
-
-                    linkedAuthorizationRESTServiceAccess.create(systemLinkedAuthorization);
+                if (!systemPermissionsIdsList.contains(systemPermissionId)) {
+                    if (!tenantRoleRESTServiceAccess.exists(getSystemActiveTenant().getTenantId(), systemRole.getId())) {
+                        SystemTenantRole str = TenantRoleFactory.create(getSystemActiveTenant().getTenantId(),
+                                systemRole.getId(), getSystemActiveTenant().getUserId());
+                        tenantRoleRESTServiceAccess.save(str);
+                    }
+                    tenantRoleRESTServiceAccess.assignPermission(getSystemActiveTenant().getTenantId(),
+                            systemRole.getId(), systemPermissionId);
                 }
             }
+            assignableRolePermissions.clear();
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_SUCCESS.getValue()));
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(JSFUtil.getMessage(DataModelEnum.USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_ERROR.getValue())));
         }
@@ -202,16 +195,16 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * This method  disassociation of
      * User tenant role permission(s)
      */
-    private void doUnassignedPermissionsForRole() {
+    protected void doUnassignedPermissionsForRole() {
         try {
-            List<SystemLinkedAuthorization> getUnassignedPermissions = systemLinkedAuthorizationList.stream()
-                    .filter(systemLinkedAuthorization -> unassignedRolePermissions.stream()
-                            .anyMatch(permissionId -> permissionId.equals(systemLinkedAuthorization.getPermissionId())))
-                    .collect(Collectors.toList());
-
-            for(SystemLinkedAuthorization systemLinkedAuthorization : getUnassignedPermissions){
-                linkedAuthorizationRESTServiceAccess.delete(systemLinkedAuthorization.getId());
+            List<Long> permissionsToUnSign = systemPermissionsIdsList.stream().
+                    filter(p -> unassignedRolePermissions.contains(p)).collect(Collectors.toList());
+            for(Long permissionId:permissionsToUnSign) {
+                tenantRoleRESTServiceAccess.unassignPermission(getSystemActiveTenant().getTenantId(),
+                        getSystemRole().getId(), permissionId);
             }
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_SUCCESS.getValue()));
+            unassignedRolePermissions.clear();
         }
         catch (Exception e) {
             handleError(e, JSFUtil.getMessage(JSFUtil.getMessage(DataModelEnum.USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR.getValue())));
@@ -318,19 +311,19 @@ public class RolePermissionManager extends AbstractManager implements Serializab
     }
 
     /**
-     * Gets list of linked authorization for the selected SystemRole
-     * @return systemLinkedAuthorizationList
+     * Gets list of permissions ids for the selected SystemRole
+     * @return systemPermissionsIdsList
      */
-    public List<SystemLinkedAuthorization> getSystemLinkedAuthorizationList() {
-        return systemLinkedAuthorizationList;
+    public List<Long> getSystemPermissionsIdsList() {
+        return systemPermissionsIdsList;
     }
 
     /**
-     * Setter for the list of linked authorization
-     * @param systemLinkedAuthorizationList object
+     * Setter for the list of permissions ids
+     * @param systemPermissionsIdsList object
      */
-    public void setSystemLinkedAuthorizationList(List<SystemLinkedAuthorization> systemLinkedAuthorizationList) {
-        this.systemLinkedAuthorizationList = systemLinkedAuthorizationList;
+    public void setSystemPermissionsIdsList(List<Long> systemPermissionsIdsList) {
+        this.systemPermissionsIdsList = systemPermissionsIdsList;
     }
 
     /**

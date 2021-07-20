@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.permissionmanagement.client.exceptions;
+package io.radien.exception;
 
-import junit.framework.TestCase;
-import org.junit.Test;
+/**
+ * Exception to express inconsistencies regarding Tenant Role domain object.
+ * In this case, the purpose is to warn that a Tenant Role User association
+ * was already created with the informed parameters
+ * @author Newton Carvalho
+ */
+public class TenantRoleUserDuplicationException extends TenantRoleException {
 
-import io.radien.ms.permissionmanagement.client.exceptions.InternalServerErrorException;
-
-public class InternalServerErrorExceptionTest extends TestCase {
-
-    @Test
-    public void testInternalServerErrorException(){
-        InternalServerErrorException exception = new InternalServerErrorException();
-        assertNotNull(exception);
-        InternalServerErrorException exception2 = new InternalServerErrorException("message");
-        assertEquals("message",exception2.getMessage());
+    /**
+     * Tenant Role exception constructor by a given message
+     *
+     * @param message to create the tenant role exception with
+     */
+    public TenantRoleUserDuplicationException(String message) {
+        super(message);
     }
-
 }

@@ -30,6 +30,8 @@ import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
@@ -40,9 +42,10 @@ import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
 
+import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -118,6 +121,8 @@ public class TenantRoleBusinessServiceTest {
         tenantRoleBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
         tenantRoleBusinessService.setTenantRolePermissionService(tenantRolePermissionServiceAccess);
         tenantRoleBusinessService.setTenantRoleUserServiceAccess(tenantRoleUserServiceAccess);
+        tenantRoleBusinessService.setTenantRESTServiceAccess(mock(TenantRESTServiceAccess.class));
+        tenantRoleBusinessService.setActiveTenantRESTServiceAccess(mock(ActiveTenantRESTServiceAccess.class));
     }
 
     /**
@@ -190,10 +195,12 @@ public class TenantRoleBusinessServiceTest {
             tenantRole.setRoleId(roleId);
             tenantRole.setTenantId(tenantId);
 
-            TenantRESTServiceAccess tenantRESTServiceAccess =
-                    Mockito.mock(TenantRESTServiceAccess.class);
-            tenantRoleBusinessService.setTenantRESTServiceAccess(tenantRESTServiceAccess);
-            when(tenantRESTServiceAccess.isTenantExistent(tenantId)).thenReturn(Boolean.TRUE);
+            if (tenantRoleBusinessService.getTenantRESTServiceAccess() == null) {
+                tenantRoleBusinessService.setTenantRESTServiceAccess(mock(TenantRESTServiceAccess.class));
+            }
+
+            when(tenantRoleBusinessService.getTenantRESTServiceAccess().isTenantExistent(tenantId)).
+                    thenReturn(Boolean.TRUE);
 
             tenantRoleBusinessService.save(tenantRole);
         }
@@ -238,13 +245,10 @@ public class TenantRoleBusinessServiceTest {
         tenantRoleWithInvalidTenant.setTenantId(mockedInvalidTenant);
         tenantRoleWithInvalidTenant.setRoleId(roleAdmin.getId());
 
-        TenantRESTServiceAccess tenantRESTServiceAccess =
-                Mockito.mock(TenantRESTServiceAccess.class);
-        tenantRoleBusinessService.setTenantRESTServiceAccess(tenantRESTServiceAccess);
         try {
-            when(tenantRESTServiceAccess.isTenantExistent(mockedInvalidTenant)).
+            when(tenantRoleBusinessService.getTenantRESTServiceAccess().isTenantExistent(mockedInvalidTenant)).
                     thenReturn(Boolean.FALSE);
-            when(tenantRESTServiceAccess.isTenantExistent(mockedValidTenant)).
+            when(tenantRoleBusinessService.getTenantRESTServiceAccess().isTenantExistent(mockedValidTenant)).
                     thenReturn(Boolean.TRUE);
         } catch (SystemException systemException) {
             fail("unexpected");
@@ -313,12 +317,27 @@ public class TenantRoleBusinessServiceTest {
 
     /**
      * Test to assign user into association
+     * @throws SystemException in case of communication issues with Tenant Rest Client or
+     * ActiveTenant Rest Client.
      */
     @Test
     @Order(8)
-    public void assignUser() {
+    public void assignUser() throws SystemException{
         // Assign user to the role "Tenant Administrator" for the tenant "1"
         SystemRole roleAdmin = assertDoesNotThrow(() -> createRole(roleNameForTenantAdministrator));
+
+        // Create mocked Tenants
+        Tenant tenantForId1 = new Tenant(); tenantForId1.setId(tenantId);
+
+        // Mock for Tenant Rest Client
+        when(tenantRoleBusinessService.getTenantRESTServiceAccess().getTenantById(tenantId)).
+                thenReturn(Optional.of(tenantForId1));
+
+        ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess = mock(ActiveTenantRESTServiceAccess.class);
+        when(activeTenantRESTServiceAccess.isActiveTenantExistent(user1Id, tenantId)).thenReturn(Boolean.FALSE);
+        when(activeTenantRESTServiceAccess.create(any())).thenReturn(Boolean.TRUE);
+        tenantRoleBusinessService.setActiveTenantRESTServiceAccess(activeTenantRESTServiceAccess);
+
         assertDoesNotThrow(() -> this.tenantRoleBusinessService.assignUser(tenantId,
                 roleAdmin.getId(), user1Id));
     }
@@ -372,10 +391,28 @@ public class TenantRoleBusinessServiceTest {
 
     /**
      * Test to validate if user has any role
+     * @throws SystemException
      */
     @Test
     @Order(12)
-    public void isAnyRoleExistentForUser() {
+    public void isAnyRoleExistentForUser() throws SystemException {
+        Long tenant4 = 4L;
+        Long tenant5 = 5L;
+
+        tenantRoleBusinessService.setTenantRESTServiceAccess(mock(TenantRESTServiceAccess.class));
+        tenantRoleBusinessService.setActiveTenantRESTServiceAccess(mock(ActiveTenantRESTServiceAccess.class));
+
+        // Create mocked Tenants
+        Tenant tenantForId1 = new Tenant(); tenantForId1.setId(tenantId);
+        Tenant tenantForId4 = new Tenant(); tenantForId4.setId(tenant4);
+        Tenant tenantForId5 = new Tenant(); tenantForId4.setId(tenant5);
+
+        when(tenantRoleBusinessService.getTenantRESTServiceAccess().
+                getTenantById(tenantId)).thenReturn(Optional.of(tenantForId1));
+        when(tenantRoleBusinessService.getTenantRESTServiceAccess().
+                getTenantById(tenant4)).thenReturn(Optional.of(tenantForId4));
+        when(tenantRoleBusinessService.getTenantRESTServiceAccess().
+                getTenantById(tenant5)).thenReturn(Optional.of(tenantForId5));
 
         // Assign user to the role "READER" for the tenant "1"
         SystemRole reader = assertDoesNotThrow(() -> createRole("READER"));
@@ -384,14 +421,12 @@ public class TenantRoleBusinessServiceTest {
                 reader.getId(), user1Id));
 
         // Assign user to the role "WRITER" for the tenant "4"
-        Long tenant4 = 4L;
         SystemRole writer = assertDoesNotThrow(() -> createRole("WRITER"));
         assertDoesNotThrow(() -> createTenantRole(writer.getId(), tenant4));
         assertDoesNotThrow(() -> this.tenantRoleBusinessService.assignUser(tenant4,
                 writer.getId(), user1Id));
 
         // Assign user to the role "OBSERVER" for the tenant "5"
-        Long tenant5 = 5L;
         SystemRole observer = assertDoesNotThrow(() -> createRole("OBSERVER"));
         assertDoesNotThrow(() -> createTenantRole(observer.getId(), tenant5));
         assertDoesNotThrow(() -> this.tenantRoleBusinessService.assignUser(tenant5,
@@ -440,42 +475,38 @@ public class TenantRoleBusinessServiceTest {
     }
 
     /**
-     * Test get tenants
+     * Test for {@link TenantRoleBusinessService#getTenants(Long, Long)}
+     * @throws SystemException in case of any communication issue regarding Tenant Rest Client
+     * @throws UniquenessConstraintException in case of duplicated values during insertion
+     * @Throws TenantRoleException if user assigment already exists
      */
     @Test
     @Order(13)
-    public void getTenants() throws SystemException {
-
+    public void getTenants() throws SystemException, UniquenessConstraintException, TenantRoleException, RoleNotFoundException {
         // Create new roles
-        SystemRole guest = assertDoesNotThrow(() -> createRole("guest"));
-        SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
+        SystemRole guest = createRole("guest");
+        SystemRole publisher = createRole("publisher");
 
         // Create mocked Tenants
         Tenant tenantForId1 = new Tenant(); tenantForId1.setId(tenantId);
+        tenantRoleBusinessService.setTenantRESTServiceAccess(mock(TenantRESTServiceAccess.class));
+        when(tenantRoleBusinessService.getTenantRESTServiceAccess().getTenantById(tenantId)).
+                thenReturn(Optional.of(tenantForId1));
         Tenant tenantForId2 = new Tenant(); tenantForId2.setId(tenantId2);
+        when(tenantRoleBusinessService.getTenantRESTServiceAccess().getTenantById(tenantId2)).
+                thenReturn(Optional.of(tenantForId2));
         Tenant tenantForId3 = new Tenant(); tenantForId3.setId(tenantId3);
+        when(tenantRoleBusinessService.getTenantRESTServiceAccess().getTenantById(tenantId3)).
+                thenReturn(Optional.of(tenantForId3));
 
         // Create Tenant Role associations (all for user Id 1)
-        assertDoesNotThrow(() -> createTenantRole(guest.getId(), tenantId2));
-        assertDoesNotThrow(() -> tenantRoleBusinessService.assignUser(tenantId2,
-                guest.getId(), user1Id));
-        assertDoesNotThrow(() -> createTenantRole(publisher.getId(), tenantId3));
-        assertDoesNotThrow(() -> tenantRoleBusinessService.assignUser(tenantId3,
-                publisher.getId(), user1Id));
+        createTenantRole(guest.getId(), tenantId);
+        createTenantRole(guest.getId(), tenantId2);
+        createTenantRole(publisher.getId(), tenantId3);
 
-        // Mock for Tenant Rest Client
-        TenantRESTServiceAccess restServiceAccess = mock(TenantRESTServiceAccess.class);
-        try {
-            when(restServiceAccess.getTenantById(tenantId)).
-                    thenReturn(Optional.of(tenantForId1));
-            when(restServiceAccess.getTenantById(tenantId2)).
-                    thenReturn(Optional.of(tenantForId2));
-            when(restServiceAccess.getTenantById(tenantId3)).
-                    thenReturn(Optional.of(tenantForId3));
-        } catch (SystemException se) {
-            fail("unexpected");
-        }
-        tenantRoleBusinessService.setTenantRESTServiceAccess(restServiceAccess);
+        tenantRoleBusinessService.assignUser(tenantId, guest.getId(), user1Id);
+        tenantRoleBusinessService.assignUser(tenantId2, guest.getId(), user1Id);
+        tenantRoleBusinessService.assignUser(tenantId3, publisher.getId(), user1Id);
 
         // User is associated with All 3 Tenants
         List<SystemTenant> tenants = assertDoesNotThrow(() ->
@@ -487,7 +518,7 @@ public class TenantRoleBusinessServiceTest {
         tenants = assertDoesNotThrow(() ->
                 tenantRoleBusinessService.getTenants(user1Id, guest.getId()));
         assertNotNull(tenants);
-        assertEquals(1, tenants.size());
+        assertEquals(2, tenants.size());
     }
 
     /**
@@ -527,29 +558,46 @@ public class TenantRoleBusinessServiceTest {
     }
 
     /**
-     * Test to un-assign user form a non existent association
+     * Test to un-assign a user using invalid parameters (tenant and user with null values)
      */
     @Test
     @Order(16)
-    public void unassignUserInvalidCaseNoTenantRoleAssociated() {
-        Long notAssociatedTenant = 99999L;
-        Long notAssociatedRole = 99988L;
-        assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
-                unassignUser(notAssociatedTenant, notAssociatedRole, user1Id));
-    }
-
-    /**
-     * Test to un-assign user from tenant that he is not assigned
-     */
-    @Test
-    @Order(17)
-    public void unassignUserInvalidCaseUserNotAssigned() {
+    public void unAssignUserWithNullableParameters() {
         // Get previously created Role
         SystemRole guest = assertDoesNotThrow(() -> createRole("guest"));
 
-        // User was already removed/unassigned
-        assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
-                unassignUser(tenantId2, guest.getId(), user1Id));
+        // Doing (un)assignment process with null tenant
+        Long invalidTenant = null;
+        String expectedErrorMessage = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id");
+        TenantRoleException tre = assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
+                unassignUser(invalidTenant, guest.getId(), user1Id));
+        assertEquals(expectedErrorMessage, tre.getMessage());
+
+        // Doing (un)assignment process with null user
+        Long validTenant = 1111111L, invalidUser = null;
+        expectedErrorMessage = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id");
+        tre = assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
+                unassignUser(validTenant, guest.getId(), invalidUser));
+        assertEquals(expectedErrorMessage, tre.getMessage());
+    }
+
+    /**
+     * Test to un-assign a user, but in a scenario where there is no associations
+     * for the three parameters (user, tenant and role)
+     */
+    @Test
+    @Order(17)
+    public void unAssignUserWithInvalidTenantRoleUserCombination() {
+        // Get previously created Role
+        SystemRole guest = assertDoesNotThrow(() -> createRole("guest"));
+
+        // Doing (un)assignment process with a tenant/role combination that does not exist
+        Long invalidTenant = 1111111111111L, invalidUser = 2222222222222L;
+        String expectedErrorMessage = TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS.
+                toString(String.valueOf(invalidTenant), String.valueOf(guest.getId()), String.valueOf(invalidUser));
+        TenantRoleException tre = assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
+                unassignUser(invalidTenant, guest.getId(), invalidUser));
+        assertEquals(expectedErrorMessage, tre.getMessage());
     }
 
     /**
@@ -924,7 +972,7 @@ public class TenantRoleBusinessServiceTest {
         // Setting mocked REST Client for positive test cases
         tenantRoleBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         try {
-            doThrow(new SystemException("HTTP 404 Not Found")).
+            doThrow(new NotFoundException("HTTP 404 Not Found")).
                     when(permissionRESTServiceAccess).
                     isPermissionExistent(permissionTestCase1, null);
             doThrow(new SystemException("Communication breakdown")).
@@ -984,5 +1032,119 @@ public class TenantRoleBusinessServiceTest {
                 mock(PermissionRESTServiceAccess.class);
         tenantRoleBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         assertEquals(permissionRESTServiceAccess, tenantRoleBusinessService.getPermissionRESTServiceAccess());
+    }
+
+    /**
+     * Test to validate if we can retrieve the correct tenant role service access
+     */
+    @Test
+    @Order(32)
+    public void getTenantRoleServiceAccess() {
+        TenantRoleServiceAccess mockTenantRoleServiceAccess = mock(TenantRoleServiceAccess.class);
+        tenantRoleBusinessService.setTenantRoleServiceAccess(mockTenantRoleServiceAccess);
+        assertEquals(mockTenantRoleServiceAccess, tenantRoleBusinessService.getTenantRoleServiceAccess());
+    }
+
+    /**
+     * Test to validate if we can retrieve the correct tenant role user service access
+     */
+    @Test
+    @Order(33)
+    public void getTenantRoleUserServiceAccess() {
+        TenantRoleUserServiceAccess mockTenantRoleUserServiceAccess = mock(TenantRoleUserServiceAccess.class);
+        tenantRoleBusinessService.setTenantRoleUserServiceAccess(mockTenantRoleUserServiceAccess);
+        assertEquals(mockTenantRoleUserServiceAccess, tenantRoleBusinessService.getTenantRoleUserServiceAccess());
+    }
+
+    /**
+     * Test to validate if we can retrieve the correct tenant role permission service access
+     */
+    @Test
+    @Order(34)
+    public void getTenantRolePermissionServiceAccess() {
+        TenantRolePermissionServiceAccess mockTenantRolePermissionServiceAccess = mock(TenantRolePermissionServiceAccess.class);
+        tenantRoleBusinessService.setTenantRolePermissionService(mockTenantRolePermissionServiceAccess);
+        assertEquals(mockTenantRolePermissionServiceAccess, tenantRoleBusinessService.getTenantRolePermissionService());
+    }
+
+    /**
+     * Test to validate if we can retrieve the correct tenant role service access
+     */
+    @Test
+    @Order(35)
+    public void getRoleServiceAccess() {
+        RoleServiceAccess mockRoleServiceAccess = mock(RoleServiceAccess.class);
+        tenantRoleBusinessService.setRoleServiceAccess(mockRoleServiceAccess);
+        assertEquals(mockRoleServiceAccess, tenantRoleBusinessService.getRoleServiceAccess());
+    }
+
+    /**
+     * Test to validate if we can retrieve the correct active tenant rest service access
+     */
+    @Test
+    @Order(36)
+    public void getActiveTenantRESTServiceAccess() {
+        ActiveTenantRESTServiceAccess mockActiveTenantRESTServiceAccess = mock(ActiveTenantRESTServiceAccess.class);
+        tenantRoleBusinessService.setActiveTenantRESTServiceAccess(mockActiveTenantRESTServiceAccess);
+        assertEquals(mockActiveTenantRESTServiceAccess, tenantRoleBusinessService.getActiveTenantRESTServiceAccess());
+    }
+
+    /**
+     * Test method {@link TenantRoleBusinessService#retrieveTenant(Long)} for
+     * a scenario where Tenant does not exist
+     * @throws SystemException thrown by TenantRESTServiceAccess when trying to retrieve tenant by id
+     */
+    @Test
+    @Order(37)
+    public void retrieveNotExistentTenant() throws SystemException {
+        Long notExistentTenantId = 1111111L;
+        String expectedErrorMsg = GenericErrorCodeMessage.
+                TENANT_ROLE_NO_TENANT_FOUND.toString(String.valueOf(notExistentTenantId));
+        TenantRESTServiceAccess mockedTenantRestServiceAccess = mock(TenantRESTServiceAccess.class);
+        tenantRoleBusinessService.setTenantRESTServiceAccess(mockedTenantRestServiceAccess);
+        when(mockedTenantRestServiceAccess.getTenantById(notExistentTenantId)).
+                thenThrow(new NotFoundException());
+        TenantRoleException tre = assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
+                retrieveTenant(notExistentTenantId));
+        assertEquals(expectedErrorMsg, tre.getMessage());
+    }
+
+    /**
+     * Test method {@link TenantRoleBusinessService#retrieveTenant(Long)} in a scenario where Internal Server Error occurs
+     * @throws SystemException thrown by TenantRESTServiceAccess when trying to retrieve tenant by id
+     */
+    @Test
+    @Order(37)
+    public void retrieveTenantWithInternalServerError() throws SystemException {
+        Long notExistentTenantId = 1111111L;
+        String errorMSg = "Internal Server Error - 500";
+        String expectedErrorMsg = new SystemException(new InternalServerErrorException(errorMSg)).getMessage();
+        TenantRESTServiceAccess mockedTenantRestServiceAccess = mock(TenantRESTServiceAccess.class);
+        tenantRoleBusinessService.setTenantRESTServiceAccess(mockedTenantRestServiceAccess);
+        when(mockedTenantRestServiceAccess.getTenantById(notExistentTenantId)).
+                thenThrow(new InternalServerErrorException(errorMSg));
+        SystemException se = assertThrows(SystemException.class, () -> tenantRoleBusinessService.
+                retrieveTenant(notExistentTenantId));
+        assertEquals(expectedErrorMsg, se.getMessage());
+    }
+
+
+    /**
+     * Test method {@link TenantRoleBusinessService#retrieveTenant(Long)} in a scenario where
+     * SytemException occurs
+     * @throws SystemException thrown by TenantRESTServiceAccess when trying to retrieve tenant by id
+     */
+    @Test
+    @Order(38)
+    public void retrieveTenantWithSystemException() throws SystemException {
+        Long notExistentTenantId = 1111111L;
+        String expectedErrorMsg = new SystemException(new SystemException()).getMessage();
+        TenantRESTServiceAccess mockedTenantRestServiceAccess = mock(TenantRESTServiceAccess.class);
+        tenantRoleBusinessService.setTenantRESTServiceAccess(mockedTenantRestServiceAccess);
+        when(mockedTenantRestServiceAccess.getTenantById(notExistentTenantId)).
+                thenThrow(new SystemException());
+        SystemException se = assertThrows(SystemException.class, () -> tenantRoleBusinessService.
+                retrieveTenant(notExistentTenantId));
+        assertEquals(expectedErrorMsg, se.getMessage());
     }
 }

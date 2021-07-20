@@ -29,6 +29,7 @@ import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tenant Role User Service rest requests and responses with access into the db
@@ -421,6 +424,77 @@ public class TenantRoleUserServiceTest {
         } catch (Exception e) {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel())));
         }
+    }
+
+    /**
+     * Utility method to create TenantRole instances and reduce cognitive complexity
+     * @param tenant tenant id
+     * @param role role id
+     * @throws UniquenessConstraintException thrown in case of repeated value (in therms of ids combination)
+     * @return SystemTenantRole instance for the given parameters
+     */
+    protected SystemTenantRole createTenantRole(Long tenant, Long role) throws UniquenessConstraintException {
+        SystemTenantRole tenantRole = new TenantRole();
+        tenantRole.setTenantId(tenant);
+        tenantRole.setRoleId(role);
+        tenantRoleServiceAccess.save(tenantRole);
+        return tenantRole;
+    }
+
+    /**
+     * Utility method to create TenantRoleUser instances and reduce cognitive complexity
+     * @param tr System Tenant Role instance
+     * @param user user ide
+     * @throws UniquenessConstraintException thrown in case of repeated value (in therms of ids combination)
+     * @return SystemTenantRoleUser instance for the given parameters
+     */
+    protected SystemTenantRoleUser createTenantRoleUser(SystemTenantRole tr, Long user) throws UniquenessConstraintException {
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        tenantRoleUser.setTenantRoleId(tr.getId());
+        tenantRoleUser.setUserId(user);
+        tenantRoleUserServiceAccess.create(tenantRoleUser);
+        return tenantRoleUser;
+    }
+
+    /**
+     * Test for method {@link TenantRoleUserServiceAccess#delete(Collection)}
+     * Given a Tenant and User Id, remove the TenantRoleUser associations
+     * @throws UniquenessConstraintException in case of insertion (save) using repeated values (combination of ids)
+     */
+    @Test
+    @Order(17)
+    public void testDeleteByTenantAndUserInformation() throws UniquenessConstraintException {
+        Long role1 = 700001L, role2 = 700002L, role3 = 700003L;
+        Long tenant1 = 500001L, tenant2 = 500002L, tenant3 = 500003L;
+        Long user1 = 800001L, user2 = 800002L;
+
+        SystemTenantRole tenant1Role1 = createTenantRole(tenant1, role1);
+        SystemTenantRole tenant1Role2 = createTenantRole(tenant1, role2);
+        SystemTenantRole tenant1Role3 = createTenantRole(tenant1, role3);
+
+        SystemTenantRoleUser tenant1Role1User1 = createTenantRoleUser(tenant1Role1, user1);
+        SystemTenantRoleUser tenant1Role2User1 = createTenantRoleUser(tenant1Role2, user1);
+        SystemTenantRoleUser tenant1Role3User1 = createTenantRoleUser(tenant1Role3, user1);
+
+        SystemTenantRoleUser tenant1Role1User2 = createTenantRoleUser(tenant1Role1, user2);
+        SystemTenantRoleUser tenant1Role2User2 = createTenantRoleUser(tenant1Role2, user2);
+        SystemTenantRoleUser tenant1Role3User2 = createTenantRoleUser(tenant1Role3, user2);
+
+        // Delete
+        Collection<Long> ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant1, null, user1);
+        assertTrue(tenantRoleUserServiceAccess.delete(ids));
+        ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant1, role1, user2);
+        assertTrue(tenantRoleUserServiceAccess.delete(ids));
+
+        // Check if association cannot be found for user1
+        assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role1User1.getTenantRoleId()));
+        assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role2User1.getTenantRoleId()));
+        assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role3User1.getTenantRoleId()));
+
+        // Check if association cannot be found for user2
+        assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role1User2.getTenantRoleId()));
+        assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role2User2.getTenantRoleId()));
+        assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role3User2.getTenantRoleId()));
     }
 
     /**

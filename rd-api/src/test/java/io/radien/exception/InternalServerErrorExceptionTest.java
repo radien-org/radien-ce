@@ -15,20 +15,19 @@
  */
 package io.radien.exception;
 
-/**
- * Exception to express inconsistencies regarding Tenant Role domain object.
- * In this case, the purpose is to warn that a Tenant Role could not
- * be found.
- * @author Newton Carvalho
- */
-public class TenantRoleNotFoundException extends TenantRoleException {
+import org.junit.Test;
 
-    /**
-     * Tenant Role exception constructor by a given message
-     *
-     * @param message to create the tenant role exception with
-     */
-    public TenantRoleNotFoundException(String message) {
-        super(message);
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class InternalServerErrorExceptionTest {
+
+    @Test
+    public void testInternalServerErrorException(){
+        InternalServerErrorException exception = new InternalServerErrorException();
+        assertNotNull(exception);
+        InternalServerErrorException exception2 = new InternalServerErrorException("message");
+        assertEquals("message",exception2.getMessage());
     }
+
 }
