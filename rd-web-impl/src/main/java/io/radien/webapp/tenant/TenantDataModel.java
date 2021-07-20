@@ -27,6 +27,9 @@ import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
+import io.radien.webapp.activeTenant.ActiveTenantMandatory;
+import io.radien.webapp.role.LazyRoleDataModel;
 import io.radien.webapp.security.UserSession;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
@@ -37,6 +40,7 @@ import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -63,6 +67,9 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     @Inject
     private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     private LazyDataModel<? extends SystemTenant> lazyModel;
 
     private SystemTenant selectedTenant;
@@ -72,16 +79,19 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     protected Date tenantStartDate;
     protected Date tenantEndDate;
 
-
     /**
      * Initialization of the tenant data tables and models
      */
     @PostConstruct
     public void init() {
         try {
-            lazyModel = new LazyTenantDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                lazyModel = new LazyTenantDataModel(service);
+            } else {
+                redirectToHomePage();
+            }
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_GENERIC_ERROR_MESSAGE.getValue()),
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
     }
@@ -89,6 +99,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }
@@ -100,6 +111,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @return a string value to redirect the user into the correct page either send him to the table in case of success,
      * or into the edit menu in case of error
      */
+    @ActiveTenantMandatory
     public String save(SystemTenant systemTenantToSave) {
         try {
             fillParentClientId(systemTenantToSave);
@@ -111,10 +123,10 @@ public class TenantDataModel extends AbstractManager implements Serializable {
                 this.service.update(systemTenantToSave);
             }
             handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_SUCCESS.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
             return DataModelEnum.TENANT_CREATION_PAGE.getValue();
         }
@@ -126,6 +138,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Automatically fill the parent id and client id if necessary
      * @param systemTenantToSave system tenant to be updated
      */
+    @ActiveTenantMandatory
     private void fillParentClientId(SystemTenant systemTenantToSave) throws SystemException {
         if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT)) {
             retrieveParentTenantId(systemTenantToSave);
@@ -139,6 +152,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * By a given tenant will calculate the previous one the given belongs to (parent tenant)
      * @param systemTenantToSave to be verified
      */
+    @ActiveTenantMandatory
     private void retrieveParentTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
             List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
@@ -149,7 +163,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
                 }
             }
         } catch (SystemException e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
             throw e;
         }
@@ -159,6 +173,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * By a given tenant will calculate the previous client one the given belongs to (client tenant)
      * @param systemTenantToSave to be verified
      */
+    @ActiveTenantMandatory
     private void retrieveClientTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
             List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
@@ -169,7 +184,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
                 }
             }
         } catch (SystemException e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
             throw e;
         }
@@ -182,6 +197,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @param tenantId of the last upper tenant
      * @throws SystemException in case of token expiration or any issue on the application
      */
+    @ActiveTenantMandatory
     private void requestUpperTenant(SystemTenant systemTenantToSave, Long tenantId) throws SystemException {
         try {
             Optional<SystemTenant> tenantToBeSearch = service.getTenantById(tenantId);
@@ -198,7 +214,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
                         JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
             }
         } catch (SystemException e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue()),
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
     }
@@ -207,12 +223,13 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Tenant update edit record method
      * @return the correct page to where the user should be redirected
      */
-    public String editRecords() {
+    @ActiveTenantMandatory
+    public String editRecords() throws IOException {
         if (selectedTenant != null) {
             return DataModelEnum.TENANT_DETAIL_PAGE.getValue();
         } else {
             handleMessage(FacesMessage.SEVERITY_WARN,
-                    JSFUtil.getMessage(DataModelEnum.TENANT_SELECT_RECORD_FIRST.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.SELECT_RECORD_FIRST.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
         return DataModelEnum.TENANT_MAIN_PAGE.getValue();
@@ -221,16 +238,17 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     /**
      * Tenant deletion in cascade method
      */
+    @ActiveTenantMandatory
     public void deleteTenantHierarchy(){
         try {
             if (selectedTenant != null) {
                 service.deleteTenantHierarchy(selectedTenant.getId());
                 handleMessage(FacesMessage.SEVERITY_INFO,
-                        JSFUtil.getMessage(DataModelEnum.TENANT_DELETE_SUCCESS.getValue()),
+                        JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()),
                         JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
             }
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_DELETE_ERROR.getValue()),
+            handleError(e, JSFUtil.getMessage(DataModelEnum.DELETE_ERROR.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
 
@@ -241,7 +259,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     /**
      * Redirect user into tenant table page
      */
-    public String returnHome() {
+    public String returnToDataTableRecords() {
         tenant = new Tenant();
         selectedTenant=null;
         return DataModelEnum.TENANT_MAIN_PAGE.getValue();
@@ -252,6 +270,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @param r to be validated
      * @throws Exception in case of incoherence in the data
      */
+    @ActiveTenantMandatory
     private void validateMandatoryFields(SystemTenant r) throws Exception {
         if(r != null && r.getTenantType().equals(TenantType.CLIENT_TENANT)) {
             clientAddressValidation(r);
@@ -342,14 +361,15 @@ public class TenantDataModel extends AbstractManager implements Serializable {
 
     /**
      * Method to update and edit the given system tenant
-     * @param t to be edited and updated
+     * @param systemTenantToEdit to be edited and updated
      * @return a string value to where the user should be redirected
      */
-    public String edit(SystemTenant t) {
+    @ActiveTenantMandatory
+    public String edit(SystemTenant systemTenantToEdit) throws IOException {
         try {
-            this.service.update(t);
+            this.service.update(systemTenantToEdit);
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.TENANT_EDIT_ERROR.getValue()),
+            handleError(e, JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
         return DataModelEnum.TENANT_MAIN_PAGE.getValue();
@@ -361,6 +381,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @param tenantStartDate to be converted
      * @param tenantEndDate to be converted
      */
+    @ActiveTenantMandatory
     protected void convertAndSetDates(SystemTenant tenant, Date tenantStartDate, Date tenantEndDate) {
         if (tenantStartDate != null) {
             LocalDate startDate = this.tenantStartDate.toInstant().atZone(ZoneId.systemDefault()).

@@ -22,6 +22,7 @@ import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 
 import javax.enterprise.context.RequestScoped;
@@ -61,7 +62,7 @@ public class EntityFilterUtil extends AbstractManager {
             return this.tenantRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
                     1, 100, null, false).getResults();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_tenants"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANTS.getValue()));
             return new ArrayList<>();
         }
     }
@@ -77,7 +78,7 @@ public class EntityFilterUtil extends AbstractManager {
             return roleRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
                     1, 10, null, false).getResults();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_roles"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.ROLES_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }
@@ -93,7 +94,7 @@ public class EntityFilterUtil extends AbstractManager {
             return this.permissionRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
                     1, 10, null, false).getResults();
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_retrieve_error"), JSFUtil.getMessage("rd_permissions"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.PERMISSIONS_MESSAGE.getValue()));
             return new ArrayList<>();
         }
     }

@@ -28,6 +28,7 @@ import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,10 +234,10 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     protected boolean isAssociationAlreadyExistent(Long roleId, Long tenantId,
                                                    Long currentTenantRoleId, EntityManager em) {
         if (roleId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("role id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel()));
         }
         if (tenantId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel()));
         }
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -272,19 +273,19 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     @Override
     public boolean delete(Long tenantRoleId) throws TenantRoleException {
         if (tenantRoleId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ID.getLabel()));
         }
 
         EntityManager em = getEntityManager();
 
         // Check if we have some user associated
         if (hasUsersAssociated(tenantRoleId, em)) {
-            throw new TenantRoleException("There are users associated with tenant role " + tenantRoleId);
+            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_USERS_ASSOCIATED_WITH_TENANT_ROLE.toString() + tenantRoleId);
         }
 
         // Check if we have some permission associated
         if (hasPermissionsAssociated(tenantRoleId, em)) {
-            throw new TenantRoleException("There are permissions associated with tenant role " + tenantRoleId);
+            throw new TenantRoleException(GenericErrorCodeMessage.TENANT_ROLE_PERMISSIONS_ASSOCIATED_WITH_TENANT_ROLE.toString() + tenantRoleId);
         }
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -341,10 +342,10 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     @Override
     public List<Long> getPermissions(Long tenantId, Long roleId, Long userId) {
         if (tenantId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel()));
         }
         if (roleId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("role id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel()));
         }
         EntityManager em = getEntityManager();
 
@@ -380,7 +381,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     @Override
     public List<Long> getTenants(Long userId, Long roleId) {
         if (userId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel()));
         }
 
         EntityManager em = getEntityManager();
@@ -406,6 +407,39 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     }
 
     /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing role ids
+     */
+    @Override
+    public List<Long> getRoleIdsForUserTenant(Long userId, Long tenantId) {
+        if (userId == null && tenantId == null) {
+            throw new IllegalArgumentException(GenericErrorCodeMessage.INFO_TENANT_AND_USER_ID.toString());
+        }
+
+        EntityManager em = getEntityManager();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
+        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+
+        cq.select(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()));
+        cq.distinct(true);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ID.getFieldName()),
+                tenantRoleUserRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName())));
+        predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenantId));
+        predicates.add(cb.equal(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName()), userId));
+
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        TypedQuery<Long> query = em.createQuery(cq);
+        return query.getResultList();
+    }
+
+    /**
      * Check if a User has some Role (Optionally for a specific Tenant)
      * @param userId User identifier
      * @param roleNames Role name identifier
@@ -415,11 +449,11 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     @Override
     public boolean hasAnyRole(Long userId, List<String> roleNames, Long tenantId) {
         if (userId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel()));
         }
 
         if (roleNames == null || roleNames.isEmpty()) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("role name"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_NAME.getLabel()));
         }
 
         EntityManager em = getEntityManager();
@@ -490,10 +524,10 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     @Override
     public Optional<Long> getTenantRoleId(Long tenant, Long role) {
         if (tenant == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel()));
         }
         if(role == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("role id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel()));
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -509,6 +543,29 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
         List<Long> list = typedQuery.getResultList();
         return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
+    }
+
+    /**
+     * Retrieves strictly the TenantRole ids based on tenant and roleIds
+     * @param tenantId Tenant id
+     * @param roleIds Collection Role ids
+     * @return List of TenantRole ids
+     */
+    @Override
+    public List<Long> getTenantRoleIds(Long tenantId, Collection<Long> roleIds){
+        EntityManager em = getEntityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
+
+        criteriaQuery.select(tenantRoleRoot.get(SystemVariables.ID.getFieldName())).
+                where(
+                        criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenantId),
+                        tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()).in(roleIds)
+                );
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
+        return typedQuery.getResultList();
     }
 
     public EntityManager getEntityManager() {

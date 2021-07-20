@@ -22,7 +22,10 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
+import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
@@ -57,6 +60,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @Inject
     private WebAuthorizationChecker webAuthorizationChecker;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
     private SystemUser selectedUser;
     private SystemUser userForTenantAssociation;
@@ -73,18 +79,21 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @PostConstruct
     public void init() throws SystemException {
         try {
-            if (!hasUserAdministratorRoleAccess) {
-                hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
-            }
-            if (!hasTenantAdministratorRoleAccess) {
-                hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
-            }
-
-            if (hasUserAdministratorRoleAccess) {
-                lazyUserDataModel = new LazyUserDataModel(service);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                if (!hasUserAdministratorRoleAccess) {
+                    hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
+                }
+                if (!hasTenantAdministratorRoleAccess) {
+                    hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
+                }
+                if (hasUserAdministratorRoleAccess) {
+                    lazyUserDataModel = new LazyUserDataModel(service);
+                }
+            } else {
+                redirectToHomePage();
             }
         } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
         }
     }
 
@@ -93,12 +102,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @throws SystemException SystemException is thrown by the common language runtime when errors occur
      * that are nonfatal and recoverable by user programs.
      */
+    @ActiveTenantMandatory
     public void onload() throws SystemException {
-        try {
-            init();
-        } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
-        }
+        init();
     }
 
     /**
@@ -165,6 +171,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Method to update a given user information that have been edited
      * @param updateUser new user information to be saved
      */
+    @ActiveTenantMandatory
     public void updateUser(SystemUser updateUser){
         try{
             if(updateUser != null){
@@ -175,26 +182,27 @@ public class UserDataModel extends AbstractManager implements Serializable {
                 }
                 service.updateUser(updateUser);
                 handleMessage(FacesMessage.SEVERITY_INFO,
-                        updateUser.getId() == null ? JSFUtil.getMessage("rd_save_success") :
-                        JSFUtil.getMessage("rd_edit_success"), JSFUtil.getMessage("rd_user"));
+                        updateUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()) :
+                        JSFUtil.getMessage(DataModelEnum.EDIT_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
-            handleError(e, updateUser.getId() == null ? JSFUtil.getMessage("rd_save_error") :
-                    JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_user"));
+            handleError(e, updateUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()) :
+                    JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
     }
 
     /**
      * Deletes the requested user and all his information
      */
+    @ActiveTenantMandatory
     public void deleteUser(){
         try{
             if(selectedUser != null){
                 service.deleteUser(selectedUser.getId());
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_delete_success"), JSFUtil.getMessage("rd_user"));
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
-            handleError(e, JSFUtil.getMessage("rd_delete_error"), JSFUtil.getMessage("rd_user"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.DELETE_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
     }
 
@@ -205,11 +213,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
         try{
             if(selectedUser != null){
                 service.sendUpdatePasswordEmail(selectedUser.getId());
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_send_update_password_email_success"),
-                        JSFUtil.getMessage("rd_user"));
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SENT_UPDATE_PASSWORD_EMAIL_SUCCESS.getValue()),
+                        JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
-            handleError(e, JSFUtil.getMessage("rd_send_update_password_email_error"), JSFUtil.getMessage("rd_user"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SENT_UPDATE_PASSWORD_EMAIL_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
     }
 
@@ -217,58 +225,79 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Redirects user to the page of editing the user
      * @return a new HTML page
      */
+    @ActiveTenantMandatory
     public String editRecord() {
         try {
             if (selectedUser != null) {
-                return "pretty:user";
+                return DataModelEnum.PRETTY_USER.getValue();
             }
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
      * Redirects user to the page of creation the user
      * @return a new HTML page
      */
+    @ActiveTenantMandatory
     public String createRecord() {
         try {
             user = new User();
             user.setEnabled(true);
         } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:user";
+        return DataModelEnum.PRETTY_USER.getValue();
     }
 
     /**
      * Redirects user to the page of user profile information
      * @return a new HTML page
      */
+    @ActiveTenantMandatory
     public String userProfile() {
         try {
             if(selectedUser != null) {
                 return "pretty:userProfile";
             }
         } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
+
+    /**
+     * Redirects to user roles page
+     * when it invoke
+     * @return users HTML page
+     */
+    public String userRoles() {
+        try {
+            if(selectedUser != null) {
+                return DataModelEnum.USER_ROLES_PAGE.getValue();
+            }
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.USER_RD_USERS.getValue()));
+        }
+        return DataModelEnum.USER_MAIN_PAGE.getValue();
+    }
+
 
     /**
      * Redirects user to the home page
      * @return a new HTML page
      */
-    public String returnHome() {
+    public String returnToDataTableRecords() {
         try {
             user = new User();
             selectedUser=null;
         } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_generic_error_message"), JSFUtil.getMessage("rd_users"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
@@ -292,6 +321,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * </ul>
      * @return true if the process can be handled/started, false otherwise
      */
+    @ActiveTenantMandatory
     public boolean isTenantAssociationProcessAllowed() {
         try {
             if (!hasTenantAdministratorRoleAccess) {
@@ -301,7 +331,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
             return this.userForTenantAssociation != null;
         }
         catch(Exception e) {
-            this.handleError(e, JSFUtil.getMessage("rd_tenant_association_error_retrieve_user"));
+            this.handleError(e, JSFUtil.getMessage(DataModelEnum.TR_ERROR_RETRIEVING_USER.getValue()));
             return false;
         }
     }
@@ -311,6 +341,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return SystemUser instance, or null in case of not found any user
      * @throws SystemException in case of any error during the attempt to retrieve SystemUser
      */
+    @ActiveTenantMandatory
     protected SystemUser findUserToAssociate() throws SystemException{
         // Corresponds to the user picked from the data grid (user selected to be update, etc)
         if (this.selectedUser != null && this.selectedUser.getId() != null) {
@@ -330,7 +361,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return url mapping that refers Tenant association screen
      */
     public String prepareTenantAssociation() {
-        return "pretty:userTenantAssociation";
+        return DataModelEnum.TENANT_USER_ASSOCIATION.getValue();
     }
 
     /**

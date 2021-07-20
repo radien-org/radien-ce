@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,18 +80,22 @@ public class Appframe extends AbstractModel implements IAppframe {
 		this.version = version;
 	}
 
+	@Override
 	public Date getCreateDate() {
 		return createDate;
 	}
 
+	@Override
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
 
+	@Override
 	public Date getLastUpdate() {
 		return lastUpdate;
 	}
 
+	@Override
 	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
@@ -107,6 +111,7 @@ public class Appframe extends AbstractModel implements IAppframe {
 	/**
 	 * @return the createUser
 	 */
+	@Override
 	public Long getCreateUser() {
 		return createUser;
 	}
@@ -114,6 +119,7 @@ public class Appframe extends AbstractModel implements IAppframe {
 	/**
 	 * @param createUser the createUser to set
 	 */
+	@Override
 	public void setCreateUser(Long createUser) {
 		this.createUser = createUser;
 	}
@@ -121,6 +127,7 @@ public class Appframe extends AbstractModel implements IAppframe {
 	/**
 	 * @return the lastUpdateUser
 	 */
+	@Override
 	public Long getLastUpdateUser() {
 		return lastUpdateUser;
 	}
@@ -128,6 +135,7 @@ public class Appframe extends AbstractModel implements IAppframe {
 	/**
 	 * @param lastUpdateUser the lastUpdateUser to set
 	 */
+	@Override
 	public void setLastUpdateUser(Long lastUpdateUser) {
 		this.lastUpdateUser = lastUpdateUser;
 	}

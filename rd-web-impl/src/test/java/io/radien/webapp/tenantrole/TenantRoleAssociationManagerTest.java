@@ -30,11 +30,13 @@ import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
+import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +97,9 @@ public class TenantRoleAssociationManagerTest {
 
     @Mock
     private TenantRESTServiceAccess tenantRESTServiceAccess;
+
+    @Mock
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
 
     private FacesContext facesContext;
 
@@ -955,6 +960,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testUnAssignUser() throws SystemException {
+        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L, "test", true));
         SystemRole role = new Role(); role.setId(2L);
         SystemTenant tenant = new Tenant(); tenant.setId(1L);
         SystemUser userToBeDissociated = new User(); userToBeDissociated.setId(3L);
@@ -1023,6 +1029,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testUnAssignUserWithException() throws SystemException {
+        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L, "test", true));
         SystemRole role = new Role(); role.setId(2L);
         SystemTenant tenant = new Tenant(); tenant.setId(1L);
         SystemUser user = new User(); user.setId(3L);

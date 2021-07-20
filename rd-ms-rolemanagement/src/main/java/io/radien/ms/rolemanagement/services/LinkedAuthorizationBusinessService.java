@@ -150,7 +150,7 @@ public class LinkedAuthorizationBusinessService implements Serializable {
      */
     public void deleteAssociation(Long associationId) throws LinkedAuthorizationNotFoundException, SystemException {
         SystemLinkedAuthorization linkedAuthorizationInfoToDelete = linkedAuthorizationServiceAccess.getAssociationById(associationId);
-        activeTenantRESTServiceAccess.getActiveTenantByUserAndTenant(linkedAuthorizationInfoToDelete.getUserId(), linkedAuthorizationInfoToDelete.getTenantId());
+        activeTenantRESTServiceAccess.deleteByTenantAndUser(linkedAuthorizationInfoToDelete.getTenantId(), linkedAuthorizationInfoToDelete.getUserId());
 
         linkedAuthorizationServiceAccess.deleteAssociation(associationId);
     }

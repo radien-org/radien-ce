@@ -80,13 +80,28 @@ public enum GenericErrorCodeMessage {
     TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER("TR5", "error.no.association.found.for.user", "No association found for user %s."),
     TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE("TR6", "error.permission.already.associated", "Permission is already associated with tenant %s and role %s."),
     TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION("TR7", "error.no.permission.found", "No association found for permission %s."),
+    TENANT_ROLE_ASSOCIATION_EXISTS("TR8", "error.no.association.tenant.roles", "There is no association between tenant %s and roles %s."),
+    TENANT_ROLE_USER_ASSOCIATION_EXISTS("TR9", "error.no.association.tenant.roles", "There is no association between tenant %s , user % and roles %s."),
 
+    /**
+     * Tenant User Role Error Code Messages
+     */
+    INFO_TENANT_USER_ROLES("TUR1","info.tenant.user.roles","Unassigning/removing userTenantRole(s) of userId: %s from tenantId: %s of no. of role(s): %s"),
+    HAVE_NULL_PARAMS_TENANT_USER_ROLES("TUR2","have.null.params.tenant.user.roles","Tenant User Role(s) have null parameters: %s"),
+
+    /**
+     * Tenant User Error Code Messages
+     */
+    INFO_TENANT_AND_USER_ID("TU1", "info.tenant.user", "User and Tenant id's are mandatory"),
+    INFO_TENANT_USER("TU2","info.tenant.user.roles","Retrieving Roles for user %s and tenant %s"),
 
     /**
      * Active Tenant Error Code messages
      */
-    ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER("AC", "error.delete.without.tenant.and.user",
+    ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER("AC1", "error.delete.without.tenant.and.user",
             "Insufficient params to perform delete. Is necessary at least tenant or user id"),
+    ACTIVE_TENANT_ERROR_VALIDATING("AC2", "error.validating.active.tenant",
+            "Error checking active tenants"),
 
     /**
      * Permission Business Error Code Messages
@@ -108,6 +123,11 @@ public enum GenericErrorCodeMessage {
      * User Business Error Code Messages
      */
     USER_FIELD_MANDATORY("U1", "error.user.field.mandatory", "User %s is mandatory."),
+
+    /**
+     * Role Business Error Code Messages
+     */
+    ERROR_ROLE_NOT_FOUND("R1", "error.role.not.found", "Role resource(s) not found: %s"),
 
     /**
      * System Error Code Messages
