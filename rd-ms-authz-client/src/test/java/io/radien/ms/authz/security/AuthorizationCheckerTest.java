@@ -235,12 +235,13 @@ public class AuthorizationCheckerTest {
 
         prepareMockParamForRefreshToken(tokensPlaceHolder, userClient);
 
-        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz").
-                thenReturn("token-yyz");
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
         when(this.tenantRoleClient.isRoleExistentForUser(userId, roleName, tenantId)).
                 thenThrow(new TokenExpiredException()).
                 thenReturn(Response.ok().entity(Boolean.TRUE).build());
+
+        assertTrue(authorizationChecker.hasGrant(tenantId, roleName));
     }
 
     /**

@@ -26,8 +26,6 @@ import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.servlet.http.HttpServletRequest;
@@ -56,8 +54,6 @@ public abstract class AuthorizationChecker implements Serializable {
     private UserClient userClient;
 
     private TenantRoleClient tenantRoleClient;
-
-    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private TokensPlaceHolder tokensPlaceHolder;
 

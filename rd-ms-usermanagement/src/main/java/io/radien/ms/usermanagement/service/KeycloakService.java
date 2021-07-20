@@ -22,8 +22,6 @@ import io.radien.ms.usermanagement.config.KeycloakConfigs;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 
@@ -34,8 +32,6 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class KeycloakService {
-
-    private static final Logger log = LoggerFactory.getLogger(KeycloakService.class);
 
     /**
      * Method to retrieve active keycloak client

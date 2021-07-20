@@ -37,8 +37,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static io.radien.api.SystemVariables.ID;
 import static io.radien.api.SystemVariables.TENANT_ID;
@@ -56,8 +54,6 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
     @Inject
     private EntityManagerHolder emh;
-
-    private static final Logger log = LoggerFactory.getLogger(ActiveTenantService.class);
 
     /**
      * Gets the System Active Tenant searching by the PK (id).

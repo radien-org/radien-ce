@@ -23,8 +23,6 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
@@ -47,8 +45,6 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
 
     @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;
-
-    private static final Logger log = LoggerFactory.getLogger(TenantRolePermissionService.class);
 
     /**
      * Gets the System Tenant Role Permission searching by the PK (id).
