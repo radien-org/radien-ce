@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
@@ -177,7 +178,7 @@ public class TenantRolePermissionServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(basePermissionId, null));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertEquals(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"), ejbException.getCausedByException().getMessage());
+        Assertions.assertEquals(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ID.getLabel()), ejbException.getCausedByException().getMessage());
     }
 
     /**
@@ -191,7 +192,7 @@ public class TenantRolePermissionServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(null, baseTenantRoleId));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id")));
+        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel())));
     }
 
     /**
@@ -313,7 +314,7 @@ public class TenantRolePermissionServiceTest {
         try{
             this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(null, 202L);
         } catch (Exception e) {
-            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant role id")));
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ROLE_ID.getLabel())));
         }
     }
 
@@ -341,7 +342,7 @@ public class TenantRolePermissionServiceTest {
         try{
             this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, null);
         } catch (Exception e) {
-            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id")));
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel())));
         }
     }
 }

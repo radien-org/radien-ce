@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.permission;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemResource;
@@ -26,6 +27,7 @@ import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 
 import javax.enterprise.context.RequestScoped;
@@ -65,12 +67,12 @@ public class PermissionManager extends AbstractManager {
             p.setActionId(this.selectedAction.getId());
             this.permissionRESTServiceAccess.create(p);
 
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"),
-                    JSFUtil.getMessage("rd_permission"));
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.PERMISSION_MESSAGE.getValue()));
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_permission"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.PERMISSION_MESSAGE.getValue()));
         }
-        return "permission";
+        return DataModelEnum.PERMISSION_DETAIL_PAGE.getValue();
     }
 
     public String edit(SystemPermission p) {
@@ -78,15 +80,15 @@ public class PermissionManager extends AbstractManager {
         try {
             this.selectedAction = this.actionRESTServiceAccess.getActionById(p.getActionId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_action_not_found"), p.getActionId())));
+                            DataModelEnum.ACTION_NOT_FOUND_MESSAGE.getValue()), p.getActionId())));
             this.selectedResource = this.resourceRESTServiceAccess.getResourceById(p.getResourceId()).
                     orElseThrow(() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
-                            "rd_resource_not_found"), p.getResourceId())));
+                            DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE.getValue()), p.getResourceId())));
         }
         catch (Exception e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.PERMISSION_MESSAGE.getValue()));
         }
-        return "permission";
+        return DataModelEnum.PERMISSION_DETAIL_PAGE.getValue();
     }
 
     public List<? extends SystemResource> filterResourcesByName(String filter) throws SystemException {
@@ -94,16 +96,16 @@ public class PermissionManager extends AbstractManager {
         try {
             if (filter.trim().length() == 0) {
                 page = this.resourceRESTServiceAccess.getAll(
-                        null, 1, 5, Arrays.asList("name"), true).getResults();
+                        null, 1, 5, Arrays.asList(SystemVariables.NAME.getFieldName()), true).getResults();
             } else {
                 if (!filter.endsWith("%")) {
                     filter += "%";
                 }
                 page = this.resourceRESTServiceAccess.getAll(
-                        filter, 1, 5, Arrays.asList("name"), true).getResults();
+                        filter, 1, 5, Arrays.asList(SystemVariables.NAME.getFieldName()), true).getResults();
             }
         } catch (SystemException e) {
-                handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
+                handleError(e, JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.PERMISSION_MESSAGE.getValue()));
         }
         return page;
     }
@@ -113,17 +115,17 @@ public class PermissionManager extends AbstractManager {
         try {
             if (filter.trim().length() == 0) {
                 list = this.actionRESTServiceAccess.getAll(
-                        null, 1, 10, Arrays.asList("name"), true).getResults();
+                        null, 1, 10, Arrays.asList(SystemVariables.NAME.getFieldName()), true).getResults();
             }
             else {
                 if (!filter.endsWith("%")) {
                     filter += "%";
                 }
                 list = this.actionRESTServiceAccess.getAll(
-                        filter, 1, 10, Arrays.asList("name"), true).getResults();
+                        filter, 1, 10, Arrays.asList(SystemVariables.NAME.getFieldName()), true).getResults();
             }
         } catch (SystemException e) {
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_permission"));
+            handleError(e, JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.PERMISSION_MESSAGE.getValue()));
         }
         return list;
     }

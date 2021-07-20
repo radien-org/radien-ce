@@ -229,12 +229,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public String editRecord() {
         try {
             if (selectedUser != null) {
-                return "pretty:user";
+                return DataModelEnum.PRETTY_USER.getValue();
             }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
@@ -249,7 +249,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:user";
+        return DataModelEnum.PRETTY_USER.getValue();
     }
 
     /**
@@ -265,7 +265,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
@@ -279,7 +279,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
-        return "pretty:users";
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**
@@ -343,7 +343,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return url mapping that refers Tenant association screen
      */
     public String prepareTenantAssociation() {
-        return "pretty:userTenantAssociation";
+        return DataModelEnum.TENANT_USER_ASSOCIATION.getValue();
     }
 
     /**

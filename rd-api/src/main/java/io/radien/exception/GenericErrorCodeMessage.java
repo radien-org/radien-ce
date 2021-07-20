@@ -72,7 +72,6 @@ public enum GenericErrorCodeMessage {
     /**
      * Tenant Role Error Code Messages
      */
-
     TENANT_ROLE_NO_TENANT_ROLE_FOUND("TR1", "error.no.tenant.role.found.id", "No Tenant Role found for id %s."),
     TENANT_ROLE_FIELD_MANDATORY("TR2", "error.tenant.role.field.mandatory", "Tenant Role %s is mandatory."),
     TENANT_ROLE_ASSOCIATION_TENANT_ROLE("TR3", "error.no.association.tenant.role", "There is no association between tenant %s and role %s."),
@@ -83,6 +82,8 @@ public enum GenericErrorCodeMessage {
     TENANT_ROLE_NO_TENANT_FOUND("TR8", "error.no.tenant.found", "No tenant found for %s."),
     TENANT_ROLE_NO_PERMISSION_FOUND("TR9", "error.no.permission.found", "No permission found for %s."),
     TENANT_ROLE_NO_ROLE_FOUND("TR10", "error.no.role.found", "No role found for %s."),
+    TENANT_ROLE_PERMISSIONS_ASSOCIATED_WITH_TENANT_ROLE("TR11", "error.permission.associated.with.tenant.role", "There are permissions associated with tenant role "),
+    TENANT_ROLE_USERS_ASSOCIATED_WITH_TENANT_ROLE("TR12", "error.user.associated.with.tenant.role","There are users associated with tenant role "),
 
     /**
      * Active Tenant Error Code messages

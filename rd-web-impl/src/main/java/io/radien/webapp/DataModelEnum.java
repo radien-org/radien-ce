@@ -42,6 +42,7 @@ public enum DataModelEnum {
     DELETE_ERROR("rd_delete_error"),
     ACTIVE_TENANT_HAS_BEEN_REMOVED("rd_removed_active_tenant"),
     ERROR_REDIRECTING("rd_error_in_redirecting"),
+    TENANT_USER_ASSOCIATION("pretty:userTenantAssociation"),
 
     /**
      * Active Management
@@ -61,10 +62,12 @@ public enum DataModelEnum {
     ACTION_DETAIL_PAGE("actionDetails"),
     ACTION_NAME_IS_MANDATORY("rd_action_name_is_mandatory"),
     ACTION_SELECTED("rd_action_selected"),
+    ACTION_NOT_FOUND_MESSAGE("rd_action_not_found"),
 
     /**
      * Permission Management
      */
+    PERMISSION_DETAIL_PAGE("permission"),
     PERMISSION_MESSAGE("rd_permission"),
     PERMISSIONS_MESSAGE("rd_permissions"),
     PERMISSION_NOT_FOUND_MESSAGE("rd_permission_not_found"),
@@ -88,6 +91,7 @@ public enum DataModelEnum {
     USER_MESSAGE("rd_user"),
     USERS_MESSAGE("rd_users"),
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
+    PRETTY_USER("pretty:user"),
     USERS_PATH("pretty:users"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
@@ -153,6 +157,7 @@ public enum DataModelEnum {
     RESOURCE_DETAIL_PAGE("resourceDetails"),
     RESOURCE_NAME_IS_MANDATORY("rd_resource_name_is_mandatory"),
     RESOURCE_SELECTED("rd_resource_selection"),
+    RESOURCE_NOT_FOUND_MESSAGE("rd_resource_not_found"),
 
     /**
      * Tenant Management

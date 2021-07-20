@@ -22,27 +22,31 @@ package io.radien.api;
  **/
 public enum SystemVariables {
 
-    ID("id"),
-    NAME("name"),
-    LOGON("logon"),
-    USER_EMAIL("userEmail"),
-    SUB("sub"),
-    TENANT_ID("tenantId"),
-    TENANT_NAME("tenantName"),
-    ROLE_ID("roleId"),
-    USER_ID("userId"),
-    TENANT_ROLE_ID("tenantRoleId"),
-    PERMISSION_ID("permissionId");
+    ID("id", "ID"),
+    NAME("name", "Name"),
+    LOGON("logon", "Logon"),
+    USER_EMAIL("userEmail", "User Email"),
+    SUB("sub", "Subject"),
+    TENANT_ID("tenantId", "Tenant ID"),
+    TENANT_NAME("tenantName", "Tenant Name"),
+    ROLE_ID("roleId", "Role ID"),
+    ROLE_NAME("roleName", "Role Name"),
+    USER_ID("userId", "User ID"),
+    TENANT_ROLE_ID("tenantRoleId", "Tenant Role ID"),
+    PERMISSION_ID("permissionId", "Permission ID"),
+    ROLE_TENANT_ID("roleTenantId", "Role Tenant ID");
 
     private final String fieldName;
+    private final String label;
 
     /**
      * Tenant error code messages constructor
      *
      * @param fieldName of the variable
      */
-    SystemVariables(String fieldName) {
+    SystemVariables(String fieldName, String label) {
         this.fieldName = fieldName;
+        this.label=label;
     }
 
     /**
@@ -51,5 +55,13 @@ public enum SystemVariables {
      */
     public String getFieldName() {
         return fieldName;
+    }
+
+    /**
+     * Converts to string the requested value of the variable
+     * @return a string value of the variable lable
+     */
+    public String getLabel() {
+        return label;
     }
 }
