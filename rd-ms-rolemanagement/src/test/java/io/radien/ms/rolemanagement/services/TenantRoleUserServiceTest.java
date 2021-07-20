@@ -17,24 +17,33 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
+import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
-import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
+import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import java.util.ArrayList;
-import org.junit.jupiter.api.*;
-
-import javax.ejb.EJBException;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.NamingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import javax.ejb.EJBException;
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.NamingException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * Tenant Role User Service rest requests and responses with access into the db
@@ -45,10 +54,14 @@ import java.util.Properties;
 public class TenantRoleUserServiceTest {
 
     static Properties p;
+    static TenantRoleServiceAccess tenantRoleServiceAccess;
     static TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
 
     static Long baseUserId = 111L;
-    static Long baseTenantRoleId = 222L;
+
+    static Long baseTenantId = 99900000L;
+    static Long baseRoleId = 99900001L;
+    static Long baseTenantRoleId;
     static EJBContainer container;
 
     /**
@@ -76,6 +89,8 @@ public class TenantRoleUserServiceTest {
     public void inject() throws NamingException {
         String lookupString = "java:global/rd-ms-rolemanagement//TenantRoleUserService";
         tenantRoleUserServiceAccess = (TenantRoleUserServiceAccess) container.getContext().lookup(lookupString);
+        lookupString = "java:global/rd-ms-rolemanagement//TenantRoleService";
+        tenantRoleServiceAccess = (TenantRoleServiceAccess) container.getContext().lookup(lookupString);
     }
 
     /**
@@ -99,11 +114,17 @@ public class TenantRoleUserServiceTest {
     @Test
     public void testCreate() throws UniquenessConstraintException {
 
+        SystemTenantRole systemTenantRole = new TenantRole();
+        systemTenantRole.setRoleId(baseRoleId);
+        systemTenantRole.setTenantId(baseTenantId);
+        tenantRoleServiceAccess.save(systemTenantRole);
+        baseTenantRoleId = systemTenantRole.getId();
+
         SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUser();
         systemTenantRoleUser.setUserId(baseUserId);
         systemTenantRoleUser.setTenantRoleId(baseTenantRoleId);
 
-        this.tenantRoleUserServiceAccess.create(systemTenantRoleUser);
+        tenantRoleUserServiceAccess.create(systemTenantRoleUser);
         Assertions.assertNotNull(systemTenantRoleUser.getId());
     }
 
@@ -231,7 +252,8 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(10)
     public void testDeleteWithoutInformingId() {
-        EJBException e = Assertions.assertThrows(EJBException.class, () -> tenantRoleUserServiceAccess.delete((Long) null));
+        Long idAsNull = null;
+        EJBException e = Assertions.assertThrows(EJBException.class, () -> tenantRoleUserServiceAccess.delete(idAsNull));
         Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
     }
 
@@ -303,7 +325,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(14)
     public void testPagination() {
-        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(null,1, 100);
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(null,null,1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
         Assertions.assertEquals(1, p.getTotalPages());
@@ -319,7 +341,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(15)
     public void testPaginationWithTenantRoleSpecified() {
-        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(baseTenantRoleId,
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(baseTenantId, baseRoleId,
                 1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
@@ -336,7 +358,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(16)
     public void testPaginationForNotExistentTenantRole() {
-        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(10000L,
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(10000L,10001L,
                 1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertEquals(0,p.getTotalResults());

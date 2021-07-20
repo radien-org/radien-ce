@@ -32,8 +32,11 @@ public enum DataModelEnum {
     EDIT_SUCCESS("rd_edit_success"),
     EDIT_ERROR_MESSAGE("rd_edit_error"),
     SAVE_SUCCESS_MESSAGE("rd_save_success"),
+    EDIT_SUCCESS_MESSAGE("rd_edit_success"),
     RETRIEVE_ERROR_MESSAGE("rd_retrieve_error"),
     ROW_SELECTED("rowSelected"),
+    UPDATE_SUCCESS_MESSAGE("rd_update_success"),
+    UPDATE_ERROR_MESSAGE("rd_update_error"),
     SELECT_RECORD_FIRST("rd_select_record_first"),
     DELETE_SUCCESS("rd_delete_success"),
     ERROR_SELECT_RECORD_TO_DELETE("rd_delete_select_record_first"),
@@ -88,13 +91,18 @@ public enum DataModelEnum {
      */
     USER_MESSAGE("rd_user"),
     USERS_MESSAGE("rd_users"),
+    USERS_SELECTED_MESSAGE("rd_user_selected"),
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
+    USER_SEND_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
+    USER_SEND_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
+    USER_PATH("pretty:user"),
     PRETTY_USER("pretty:user"),
     USERS_PATH("pretty:users"),
     USERS_ROLES_PATH("pretty:userRoles"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
     USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),
+    USERS_PROFILE_PATH("pretty:userProfile"),
     SENT_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
     SENT_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
 
@@ -131,7 +139,7 @@ public enum DataModelEnum {
     TR_PATH("tenantrole"),
     TR_ERROR_RETRIEVING_USER("rd_tenant_association_error_retrieve_user"),
 
-    /**
+    /*
      * Tenant Management
      */
     TENANT_MAIN_PAGE("tenants"),

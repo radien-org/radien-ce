@@ -63,7 +63,7 @@ public class TenantRoleUserResourceTest {
      */
     @Test
     public void testGetUsers() {
-        Response response = tenantRoleUserResource.getAll(1L,
+        Response response = tenantRoleUserResource.getAll(1L,1L,
                 2, 3);
         assertEquals(200, response.getStatus());
     }
@@ -75,9 +75,9 @@ public class TenantRoleUserResourceTest {
     @Test
     public void testGetUserWithException() {
         doThrow(new RuntimeException("error")).
-                when(tenantRoleUserServiceAccess).getAll(1L,
+                when(tenantRoleUserServiceAccess).getAll(1L,1L,
                 2, 3);
-        Response response = tenantRoleUserResource.getAll(1L,
+        Response response = tenantRoleUserResource.getAll(1L,1L,
                 2, 3);
         assertEquals(500, response.getStatus());
     }

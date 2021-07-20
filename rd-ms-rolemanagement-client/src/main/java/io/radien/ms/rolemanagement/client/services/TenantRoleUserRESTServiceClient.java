@@ -68,20 +68,21 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      * Under a pagination approach, retrieves the Users associations that exist
      * for a TenantRole
      * (Invokes the core method counterpart and handles TokenExpiration error)
-     * @param tenantRoleId identifier for a TenantRole
+     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
+     * @param roleId role identifier for a TenantRole (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
      * @return Page containing TenantRoleUser instances
      * @throws SystemException in case of any error
      */
     @Override
-    public Page<? extends SystemTenantRoleUser> getUsers(Long tenantRoleId, int pageNo, int pageSize) throws SystemException {
+    public Page<? extends SystemTenantRoleUser> getUsers(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
         try {
-            return getUsersCore(tenantRoleId, pageNo, pageSize);
+            return getUsersCore(tenantId, roleId, pageNo, pageSize);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return getUsersCore(tenantRoleId, pageNo, pageSize);
+                return getUsersCore(tenantId, roleId, pageNo, pageSize);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -90,17 +91,19 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
 
     /**
      * Core method that Retrieves TenantRoleUser associations using pagination approach
+     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
+     * @param roleId role identifier for a TenantRole (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
      * @return Page containing TenantRole user associations (Chunk/Portion compatible
      * with parameter Page number and Page size)
      * @throws SystemException in case of any error
      */
-    protected Page<? extends SystemTenantRoleUser> getUsersCore(Long tenantRoleId, int pageNo, int pageSize) throws SystemException {
+    protected Page<? extends SystemTenantRoleUser> getUsersCore(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
         try {
             TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getAll(tenantRoleId, pageNo, pageSize);
+            Response response = client.getAll(tenantId, roleId, pageNo, pageSize);
             return TenantRoleUserModelMapper.mapToPage((InputStream) response.getEntity());
         }
         catch (TokenExpiredException t) {
