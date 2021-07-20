@@ -171,6 +171,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM view id getter
      * @return the generic ecm view id
      */
+    @Override
     public String viewId() {
         return viewId;
     }
@@ -179,6 +180,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM view id getter
      * @return the generic ecm view id
      */
+    @Override
     public String getViewId() {
         return viewId;
     }
@@ -187,6 +189,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm view id setter
      * @param viewId to be set
      */
+    @Override
     public void setViewId(String viewId) {
         this.viewId = viewId;
     }
@@ -195,6 +198,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM language getter
      * @return the generic ecm language
      */
+    @Override
     public String getLanguage() {
         return language;
     }
@@ -203,6 +207,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm language setter
      * @param language to be set
      */
+    @Override
     public void setLanguage(String language) {
         this.language = language;
     }
@@ -220,6 +225,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM name getter
      * @return the generic ecm name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -228,6 +234,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm name setter
      * @param name to be set
      */
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -236,6 +243,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM HTML content getter
      * @return the generic ecm html content
      */
+    @Override
     public String getHtmlContent() {
         return htmlContent;
     }
@@ -244,6 +252,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm html content setter
      * @param htmlContent to be set
      */
+    @Override
     public void setHtmlContent(String htmlContent) {
         this.htmlContent = htmlContent;
     }
@@ -252,6 +261,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM content type getter
      * @return the generic ecm content type
      */
+    @Override
     public ContentType getContentType() {
         return contentType;
     }
@@ -260,6 +270,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic content type setter
      * @param contentType to be set
      */
+    @Override
     public void setContentType(ContentType contentType) {
         this.contentType = contentType;
     }
@@ -268,6 +279,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM app getter
      * @return the generic ecm app
      */
+    @Override
     public String getApp() {
         return app;
     }
@@ -276,6 +288,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm app setter
      * @param app to be set
      */
+    @Override
     public void setApp(String app) {
         this.app = app;
     }
@@ -284,6 +297,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM author getter
      * @return the generic ecm author
      */
+    @Override
     public String getAuthor() {
         return author;
     }
@@ -292,6 +306,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm author setter
      * @param author to be set
      */
+    @Override
     public void setAuthor(String author) {
         this.author = author;
     }
@@ -300,6 +315,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM is active getter
      * @return true if generic ecm is active
      */
+    @Override
     public boolean isActive() {
         return active;
     }
@@ -308,6 +324,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm is active setter
      * @param active to be set
      */
+    @Override
     public void setActive(boolean active) {
         this.active = active;
     }
@@ -316,6 +333,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM image getter
      * @return the generic ecm image
      */
+    @Override
     public byte[] getImage() {
         return image;
     }
@@ -324,6 +342,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm image setter
      * @param inputStream to be set
      */
+    @Override
     public void setImage(byte[] inputStream) {
         this.image = inputStream;
     }
@@ -332,6 +351,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM file getter
      * @return the generic ecm file
      */
+    @Override
     public byte[] getFile() {
         return fileStream;
     }
@@ -340,6 +360,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm file setter
      * @param fileStream to be set
      */
+    @Override
     public void setFile(byte[] fileStream) {
         this.fileStream = fileStream;
     }
@@ -348,6 +369,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM mime type getter
      * @return the generic ecm mime type
      */
+    @Override
     public String getMimeType() {
         return mimeType;
     }
@@ -356,6 +378,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM Mime type setter
      * @param mimeType to be set
      */
+    @Override
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
@@ -364,6 +387,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM file size getter
      * @return the generic ecm file size
      */
+    @Override
     public long getFileSize() {
         return fileSize;
     }
@@ -372,6 +396,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm file size setter
      * @param fileSize to be set
      */
+    @Override
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
@@ -380,6 +405,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Validator of the generic ecm is system
      * @return true if generic ecm is system
      */
+    @Override
     public boolean isSystem() {
         return system;
     }
@@ -388,6 +414,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ecm is system setter
      * @param system to be set
      */
+    @Override
     public void setSystem(boolean system) {
         this.system = system;
     }
@@ -396,6 +423,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM tags getter
      * @return the generic ecm tags
      */
+    @Override
     public List<String> getTags() {
         return tags;
     }
@@ -404,6 +432,7 @@ public class GenericEnterpriseContent extends AbstractECMModel implements Enterp
      * Generic ECM tags setter
      * @param tags to be set
      */
+    @Override
     public void setTags(List<String> tags) {
         this.tags = tags;
     }
