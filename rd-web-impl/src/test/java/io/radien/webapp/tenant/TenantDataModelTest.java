@@ -45,6 +45,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -150,7 +151,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.TENANT_SAVE_SUCCESS.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
     }
 
     @Test
@@ -164,7 +165,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.TENANT_SAVE_SUCCESS.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
     }
 
     @Test
@@ -176,7 +177,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.TENANT_SAVE_ERROR_MESSAGE.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
     @Test
@@ -207,7 +208,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.TENANT_SAVE_SUCCESS.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
     }
 
     @Test
@@ -367,12 +368,12 @@ public class TenantDataModelTest {
 
 
     @Test
-    public void testEditRecordsEmptySelectedRecord() {
+    public void testEditRecordsEmptySelectedRecord() throws IOException {
         assertEquals(DataModelEnum.TENANT_DETAIL_PAGE.getValue(), tenantDataModel.editRecords());
     }
 
     @Test
-    public void testEditRecords() {
+    public void testEditRecords() throws IOException {
         tenantDataModel.setSelectedTenant(null);
         assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.editRecords());
     }
@@ -402,7 +403,7 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.TENANT_DELETE_SUCCESS.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.DELETE_SUCCESS.getValue(), captured.getSummary());
     }
 
     @Test
@@ -430,16 +431,16 @@ public class TenantDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.TENANT_DELETE_ERROR.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.DELETE_ERROR.getValue(), captured.getSummary());
     }
 
     @Test
     public void testReturnHome() {
-        assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.returnHome());
+        assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.returnToDataTableRecords());
     }
 
     @Test
-    public void testEdit() throws SystemException {
+    public void testEdit() throws SystemException, IOException {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");

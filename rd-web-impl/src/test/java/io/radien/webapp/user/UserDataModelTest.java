@@ -18,48 +18,46 @@ package io.radien.webapp.user;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
-import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-
 import io.radien.webapp.tenantrole.LazyTenantRoleUserDataModel;
+import java.lang.reflect.Method;
+import java.util.Optional;
 import javax.faces.application.FacesMessage;
-import org.apache.commons.lang3.StringUtils;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.faces.context.Flash;
-
-
-import org.junit.Test;
-
 import org.mockito.Mockito;
-
-
+import org.mockito.MockitoAnnotations;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import java.lang.reflect.Method;
-import java.util.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.nullable;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserDataModelTest {
 
@@ -115,6 +113,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testIsTenantAssociationProcessAllowedSuccessCase() throws SystemException {
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(true);
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
         SystemUser selectedUser = new User(); selectedUser.setId(3L); selectedUser.setLogon("a.b");
 
@@ -337,6 +336,7 @@ public class UserDataModelTest {
 
         ActiveTenant activeTenant = new ActiveTenant(); activeTenant.setTenantId(1L);
         when(activeTenantDataModelManager.getActiveTenant()).thenReturn(activeTenant);
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
 
         userDataModel.init();
 
@@ -349,6 +349,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testInitWhenExceptionOccurs() {
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
         when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenThrow(new RuntimeException("error"));
         userDataModel.init();
 
@@ -366,10 +367,7 @@ public class UserDataModelTest {
     @Test
     public void testInitWhenNoActiveTenant() {
         when(activeTenantDataModelManager.getActiveTenant()).thenReturn(null);
-        userDataModel.setHasUserAdministratorRoleAccess(true);
-        userDataModel.setHasTenantAdministratorRoleAccess(true);
-        userDataModel.init();
-        assertNull(((LazyTenantRoleUserDataModel) userDataModel.getLazyUserDataModel()).getTenantId());
+        assertNull(userDataModel.getLazyUserDataModel());
     }
 
     /**
@@ -384,11 +382,11 @@ public class UserDataModelTest {
     }
 
     /**
-     * Test for method {@link UserDataModel#returnHome()}
+     * Test for method {@link UserDataModel#returnToDataTableRecords()} ()}
      */
     @Test
     public void testReturnHome() {
-        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.returnHome());
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.returnToDataTableRecords());
         assertNull(userDataModel.getSelectedUser());
         assertNotNull(userDataModel.getUser());
     }
@@ -489,7 +487,7 @@ public class UserDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.DELETE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.DELETE_SUCCESS.getValue(), captured.getSummary());
     }
 
     /**
@@ -507,7 +505,7 @@ public class UserDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.DELETE_ERROR_MESSAGE.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.DELETE_ERROR.getValue(), captured.getSummary());
     }
 
 
