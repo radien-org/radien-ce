@@ -24,8 +24,6 @@ import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
 import io.radien.ms.permissionmanagement.model.Permission;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -40,8 +38,6 @@ import java.util.List;
  */
 @RequestScoped
 public class PermissionResource implements PermissionResourceClient {
-
-	private Logger log = LoggerFactory.getLogger(PermissionResource.class);
 
 	@Inject
 	private PermissionServiceAccess permissionServiceAccess;

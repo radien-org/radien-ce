@@ -37,8 +37,6 @@
 				<p:ajax event="rowSelect" listener="#{userDataModel.onRowSelect}" update="@form:userManagementTableDiv"
 						oncomplete="$('.formValidationModalClass').modal('show')"/>
 
-				<p:column headerText="#{msg.logon}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}">
-					<h:outputText value="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}"/>
 				<f:facet name="header">
 					<div class="text-right">
 						<b:commandButton value="#{msg.rd_roles}"

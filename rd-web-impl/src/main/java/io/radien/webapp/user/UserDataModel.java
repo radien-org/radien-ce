@@ -280,13 +280,13 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public String userRoles() {
         try {
             if(selectedUser != null) {
-                return DataModelEnum.USER_ROLES_PAGE.getValue();
+                return DataModelEnum.USERS_ROLES_PATH.getValue();
             }
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
-                    JSFUtil.getMessage(DataModelEnum.USER_RD_USERS.getValue()));
+                    JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
         }
-        return DataModelEnum.USER_MAIN_PAGE.getValue();
+        return DataModelEnum.PRETTY_USER.getValue();
     }
 
 

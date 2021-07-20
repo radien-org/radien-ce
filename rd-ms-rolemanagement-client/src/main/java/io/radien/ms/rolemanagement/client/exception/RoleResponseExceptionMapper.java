@@ -60,7 +60,8 @@ public class RoleResponseExceptionMapper implements
                 return new NotFoundException(response.readEntity(String.class));
             case 500:
                 return new InternalServerErrorException(response.readEntity(String.class));
+            default:
+                return null;
         }
-        return null;
     }
 }

@@ -22,8 +22,6 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ResourceResourceClient;
 import io.radien.ms.permissionmanagement.model.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -40,8 +38,6 @@ import java.util.List;
 @Path("resource")
 @RequestScoped
 public class ResourceResource implements ResourceResourceClient {
-
-	private Logger log = LoggerFactory.getLogger(ResourceResource.class);
 
 	@Inject
 	private ResourceServiceAccess resourceServiceAccess;

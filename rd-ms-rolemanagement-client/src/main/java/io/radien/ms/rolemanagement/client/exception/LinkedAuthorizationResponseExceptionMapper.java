@@ -59,7 +59,8 @@ public class LinkedAuthorizationResponseExceptionMapper implements ResponseExcep
                 return new LinkedAuthorizationNotFoundException(response.readEntity(String.class));
             case 500:
                 return new InternalServerErrorException(response.readEntity(String.class));
+            default:
+                return null;
         }
-        return null;
     }
 }
