@@ -82,7 +82,7 @@ public class TenantRoleBusinessServiceTest {
     static TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
     static RoleServiceAccess roleServiceAccess;
     static EJBContainer container;
-
+    static ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     static String lookupString;
 
@@ -484,8 +484,6 @@ public class TenantRoleBusinessServiceTest {
     @Test
     @Order(13)
     public void getTenants() throws SystemException, UniquenessConstraintException, TenantRoleException, RoleNotFoundException {
-//        Long user = 100000L;
-
         // Create new roles
         SystemRole guest = createRole("guest");
         SystemRole publisher = createRole("publisher");

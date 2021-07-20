@@ -11,12 +11,11 @@ then
     exit
 fi
 
-
-ACCESS_TOKEN=$(curl -L -X POST 'https://idp-int.radien.io/auth/realms/radien/protocol/openid-connect/token' \
+ACCESS_TOKEN=$(curl -L -X POST $KEYCLOAK_IDP_URL$REALMS_TOKEN_PATH \
 -H 'Content-Type: application/x-www-form-urlencoded' \
---data-urlencode 'client_id=radien' \
---data-urlencode 'client_secret=d8f67579-1a33-47be-ad6f-aef38269ed12' \
---data-urlencode 'redirect_uri=https://localhost:8443/web/login' \
---data-urlencode 'grant_type=password' \
---data-urlencode 'username=n.santana-username' \
---data-urlencode 'password=batata' | jq -r '.access_token')
+--data-urlencode $SCRIPT_CLIENT_ID=$SCRIPT_CLIENT_ID_VALUE \
+--data-urlencode $SCRIPT_CLIENT_SECRET=$SCRIPT_CLIENT_SECRET_VALUE \
+--data-urlencode $SCRIPT_REDIRECT_URL=$SCRIPT_REDIRECT_URL_VALUE \
+--data-urlencode $SCRIPT_GRANT_TYPE=$SCRIPT_GRANT_TYPE_VALUE \
+--data-urlencode $SCRIPT_USERNAME=$SCRIPT_USERNAME_VALUE \
+--data-urlencode $SCRIPT_PASSWORD=$SCRIPT_PASSWORD_VALUE | jq -r '.access_token')

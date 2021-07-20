@@ -22,6 +22,9 @@ import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
+import io.radien.webapp.activeTenant.ActiveTenantMandatory;
+import io.radien.webapp.tenant.LazyTenantDataModel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -58,13 +61,20 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
     @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
 
+    @Inject
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     /**
      * The most import stuff. Initializes the LazyDataModel component
      */
     @PostConstruct
     public void init() {
         try {
-            lazyModel = buildLazyModel(service, tenantRESTServiceAccess, roleRESTServiceAccess);
+            if(activeTenantDataModelManager.isTenantActive()) {
+                lazyModel = buildLazyModel(service, tenantRESTServiceAccess, roleRESTServiceAccess);
+            } else {
+                redirectToHomePage();
+            }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TR_ASSOCIATIONS.getValue()));
@@ -88,6 +98,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
     /**
      * Makes the LazyDataModel perform the onload event/method
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }
