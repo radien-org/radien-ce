@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * LazyDataModel implemented specifically to attend the exhibition of TenantRoleUser
@@ -49,7 +51,10 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
     private final transient UserRESTServiceAccess userService;
     private final Map<Long, SystemUser> userMapRef;
 
-    private Long tenantRoleId = null;
+    private Long tenantId = null;
+    private Long roleId = null;
+
+    private static Logger log = LoggerFactory.getLogger(LazyTenantRoleUserDataModel.class);
 
     private static final SystemUser DEFAULT_USER = new User();
 
@@ -84,12 +89,16 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
      */
     @Override
     public Page<? extends SystemTenantRoleUser> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
-        Page<? extends SystemTenantRoleUser> page = service.getUsers(tenantRoleId,
-                (offset/pageSize)+1, pageSize);
-        // Get the user ids
-        List<Long> userIds = page.getResults().stream().map(SystemTenantRoleUser::getUserId).
-                distinct().collect(Collectors.toList());
-        updateUserReferencesForExhibition(userIds);
+        Page<? extends SystemTenantRoleUser> page = new Page<>();
+        // Just retrieve if we have tenant or role information
+        if (tenantId != null || roleId != null) {
+            page = service.getUsers(tenantId, roleId,
+                    (offset/pageSize)+1, pageSize);
+            // Get the user ids
+            List<Long> userIds = page.getResults().stream().map(SystemTenantRoleUser::getUserId).
+                    distinct().collect(Collectors.toList());
+            updateUserReferencesForExhibition(userIds);
+        }
         return page;
     }
 
@@ -122,22 +131,38 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
      * @return the user (if it exists), otherwise returns an empty pojo
      */
     public SystemUser getUser(Long userId) {
-        return userMapRef.getOrDefault(userId, DEFAULT_USER);
+        if (!userMapRef.containsKey(userId)) {
+            log.warn("User not found for id {}", userId);
+            return DEFAULT_USER;
+        }
+        return userMapRef.get(userId);
     }
 
     /**
-     * Getter for tenantRoleId property
+     * Getter for tenantId property
      * @return long value that corresponds to the tenantRoleId property
      */
-    public Long getTenantRoleId() {
-        return tenantRoleId;
+    public Long getTenantId() {
+        return tenantId;
     }
 
     /**
-     * Setter for tenantRoleId property
-     * @param tenantRoleId  long value that corresponds to the tenantRoleId property
+     * Setter for tenantId property
+     * @param tenantId  long value that corresponds to the tenantId property
      */
-    public void setTenantRoleId(Long tenantRoleId) {
-        this.tenantRoleId = tenantRoleId;
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
+
+    /**
+     * Getter for roleId property
+     * @return long value that corresponds to the roleId property
+     */
+    public Long getRoleId() { return roleId; }
+
+    /**
+     * Setter for roleId property
+     * @param roleId long value that corresponds to the roleId property
+     */
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
 }

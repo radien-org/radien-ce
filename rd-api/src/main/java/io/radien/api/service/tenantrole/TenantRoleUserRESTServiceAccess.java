@@ -29,13 +29,14 @@ public interface TenantRoleUserRESTServiceAccess {
 
     /**
      * Under a pagination approach, retrieves the Users associations that currently exist
-     * @param tenantRoleId identifier for a TenantRole (Acting as filter)
+     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
+     * @param roleId role identifier for a TenantRole (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
      * @return Page containing TenantRoleUser instances
      * @throws SystemException in case of any error
      */
-    Page<? extends SystemTenantRoleUser> getUsers(Long tenantRoleId, int pageNo, int pageSize) throws SystemException;
+    Page<? extends SystemTenantRoleUser> getUsers(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
 
     /**
      * UnAssign/dissociate/remove/delete UserTenantRole(s)

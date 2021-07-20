@@ -113,11 +113,11 @@ public class TenantRoleUserRESTServiceClientTest {
         Response response = Response.ok(is).build();
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
-        when(client.getAll(2L, 1, 3)).thenReturn(response);
+        when(client.getAll(2L, 3L, 1, 3)).thenReturn(response);
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
                 thenReturn(client);
 
-        Page<? extends SystemTenantRoleUser> result = target.getUsers(2L, 1, 3);
+        Page<? extends SystemTenantRoleUser> result = target.getUsers(2L, 3L, 1, 3);
         assertNotNull(result);
         assertEquals(1, result.getTotalPages());
         assertEquals(3,result.getResults().size());
@@ -135,7 +135,7 @@ public class TenantRoleUserRESTServiceClientTest {
 
         // Simulates JWT expire even on the reattempt
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getAll(33L, 1, 2)).
+        when(client.getAll(33L, 44L, 1, 2)).
                 thenThrow(new TokenExpiredException("test")).
                 thenThrow(new TokenExpiredException("test"));
 
@@ -143,7 +143,7 @@ public class TenantRoleUserRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getUsers(33L, 1, 2);
+        target.getUsers(33L, 44L, 1, 2);
     }
 
     /**
@@ -158,13 +158,13 @@ public class TenantRoleUserRESTServiceClientTest {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getAll(33L, 1, 2)).thenThrow(new InternalServerErrorException("test"));
+        when(client.getAll(33L, 44L, 1, 2)).thenThrow(new InternalServerErrorException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getUsers(33L, 1, 2);
+        target.getUsers(33L, 44L, 1, 2);
     }
 
     /**
