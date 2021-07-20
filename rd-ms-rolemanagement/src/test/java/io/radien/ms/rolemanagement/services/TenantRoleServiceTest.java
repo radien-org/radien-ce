@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
@@ -270,7 +271,7 @@ public class TenantRoleServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRoleServiceAccess.isAssociationAlreadyExistent(baseRoleId, null));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id")));
+        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel())));
     }
 
     /**
@@ -284,7 +285,7 @@ public class TenantRoleServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRoleServiceAccess.isAssociationAlreadyExistent(null, baseTenantId));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("role id")));
+        Assertions.assertTrue(ejbException.getCausedByException().getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel())));
     }
 
     /**
@@ -539,7 +540,7 @@ public class TenantRoleServiceTest {
             this.tenantRoleServiceAccess.
                     hasAnyRole(null, Arrays.asList("role-a", "role-b"), null);
         } catch(Exception e) {
-            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id")));
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel())));
         }
     }
 
@@ -868,7 +869,7 @@ public class TenantRoleServiceTest {
             this.tenantRoleServiceAccess.
                     hasAnyRole(user1, Arrays.asList(), null);
         } catch(Exception e) {
-            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("role name")));
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_NAME.getLabel())));
         }
     }
 

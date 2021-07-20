@@ -37,6 +37,7 @@ public class SessionTimeoutListener implements HttpSessionListener {
 	 * Creates a new session for the requested http session event
 	 * @param event to be created a new session in
 	 */
+	@Override
 	public void sessionCreated(HttpSessionEvent event) {
 		logger.debug("session created : " + event.getSession().getId());
 	}
@@ -45,6 +46,7 @@ public class SessionTimeoutListener implements HttpSessionListener {
 	 * Destroys the session for the requested http session event
 	 * @param event where the session will have to be destroyed
 	 */
+	@Override
 	public void sessionDestroyed(HttpSessionEvent event) {
 		HttpSession session = event.getSession();
 		try {
