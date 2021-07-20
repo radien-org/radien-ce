@@ -59,7 +59,7 @@ public class ResponseExceptionMapper implements
             case 401: return new TokenExpiredException(response.readEntity(String.class));
             case 404: return new NotFoundException(response.readEntity(String.class));
             case 500: return new InternalServerErrorException(response.readEntity(String.class));
+            default: return null;
         }
-        return null;
     }
 }
