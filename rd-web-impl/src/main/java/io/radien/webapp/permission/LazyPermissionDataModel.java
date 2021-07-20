@@ -24,7 +24,6 @@ import org.primefaces.model.FilterMeta;
 import org.primefaces.model.SortMeta;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,8 +33,6 @@ public class LazyPermissionDataModel extends LazyAbstractDataModel<SystemPermiss
 
     private static final long serialVersionUID = -7135039336902887393L;
     private PermissionRESTServiceAccess service;
-
-    private List<? extends SystemPermission> datasource;
 
     public LazyPermissionDataModel(PermissionRESTServiceAccess service) {
         this.service=service;

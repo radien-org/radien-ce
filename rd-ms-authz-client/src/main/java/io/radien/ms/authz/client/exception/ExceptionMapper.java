@@ -53,8 +53,9 @@ public class ExceptionMapper implements ResponseExceptionMapper<Exception> {
             case NOT_FOUND:
                 log.info("Received status code 404 aligned with Not Found Exception");
                 return new NotFoundException(response.readEntity(String.class));
+            default:
+                return null;
         }
-        return null;
     }
 
     /**

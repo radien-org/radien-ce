@@ -216,10 +216,10 @@ public class UserDataModelTest {
     public void testUserRoles(){
         SystemUser user = new User(); user.setId(2L);
         userDataModel.setSelectedUser(user);
-        assertEquals(DataModelEnum.USER_ROLES_PAGE.getValue(), userDataModel.userRoles());
+        assertEquals(DataModelEnum.USERS_ROLES_PATH.getValue(), userDataModel.userRoles());
 
         userDataModel.setSelectedUser(null);
-        assertEquals(DataModelEnum.USER_MAIN_PAGE.getValue(), userDataModel.userRoles());
+        assertEquals(DataModelEnum.PRETTY_USER.getValue(), userDataModel.userRoles());
 
     }
 }

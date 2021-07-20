@@ -189,15 +189,7 @@ public enum DataModelEnum {
     USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS("rd_user_tenant_roles_association_assigned_success"),
     USER_RD_TENANT_ROLE_ASSIGNED_ERROR("rd_user_tenant_roles_association_assigned_error"),
     USER_RD_TENANT_ROLE_UNASSIGNED_SUCCESS("rd_user_tenant_roles_association_unassigned_success"),
-    USER_RD_TENANT_ROLE_UNASSIGNED_ERROR("rd_user_tenant_roles_association_unassigned_error"),
-
-    /**
-     * User Management Pages
-     */
-    USER_MAIN_PAGE("users"),
-    USER_ROLES_PAGE("userRoles"),
-    USER_PROFILE_PAGE("userProfile"),
-    USER_RD_USERS("rd_users");
+    USER_RD_TENANT_ROLE_UNASSIGNED_ERROR("rd_user_tenant_roles_association_unassigned_error");
   
     private String value;
 
