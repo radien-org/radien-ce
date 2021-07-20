@@ -397,9 +397,9 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
             clearAssignableOrUnAssignedRoles();
             clearDefaultRolesAssignedMap();
         } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_RD_USERS.getValue()));
-            return DataModelEnum.USER_ROLES_PAGE.getValue();
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
+            return DataModelEnum.USERS_ROLES_PATH.getValue();
         }
-        return DataModelEnum.USER_MAIN_PAGE.getValue();
+        return DataModelEnum.PRETTY_USER.getValue();
     }
 }

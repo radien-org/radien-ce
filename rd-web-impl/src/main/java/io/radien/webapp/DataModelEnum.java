@@ -78,8 +78,9 @@ public enum DataModelEnum {
     ROLE_CREATION_PAGE("role"),
     ROLE_DETAIL_PAGE("roleDetails"),
     ROLE_NOT_FOUND_MESSAGE("rd_role_not_found"),
-    ROLE_MAIN_PAGE("roles"),
     ON_ROW_ROLE_EXPAND_ERROR("rd_on_row_role_expand_error"),
+    ROLE_NAME_MANDATORY("rd_role_name_is_mandatory"),
+    ROLE_SELECTED("rd_role_selected"),
 
 
     /**
@@ -90,6 +91,7 @@ public enum DataModelEnum {
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
     PRETTY_USER("pretty:user"),
     USERS_PATH("pretty:users"),
+    USERS_ROLES_PATH("pretty:userRoles"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
     USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),
@@ -173,7 +175,7 @@ public enum DataModelEnum {
     USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_assigned_success"),
     USER_ACTIVE_TENANT_ROLE_PERMISSION_ASSIGNED_ERROR("rd_user_active_tenant_role_permission_assigned_error"),
     USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_SUCCESS("rd_user_active_tenant_role_permission_unassigned_success"),
-    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR("rd_user_active_tenant_role_permission_unassigned_error");
+    USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_ERROR("rd_user_active_tenant_role_permission_unassigned_error"),
 
     /**
      * User Tenant Role Messages
@@ -183,15 +185,7 @@ public enum DataModelEnum {
     USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS("rd_user_tenant_roles_association_assigned_success"),
     USER_RD_TENANT_ROLE_ASSIGNED_ERROR("rd_user_tenant_roles_association_assigned_error"),
     USER_RD_TENANT_ROLE_UNASSIGNED_SUCCESS("rd_user_tenant_roles_association_unassigned_success"),
-    USER_RD_TENANT_ROLE_UNASSIGNED_ERROR("rd_user_tenant_roles_association_unassigned_error"),
-
-    /**
-     * User Management Pages
-     */
-    USER_MAIN_PAGE("users"),
-    USER_ROLES_PAGE("userRoles"),
-    USER_PROFILE_PAGE("userProfile"),
-    USER_RD_USERS("rd_users");
+    USER_RD_TENANT_ROLE_UNASSIGNED_ERROR("rd_user_tenant_roles_association_unassigned_error");
   
     private String value;
 
