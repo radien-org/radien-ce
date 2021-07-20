@@ -15,12 +15,13 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
-import javax.ejb.EJBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,6 +194,22 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     }
 
     /**
+     * Retrieves the Roles for which a User is associated under a Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return Response OK with List containing roles. Response 500 in case of any other error.
+     */
+    @Override
+    public Response getRolesForUserTenant(Long userId, Long tenantId) {
+        log(GenericErrorCodeMessage.INFO_TENANT_USER.toString(String.valueOf(userId), String.valueOf(tenantId)));
+        try {
+            return Response.ok().entity(tenantRoleBusinessService.getRolesForUserTenant(userId, tenantId)).build();
+        } catch (RoleNotFoundException e) {
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        }
+    }
+
+    /**
      * Check if Role exists for a User (Optionally under a Tenant)
      * @param userId User identifier
      * @param roleName Role name identifier
@@ -300,7 +317,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             log("Dissociating/removing user %d from tenant %d role %d", userId, tenantId, roleId);
             tenantRoleBusinessService.unassignUser(tenantId, roleId, userId);
             return Response.ok().build();
-        } catch (TenantRoleException | EJBException e) {
+        } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);

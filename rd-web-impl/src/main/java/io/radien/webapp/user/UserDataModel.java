@@ -269,6 +269,24 @@ public class UserDataModel extends AbstractManager implements Serializable {
     }
 
     /**
+     * Redirects to user roles page
+     * when it invoke
+     * @return users HTML page
+     */
+    public String userRoles() {
+        try {
+            if(selectedUser != null) {
+                return DataModelEnum.USER_ROLES_PAGE.getValue();
+            }
+        } catch(Exception e) {
+            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+                    JSFUtil.getMessage(DataModelEnum.USER_RD_USERS.getValue()));
+        }
+        return DataModelEnum.USER_MAIN_PAGE.getValue();
+    }
+
+
+    /**
      * Redirects user to the home page
      * @return a new HTML page
      */

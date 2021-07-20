@@ -35,6 +35,7 @@ import io.radien.ms.rolemanagement.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import java.util.ArrayList;
 import org.junit.jupiter.api.*;
 
 import javax.ejb.EJBException;
@@ -45,6 +46,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tenant Role Service test
@@ -170,8 +173,8 @@ public class TenantRoleServiceTest {
 
         SystemTenantRole retrieved = this.tenantRoleServiceAccess.get(generatedId);
         Assertions.assertNotNull(retrieved);
-        Assertions.assertEquals(retrieved.getRoleId(), originalRoleId);
-        Assertions.assertEquals(retrieved.getTenantId(), originalTenantId);
+        assertEquals(retrieved.getRoleId(), originalRoleId);
+        assertEquals(retrieved.getTenantId(), originalTenantId);
 
         Long newRoleId = 44L, newTenantId = 45L;
         SystemTenantRole systemTenantRole1 = new TenantRole();
@@ -182,8 +185,8 @@ public class TenantRoleServiceTest {
 
         retrieved = this.tenantRoleServiceAccess.get(generatedId);
         Assertions.assertNotNull(retrieved.getId());
-        Assertions.assertEquals(retrieved.getRoleId(), newRoleId);
-        Assertions.assertEquals(retrieved.getTenantId(), newTenantId);
+        assertEquals(retrieved.getRoleId(), newRoleId);
+        assertEquals(retrieved.getTenantId(), newTenantId);
     }
 
     /**
@@ -375,7 +378,7 @@ public class TenantRoleServiceTest {
         Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(1, 100);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
-        Assertions.assertEquals(1, p.getTotalPages());
+        assertEquals(1, p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
     }
@@ -393,7 +396,7 @@ public class TenantRoleServiceTest {
                 true, true);
         List<? extends SystemTenantRole> list = tenantRoleServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(1, list.size());
+        assertEquals(1, list.size());
     }
 
     /**
@@ -418,7 +421,7 @@ public class TenantRoleServiceTest {
                 true, false);
         List<? extends SystemTenantRole> list = tenantRoleServiceAccess.get(filter);
         Assertions.assertNotNull(list);
-        Assertions.assertEquals(2, list.size());
+        assertEquals(2, list.size());
     }
 
     /**
@@ -457,7 +460,7 @@ public class TenantRoleServiceTest {
 
         Optional<Long> id = this.tenantRoleServiceAccess.getTenantRoleId(10000L, 10001L);
         Assertions.assertTrue(id.isPresent());
-        Assertions.assertEquals(expectedId, id.get());
+        assertEquals(expectedId, id.get());
 
         id = this.tenantRoleServiceAccess.getTenantRoleId(101010L, 202L);
         Assertions.assertFalse(id.isPresent());
@@ -868,5 +871,135 @@ public class TenantRoleServiceTest {
         } catch(Exception e) {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_NAME.getLabel())));
         }
+    }
+
+    /**
+     * Test method for getRoles(Long userId, Long tenantId)
+     */
+    @Test
+    public void testGetRoles() {
+        SystemRole role1 = new Role();
+        roleObject(role1, "role1");
+
+        SystemRole role2 = new Role();
+        roleObject(role2, "role2");
+
+        SystemRole role3 = new Role();
+        roleObject(role3, "role3");
+
+
+        Long tenant1=444L, tenant2=445L, tenant3 = 446L;
+        SystemTenantRole tenant1Role1 = new TenantRole();
+        tenantRoleObject(tenant1Role1, tenant1, role1);
+
+        SystemTenantRole tenant1Role2 = new TenantRole();
+        tenantRoleObject(tenant1Role2, tenant1, role2);
+
+        SystemTenantRole tenant2Role1 = new TenantRole();
+        tenantRoleObject(tenant2Role1, tenant2, role1);
+
+        SystemTenantRole tenant2Role3 = new TenantRole();
+        tenantRoleObject(tenant2Role3, tenant2, role3);
+
+        SystemTenantRole tenant3Role3 = new TenantRole();
+        tenantRoleObject(tenant3Role3, tenant3, role3);
+
+
+        Long user1 = 100000000L, user2 = 100000011L;
+        SystemTenantRoleUser tenant1Role1User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant1Role1User1,user1,tenant1Role1);
+
+        SystemTenantRoleUser tenant1Role2User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant1Role2User1,user1,tenant1Role2);
+
+        SystemTenantRoleUser tenant2Role1User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant2Role1User1,user1,tenant2Role1);
+
+        SystemTenantRoleUser tenant3Role3User1 = new TenantRoleUser();
+        userTenantRoleObject(tenant3Role3User1,user1,tenant3Role3);
+
+        SystemTenantRoleUser tenant1Role2User2 = new TenantRoleUser();
+        userTenantRoleObject(tenant1Role2User2,user2,tenant1Role2);
+
+        SystemTenantRoleUser tenant2Role3User2 = new TenantRoleUser();
+        userTenantRoleObject(tenant2Role3User2,user2,tenant2Role3);
+
+
+        List<Long> ids = tenantRoleServiceAccess.getRoleIdsForUserTenant(user1, tenant1);
+        Assertions.assertTrue(ids.contains(role1.getId()) && ids.contains(role2.getId()));
+        Assertions.assertEquals(5, ids.size());
+
+        ids = tenantRoleServiceAccess.getRoleIdsForUserTenant(user2, tenant2);
+        Assertions.assertTrue(ids.contains(role3.getId()));
+        Assertions.assertEquals(3, ids.size());
+
+        ids = tenantRoleServiceAccess.getRoleIdsForUserTenant(99999999L, tenant3);
+        Assertions.assertTrue(ids.isEmpty());
+    }
+
+    /**
+     * Test method getRoles(Long userId, Long tenantId)
+     * without informing the mandatory field Role
+     */
+    @Test
+    public void testGetRolesWithoutMandatoryFieldUser() {
+        EJBException e = Assertions.assertThrows(EJBException.class, () ->
+                tenantRoleServiceAccess.getRoleIdsForUserTenant(null, null));
+        Assertions.assertTrue(e.getCausedByException() instanceof IllegalArgumentException);
+    }
+
+    /**
+     * Test method getTenantRoleIds()
+     * asserts List TenantRoleIds
+     * @throws TenantRoleException
+     */
+    @Test
+    public void testGetTenantRoleIds() throws TenantRoleException {
+        SystemTenantRole str = new TenantRole();
+        str.setTenantId(10000L);
+        str.setRoleId(10000L);
+        Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.save(str));
+
+        ArrayList<Long> roleIds = new ArrayList<Long>();
+        roleIds.add(10000L);
+
+        Long expectedId = str.getId();
+        Assertions.assertNotNull(expectedId);
+
+        List<Long> ids = tenantRoleServiceAccess.getTenantRoleIds(10000L, roleIds);
+        Assertions.assertFalse(ids.isEmpty());
+        assertEquals(expectedId, ids.get(0));
+    }
+
+    /**
+     * This method construct role object
+     * @param role reference role object
+     * @param roleName Role name
+     */
+    private void roleObject(SystemRole role, String roleName){
+        role.setName(roleName);
+        Assertions.assertDoesNotThrow(() -> this.roleServiceAccess.save(role));
+    }
+
+    /**
+     * This method construct tenantRole object
+     * @param tenantRole reference tenantRole object
+     * @param tenantId Tenant Identifier
+     * @param role reference role object
+     */
+    private void tenantRoleObject(SystemTenantRole tenantRole, Long tenantId, SystemRole role){
+        tenantRole.setTenantId(tenantId); tenantRole.setRoleId(role.getId());
+        Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.save(tenantRole));
+    }
+
+    /**
+     * This method construct systemTenantRoleUser object
+     * @param systemTenantRoleUser reference systemTenantRoleUser object
+     * @param userId User Identifier
+     * @param tenantRole reference tenantRole object
+     */
+    private void userTenantRoleObject(SystemTenantRoleUser systemTenantRoleUser, Long userId, SystemTenantRole tenantRole){
+        systemTenantRoleUser.setUserId(userId); systemTenantRoleUser.setTenantRoleId(tenantRole.getId());
+        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(systemTenantRoleUser));
     }
 }

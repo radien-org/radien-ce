@@ -18,6 +18,7 @@ package io.radien.api.service.tenantrole;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.exception.SystemException;
+import java.util.Collection;
 
 /**
  * Rest service client responsible to Deal with TenantRoleUser endpoint
@@ -35,4 +36,14 @@ public interface TenantRoleUserRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Page<? extends SystemTenantRoleUser> getUsers(Long tenantRoleId, int pageNo, int pageSize) throws SystemException;
+
+    /**
+     * UnAssign/dissociate/remove/delete UserTenantRole(s)
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @param roleIds Collection of Role ids
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    Boolean deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException;
 }

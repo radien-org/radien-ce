@@ -44,9 +44,8 @@ import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
 
-import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR;
+import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -594,7 +593,7 @@ public class TenantRoleBusinessServiceTest {
 
         // Doing (un)assignment process with a tenant/role combination that does not exist
         Long invalidTenant = 1111111111111L, invalidUser = 2222222222222L;
-        String expectedErrorMessage = TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR.
+        String expectedErrorMessage = TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS.
                 toString(String.valueOf(invalidTenant), String.valueOf(guest.getId()), String.valueOf(invalidUser));
         TenantRoleException tre = assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
                 unassignUser(invalidTenant, guest.getId(), invalidUser));

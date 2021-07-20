@@ -108,6 +108,8 @@
 		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
 		<version.junit>4.13.1</version.junit>
 		<version.junit.jupiter>5.7.1</version.junit.jupiter>
+		<version.mock.jupiter>5.7.1</version.mock.jupiter>
+		<version.mockito.core>2.23.0</version.mockito.core>
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
@@ -424,6 +426,13 @@
 				<groupId>org.primefaces.extensions</groupId>
 				<artifactId>primefaces-extensions</artifactId>
 				<version>${version.primefaces.ext}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${version.mockito.core}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

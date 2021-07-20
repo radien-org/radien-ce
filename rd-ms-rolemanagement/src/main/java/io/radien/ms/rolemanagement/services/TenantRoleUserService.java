@@ -311,6 +311,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
+<<<<<<< HEAD
      * Gets Ids (of tenant role user associations) for the given parameters
      * @param tenant tenant identifier (mandatory)
      * @param role role identifier
@@ -347,6 +348,8 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
+=======
+>>>>>>> main
      * Delete tenant role user associations for given parameters
      * @param ids list containing tenant role user identifiers (mandatory)
      * @return true in case of success, false if no registers could be fetch the informed ids
@@ -392,6 +395,30 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
         List<Long> list = em.createQuery(sc).getResultList();
         return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
+    }
+
+    /**
+     * Get Collection of Tenant User Role(s) association
+     * @param tenantRoleIds Collection of TenantRoleIds
+     * @param userId User id
+     * @return Collection containing Tenant User Role ids
+     */
+    @Override
+    public Collection<Long> getTenantRoleUserIds(List<Long> tenantRoleIds, Long userId) {
+
+        EntityManager em = getEntityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<TenantRoleUser> tenantRoleRoot = criteriaQuery.from(TenantRoleUser.class);
+
+        criteriaQuery.select(tenantRoleRoot.get(SystemVariables.ID.getFieldName())).
+                where(
+                        criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.USER_ID.getFieldName()), userId),
+                        tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()).in(tenantRoleIds)
+                );
+
+        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
+        return typedQuery.getResultList();
     }
 
     /**

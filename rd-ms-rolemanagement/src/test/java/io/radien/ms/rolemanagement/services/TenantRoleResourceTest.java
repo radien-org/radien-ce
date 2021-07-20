@@ -15,11 +15,13 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -519,5 +521,30 @@ public class TenantRoleResourceTest {
         response = tenantRoleResource.unassignPermission(1L,
                 2L, 3L);
         assertEquals(500, response.getStatus());
+    }
+
+    /**
+     * Tests response from getRoles method
+     */
+    @Test
+    public void testGetRoles() {
+        Response response = tenantRoleResource.getRolesForUserTenant(1L, 1L);
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Tests response from getRoles method when exceptions occur during the processing
+     */
+    @Test
+    public void testGetRolesWithException() {
+        try {
+            doThrow(new RoleNotFoundException("error")).
+                    when(tenantRoleBusinessService).getRolesForUserTenant(1L, 1L);
+        }
+        catch (Exception e) {
+            fail("unexpected");
+        }
+        Response response = tenantRoleResource.getRolesForUserTenant(1L, 1L);
+        assertEquals(404, response.getStatus());
     }
 }

@@ -23,11 +23,19 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.TenantRoleException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRole;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
 import java.util.Collection;
+import java.util.ArrayList;
+import org.junit.jupiter.api.*;
+
+import javax.ejb.EJBException;
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.NamingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -485,5 +493,35 @@ public class TenantRoleUserServiceTest {
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role1User2.getTenantRoleId()));
         assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role2User2.getTenantRoleId()));
         assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role3User2.getTenantRoleId()));
+    }
+
+    /**
+     * Test method getTenantRoleUserIds
+     * asserts TenantRoleUserIds
+     * @throws TenantRoleException if any inconsistency of TenantRole
+     */
+    @Test
+    public void testGetTenantRoleUserIds() throws TenantRoleUserException {
+        SystemTenantRoleUser sru = new TenantRoleUser();
+        sru.setTenantRoleId(117L);
+        sru.setUserId(118L);
+        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
+
+        Long expectedId = sru.getId();
+        Assertions.assertNotNull(expectedId);
+
+        ArrayList<Long> tenantRoleIds = new ArrayList<Long>();
+        tenantRoleIds.add(117L);
+
+        List<Long> ids = (List<Long>) tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, 118L);
+        Assertions.assertFalse(ids.isEmpty());
+        Assertions.assertEquals(expectedId, ids.get(0));
+
+        try{
+            ids = (List<Long>) tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, 119L);
+            Assertions.assertTrue(ids.isEmpty());
+        } catch (TenantRoleUserException e) {
+            Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_EXISTS.toString()));
+        }
     }
 }
