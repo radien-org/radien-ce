@@ -85,8 +85,10 @@ public enum GenericErrorCodeMessage {
     /**
      * Active Tenant Error Code messages
      */
-    ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER("AC", "error.delete.without.tenant.and.user",
+    ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER("AC1", "error.delete.without.tenant.and.user",
             "Insufficient params to perform delete. Is necessary at least tenant or user id"),
+    ACTIVE_TENANT_ERROR_VALIDATING("AC2", "error.validating.active.tenant",
+            "Error checking active tenants"),
 
     /**
      * Permission Business Error Code Messages

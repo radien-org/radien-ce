@@ -25,6 +25,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleServiceAccess;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
@@ -77,7 +78,7 @@ public class TenantRoleBusinessServiceTest {
     static TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
     static RoleServiceAccess roleServiceAccess;
     static EJBContainer container;
-
+    static ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     static String lookupString;
 
@@ -443,7 +444,7 @@ public class TenantRoleBusinessServiceTest {
      */
     @Test
     @Order(13)
-    public void getTenants() {
+    public void getTenants() throws SystemException {
 
         // Create new roles
         SystemRole guest = assertDoesNotThrow(() -> createRole("guest"));

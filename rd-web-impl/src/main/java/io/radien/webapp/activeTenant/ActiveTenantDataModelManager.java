@@ -27,11 +27,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -186,12 +183,11 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     }
 
     /**
-     * Redirects the user to the home page
-     * @throws IOException in case of any issue while redirecting the user in the url or in the user session
+     * Validates if the requested user is active or not
+     * @return true in case the user is indeed with the tenant active
      */
-    private void redirectToHomePage() throws IOException {
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + DataModelEnum.PUBLIC_INDEX_PATH.getValue());
+    public boolean isTenantActive() {
+        return activeTenant != null;
     }
 
     /**
