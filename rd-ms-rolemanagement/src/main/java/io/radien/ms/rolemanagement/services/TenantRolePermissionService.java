@@ -181,10 +181,10 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      */
     protected boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId, EntityManager em) {
         if (permissionId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel()));
         }
         if (tenantRoleId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ID.getLabel()));
         }
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
@@ -207,7 +207,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
     @Override
     public boolean delete(Long tenantRolePermissionId)  {
         if (tenantRolePermissionId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel()));
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -230,10 +230,10 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
     @Override
     public Optional<Long> getTenantRolePermissionId(Long tenantRole, Long permission) {
         if (tenantRole == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant role id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ROLE_ID.getLabel()));
         }
         if(permission == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("permission id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel()));
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();

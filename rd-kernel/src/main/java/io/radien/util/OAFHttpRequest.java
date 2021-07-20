@@ -58,6 +58,7 @@ public class OAFHttpRequest extends HttpServletRequestWrapper {
 	 * @param name to be found
 	 * @return string value of the http request header
 	 */
+	@Override
 	public String getHeader(String name) {
 		// check the custom headers first
 		String headerValue = customHeaders.get(name);
@@ -73,6 +74,7 @@ public class OAFHttpRequest extends HttpServletRequestWrapper {
 	 * Retrieves all the existent headers into an enumeration string
 	 * @return a enumeration array list of strings of all the existent header names
 	 */
+	@Override
 	public Enumeration<String> getHeaderNames() {
 		// create a set of the custom header names
 		Set<String> set = new HashSet<>(customHeaders.keySet());
