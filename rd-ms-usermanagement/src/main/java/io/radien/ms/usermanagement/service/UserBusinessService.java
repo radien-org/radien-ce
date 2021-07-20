@@ -24,8 +24,6 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -41,8 +39,6 @@ import java.util.List;
 public class UserBusinessService implements Serializable {
 
 	private static final long serialVersionUID = 9136599710056928804L;
-
-	private static final Logger log = LoggerFactory.getLogger(UserBusinessService.class);
 
 	@Inject
 	private UserServiceAccess userServiceAccess;

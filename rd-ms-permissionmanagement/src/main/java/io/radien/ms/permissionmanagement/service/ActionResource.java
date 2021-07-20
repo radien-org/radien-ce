@@ -41,8 +41,6 @@ import java.util.List;
 @RequestScoped
 public class ActionResource implements ActionResourceClient {
 
-	private Logger log = LoggerFactory.getLogger(ActionResource.class);
-
 	@Inject
 	private ActionServiceAccess actionServiceAccess;
 
