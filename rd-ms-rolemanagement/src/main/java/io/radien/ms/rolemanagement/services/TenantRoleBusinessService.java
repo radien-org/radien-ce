@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
@@ -27,12 +28,15 @@ import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,6 +194,21 @@ public class TenantRoleBusinessService implements Serializable {
             opt.ifPresent(list::add);
         }
         return list;
+    }
+
+    /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing roles
+     * @throws RoleNotFoundException in case of error finding roles
+     */
+    public List<SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws RoleNotFoundException {
+        checkIfMandatoryParametersWereInformed(userId);
+        List<Long> ids = this.tenantRoleServiceAccess.getRoleIdsForUserTenant(userId, tenantId);
+
+        return Collections.unmodifiableList(getRoleServiceAccess().getSpecificRoles(new RoleSearchFilter(null,
+                null, ids, true,true)));
     }
 
     /**

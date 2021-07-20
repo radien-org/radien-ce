@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.radien.ms.rolemanagement.services;
+
+import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+
+import io.radien.api.util.CheckMandatoryParametersServiceUtil;
+
+import io.radien.exception.TenantRoleException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+/**
+ * Class that aggregates UnitTest cases for
+ * TenantRoleUserBusinessService
+ *
+ * @author Rajesh Gavvala
+ */
+public class TenantRoleUserBusinessServiceTest {
+
+    @InjectMocks
+    private TenantRoleUserBusinessService tenantRoleUserBusinessService;
+
+    @Mock
+    private TenantRoleServiceAccess tenantRoleServiceAccess;
+
+    @Mock
+    private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
+
+    @Mock
+    private CheckMandatoryParametersServiceUtil checkMandatoryParametersServiceUtil;
+
+    Long userId = 1L;
+    Long tenantId = 2L;
+    Collection<Long> roleIds;
+    List<Long> tenantRoleIds = new ArrayList<>();
+    List<Long> tenantRoleUserIds;
+
+
+    @BeforeEach
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
+
+        roleIds = new HashSet<>( Arrays.asList(3L, 4L));
+        tenantRoleIds.add(5L);
+        tenantRoleUserIds = Arrays.asList(6L, 7L);
+    }
+
+    @Test
+    public void testUnAssignUserTenantRoles() throws TenantRoleException, TenantRoleUserException, TenantRoleUserNotFoundException {
+        doNothing().when(checkMandatoryParametersServiceUtil).checkIfMandatoryParametersTenantRoleUser(anyLong(), anyLong(), anyCollection());
+        when(tenantRoleServiceAccess.getTenantRoleIds(anyLong(), anyCollection())).thenReturn(tenantRoleIds);
+        when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyList(), anyLong())).thenReturn(tenantRoleUserIds);
+        doReturn(true).when(tenantRoleUserServiceAccess).delete(anyCollection());
+
+        Assertions.assertEquals(tenantRoleIds, tenantRoleServiceAccess.getTenantRoleIds(tenantId, roleIds));
+        Assertions.assertEquals(tenantRoleUserIds, tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, userId));
+
+        tenantRoleUserBusinessService.deleteUnAssignedUserTenantRoles(userId, tenantId, roleIds);
+    }
+
+    @Test
+    public void testUnAssignUserTenantRolesException() throws TenantRoleException, TenantRoleUserException {
+        when(tenantRoleServiceAccess.getTenantRoleIds(anyLong(), anyCollection())).thenThrow(TenantRoleException.class);
+        when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyList(), anyLong())).thenThrow(TenantRoleUserException.class);
+
+        Assertions.assertThrows(TenantRoleException.class, () -> tenantRoleServiceAccess.getTenantRoleIds(tenantId, roleIds));
+        Assertions.assertThrows(TenantRoleUserException.class, () -> tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, userId));
+    }
+
+}

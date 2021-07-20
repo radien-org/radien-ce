@@ -595,23 +595,14 @@ public class UserDataModelTest {
         assertEquals(DataModelEnum.EDIT_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
+    @Test
+    public void testUserRoles(){
+        SystemUser user = new User(); user.setId(2L);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USER_ROLES_PAGE.getValue(), userDataModel.userRoles());
 
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USER_MAIN_PAGE.getValue(), userDataModel.userRoles());
 
-//    try{
-//        if(updateUser != null){
-//            if (updateUser.getId() == null) {
-//                updateUser.setCreateUser(userSessionEnabled.getUserId());
-//            } else {
-//                updateUser.setLastUpdateUser(userSessionEnabled.getUserId());
-//            }
-//            service.updateUser(updateUser);
-//            handleMessage(FacesMessage.SEVERITY_INFO,
-//                    updateUser.getId() == null ? JSFUtil.getMessage("rd_save_success") :
-//                            JSFUtil.getMessage("rd_edit_success"), JSFUtil.getMessage("rd_user"));
-//        }
-//    }catch (Exception e){
-//        handleError(e, updateUser.getId() == null ? JSFUtil.getMessage("rd_save_error") :
-//                JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_user"));
-//    }
-
+    }
 }

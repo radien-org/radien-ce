@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+   <ui:define name="content" bootsFacesDecorator="true">
+      <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+      <h:form id="userTenantRoles" styleClass="tableContainer">
+         <b:container>
+
+            <b:row>
+               <h:panelGroup layout="block" styleClass="headerInformation" style="text-align: left">
+                  <h1><h:outputText value="#{msg.rd_user_tenant_roles} "/></h1>
+                  <hr />
+               </h:panelGroup>
+            </b:row>
+
+            <b:column>
+               <b:row>
+                  <b:column medium-screen="1">
+                     <h:outputLabel value="#{msg.logon}"/>
+                  </b:column>
+                  <b:column medium-screen="10">
+                     <b:inputText id="userLogin" value="#{userDataModel.selectedUser.logon}" disabled="true" />
+                  </b:column>
+               </b:row>
+            </b:column>
+
+            <b:column>
+               <b:row>
+                  <b:column medium-screen="1">
+                     <h:outputLabel value="#{msg.rd_tenant}"/>
+                     <br />
+                  </b:column>
+                  <b:column medium-screen="10">
+                     <b:selectOneMenu value="#{userTenantRolesManager.tenant}"
+                                      valueChangeListener="#{userTenantRolesManager.selectedChangeTenant}"
+                                      update="@form:userTenantRoles" ajax="true"
+                                      requiredMessage="#{msg.rd_active_tenant_must_be_choose}"
+                                      tooltip="#{msg.rd_select_tenant_is_mandatory}">
+
+                        <f:selectItem itemLabel="#{not empty userTenantRolesManager.userTenants ? msg.rd_select_tenant : msg.rd_tenant_not_found_for_selection}"
+                                      itemValue="#{null}"/>
+
+                        <f:selectItems value="#{userTenantRolesManager.userTenants}"
+                                       var="tenant"
+                                       itemValue="#{tenant}"
+                                       itemLabel="#{tenant.tenantType.name}"/>
+                     </b:selectOneMenu>
+                  </b:column>
+               </b:row>
+               <br />
+            </b:column>
+
+            <b:column rendered="#{not empty userTenantRolesManager.tenant.tenantType}">
+               <b:row>
+                  <b:column medium-screen="1">
+                     <h:outputLabel value="#{msg.rd_roles}"/>
+                     <br />
+                  </b:column>
+                  <b:column medium-screen="10">
+                     <p:dataTable id="dataTableRoles" value="#{roleDataModel.lazyModel}"
+                                  var="role"
+                                  rows="5"
+                                  paginator="true"
+                                  selectionPageOnly="false"
+                                  paginatorPosition="bottom"
+                                  paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+                                  currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                  rowsPerPageTemplate="5,10,20,50"
+                                  styleClass = "tableDesign">
+
+                        <p:column headerText="#{msg.rd_assign_unassigned}" styleClass="no-visible-header-checkbox">
+                           <p:selectBooleanButton value="#{userTenantRolesManager.isRoleAssigned[role.id]}"
+                                                  onIcon="pi pi-check"
+                                                  offIcon="pi pi-times"
+                                                  onLabel="" offLabel=""
+                                                  valueChangeListener="#{userTenantRolesManager.isAssignableOrUnassignedRole}">
+                              <p:ajax listener="#{userTenantRolesManager.isAssignableOrUnassignedRoleType(role)}"/>
+                           </p:selectBooleanButton>
+                        </p:column>
+
+                        <p:column headerText="#{msg.id}" sortBy="#{role.id}">
+                           <h:outputText value="#{role.id}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.name}" sortBy="#{role.name}">
+                           <h:outputText value="#{role.name}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.description}" sortBy="#{role.description}">
+                           <h:outputText value="#{role.description}"/>
+                        </p:column>
+
+                     </p:dataTable>
+                  </b:column>
+               </b:row>
+               <br />
+            </b:column>
+
+               <b:buttonGroup>
+                  <b:commandButton id="backToUsersTable"
+                                   value="#{msg.rd_users}"
+                                   tooltip="#{msg.returnToRecordList}"
+                                   iconAwesome="fa-home"
+                                   action="#{userTenantRolesManager.returnBackToUsersTable}"
+                                   immediate="true"/>
+
+                  <b:button onclick="$('.formValidationModalUserTenantRoles').modal('show')"
+                            value="#{msg.confirm}"
+                            iconAwesome="fa-save"/>
+
+                  <b:modal id="model"
+                           title="#{msg.confirmation}"
+                           styleClass="formValidationModalUserTenantRoles"
+                           closable="false" close-on-escape="false" backdrop="false">
+
+                     <p>#{msg.rd_assign_unassigned_user_roles_confirmation}</p>
+
+                     <f:facet name="footer">
+                        <b:button value="#{msg.back}"
+                                  onclick="return false;" dismiss="modal"/>
+                        <b:commandButton id="confirmAssignOrUnassignedRoles"
+                                         value="#{msg.rd_assign_unassigned_roles}" look="warning"
+                                         actionListener="#{userTenantRolesManager.assignOrUnassignedRolesToUserTenant}"
+                                         oncomplete="{ $('.formValidationModalUserTenantRoles').modal('hide') } "/>
+                     </f:facet>
+                  </b:modal>
+               </b:buttonGroup>
+         </b:container>
+         <b:growl id="userTenantRolesMessages" showSummary="false" allowDismiss="true" showDetail="true" redisplay="false" escape="true"/>
+      </h:form>
+   </ui:define>
+</ui:composition>

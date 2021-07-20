@@ -19,9 +19,11 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
+
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,6 +97,14 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
     List<Long> getTenants(Long userId, Long roleId);
 
     /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing role ids
+     */
+    List<Long> getRoleIdsForUserTenant(Long userId, Long tenantId);
+
+    /**
      * Check if a User has some Role (Optionally for a specific Tenant)
      * @param userId User identifier
      * @param roleNames Role name identifier
@@ -119,4 +129,13 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @return TenantRole id
      */
     Optional<Long> getTenantRoleId(Long tenant, Long role);
+
+    /**
+     * Retrieves strictly the TenantRole ids based on tenant and role(s)
+     * @param tenantId Tenant id
+     * @param roleIds Collection Role ids
+     * @return List of TenantRole ids
+     * @throws TenantRoleException in case of any inconsistency found
+     */
+    List<Long> getTenantRoleIds(Long tenantId, Collection<Long> roleIds) throws TenantRoleException;
 }

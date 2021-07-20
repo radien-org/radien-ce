@@ -7,7 +7,6 @@
 				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<f:metadata>
-		<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
 		<f:viewAction action="#{userDataModel.onload}"/>
 	</f:metadata>
 
@@ -20,8 +19,7 @@
 					<hr />
 				</h:panelGroup>
 			</b:row>
-			<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
-			<!--@elvariable id="user" type="io.radien.api.model.user.SystemUser"-->
+
 			<p:dataTable id="dataTable" value="#{userDataModel.lazyUserDataModel}"
 						 var="tenantRoleUser"
 						 rowKey="#{tenantRoleUser.id}"
@@ -41,6 +39,18 @@
 
 				<p:column headerText="#{msg.logon}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}">
 					<h:outputText value="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}"/>
+				<f:facet name="header">
+					<div class="text-right">
+						<b:commandButton value="#{msg.rd_roles}"
+										 tooltip="#{msg.rd_select_user_to_assign_unassigned_user_tenant_roles}"
+										 iconAwesome="fa-expand"
+										 action="#{userDataModel.userRoles}"
+										 actionListener="#{userTenantRolesManager.clearAssignableOrUnAssignedRoles}"/>
+					</div>
+				</f:facet>
+
+				<p:column headerText="#{msg.logon}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}">
+					<h:outputText value="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}"/>
 				</p:column>
 
 				<p:column headerText="#{msg.firstname}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).firstname}">
@@ -56,7 +66,6 @@
 				</p:column>
 			</p:dataTable>
 
-			<!--@elvariable id="userDataModel" type="io.radien.webapp.user.UserDataModel"-->
 			<b:button id="delete-user-button"
 					  onclick="$('.formValidationModalUserDelete').modal('show')"
 					  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
@@ -105,7 +114,7 @@
 							 immediate="true" update="@form:userManagementTableDiv"
 							 auto-update="true"/>
 
-			<b:growl showDetail="true" allowDismiss="true" delay="0"/>
+			<b:growl redisplay="false" showDetail="true" allowDismiss="true" delay="0"/>
 		</h:form>
 	</ui:define>
 </ui:composition>
