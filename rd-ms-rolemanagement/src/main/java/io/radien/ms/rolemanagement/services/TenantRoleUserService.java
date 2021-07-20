@@ -272,10 +272,10 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      */
     protected boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, EntityManager em) {
         if (userId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel()));
         }
         if (tenantRoleId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ID.getFieldName()));
         }
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -300,7 +300,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     @Override
     public boolean delete(Long tenantRoleUserId)  {
         if (tenantRoleUserId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel()));
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -319,10 +319,10 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     @Override
     public Optional<Long> getTenantRoleUserId(Long tenantRole, Long user) {
         if (tenantRole == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ID.getFieldName()));
         }
         if(user == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel()));
         }
 
         EntityManager em = getEntityManager();
