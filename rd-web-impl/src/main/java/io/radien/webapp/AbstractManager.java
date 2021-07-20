@@ -20,8 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 
@@ -66,5 +68,15 @@ public abstract class AbstractManager implements Serializable {
 
     public Logger getLog() {
         return log;
+    }
+
+
+    /**
+     * Redirects the user to the Radien home page can be appended with a message or not
+     * @throws IOException in case of redirection error
+     */
+    protected void redirectToHomePage() throws IOException {
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + DataModelEnum.PUBLIC_INDEX_PATH.getValue());
     }
 }

@@ -58,6 +58,9 @@ public class UserDataModelTest {
     @Mock
     private UserRESTServiceAccess userRESTServiceAccess;
 
+    @Mock
+    private ActiveTenantDataModelManager activeTenantDataModelManager;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Before
@@ -93,6 +96,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testIsTenantAssociationProcessAllowedSuccessCase() throws SystemException {
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(true);
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
         SystemUser selectedUser = new User(); selectedUser.setId(3L); selectedUser.setLogon("a.b");
 
