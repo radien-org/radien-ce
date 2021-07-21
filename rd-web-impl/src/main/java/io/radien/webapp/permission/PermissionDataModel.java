@@ -22,7 +22,6 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
-import io.radien.webapp.linkedAuthorization.LazyLinkedAuthorizationDataModel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
