@@ -396,7 +396,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testCreateRecord() {
-        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.createRecord());
+        assertEquals(DataModelEnum.USER_PATH.getValue(), userDataModel.createRecord());
         assertNotNull(userDataModel.getUser());
         assertTrue(userDataModel.getUser().isEnabled());
     }
@@ -602,7 +602,7 @@ public class UserDataModelTest {
         assertEquals(DataModelEnum.USERS_ROLES_PATH.getValue(), userDataModel.userRoles());
 
         userDataModel.setSelectedUser(null);
-        assertEquals(DataModelEnum.PRETTY_USER.getValue(), userDataModel.userRoles());
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userRoles());
 
     }
 }
