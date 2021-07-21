@@ -141,7 +141,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
 
     /**
      * Before redirect to home page, this method allows to know if the current view
-     corresponds to the users listing screen.
+     * corresponds to the users listing screen.
      * If does, redirection to home page should not happen, the navigation must keep stay
      * in the users listing page.
      *
