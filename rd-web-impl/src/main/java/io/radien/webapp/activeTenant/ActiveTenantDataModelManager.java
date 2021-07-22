@@ -24,10 +24,13 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 
+import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -129,7 +132,10 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                 }
                 //then we check if it still exists the association for the user if so then...
                 validateCorrectTenantAndActivateItToUser(valueChange);
-                if (!isOnUsersListingScreen()) {
+                //check if we are at users listing screen
+                if (isOnUsersListingScreen()) {
+                    redirectToUsersScreen();
+                } else {
                     redirectToHomePage();
                 }
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantValue);
@@ -142,14 +148,23 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     /**
      * Before redirect to home page, this method allows to know if the current view
      * corresponds to the users listing screen.
-     * If does, redirection to home page should not happen, the navigation must keep stay
-     * in the users listing page.
+     * If does, redirection to HOME page should not happen, the navigation should
+     * be redirect to the USERS LISTING page.
      *
      * @return true if view corresponds to the users listing screen, otherwise false
      */
     protected boolean isOnUsersListingScreen() {
         String viewId = "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
         return viewId.equals(DataModelEnum.USERS_PATH.getValue());
+    }
+
+    /**
+     * Redirect the navigation to the users screen
+     * @throws IOException in case of any i/o issue during the dispatch process
+     */
+    protected void redirectToUsersScreen() throws IOException {
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + DataModelEnum.USERS_DISPATCH_PATH.getValue());
     }
 
     /**
