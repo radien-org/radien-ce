@@ -252,6 +252,49 @@ public class ActiveTenantDataModelManagerTest {
         assertEquals(expectedRedirectionPath, urlRedirection.get(0));
     }
 
+    /**
+     * Test the flow when coming from users screen
+     * @throws IOException
+     */
+    @Test
+    public void testingFlowWhenComingFromUsersScreen() throws IOException, SystemException {
+        PowerMockito.mockStatic(PrettyContext.class);
+        PrettyContext prettyContext = mock(PrettyContext.class);
+        UrlMapping urlMapping = mock(UrlMapping.class);
+
+        String id = "users";
+        when(urlMapping.getId()).thenReturn(id);
+        when(prettyContext.getCurrentMapping()).thenReturn(urlMapping);
+        when(PrettyContext.getCurrentInstance()).thenReturn(prettyContext);
+
+        String mockedContextPath = "int-env-url";
+        String expectedRedirectionPath = mockedContextPath + DataModelEnum.USERS_DISPATCH_PATH.getValue();
+        final List<?> urlRedirection = new ArrayList();
+
+        PowerMockito.mockStatic(FacesContext.class);
+        FacesContext fc = mock(FacesContext.class);
+        ExternalContext ec = mock(ExternalContext.class);
+        Flash flash = mock(Flash.class);
+
+        when(FacesContext.getCurrentInstance()).thenReturn(fc);
+        when(fc.getExternalContext()).thenReturn(ec);
+        when(ec.getFlash()).thenReturn(flash);
+        when(ec.getRequestContextPath()).thenReturn(mockedContextPath);
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                urlRedirection.add(invocation.getArgument(0));
+                return null;
+            }
+        }).when(ec).redirect(anyString());
+
+        testTenantChangedValidationMethodToOther();
+
+        assertEquals(expectedRedirectionPath, urlRedirection.get(0));
+    }
+
+
     @Test
     public void testTenantChangedValidationMethodToNull() {
         assertNotNull(activeTenantDataModelManager.getActiveTenant());
