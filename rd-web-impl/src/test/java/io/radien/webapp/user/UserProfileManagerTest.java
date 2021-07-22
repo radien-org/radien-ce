@@ -21,7 +21,6 @@ import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.LinkedAuthorization;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -236,8 +235,6 @@ public class UserProfileManagerTest {
         when(userSession.getUserId()).then(i -> userId);
         when(userSession.isActive()).then(isActive -> true);
         when(userSession.getUser()).then(user -> systemUser);
-
-        List<LinkedAuthorization> linkedAuthorizations = new ArrayList<>();
 
         // Expected tenants
         try {

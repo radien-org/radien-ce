@@ -50,15 +50,6 @@
 		<pattern value="/module/role" />
 		<view-id value="/module/role/role.oaf" />
 	</url-mapping>
-	
-	<url-mapping id="linkedauthorizations">
-		<pattern value="/module/linkedauthorizations" />
-		<view-id value="/module/linkedauthorizations/linkedauthorizations.oaf" />
-	</url-mapping>
-	<url-mapping id="linkedauthorization">
-		<pattern value="/module/linkedauthorization" />
-		<view-id value="/module/linkedauthorization/linkedauthorization.oaf" />
-	</url-mapping>
 
 	<url-mapping id="tenantroles">
 		<pattern value="/module/tenantroles" />

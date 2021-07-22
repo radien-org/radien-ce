@@ -110,12 +110,6 @@ public enum DataModelEnum {
     SENT_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
 
     /**
-     * Linked Authorization
-     */
-    LINKED_AUTHORIZATION_MESSAGE("rd_linkedauthorization"),
-    LINKED_AUTHORIZATION_PATH("linkedauthorization"),
-
-    /**
      * Tenant Role
      */
     TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE("rd_tenant_role_permission_association_no_permission_select"),
