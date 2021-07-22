@@ -20,7 +20,6 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
-
 import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -31,21 +30,17 @@ import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantRoleUserDataModel;
+import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
+import java.io.Serializable;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Model;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
-
-import javax.annotation.PostConstruct;
-
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Model;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
-import javax.inject.Inject;
-
-import java.io.Serializable;
 
 /**
  * @author Rajesh Gavvala
@@ -70,12 +65,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @Inject
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
-    private LazyDataModel<? extends SystemTenantRoleUser> lazyUserDataModel;
+    private LazyDataModel<? extends SystemUser> lazyUserDataModel;
 
     private SystemUser selectedUser;
     private SystemUser userForTenantAssociation;
     private SystemUser user = new User();
-    private SystemTenantRoleUser selectedTenantRoleUser = new TenantRoleUser();
 
     private boolean hasUserAdministratorRoleAccess = false;
     private boolean hasTenantAdministratorRoleAccess = false;
@@ -100,9 +94,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
                     // Must retrieve user compatible with the Active Tenant
                     Long tenantId = activeTenantDataModelManager.getActiveTenant() != null ?
                             activeTenantDataModelManager.getActiveTenant().getTenantId() : null;
-                    lazyUserDataModel = new LazyTenantRoleUserDataModel(tenantRoleUserRESTServiceAccess,
+                    lazyUserDataModel = new LazyTenantingUserDataModel(tenantRoleUserRESTServiceAccess,
                             service);
-                    ((LazyTenantRoleUserDataModel) lazyUserDataModel).setTenantId(tenantId);
+                    ((LazyTenantingUserDataModel) lazyUserDataModel).setTenantId(tenantId);
                 }
             } else {
                 redirectToHomePage();
@@ -127,7 +121,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Loads in a lazy loading system all the records for the user management
      * @return a lazy loading list of system users
      */
-    public LazyDataModel<? extends SystemTenantRoleUser> getLazyUserDataModel() {
+    public LazyDataModel<? extends SystemUser> getLazyUserDataModel() {
         return lazyUserDataModel;
     }
 
@@ -135,7 +129,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Sets a Lazy Loading list with a given object
      * @param lazyUserDataModel to be set
      */
-    public void setLazyUserDataModel(LazyDataModel<? extends SystemTenantRoleUser> lazyUserDataModel) {
+    public void setLazyUserDataModel(LazyDataModel<? extends SystemUser> lazyUserDataModel) {
         this.lazyUserDataModel = lazyUserDataModel;
     }
 
@@ -304,9 +298,8 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Stores the information selected by the current user to be used for later
      * @param event that will contain which user has been selected
      */
-    public void onRowSelect(SelectEvent<SystemTenantRoleUser> event) {
-        this.selectedTenantRoleUser=event.getObject();
-        this.selectedUser=((LazyTenantRoleUserDataModel) lazyUserDataModel).getUser(selectedTenantRoleUser.getUserId());
+    public void onRowSelect(SelectEvent<SystemUser> event) {
+        this.selectedUser=event.getObject();
         FacesMessage msg = new FacesMessage(JSFUtil.getMessage(DataModelEnum.USERS_SELECTED_MESSAGE.getValue()),
                 String.valueOf(selectedUser.getLogon()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -414,11 +407,5 @@ public class UserDataModel extends AbstractManager implements Serializable {
         this.userForTenantAssociation = userForTenantAssociation;
     }
 
-    public SystemTenantRoleUser getSelectedTenantRoleUser() {
-        return selectedTenantRoleUser;
-    }
 
-    public void setSelectedTenantRoleUser(SystemTenantRoleUser selectedTenantRoleUser) {
-        this.selectedTenantRoleUser = selectedTenantRoleUser;
-    }
 }
