@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.SortMeta;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * LazyDataModel implemented specifically to attend the exhibition of tenanting users
