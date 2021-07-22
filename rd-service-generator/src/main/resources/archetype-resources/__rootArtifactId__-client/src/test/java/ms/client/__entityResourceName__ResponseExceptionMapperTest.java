@@ -15,9 +15,9 @@
  */
 package ${package}.ms.client;
 
-import io.rd.exception.NotFoundException;
-import io.rd.ms.client.exceptions.BadRequestException;
-import io.rd.ms.client.exceptions.InternalServerErrorException;
+import ${package}.exception.NotFoundException;
+import ${package}.ms.client.exceptions.BadRequestException;
+import ${package}.ms.client.exceptions.InternalServerErrorException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,20 +27,20 @@ import javax.ws.rs.core.Response;
 import static org.junit.Assert.*;
 
 public class ${entityResourceName}ResponseExceptionMapperTest {
-    DemoResponseExceptionMapper demoResponseExceptionMapper;
+    ${entityResourceName}ResponseExceptionMapper ${entityResourceName.toLowerCase()}ResponseExceptionMapper;
 
     @Before
     public void before() {
-        demoResponseExceptionMapper = new DemoResponseExceptionMapper();
+        ${entityResourceName.toLowerCase()}ResponseExceptionMapper = new ${entityResourceName}ResponseExceptionMapper();
     }
 
     @Test
     public void handles() {
-        boolean handlesException200 = demoResponseExceptionMapper.handles(200, null);
-        boolean handlesException400 = demoResponseExceptionMapper.handles(400, null);
-        boolean handlesException401 = demoResponseExceptionMapper.handles(401, null);
-        boolean handlesException404 = demoResponseExceptionMapper.handles(404, null);
-        boolean handlesException500 = demoResponseExceptionMapper.handles(500, null);
+        boolean handlesException200 = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.handles(200, null);
+        boolean handlesException400 = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.handles(400, null);
+        boolean handlesException401 = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.handles(401, null);
+        boolean handlesException404 = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.handles(404, null);
+        boolean handlesException500 = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.handles(500, null);
 
         assertFalse(handlesException200);
         assertTrue(handlesException400);
@@ -54,16 +54,16 @@ public class ${entityResourceName}ResponseExceptionMapperTest {
         String msg = "messageException";
 
         Response responseOk = Response.status(Response.Status.OK).entity(msg).build();
-        Exception exceptionOk = demoResponseExceptionMapper.toThrowable(responseOk);
+        Exception exceptionOk = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.toThrowable(responseOk);
 
         Response responseBadRequest = Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
-        Exception exceptionBadRequest = demoResponseExceptionMapper.toThrowable(responseBadRequest);
+        Exception exceptionBadRequest = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.toThrowable(responseBadRequest);
 
         Response responseNotFound = Response.status(Response.Status.NOT_FOUND).entity(msg).build();
-        Exception exceptionNotFound = demoResponseExceptionMapper.toThrowable(responseNotFound);
+        Exception exceptionNotFound = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.toThrowable(responseNotFound);
 
         Response responseInternalServerError = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        Exception exceptionInternalServerError = demoResponseExceptionMapper.toThrowable(responseInternalServerError);
+        Exception exceptionInternalServerError = ${entityResourceName.toLowerCase()}ResponseExceptionMapper.toThrowable(responseInternalServerError);
 
         assertTrue(exceptionBadRequest instanceof BadRequestException);
         assertEquals(msg,exceptionBadRequest.getMessage());

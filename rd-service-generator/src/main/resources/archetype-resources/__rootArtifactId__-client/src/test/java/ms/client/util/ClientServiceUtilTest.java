@@ -38,7 +38,7 @@ public class ClientServiceUtilTest {
     public void testGetUserResourceClient() {
         boolean valid = true;
         try {
-            clientServiceUtil.getDemoResourceClient("http://url.test.de") ;
+            clientServiceUtil.get${entityResourceName}ResourceClient("http://url.test.de") ;
         } catch (MalformedURLException e) {
             valid = false;
         }
