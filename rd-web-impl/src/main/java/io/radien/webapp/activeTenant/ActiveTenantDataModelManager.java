@@ -134,7 +134,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                 validateCorrectTenantAndActivateItToUser(valueChange);
                 //check if we are at users listing screen
                 if (isOnUsersListingScreen()) {
-                    redirectToUsersScreen();
+                    redirectToPage(DataModelEnum.USERS_DISPATCH_PATH.getValue());
                 } else {
                     redirectToHomePage();
                 }
@@ -156,15 +156,6 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     protected boolean isOnUsersListingScreen() {
         String viewId = "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
         return viewId.equals(DataModelEnum.USERS_PATH.getValue());
-    }
-
-    /**
-     * Redirect the navigation to the users screen
-     * @throws IOException in case of any i/o issue during the dispatch process
-     */
-    protected void redirectToUsersScreen() throws IOException {
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + DataModelEnum.USERS_DISPATCH_PATH.getValue());
     }
 
     /**

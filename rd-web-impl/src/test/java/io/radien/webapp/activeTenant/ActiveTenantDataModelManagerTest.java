@@ -221,38 +221,6 @@ public class ActiveTenantDataModelManagerTest {
     }
 
     /**
-     * Test method for {@link ActiveTenantDataModelManager#redirectToUsersScreen()}
-     * The finality for this test is to infer the if the redirection is dispatching
-     * to the users listing screen
-     * @throws IOException in case of any i/o issue when redirecting the url
-     */
-    @Test
-    public void testRedirectToUsersScreen() throws IOException {
-        String mockedContextPath = "int-env-url";
-        String expectedRedirectionPath = mockedContextPath + DataModelEnum.USERS_DISPATCH_PATH.getValue();
-        final List<?> urlRedirection = new ArrayList();
-
-        PowerMockito.mockStatic(FacesContext.class);
-        FacesContext fc = mock(FacesContext.class);
-        ExternalContext ec = mock(ExternalContext.class);
-
-        when(FacesContext.getCurrentInstance()).thenReturn(fc);
-        when(fc.getExternalContext()).thenReturn(ec);
-        when(ec.getRequestContextPath()).thenReturn(mockedContextPath);
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                urlRedirection.add(invocation.getArgument(0));
-                return null;
-            }
-        }).when(ec).redirect(anyString());
-
-        activeTenantDataModelManager.redirectToUsersScreen();
-        assertEquals(expectedRedirectionPath, urlRedirection.get(0));
-    }
-
-    /**
      * Test the flow when coming from users screen
      * @throws IOException
      */
