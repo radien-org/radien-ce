@@ -24,13 +24,10 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 
-import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import java.io.Serializable;
