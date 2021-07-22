@@ -602,7 +602,7 @@ public class UserDataModelTest {
         assertEquals(DataModelEnum.USERS_ROLES_PATH.getValue(), userDataModel.userRoles());
 
         userDataModel.setSelectedUser(null);
-        assertEquals(DataModelEnum.PRETTY_USER.getValue(), userDataModel.userRoles());
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userRoles());
 
     }
 }

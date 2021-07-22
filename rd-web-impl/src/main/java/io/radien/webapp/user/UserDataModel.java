@@ -286,7 +286,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
         }
-        return DataModelEnum.PRETTY_USER.getValue();
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
 
