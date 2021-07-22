@@ -16,6 +16,8 @@
 
 package io.radien.webapp.activeTenant;
 
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.config.mapping.UrlMapping;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
@@ -26,12 +28,15 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -48,6 +53,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
@@ -63,7 +69,7 @@ import static org.mockito.Mockito.doThrow;
  * @author Bruno Gama
  **/
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class, PrettyContext.class})
 public class ActiveTenantDataModelManagerTest {
 
     @InjectMocks
@@ -166,6 +172,96 @@ public class ActiveTenantDataModelManagerTest {
         assertNotNull(activeTenantNames);
         assertEquals(fixedList, activeTenantNames);
     }
+
+    /**
+     * Test for method {@link ActiveTenantDataModelManager#isTenantActive()}
+     */
+    @Test
+    public void testIsTenantActive() {
+        activeTenantDataModelManager.setActiveTenant(null);
+        assertFalse(activeTenantDataModelManager.isTenantActive());
+        activeTenantDataModelManager.setActiveTenant(mock(ActiveTenant.class));
+        assertTrue(activeTenantDataModelManager.isTenantActive());
+    }
+
+    /**
+     * Test for method {@link ActiveTenantDataModelManager#isOnUsersListingScreen()}
+     * Scenario where the user is navigating through Users Management Data Table Screen
+     */
+    @Test
+    public void testIsOnUsersListingScreenOK() {
+        PowerMockito.mockStatic(PrettyContext.class);
+        PrettyContext prettyContext = mock(PrettyContext.class);
+        UrlMapping urlMapping = mock(UrlMapping.class);
+
+        String id = "users";
+        when(urlMapping.getId()).thenReturn(id);
+        when(prettyContext.getCurrentMapping()).thenReturn(urlMapping);
+        when(PrettyContext.getCurrentInstance()).thenReturn(prettyContext);
+
+        assertTrue(activeTenantDataModelManager.isOnUsersListingScreen());
+    }
+
+    /**
+     * Test for method {@link ActiveTenantDataModelManager#isOnUsersListingScreen()}
+     * Scenario where the user is navigating through others screens
+     */
+    @Test
+    public void testIsOnUsersListingScreenNOK() {
+        PowerMockito.mockStatic(PrettyContext.class);
+        PrettyContext prettyContext = mock(PrettyContext.class);
+        UrlMapping urlMapping = mock(UrlMapping.class);
+
+        String id = "tenants";
+        when(urlMapping.getId()).thenReturn(id);
+        when(prettyContext.getCurrentMapping()).thenReturn(urlMapping);
+        when(PrettyContext.getCurrentInstance()).thenReturn(prettyContext);
+
+        assertFalse(activeTenantDataModelManager.isOnUsersListingScreen());
+    }
+
+    /**
+     * Test the flow when coming from users screen
+     * @throws IOException
+     */
+    @Test
+    public void testingFlowWhenComingFromUsersScreen() throws IOException, SystemException {
+        PowerMockito.mockStatic(PrettyContext.class);
+        PrettyContext prettyContext = mock(PrettyContext.class);
+        UrlMapping urlMapping = mock(UrlMapping.class);
+
+        String id = "users";
+        when(urlMapping.getId()).thenReturn(id);
+        when(prettyContext.getCurrentMapping()).thenReturn(urlMapping);
+        when(PrettyContext.getCurrentInstance()).thenReturn(prettyContext);
+
+        String mockedContextPath = "int-env-url";
+        String expectedRedirectionPath = mockedContextPath + DataModelEnum.USERS_DISPATCH_PATH.getValue();
+        final List<?> urlRedirection = new ArrayList();
+
+        PowerMockito.mockStatic(FacesContext.class);
+        FacesContext fc = mock(FacesContext.class);
+        ExternalContext ec = mock(ExternalContext.class);
+        Flash flash = mock(Flash.class);
+
+        when(FacesContext.getCurrentInstance()).thenReturn(fc);
+        when(fc.getExternalContext()).thenReturn(ec);
+        when(ec.getFlash()).thenReturn(flash);
+        when(ec.getRequestContextPath()).thenReturn(mockedContextPath);
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                urlRedirection.add(invocation.getArgument(0));
+                return null;
+            }
+        }).when(ec).redirect(anyString());
+
+        testTenantChangedValidationMethodToOther();
+
+        assertEquals(expectedRedirectionPath, urlRedirection.get(0));
+    }
+
 
     @Test
     public void testTenantChangedValidationMethodToNull() {

@@ -129,7 +129,10 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                 }
                 //then we check if it still exists the association for the user if so then...
                 validateCorrectTenantAndActivateItToUser(valueChange);
-                if (!isOnUsersListingScreen()) {
+                //check if we are at users listing screen
+                if (isOnUsersListingScreen()) {
+                    redirectToPage(DataModelEnum.USERS_DISPATCH_PATH.getValue());
+                } else {
                     redirectToHomePage();
                 }
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantValue);
@@ -142,8 +145,8 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     /**
      * Before redirect to home page, this method allows to know if the current view
      * corresponds to the users listing screen.
-     * If does, redirection to home page should not happen, the navigation must keep stay
-     * in the users listing page.
+     * If does, redirection to HOME page should not happen, the navigation should
+     * be redirect to the USERS LISTING page.
      *
      * @return true if view corresponds to the users listing screen, otherwise false
      */
