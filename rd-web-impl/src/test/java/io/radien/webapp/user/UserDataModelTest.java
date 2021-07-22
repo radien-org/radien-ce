@@ -396,7 +396,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testCreateRecord() {
-        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.createRecord());
+        assertEquals(DataModelEnum.USER_PATH.getValue(), userDataModel.createRecord());
         assertNotNull(userDataModel.getUser());
         assertTrue(userDataModel.getUser().isEnabled());
     }

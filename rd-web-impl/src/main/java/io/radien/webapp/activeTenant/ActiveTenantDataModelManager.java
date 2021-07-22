@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.activeTenant;
 
+import com.ocpsoft.pretty.PrettyContext;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.exception.SystemException;
@@ -128,12 +129,27 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                 }
                 //then we check if it still exists the association for the user if so then...
                 validateCorrectTenantAndActivateItToUser(valueChange);
-                redirectToHomePage();
+                if (!isOnUsersListingScreen()) {
+                    redirectToHomePage();
+                }
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantValue);
             }
         } catch (Exception exception) {
             handleError(exception, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()));
         }
+    }
+
+    /**
+     * Before redirect to home page, this method allows to know if the current view
+     * corresponds to the users listing screen.
+     * If does, redirection to home page should not happen, the navigation must keep stay
+     * in the users listing page.
+     *
+     * @return true if view corresponds to the users listing screen, otherwise false
+     */
+    protected boolean isOnUsersListingScreen() {
+        String viewId = "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
+        return viewId.equals(DataModelEnum.USERS_PATH.getValue());
     }
 
     /**

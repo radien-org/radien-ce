@@ -257,7 +257,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public String createRecord() {
         user = new User();
         user.setEnabled(true);
-        return DataModelEnum.USERS_PATH.getValue();
+        return DataModelEnum.USER_PATH.getValue();
     }
 
     /**
