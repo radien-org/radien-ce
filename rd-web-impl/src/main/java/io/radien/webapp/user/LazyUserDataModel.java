@@ -98,10 +98,10 @@ public class LazyUserDataModel extends LazyDataModel<SystemUser> {
     }
 
     protected String extractErrorMessage(Exception exception) {
-        String errorMsg = (exception instanceof EJBException) ?
+        String errorMessage = (exception instanceof EJBException) ?
                 exception.getCause().getMessage() : exception.getMessage();
         // Bootsfaces growl has issues to handle special characters
-        return errorMsg.replace("\n\t", "");
+        return errorMessage.replace("\n\t", "");
     }
 
 
