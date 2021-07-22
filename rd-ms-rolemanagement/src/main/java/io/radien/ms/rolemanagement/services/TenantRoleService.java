@@ -76,22 +76,22 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     @Override
     public Page<SystemTenantRole> getAll(int pageNo, int pageSize) {
         log.info("Retrieving tenant role associations using pagination mode");
-        EntityManager entityManager = getEntityManager();
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        EntityManager em = getEntityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<TenantRole> criteriaQuery = criteriaBuilder.createQuery(TenantRole.class);
         Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
 
         criteriaQuery.select(tenantRoleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
-        TypedQuery<TenantRole> q= entityManager.createQuery(criteriaQuery);
+        TypedQuery<TenantRole> q= em.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemTenantRole> systemTenantRoles = q.getResultList();
 
-        int totalRecords = Math.toIntExact(getCount(global, tenantRoleRoot, entityManager));
+        int totalRecords = Math.toIntExact(getCount(global, tenantRoleRoot, em));
         int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
         log.info("Pagination ready to be shown");

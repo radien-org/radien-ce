@@ -82,18 +82,18 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		this.refreshToken = refreshToken;
 		try {
 			Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
-			SystemUser user;
+			SystemUser systemUser;
 			if (!existingUser.isPresent()) {
-				user = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, getOAF().getSystemAdminUserId());
-				userClientService.create(user, true);
+				systemUser = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, getOAF().getSystemAdminUserId());
+				userClientService.create(systemUser, true);
 				Optional<SystemUser> userBySub = userClientService.getUserBySub(userIdSubject);
 				if(userBySub.isPresent()) {
-					user = userBySub.get();
+					systemUser = userBySub.get();
 				}
 			} else {
-				user = existingUser.get();
+				systemUser = existingUser.get();
 			}
-			this.user = user;
+			this.user = systemUser;
 		} catch (SystemException exception){
 			log.error(exception.getMessage());
 		}

@@ -101,13 +101,13 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         log.info("Retrieving tenant role user associations using pagination mode, tenant {} role{}, page {}, size{}",
                 tenant, role, pageNo, pageSize);
 
-        EntityManager entityManager = getEntityManager();
-        List<Long> tenantRoleIds = (tenant != null || role != null) ? getTenantRoleIds(entityManager, tenant, role) : null;
+        EntityManager em = getEntityManager();
+        List<Long> tenantRoleIds = (tenant != null || role != null) ? getTenantRoleIds(em, tenant, role) : null;
         if (tenantRoleIds != null && tenantRoleIds.isEmpty()) {
             return new Page<>(new ArrayList<>(), pageNo, 0, 0);
         }
 
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<TenantRoleUser> criteriaQuery = criteriaBuilder.createQuery(TenantRoleUser.class);
         Root<TenantRoleUser> tenantRoleRoot = criteriaQuery.from(TenantRoleUser.class);
 
@@ -118,14 +118,14 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
             criteriaQuery.where(global);
         }
 
-        TypedQuery<TenantRoleUser> q= entityManager.createQuery(criteriaQuery);
+        TypedQuery<TenantRoleUser> q= em.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
 
         List<? extends SystemTenantRoleUser> systemTenantRolesUsers = q.getResultList();
 
-        int totalRecords = Math.toIntExact(getCount(global, tenantRoleRoot, entityManager));
+        int totalRecords = Math.toIntExact(getCount(global, tenantRoleRoot, em));
         int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
         log.info("Pagination ready to be shown");
