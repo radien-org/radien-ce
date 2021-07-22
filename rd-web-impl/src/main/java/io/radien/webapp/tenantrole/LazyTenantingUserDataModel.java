@@ -47,7 +47,6 @@ public class LazyTenantingUserDataModel extends LazyAbstractDataModel<SystemUser
 
     private Long tenantId = null;
 
-    private static Logger log = LoggerFactory.getLogger(LazyTenantingUserDataModel.class);
 
     /**
      * The idea for this constructor is to allow fetching User relations
