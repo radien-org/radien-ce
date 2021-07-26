@@ -23,6 +23,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +148,7 @@ public class RoleResource implements RoleResourceClient {
     public Response save(Role role) {
         try {
             log.info("New information to be created/updated it's on it's way!");
-            roleBusinessService.save(new io.radien.ms.rolemanagement.entities.Role(role));
+            roleBusinessService.save(new RoleEntity(role));
             return Response.ok().build();
         } catch (RoleNotFoundException e) {
             return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();

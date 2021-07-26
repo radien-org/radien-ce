@@ -1,7 +1,7 @@
 package io.radien.ms.rolemanagement.providers;
 
 import io.radien.api.model.role.SystemRole;
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ public class SystemRoleMessageBodyReaderTest {
     @Test
     public void testIsReadable() {
         SystemRoleMessageBodyReader target = new SystemRoleMessageBodyReader();
-        assertTrue(target.isReadable(Role.class, null, null, null));
+        assertTrue(target.isReadable(RoleEntity.class, null, null, null));
     }
 
     @Test

@@ -39,8 +39,8 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
-import io.radien.ms.rolemanagement.entities.Role;
-import io.radien.ms.rolemanagement.entities.TenantRole;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import org.junit.jupiter.api.*;
@@ -166,7 +166,7 @@ public class TenantRoleBusinessServiceTest {
     protected SystemRole createRole(String name) throws RoleNotFoundException, UniquenessConstraintException {
         SystemRole sr = getRoleByName(name);
         if (sr == null) {
-            sr = new Role();
+            sr = new RoleEntity();
             sr.setName(name);
             roleServiceAccess.save(sr);
         }
@@ -191,7 +191,7 @@ public class TenantRoleBusinessServiceTest {
         SystemTenantRole tenantRole = tenantRoles.isEmpty() ? null : tenantRoles.get(0);
 
         if (tenantRole == null) {
-            tenantRole = new TenantRole();
+            tenantRole = new TenantRoleEntity();
             tenantRole.setRoleId(roleId);
             tenantRole.setTenantId(tenantId);
 
@@ -231,7 +231,7 @@ public class TenantRoleBusinessServiceTest {
         assertNotNull(tenantRole);
 
         // Try to create again using the same parameters
-        SystemTenantRole repeated = new TenantRole();
+        SystemTenantRole repeated = new TenantRoleEntity();
         repeated.setTenantId(tenantId);
         repeated.setRoleId(roleAdmin.getId());
 
@@ -241,7 +241,7 @@ public class TenantRoleBusinessServiceTest {
         // Try to insert with invalid Tenant
         Long mockedInvalidTenant = 9999L;
         Long mockedValidTenant = 8888L;
-        SystemTenantRole tenantRoleWithInvalidTenant = new TenantRole();
+        SystemTenantRole tenantRoleWithInvalidTenant = new TenantRoleEntity();
         tenantRoleWithInvalidTenant.setTenantId(mockedInvalidTenant);
         tenantRoleWithInvalidTenant.setRoleId(roleAdmin.getId());
 
@@ -257,7 +257,7 @@ public class TenantRoleBusinessServiceTest {
                 save(tenantRoleWithInvalidTenant));
 
         // Try to insert with invalid Role
-        SystemTenantRole tenantRoleWithInvalidRole = new TenantRole();
+        SystemTenantRole tenantRoleWithInvalidRole = new TenantRoleEntity();
         tenantRoleWithInvalidRole.setTenantId(mockedValidTenant);
         tenantRoleWithInvalidRole.setRoleId(1111111L);
         assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
@@ -1002,7 +1002,7 @@ public class TenantRoleBusinessServiceTest {
         Long tenantTestCase1 = 100L;
         SystemRole role = assertDoesNotThrow(() -> createRole("test"));
 
-        SystemTenantRole systemTenantRole = new TenantRole();
+        SystemTenantRole systemTenantRole = new TenantRoleEntity();
         systemTenantRole.setTenantId(tenantTestCase1);
         systemTenantRole.setRoleId(role.getId());
 

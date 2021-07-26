@@ -16,7 +16,7 @@
 package io.radien.ms.rolemanagement.providers;
 
 import io.radien.api.model.role.SystemRole;
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import io.radien.ms.rolemanagement.util.RoleModelMapper;
 
 import javax.ws.rs.Consumes;
@@ -49,7 +49,7 @@ public class SystemRoleMessageBodyReader implements MessageBodyReader<SystemRole
      */
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(Role.class);
+        return type.equals(RoleEntity.class);
     }
 
     /**

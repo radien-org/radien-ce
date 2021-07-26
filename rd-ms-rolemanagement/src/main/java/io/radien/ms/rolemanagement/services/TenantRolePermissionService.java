@@ -22,7 +22,7 @@ import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
-import io.radien.ms.rolemanagement.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
 
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
@@ -53,7 +53,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      */
     @Override
     public SystemTenantRolePermission get(Long tenantRolePermissionId) {
-        return getEntityManager().find(TenantRolePermission.class, tenantRolePermissionId);
+        return getEntityManager().find(TenantRolePermissionEntity.class, tenantRolePermissionId);
     }
 
     /**
@@ -64,15 +64,15 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
     public List<? extends SystemTenantRolePermission> get(SystemTenantRolePermissionSearchFilter filter) {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<TenantRolePermission> criteriaQuery = criteriaBuilder.createQuery(TenantRolePermission.class);
-        Root<TenantRolePermission> root = criteriaQuery.from(TenantRolePermission.class);
+        CriteriaQuery<TenantRolePermissionEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRolePermissionEntity.class);
+        Root<TenantRolePermissionEntity> root = criteriaQuery.from(TenantRolePermissionEntity.class);
 
         criteriaQuery.select(root);
 
         Predicate global = getFilteredPredicate((TenantRolePermissionSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
-        TypedQuery<TenantRolePermission> q = em.createQuery(criteriaQuery);
+        TypedQuery<TenantRolePermissionEntity> q = em.createQuery(criteriaQuery);
 
         return q.getResultList();
     }
@@ -91,7 +91,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
      * @return a filtered predicate
      */
     private Predicate getFilteredPredicate(TenantRolePermissionSearchFilter filter, CriteriaBuilder criteriaBuilder,
-                                           Root<TenantRolePermission> tenantRolePermissionRoot) {
+                                           Root<TenantRolePermissionEntity> tenantRolePermissionRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -120,7 +120,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
     private Predicate getFieldPredicate(String name, Object value,
                                         TenantRolePermissionSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
-                                        Root<TenantRolePermission> tenantRolePermissionRoot,
+                                        Root<TenantRolePermissionEntity> tenantRolePermissionRoot,
                                         Predicate global) {
         if(value != null) {
             Predicate subPredicate;
@@ -184,7 +184,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         }
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
-        Root<TenantRolePermission> root = sc.from(TenantRolePermission.class);
+        Root<TenantRolePermissionEntity> root = sc.from(TenantRolePermissionEntity.class);
 
         sc.select(cb.count(root)).
                 where(
@@ -207,8 +207,8 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<TenantRolePermission> criteriaDelete = cb.createCriteriaDelete(TenantRolePermission.class);
-        Root<TenantRolePermission> tenantRolePermissionRoot = criteriaDelete.from(TenantRolePermission.class);
+        CriteriaDelete<TenantRolePermissionEntity> criteriaDelete = cb.createCriteriaDelete(TenantRolePermissionEntity.class);
+        Root<TenantRolePermissionEntity> tenantRolePermissionRoot = criteriaDelete.from(TenantRolePermissionEntity.class);
         criteriaDelete.where(cb.equal(tenantRolePermissionRoot.get(SystemVariables.ID.getFieldName()),tenantRolePermissionId));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
     }
@@ -234,7 +234,7 @@ public class TenantRolePermissionService implements TenantRolePermissionServiceA
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
-        Root<TenantRolePermission> root = criteriaQuery.from(TenantRolePermission.class);
+        Root<TenantRolePermissionEntity> root = criteriaQuery.from(TenantRolePermissionEntity.class);
 
         criteriaQuery.select(root.get(SystemVariables.ID.getFieldName()));
 

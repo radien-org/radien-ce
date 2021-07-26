@@ -22,6 +22,7 @@ import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
+import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +133,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     public Response save(TenantRole tenantRole) {
         try {
             log("Creating association for Tenant %d and Role %d", tenantRole.getTenantId(), tenantRole.getRoleId());
-            tenantRoleBusinessService.save(new io.radien.ms.rolemanagement.entities.TenantRole(tenantRole));
+            tenantRoleBusinessService.save(new TenantRoleEntity(tenantRole));
             return Response.ok().build();
         } catch (UniquenessConstraintException | TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());

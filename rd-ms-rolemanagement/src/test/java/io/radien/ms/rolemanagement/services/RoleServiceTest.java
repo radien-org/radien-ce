@@ -22,7 +22,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -93,8 +93,8 @@ public class RoleServiceTest {
 
     @Test
     public void testAddDuplicatedUserEmail() {
-        Role role = RoleFactory.create("name", "description", 2L);
-        Role roleDuplicated = RoleFactory.create("name", "description", 2L);
+        RoleEntity role = RoleFactory.create("name", "description", 2L);
+        RoleEntity roleDuplicated = RoleFactory.create("name", "description", 2L);
 
         boolean success = false;
         try{
@@ -113,7 +113,7 @@ public class RoleServiceTest {
 
     @Test
     public void testGetById() throws RoleNotFoundException, UniquenessConstraintException {
-        Role role = RoleFactory.create("nameGetByID", "descriptionGetByID", 2L);
+        RoleEntity role = RoleFactory.create("nameGetByID", "descriptionGetByID", 2L);
         roleServiceAccess.save(role);
         SystemRole result = roleServiceAccess.get(role.getId());
         assertNotNull(result);

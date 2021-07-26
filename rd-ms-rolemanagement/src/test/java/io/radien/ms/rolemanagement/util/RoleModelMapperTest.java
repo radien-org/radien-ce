@@ -1,6 +1,6 @@
 package io.radien.ms.rolemanagement.util;
 
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
 
 import javax.json.JsonArray;
@@ -17,7 +17,7 @@ public class RoleModelMapperTest {
 
     @Test
     public void testMapRole() {
-        Role role = RoleFactory.create("nameValue", "descriptionValue", 2L);
+        RoleEntity role = RoleFactory.create("nameValue", "descriptionValue", 2L);
 
         JsonObject jsonObject = RoleModelMapper.map(role);
         assertEquals(role.getName(),jsonObject.getString("name"));
@@ -26,7 +26,7 @@ public class RoleModelMapperTest {
 
     @Test
     public void testMapList() {
-        Role role = RoleFactory.create("nameValue", "descriptionValue", 2L);
+        RoleEntity role = RoleFactory.create("nameValue", "descriptionValue", 2L);
 
         JsonArray jsonArray = RoleModelMapper.map(Collections.singletonList(role));
         assertEquals(1,jsonArray.size());
@@ -45,7 +45,7 @@ public class RoleModelMapperTest {
                 "}";
 
         InputStream in = new ByteArrayInputStream(result.getBytes());
-        Role role = RoleModelMapper.map(in);
+        RoleEntity role = RoleModelMapper.map(in);
 
         assertNull(role.getId());
         assertEquals("nameValue", role.getName());

@@ -30,20 +30,20 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "ROL01")
-public class Role extends io.radien.ms.rolemanagement.client.entities.Role {
+public class RoleEntity extends io.radien.ms.rolemanagement.client.entities.Role {
 
     private static final long serialVersionUID = -725339588872652151L;
 
     /**
      * Role entity emty constructor
      */
-    public Role(){ }
+    public RoleEntity(){ }
 
     /**
      * Role entity constructor
      * @param role {@link io.radien.ms.rolemanagement.client.entities.Role} to be added/created
      */
-    public Role(io.radien.ms.rolemanagement.client.entities.Role role){
+    public RoleEntity(io.radien.ms.rolemanagement.client.entities.Role role){
         super(role);
     }
 

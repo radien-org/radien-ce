@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class RoleTest {
 
-    Role role;
+    RoleEntity role;
     Date now = new Date();
 
     public RoleTest() {
@@ -24,7 +24,7 @@ public class RoleTest {
 
     @Test
     public void testConstructor() {
-        Role newRole = new Role(io.radien.ms.rolemanagement.client.services.RoleFactory.create("newName", "newDescription", 99L));
+        RoleEntity newRole = new RoleEntity(io.radien.ms.rolemanagement.client.services.RoleFactory.create("newName", "newDescription", 99L));
 
         assertNull(newRole.getId());
         assertEquals("newName", newRole.getName());

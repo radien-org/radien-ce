@@ -27,8 +27,8 @@ import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
-import io.radien.ms.rolemanagement.entities.TenantRole;
-import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,13 +117,13 @@ public class TenantRoleUserServiceTest {
     @Test
     public void testCreate() throws UniquenessConstraintException {
 
-        SystemTenantRole systemTenantRole = new TenantRole();
+        SystemTenantRole systemTenantRole = new TenantRoleEntity();
         systemTenantRole.setRoleId(baseRoleId);
         systemTenantRole.setTenantId(baseTenantId);
         tenantRoleServiceAccess.save(systemTenantRole);
         baseTenantRoleId = systemTenantRole.getId();
 
-        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
         systemTenantRoleUser.setUserId(baseUserId);
         systemTenantRoleUser.setTenantRoleId(baseTenantRoleId);
 
@@ -140,7 +140,7 @@ public class TenantRoleUserServiceTest {
     @Order(2)
     @Test
     public void testCreateDuplicatedWithError() {
-        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
         systemTenantRoleUser.setUserId(baseUserId);
         systemTenantRoleUser.setTenantRoleId(baseTenantRoleId);
         Assertions.assertThrows(UniquenessConstraintException.class, () ->
@@ -155,7 +155,7 @@ public class TenantRoleUserServiceTest {
     @Order(3)
     public void testGetById() {
 
-        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
         systemTenantRoleUser.setTenantRoleId(1L);
         systemTenantRoleUser.setUserId(1L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(systemTenantRoleUser));
@@ -233,7 +233,7 @@ public class TenantRoleUserServiceTest {
     @Order(9)
     public void testDeleteTenantRoleUser() {
         // Insert first
-        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setUserId(69L);
         tenantRoleUser.setTenantRoleId(70L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
@@ -283,12 +283,12 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(12)
     public void testRetrieveSettingLogicConjunctionToFalse() {
-        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setUserId(404L);
         tenantRoleUser.setTenantRoleId(405L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
 
-        SystemTenantRoleUser tenantRoleUser2 = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser2 = new TenantRoleUserEntity();
         tenantRoleUser2.setUserId(406L);
         tenantRoleUser2.setTenantRoleId(407L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser2));
@@ -376,7 +376,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(17)
     public void testGetTenantRoleUserId() {
-        SystemTenantRoleUser sru = new TenantRoleUser();
+        SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(101010L);
         sru.setUserId(101L);
         Assertions.assertDoesNotThrow(() -> this.tenantRoleUserServiceAccess.create(sru));
@@ -404,7 +404,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(16)
     public void testGetTenantRoleUserIdNullUser() {
-        SystemTenantRoleUser sru = new TenantRoleUser();
+        SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(301010L);
         sru.setUserId(601L);
         Assertions.assertDoesNotThrow(() -> this.tenantRoleUserServiceAccess.create(sru));
@@ -434,7 +434,7 @@ public class TenantRoleUserServiceTest {
      * @return SystemTenantRole instance for the given parameters
      */
     protected SystemTenantRole createTenantRole(Long tenant, Long role) throws UniquenessConstraintException {
-        SystemTenantRole tenantRole = new TenantRole();
+        SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setTenantId(tenant);
         tenantRole.setRoleId(role);
         tenantRoleServiceAccess.save(tenantRole);
@@ -449,7 +449,7 @@ public class TenantRoleUserServiceTest {
      * @return SystemTenantRoleUser instance for the given parameters
      */
     protected SystemTenantRoleUser createTenantRoleUser(SystemTenantRole tr, Long user) throws UniquenessConstraintException {
-        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setTenantRoleId(tr.getId());
         tenantRoleUser.setUserId(user);
         tenantRoleUserServiceAccess.create(tenantRoleUser);
@@ -504,7 +504,7 @@ public class TenantRoleUserServiceTest {
      */
     @Test
     public void testGetTenantRoleUserIds() throws TenantRoleUserException {
-        SystemTenantRoleUser sru = new TenantRoleUser();
+        SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(117L);
         sru.setUserId(118L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));

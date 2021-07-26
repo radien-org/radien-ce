@@ -24,10 +24,10 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
-import io.radien.ms.rolemanagement.entities.Role;
-import io.radien.ms.rolemanagement.entities.TenantRole;
-import io.radien.ms.rolemanagement.entities.TenantRolePermission;
-import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
+import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      */
     @Override
     public SystemTenantRole get(Long tenantRoleId) {
-        return getEntityManager().find(TenantRole.class, tenantRoleId);
+        return getEntityManager().find(TenantRoleEntity.class, tenantRoleId);
     }
 
     /**
@@ -78,13 +78,13 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         log.info("Retrieving tenant role associations using pagination mode");
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<TenantRole> criteriaQuery = criteriaBuilder.createQuery(TenantRole.class);
-        Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
+        CriteriaQuery<TenantRoleEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRoleEntity.class);
+        Root<TenantRoleEntity> tenantRoleRoot = criteriaQuery.from(TenantRoleEntity.class);
 
         criteriaQuery.select(tenantRoleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
-        TypedQuery<TenantRole> q= em.createQuery(criteriaQuery);
+        TypedQuery<TenantRoleEntity> q= em.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
@@ -103,7 +103,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * Count the number of existent associations (Tenant role) in the DB.
      * @return the count of tenant role associations
      */
-    private long getCount(Predicate global, Root<TenantRole> userRoot, EntityManager em) {
+    private long getCount(Predicate global, Root<TenantRoleEntity> userRoot, EntityManager em) {
         log.info("Gathering/counting the associations");
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -123,15 +123,15 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     public List<? extends SystemTenantRole> get(SystemTenantRoleSearchFilter filter) {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<TenantRole> criteriaQuery = criteriaBuilder.createQuery(TenantRole.class);
-        Root<TenantRole> root = criteriaQuery.from(TenantRole.class);
+        CriteriaQuery<TenantRoleEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRoleEntity.class);
+        Root<TenantRoleEntity> root = criteriaQuery.from(TenantRoleEntity.class);
 
         criteriaQuery.select(root);
 
         Predicate global = getFilteredPredicate((TenantRoleSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
-        TypedQuery<TenantRole> q = em.createQuery(criteriaQuery);
+        TypedQuery<TenantRoleEntity> q = em.createQuery(criteriaQuery);
 
         return q.getResultList();
     }
@@ -150,7 +150,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @return a filtered predicate
      */
     private Predicate getFilteredPredicate(TenantRoleSearchFilter filter, CriteriaBuilder criteriaBuilder,
-                                           Root<TenantRole> tenantRoleRoot) {
+                                           Root<TenantRoleEntity> tenantRoleRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -177,7 +177,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * @return a constructed predicate
      */
     private Predicate getFieldPredicate(String name, Object value, TenantRoleSearchFilter filter,
-                                        CriteriaBuilder criteriaBuilder, Root<TenantRole> tenantRoleRoot,
+                                        CriteriaBuilder criteriaBuilder, Root<TenantRoleEntity> tenantRoleRoot,
                                         Predicate global) {
         if(value != null) {
             Predicate subPredicate = criteriaBuilder.equal(tenantRoleRoot.get(name), value);
@@ -242,7 +242,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
-        Root<TenantRole> root = sc.from(TenantRole.class);
+        Root<TenantRoleEntity> root = sc.from(TenantRoleEntity.class);
 
         sc.select(cb.count(root));
 
@@ -289,8 +289,8 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         }
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<TenantRole> criteriaDelete = cb.createCriteriaDelete(TenantRole.class);
-        Root<TenantRole> tenantRoleRoot = criteriaDelete.from(TenantRole.class);
+        CriteriaDelete<TenantRoleEntity> criteriaDelete = cb.createCriteriaDelete(TenantRoleEntity.class);
+        Root<TenantRoleEntity> tenantRoleRoot = criteriaDelete.from(TenantRoleEntity.class);
         criteriaDelete.where(cb.equal(tenantRoleRoot.get(SystemVariables.ID.getFieldName()),tenantRoleId));
         return em.createQuery(criteriaDelete).executeUpdate() > 0;
     }
@@ -304,7 +304,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     protected boolean hasUsersAssociated(Long tenantRoleId, EntityManager em) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
-        Root<TenantRoleUser> root = sc.from(TenantRoleUser.class);
+        Root<TenantRoleUserEntity> root = sc.from(TenantRoleUserEntity.class);
 
         sc.select(cb.count(root));
 
@@ -323,7 +323,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     protected boolean hasPermissionsAssociated(Long tenantRoleId, EntityManager em) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
-        Root<TenantRolePermission> root = sc.from(TenantRolePermission.class);
+        Root<TenantRolePermissionEntity> root = sc.from(TenantRolePermissionEntity.class);
 
         sc.select(cb.count(root));
 
@@ -351,8 +351,8 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
-        Root<TenantRolePermission> tenantRolePermissionRoot = cq.from(TenantRolePermission.class);
+        Root<TenantRoleEntity> tenantRoleRoot = cq.from(TenantRoleEntity.class);
+        Root<TenantRolePermissionEntity> tenantRolePermissionRoot = cq.from(TenantRolePermissionEntity.class);
 
         cq.select(tenantRolePermissionRoot.get(SystemVariables.PERMISSION_ID.getFieldName()));
 
@@ -361,7 +361,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()), roleId));
         predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ID.getFieldName()), tenantRolePermissionRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName())));
         if (userId != null) {
-            Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+            Root<TenantRoleUserEntity> tenantRoleUserRoot = cq.from(TenantRoleUserEntity.class);
             predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ID.getFieldName()), tenantRoleUserRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName())));
             predicates.add(cb.equal(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName()), userId));
         }
@@ -388,8 +388,8 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
-        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+        Root<TenantRoleEntity> tenantRoleRoot = cq.from(TenantRoleEntity.class);
+        Root<TenantRoleUserEntity> tenantRoleUserRoot = cq.from(TenantRoleUserEntity.class);
 
         cq.select(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()));
         cq.distinct(true);
@@ -423,8 +423,8 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
-        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+        Root<TenantRoleEntity> tenantRoleRoot = cq.from(TenantRoleEntity.class);
+        Root<TenantRoleUserEntity> tenantRoleUserRoot = cq.from(TenantRoleUserEntity.class);
 
         cq.select(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()));
         cq.distinct(true);
@@ -461,9 +461,9 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Role> roleRoot = cq.from(Role.class);
-        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
-        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+        Root<RoleEntity> roleRoot = cq.from(RoleEntity.class);
+        Root<TenantRoleEntity> tenantRoleRoot = cq.from(TenantRoleEntity.class);
+        Root<TenantRoleUserEntity> tenantRoleUserRoot = cq.from(TenantRoleUserEntity.class);
 
         cq.select(cb.count(tenantRoleRoot));
 
@@ -495,9 +495,9 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<TenantRole> tenantRoleRoot = cq.from(TenantRole.class);
-        Root<TenantRolePermission> tenantRolePermissionRoot = cq.from(TenantRolePermission.class);
-        Root<TenantRoleUser> tenantRoleUserRoot = cq.from(TenantRoleUser.class);
+        Root<TenantRoleEntity> tenantRoleRoot = cq.from(TenantRoleEntity.class);
+        Root<TenantRolePermissionEntity> tenantRolePermissionRoot = cq.from(TenantRolePermissionEntity.class);
+        Root<TenantRoleUserEntity> tenantRoleUserRoot = cq.from(TenantRoleUserEntity.class);
 
         cq.select(cb.count(tenantRoleRoot));
 
@@ -533,7 +533,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
+        Root<TenantRoleEntity> tenantRoleRoot = criteriaQuery.from(TenantRoleEntity.class);
 
         criteriaQuery.select(tenantRoleRoot.get(SystemVariables.ID.getFieldName())).
                 where(
@@ -557,7 +557,7 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRole> tenantRoleRoot = criteriaQuery.from(TenantRole.class);
+        Root<TenantRoleEntity> tenantRoleRoot = criteriaQuery.from(TenantRoleEntity.class);
 
         criteriaQuery.select(tenantRoleRoot.get(SystemVariables.ID.getFieldName())).
                 where(
