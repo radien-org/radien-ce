@@ -21,7 +21,7 @@ import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ResourceResourceClient;
-import io.radien.ms.permissionmanagement.model.Resource;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -128,7 +128,7 @@ public class ResourceResource implements ResourceResourceClient {
 	 */
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Resource resource) {
 		try {
-			resourceServiceAccess.save(new Resource(resource));
+			resourceServiceAccess.save(new ResourceEntity(resource));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());

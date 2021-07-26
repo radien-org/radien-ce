@@ -25,10 +25,10 @@ import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
-import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
-import io.radien.ms.permissionmanagement.model.Permission;
-import io.radien.ms.permissionmanagement.model.Resource;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -113,15 +113,15 @@ public class PermissionBusinessServiceTest {
 
     @Test
     public void testAssociation() throws UniquenessConstraintException, PermissionNotFoundException {
-        resource = new Resource();
+        resource = new ResourceEntity();
         resource.setName("userTestAssociation");
         resourceServiceAccess.save(resource);
 
-        action = new Action();
+        action = new ActionEntity();
         action.setName("remove-userTestAssociation");
         actionServiceAccess.save(action);
 
-        permission = new Permission();
+        permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociation");
         permissionServiceAccess.save(permission);
 
@@ -138,19 +138,19 @@ public class PermissionBusinessServiceTest {
 
     @Test
     public void testDissociation() throws UniquenessConstraintException {
-        resource = new Resource();
+        resource = new ResourceEntity();
         resource.setName("userTestDissociation");
         resourceServiceAccess.save(resource);
 
-        action = new Action();
+        action = new ActionEntity();
         action.setName("remove-userTestDissociation");
         actionServiceAccess.save(action);
 
-        permission = new Permission();
+        permission = new PermissionEntity();
         permission.setName("removing-assetTestDissociation");
         permissionServiceAccess.save(permission);
 
-        Permission perm = new Permission();
+        PermissionEntity perm = new PermissionEntity();
         perm.setName("adding-user");
         perm.setActionId(action.getId());
         perm.setResourceId(resource.getId());
@@ -175,15 +175,15 @@ public class PermissionBusinessServiceTest {
 
     @Test
     public void testAssociatingNotExistentPermission() throws UniquenessConstraintException {
-        resource = new Resource();
+        resource = new ResourceEntity();
         resource.setName("userTestAssociatingNotExistentPermission");
         resourceServiceAccess.save(resource);
 
-        action = new Action();
+        action = new ActionEntity();
         action.setName("remove-userTestAssociatingNotExistentPermission");
         actionServiceAccess.save(action);
 
-        permission = new Permission();
+        permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociatingNotExistentPermission");
         permissionServiceAccess.save(permission);
 
@@ -195,15 +195,15 @@ public class PermissionBusinessServiceTest {
 
     @Test
     public void testAssociatingNotExistentAction() throws UniquenessConstraintException {
-        resource = new Resource();
+        resource = new ResourceEntity();
         resource.setName("userTestAssociatingNotExistentAction");
         resourceServiceAccess.save(resource);
 
-        action = new Action();
+        action = new ActionEntity();
         action.setName("remove-userTestAssociatingNotExistentAction");
         actionServiceAccess.save(action);
 
-        permission = new Permission();
+        permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociatingNotExistentAction");
         permissionServiceAccess.save(permission);
 
@@ -215,15 +215,15 @@ public class PermissionBusinessServiceTest {
 
     @Test
     public void testAssociatingNotExistentResource() throws UniquenessConstraintException {
-        resource = new Resource();
+        resource = new ResourceEntity();
         resource.setName("userTestAssociatingNotExistentResource");
         resourceServiceAccess.save(resource);
 
-        action = new Action();
+        action = new ActionEntity();
         action.setName("remove-userTestAssociatingNotExistentResource");
         actionServiceAccess.save(action);
 
-        permission = new Permission();
+        permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociatingNotExistentResource");
         permissionServiceAccess.save(permission);
 
@@ -251,15 +251,15 @@ public class PermissionBusinessServiceTest {
 
     @Test
     public void testAssociatingWithNullAsResourceId() throws UniquenessConstraintException {
-        resource = new Resource();
+        resource = new ResourceEntity();
         resource.setName("user");
         resourceServiceAccess.save(resource);
 
-        action = new Action();
+        action = new ActionEntity();
         action.setName("remove-user");
         actionServiceAccess.save(action);
 
-        permission = new Permission();
+        permission = new PermissionEntity();
         permission.setName("removing-asset");
         permissionServiceAccess.save(permission);
 

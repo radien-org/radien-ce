@@ -15,8 +15,8 @@
  */
 package io.radien.ms.permissionmanagement.legacy;
 
-import io.radien.ms.permissionmanagement.model.Permission;
-import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -27,15 +27,15 @@ import javax.json.JsonObjectBuilder;
 public class PermissionFactoryTest extends TestCase {
 
     JsonObject json;
-    Permission perm;
-    Action action;
+    PermissionEntity perm;
+    ActionEntity action;
 
     /**
      * Constructor class method were we are going to create the JSON and the permission for
      * testing purposes.
      */
     public PermissionFactoryTest() {
-        action = new Action();
+        action = new ActionEntity();
         action.setName("WRITE-PERMISSION-ON-SOME_RADIEN_MODULE");
         action.setId(2L);
         action.setCreateUser(4L);
@@ -65,7 +65,7 @@ public class PermissionFactoryTest extends TestCase {
      */
     @Test
     public void testConvert() {
-        Permission constructedNewPermission = PermissionFactory.convert(json);
+        PermissionEntity constructedNewPermission = PermissionFactory.convert(json);
         assertEquals(perm.getId(), constructedNewPermission.getId());
         assertEquals(perm.getName(), constructedNewPermission.getName());
         assertEquals(perm.getCreateUser(), constructedNewPermission.getCreateUser());

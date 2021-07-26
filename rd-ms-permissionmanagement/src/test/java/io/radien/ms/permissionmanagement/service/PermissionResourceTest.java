@@ -20,7 +20,7 @@ import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
-import io.radien.ms.permissionmanagement.model.Permission;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -118,7 +118,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testGetById() throws PermissionNotFoundException {
-        when(permissionServiceAccess.get(1L)).thenReturn(new Permission());
+        when(permissionServiceAccess.get(1L)).thenReturn(new PermissionEntity());
         Response response = permissionResource.getById(1L);
         assertEquals(200,response.getStatus());
     }
@@ -177,7 +177,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testSave() {
-        Response response = permissionResource.save(new Permission());
+        Response response = permissionResource.save(new PermissionEntity());
         assertEquals(200,response.getStatus());
     }
 
@@ -266,7 +266,7 @@ public class PermissionResourceTest {
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException {
         doThrow(new UniquenessConstraintException()).when(permissionServiceAccess).save(any());
-        Response response = permissionResource.save(new Permission());
+        Response response = permissionResource.save(new PermissionEntity());
         assertEquals(400,response.getStatus());
     }
 
@@ -278,7 +278,7 @@ public class PermissionResourceTest {
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException {
         doThrow(new RuntimeException()).when(permissionServiceAccess).save(any());
-        Response response = permissionResource.save(new Permission());
+        Response response = permissionResource.save(new PermissionEntity());
         assertEquals(500,response.getStatus());
     }
 
@@ -333,7 +333,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testHasPermission() {
-        SystemPermission systemPermission = new Permission();
+        SystemPermission systemPermission = new PermissionEntity();
         when(permissionServiceAccess.getPermissionByActionAndResourceNames(any(), any())).
                 thenReturn(systemPermission);
         Response response = permissionResource.hasPermission("add", "contract");

@@ -22,8 +22,8 @@ import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
-import io.radien.ms.permissionmanagement.model.Action;
-import io.radien.ms.permissionmanagement.model.Resource;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +134,7 @@ public class PermissionBusinessService {
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+        Root<ActionEntity> actionRoot = criteriaQuery.from(ActionEntity.class);
 
         criteriaQuery.select(actionRoot.get("id")).where(criteriaBuilder.equal(actionRoot.get("id"), actionId));
 
@@ -151,7 +151,7 @@ public class PermissionBusinessService {
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
+        Root<ResourceEntity> resourceRoot = criteriaQuery.from(ResourceEntity.class);
 
         criteriaQuery.select(resourceRoot.get("id")).where(criteriaBuilder.equal(resourceRoot.get("id"), resourceId));
 

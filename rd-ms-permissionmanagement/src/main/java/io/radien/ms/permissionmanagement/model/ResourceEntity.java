@@ -32,18 +32,18 @@ import javax.persistence.Column;
  */
 @Entity
 @Table(name = "RES01")
-public class Resource extends io.radien.ms.permissionmanagement.client.entities.Resource {
+public class ResourceEntity extends io.radien.ms.permissionmanagement.client.entities.Resource {
 
 	/**
 	 * Entity Resource empty constructor
 	 */
-	public Resource() {}
+	public ResourceEntity() {}
 
 	/**
 	 * Entity Resource constructor
 	 * @param a {@link io.radien.ms.permissionmanagement.client.entities.Resource} resource to be created
 	 */
-	public Resource(io.radien.ms.permissionmanagement.client.entities.Resource a) {
+	public ResourceEntity(io.radien.ms.permissionmanagement.client.entities.Resource a) {
 		super(a);
 	}
 

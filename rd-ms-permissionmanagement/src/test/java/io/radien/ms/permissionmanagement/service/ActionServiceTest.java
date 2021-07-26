@@ -18,12 +18,11 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
-import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
-import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -129,10 +128,10 @@ public class ActionServiceTest {
      */
     @Test
     public void testAddDuplicatedName() throws UniquenessConstraintException {
-        Action u = ActionFactory.create("actionNameXXX", 2L);
+        ActionEntity u = ActionFactory.create("actionNameXXX", 2L);
         actionServiceAccess.save(u);
 
-        Action u2 = ActionFactory.create("actionNameXXX", 2L);
+        ActionEntity u2 = ActionFactory.create("actionNameXXX", 2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> actionServiceAccess.save(u2));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");;
         String actualMessage = exception.getMessage();
@@ -150,7 +149,7 @@ public class ActionServiceTest {
      */
     @Test
     public void testGetById() throws UniquenessConstraintException {
-        Action u = ActionFactory.create("testGetIdFirstName", 2L);
+        ActionEntity u = ActionFactory.create("testGetIdFirstName", 2L);
         actionServiceAccess.save(u);
         SystemAction result = actionServiceAccess.get(u.getId());
         assertNotNull(result);
@@ -167,10 +166,10 @@ public class ActionServiceTest {
      */
     @Test
     public void testGetByListOfIds() throws UniquenessConstraintException {
-        Action p1 = ActionFactory.create("testGetByListOfIdsFirstName1", 2L);
+        ActionEntity p1 = ActionFactory.create("testGetByListOfIdsFirstName1", 2L);
         actionServiceAccess.save(p1);
 
-        Action p2 = ActionFactory.create("testGetByListOfIdsFirstName2", 2L);
+        ActionEntity p2 = ActionFactory.create("testGetByListOfIdsFirstName2", 2L);
         actionServiceAccess.save(p2);
 
         List<Long> ActionIds = Arrays.asList(p1.getId(), p2.getId());
@@ -277,16 +276,16 @@ public class ActionServiceTest {
      */
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
-        Action p1 = ActionFactory.create("actionName1", 2L);
+        ActionEntity p1 = ActionFactory.create("actionName1", 2L);
         actionServiceAccess.save(p1);
 
-        Action p2 = ActionFactory.create("actionName2", 2L);
+        ActionEntity p2 = ActionFactory.create("actionName2", 2L);
         actionServiceAccess.save(p2);
 
-        Action p3 = ActionFactory.create("actionName3", 2L);
+        ActionEntity p3 = ActionFactory.create("actionName3", 2L);
         actionServiceAccess.save(p3);
 
-        Action u4 = ActionFactory.create("actionName1", 2L);
+        ActionEntity u4 = ActionFactory.create("actionName1", 2L);
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> actionServiceAccess.save(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
@@ -304,19 +303,19 @@ public class ActionServiceTest {
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
         String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
-        Action p1 = ActionFactory.create("actionNamePerm1", 2L);
+        ActionEntity p1 = ActionFactory.create("actionNamePerm1", 2L);
         actionServiceAccess.save(p1);
 
-        Action p2 = ActionFactory.create("actionNamePerm2", 2L);
+        ActionEntity p2 = ActionFactory.create("actionNamePerm2", 2L);
         actionServiceAccess.save(p2);
 
-        Action p3 = ActionFactory.create("actionNamePerm1", 2L);
+        ActionEntity p3 = ActionFactory.create("actionNamePerm1", 2L);
 
         Exception exceptionForFieldName = assertThrows(Exception.class, () -> actionServiceAccess.save(p3));
         String actualMessage = exceptionForFieldName.getMessage();
         assertTrue(actualMessage.contains(expectedMessageName));
 
-        Action u4 = ActionFactory.create("actionNamePerm2", 2L);
+        ActionEntity u4 = ActionFactory.create("actionNamePerm2", 2L);
 
         Exception exceptionName2 = assertThrows(Exception.class, () -> actionServiceAccess.save(u4));
         String messageFromException = exceptionName2.getMessage();

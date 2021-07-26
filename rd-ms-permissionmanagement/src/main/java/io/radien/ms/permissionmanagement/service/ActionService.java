@@ -23,7 +23,7 @@ import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
-import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -57,7 +57,7 @@ public class ActionService implements ActionServiceAccess {
      * Count the number of Actions existent in the DB.
      * @return the count of Actions
      */
-    private long getCount(Predicate global, Root<Action> actionRoot, CriteriaBuilder cb, EntityManager em) {
+    private long getCount(Predicate global, Root<ActionEntity> actionRoot, CriteriaBuilder cb, EntityManager em) {
         CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
 
         criteriaQuery.where(global);
@@ -76,7 +76,7 @@ public class ActionService implements ActionServiceAccess {
      */
     @Override
     public SystemAction get(Long actionId)  {
-        return getEntityManager().find(Action.class, actionId);
+        return getEntityManager().find(ActionEntity.class, actionId);
     }
 
     /**
@@ -93,12 +93,12 @@ public class ActionService implements ActionServiceAccess {
 
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
-        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+        CriteriaQuery<ActionEntity> criteriaQuery = criteriaBuilder.createQuery(ActionEntity.class);
+        Root<ActionEntity> actionRoot = criteriaQuery.from(ActionEntity.class);
         criteriaQuery.select(actionRoot);
         criteriaQuery.where(actionRoot.get("id").in(actionId));
 
-        TypedQuery<Action> q=em.createQuery(criteriaQuery);
+        TypedQuery<ActionEntity> q=em.createQuery(criteriaQuery);
 
         return new ArrayList<>(q.getResultList());
     }
@@ -119,8 +119,8 @@ public class ActionService implements ActionServiceAccess {
                                      boolean isAscending) {
         EntityManager em = this.getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
-        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+        CriteriaQuery<ActionEntity> criteriaQuery = criteriaBuilder.createQuery(ActionEntity.class);
+        Root<ActionEntity> actionRoot = criteriaQuery.from(ActionEntity.class);
 
         criteriaQuery.select(actionRoot);
 
@@ -140,7 +140,7 @@ public class ActionService implements ActionServiceAccess {
             criteriaQuery.orderBy(orders);
         }
 
-        TypedQuery<Action> q=em.createQuery(criteriaQuery);
+        TypedQuery<ActionEntity> q=em.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
@@ -161,7 +161,7 @@ public class ActionService implements ActionServiceAccess {
     @Override
     public void save(SystemAction action) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
-        List<Action> alreadyExistentRecords = searchDuplicatedName(action, em);
+        List<ActionEntity> alreadyExistentRecords = searchDuplicatedName(action, em);
         if (!alreadyExistentRecords.isEmpty()) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
@@ -177,18 +177,18 @@ public class ActionService implements ActionServiceAccess {
      * @param action Action information to look up.
      * @return list of Actions with duplicated information.
      */
-    private List<Action> searchDuplicatedName(SystemAction action, EntityManager em) {
-        List<Action> alreadyExistentRecords;
+    private List<ActionEntity> searchDuplicatedName(SystemAction action, EntityManager em) {
+        List<ActionEntity> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
-        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+        CriteriaQuery<ActionEntity> criteriaQuery = criteriaBuilder.createQuery(ActionEntity.class);
+        Root<ActionEntity> actionRoot = criteriaQuery.from(ActionEntity.class);
         criteriaQuery.select(actionRoot);
         Predicate global = criteriaBuilder.equal(actionRoot.get("name"), action.getName());
         if(action.getId()!= null) {
             global=criteriaBuilder.and(global, criteriaBuilder.notEqual(actionRoot.get("id"), action.getId()));
         }
         criteriaQuery.where(global);
-        TypedQuery<Action> q = em.createQuery(criteriaQuery);
+        TypedQuery<ActionEntity> q = em.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
     }
@@ -201,8 +201,8 @@ public class ActionService implements ActionServiceAccess {
     public void delete(Long actionId) {
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Action> criteriaDelete = cb.createCriteriaDelete(Action.class);
-        Root<Action> actionRoot = criteriaDelete.from(Action.class);
+        CriteriaDelete<ActionEntity> criteriaDelete = cb.createCriteriaDelete(ActionEntity.class);
+        Root<ActionEntity> actionRoot = criteriaDelete.from(ActionEntity.class);
 
         criteriaDelete.where(cb.equal(actionRoot.get("id"),actionId));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -219,8 +219,8 @@ public class ActionService implements ActionServiceAccess {
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Action> criteriaDelete = cb.createCriteriaDelete(Action.class);
-        Root<Action> actionRoot = criteriaDelete.from(Action.class);
+        CriteriaDelete<ActionEntity> criteriaDelete = cb.createCriteriaDelete(ActionEntity.class);
+        Root<ActionEntity> actionRoot = criteriaDelete.from(ActionEntity.class);
 
         criteriaDelete.where(actionRoot.get("id").in(actionIds));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -234,15 +234,15 @@ public class ActionService implements ActionServiceAccess {
     public List<? extends SystemAction> getActions(SystemActionSearchFilter filter) {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Action> criteriaQuery = criteriaBuilder.createQuery(Action.class);
-        Root<Action> actionRoot = criteriaQuery.from(Action.class);
+        CriteriaQuery<ActionEntity> criteriaQuery = criteriaBuilder.createQuery(ActionEntity.class);
+        Root<ActionEntity> actionRoot = criteriaQuery.from(ActionEntity.class);
 
         criteriaQuery.select(actionRoot);
 
         Predicate global = getFilteredPredicate((ActionSearchFilter) filter, criteriaBuilder, actionRoot);
 
         criteriaQuery.where(global);
-        TypedQuery<Action> q=em.createQuery(criteriaQuery);
+        TypedQuery<ActionEntity> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
     }
@@ -257,7 +257,7 @@ public class ActionService implements ActionServiceAccess {
      */
     private Predicate getFilteredPredicate(ActionSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder,
-                                           Root<Action> actionRoot) {
+                                           Root<ActionEntity> actionRoot) {
         Predicate global;
 
         // is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
@@ -291,7 +291,7 @@ public class ActionService implements ActionServiceAccess {
     private Predicate getFieldPredicate(String name, Object value,
                                         ActionSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
-                                        Root<Action> actionRoot,
+                                        Root<ActionEntity> actionRoot,
                                         Predicate global) {
         if(value != null) {
             Predicate subPredicate;

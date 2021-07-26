@@ -33,18 +33,18 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "PERM01", uniqueConstraints = @UniqueConstraint(columnNames = {"actionId", "resourceId"}))
-public class Permission extends io.radien.ms.permissionmanagement.client.entities.Permission {
+public class PermissionEntity extends io.radien.ms.permissionmanagement.client.entities.Permission {
 
 	/**
 	 * Entity Permission empty constructor
 	 */
-	public Permission() {}
+	public PermissionEntity() {}
 
 	/**
 	 * Entity Permission constructor
 	 * @param p {@link io.radien.ms.permissionmanagement.client.entities.Permission} permission to be created
 	 */
-	public Permission(io.radien.ms.permissionmanagement.client.entities.Permission p) {
+	public PermissionEntity(io.radien.ms.permissionmanagement.client.entities.Permission p) {
 		super(p);
 	}
 

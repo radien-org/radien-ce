@@ -23,7 +23,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
-import io.radien.ms.permissionmanagement.model.Permission;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -137,7 +137,7 @@ public class PermissionResource implements PermissionResourceClient {
 	 */
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission) {
 		try {
-			permissionServiceAccess.save(new Permission(permission));
+			permissionServiceAccess.save(new PermissionEntity(permission));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
