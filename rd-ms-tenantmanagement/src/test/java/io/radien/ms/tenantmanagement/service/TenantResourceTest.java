@@ -18,7 +18,7 @@ package io.radien.ms.tenantmanagement.service;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.*;
-import io.radien.ms.tenantmanagement.entities.Tenant;
+import io.radien.ms.tenantmanagement.entities.TenantEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -102,7 +102,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testGetById() {
-        when(tenantServiceAccess.get(1L)).thenReturn(new Tenant());
+        when(tenantServiceAccess.get(1L)).thenReturn(new TenantEntity());
         Response response = tenantResource.getById(1L);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
@@ -129,7 +129,7 @@ public class TenantResourceTest {
 
     @Test
     public void testGetContractById() {
-        when(tenantServiceAccess.get(anyLong())).thenReturn(new Tenant());
+        when(tenantServiceAccess.get(anyLong())).thenReturn(new TenantEntity());
         Response response = tenantResource.getById(1L);
 
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
@@ -178,7 +178,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testCreate() {
-        Response response = tenantResource.create(new Tenant());
+        Response response = tenantResource.create(new TenantEntity());
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -190,7 +190,7 @@ public class TenantResourceTest {
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException, TenantException {
         doThrow(new UniquenessConstraintException()).when(tenantServiceAccess).create(any());
-        Response response = tenantResource.create(new Tenant());
+        Response response = tenantResource.create(new TenantEntity());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
     }
 
@@ -202,7 +202,7 @@ public class TenantResourceTest {
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException, TenantException {
         doThrow(new RuntimeException()).when(tenantServiceAccess).create(any());
-        Response response = tenantResource.create(new Tenant());
+        Response response = tenantResource.create(new TenantEntity());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 
@@ -212,7 +212,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testUpdate() {
-        Response response = tenantResource.update(1l,new Tenant());
+        Response response = tenantResource.update(1l,new TenantEntity());
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -224,7 +224,7 @@ public class TenantResourceTest {
     @Test
     public void testUpdateInvalid() throws UniquenessConstraintException, TenantException {
         doThrow(new UniquenessConstraintException()).when(tenantServiceAccess).update(any());
-        Response response = tenantResource.update(1l,new Tenant());
+        Response response = tenantResource.update(1l,new TenantEntity());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
     }
 
@@ -236,7 +236,7 @@ public class TenantResourceTest {
     @Test
     public void testUpdateGenericError() throws UniquenessConstraintException, TenantException {
         doThrow(new RuntimeException()).when(tenantServiceAccess).update(any());
-        Response response = tenantResource.update(1l,new Tenant());
+        Response response = tenantResource.update(1l,new TenantEntity());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 

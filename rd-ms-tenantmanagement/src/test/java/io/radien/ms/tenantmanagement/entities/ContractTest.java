@@ -25,13 +25,13 @@ import java.util.Date;
 
 public class ContractTest extends TestCase {
 
-    Contract contract;
+    ContractEntity contract;
     private final Date lastUpdate = new Date();
     private final LocalDateTime start = LocalDateTime.now();
     private final LocalDateTime end = LocalDateTime.now();
 
     public ContractTest() {
-        contract = new Contract(ContractFactory.create("name",start,end,1L));
+        contract = new ContractEntity(ContractFactory.create("name",start,end,1L));
         contract.setId(2L);
         contract.setLastUpdate(lastUpdate);
     }

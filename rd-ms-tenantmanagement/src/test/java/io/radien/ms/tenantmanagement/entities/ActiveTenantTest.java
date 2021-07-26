@@ -21,20 +21,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Active Tenant test class {@link io.radien.ms.tenantmanagement.entities.ActiveTenant}
+ * Active Tenant test class {@link ActiveTenantEntity}
  *
  * @author Bruno Gama
  */
 public class ActiveTenantTest {
-    ActiveTenant activeTenant;
-    ActiveTenant activeTenant1;
+    ActiveTenantEntity activeTenant;
+    ActiveTenantEntity activeTenant1;
 
     /**
      * Active tenant entity constructor test
      */
     public ActiveTenantTest(){
-        activeTenant1 = new ActiveTenant(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant());
-        activeTenant = new ActiveTenant();
+        activeTenant1 = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant());
+        activeTenant = new ActiveTenantEntity();
         activeTenant.setUserId(1L);
         activeTenant.setTenantId(1L);
         activeTenant.setId(1L);

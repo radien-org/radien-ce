@@ -30,20 +30,20 @@ import javax.persistence.TableGenerator;
  */
 @Entity
 @Table(name = "ACTTNT01")
-public class ActiveTenant extends io.radien.ms.tenantmanagement.client.entities.ActiveTenant {
+public class ActiveTenantEntity extends io.radien.ms.tenantmanagement.client.entities.ActiveTenant {
 
 	private static final long serialVersionUID = -4526437514769444576L;
 
 	/**
 	 * Active Tenant entity empty constructor
 	 */
-	public ActiveTenant(){ }
+	public ActiveTenantEntity(){ }
 
 	/**
 	 * Active Tenant entity constructor
 	 * @param activeTenant {@link io.radien.ms.tenantmanagement.client.entities.ActiveTenant} to be created/added
 	 */
-	public ActiveTenant(io.radien.ms.tenantmanagement.client.entities.ActiveTenant activeTenant){
+	public ActiveTenantEntity(io.radien.ms.tenantmanagement.client.entities.ActiveTenant activeTenant){
 		super(activeTenant);
 	}
 

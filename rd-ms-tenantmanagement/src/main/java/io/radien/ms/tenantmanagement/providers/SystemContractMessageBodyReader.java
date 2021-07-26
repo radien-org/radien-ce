@@ -17,7 +17,7 @@ package io.radien.ms.tenantmanagement.providers;
 
 import io.radien.api.model.tenant.SystemContract;
 import io.radien.ms.tenantmanagement.client.util.ContractModelMapper;
-import io.radien.ms.tenantmanagement.entities.Contract;
+import io.radien.ms.tenantmanagement.entities.ContractEntity;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -50,7 +50,7 @@ public class SystemContractMessageBodyReader implements MessageBodyReader<System
 	 */
 	@Override
 	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-		return type.equals(Contract.class);
+		return type.equals(ContractEntity.class);
 	}
 
 	/**

@@ -33,20 +33,20 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "TNT01")
-public class Tenant extends io.radien.ms.tenantmanagement.client.entities.Tenant {
+public class TenantEntity extends io.radien.ms.tenantmanagement.client.entities.Tenant {
 
 	private static final long serialVersionUID = 307978393054123750L;
 
 	/**
 	 * Tenant entity empty constructor
 	 */
-	public Tenant(){ }
+	public TenantEntity(){ }
 
 	/**
 	 * Tenant entity constructor
 	 * @param tenant {@link io.radien.ms.tenantmanagement.client.entities.Tenant} to be created/added
 	 */
-	public Tenant(io.radien.ms.tenantmanagement.client.entities.Tenant tenant){
+	public TenantEntity(io.radien.ms.tenantmanagement.client.entities.Tenant tenant){
 		super(tenant);
 	}
 

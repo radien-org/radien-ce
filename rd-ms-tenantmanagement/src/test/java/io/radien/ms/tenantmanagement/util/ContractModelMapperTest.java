@@ -16,7 +16,7 @@
 package io.radien.ms.tenantmanagement.util;
 
 import io.radien.ms.tenantmanagement.client.services.ContractFactory;
-import io.radien.ms.tenantmanagement.entities.Contract;
+import io.radien.ms.tenantmanagement.entities.ContractEntity;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class ContractModelMapperTest extends TestCase {
                 "        \"lastUpdate\": null\n" +
                 "    }";
         InputStream in = new ByteArrayInputStream(example.getBytes());
-        Contract contract = ContractModelMapper.map(in);
+        ContractEntity contract = ContractModelMapper.map(in);
         assertEquals((Long)3L, contract.getId());
         assertEquals("AB",contract.getName());
         assertEquals(LocalDateTime.parse("2021-01-22T13:59:17.468"),contract.getStart());
@@ -64,7 +64,7 @@ public class ContractModelMapperTest extends TestCase {
 
         LocalDateTime time1 = LocalDateTime.now();
         LocalDateTime time2 = LocalDateTime.now();
-        Contract contract = new Contract(ContractFactory.create("a", time1,time2,1L));
+        ContractEntity contract = new ContractEntity(ContractFactory.create("a", time1,time2,1L));
         JsonObject jsonObject = ContractModelMapper.map(contract);
 
         assertEquals(contract.getName(),jsonObject.getString("name"));
@@ -79,7 +79,7 @@ public class ContractModelMapperTest extends TestCase {
     public void testMapList() {
         LocalDateTime time1 = LocalDateTime.now();
         LocalDateTime time2 = LocalDateTime.now();
-        Contract contract = new Contract(ContractFactory.create("a", time1,time2,1L));
+        ContractEntity contract = new ContractEntity(ContractFactory.create("a", time1,time2,1L));
         JsonArray jsonArray = ContractModelMapper.map(Collections.singletonList(contract));
         assertEquals(1,jsonArray.size());
         JsonObject jsonObject = jsonArray.getJsonObject(0);

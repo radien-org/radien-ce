@@ -25,6 +25,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
+import io.radien.ms.tenantmanagement.entities.TenantEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +141,7 @@ public class TenantResource implements TenantResourceClient {
 	@Override
 	public Response create(Tenant tenant) {
 		try {
-            tenantService.create(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
+            tenantService.create(new TenantEntity(tenant));
 			return Response.ok(tenant.getId()).build();
 		} catch (TenantException | UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
@@ -159,7 +160,7 @@ public class TenantResource implements TenantResourceClient {
 	public Response update(long id, Tenant tenant) {
 		try {
 			tenant.setId(id);
-            tenantService.update(new io.radien.ms.tenantmanagement.entities.Tenant(tenant));
+            tenantService.update(new TenantEntity(tenant));
 			return Response.ok().build();
 		}catch (TenantException | UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
