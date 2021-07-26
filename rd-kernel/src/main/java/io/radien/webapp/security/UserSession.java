@@ -27,7 +27,6 @@ import javax.inject.Named;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -235,16 +234,19 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		this.refreshToken = refreshToken;
 	}
 
+
 	/**
 	 * Perform the logout process
+	 * @return boolean that indicates if the process was successfully concluded or not
 	 */
-	public void logout() {
+	public boolean logout() {
 		if (isActive()) {
 			ExternalContext externalContext = JSFUtil.getExternalContext();
 			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
 			HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
-			logout(request, response);
+			return logout(request, response);
 		}
+		return false;
 	}
 
 	/**
@@ -252,18 +254,19 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 * and servlet response to perform the logout process
 	 * @param request used to obtain the logout url, the cookies and so on
 	 * @param response used to perform redirection
+	 * @return boolean that indicates if the process was successfully concluded or not
 	 */
-	protected void logout(HttpServletRequest request, HttpServletResponse response) {
-		log.info("going to start logout process");
+	protected boolean logout(HttpServletRequest request, HttpServletResponse response) {
 		try {
+			log.info("going to start logout process");
 			request.logout();
-			log.info("cleaning cookies");
-			cleanCookies(request, response);
 			String logoutUrl = getLogoutURL(request);
 			log.info("going to redirect to the following url {}", logoutUrl);
 			response.sendRedirect(logoutUrl);
+			return true;
 		} catch (ServletException | IOException e) {
 			log.error("error performing logout", e);
+			return false;
 		}
 	}
 
@@ -290,22 +293,4 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		return request.toString().substring(0, request.toString().length() -
 				request.getServletPath().length());
 	}
-
-	/**
-	 * Clean/Erase all the cookies
-	 * @param request to obtain cookies references
-	 * @param response to clean the cookies
-	 */
-	public void cleanCookies(HttpServletRequest request, HttpServletResponse response) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				cookie.setValue("");
-				cookie.setPath("/");
-				cookie.setMaxAge(0);
-				response.addCookie(cookie);
-			}
-		}
-	}
-
 }
