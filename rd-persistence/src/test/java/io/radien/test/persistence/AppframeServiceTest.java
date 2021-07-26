@@ -52,40 +52,8 @@ public class AppframeServiceTest extends TestCase {
 	}
 	
 	@Test
-	public void testAddAppframe() throws Exception {
+	public void testDeleteAppframe() {
 		appframeService.addAppframe(new Appframe(1L,"1.0"));
-        appframeService.addAppframe(new Appframe(2L,"2.0"));
-        appframeService.addAppframe(new Appframe(3L,"3.0"));
-
-        List<Appframe> list = appframeService.getAppframes();
-        assertEquals("List.size()", 3, list.size());
-
-        for (Appframe movie : list) {
-        	appframeService.deleteAppframe(movie);
-        }
-
-        assertEquals("AppframeService.getAppframe()", 0, appframeService.getAppframes().size());
-    }
-	
-	@Test
-    public void testDeleteAppframe(Appframe appframe) throws Exception {
-    	appframeService.addAppframe(new Appframe(1L,"1.0"));
-        appframeService.addAppframe(new Appframe(2L,"2.0"));
-        appframeService.addAppframe(new Appframe(3L,"3.0"));
-
-        List<Appframe> list = appframeService.getAppframes();
-        assertEquals("List.size()", 3, list.size());
-
-        for (Appframe movie : list) {
-        	appframeService.deleteAppframe(movie);
-        }
-
-        assertEquals("AppframeService.getAppframe()", 0, appframeService.getAppframes().size());
-    }
-
-	@Test
-    public void testGetAppframes() throws Exception {
-    	appframeService.addAppframe(new Appframe(1L,"1.0"));
         appframeService.addAppframe(new Appframe(2L,"2.0"));
         appframeService.addAppframe(new Appframe(3L,"3.0"));
 

@@ -50,16 +50,17 @@ public class MethodRuntimeInterceptor {
 			long start = 0;
 
 			start = System.currentTimeMillis();
-			log.info(GenericErrorCodeMessage.INFO_SYSTEM_START.toString(String.valueOf(counter),
-					ctx.getMethod().getDeclaringClass().getName(), ctx.getMethod().getName()));
+			String infoSystemStart = GenericErrorCodeMessage.INFO_SYSTEM_START.toString(String.valueOf(counter));
+			log.info(infoSystemStart, ctx.getMethod().getDeclaringClass().getName(), ctx.getMethod().getName());
 
 			result = ctx.proceed();
 
 			long end = System.currentTimeMillis();
 			long duration = end - start;
-			log.info(GenericErrorCodeMessage.INFO_SYSTEM_END.toString(String.valueOf(counter),
-					ctx.getMethod().getDeclaringClass().getName(), ctx.getMethod().getName(), String.valueOf(duration),
-					String.valueOf(result)));
+			String infoSystemEnd = GenericErrorCodeMessage.INFO_SYSTEM_END.toString(String.valueOf(counter));
+			log.info(infoSystemEnd,
+					ctx.getMethod().getDeclaringClass().getName(), ctx.getMethod().getName(), duration,
+					result);
 
 		} catch (Exception e) {
 			log.error(GenericErrorCodeMessage.ERROR_METHOD_INTERCEPTION.toString(), e);

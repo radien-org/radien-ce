@@ -172,7 +172,8 @@ public class TenantFactory {
         TenantType tenantType = TenantType.getByName(typeAsString);
         // TODO @Newton: Necessary to understand why TenantMessageBodyWriter is not being invoked
         if (tenantType == null) {
-            log.error(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString(), typeAsString);
+            String tenantTypeNotFound = GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString();
+            log.error(tenantTypeNotFound, typeAsString);
             try {
                 tenantType = TenantType.valueOf(typeAsString);
             } catch (IllegalArgumentException i) {

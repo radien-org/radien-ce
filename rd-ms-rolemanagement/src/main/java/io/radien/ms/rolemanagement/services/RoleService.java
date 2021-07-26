@@ -345,7 +345,7 @@ public class RoleService implements RoleServiceAccess {
 
             if (roleId != null) {
                 criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), roleId));
-            } else if (name != null) {
+            } else {
                 criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("name"), name));
             }
 

@@ -297,10 +297,8 @@ public class TenantService implements TenantServiceAccess {
 
         // There must only exist one Root Tenant
         List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getName(), null,false, false));
-        if (!list.isEmpty()) {
-            if (tenant.getId() == null || list.size() > 1 || !list.get(0).getId().equals(tenant.getId())) {
+        if ((!list.isEmpty()) && (tenant.getId() == null || list.size() > 1 || !list.get(0).getId().equals(tenant.getId()))) {
                 throw new TenantException(GenericErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString());
-            }
         }
     }
 

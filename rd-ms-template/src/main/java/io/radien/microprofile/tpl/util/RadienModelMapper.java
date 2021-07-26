@@ -64,15 +64,4 @@ public class RadienModelMapper {
         }
         return returnedString;
     }
-
-    private static Integer getIntFromJson(String key, JsonObject json) {
-        Integer returnedValue = null;
-        if (json.containsKey(key)) {
-            JsonNumber value = json.getJsonNumber(key);
-            if (value != null) {
-                returnedValue = value.intValue();
-            }
-        }
-        return returnedValue;
-    }
 }
