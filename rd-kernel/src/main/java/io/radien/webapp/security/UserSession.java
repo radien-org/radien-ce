@@ -15,13 +15,21 @@
  */
 package io.radien.webapp.security;
 
+import io.radien.api.OAFProperties;
+import io.radien.webapp.JSFUtil;
+import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.SystemException;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -226,4 +234,78 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
+
+	/**
+	 * Perform the logout process
+	 */
+	public void logout() {
+		if (isActive()) {
+			ExternalContext externalContext = JSFUtil.getExternalContext();
+			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+			HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
+			logout(request, response);
+		}
+	}
+
+	/**
+	 * Core (internal) that uses the servlet request
+	 * and servlet response to perform the logout process
+	 * @param request used to obtain the logout url, the cookies and so on
+	 * @param response used to perform redirection
+	 */
+	protected void logout(HttpServletRequest request, HttpServletResponse response) {
+		log.info("going to start logout process");
+		try {
+			request.logout();
+			log.info("cleaning cookies");
+			cleanCookies(request, response);
+			String logoutUrl = getLogoutURL(request);
+			log.info("going to redirect to the following url {}", logoutUrl);
+			response.sendRedirect(logoutUrl);
+		} catch (ServletException | IOException e) {
+			log.error("error performing logout", e);
+		}
+	}
+
+	/**
+	 * Retrieve the logout URL
+	 * @param httpServletRequest
+	 * @return String that represents the logout url
+	 */
+	protected String getLogoutURL(HttpServletRequest httpServletRequest) {
+		String keyCloakLogoutURL = oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI);
+		StringBuffer sb = new StringBuffer().
+				append(keyCloakLogoutURL).
+				append("?redirect_uri=").
+				append(getApplicationURL(httpServletRequest));
+		return sb.toString();
+	}
+
+	/**
+	 * Retrieves the base url (schema + server name + port + context) for the current application
+	 * @param request http servlet from which will be extract all the required informations
+	 * @return String that represent the context url path
+	 */
+	protected String getApplicationURL(HttpServletRequest request) {
+		return request.toString().substring(0, request.toString().length() -
+				request.getServletPath().length());
+	}
+
+	/**
+	 * Clean/Erase all the cookies
+	 * @param request to obtain cookies references
+	 * @param response to clean the cookies
+	 */
+	public void cleanCookies(HttpServletRequest request, HttpServletResponse response) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				cookie.setValue("");
+				cookie.setPath("/");
+				cookie.setMaxAge(0);
+				response.addCookie(cookie);
+			}
+		}
+	}
+
 }
