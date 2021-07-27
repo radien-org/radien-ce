@@ -126,11 +126,9 @@
 		                        <f:param name="navigationNode" value="userprofile" />
 		                        <f:attribute name="navigationNode" value="userprofile" />
 		                    </b:navCommandLink>
+							<b:navCommandLink value="#{msg.logout}" action="#{userSession.logout}"
+											  rendered="#{userSession.active}"/>
 						</b:dropMenu>
-
-						<b:navCommandLink value="#{msg.logout}" action="#{userSession.logout}"
-										  rendered="#{userSession.active}"/>
-
 					</b:navbarLinks>
 
 				</b:navBar>

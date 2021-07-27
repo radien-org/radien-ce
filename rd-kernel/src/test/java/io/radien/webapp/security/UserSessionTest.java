@@ -5,7 +5,6 @@ import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.webapp.JSFUtil;
 import java.io.IOException;
-import java.util.List;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
