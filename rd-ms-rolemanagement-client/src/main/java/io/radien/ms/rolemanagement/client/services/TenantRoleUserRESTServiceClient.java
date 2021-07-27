@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
@@ -28,6 +29,12 @@ import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.json.Json;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import org.apache.cxf.bus.extension.ExtensionException;
 
 import javax.ejb.Stateless;
@@ -113,6 +120,80 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
                 InternalServerErrorException e){
             throw new SystemException(e);
         }
+    }
+
+    /**
+     * Under a pagination approach, retrieves the Ids for Users associations that exist
+     * for a TenantRole
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
+     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRoleUser instances
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Page<Long> getUsersIds(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
+        try {
+            return getUsersIdsCore(tenantId, roleId, pageNo, pageSize);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getUsersIdsCore(tenantId, roleId, pageNo, pageSize);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that Retrieves TenantRoleUser associations Ids using pagination approach
+     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
+     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRole user associations (Chunk/Portion compatible
+     * with parameter Page number and Page size)
+     * @throws SystemException in case of any error
+     */
+    protected Page<Long> getUsersIdsCore(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
+        try {
+            TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getAllUserIds(tenantId, roleId, pageNo, pageSize);
+            return getPageIds((InputStream) response.getEntity());
+        }
+        catch (TokenExpiredException t) {
+            throw t;
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException |
+                InternalServerErrorException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Converts a Json Object into a Page object containing ids
+     * @param i input stream from where the json object will be read
+     * @return page containing user ids
+     */
+    protected Page<Long> getPageIds(InputStream i) {
+        Page<Long> idsPage = new Page<>();
+        try(JsonReader jsonReader = Json.createReader(i)) {
+            JsonObject page = jsonReader.readObject();
+            int currentPage = FactoryUtilService.getIntFromJson("currentPage", page);
+            int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
+            int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
+            List<Long> ids = FactoryUtilService.getArrayFromJson("results", page).
+                    getValuesAs(JsonNumber.class).stream().
+                    map(JsonNumber::longValue).collect(Collectors.toList());
+            idsPage.setTotalPages(totalPages);
+            idsPage.setTotalResults(totalResults);
+            idsPage.setCurrentPage(currentPage);
+            idsPage.setResults(ids);
+        }
+        return idsPage;
     }
 
     /**

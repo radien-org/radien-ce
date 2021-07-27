@@ -168,6 +168,77 @@ public class TenantRoleUserRESTServiceClientTest {
     }
 
     /**
+     * Test for method that retrieves Users (Ids) currently associated with Tenant and Role,
+     * The ids are retrieved using a pagination approach
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetUsersIds() throws MalformedURLException, SystemException{
+        String results = "[3, 4, 10]";
+
+        String pageAsJsonString = "{\"currentPage\": 1, \"totalResults\": 3, \"totalPages\": 1, " +
+                "\"results\": " + results + "}";
+
+        InputStream is = new ByteArrayInputStream(pageAsJsonString.getBytes());
+        Response response = Response.ok(is).build();
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(client.getAllUserIds(2L, 3L, 1, 3)).thenReturn(response);
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Page<Long> result = target.getUsersIds(2L, 3L, 1, 3);
+        assertNotNull(result);
+        assertEquals(1, result.getTotalPages());
+        assertEquals(3,result.getResults().size());
+    }
+
+    /**
+     * Test for method that retrieves Users Ids (associated with tenant and role) using pagination approach,
+     * but taking in consideration a scenario where JasonWeb token expires
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetUsersIdsTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        // Simulates JWT expire even on the reattempt
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getAllUserIds(33L, 44L, 1, 2)).
+                thenThrow(new TokenExpiredException("test")).
+                thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getUsersIds(33L, 44L, 1, 2);
+    }
+
+    /**
+     * Test for method that retrieves User ids (associated with a tenant and role) using pagination approach,
+     * but taking in consideration a scenario where error occurs in the middle of processing
+     * (Backend error)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetUsersIdsException() throws MalformedURLException, SystemException {
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getAllUserIds(33L, 44L, 1, 2)).thenThrow(new InternalServerErrorException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getUsersIds(33L, 44L, 1, 2);
+    }
+
+    /**
      * Test Unassigned User Tenant Role(s)
      * @throws MalformedURLException for url informed incorrectly
      * @throws SystemException in case of any error

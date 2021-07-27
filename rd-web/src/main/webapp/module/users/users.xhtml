@@ -21,8 +21,8 @@
 			</b:row>
 
 			<p:dataTable id="dataTable" value="#{userDataModel.lazyUserDataModel}"
-						 var="tenantRoleUser"
-						 rowKey="#{tenantRoleUser.id}"
+						 var="user"
+						 rowKey="#{user.id}"
 						 widgetVar="userDataTable"
 						 lazy="true"
 						 paginator="true" rows="10"
@@ -32,7 +32,7 @@
 						 rowsPerPageTemplate="5,10,20,50"
 						 styleClass = "tableDesign"
 						 selectionMode="single"
-						 selection="#{userDataModel.selectedTenantRoleUser}">
+						 selection="#{userDataModel.selectedUser}">
 
 				<p:ajax event="rowSelect" listener="#{userDataModel.onRowSelect}" update="@form:userManagementTableDiv"
 						oncomplete="$('.formValidationModalClass').modal('show')"/>
@@ -47,20 +47,20 @@
 					</div>
 				</f:facet>
 
-				<p:column headerText="#{msg.logon}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}">
-					<h:outputText value="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).logon}"/>
+				<p:column headerText="#{msg.logon}" sortBy="#{user.logon}">
+					<h:outputText value="#{user.logon}"/>
 				</p:column>
 
-				<p:column headerText="#{msg.firstname}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).firstname}">
-					<h:outputText value="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).firstname}"/>
+				<p:column headerText="#{msg.firstname}" sortBy="#{user.firstname}">
+					<h:outputText value="#{user.firstname}"/>
 				</p:column>
 
-				<p:column headerText="#{msg.lastname}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).lastname}">
-					<h:outputText value="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).lastname}"/>
+				<p:column headerText="#{msg.lastname}" sortBy="#{user.lastname}">
+					<h:outputText value="#{user.lastname}"/>
 				</p:column>
 
-				<p:column headerText="#{msg.email}" sortBy="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).userEmail}">
-					<h:outputText value="#{userDataModel.lazyUserDataModel.getUser(tenantRoleUser.userId).userEmail}"/>
+				<p:column headerText="#{msg.email}" sortBy="#{user.userEmail}">
+					<h:outputText value="#{user.userEmail}"/>
 				</p:column>
 			</p:dataTable>
 

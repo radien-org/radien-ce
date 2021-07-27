@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
@@ -351,6 +352,14 @@ public class TenantRoleUserServiceTest {
         Assertions.assertEquals(1, p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
+
+        Page<Long> p2 = tenantRoleUserServiceAccess.getAllUserIds(baseTenantId, baseRoleId,
+                1, 100);
+        Assertions.assertTrue(p2.getTotalResults() > 0);
+
+        List<Long> mappedIds = p.getResults().stream().map(SystemTenantRoleUser::getUserId).
+                distinct().collect(Collectors.toList());
+        Assertions.assertEquals(mappedIds, p2.getResults());
     }
 
     /**
@@ -368,6 +377,14 @@ public class TenantRoleUserServiceTest {
         Assertions.assertEquals(0,p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertTrue(p.getResults().isEmpty());
+
+        Page<Long> p2 = tenantRoleUserServiceAccess.getAllUserIds(10000L,10001L,
+                1, 100);
+        Assertions.assertNotNull(p);
+        Assertions.assertEquals(0,p2.getTotalResults());
+        Assertions.assertEquals(0,p2.getTotalPages());
+        Assertions.assertNotNull(p2.getResults());
+        Assertions.assertTrue(p2.getResults().isEmpty());
     }
 
     /**

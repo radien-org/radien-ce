@@ -134,6 +134,52 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
+     * Gets all the tenant role user associations into a pagination mode.
+     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
+     * @param role search param that corresponds to the TenantRole.roleId (Optional)
+     * @param pageNo of the requested information. Where the tenant is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page containing system tenant role user associations.
+     */
+    @Override
+    public Page<Long> getAllUserIds(Long tenant, Long role, int pageNo, int pageSize) {
+        log.info("Retrieving tenant role user associations ids using pagination mode, tenant {} role{}, page {}, size{}",
+                tenant, role, pageNo, pageSize);
+
+        EntityManager em = getEntityManager();
+        List<Long> tenantRoleIds = (tenant != null || role != null) ? getTenantRoleIds(em, tenant, role) : null;
+        if (tenantRoleIds != null && tenantRoleIds.isEmpty()) {
+            return new Page<>(new ArrayList<>(), pageNo, 0, 0);
+        }
+
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<TenantRoleUser> tenantRoleRoot = criteriaQuery.from(TenantRoleUser.class);
+
+        criteriaQuery.select(tenantRoleRoot.get(SystemVariables.USER_ID.getFieldName())).distinct(true);
+        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        if (tenantRoleIds != null) {
+            global = criteriaBuilder.and(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()).in(tenantRoleIds));
+            criteriaQuery.where(global);
+        }
+
+        TypedQuery<Long> q= em.createQuery(criteriaQuery);
+
+        q.setFirstResult((pageNo-1) * pageSize);
+        q.setMaxResults(pageSize);
+
+        List<Long> systemTenantRolesUsers = q.getResultList();
+
+        int totalRecords = Math.toIntExact(getCount(global, tenantRoleRoot, em.getCriteriaBuilder(),
+                em));
+        int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
+
+        log.info("Pagination ready to be shown");
+
+        return new Page<>(systemTenantRolesUsers, pageNo, totalRecords, totalPages);
+    }
+
+    /**
      * Count the number of existent associations (Tenant role user) in the DB.
      * @return the count of tenant role user associations
      */
@@ -146,6 +192,25 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
         criteriaQuery.where(global);
 
         criteriaQuery.select(criteriaBuilder.count(tenantRoleUserRoot));
+
+        TypedQuery<Long> q= em.createQuery(criteriaQuery);
+
+        return q.getSingleResult();
+    }
+
+    /**
+     * Count the number of existent associations ids (for Tenant role user) in the DB.
+     * @return the count of tenant role user associations ids
+     */
+    private long getCount(Predicate global, Root<TenantRoleUser> tenantRoleUserRoot, CriteriaBuilder cb,
+                          EntityManager em) {
+
+        log.info("Gathering/counting the associations ids for tenant role user");
+        CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+
+        criteriaQuery.where(global);
+
+        criteriaQuery.select(cb.count(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName())));
 
         TypedQuery<Long> q= em.createQuery(criteriaQuery);
 
