@@ -30,7 +30,7 @@ import javax.ws.rs.ext.Provider;
  * @author Bruno Gama
  */
 @Provider
-public class ResponseExceptionMapper implements
+public class TenantResponseExceptionMapper implements
         org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper<Exception> {
 
     /**

@@ -31,20 +31,20 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "CTR01")
-public class Contract extends io.radien.ms.tenantmanagement.client.entities.Contract {
+public class ContractEntity extends io.radien.ms.tenantmanagement.client.entities.Contract {
 
 	private static final long serialVersionUID = -7928267613860708799L;
 
 	/**
 	 * Entity contract empty constructor
 	 */
-	public Contract(){ }
+	public ContractEntity(){ }
 
 	/**
 	 * Entity contract constructor
 	 * @param contract {@link io.radien.ms.tenantmanagement.client.entities.Contract} to be added or created
 	 */
-	public Contract(io.radien.ms.tenantmanagement.client.entities.Contract contract){
+	public ContractEntity(io.radien.ms.tenantmanagement.client.entities.Contract contract){
 		super(contract);
 	}
 

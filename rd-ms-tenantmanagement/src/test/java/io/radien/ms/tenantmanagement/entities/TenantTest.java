@@ -21,12 +21,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TenantTest {
-    Tenant tenant;
-    Tenant tenant2;
+    TenantEntity tenant;
+    TenantEntity tenant2;
 
     public TenantTest(){
-        tenant2 = new Tenant(new io.radien.ms.tenantmanagement.client.entities.Tenant());
-        tenant = new Tenant();
+        tenant2 = new TenantEntity(new io.radien.ms.tenantmanagement.client.entities.Tenant());
+        tenant = new TenantEntity();
         tenant.setName("a");
         tenant.setId(1L);
         tenant2.setName("b");

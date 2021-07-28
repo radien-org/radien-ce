@@ -16,7 +16,7 @@
 package io.radien.ms.tenantmanagement.providers;
 
 import io.radien.api.model.tenant.SystemContract;
-import io.radien.ms.tenantmanagement.entities.Contract;
+import io.radien.ms.tenantmanagement.entities.ContractEntity;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ public class SystemContractMessageBodyReaderTest extends TestCase {
     @Test
     public void testIsReadable() {
         SystemContractMessageBodyReader target = new SystemContractMessageBodyReader();
-        assertTrue(target.isReadable(Contract.class,null,null,null));
+        assertTrue(target.isReadable(ContractEntity.class,null,null,null));
     }
 
     @Test

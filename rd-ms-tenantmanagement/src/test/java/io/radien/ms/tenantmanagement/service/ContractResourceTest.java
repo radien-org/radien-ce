@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 
 import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.exception.NotFoundException;
-import io.radien.ms.tenantmanagement.entities.Contract;
+import io.radien.ms.tenantmanagement.entities.ContractEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -132,7 +132,7 @@ public class ContractResourceTest {
      */
     @Test
     public void testGetById() throws UserNotFoundException {
-        when(contractService.get(1L)).thenReturn(new Contract());
+        when(contractService.get(1L)).thenReturn(new ContractEntity());
         Response response = contractResource.getById(1L);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
@@ -160,7 +160,7 @@ public class ContractResourceTest {
 
     @Test
     public void testGetContractById() throws UserNotFoundException {
-        when(contractService.get(anyLong())).thenReturn(new Contract());
+        when(contractService.get(anyLong())).thenReturn(new ContractEntity());
         Response response = contractResource.getById(1L);
 
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
@@ -190,7 +190,7 @@ public class ContractResourceTest {
      */
     @Test
     public void testCreate() {
-        Response response = contractResource.create(new Contract());
+        Response response = contractResource.create(new ContractEntity());
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -203,7 +203,7 @@ public class ContractResourceTest {
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, SystemException {
         doThrow(new UniquenessConstraintException()).when(contractService).create(any());
-        Response response = contractResource.create(new Contract());
+        Response response = contractResource.create(new ContractEntity());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
     }
 
@@ -216,7 +216,7 @@ public class ContractResourceTest {
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException, SystemException {
         doThrow(new RuntimeException()).when(contractService).create(any());
-        Response response = contractResource.create(new Contract());
+        Response response = contractResource.create(new ContractEntity());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 
@@ -226,7 +226,7 @@ public class ContractResourceTest {
      */
     @Test
     public void testUpdate() {
-        Response response = contractResource.update(1l,new Contract());
+        Response response = contractResource.update(1l,new ContractEntity());
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -239,7 +239,7 @@ public class ContractResourceTest {
     @Test
     public void testUpdateInvalid() throws UniquenessConstraintException, UserNotFoundException, SystemException {
         doThrow(new UniquenessConstraintException()).when(contractService).update(any());
-        Response response = contractResource.update(1l,new Contract());
+        Response response = contractResource.update(1l,new ContractEntity());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
     }
 
@@ -252,7 +252,7 @@ public class ContractResourceTest {
     @Test
     public void testUpdateGenericError() throws UniquenessConstraintException, UserNotFoundException, SystemException {
         doThrow(new RuntimeException()).when(contractService).update(any());
-        Response response = contractResource.update(1l,new Contract());
+        Response response = contractResource.update(1l,new ContractEntity());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 

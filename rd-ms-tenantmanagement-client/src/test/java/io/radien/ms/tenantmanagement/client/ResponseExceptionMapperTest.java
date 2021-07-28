@@ -33,7 +33,7 @@ public class ResponseExceptionMapperTest {
 
     @Test
     public void handles() {
-        ResponseExceptionMapper uRexceptionMapper = new ResponseExceptionMapper();
+        TenantResponseExceptionMapper uRexceptionMapper = new TenantResponseExceptionMapper();
         boolean handlesException200 = uRexceptionMapper.handles(200, null);
         boolean handlesException400 = uRexceptionMapper.handles(400, null);
         boolean handlesException401 = uRexceptionMapper.handles(401, null);
@@ -51,7 +51,7 @@ public class ResponseExceptionMapperTest {
     @Test
     public void toThrowable() {
         String msg = "messageException";
-        ResponseExceptionMapper target = new ResponseExceptionMapper();
+        TenantResponseExceptionMapper target = new TenantResponseExceptionMapper();
 
         Response responseOk = Response.status(Status.OK).entity(msg).build();
         Exception exceptionOk = target.toThrowable(responseOk);

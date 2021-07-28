@@ -25,7 +25,7 @@ import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 
-import io.radien.ms.tenantmanagement.entities.Contract;
+import io.radien.ms.tenantmanagement.entities.ContractEntity;
 import io.radien.ms.tenantmanagement.client.services.ContractFactory;
 import org.junit.Test;
 
@@ -73,7 +73,7 @@ public class ContractServiceTest {
             String name = "aa";
             LocalDateTime start  = LocalDateTime.now();
             LocalDateTime end = LocalDateTime.now();
-            cTest = new Contract(ContractFactory.create(name,start,end,1L));
+            cTest = new ContractEntity(ContractFactory.create(name,start,end,1L));
             contractServiceAccess.create(cTest);
         }
     }
@@ -144,7 +144,7 @@ public class ContractServiceTest {
         String name = "a<a>";
         LocalDateTime start  = LocalDateTime.now();
         LocalDateTime end = LocalDateTime.now();
-        SystemContract c = new Contract(ContractFactory.create(name,start,end,1L));
+        SystemContract c = new ContractEntity(ContractFactory.create(name,start,end,1L));
         contractServiceAccess.create(c);
         SystemContract result = contractServiceAccess.get(c.getId());
         assertNotNull(result);
@@ -199,7 +199,7 @@ public class ContractServiceTest {
         String name1 = "a<a>23";
         LocalDateTime start1  = LocalDateTime.now();
         LocalDateTime end1 = LocalDateTime.now();
-        SystemContract c1 = new Contract(ContractFactory.create(name1,start1,end1,1L));
+        SystemContract c1 = new ContractEntity(ContractFactory.create(name1,start1,end1,1L));
         contractServiceAccess.create(c1);
         String name3 = "a<a>99zz";
         LocalDateTime start3  = LocalDateTime.now();
@@ -227,11 +227,11 @@ public class ContractServiceTest {
     public void testGetAll() throws UniquenessConstraintException {
         LocalDateTime start1  = LocalDateTime.now();
         LocalDateTime end1 = LocalDateTime.now();
-        SystemContract c1 = new Contract(ContractFactory.create("getAll1",start1,end1,1L));
+        SystemContract c1 = new ContractEntity(ContractFactory.create("getAll1",start1,end1,1L));
         contractServiceAccess.create(c1);
-        SystemContract c2 = new Contract(ContractFactory.create("getAll2",start1,end1,1L));
+        SystemContract c2 = new ContractEntity(ContractFactory.create("getAll2",start1,end1,1L));
         contractServiceAccess.create(c2);
-        SystemContract c3 = new Contract(ContractFactory.create("getAll3",start1,end1,1L));
+        SystemContract c3 = new ContractEntity(ContractFactory.create("getAll3",start1,end1,1L));
         contractServiceAccess.create(c3);
 
         Page<? extends SystemContract> page = contractServiceAccess.getAll(1, 10);
@@ -243,7 +243,7 @@ public class ContractServiceTest {
     public void testExists() throws UniquenessConstraintException, NotFoundException {
         LocalDateTime start1  = LocalDateTime.now();
         LocalDateTime end1 = LocalDateTime.now();
-        SystemContract c1 = new Contract(ContractFactory.create("exists1",start1,end1,1L));
+        SystemContract c1 = new ContractEntity(ContractFactory.create("exists1",start1,end1,1L));
         contractServiceAccess.create(c1);
 
         assertTrue(contractServiceAccess.exists(c1.getId()));
