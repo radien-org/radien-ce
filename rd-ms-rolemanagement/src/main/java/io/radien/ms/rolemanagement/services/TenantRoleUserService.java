@@ -154,7 +154,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRoleUser> tenantRoleRoot = criteriaQuery.from(TenantRoleUser.class);
+        Root<TenantRoleUserEntity> tenantRoleRoot = criteriaQuery.from(TenantRoleUserEntity.class);
 
         criteriaQuery.select(tenantRoleRoot.get(SystemVariables.USER_ID.getFieldName())).distinct(true);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -202,7 +202,7 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
      * Count the number of existent associations ids (for Tenant role user) in the DB.
      * @return the count of tenant role user associations ids
      */
-    private long getCount(Predicate global, Root<TenantRoleUser> tenantRoleUserRoot, CriteriaBuilder cb,
+    private long getCount(Predicate global, Root<TenantRoleUserEntity> tenantRoleUserRoot, CriteriaBuilder cb,
                           EntityManager em) {
 
         log.info("Gathering/counting the associations ids for tenant role user");
