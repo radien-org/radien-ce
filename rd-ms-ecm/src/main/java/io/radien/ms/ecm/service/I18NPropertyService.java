@@ -84,7 +84,7 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         List<I18NPropertyEntity> entityList = I18NPropertyEntityMapper.mapToEntity(propertyList);
         Iterable<I18NPropertyEntity> properties = documentTemplate.insert(entityList);
         List<I18NProperty> result = new ArrayList<>();
-        properties.forEach(var -> result.add(I18NPropertyEntityMapper.mapToDTO(var)));
+        properties.forEach(property -> result.add(I18NPropertyEntityMapper.mapToDTO(property)));
 
         return result;
     }
@@ -140,18 +140,6 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         ResourceBundleLoader loader = new ResourceBundleLoader(availableLanguages, defaultLanguage);
 
         saveOrUpdate(loader.getAllProperties());
-    }
-
-    /**
-     * Method that will validate if the requested given I18N should be saved or updated
-     * @param property to be saved or updated
-     */
-    private void saveOrUpdate(I18NProperty property) {
-        if(getByKey(property.getKey()) != null) {
-            documentTemplate.update(property);
-            return;
-        }
-        documentTemplate.insert(property);
     }
 
     /**

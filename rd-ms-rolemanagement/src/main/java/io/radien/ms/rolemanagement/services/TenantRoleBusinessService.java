@@ -91,8 +91,6 @@ public class TenantRoleBusinessService implements Serializable {
     @Inject
     private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
     /**
      * Retrieves TenantRole association using pagination approach
      * @param pageNumber page number

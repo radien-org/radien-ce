@@ -33,11 +33,9 @@ public class BatchResponse {
      * @return the response with the summary
      */
     public static Response get(BatchSummary summary) {
-        if (summary.getTotalNonProcessed() > 0) {
-            if (summary.getTotalProcessed() == 0) {
+        if (summary.getTotalNonProcessed() > 0 && summary.getTotalProcessed() == 0) {
                 // None users were inserted
                 return Response.status(Response.Status.BAD_REQUEST).entity(summary).build();
-            }
         }
         // All (or some) users were inserted
         return Response.ok().entity(summary).build();
