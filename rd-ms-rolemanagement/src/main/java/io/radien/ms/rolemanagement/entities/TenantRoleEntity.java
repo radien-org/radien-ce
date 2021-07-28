@@ -25,55 +25,55 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 
 /**
- * Tenant Role User association with JPA descriptors
+ * Tenant Role association with JPA descriptors
  * @author Newton Carvalho
  */
 @Entity
-@Table(name = "TNT_ROL_USR01", uniqueConstraints = @UniqueConstraint(columnNames = {"tenantRoleId, userId"}))
-public class TenantRoleUser extends io.radien.ms.rolemanagement.client.entities.TenantRoleUser {
+@Table(name = "TNT_ROL01", uniqueConstraints = @UniqueConstraint(columnNames = {"tenantId, roleId"}))
+public class TenantRoleEntity extends io.radien.ms.rolemanagement.client.entities.TenantRole {
 
 	/**
-	 * Tenant Role User entity empty constructor
+	 * Tenant Role entity empty constructor
 	 */
-	public TenantRoleUser(){ }
+	public TenantRoleEntity(){ }
 
 	/**
-	 * Tenant Role User entity constructor
-	 * @param tenantRoleUser {@link io.radien.ms.rolemanagement.client.entities.TenantRoleUser} to be added/created
+	 * Tenant Role entity constructor
+	 * @param tenantRole {@link io.radien.ms.rolemanagement.client.entities.TenantRole} to be added/created
 	 */
-	public TenantRoleUser(io.radien.ms.rolemanagement.client.entities.TenantRoleUser tenantRoleUser){
-		super(tenantRoleUser);
+	public TenantRoleEntity(io.radien.ms.rolemanagement.client.entities.TenantRole tenantRole){
+		super(tenantRole);
 	}
 
 	/**
-	 * Tenant Role User id table field
-	 * @return tenant role user id
+	 * Tenant Role id table field
+	 * @return the tenant role id
 	 */
 	@Id
-	@TableGenerator(name = "GEN_SEQ_TNT_ROL_USR01", allocationSize = 100)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT_ROL_USR01")
+	@TableGenerator(name = "GEN_SEQ_TNT_ROL01", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT_ROL01")
 	@Override
 	public Long getId() {
 		return super.getId();
 	}
 
 	/**
-	 * Tenant Role User tenant role id table field
-	 * @return tenant role user tenant role id
+	 * Tenant Role tenant id table field
+	 * @return tenant role tenant id
 	 */
 	@Column
 	@Override
-	public Long getTenantRoleId() {
-		return super.getTenantRoleId();
+	public Long getTenantId() {
+		return super.getTenantId();
 	}
 
 	/**
-	 * Tenant Role User user id table field
-	 * @return tenant role user user id
+	 * Tenant Role role id table field
+	 * @return tenant role role id
 	 */
 	@Column
 	@Override
-	public Long getUserId() {
-		return super.getUserId();
+	public Long getRoleId() {
+		return super.getRoleId();
 	}
 }

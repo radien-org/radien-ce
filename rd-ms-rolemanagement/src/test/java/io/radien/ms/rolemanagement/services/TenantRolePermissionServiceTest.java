@@ -22,7 +22,7 @@ import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
-import io.radien.ms.rolemanagement.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
 import org.junit.jupiter.api.*;
 
 import javax.ejb.EJBException;
@@ -93,7 +93,7 @@ public class TenantRolePermissionServiceTest {
     @Test
     public void testCreate() throws UniquenessConstraintException {
 
-        SystemTenantRolePermission systemTenantRolePermission = new TenantRolePermission();
+        SystemTenantRolePermission systemTenantRolePermission = new TenantRolePermissionEntity();
         systemTenantRolePermission.setPermissionId(basePermissionId);
         systemTenantRolePermission.setTenantRoleId(baseTenantRoleId);
 
@@ -110,7 +110,7 @@ public class TenantRolePermissionServiceTest {
     @Order(2)
     @Test
     public void testCreateDuplicatedWithError() {
-        SystemTenantRolePermission systemTenantRolePermission = new TenantRolePermission();
+        SystemTenantRolePermission systemTenantRolePermission = new TenantRolePermissionEntity();
         systemTenantRolePermission.setPermissionId(basePermissionId);
         systemTenantRolePermission.setTenantRoleId(baseTenantRoleId);
         Assertions.assertThrows(UniquenessConstraintException.class, () ->
@@ -125,7 +125,7 @@ public class TenantRolePermissionServiceTest {
     @Order(3)
     public void testGetById() {
 
-        SystemTenantRolePermission systemTenantRolePermission = new TenantRolePermission();
+        SystemTenantRolePermission systemTenantRolePermission = new TenantRolePermissionEntity();
         systemTenantRolePermission.setTenantRoleId(1L);
         systemTenantRolePermission.setPermissionId(1L);
         Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(systemTenantRolePermission));
@@ -203,7 +203,7 @@ public class TenantRolePermissionServiceTest {
     @Order(9)
     public void testDeleteTenantRolePermission() {
         // Insert first
-        SystemTenantRolePermission tenantRolePermission = new TenantRolePermission();
+        SystemTenantRolePermission tenantRolePermission = new TenantRolePermissionEntity();
         tenantRolePermission.setPermissionId(69L);
         tenantRolePermission.setTenantRoleId(70L);
         Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(tenantRolePermission));
@@ -252,12 +252,12 @@ public class TenantRolePermissionServiceTest {
     @Test
     @Order(12)
     public void testRetrieveSettingLogicConjunctionToFalse() {
-        SystemTenantRolePermission tenantRolePermission = new TenantRolePermission();
+        SystemTenantRolePermission tenantRolePermission = new TenantRolePermissionEntity();
         tenantRolePermission.setPermissionId(404L);
         tenantRolePermission.setTenantRoleId(405L);
         Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(tenantRolePermission));
 
-        SystemTenantRolePermission tenantRolePermission2 = new TenantRolePermission();
+        SystemTenantRolePermission tenantRolePermission2 = new TenantRolePermissionEntity();
         tenantRolePermission2.setPermissionId(406L);
         tenantRolePermission2.setTenantRoleId(407L);
         Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(tenantRolePermission2));
@@ -296,7 +296,7 @@ public class TenantRolePermissionServiceTest {
     @Test
     @Order(15)
     public void testGetTenantRoleUserId() {
-        SystemTenantRolePermission sru = new TenantRolePermission();
+        SystemTenantRolePermission sru = new TenantRolePermissionEntity();
         sru.setTenantRoleId(101010L);
         sru.setPermissionId(101L);
         Assertions.assertDoesNotThrow(() -> this.tenantRolePermissionServiceAccess.create(sru));
@@ -324,7 +324,7 @@ public class TenantRolePermissionServiceTest {
     @Test
     @Order(16)
     public void testGetTenantRoleUserIdPermissionNull() {
-        SystemTenantRolePermission sru = new TenantRolePermission();
+        SystemTenantRolePermission sru = new TenantRolePermissionEntity();
         sru.setTenantRoleId(201010L);
         sru.setPermissionId(101L);
         Assertions.assertDoesNotThrow(() -> this.tenantRolePermissionServiceAccess.create(sru));

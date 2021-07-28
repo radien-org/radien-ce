@@ -39,8 +39,8 @@ import io.radien.exception.TenantRoleUserDuplicationException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
-import io.radien.ms.rolemanagement.entities.TenantRolePermission;
-import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
@@ -298,7 +298,7 @@ public class TenantRoleBusinessService implements Serializable {
             throw new TenantRoleUserDuplicationException(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
                     toString(tenant.toString(), role.toString()));
         }
-        TenantRoleUser tru = new TenantRoleUser();
+        TenantRoleUserEntity tru = new TenantRoleUserEntity();
         tru.setTenantRoleId(tenantRoleId);
         tru.setUserId(user);
         tru.setCreateDate(new Date());
@@ -372,7 +372,7 @@ public class TenantRoleBusinessService implements Serializable {
             throw new TenantRoleException(TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE.
                     toString(tenant.toString(), role.toString()));
         }
-        TenantRolePermission trp = new TenantRolePermission();
+        TenantRolePermissionEntity trp = new TenantRolePermissionEntity();
         trp.setTenantRoleId(tenantRoleId);
         trp.setPermissionId(permission);
         trp.setCreateDate(new Date());

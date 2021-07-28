@@ -25,42 +25,41 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 
 /**
- * Tenant Role Permission association with JPA descriptors
+ * Tenant Role User association with JPA descriptors
  * @author Newton Carvalho
  */
 @Entity
-@Table(name = "TNT_ROL_PER01", uniqueConstraints = @UniqueConstraint(columnNames = {"tenantRoleId, permissionId"}))
-public class TenantRolePermission extends io.radien.ms.rolemanagement.client.entities.TenantRolePermission {
+@Table(name = "TNT_ROL_USR01", uniqueConstraints = @UniqueConstraint(columnNames = {"tenantRoleId, userId"}))
+public class TenantRoleUserEntity extends io.radien.ms.rolemanagement.client.entities.TenantRoleUser {
 
 	/**
-	 * Tenant Role Permission entity empty constructor
+	 * Tenant Role User entity empty constructor
 	 */
-	public TenantRolePermission(){ }
+	public TenantRoleUserEntity(){ }
 
 	/**
-	 * Tenant Role Permission constructor
-	 * @param tenantRolePermission {@link io.radien.ms.rolemanagement.client.entities.TenantRolePermission}
-	 * to be added/created
+	 * Tenant Role User entity constructor
+	 * @param tenantRoleUser {@link io.radien.ms.rolemanagement.client.entities.TenantRoleUser} to be added/created
 	 */
-	public TenantRolePermission(io.radien.ms.rolemanagement.client.entities.TenantRolePermission tenantRolePermission){
-		super(tenantRolePermission);
+	public TenantRoleUserEntity(io.radien.ms.rolemanagement.client.entities.TenantRoleUser tenantRoleUser){
+		super(tenantRoleUser);
 	}
 
 	/**
-	 * Tenant Role Permission id table field
-	 * @return tenant role permission id
+	 * Tenant Role User id table field
+	 * @return tenant role user id
 	 */
 	@Id
-	@TableGenerator(name = "GEN_SEQ_TNT_ROL_PER01", allocationSize = 100)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT_ROL_PER01")
+	@TableGenerator(name = "GEN_SEQ_TNT_ROL_USR01", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_TNT_ROL_USR01")
 	@Override
 	public Long getId() {
 		return super.getId();
 	}
 
 	/**
-	 * Tenant Role Permission tenant role id table field
-	 * @return tenant role permission tenant role id
+	 * Tenant Role User tenant role id table field
+	 * @return tenant role user tenant role id
 	 */
 	@Column
 	@Override
@@ -69,12 +68,12 @@ public class TenantRolePermission extends io.radien.ms.rolemanagement.client.ent
 	}
 
 	/**
-	 * Tenant Role Permission permission id table field
-	 * @return tenant role permission permission id
+	 * Tenant Role User user id table field
+	 * @return tenant role user user id
 	 */
 	@Column
 	@Override
-	public Long getPermissionId() {
-		return super.getPermissionId();
+	public Long getUserId() {
+		return super.getUserId();
 	}
 }
