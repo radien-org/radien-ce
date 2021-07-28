@@ -21,9 +21,7 @@ import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
-import io.radien.ms.permissionmanagement.model.Action;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -130,7 +128,7 @@ public class ActionResource implements ActionResourceClient {
 	 */
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Action action) {
 		try {
-			actionServiceAccess.save(new Action(action));
+			actionServiceAccess.save(new ActionEntity(action));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());

@@ -32,18 +32,18 @@ import javax.persistence.Column;
  */
 @Entity
 @Table(name = "ACT01")
-public class Action extends io.radien.ms.permissionmanagement.client.entities.Action {
+public class ActionEntity extends io.radien.ms.permissionmanagement.client.entities.Action {
 
 	/**
 	 * Entity Action empty constructor
 	 */
-	public Action() {}
+	public ActionEntity() {}
 
 	/**
 	 * Entity action constructor
 	 * @param a {@link io.radien.ms.permissionmanagement.client.entities.Action} action to be created
 	 */
-	public Action(io.radien.ms.permissionmanagement.client.entities.Action a) {
+	public ActionEntity(io.radien.ms.permissionmanagement.client.entities.Action a) {
 		super(a);
 	}
 

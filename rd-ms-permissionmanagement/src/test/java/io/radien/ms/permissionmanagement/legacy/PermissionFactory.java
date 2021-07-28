@@ -18,14 +18,13 @@ package io.radien.ms.permissionmanagement.legacy;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.permissionmanagement.model.Action;
-import io.radien.ms.permissionmanagement.model.Permission;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
 import java.util.Date;
 
 /**
@@ -42,8 +41,8 @@ public class PermissionFactory {
      * @param name description for the permission
      * @return a User object to be used
      */
-    public static Permission create(String name, Long action, Long createdUser) {
-        Permission p = new Permission();
+    public static PermissionEntity create(String name, Long action, Long createdUser) {
+        PermissionEntity p = new PermissionEntity();
         p.setName(name);
         p.setCreateUser(createdUser);
         Date now = new Date();
@@ -60,14 +59,14 @@ public class PermissionFactory {
      * @param permission the JSONObject to convert
      * @return the SystemUserObject
      */
-    public static Permission convert(JsonObject permission) {
+    public static PermissionEntity convert(JsonObject permission) {
         Long id = FactoryUtilService.getLongFromJson("id", permission);
         String name = FactoryUtilService.getStringFromJson("name", permission);
         Long createUser = FactoryUtilService.getLongFromJson("createUser", permission);
         Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", permission);
         Long actionId = FactoryUtilService.getLongFromJson("actionId", permission);
 
-        Permission p = new Permission();
+        PermissionEntity p = new PermissionEntity();
         p.setId(id);
         p.setName(name);
         p.setCreateDate(new Date());
@@ -78,13 +77,13 @@ public class PermissionFactory {
         return p;
     }
 
-    private static Action createActionFromJson(JsonObject actionAsJsonObject) {
+    private static ActionEntity createActionFromJson(JsonObject actionAsJsonObject) {
         Long id = FactoryUtilService.getLongFromJson("id", actionAsJsonObject);
         String name = FactoryUtilService.getStringFromJson("name", actionAsJsonObject);
         Long createAction = FactoryUtilService.getLongFromJson("createUser", actionAsJsonObject);
         Long updateAction = FactoryUtilService.getLongFromJson("lastUpdateUser", actionAsJsonObject);
 
-        Action action = new Action();
+        ActionEntity action = new ActionEntity();
         action.setId(id);
         action.setName(name);
         action.setCreateUser(createAction);

@@ -40,7 +40,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
-import io.radien.ms.permissionmanagement.model.Permission;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
 
 /**
  * Permission DB connection requests
@@ -65,7 +65,7 @@ public class PermissionService implements PermissionServiceAccess {
      * Count the number of Permissions existent in the DB.
      * @return the count of Permissions
      */
-    private long getCount(Predicate global, Root<Permission> permissionRoot, EntityManager em) {
+    private long getCount(Predicate global, Root<PermissionEntity> permissionRoot, EntityManager em) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
@@ -85,7 +85,7 @@ public class PermissionService implements PermissionServiceAccess {
      */
     @Override
     public SystemPermission get(Long permissionId)  {
-        return getEntityManager().find(Permission.class, permissionId);
+        return getEntityManager().find(PermissionEntity.class, permissionId);
     }
 
     /**
@@ -102,12 +102,12 @@ public class PermissionService implements PermissionServiceAccess {
 
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
-        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        CriteriaQuery<PermissionEntity> criteriaQuery = criteriaBuilder.createQuery(PermissionEntity.class);
+        Root<PermissionEntity> permissionRoot = criteriaQuery.from(PermissionEntity.class);
         criteriaQuery.select(permissionRoot);
         criteriaQuery.where(permissionRoot.get("id").in(permissionId));
 
-        TypedQuery<Permission> q=em.createQuery(criteriaQuery);
+        TypedQuery<PermissionEntity> q=em.createQuery(criteriaQuery);
 
         return new ArrayList<>(q.getResultList());
     }
@@ -126,8 +126,8 @@ public class PermissionService implements PermissionServiceAccess {
     public Page<SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
         EntityManager em = this.getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
-        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        CriteriaQuery<PermissionEntity> criteriaQuery = criteriaBuilder.createQuery(PermissionEntity.class);
+        Root<PermissionEntity> permissionRoot = criteriaQuery.from(PermissionEntity.class);
 
         criteriaQuery.select(permissionRoot);
 
@@ -147,7 +147,7 @@ public class PermissionService implements PermissionServiceAccess {
             criteriaQuery.orderBy(orders);
         }
 
-        TypedQuery<Permission> q=em.createQuery(criteriaQuery);
+        TypedQuery<PermissionEntity> q=em.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
@@ -168,7 +168,7 @@ public class PermissionService implements PermissionServiceAccess {
     @Override
     public void save(SystemPermission permission) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
-        List<Permission> alreadyExistentRecords = searchDuplicatedName(permission, em);
+        List<PermissionEntity> alreadyExistentRecords = searchDuplicatedName(permission, em);
         if (!alreadyExistentRecords.isEmpty()) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
@@ -188,18 +188,18 @@ public class PermissionService implements PermissionServiceAccess {
      * @param permission Permission information to look up.
      * @return list of Permissions with duplicated information.
      */
-    private List<Permission> searchDuplicatedName(SystemPermission permission, EntityManager em) {
-        List<Permission> alreadyExistentRecords;
+    private List<PermissionEntity> searchDuplicatedName(SystemPermission permission, EntityManager em) {
+        List<PermissionEntity> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
-        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        CriteriaQuery<PermissionEntity> criteriaQuery = criteriaBuilder.createQuery(PermissionEntity.class);
+        Root<PermissionEntity> permissionRoot = criteriaQuery.from(PermissionEntity.class);
         criteriaQuery.select(permissionRoot);
         Predicate global = criteriaBuilder.equal(permissionRoot.get("name"), permission.getName());
         if(permission.getId()!= null) {
             global=criteriaBuilder.and(global, criteriaBuilder.notEqual(permissionRoot.get("id"), permission.getId()));
         }
         criteriaQuery.where(global);
-        TypedQuery<Permission> q = em.createQuery(criteriaQuery);
+        TypedQuery<PermissionEntity> q = em.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
     }
@@ -212,8 +212,8 @@ public class PermissionService implements PermissionServiceAccess {
     public void delete(Long permissionId) {
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Permission> criteriaDelete = cb.createCriteriaDelete(Permission.class);
-        Root<Permission> permissionRoot = criteriaDelete.from(Permission.class);
+        CriteriaDelete<PermissionEntity> criteriaDelete = cb.createCriteriaDelete(PermissionEntity.class);
+        Root<PermissionEntity> permissionRoot = criteriaDelete.from(PermissionEntity.class);
 
         criteriaDelete.where(cb.equal(permissionRoot.get("id"),permissionId));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -230,8 +230,8 @@ public class PermissionService implements PermissionServiceAccess {
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Permission> criteriaDelete = cb.createCriteriaDelete(Permission.class);
-        Root<Permission> permissionRoot = criteriaDelete.from(Permission.class);
+        CriteriaDelete<PermissionEntity> criteriaDelete = cb.createCriteriaDelete(PermissionEntity.class);
+        Root<PermissionEntity> permissionRoot = criteriaDelete.from(PermissionEntity.class);
 
         criteriaDelete.where(permissionRoot.get("id").in(permissionIds));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -245,15 +245,15 @@ public class PermissionService implements PermissionServiceAccess {
     public List<? extends SystemPermission> getPermissions(SystemPermissionSearchFilter filter) {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Permission> criteriaQuery = criteriaBuilder.createQuery(Permission.class);
-        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        CriteriaQuery<PermissionEntity> criteriaQuery = criteriaBuilder.createQuery(PermissionEntity.class);
+        Root<PermissionEntity> permissionRoot = criteriaQuery.from(PermissionEntity.class);
 
         criteriaQuery.select(permissionRoot);
 
         Predicate global = getFilteredPredicate((PermissionSearchFilter) filter, criteriaBuilder, permissionRoot);
 
         criteriaQuery.where(global);
-        TypedQuery<Permission> q=em.createQuery(criteriaQuery);
+        TypedQuery<PermissionEntity> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
     }
@@ -267,7 +267,7 @@ public class PermissionService implements PermissionServiceAccess {
      * @return a constructed predicate with the fields needed to be search
      */
     private Predicate getFilteredPredicate(PermissionSearchFilter filter,
-                                           CriteriaBuilder criteriaBuilder, Root<Permission> permissionRoot) {
+                                           CriteriaBuilder criteriaBuilder, Root<PermissionEntity> permissionRoot) {
         Predicate global;
 
         // is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
@@ -301,7 +301,7 @@ public class PermissionService implements PermissionServiceAccess {
     }
 
     private Predicate getFieldPredicate(String name, Object value, PermissionSearchFilter filter,
-                                        CriteriaBuilder criteriaBuilder, Root<Permission> permissionRoot,
+                                        CriteriaBuilder criteriaBuilder, Root<PermissionEntity> permissionRoot,
                                         Predicate global) {
         if(value != null) {
             Predicate subPredicate;
@@ -345,7 +345,7 @@ public class PermissionService implements PermissionServiceAccess {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        Root<PermissionEntity> permissionRoot = criteriaQuery.from(PermissionEntity.class);
 
         criteriaQuery.select(criteriaBuilder.count(permissionRoot));
         if (permissionId !=  null) {
@@ -368,9 +368,9 @@ public class PermissionService implements PermissionServiceAccess {
      */
     @Override
     public SystemPermission getPermissionByActionAndResourceNames(String action, String resource) {
-        String query = "Select p From Permission p, Resource r, Action a " +
+        String query = "Select p From PermissionEntity p, ResourceEntity r, ActionEntity a " +
                 "Where p.actionId = a.id and p.resourceId = r.id and r.name = :rName and a.name= :aName";
-        return getEntityManager().createQuery(query, Permission.class).
+        return getEntityManager().createQuery(query, PermissionEntity.class).
                 setParameter("rName", resource).
                 setParameter("aName", action).
                 getResultStream().findFirst().orElse(null);
@@ -389,7 +389,7 @@ public class PermissionService implements PermissionServiceAccess {
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Permission> permissionRoot = criteriaQuery.from(Permission.class);
+        Root<PermissionEntity> permissionRoot = criteriaQuery.from(PermissionEntity.class);
         criteriaQuery.select(criteriaBuilder.count(permissionRoot));
 
         Predicate global = null;
@@ -414,6 +414,6 @@ public class PermissionService implements PermissionServiceAccess {
     @Override
     public long getTotalRecordsCount() {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Permission.class), getEntityManager());
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(PermissionEntity.class), getEntityManager());
     }
 }
