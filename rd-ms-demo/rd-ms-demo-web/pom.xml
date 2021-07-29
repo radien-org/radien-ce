@@ -18,7 +18,7 @@
     <url>http://www.radien.io</url>
 
     <build>
-        <finalName>web</finalName>
+        <finalName>demowebservice</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
