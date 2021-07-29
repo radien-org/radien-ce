@@ -17,7 +17,7 @@
     <name>Module - Service - ${project.version}</name>
     <url>http://www.radien.io</url>
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>demomanagementservice</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
