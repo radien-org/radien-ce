@@ -277,7 +277,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 */
 	protected String getLogoutURL(HttpServletRequest httpServletRequest) {
 		String keyCloakLogoutURL = oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI);
-		StringBuffer sb = new StringBuffer().
+		StringBuilder sb = new StringBuilder().
 				append(keyCloakLogoutURL).
 				append("?redirect_uri=").
 				append(getApplicationURL(httpServletRequest));
