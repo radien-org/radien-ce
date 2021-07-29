@@ -40,42 +40,41 @@
 				<f:facet name="header">
 					<div class="text-right">
 						<b:commandButton value="#{msg.create}"
-										  tooltip="Create a new user!"
+										  tooltip="#{msg.rd_create_new_user}"
 										  iconAwesome="fa-cube"
 										  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
 										  action="#{userDataModel.createRecord}"/>
 
-						<b:dropButton value="User Actions" drop="down">
-							<b:navCommandLink id="delete-user-button"
-									  onclick="$('.formValidationModalUserDelete').modal('show')"
-									  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
-									  value="#{msg.delete}"
-									  icon="trash"
-									  update="@form:userManagementTableDiv"/>
-							<b:modal id="model"
-									 title="Confirmation"
+						<b:dropButton value="#{msg.rd_user_actions}" drop="down">
+							<b:navLink id="delete-user-button"
+									   onclick="$('.formValidationModalUserDelete').modal('show')"
+									   href="#modeldelete" autoUpdate="true"
+									   rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+									   value="#{msg.delete}"
+									   icon="trash"/>
+							<b:modal id="modeldelete"
+									 title="#{msg.confirmation}"
 									 styleClass="formValidationModalUserDelete"
-									 closable="false"
-									 close-on-escape="false" backdrop="false"
+									 closable="false" close-on-escape="false" backdrop="false"
 									 rendered="#{not empty userDataModel.selectedUser}">
-								<p>Are you sure confirm to delete the selected user?</p>
+								<p>#{msg.userSelectDeleteConfirmation}</p>
 								<f:facet name="footer">
-									<b:commandButton value="No"
+									<b:commandButton value="#{msg.no}"
 													 onclick="{ $('.formValidationModalUserDelete').modal('hide') } "/>
-									<b:commandButton value="Yes" look="warning"
+									<b:commandButton value="#{msg.yes}" look="warning"
 													 actionListener="#{userDataModel.deleteUser}"
 													 oncomplete="{ $('.formValidationModalUserDelete').modal('hide') } "/>
 								</f:facet>
 							</b:modal>
 
 							<b:navCommandLink value="#{msg.edit}"
-											 tooltip="Edit existent user information!"
+											 tooltip="#{msg.rd_edit_existent_user_info}"
 											 iconAwesome="fa-edit"
 											 rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
 											 action="#{userDataModel.editRecord}"/>
 
 							<b:navCommandLink value="#{msg.profile}"
-											 tooltip="Profile of existent user!"
+											 tooltip="#{msg.rd_profile_existent_user}"
 											 iconAwesome="fa-user-plus"
 											 action="#{userDataModel.userProfile}"/>
 
@@ -87,11 +86,11 @@
 
 						</b:dropButton>
 
-						<b:commandButton id="refresh" value="Refresh Values"
+						<b:commandButton id="refresh" value="#{msg.refreshValues}"
 										  ajax="false"
 										  iconAwesome="fa-refresh"
 										  icon-spin="true"
-										  tooltip="Refresh existent User data table!"
+										  tooltip="#{msg.rd_refresh_existent_user_data_table}"
 										  actionListener="#{userDataModel.onload}"
 										  immediate="true" update="@form:userManagementTableDiv"
 										  auto-update="true"/>
