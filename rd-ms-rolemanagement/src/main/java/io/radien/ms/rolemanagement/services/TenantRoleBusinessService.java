@@ -318,7 +318,7 @@ public class TenantRoleBusinessService implements Serializable {
      * @return the association id (if exists), otherwise throws a exception
      * @throws TenantRoleNotFoundException thrown if association does not exists
      */
-    private Long getTenantRoleId(Long tenant, Long role) throws TenantRoleNotFoundException{
+    public Long getTenantRoleId(Long tenant, Long role) throws TenantRoleNotFoundException{
         return this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
                 orElseThrow(() -> new TenantRoleNotFoundException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
                         tenant.toString(), role.toString())));

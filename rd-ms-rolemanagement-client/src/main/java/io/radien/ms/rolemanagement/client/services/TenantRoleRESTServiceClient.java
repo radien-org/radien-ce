@@ -24,6 +24,7 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -116,6 +117,52 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
         catch (Exception e) {
             throw new SystemException("Error trying to retrieve Tenant Role User associations", e);
+        }
+    }
+
+    /**
+     * Given a Tenant and a role identifier obtains the TenantRole Id
+     * (To do that it invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenant Tenant identifier (mandatory)
+     * @param role Role identifier (mandatory)
+     * @return Optional containing TenantRole Identifier (Empty if no id could be found)
+     * @throws SystemException in case of any error
+     */
+    public Optional<Long> getIdByTenantRole(Long tenant, Long role) throws SystemException {
+        try {
+            return getIdByTenantRoleCore(tenant, role);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getIdByTenantRoleCore(tenant, role);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that obtains the TenantRole Id (for given Tenant and role identifiers)
+     * @param tenant Tenant identifier (mandatory)
+     * @param role Role identifier (mandatory)
+     * @return Optional containing TenantRole Identifier (Empty if no id could be found)
+     * @throws SystemException in case of any error
+     */
+    protected Optional<Long> getIdByTenantRoleCore(Long tenant, Long role) throws SystemException {
+        try {
+            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getIdByTenantRole(tenant, role);
+            return Optional.of(response.readEntity(Long.class));
+        }
+        catch (NotFoundException nf) {
+            return Optional.empty();
+        }
+        catch (TokenExpiredException tke) {
+            throw  tke;
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
         }
     }
 
