@@ -24,6 +24,8 @@ import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Resource implementation responsible for deal with operations
@@ -31,7 +33,9 @@ import javax.ws.rs.core.Response;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRolePermissionResource extends LoggableResource implements TenantRolePermissionResourceClient {
+public class TenantRolePermissionResource implements TenantRolePermissionResourceClient {
+
+    private static Logger log = LoggerFactory.getLogger(TenantRolePermissionResource.class);
 
     @Inject
     private TenantRolePermissionBusinessService tenantRolePermissionBusinessService;
@@ -50,10 +54,11 @@ public class TenantRolePermissionResource extends LoggableResource implements Te
      */
     @Override
     public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize) {
-        log("Retrieving TenantRole Permission associations using pagination. Page number %d. Page Size %d.",
+        log.info("Retrieving TenantRole Permission associations using pagination. Page number {}. Page Size {}.",
                 pageNo, pageSize);
         try {
-            return Response.ok().entity(this.tenantRolePermissionBusinessService.getAll(tenantId, roleId, pageNo, pageSize)).build();
+            return Response.ok().entity(this.tenantRolePermissionBusinessService.
+                    getAll(tenantId, roleId, pageNo, pageSize)).build();
         }
         catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
@@ -69,7 +74,7 @@ public class TenantRolePermissionResource extends LoggableResource implements Te
      */
     public Response delete(long id) {
         try {
-            log("Deleting TenantRole Permission association for id %d", id);
+            log.info("Deleting TenantRole Permission association for id {}", id);
             return Response.ok().entity(tenantRolePermissionBusinessService.delete(id)).build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
@@ -90,7 +95,7 @@ public class TenantRolePermissionResource extends LoggableResource implements Te
     @Override
     public Response assignPermission(TenantRolePermission tenantRolePermission) {
         try {
-            log("Associating/adding permission %d to tenant-role %d", tenantRolePermission.getTenantRoleId(),
+            log.info("Associating/adding permission {} to tenant-role {}", tenantRolePermission.getTenantRoleId(),
                     tenantRolePermission.getPermissionId());
             tenantRolePermissionBusinessService.assignPermission(new io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity(tenantRolePermission));
             return Response.ok().build();
@@ -113,7 +118,7 @@ public class TenantRolePermissionResource extends LoggableResource implements Te
     @Override
     public Response unAssignPermission(Long tenantId, Long roleId, Long permissionId) {
         try {
-            log("Dissociating/removing permission %d from tenant %d role %d", permissionId, tenantId, roleId);
+            log.info("Dissociating/removing permission {} from tenant {} role {}", permissionId, tenantId, roleId);
             tenantRolePermissionBusinessService.unAssignPermission(tenantId, roleId, permissionId);
             return Response.ok().build();
         } catch (TenantRoleException | EJBException e) {

@@ -16,15 +16,8 @@
 package io.radien.api.service.tenantrole;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.model.role.SystemRole;
-import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.exception.SystemException;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Rest service client responsible to Deal with TenantRole Permission endpoint

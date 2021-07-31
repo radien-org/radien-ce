@@ -16,10 +16,13 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import java.util.Collection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -30,7 +33,9 @@ import javax.ws.rs.core.Response;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRoleUserResource extends LoggableResource implements TenantRoleUserResourceClient {
+public class TenantRoleUserResource implements TenantRoleUserResourceClient {
+
+    private final static Logger log = LoggerFactory.getLogger(TenantRoleUserResource.class);
 
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
@@ -52,7 +57,7 @@ public class TenantRoleUserResource extends LoggableResource implements TenantRo
      */
     @Override
     public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role users. tenant id {} role id {}, pageNumber {} and pageSize{}",
+        log.info("Retrieving tenant role users. tenant id {} role id {}, pageNumber {} and pageSize {}",
                 tenantId, roleId, pageNo, pageSize);
         try {
             return Response.ok().entity(tenantRoleUserServiceAccess.
@@ -76,7 +81,7 @@ public class TenantRoleUserResource extends LoggableResource implements TenantRo
      */
     @Override
     public Response getAllUserIds(Long tenantId, Long roleId, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role users ids. tenant id {} role id {}, pageNumber {} and pageSize{}",
+        log.info("Retrieving tenant role users ids. tenant id {} role id {}, pageNumber {} and pageSize {}",
                 tenantId, roleId, pageNo, pageSize);
         try {
             return Response.ok().entity(tenantRoleUserServiceAccess.
@@ -97,10 +102,7 @@ public class TenantRoleUserResource extends LoggableResource implements TenantRo
      */
     @Override
     public Response deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) {
-        if(log.isInfoEnabled()){
-            log.info(GenericErrorCodeMessage.INFO_TENANT_USER_ROLES.toString(String.valueOf(userId),
-                    String.valueOf(tenantId), String.valueOf(roleIds.size())));
-        }
+        log.info("(Un)Assigning/removing TenantRoleUser associations for user {}, tenant {} and roles {}", userId, tenantId, roleIds);
         try {
             tenantRoleUserBusinessService.deleteUnAssignedUserTenantRoles(userId ,tenantId, roleIds);
             return Response.ok().build();

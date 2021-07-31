@@ -25,6 +25,8 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -37,7 +39,9 @@ import java.util.List;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRoleResource extends LoggableResource implements TenantRoleResourceClient {
+public class TenantRoleResource implements TenantRoleResourceClient {
+
+    private static Logger log = LoggerFactory.getLogger(TenantRoleResource.class);
 
     @Inject
     private TenantRoleBusinessService tenantRoleBusinessService;
@@ -72,7 +76,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response getAll(int pageNo, int pageSize) {
-        log("Retrieving TenantRole associations using pagination. Page number %d. Page Size %d.",
+        log.info("Retrieving TenantRole associations using pagination. Page number {}. Page Size {}}.",
                 pageNo, pageSize);
         try {
             return Response.ok().entity(this.tenantRoleBusinessService.getAll(pageNo, pageSize)).build();
@@ -93,7 +97,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response getSpecific(Long tenantId, Long roleId, boolean isLogicalConjunction) {
-        log("Retrieving TenantRole associations for tenant %d role %d using logical function %b",
+        log.info("Retrieving TenantRole associations for tenant {} role {} using logical function {}",
                 tenantId, roleId, isLogicalConjunction);
         try {
             return Response.ok(tenantRoleBusinessService.getSpecific(tenantId, roleId, isLogicalConjunction)).build();
@@ -111,7 +115,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
     @Override
     public Response getById(Long id) {
         try {
-            log("Retrieving TenantRole association for id %d", id);
+            log.info("Retrieving TenantRole association for id {}", id);
             return Response.ok().entity(tenantRoleBusinessService.getById(id)).build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
@@ -130,7 +134,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
     @Override
     public Response delete(long id) {
         try {
-            log("Deleting TenantRole association for id %d", id);
+            log.info("Deleting TenantRole association for id {}", id);
             return Response.ok().entity(tenantRoleBusinessService.delete(id)).build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
@@ -149,7 +153,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
     @Override
     public Response save(TenantRole tenantRole) {
         try {
-            log("Creating association for Tenant %d and Role %d", tenantRole.getTenantId(), tenantRole.getRoleId());
+            log.info("Creating association for Tenant {} and Role {}", tenantRole.getTenantId(), tenantRole.getRoleId());
             tenantRoleBusinessService.save(new TenantRoleEntity(tenantRole));
             return Response.ok().build();
         } catch (UniquenessConstraintException | TenantRoleException e) {
@@ -168,7 +172,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response exists(Long tenantId, Long roleId) {
-        log("Checking if Tenant Role association exists for tenant %d and role %d", tenantId, roleId);
+        log.info("Checking if Tenant Role association exists for tenant {} and role {}", tenantId, roleId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.existsAssociation(tenantId, roleId)).build();
         } catch(Exception e) {
@@ -185,7 +189,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response getPermissions(Long tenantId, Long roleId, Long userId) {
-        log("Retrieving permissions for tenant %d role %d and user %d", tenantId, roleId, userId);
+        log.info("Retrieving permissions for tenant {} role {} and user {}", tenantId, roleId, userId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.
                     getPermissions(tenantId, roleId, userId)).build();
@@ -202,7 +206,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response getTenants(Long userId, Long roleId) {
-        log("Retrieving tenants for user %d and role %d", userId, roleId);
+        log.info("Retrieving tenants for user {} and role {}", userId, roleId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.
                     getTenants(userId, roleId)).build();
@@ -219,7 +223,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response getRolesForUserTenant(Long userId, Long tenantId) {
-        log(GenericErrorCodeMessage.INFO_TENANT_USER.toString(String.valueOf(userId), String.valueOf(tenantId)));
+        log.info(GenericErrorCodeMessage.INFO_TENANT_USER.toString(String.valueOf(userId), String.valueOf(tenantId)));
         try {
             return Response.ok().entity(tenantRoleBusinessService.getRolesForUserTenant(userId, tenantId)).build();
         } catch (RoleNotFoundException e) {
@@ -238,7 +242,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response isRoleExistentForUser(Long userId, String roleName, Long tenantId) {
-        log("Checking if role %s exists for user %d under tenant %d", roleName, userId, tenantId);
+        log.info("Checking if role {} exists for user {} under tenant {}", roleName, userId, tenantId);
         if (userId == null || roleName == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -262,7 +266,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response isAnyRoleExistentForUser(Long userId, List<String> roleNames, Long tenantId) {
-        log("Checking if user %d has roles for tenantId %d", userId, tenantId);
+        log.info("Checking if user {} has roles for tenantId {}", userId, tenantId);
         if (userId == null || roleNames == null || roleNames.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -285,7 +289,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
      */
     @Override
     public Response isPermissionExistentForUser(Long userId, Long permissionId, Long tenantId) {
-        log("Checking if permission %d exists for user %d under tenant %d", permissionId, userId, tenantId);
+        log.info("Checking if permission {} exists for user {} under tenant {}", permissionId, userId, tenantId);
         if (userId == null || permissionId == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -310,7 +314,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
     @Override
     public Response assignUser(Long tenantId, Long roleId, Long userId) {
         try {
-            log("Associating/adding user %d to tenant %d role %d", userId, tenantId, roleId);
+            log.info("Associating/adding user {} to tenant {} role {}", userId, tenantId, roleId);
             tenantRoleBusinessService.assignUser(tenantId, roleId, userId);
             return Response.ok().build();
         } catch (TenantRoleException | UniquenessConstraintException e) {
@@ -332,7 +336,7 @@ public class TenantRoleResource extends LoggableResource implements TenantRoleRe
     @Override
     public Response unassignUser(Long tenantId, Long roleId, Long userId) {
         try {
-            log("Dissociating/removing user %d from tenant %d role %d", userId, tenantId, roleId);
+            log.info("Dissociating/removing user {} from tenant {} role {}", userId, tenantId, roleId);
             tenantRoleBusinessService.unassignUser(tenantId, roleId, userId);
             return Response.ok().build();
         } catch (TenantRoleException e) {

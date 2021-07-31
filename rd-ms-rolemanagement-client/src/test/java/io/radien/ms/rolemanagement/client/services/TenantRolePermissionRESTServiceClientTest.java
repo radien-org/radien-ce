@@ -194,7 +194,9 @@ public class TenantRolePermissionRESTServiceClientTest {
         when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
         when(client.unAssignPermission(1L, 2L, 3L)).
                 thenThrow(new TokenExpiredException(msg)).
-                thenReturn(Response.ok().build()).
+                thenReturn(Response.ok().build());
+
+        when(client.unAssignPermission(2L, 2L, 3L)).
                 thenThrow(new TokenExpiredException(msg)).
                 thenThrow(new TokenExpiredException(msg));
 
@@ -203,7 +205,7 @@ public class TenantRolePermissionRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         assertTrue(target.unAssignPermission(1L, 2L, 3L));
-        target.unAssignPermission(1L, 2L, 3L);
+        target.unAssignPermission(2L, 2L, 3L);
     }
 
     /**
@@ -261,7 +263,9 @@ public class TenantRolePermissionRESTServiceClientTest {
         String msg = "test";
         when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
         when(client.delete(1L)).thenThrow(new TokenExpiredException(msg)).
-                thenReturn(Response.ok().build()).
+                thenReturn(Response.ok().build());
+
+        when(client.delete(2L)).
                 thenThrow(new TokenExpiredException(msg)).
                 thenThrow(new TokenExpiredException(msg));
 
@@ -270,7 +274,7 @@ public class TenantRolePermissionRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         assertTrue(target.unAssignPermission(1L));
-        target.unAssignPermission(1L);
+        target.unAssignPermission(2L);
     }
 
     /**
