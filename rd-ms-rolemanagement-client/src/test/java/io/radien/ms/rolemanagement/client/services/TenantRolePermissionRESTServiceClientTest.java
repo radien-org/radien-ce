@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -42,6 +43,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -187,7 +189,7 @@ public class TenantRolePermissionRESTServiceClientTest {
      * @throws MalformedURLException for url informed incorrectly
      * @throws SystemException in case of any communication issue       
      */
-    @Test(expected = SystemException.class)
+    @Test
     public void testUnAssignPermissionTokenExpiration() throws MalformedURLException, SystemException {
         TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
         String msg = "error performing renewing token";
@@ -205,7 +207,9 @@ public class TenantRolePermissionRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         assertTrue(target.unAssignPermission(1L, 2L, 3L));
-        target.unAssignPermission(2L, 2L, 3L);
+        SystemException se = assertThrows(SystemException.class, () -> target.unAssignPermission(2L, 2L, 3L));
+        assertEquals(1, se.getMessages().size());
+        assertEquals(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString(), se.getMessages().get(0));
     }
 
     /**
@@ -257,7 +261,7 @@ public class TenantRolePermissionRESTServiceClientTest {
      * @throws MalformedURLException for url informed incorrectly
      * @throws SystemException in case of any communication issue
      */
-    @Test(expected = SystemException.class)
+    @Test
     public void testUnAssignPermissionBasedOnSingleIdWithTokenExpiration() throws MalformedURLException, SystemException {
         TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
         String msg = "test";
@@ -274,7 +278,9 @@ public class TenantRolePermissionRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         assertTrue(target.unAssignPermission(1L));
-        target.unAssignPermission(2L);
+        SystemException se = assertThrows(SystemException.class, () -> target.unAssignPermission(2L));
+        assertEquals(1, se.getMessages().size());
+        assertEquals(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString(), se.getMessages().get(0));
     }
 
     /**

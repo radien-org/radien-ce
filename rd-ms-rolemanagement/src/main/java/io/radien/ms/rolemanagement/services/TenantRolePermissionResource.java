@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @RequestScoped
 public class TenantRolePermissionResource implements TenantRolePermissionResourceClient {
 
-    private static Logger log = LoggerFactory.getLogger(TenantRolePermissionResource.class);
+    private static final Logger log = LoggerFactory.getLogger(TenantRolePermissionResource.class);
 
     @Inject
     private TenantRolePermissionBusinessService tenantRolePermissionBusinessService;

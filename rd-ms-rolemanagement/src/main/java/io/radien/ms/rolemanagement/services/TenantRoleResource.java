@@ -41,7 +41,7 @@ import java.util.List;
 @RequestScoped
 public class TenantRoleResource implements TenantRoleResourceClient {
 
-    private static Logger log = LoggerFactory.getLogger(TenantRoleResource.class);
+    private static final Logger log = LoggerFactory.getLogger(TenantRoleResource.class);
 
     @Inject
     private TenantRoleBusinessService tenantRoleBusinessService;
@@ -223,7 +223,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getRolesForUserTenant(Long userId, Long tenantId) {
-        log.info(GenericErrorCodeMessage.INFO_TENANT_USER.toString(String.valueOf(userId), String.valueOf(tenantId)));
+        log.info("Retrieving Roles for user {} and tenant {}", userId, tenantId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.getRolesForUserTenant(userId, tenantId)).build();
         } catch (RoleNotFoundException e) {

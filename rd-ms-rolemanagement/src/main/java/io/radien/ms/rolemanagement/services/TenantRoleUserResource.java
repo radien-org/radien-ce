@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response;
 @RequestScoped
 public class TenantRoleUserResource implements TenantRoleUserResourceClient {
 
-    private final static Logger log = LoggerFactory.getLogger(TenantRoleUserResource.class);
+    private static final Logger log = LoggerFactory.getLogger(TenantRoleUserResource.class);
 
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
