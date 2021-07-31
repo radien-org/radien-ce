@@ -35,6 +35,7 @@ import io.radien.exception.NotFoundException;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
@@ -619,10 +620,12 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
 
     /**
      * Test to assign permission into an already assigned permission existent in a tenant role association
+     * @throws SystemException to express cases of communication issue with the endpoints
+     * @throws TenantRoleNotFoundException to express cases in which Tenant Role could not found
      */
     @Test
     @Order(20)
-    public void assignPermissionInvalidCaseAssignmentAlreadyPerformed() {
+    public void assignPermissionInvalidCaseAssignmentAlreadyPerformed() throws SystemException, TenantRoleNotFoundException {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
 
@@ -637,20 +640,15 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         deleteDocument.setName("DELETE DOCUMENT"); deleteDocument.setId(9988L);
 
         // Mocking PermissionRESTServiceClient
-        try {
-            PermissionRESTServiceAccess permissionRESTServiceAccess =
+        PermissionRESTServiceAccess permissionRESTServiceAccess =
                     mock(PermissionRESTServiceAccess.class);
-            when(permissionRESTServiceAccess.getPermissionById(readDocument.getId())).
+        when(permissionRESTServiceAccess.getPermissionById(readDocument.getId())).
                     thenReturn(Optional.of(readDocument));
-        }
-        catch (SystemException se) {
-            fail("unexpected");
-        }
+
+        TenantRolePermissionEntity trpe = assemblyTenantRolePermission(tenantId3, publisher.getId(), readDocument.getId());
 
         // Trying to Assigning permission again
-        assertThrows(TenantRoleException.class, () ->
-                tenantRolePermissionBusinessService.assignPermission(assemblyTenantRolePermission(tenantId3,
-                        publisher.getId(), readDocument.getId())));
+        assertThrows(TenantRoleException.class, () -> tenantRolePermissionBusinessService.assignPermission(trpe));
 
     }
 
