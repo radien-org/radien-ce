@@ -241,35 +241,4 @@ public interface TenantRoleResourceClient {
     Response unassignUser(@QueryParam("tenantId") Long tenantId,
                           @QueryParam("roleId") Long roleId,
                           @QueryParam("userId") Long userId);
-
-    /**
-     * Assign/associate/add permission to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @POST
-    @Path("/assign/permission/{permissionId}/tenant/{tenantId}/role/{roleId}")
-    Response assignPermission(@PathParam("tenantId") Long tenantId,
-                              @PathParam("roleId") Long roleId,
-                              @PathParam("permissionId") Long permissionId);
-
-    /**
-     * (Un)Assign/Dissociate/remove permission from a Tenant (TenantRole domain)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @DELETE
-    @Path("/unassign/permission/{permissionId}/tenant/{tenantId}/role/{roleId}")
-    Response unassignPermission(@PathParam("tenantId") Long tenantId,
-                                @PathParam("roleId") Long roleId,
-                                @PathParam("permissionId") Long permissionId);
 }

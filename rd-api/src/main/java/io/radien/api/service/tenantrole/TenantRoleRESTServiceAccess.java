@@ -134,25 +134,4 @@ public interface TenantRoleRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean unassignUser(Long tenantId, Long roleId, Long userId) throws SystemException;
-
-    /**
-     * Assign/associate/add permission to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Boolean indicating if operation was concluded successfully
-     * @throws SystemException in case of any error
-     */
-    Boolean assignPermission(Long tenantId, Long roleId, Long permissionId) throws SystemException;
-
-    /**
-     * (Un)Assign/Dissociate/remove permission from a Tenant (TenantRole domain)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Boolean indicating if operation was concluded successfully
-     * @throws SystemException in case of any error
-     */
-    Boolean unassignPermission(Long tenantId, Long roleId, Long permissionId) throws SystemException;
 }

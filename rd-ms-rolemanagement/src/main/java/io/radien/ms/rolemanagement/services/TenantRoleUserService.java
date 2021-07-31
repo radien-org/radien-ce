@@ -47,7 +47,7 @@ import java.util.Optional;
  * @author Newton Carvalho
  */
 @Stateful
-public class TenantRoleUserService implements TenantRoleUserServiceAccess {
+public class TenantRoleUserService extends AbstractTenantRoleDomainService implements TenantRoleUserServiceAccess {
 
     @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;
@@ -62,30 +62,6 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     @Override
     public SystemTenantRoleUser get(Long tenantRoleUserId) {
         return getEntityManager().find(TenantRoleUserEntity.class, tenantRoleUserId);
-    }
-
-    /**
-     * Gets all the tenant role ids for the following parameters.
-     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
-     * @param role search param that corresponds to the TenantRole.roleId (Optional)
-     * @return a list containing ids
-     */
-    protected List<Long> getTenantRoleIds(EntityManager em, Long tenant, Long role) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRoleEntity> root = criteriaQuery.from(TenantRoleEntity.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        if (tenant != null) {
-            predicates.add(criteriaBuilder.equal(root.get(SystemVariables.TENANT_ID.getFieldName()), tenant));
-        }
-        if (role != null) {
-            predicates.add(criteriaBuilder.equal(root.get(SystemVariables.ROLE_ID.getFieldName()), role));
-        }
-        criteriaQuery.select(root.get(SystemVariables.ID.getFieldName())).
-                where(predicates.toArray(new Predicate[]{}));
-        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
-        return typedQuery.getResultList();
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.tenantrole;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.ServiceAccess;
@@ -30,6 +31,16 @@ import java.util.Optional;
  * @author Newton Carvalho
  */
 public interface TenantRolePermissionServiceAccess extends ServiceAccess {
+
+    /**
+     * Gets all the tenant role permission associations into a pagination mode.
+     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
+     * @param role search param that corresponds to the TenantRole.roleId (Optional)
+     * @param pageNo of the requested information. Where the tenant is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page containing system tenant role permission associations.
+     */
+    Page<SystemTenantRolePermission> getAll(Long tenant, Long role, int pageNo, int pageSize);
 
     /**
      * Gets specific tenant role permission association by the id

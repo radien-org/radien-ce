@@ -25,8 +25,6 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -39,9 +37,7 @@ import java.util.List;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRoleResource implements TenantRoleResourceClient {
-
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+public class TenantRoleResource extends LoggableResource implements TenantRoleResourceClient {
 
     @Inject
     private TenantRoleBusinessService tenantRoleBusinessService;
@@ -343,63 +339,6 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * Assign/associate/add permission to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @Override
-    public Response assignPermission(Long tenantId, Long roleId, Long permissionId) {
-        try {
-            log("Associating/adding permission %d to tenant %d role %d", permissionId, tenantId, roleId);
-            tenantRoleBusinessService.assignPermission(tenantId, roleId, permissionId);
-            return Response.ok().build();
-        } catch (TenantRoleException | UniquenessConstraintException e) {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * (Un)Assign/Dissociate/remove permission from a Tenant (TenantRole domain)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @Override
-    public Response unassignPermission(Long tenantId, Long roleId, Long permissionId) {
-        try {
-            log("Dissociating/removing permission %d from tenant %d role %d", permissionId, tenantId, roleId);
-            tenantRoleBusinessService.unassignPermission(tenantId, roleId, permissionId);
-            return Response.ok().build();
-        } catch (TenantRoleException e) {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * Utility method to log messages (in a cleaner approach)
-     * @param msg message to be logged
-     * @param params message params
-     */
-    private void log(String msg, Object... params) {
-        if (msg != null) {
-            String formattedMsg = params != null ? String.format(msg, params) : msg;
-            log.error(formattedMsg);
         }
     }
 }

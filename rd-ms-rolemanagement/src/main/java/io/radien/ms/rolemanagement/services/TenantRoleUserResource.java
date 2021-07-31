@@ -15,17 +15,11 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
-
-import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
-
 import java.util.Collection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -36,9 +30,7 @@ import javax.ws.rs.core.Response;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRoleUserResource implements TenantRoleUserResourceClient {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+public class TenantRoleUserResource extends LoggableResource implements TenantRoleUserResourceClient {
 
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;

@@ -23,6 +23,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
@@ -89,6 +90,9 @@ public class TenantRoleAssociationManagerTest {
 
     @Mock
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+
+    @Mock
+    private TenantRolePermissionRESTServiceAccess tenantRolePermissionRESTServiceAccess;
 
     @Mock
     private RoleRESTServiceAccess roleRESTServiceAccess;
@@ -452,7 +456,6 @@ public class TenantRoleAssociationManagerTest {
      * to expose the information related to the TenantRole that wil be edited.
      * Return uri mapping referring the value tenantrole
      * @throws SystemException in case of any rest client communication issue
-     * @Exception still thrown by role rest client
      */
     @Test
     public void testEditTenantRole() throws Exception {
@@ -625,7 +628,7 @@ public class TenantRoleAssociationManagerTest {
 
         List<SystemPermission> expectedAssociatedPermissions = new ArrayList<>();
         expectedAssociatedPermissions.add(permission);
-        when(tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), null)).
+        when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).
                 then(i -> Boolean.TRUE);
         when(tenantRoleRESTServiceAccess.getPermissions(tenant.getId(),
                 role.getId(), null)).then(i -> expectedAssociatedPermissions);
@@ -694,7 +697,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
 
         Exception e = new RuntimeException("Error assigning permission");
-        when(tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), permission.getId())).
+        when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).
                 thenThrow(e);
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
@@ -727,7 +730,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setRole(role);
         tenantRoleAssociationManager.setTenant(tenant);
 
-        when(tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(),
+        when(tenantRolePermissionRESTServiceAccess.unAssignPermission(tenant.getId(), role.getId(),
                 permissionToBeDissociated.getId())).then(i -> Boolean.TRUE);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
@@ -794,7 +797,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
 
         Exception e = new RuntimeException("Error (un)assigning permission");
-        when(tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(), permission.getId())).
+        when(tenantRolePermissionRESTServiceAccess.unAssignPermission(tenant.getId(), role.getId(), permission.getId())).
                 thenThrow(e);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();

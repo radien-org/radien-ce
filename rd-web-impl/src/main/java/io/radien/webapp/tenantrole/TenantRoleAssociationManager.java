@@ -25,6 +25,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
@@ -32,6 +33,7 @@ import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
@@ -45,6 +47,7 @@ import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.util.TenantRoleUtil;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
@@ -55,6 +58,8 @@ import org.primefaces.event.SelectEvent;
 
 import static io.radien.webapp.DataModelEnum.EDIT_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.PERMISSIONS_MESSAGE;
+import static io.radien.webapp.DataModelEnum.RETRIEVE_ERROR_MESSAGE;
+import static io.radien.webapp.DataModelEnum.ROLES_MESSAGE;
 import static io.radien.webapp.DataModelEnum.ROLE_NOT_FOUND_MESSAGE;
 import static io.radien.webapp.DataModelEnum.SAVE_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.SAVE_SUCCESS_MESSAGE;
@@ -73,12 +78,9 @@ import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_NO_USER_SELECT_MESSAGE;
 import static io.radien.webapp.DataModelEnum.TRU_DISSOCIATION_SUCCESS_MESSAGE;
 import static io.radien.webapp.DataModelEnum.TR_ASSOCIATION;
-import static io.radien.webapp.DataModelEnum.TR_ASSOCIATION_ID;
+import static io.radien.webapp.DataModelEnum.TR_PATH;
 import static io.radien.webapp.DataModelEnum.TR_TENANTS_FROM_USER;
 import static io.radien.webapp.DataModelEnum.USERS_PATH;
-import static io.radien.webapp.DataModelEnum.TR_PATH;
-import static io.radien.webapp.DataModelEnum.ROLES_MESSAGE;
-import static io.radien.webapp.DataModelEnum.RETRIEVE_ERROR_MESSAGE;
 import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH;
 import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_ERROR;
 import static io.radien.webapp.DataModelEnum.USER_ASSIGNING_TENANT_SUCCESS;
@@ -98,6 +100,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
 
     @Inject
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+
+    @Inject
+    private TenantRolePermissionRESTServiceAccess tenantRolePermissionRESTServiceAccess;
 
     @Inject
     private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
@@ -266,7 +271,11 @@ public class TenantRoleAssociationManager extends AbstractManager {
                 throw new IllegalArgumentException(JSFUtil.
                         getMessage(TRP_ASSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue()));
             }
-            this.tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), permission.getId());
+            TenantRolePermission tenantRolePermission = new TenantRolePermission();
+            tenantRolePermission.setPermissionId(permission.getId());
+            tenantRolePermission.setTenantRoleId(tenantRole.getId());
+            tenantRolePermission.setCreateDate(new Date());
+            this.tenantRolePermissionRESTServiceAccess.assignPermission(tenantRolePermission);
             this.calculatePermissions();
             handleMessage(FacesMessage.SEVERITY_INFO,
                     JSFUtil.getMessage(TRP_ASSOCIATION_SUCCESS_MESSAGE.getValue()));
@@ -288,7 +297,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
                 throw new IllegalArgumentException(JSFUtil.
                         getMessage(TRP_DISSOCIATION_NO_PERMISSION_SELECT_MESSAGE.getValue()));
             }
-            this.tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(),
+            this.tenantRolePermissionRESTServiceAccess.unAssignPermission(tenant.getId(), role.getId(),
                     selectedPermissionToUnAssign.getId());
             this.calculatePermissions();
             handleMessage(FacesMessage.SEVERITY_INFO,

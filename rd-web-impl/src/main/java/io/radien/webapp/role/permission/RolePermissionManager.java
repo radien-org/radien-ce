@@ -19,14 +19,18 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.client.services.TenantRoleFactory;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
+import io.radien.webapp.util.TenantRoleUtil;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +59,12 @@ public class RolePermissionManager extends AbstractManager implements Serializab
 
     @Inject
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+
+    @Inject
+    private TenantRolePermissionRESTServiceAccess tenantRolePermissionRESTServiceAccess;
+
+    @Inject
+    private TenantRoleUtil tenantRoleUtil;
 
     private SystemRole systemRole;
     private SystemActiveTenant systemActiveTenant;
@@ -180,8 +190,13 @@ public class RolePermissionManager extends AbstractManager implements Serializab
                                 systemRole.getId(), getSystemActiveTenant().getUserId());
                         tenantRoleRESTServiceAccess.save(str);
                     }
-                    tenantRoleRESTServiceAccess.assignPermission(getSystemActiveTenant().getTenantId(),
-                            systemRole.getId(), systemPermissionId);
+                    TenantRolePermission tenantRolePermission = new TenantRolePermission();
+                    tenantRolePermission.setTenantRoleId(tenantRoleUtil.getTenantRoleId(getSystemActiveTenant().getTenantId(),
+                            systemRole.getId()));
+                    tenantRolePermission.setPermissionId(systemPermissionId);
+                    tenantRolePermission.setCreateDate(new Date());
+                    tenantRolePermission.setCreateUser(getSystemActiveTenant().getUserId());
+                    tenantRolePermissionRESTServiceAccess.assignPermission(tenantRolePermission);
                 }
             }
             assignableRolePermissions.clear();
@@ -200,7 +215,7 @@ public class RolePermissionManager extends AbstractManager implements Serializab
             List<Long> permissionsToUnSign = systemPermissionsIdsList.stream().
                     filter(p -> unassignedRolePermissions.contains(p)).collect(Collectors.toList());
             for(Long permissionId:permissionsToUnSign) {
-                tenantRoleRESTServiceAccess.unassignPermission(getSystemActiveTenant().getTenantId(),
+                tenantRolePermissionRESTServiceAccess.unAssignPermission(getSystemActiveTenant().getTenantId(),
                         getSystemRole().getId(), permissionId);
             }
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_ACTIVE_TENANT_ROLE_PERMISSION_UNASSIGNED_SUCCESS.getValue()));
