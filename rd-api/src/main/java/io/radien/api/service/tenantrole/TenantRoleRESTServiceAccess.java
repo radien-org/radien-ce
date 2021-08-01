@@ -114,24 +114,5 @@ public interface TenantRoleRESTServiceAccess {
     List<? extends SystemTenantRole> getTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction)
             throws SystemException;
 
-    /**
-     * Assign/associate/add user to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Mandatory)
-     * @return Boolean indicating if operation was concluded successfully
-     * @throws SystemException in case of any error
-     */
-    Boolean assignUser(Long tenantId, Long roleId, Long userId) throws SystemException;
 
-    /**
-     * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Mandatory)
-     * @return Boolean indicating if operation was concluded successfully
-     * @throws SystemException in case of any error
-     */
-    Boolean unassignUser(Long tenantId, Long roleId, Long userId) throws SystemException;
 }

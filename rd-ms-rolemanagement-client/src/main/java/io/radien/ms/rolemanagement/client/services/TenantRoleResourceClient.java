@@ -211,34 +211,4 @@ public interface TenantRoleResourceClient {
                                          @QueryParam("permissionId") Long permissionId,
                                          @QueryParam("tenantId") Long tenantId);
 
-    /**
-     * Assign/associate/add user to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @POST
-    @Path("/assign/user/{userId}/tenant/{tenantId}/role/{roleId}")
-    Response assignUser(@PathParam("tenantId") Long tenantId,
-                        @PathParam("roleId") Long roleId,
-                        @PathParam("userId") Long userId);
-
-    /**
-     * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier
-     * @param userId User identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @DELETE
-    @Path("/unassign/user")
-    Response unassignUser(@QueryParam("tenantId") Long tenantId,
-                          @QueryParam("roleId") Long roleId,
-                          @QueryParam("userId") Long userId);
 }

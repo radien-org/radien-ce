@@ -15,24 +15,20 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
-
-import io.radien.api.util.CheckMandatoryParametersServiceUtil;
-
+import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.tenantroleuser.TenantRoleUserException;
-import io.radien.exception.tenantroleuser.TenantRoleUserNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -40,8 +36,8 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 /**
  * Class that aggregates UnitTest cases for
@@ -60,9 +56,6 @@ public class TenantRoleUserBusinessServiceTest {
     @Mock
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
 
-    @Mock
-    private CheckMandatoryParametersServiceUtil checkMandatoryParametersServiceUtil;
-
     Long userId = 1L;
     Long tenantId = 2L;
     Collection<Long> roleIds;
@@ -80,16 +73,19 @@ public class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    public void testUnAssignUserTenantRoles() throws TenantRoleException, TenantRoleUserException, TenantRoleUserNotFoundException {
-        doNothing().when(checkMandatoryParametersServiceUtil).checkIfMandatoryParametersTenantRoleUser(anyLong(), anyLong(), anyCollection());
-        when(tenantRoleServiceAccess.getTenantRoleIds(anyLong(), anyCollection())).thenReturn(tenantRoleIds);
+    public void testUnAssignUserTenantRoles() throws TenantRoleException, TenantRoleUserException, SystemException {
+        when(tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantId, roleIds, userId)).
+                thenReturn(tenantRoleUserIds);
+
         when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyList(), anyLong())).thenReturn(tenantRoleUserIds);
         doReturn(true).when(tenantRoleUserServiceAccess).delete(anyCollection());
 
-        Assertions.assertEquals(tenantRoleIds, tenantRoleServiceAccess.getTenantRoleIds(tenantId, roleIds));
         Assertions.assertEquals(tenantRoleUserIds, tenantRoleUserServiceAccess.getTenantRoleUserIds(tenantRoleIds, userId));
 
-        tenantRoleUserBusinessService.deleteUnAssignedUserTenantRoles(userId, tenantId, roleIds);
+        ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess = mock(ActiveTenantRESTServiceAccess.class);
+        when(activeTenantRESTServiceAccess.deleteByTenantAndUser(tenantId, userId)).thenReturn(Boolean.TRUE);
+        tenantRoleUserBusinessService.setActiveTenantRESTServiceAccess(activeTenantRESTServiceAccess);
+        tenantRoleUserBusinessService.unAssignUser(tenantId, roleIds, userId);
     }
 
     @Test

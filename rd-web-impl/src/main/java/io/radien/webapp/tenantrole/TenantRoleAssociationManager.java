@@ -322,7 +322,11 @@ public class TenantRoleAssociationManager extends AbstractManager {
                         webAuthorizationChecker.getCurrentUserId());
                 tenantRoleRESTServiceAccess.save(tr);
             }
-            tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), userId);
+            TenantRoleUser tenantRoleUser = new TenantRoleUser();
+            tenantRoleUser.setTenantRoleId(tenantRoleUtil.getTenantRoleId(tenant.getId(), role.getId()));
+            tenantRoleUser.setUserId(userId);
+
+            tenantRoleUserRESTServiceAccess.assignUser(tenantRoleUser);
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(USER_ASSIGNING_TENANT_SUCCESS.getValue()));
             return USERS_PATH.getValue();
         }
@@ -348,7 +352,10 @@ public class TenantRoleAssociationManager extends AbstractManager {
                         (() -> new SystemException(MessageFormat.format(JSFUtil.getMessage(
                         USER_NOT_FOUND_MESSAGE.getValue()), this.user.getLogon())));
 
-            this.tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId());
+            TenantRoleUser tenantRoleUser = new TenantRoleUser();
+            tenantRoleUser.setTenantRoleId(tenantRoleUtil.getTenantRoleId(tenant.getId(), role.getId()));
+            tenantRoleUser.setUserId(user.getId());
+            this.tenantRoleUserRESTServiceAccess.assignUser(tenantRoleUser);
             this.prepareUserDataTable();
             handleMessage(FacesMessage.SEVERITY_INFO,
                     JSFUtil.getMessage(TRU_ASSOCIATION_SUCCESS_MESSAGE.getValue()));
@@ -374,8 +381,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             boolean isSameUser = selectedUserToUnAssign.getUserId().equals(webAuthorizationChecker.getCurrentUserId());
             boolean isSameTenant = tenant.getId().equals(activeTenantDataModelManager.getActiveTenant().getTenantId());
 
-            this.tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(),
-                    selectedUserToUnAssign.getUserId());
+            this.tenantRoleUserRESTServiceAccess.unAssignUser(selectedUserToUnAssign.getId());
             this.prepareUserDataTable();
             this.selectedUserToUnAssign = new TenantRoleUser();
             handleMessage(FacesMessage.SEVERITY_INFO,

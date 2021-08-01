@@ -17,15 +17,16 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.TenantRoleException;
+import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import java.util.Collection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Resource implementation responsible for deal with operations
@@ -92,20 +93,63 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
     }
 
     /**
-     * Delete unassigned User Tenant Role(s)
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @param roleIds Collection Role ids
-     * @return @return Response OK if operation concludes with success
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error
+     * Deletes a Tenant Role User association using the id as search parameter.
+     * @param id Tenant Role id association to guide the search process
+     * @return 200 code message in case of success (Tenant Role association found)
+     * 400 if tenant role user association could not be found ,
+     * 500 code message if there is any error.
+     */
+    public Response delete(long id) {
+        try {
+            log.info("Deleting TenantRole User association for id {}", id);
+            return Response.ok().entity(tenantRoleUserBusinessService.delete(id)).build();
+        } catch (TenantRoleException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Assign/associate/add user to a TenantRole domain
+     * The association will always be under a specific role
+     * @param tenantRoleUser represents the association between Tenant, Role and User
+     * @return Response OK if operation concludes with success.
+     * Response status 400 in case of association already existing or
+     * other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
      */
     @Override
-    public Response deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) {
-        log.info("(Un)Assigning/removing TenantRoleUser associations for user {}, tenant {} and roles {}", userId, tenantId, roleIds);
+    public Response assignUser(TenantRoleUser tenantRoleUser) {
         try {
-            tenantRoleUserBusinessService.deleteUnAssignedUserTenantRoles(userId ,tenantId, roleIds);
+            log.info("Associating/adding user {} to tenant-role {}", tenantRoleUser.getTenantRoleId(),
+                    tenantRoleUser.getUserId());
+            tenantRoleUserBusinessService.assignUser(new io.radien.ms.rolemanagement.entities.TenantRoleUserEntity(tenantRoleUser));
             return Response.ok().build();
+        } catch (TenantRoleException | UniquenessConstraintException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * (Un)Assign/Dissociate/remove user from TenantRole domain
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleIds Roles identifiers
+     * @param userId User identifier (Mandatory)
+     * @return Response OK if operation concludes with success.
+     * Response status 400 in case of association already existing or other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @Override
+    public Response unAssignUser(Long tenantId, Collection<Long> roleIds, Long userId) {
+        try {
+            log.info("Dissociating/removing user {} from tenant {} roles {}", userId, tenantId, roleIds);
+            tenantRoleUserBusinessService.unAssignUser(tenantId, roleIds, userId);
+            return Response.ok().build();
+        } catch (TenantRoleException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }

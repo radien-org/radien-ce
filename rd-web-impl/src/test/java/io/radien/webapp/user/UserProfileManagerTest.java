@@ -17,8 +17,8 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
@@ -26,7 +26,14 @@ import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,30 +45,20 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.context.Flash;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static io.radien.ms.tenantmanagement.client.services.TenantFactory.create;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-
-import static io.radien.ms.tenantmanagement.client.services.TenantFactory.create;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.nullable;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.nullable;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Class that aggregates UnitTest cases for UserProfileManager
@@ -81,10 +78,10 @@ public class UserProfileManagerTest {
     private UserRESTServiceAccess userRESTServiceAccess;
 
     @Mock
-    private TenantRESTServiceAccess tenantRESTServiceAccess;
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     @Mock
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     private FacesContext facesContext;
 
@@ -123,7 +120,7 @@ public class UserProfileManagerTest {
      */
     protected List<? extends SystemTenant> getMockedTenants(List<Long> tenantIds) {
         List<SystemTenant> tenants = new ArrayList<>();
-        String description = null;
+        String description;
         for (Long tenantId:tenantIds) {
             description = "tenant-" + tenantId;
             Tenant tenant = create(description, description, TenantType.SUB_TENANT, null,
@@ -239,7 +236,7 @@ public class UserProfileManagerTest {
         // Expected tenants
         try {
             when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
-                    then(i -> getMockedTenants(Arrays.asList(3L)));
+                    then(i -> getMockedTenants(Collections.singletonList(3L)));
         } catch (SystemException s) {
             fail("not expected");
         }
@@ -310,7 +307,6 @@ public class UserProfileManagerTest {
     @Test
     public void testInitWhenAssignedTenantsRetrievalFail() {
         Long userId = 88L;
-        Long tenantId = 1L;
         String errorMsg = "error retrieving tenant";
         when(userSession.getUserId()).then(i -> userId);
 
@@ -411,7 +407,7 @@ public class UserProfileManagerTest {
         String errorMsg = "dissociation fail";
 
         try {
-            when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), null, userId)).
+            when(tenantRoleUserRESTServiceAccess.unAssignUser(tenant.getId(), null, userId)).
                     thenThrow(new SystemException(errorMsg));
         } catch (SystemException s) {
             fail("unexpected");
@@ -442,7 +438,7 @@ public class UserProfileManagerTest {
         Tenant tenant = new Tenant(); tenant.setId(1111L);
         userProfileManager.setSelectedTenantToUnAssign(tenant);
         try {
-            when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), null, userId)).
+            when(tenantRoleUserRESTServiceAccess.unAssignUser(tenant.getId(), null, userId)).
                     thenReturn(Boolean.TRUE);
         } catch (SystemException s) {
             fail("unexpected");

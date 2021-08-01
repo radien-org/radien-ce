@@ -19,7 +19,6 @@ import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.role.RoleServiceAccess;
-import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
@@ -33,6 +32,7 @@ import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.RoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.List;
 import java.util.Properties;
 import javax.ejb.embeddable.EJBContainer;
@@ -58,13 +58,13 @@ public abstract class AbstractTenantRoleBusinessServiceTest {
     protected static Properties p;
     protected static TenantRoleBusinessService tenantRoleBusinessService;
     protected static TenantRolePermissionBusinessService tenantRolePermissionBusinessService;
+    protected static TenantRoleUserBusinessService tenantRoleUserBusinessService;
 
     protected static TenantRoleServiceAccess tenantRoleServiceAccess;
     protected static TenantRolePermissionServiceAccess tenantRolePermissionServiceAccess;
     protected static TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
     protected static RoleServiceAccess roleServiceAccess;
     protected static EJBContainer container;
-    protected static ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     protected static String lookupString;
 
@@ -147,6 +147,22 @@ public abstract class AbstractTenantRoleBusinessServiceTest {
         trp.setTenantRoleId(tenantRolePermissionBusinessService.getTenantRoleId(tenant, role));
         trp.setPermissionId(permission);
         return trp;
+    }
+
+    /**
+     * Utility method to assembly a TenantRoleUser
+     * @param tenant tenant identifier
+     * @param role role identifier
+     * @param user user identifier
+     * @return instance of TenantRolePermission
+     * @throws TenantRoleNotFoundException if tenant role could not be found for the informed params
+     */
+    protected TenantRoleUserEntity assemblyTenantRoleUser(Long tenant,
+                                                          Long role, Long user) throws TenantRoleNotFoundException {
+        TenantRoleUserEntity tru = new TenantRoleUserEntity();
+        tru.setTenantRoleId(tenantRolePermissionBusinessService.getTenantRoleId(tenant, role));
+        tru.setUserId(user);
+        return tru;
     }
 
 }

@@ -15,25 +15,21 @@
  */
 package io.radien.webapp.user.tenant.role;
 
+import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.exception.SystemException;
-
+import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
+import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.user.UserDataModel;
-
-import io.radien.api.model.role.SystemRole;
-import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.model.tenantrole.SystemTenantRole;
-
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
-import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
-
-import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import io.radien.ms.tenantmanagement.client.entities.Tenant;
-
+import io.radien.webapp.util.TenantRoleUtil;
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,16 +37,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-
 import javax.annotation.PostConstruct;
-
 import javax.enterprise.inject.Model;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 /**
  * JSF manager bean that handle the assign/unassigned
  * role(s) for a selected user the tenant
@@ -67,6 +59,9 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
 
     @Inject
     private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
+
+    @Inject
+    private TenantRoleUtil tenantRoleUtil;
 
     @Inject
     private UserDataModel userDataModel;
@@ -88,11 +83,9 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      * This method initializes and constructs
      * the User Tenant(s) and SystemRoles
      * Retrieves list of Tenants associated with the User
-     * @throws SystemException if error occurs
-     * while retrieving User Tenant(s)
      */
     @PostConstruct
-    public void init() throws SystemException {
+    public void init() {
         try{
             userTenants = Collections.unmodifiableList(tenantRoleRESTServiceAccess.getTenants(userDataModel.getSelectedUser().getId(),null));
         } catch(Exception e) {
@@ -115,9 +108,8 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     /**
      * This method retrieves the assigned Roles for an User
      * that corresponds to the selected Tenant
-     * @throws SystemException is thrown when error occurs
      */
-    public void loadUserTenantRoles(SystemTenant systemTenant) throws SystemException {
+    public void loadUserTenantRoles(SystemTenant systemTenant) {
         try{
             assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleRESTServiceAccess
                     .getRolesForUserTenant(userDataModel.getSelectedUser().getId(), systemTenant.getId()));
@@ -204,10 +196,10 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
                 }
 
                 if(isTenantRoleAssociationExists || isTenantRoleSaved){
-                    tenantRoleRESTServiceAccess.assignUser(
-                            tenant.getId(),
-                            systemRoleId,
-                            userDataModel.getSelectedUser().getId());
+                    TenantRoleUser tenantRoleUser = new TenantRoleUser();
+                    tenantRoleUser.setTenantRoleId(tenantRoleUtil.getTenantRoleId(tenant.getId(), systemRoleId));
+                    tenantRoleUser.setUserId(userDataModel.getSelectedUser().getId());
+                    tenantRoleUserRESTServiceAccess.assignUser(tenantRoleUser);
                 }
             }
         } catch (Exception e) {
@@ -223,7 +215,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     private void doUnassignedRolesForUserTenant() {
         try {
             boolean isUnassignedRolesForUserTenant = tenantRoleUserRESTServiceAccess
-                    .deleteUnAssignedUserTenantRoles(userDataModel.getSelectedUser().getId(), tenant.getId(), unassignedUserTenantRoles);
+                    .unAssignUser(tenant.getId(), unassignedUserTenantRoles, userDataModel.getSelectedUser().getId());
 
             if(isUnassignedRolesForUserTenant){
                 handleMessage(FacesMessage.SEVERITY_INFO,

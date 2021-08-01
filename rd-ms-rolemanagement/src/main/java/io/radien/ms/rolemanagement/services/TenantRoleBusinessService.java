@@ -21,31 +21,20 @@ import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
-import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
-import io.radien.exception.TenantRoleUserDuplicationException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
-import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
-import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
-import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-
-import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS;
 
 /**
  * Component that orchestrates the using of diverse Service Access components
@@ -57,9 +46,6 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
     
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
-
-    @Inject
-    private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     /**
      * Retrieves TenantRole association using pagination approach
@@ -167,9 +153,8 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
         checkIfMandatoryParametersWereInformed(userId);
         List<SystemTenant> list = new ArrayList<>();
         List<Long> ids = this.getTenantRoleServiceAccess().getTenants(userId, roleId);
-        for (Long id:ids) {
-            Optional<SystemTenant> opt = getTenantRESTServiceAccess().getTenantById(id);
-            opt.ifPresent(list::add);
+        if (!ids.isEmpty()) {
+            list.addAll(getTenantRESTServiceAccess().getTenantsByIds(ids));
         }
         return list;
     }
@@ -225,80 +210,6 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
     public boolean isPermissionExistentForUser(Long userId, Long permissionId, Long tenantId) {
         checkIfMandatoryParametersWereInformed(userId, permissionId);
         return this.getTenantRoleServiceAccess().hasPermission(userId, permissionId, tenantId);
-    }
-
-    /**
-     * Assign/associate/add user to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenant Tenant identifier (Mandatory)
-     * @param role Role identifier (Mandatory)
-     * @param user User identifier (Mandatory)
-     * @throws TenantRoleException for the case of any inconsistency found
-     * @throws UniquenessConstraintException in case of error during the insertion
-     */
-    public void assignUser(Long tenant, Long role, Long user) throws TenantRoleException,
-            UniquenessConstraintException, SystemException {
-        checkIfMandatoryParametersWereInformed(tenant, role, user);
-        Long tenantRoleId = getTenantRoleId(tenant, role);
-        if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user, tenantRoleId)) {
-            throw new TenantRoleUserDuplicationException(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
-                    toString(tenant.toString(), role.toString()));
-        }
-        TenantRoleUserEntity tru = new TenantRoleUserEntity();
-        tru.setTenantRoleId(tenantRoleId);
-        tru.setUserId(user);
-        tru.setCreateDate(new Date());
-        this.tenantRoleUserServiceAccess.create(tru);
-        if(!activeTenantRESTServiceAccess.isActiveTenantExistent(user, tenant)) {
-            SystemTenant retrievedTenant = retrieveTenant(tenant);
-            ActiveTenant activeTenant = ActiveTenantFactory.create(user,
-                    tenant, retrievedTenant.getName(), false);
-            activeTenantRESTServiceAccess.create(activeTenant);
-        }
-    }
-
-    /**
-     * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
-     * @param tenant Tenant identifier (Mandatory)
-     * @param role Role identifier
-     * @param user User identifier (Mandatory)
-     * @throws TenantRoleException for the case of any inconsistency found
-     */
-    public void unassignUser(Long tenant, Long role, Long user) throws TenantRoleException, SystemException {
-        if (tenant == null) {
-            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
-                    TENANT_ROLE_FIELD_MANDATORY.toString("tenant id"));
-        }
-        if (user == null) {
-            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
-                    TENANT_ROLE_FIELD_MANDATORY.toString("user id"));
-        }
-        Collection<Long> ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant, role, user);
-        if (ids.isEmpty()) {
-            throw new TenantRoleNotFoundException (TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS.
-                    toString(String.valueOf(tenant), String.valueOf(role), String.valueOf(user)));
-        }
-        tenantRoleUserServiceAccess.delete(ids);
-        if (!tenantRoleUserServiceAccess.isAssociatedWithTenant(user, tenant)) {
-            // If user is no longer associated with the informed tenant, lets remove active tenant as well
-            activeTenantRESTServiceAccess.deleteByTenantAndUser(tenant, user);
-        }
-    }
-
-    /**
-     * Getter for the property {@link TenantRoleBusinessService#activeTenantRESTServiceAccess}
-     * @return instance of ActiveTenantRESTServiceAccess
-     */
-    public ActiveTenantRESTServiceAccess getActiveTenantRESTServiceAccess() {
-        return activeTenantRESTServiceAccess;
-    }
-
-    /**
-     * Setter for the property {@link TenantRoleBusinessService#activeTenantRESTServiceAccess}
-     * @param activeTenantRESTServiceAccess instance of ActiveTenantRESTServiceAccess to be set
-     */
-    public void setActiveTenantRESTServiceAccess(ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess) {
-        this.activeTenantRESTServiceAccess = activeTenantRESTServiceAccess;
     }
 
     public TenantRoleUserServiceAccess getTenantRoleUserServiceAccess() {

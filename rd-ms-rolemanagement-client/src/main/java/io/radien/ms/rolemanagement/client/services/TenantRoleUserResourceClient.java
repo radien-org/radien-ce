@@ -16,19 +16,20 @@
 package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import java.util.Collection;
-
-import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 /**
  * Tenant Role User REST requests and services
@@ -78,9 +79,42 @@ public interface TenantRoleUserResourceClient {
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
+    /**
+     * Deletes a Tenant Role User association using the id as search parameter.
+     * @param id Tenant Role User id association to guide the search process
+     * @return 200 code message in case of success (Tenant Role User association found)
+     * 400 if tenant role User association could not be found ,
+     * 500 code message if there is any error.
+     */
     @DELETE
-    Response deleteUnAssignedUserTenantRoles(@QueryParam("userId") Long userId,
-                                       @QueryParam("tenantId") Long tenantId,
-                                       @QueryParam("roleIds") Collection<Long> roleIds);
+    @Path("/{id}")
+    Response delete(@PathParam("id") long id);
+
+    /**
+     * Assign/associate/add permission to a TenantRole domain
+     * The association will always be under a specific role
+     * @param tenantRoleUser represents the association between Tenant, Role and User
+     * @return Response OK if operation concludes with success.
+     * Response status 400 in case of association already existing or
+     * other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response assignUser(TenantRoleUser tenantRoleUser);
+
+    /**
+     * (Un)Assign/Dissociate/remove user from a TenantRole domain
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleIds Roles identifiers
+     * @param userId User identifier (Mandatory)
+     * @return Response OK if operation concludes with success.
+     * Response status 400 in case of violations regarding business rules
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @DELETE
+    Response unAssignUser(@QueryParam("tenantId") Long tenantId,
+                          @QueryParam("roleIds") Collection<Long> roleIds,
+                          @QueryParam("userId") Long userId);
 
 }

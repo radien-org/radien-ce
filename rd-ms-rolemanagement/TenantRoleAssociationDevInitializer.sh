@@ -37,8 +37,8 @@ curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrolepermis
 curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrolepermission' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantRoleId":3, "permissionId":4}'
 
 echo "---> Going to associate the first user"
-curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/user/1/tenant/1/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
-curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/user/1/tenant/2/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
-curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantrole/assign/user/1/tenant/3/role/1' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json'
+curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantroleuser' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantRoleId":1, "userId":1}'
+curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantroleuser' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantRoleId":2, "userId":1}'
+curl -L -X POST 'http://localhost:8083/rolemanagementservice/v1/tenantroleuser' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{"tenantRoleId":3, "userId":1}'
 
 echo "-----------------------------------------------------------------------------------------------------------------"
