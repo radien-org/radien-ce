@@ -91,11 +91,12 @@ public interface TenantRoleResourceClient {
      * @param tenant tenant identifier
      * @param role role identifier
      * @return Response OK (200) with the retrieved id (if exists). If not exist will return 404 status.
-     * For any other error, will return status 500
+     * In case of insufficient params (tenant or role not informed) It will return 400 status.
+     * For any other kind of (unpredictable) error this endpoint will return status 500
      */
     @GET
-    @Path("/id/tenant/{tenant}/role/{role}")
-    public Response getIdByTenantRole(@PathParam("tenant") Long tenant, @PathParam("role") Long role);
+    @Path("/id")
+    public Response getIdByTenantRole(@QueryParam("tenant") Long tenant, @QueryParam("role") Long role);
 
     /**
      * Deletes a Tenant Role association using the id as search parameter.
