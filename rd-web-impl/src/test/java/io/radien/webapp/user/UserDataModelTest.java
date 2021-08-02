@@ -401,6 +401,17 @@ public class UserDataModelTest {
     }
 
     /**
+     * Test for method {@link UserDataModel#deleteRecord()}
+     */
+    @Test
+    public void testDeleteRecord(){
+        userDataModel.setSelectedUser(new User());
+        assertEquals(DataModelEnum.USER_DELETE_PATH.getValue(), userDataModel.deleteRecord());
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.deleteRecord());
+    }
+
+    /**
      * Test for method {@link UserDataModel#onRowSelect(SelectEvent)}
      */
     @Test
