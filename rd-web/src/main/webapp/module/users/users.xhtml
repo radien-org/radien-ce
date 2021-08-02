@@ -46,26 +46,11 @@
 										  action="#{userDataModel.createRecord}"/>
 
 						<b:dropButton value="#{msg.rd_user_actions}" drop="down">
-							<b:navLink id="delete-user-button"
-									   onclick="$('.formValidationModalUserDelete').modal('show')"
-									   href="#modeldelete" autoUpdate="true"
-									   rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
-									   value="#{msg.delete}"
-									   icon="trash"/>
-							<b:modal id="modeldelete"
-									 title="#{msg.confirmation}"
-									 styleClass="formValidationModalUserDelete"
-									 closable="false" close-on-escape="false" backdrop="false"
-									 rendered="#{not empty userDataModel.selectedUser}">
-								<p>#{msg.userSelectDeleteConfirmation}</p>
-								<f:facet name="footer">
-									<b:commandButton value="#{msg.no}"
-													 onclick="{ $('.formValidationModalUserDelete').modal('hide') } "/>
-									<b:commandButton value="#{msg.yes}" look="warning"
-													 actionListener="#{userDataModel.deleteUser}"
-													 oncomplete="{ $('.formValidationModalUserDelete').modal('hide') } "/>
-								</f:facet>
-							</b:modal>
+							<b:navCommandLink value="#{msg.delete}"
+											  tooltip="#{msg.rd_delete_existent_user_info}"
+											  iconAwesome="fa-trash"
+											  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+											  action="#{userDataModel.deleteRecord}"/>
 
 							<b:navCommandLink value="#{msg.edit}"
 											 tooltip="#{msg.rd_edit_existent_user_info}"

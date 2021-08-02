@@ -40,6 +40,10 @@
 		<pattern value="/module/users/userRoles" />
 		<view-id value="/module/users/userRoles.oaf" />
 	</url-mapping>
+	<url-mapping id="userDelete">
+		<pattern value="/module/users/userDelete" />
+		<view-id value="/module/users/userDelete.oaf" />
+	</url-mapping>
 
 	<!-- Rolesmanagement -->
 	<url-mapping id="roles">
