@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.client.services;
 
+import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
@@ -83,6 +84,19 @@ public interface TenantRoleResourceClient {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@PathParam("id") Long id);
+
+    /**
+     * Retrieve the association Id ({@link SystemTenantRole#getId()}) using the combination of tenant
+     * and role as parameters
+     * @param tenant tenant identifier
+     * @param role role identifier
+     * @return Response OK (200) with the retrieved id (if exists). If not exist will return 404 status.
+     * In case of insufficient params (tenant or role not informed) It will return 400 status.
+     * For any other kind of (unpredictable) error this endpoint will return status 500
+     */
+    @GET
+    @Path("/id")
+    public Response getIdByTenantRole(@QueryParam("tenant") Long tenant, @QueryParam("role") Long role);
 
     /**
      * Deletes a Tenant Role association using the id as search parameter.

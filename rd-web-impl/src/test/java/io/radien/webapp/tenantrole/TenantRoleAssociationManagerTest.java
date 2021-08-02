@@ -38,6 +38,7 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import io.radien.webapp.util.TenantRoleUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -100,6 +101,9 @@ public class TenantRoleAssociationManagerTest {
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
+
+    @InjectMocks
+    private TenantRoleUtil tenantRoleUtil;
 
     private FacesContext facesContext;
 
@@ -170,7 +174,9 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
         tenantRoleAssociationManager.setTenantRole(tenantRole);
 
+        when(tenantRoleRESTServiceAccess.getIdByTenantRole(tenant.getId(), role.getId())).thenReturn(Optional.of(1L));
         when(tenantRoleRESTServiceAccess.save(tenantRole)).thenReturn(Boolean.TRUE);
+        tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
         tenantRoleAssociationManager.associateTenantRole();
 
         assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
@@ -1090,99 +1096,14 @@ public class TenantRoleAssociationManagerTest {
         assertNotNull(tenantRoleAssociationManager.getLazyModel());
     }
 
-
     /**
-     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
-     * Corresponds the success case in which was able to retrieve the id given a tenant and a role
-     * @throws SystemException in case of any communication with an endpoint
+     * Test for setter method {@link TenantRoleAssociationManager#setTenantRoleUtil(TenantRoleUtil)}
      */
     @Test
-    public void testGetTenantRoleId() throws SystemException{
-        SystemTenant tenant = new Tenant(); tenant.setId(55L);
-        SystemRole role = new Role(); role.setId(88L);
-
-        TenantRole tenantRole = new TenantRole();
-        tenantRole.setTenantId(tenant.getId());
-        tenantRole.setRoleId(role.getId());
-        tenantRole.setId(11111L);
-
-        List<TenantRole> retrieved = new ArrayList<>();
-        retrieved.add(tenantRole);
-
-        when(tenantRoleRESTServiceAccess.getTenantRoles(tenant.getId(),
-                    role.getId(), true)).then(i -> retrieved);
-
-        tenantRoleAssociationManager.setTenant(tenant);
-        tenantRoleAssociationManager.setRole(role);
-        assertEquals(tenantRole.getId(), tenantRoleAssociationManager.getTenantRoleId());
-    }
-
-    /**
-     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
-     * Corresponds the unsuccessful case in which was not able to retrieve the id given a tenant and a role
-     * @throws SystemException in case of any communication with an endpoint
-     */
-    @Test
-    public void testGetTenantRoleIdWithNoResults() throws SystemException{
-        SystemTenant tenant = new Tenant(); tenant.setId(1L);
-        SystemRole role = new Role(); role.setId(1L);
-
-        when(tenantRoleRESTServiceAccess.getTenantRoles(tenant.getId(),
-                role.getId(), true)).then(i -> new ArrayList<>());
-
-        tenantRoleAssociationManager.setTenant(tenant);
-        tenantRoleAssociationManager.setRole(role);
-        assertNull(tenantRoleAssociationManager.getTenantRoleId());
-    }
-
-    /**
-     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
-     * Corresponds the unsuccessful case in which an exception occurs in the middle of process
-     * @throws SystemException in case of any communication with an endpoint
-     */
-    @Test
-    public void testGetTenantRoleIdWithException() throws SystemException{
-        SystemTenant tenant = new Tenant(); tenant.setId(1L);
-        SystemRole role = new Role(); role.setId(1L);
-
-        tenantRoleAssociationManager.setTenant(tenant);
-        tenantRoleAssociationManager.setRole(role);
-
-        when(tenantRoleRESTServiceAccess.getTenantRoles(tenant.getId(),
-                role.getId(), true)).thenThrow(new SystemException("error"));
-
-        assertNull(tenantRoleAssociationManager.getTenantRoleId());
-
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue(), captured.getSummary());
-    }
-
-    /**
-     * Test for method {@link TenantRoleAssociationManager#getTenantRoleId()}
-     * Corresponds the unsuccessful case in which is not possible to retrieve the tenant role id
-     * due insufficient params
-     * @throws SystemException in case of any communication with an endpoint
-     */
-    @Test
-    public void testGetTenantRoleIdWithInsufficientParams() throws SystemException{
-        tenantRoleAssociationManager.setTenant(null);
-        assertNull(tenantRoleAssociationManager.getTenantRoleId());
-
-        SystemTenant tenant = new Tenant();
-        tenantRoleAssociationManager.setTenant(tenant);
-        assertNull(tenantRoleAssociationManager.getTenantRoleId());
-
-        tenant.setId(1L);
-        tenantRoleAssociationManager.setTenant(tenant);
-        tenantRoleAssociationManager.setRole(null);
-        assertNull(tenantRoleAssociationManager.getTenantRoleId());
-
-        SystemRole role = new Role();
-        tenantRoleAssociationManager.setRole(role);
-        assertNull(tenantRoleAssociationManager.getTenantRoleId());
+    public void testSetterForTenantRoleUtil() {
+        tenantRoleAssociationManager.setTenantRoleUtil(null);
+        assertNull(tenantRoleAssociationManager.getTenantRoleUtil());
+        tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
+        assertEquals(tenantRoleUtil, tenantRoleAssociationManager.getTenantRoleUtil());
     }
 }

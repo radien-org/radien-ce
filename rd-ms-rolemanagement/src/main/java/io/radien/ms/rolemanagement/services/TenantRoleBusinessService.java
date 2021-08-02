@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
@@ -317,8 +318,17 @@ public class TenantRoleBusinessService implements Serializable {
      * @param role role identifier (id)
      * @return the association id (if exists), otherwise throws a exception
      * @throws TenantRoleNotFoundException thrown if association does not exists
+     * @throws TenantRoleIllegalArgumentException thrown when either tenant or role are not informed
      */
-    private Long getTenantRoleId(Long tenant, Long role) throws TenantRoleNotFoundException{
+    public Long getTenantRoleId(Long tenant, Long role) throws TenantRoleNotFoundException, TenantRoleIllegalArgumentException{
+        if (tenant == null) {
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel()));
+        }
+        if (role == null) {
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel()));
+        }
         return this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
                 orElseThrow(() -> new TenantRoleNotFoundException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
                         tenant.toString(), role.toString())));

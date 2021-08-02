@@ -42,6 +42,7 @@ import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
+import io.radien.webapp.util.TenantRoleUtil;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +114,9 @@ public class TenantRoleAssociationManager extends AbstractManager {
     @Inject
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
+    @Inject
+    private TenantRoleUtil tenantRoleUtil;
+
     private SystemTenant tenant = new Tenant();
     private SystemRole role = new Role();
     private SystemPermission permission = new Permission();
@@ -143,6 +147,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             tenantRole.setRoleId(role.getId());
             tenantRoleRESTServiceAccess.save(tenantRole);
             if (tenantRole.getId() == null) {
+                tenantRole.setId(tenantRoleUtil.getTenantRoleId(tenant.getId(), role.getId()));
                 tenantRoleAssociationCreated = true;
             }
             this.prepareUserDataTable();
@@ -233,28 +238,6 @@ public class TenantRoleAssociationManager extends AbstractManager {
             handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(PERMISSIONS_MESSAGE.getValue()));
             return new ArrayList<>();
-        }
-    }
-
-    /**
-     * Given a tenant and a role, retrieves the id that exists for that
-     * relationship
-     * @return Id (key) that must exist for a Tenant Role association
-     */
-    @ActiveTenantMandatory
-    protected Long getTenantRoleId() {
-        if (tenant == null || tenant.getId() == null || role == null || role.getId() == null) {
-            return null;
-        }
-        try {
-            List<? extends SystemTenantRole> tenantRoles = tenantRoleRESTServiceAccess.
-                    getTenantRoles(tenant.getId(), role.getId(), true);
-            return !tenantRoles.isEmpty() ? tenantRoles.get(0).getId() : null;
-        }
-        catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(RETRIEVE_ERROR_MESSAGE.getValue()),
-                    JSFUtil.getMessage(TR_ASSOCIATION_ID.getValue()));
-            return null;
         }
     }
 
@@ -718,4 +701,19 @@ public class TenantRoleAssociationManager extends AbstractManager {
         this.previousSelectedUserToUnAssign = previousSelectedPermissionToUnAssign;
     }
 
+    /**
+     * Getter method for the property {@link TenantRoleAssociationManager#tenantRoleUtil}
+     * @return instance of {@link TenantRoleUtil}
+     */
+    public TenantRoleUtil getTenantRoleUtil() {
+        return tenantRoleUtil;
+    }
+
+    /**
+     * Setter method for the property {@link TenantRoleAssociationManager#tenantRoleUtil}
+     * @param tenantRoleUtil instance of {@link TenantRoleUtil}
+     */
+    public void setTenantRoleUtil(TenantRoleUtil tenantRoleUtil) {
+        this.tenantRoleUtil = tenantRoleUtil;
+    }
 }

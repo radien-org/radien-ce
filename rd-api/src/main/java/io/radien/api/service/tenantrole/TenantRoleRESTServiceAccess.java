@@ -42,6 +42,15 @@ public interface TenantRoleRESTServiceAccess {
     Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException;
 
     /**
+     * Obtains the TenantRole Id (for given Tenant and role identifiers)
+     * @param tenant Tenant identifier (mandatory)
+     * @param role Role identifier (mandatory)
+     * @return Optional containing TenantRole Identifier (Empty if no id could be found)
+     * @throws SystemException in case of any error
+     */
+    Optional<Long> getIdByTenantRole(Long tenant, Long role) throws SystemException;
+
+    /**
      * Obtains TenantRole by Id
      * @param id TenantRole identifier
      * @return Optional containing TenantRole

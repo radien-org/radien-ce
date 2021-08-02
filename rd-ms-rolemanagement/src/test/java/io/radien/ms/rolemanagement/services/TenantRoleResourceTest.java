@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
@@ -547,4 +548,41 @@ public class TenantRoleResourceTest {
         Response response = tenantRoleResource.getRolesForUserTenant(1L, 1L);
         assertEquals(404, response.getStatus());
     }
+
+    /**
+     * Tests response from getIdByTenantRole
+     */
+    @Test
+    void testGetIdByTenantRole() {
+        Response response = tenantRoleResource.getById(1L);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests response from getIdByTenantRole when exceptions occurs during the processing
+     * @throws TenantRoleNotFoundException thrown when no id could be found for the tenant role combination
+     * @throws TenantRoleIllegalArgumentException thrown when params were not correctly informed
+     */
+    @Test
+    void testGetIdByTenantRoleWithExceptions() throws TenantRoleNotFoundException, TenantRoleIllegalArgumentException {
+        doThrow(new TenantRoleNotFoundException("No Tenant Role found for id")).
+                when(tenantRoleBusinessService).getTenantRoleId(1L, 1L);
+        doThrow(new RuntimeException("error")).
+                when(tenantRoleBusinessService).getTenantRoleId(2L, 2L);
+        doThrow(new TenantRoleIllegalArgumentException("error")).
+                when(tenantRoleBusinessService).getTenantRoleId(null, 2L);
+
+        // Association Not Found
+        Response response = tenantRoleResource.getIdByTenantRole(1L, 1L);
+        assertEquals(404,response.getStatus());
+
+        // Generic Error
+        response = tenantRoleResource.getIdByTenantRole(2L,2L);
+        assertEquals(500,response.getStatus());
+
+        // Invalid request
+        response = tenantRoleResource.getIdByTenantRole(null,2L);
+        assertEquals(400,response.getStatus());
+    }
+
 }
