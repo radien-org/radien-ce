@@ -15,30 +15,27 @@
  */
 package io.radien.webapp.security;
 
+import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.security.TokensPlaceHolder;
+import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.ms.usermanagement.client.services.UserFactory;
 import io.radien.webapp.JSFUtil;
 import java.io.IOException;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import io.radien.api.security.TokensPlaceHolder;
-import io.radien.exception.SystemException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.radien.api.OAFAccess;
-import io.radien.api.model.user.SystemUser;
-import io.radien.api.security.UserSessionEnabled;
-import io.radien.api.service.user.UserRESTServiceAccess;
-import io.radien.ms.usermanagement.client.services.UserFactory;
-
-import java.util.Optional;
 
 /**
  * Class responsible for managing the current user session
@@ -260,7 +257,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		try {
 			log.info("going to start logout process");
 			request.logout();
-			String logoutUrl = getLogoutURL(request);
+			String logoutUrl = getLogoutURL();
 			log.info("going to redirect to the following url {}", logoutUrl);
 			response.sendRedirect(logoutUrl);
 			return true;
@@ -272,25 +269,25 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	/**
 	 * Retrieve the logout URL
-	 * @param httpServletRequest
 	 * @return String that represents the logout url
 	 */
-	protected String getLogoutURL(HttpServletRequest httpServletRequest) {
+	protected String getLogoutURL() {
 		String keyCloakLogoutURL = oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI);
 		StringBuilder sb = new StringBuilder().
 				append(keyCloakLogoutURL).
 				append("?redirect_uri=").
-				append(getApplicationURL(httpServletRequest));
+				append(getApplicationURL());
 		return sb.toString();
 	}
 
 	/**
 	 * Retrieves the base url (schema + server name + port + context) for the current application
-	 * @param request http servlet from which will be extract all the required informations
 	 * @return String that represent the context url path
 	 */
-	protected String getApplicationURL(HttpServletRequest request) {
-		return request.toString().substring(0, request.toString().length() -
-				request.getServletPath().length());
+	protected String getApplicationURL() {
+		String applicationUrl = oaf.getProperty(OAFProperties.SYS_HOSTNAME) +
+				oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
+		log.info("application url {}", applicationUrl);
+		return applicationUrl;
 	}
 }
