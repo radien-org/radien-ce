@@ -15,23 +15,27 @@
  */
 package io.radien.webapp.security;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import io.radien.api.security.TokensPlaceHolder;
-import io.radien.exception.SystemException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
-
+import io.radien.webapp.JSFUtil;
+import java.io.IOException;
 import java.util.Optional;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class responsible for managing the current user session
@@ -225,5 +229,65 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 */
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+
+	/**
+	 * Perform the logout process
+	 * @return boolean that indicates if the process was successfully concluded or not
+	 */
+	public boolean logout() {
+		if (isActive()) {
+			ExternalContext externalContext = JSFUtil.getExternalContext();
+			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+			HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
+			return logout(request, response);
+		}
+		return false;
+	}
+
+	/**
+	 * Core (internal) that uses the servlet request
+	 * and servlet response to perform the logout process
+	 * @param request used to obtain the logout url, the cookies and so on
+	 * @param response used to perform redirection
+	 * @return boolean that indicates if the process was successfully concluded or not
+	 */
+	protected boolean logout(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			log.info("going to start logout process");
+			request.logout();
+			String logoutUrl = getLogoutURL();
+			log.info("going to redirect to the following url {}", logoutUrl);
+			response.sendRedirect(logoutUrl);
+			return true;
+		} catch (ServletException | IOException e) {
+			log.error("error performing logout", e);
+			return false;
+		}
+	}
+
+	/**
+	 * Retrieve the logout URL
+	 * @return String that represents the logout url
+	 */
+	protected String getLogoutURL() {
+		String keyCloakLogoutURL = oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI);
+		StringBuilder sb = new StringBuilder().
+				append(keyCloakLogoutURL).
+				append("?redirect_uri=").
+				append(getApplicationURL());
+		return sb.toString();
+	}
+
+	/**
+	 * Retrieves the base url (schema + server name + port + context) for the current application
+	 * @return String that represent the context url path
+	 */
+	protected String getApplicationURL() {
+		String applicationUrl = oaf.getProperty(OAFProperties.SYS_HOSTNAME) +
+				oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
+		log.info("application url {}", applicationUrl);
+		return applicationUrl;
 	}
 }

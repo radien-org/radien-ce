@@ -26,6 +26,7 @@ import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
@@ -140,9 +141,10 @@ public abstract class AbstractTenantRoleBusinessServiceTest {
      * @param permission permission identifier
      * @return instance of TenantRolePermission
      * @throws TenantRoleNotFoundException if tenant role could not be found for the informed params
+     * @throws TenantRoleIllegalArgumentException thrown when either tenant or role are not informed
      */
     protected TenantRolePermissionEntity assemblyTenantRolePermission(Long tenant,
-                                                                      Long role, Long permission) throws TenantRoleNotFoundException {
+                                                                      Long role, Long permission) throws TenantRoleNotFoundException, TenantRoleIllegalArgumentException {
         TenantRolePermissionEntity trp = new TenantRolePermissionEntity();
         trp.setTenantRoleId(tenantRolePermissionBusinessService.getTenantRoleId(tenant, role));
         trp.setPermissionId(permission);
@@ -156,9 +158,10 @@ public abstract class AbstractTenantRoleBusinessServiceTest {
      * @param user user identifier
      * @return instance of TenantRolePermission
      * @throws TenantRoleNotFoundException if tenant role could not be found for the informed params
+     * @throws TenantRoleIllegalArgumentException thrown when either tenant or role are not informed
      */
     protected TenantRoleUserEntity assemblyTenantRoleUser(Long tenant,
-                                                          Long role, Long user) throws TenantRoleNotFoundException {
+                                                          Long role, Long user) throws TenantRoleNotFoundException, TenantRoleIllegalArgumentException {
         TenantRoleUserEntity tru = new TenantRoleUserEntity();
         tru.setTenantRoleId(tenantRolePermissionBusinessService.getTenantRoleId(tenant, role));
         tru.setUserId(user);

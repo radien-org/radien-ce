@@ -63,6 +63,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLE;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND;
@@ -269,10 +270,11 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
      * @throws SystemException in case of communication issues with Tenant Rest Client or
      * ActiveTenant Rest Client.
      * @throws TenantRoleNotFoundException in case of wrong combination of Tenant and role
+     * @throws TenantRoleIllegalArgumentException thrown when either tenant or role are not informed
      */
     @Test
     @Order(8)
-    public void assignUser() throws SystemException, TenantRoleNotFoundException {
+    public void assignUser() throws SystemException, TenantRoleNotFoundException, TenantRoleIllegalArgumentException {
         // Assign user to the role "Tenant Administrator" for the tenant "1"
         SystemRole roleAdmin = assertDoesNotThrow(() -> createRole(roleNameForTenantAdministrator));
 
@@ -665,10 +667,12 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
      * Test to assign permission into an already assigned permission existent in a tenant role association
      * @throws SystemException to express cases of communication issue with the endpoints
      * @throws TenantRoleNotFoundException to express cases in which Tenant Role could not found
+     * @throws TenantRoleIllegalArgumentException thrown when either tenant or role are not informed
      */
     @Test
     @Order(20)
-    public void assignPermissionInvalidCaseAssignmentAlreadyPerformed() throws SystemException, TenantRoleNotFoundException {
+    public void assignPermissionInvalidCaseAssignmentAlreadyPerformed() throws SystemException,
+            TenantRoleNotFoundException, TenantRoleIllegalArgumentException {
         // Get previously created Role
         SystemRole publisher = assertDoesNotThrow(() -> createRole("publisher"));
 
@@ -1135,6 +1139,32 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
     }
 
     /**
+     * Test for method {@link TenantRoleBusinessService#getTenantRoleId(Long, Long)},
+     * handling invalid cases where params where not correctly informed
+     */
+    @Test
+    @Order(39)
+    public void retrieveTenantRoleIdForInvalidCase() {
+        Long tenant = 11111999999999L, role = 211119788676769999L;
+        String expectedMsgForNotFoundTenantRole = TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
+                tenant.toString(), role.toString());
+
+        TenantRoleNotFoundException notFoundException = assertThrows(TenantRoleNotFoundException.class, () ->
+                tenantRoleBusinessService.getTenantRoleId(tenant, role));
+        assertEquals(expectedMsgForNotFoundTenantRole, notFoundException.getMessage());
+
+        String expectedMsgForTenantNull = TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel());
+        TenantRoleIllegalArgumentException argumentException = assertThrows(TenantRoleIllegalArgumentException.class,
+                () -> tenantRoleBusinessService.getTenantRoleId(null, role));
+        assertEquals(expectedMsgForTenantNull, argumentException.getMessage());
+
+        String expectedMsgForRoleNull = TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel());
+        argumentException = assertThrows(TenantRoleIllegalArgumentException.class,
+                () -> tenantRoleBusinessService.getTenantRoleId(tenant, null));
+        assertEquals(expectedMsgForRoleNull, argumentException.getMessage());
+    }
+
+    /**
      * Test method for {@link TenantRolePermissionBusinessService#getAll(Long, Long, int, int)}
      * @throws TenantRoleException to be thrown in case of invalid conditions regarding Tenant Role domains Business Rules
      * @throws UniquenessConstraintException to be thrown in cases of repeated values
@@ -1142,7 +1172,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
      * @throws RoleNotFoundException to be thrown in case of role not found
      */
     @Test
-    @Order(39)
+    @Order(40)
     void testPermissionPagination() throws TenantRoleException, UniquenessConstraintException, SystemException, RoleNotFoundException {
         tenantRoleBusinessService.setRoleServiceAccess(roleServiceAccess);
         tenantRoleBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
@@ -1177,7 +1207,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
      * @throws RoleNotFoundException to be thrown in case of role not found
      */
     @Test
-    @Order(40)
+    @Order(41)
     void testDeletePermissionById() throws RoleNotFoundException, UniquenessConstraintException, TenantRoleException, SystemException {
         Long tenant = 1000000L;
         SystemRole role = createRole("a deletable test role");
@@ -1197,7 +1227,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
      * where there is no tenant role permission for the informed id
      */
     @Test
-    @Order(40)
+    @Order(42)
     void testDeleteWhenTenantRolePermissionNotFound() {
         assertThrows(TenantRoleException.class, () ->
                 tenantRolePermissionBusinessService.delete(1111111111L));
@@ -1211,7 +1241,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
      * @throws RoleNotFoundException to be thrown in case of role not found
      */
     @Test
-    @Order(42)
+    @Order(43)
     void testDeleteUserById() throws RoleNotFoundException, UniquenessConstraintException, TenantRoleException, SystemException {
         Long tenant = 1000002L;
         SystemRole role = createRole("a new deletable test role");
@@ -1234,10 +1264,9 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
      * where there is no tenant role user for the informed id
      */
     @Test
-    @Order(40)
+    @Order(44)
     void testDeleteWhenTenantRoleUserNotFound()  {
         assertThrows(TenantRoleException.class, () ->
                 tenantRoleUserBusinessService.delete(1111111111L));
     }
-
 }

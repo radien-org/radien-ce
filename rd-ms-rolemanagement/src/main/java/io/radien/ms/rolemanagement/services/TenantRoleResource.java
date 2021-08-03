@@ -19,6 +19,7 @@ import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
@@ -50,6 +51,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      * @param tenant tenant identifier
      * @param role role identifier
      * @return Response OK (200) with the retrieved id (if exists). If not exist will return 404 status.
+     * In case of insufficient params (tenant or role not informed) It will return 400 status.
      * For any other kind of (unpredictable) error this endpoint will return status 500
      */
     @Override
@@ -58,6 +60,8 @@ public class TenantRoleResource implements TenantRoleResourceClient {
             return Response.ok(tenantRoleBusinessService.getTenantRoleId(tenant, role)).build();
         } catch (TenantRoleNotFoundException e) {
             return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        } catch (TenantRoleIllegalArgumentException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }

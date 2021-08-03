@@ -124,7 +124,9 @@ public enum OAFProperties implements SystemProperties{
 
 	SYSTEM_MS_SECRET_ECM("system.ms.secret.ecm"),
 	SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM("system.supported.languages"),
-    SYSTEM_MS_CONFIG_DEFAULT_LANG_ECM("system.default.language");
+    SYSTEM_MS_CONFIG_DEFAULT_LANG_ECM("system.default.language"),
+
+    AUTH_LOGOUT_URI("auth.logoutUri");
 
     private String propKey;
 
