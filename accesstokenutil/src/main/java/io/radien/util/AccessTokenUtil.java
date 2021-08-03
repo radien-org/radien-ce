@@ -44,7 +44,7 @@ public class AccessTokenUtil {
         String tenantRoleUrl= host+":8083/rolemanagementservice/v1/tenantrole";
         makePostRequest(tenantRoleUrl,"tenantRole1",accessToken,"{\"tenantId\":1, \"roleId\":1}");
         makePostRequest(tenantRoleUrl,"tenantRole2",accessToken,"{\"tenantId\":2, \"roleId\":1}");
-        makePostRequest(tenantRoleUrl,"tenantRole1",accessToken,"{\"tenantId\":3, \"roleId\":1}");
+        makePostRequest(tenantRoleUrl,"tenantRole3",accessToken,"{\"tenantId\":3, \"roleId\":1}");
 
         String tenantRolePermissionUrl= host+":8083/rolemanagementservice/v1/tenantrolepermission";
         makePostRequest(tenantRolePermissionUrl,"assignPermission1",accessToken,"{\"tenantRoleId\":1, \"permissionId\":1}");
@@ -57,6 +57,11 @@ public class AccessTokenUtil {
 
         makePostRequest(tenantRolePermissionUrl,"assignPermission8",accessToken,"{\"tenantRoleId\":2, \"permissionId\":1}");
         makePostRequest(tenantRolePermissionUrl,"assignPermission9",accessToken,"{\"tenantRoleId\":3, \"permissionId\":1}");
+
+        String tenantRoleUserUrl= host+":8083/rolemanagementservice/v1/tenantroleuser";
+        makePostRequest(tenantRoleUserUrl,"assignUser1ToTenantRole1",accessToken,"{\"tenantRoleId\":1, \"userId\":1}");
+        makePostRequest(tenantRoleUserUrl,"assignUser1ToTenantRole2",accessToken,"{\"tenantRoleId\":2, \"userId\":1}");
+        makePostRequest(tenantRoleUserUrl,"assignUser1ToTenantRole3",accessToken,"{\"tenantRoleId\":3, \"userId\":1}");
     }
 
     private static void roleCreation(String accessToken) {
