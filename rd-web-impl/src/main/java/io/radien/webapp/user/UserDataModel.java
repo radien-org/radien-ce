@@ -244,6 +244,18 @@ public class UserDataModel extends AbstractManager implements Serializable {
     }
 
     /**
+     * Redirects user to the page of delete the user
+     * @return a new HTML page
+     */
+    @ActiveTenantMandatory
+    public String deleteRecord() {
+        if (selectedUser != null) {
+            return DataModelEnum.USER_DELETE_PATH.getValue();
+        }
+        return DataModelEnum.USERS_PATH.getValue();
+    }
+
+    /**
      * Redirects user to the page of creation the user
      * @return a new HTML page
      */

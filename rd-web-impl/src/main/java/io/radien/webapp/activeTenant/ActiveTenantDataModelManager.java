@@ -89,12 +89,13 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      */
     public List<String> getUserTenants() {
         List<String> actTenantNames = new ArrayList<>();
-        for(SystemActiveTenant actTenant : userActiveTenants) {
-            actTenantNames.add(actTenant.getTenantName());
+        if (userActiveTenants != null) {
+            for (SystemActiveTenant actTenant : userActiveTenants) {
+                actTenantNames.add(actTenant.getTenantName());
+            }
+
+            actTenantNames.sort(Comparator.comparing(String::toString));
         }
-
-        actTenantNames.sort(Comparator.comparing(String::toString));
-
         return actTenantNames;
     }
 
