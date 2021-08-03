@@ -66,13 +66,8 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
 
             //choose the already selected active tenant
             for (SystemActiveTenant actTenant : userActiveTenants) {
-                if(userActiveTenants.size()==1) {
-                    if(!actTenant.getIsTenantActive()) {
-                        actTenant.setIsTenantActive(true);
-                        activeTenantRESTServiceAccess.update(actTenant);
-                    }
-                    activeTenant = actTenant;
-                    activeTenantValue = actTenant.getTenantName();
+                if(activeTenantValue == null && userActiveTenants.size()>1) {
+                    setUpdateTenantActive(actTenant);
                 } else if (actTenant.getIsTenantActive()) {
                     activeTenant = actTenant;
                     activeTenantValue = actTenant.getTenantName();
@@ -81,6 +76,21 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()));
         }
+    }
+
+    /**
+     * Validates and sets systemActiveTenant
+     * @param actTenant SystemActiveTenant to be set
+     * @throws SystemException if any system error occurs
+     */
+    private void setUpdateTenantActive(SystemActiveTenant actTenant) throws SystemException {
+        if (!actTenant.getIsTenantActive()) {
+            actTenant.setIsTenantActive( true );
+            activeTenantRESTServiceAccess.update( actTenant );
+        }
+
+        activeTenant = actTenant;
+        activeTenantValue = actTenant.getTenantName();
     }
 
     /**

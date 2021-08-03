@@ -104,6 +104,7 @@ public enum DataModelEnum {
     USERS_DISPATCH_PATH("/module/users"),
     USERS_ROLES_PATH("pretty:userRoles"),
     USER_DELETE_PATH("pretty:userDelete"),
+    USER_UN_ASSIGN_PATH("pretty:userUnAssign"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
     USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),
