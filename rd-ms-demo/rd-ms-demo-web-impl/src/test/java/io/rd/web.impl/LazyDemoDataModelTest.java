@@ -19,7 +19,6 @@ import io.rd.api.entity.Page;
 import io.rd.api.model.SystemDemo;
 import io.rd.api.service.DemoRESTServiceAccess;
 import io.rd.ms.client.entities.Demo;
-import io.rd.web.impl.LazyDemoDataModel;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +35,8 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 /**
@@ -91,7 +91,7 @@ public class LazyDemoDataModelTest {
     @Test
     public void getRowKey_test(){
         String id = lazyDemoDataModel.getRowKey(data.get(1));
-        assertEquals(id, "1");
+        assertEquals("1", id);
     }
 
     @Test
@@ -101,9 +101,9 @@ public class LazyDemoDataModelTest {
         assertEquals(lazyDemoDataModel.getErrorMsg(), errorMsg);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void load_error_test() throws MalformedURLException {
-        assertNull(lazyDemoDataModel.load(0, -1, null,  null));
+    @Test(expected = Exception.class)
+    public void load_error_test() {
+        lazyDemoDataModel.load(0, -1, null,  null);
     }
 
     private void initData(int size) {

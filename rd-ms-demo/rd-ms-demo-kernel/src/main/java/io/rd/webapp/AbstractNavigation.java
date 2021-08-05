@@ -48,7 +48,7 @@ public abstract class AbstractNavigation implements Serializable {
 	@PostConstruct
 	protected void init() {
 
-		HttpServletRequest request = (HttpServletRequest) JSFUtil.getExternalContext()
+		HttpServletRequest request = (HttpServletRequest) JSFDemoUtil.getExternalContext()
 				.getRequest();
 		request.getRequestURI();
 
@@ -74,12 +74,12 @@ public abstract class AbstractNavigation implements Serializable {
 	}
 
 	public void navigationAction(ActionEvent event) {
-		String navigationNode = JSFUtil.getString(event, paramNavigationNode, defaultLandingPage);
+		String navigationNode = JSFDemoUtil.getString(event, paramNavigationNode, defaultLandingPage);
 		setActiveNavigationNode(navigationNode);
 	}
 
 	public void navigationAction(AjaxBehaviorEvent event) {
-		String navigationNode = JSFUtil.getString(event, paramNavigationNode, defaultLandingPage);
+		String navigationNode = JSFDemoUtil.getString(event, paramNavigationNode, defaultLandingPage);
 		setActiveNavigationNode(navigationNode);
 	}
 

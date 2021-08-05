@@ -37,9 +37,9 @@ import io.rd.util.StringFormatUtil;
  * @author Rajesh Gavvala
  * @author Marco Weiland
  */
-public class JSFUtil {
-	private static final Logger log = LoggerFactory.getLogger(JSFUtil.class);
-	private JSFUtil(){}
+public class JSFDemoUtil {
+	private static final Logger log = LoggerFactory.getLogger(JSFDemoUtil.class);
+	private JSFDemoUtil(){}
 
 	/**
 	 * returns the message in the default bundle by the key given by arguments
@@ -70,7 +70,7 @@ public class JSFUtil {
 	}
 
 	private static Optional<String> getReturnVal(String attribute) {
-		ExternalContext externalContext = JSFUtil.getExternalContext();
+		ExternalContext externalContext = JSFDemoUtil.getExternalContext();
 		if(externalContext == null){
 			log.error("Null External Context");
 			return Optional.empty();
@@ -103,7 +103,7 @@ public class JSFUtil {
 
 	public static void addMessage( Severity severity,  String title,  String message) {
 		FacesMessage facesMsg = new FacesMessage(severity, title, message);
-		ExternalContext externalContext = JSFUtil.getExternalContext();
+		ExternalContext externalContext = JSFDemoUtil.getExternalContext();
 		if(externalContext == null) {
 			log.error("Null external context");
 			return;

@@ -16,10 +16,11 @@
 package io.rd.web.impl;
 
 import com.sun.faces.config.InitFacesContext;
-import io.rd.api.OAFAccess;
+
 import io.rd.web.impl.i18n.LocaleManager;
 import io.rd.webapp.AbstractLocaleManager;
-import io.rd.webapp.JSFUtil;
+import io.rd.webapp.JSFDemoUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.*;
  * @author Rajesh Gavvala
  */
 @PowerMockIgnore("javax.management.*")
-@PrepareForTest({FacesContext.class, JSFUtil.class})
+@PrepareForTest({FacesContext.class, JSFDemoUtil.class})
 public class LocalManagerTest {
     @InjectMocks
     LocaleManager localeManager;
@@ -104,7 +105,7 @@ public class LocalManagerTest {
 
     @Test(expected = NullPointerException.class)
     public void timeZoneChangedListener_getClientOffset_exception_test() {
-        when(JSFUtil.getExternalContext().getRequestLocale()).thenReturn(Locale.forLanguageTag("en-US"));
+        when(Objects.requireNonNull(JSFDemoUtil.getExternalContext()).getRequestLocale()).thenReturn(Locale.forLanguageTag("en-US"));
         localeManager.timezoneChangedListener(ajaxBehaviorEvent);
     }
 
