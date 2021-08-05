@@ -45,6 +45,10 @@ import java.io.Serializable;
 public class DemoDataModel extends AbstractManager implements Serializable {
     private static final long serialVersionUID = 6812608123262000035L;
 
+    private static final String URL_CREATE_ENTITY = "pretty:createEntity";
+    private static final String URL_EDIT_ENTITY = "pretty:editEntity";
+    private static final String URL_ENTITY = "pretty:entities";
+
 
     @Inject
     private DemoRESTServiceAccess service;
@@ -120,20 +124,20 @@ public class DemoDataModel extends AbstractManager implements Serializable {
     }
 
     public String createDemo() {
-        return "pretty:createEntity";
+        return URL_CREATE_ENTITY;
     }
 
     public String editDemo() {
         if(selectedDemo != null) {
-            return "pretty:editEntity";
+            return URL_EDIT_ENTITY;
         }
-        return "pretty:entities";
+        return URL_ENTITY;
     }
 
     public String returnHome() {
         demo = new Demo();
         selectedDemo=null;
-        return "pretty:entities";
+        return URL_ENTITY;
     }
 
     public SystemDemo getDemo() {
