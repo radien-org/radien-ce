@@ -25,7 +25,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,8 +41,6 @@ import java.util.stream.Collectors;
 public class RoleFactory {
 
     private static final Logger log = LoggerFactory.getLogger(RoleFactory.class);
-
-    private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
      * Create a role with already predefined fields.
@@ -87,7 +84,7 @@ public class RoleFactory {
         role.setDescription(description);
         if (terminationDateAsString != null) {
             try {
-                role.setTerminationDate(format.parse(terminationDateAsString));
+                role.setTerminationDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(terminationDateAsString));
             } catch (ParseException e) {
                 throw new RuntimeException("Error parsing terminationDate", e);
             }
@@ -118,7 +115,7 @@ public class RoleFactory {
         FactoryUtilService.addValueLong(builder, "createUser", role.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", role.getLastUpdateUser());
         if (role.getTerminationDate() != null) {
-            FactoryUtilService.addValue(builder, "terminationDate", format.format(role.getTerminationDate()));
+            FactoryUtilService.addValue(builder, "terminationDate", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(role.getTerminationDate()));
         }
         log.info("Will begin to create a new json object with the specific values received in the give role" +
                 " ID: {}, Name: {}, Description: {}, Termination Date: {}, Created User: {}", role.getId(), role.getName(),
