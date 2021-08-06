@@ -316,6 +316,7 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
         sc.select(cb.count(root)).
                 where(
+                        cb.equal(root.get(SystemVariables.USER_ID.getFieldName()), userId),
                         cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),
                                 tenantRoleRoot.get(SystemVariables.ID.getFieldName())),
                         cb.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenantId)
