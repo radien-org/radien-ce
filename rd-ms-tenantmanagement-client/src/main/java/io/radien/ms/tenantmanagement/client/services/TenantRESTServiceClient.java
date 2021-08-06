@@ -28,26 +28,25 @@ import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contract REST service requests to the client
  *
  * @author Santana
  */
-@Stateless
+@RequestScoped
 public class TenantRESTServiceClient extends AuthorizationChecker implements TenantRESTServiceAccess {
 	private static final long serialVersionUID = 4007939167636938896L;
 
