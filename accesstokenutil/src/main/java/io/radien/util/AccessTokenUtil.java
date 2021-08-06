@@ -41,12 +41,12 @@ public class AccessTokenUtil {
     }
 
     private static void tenantRoleCreation(String accessToken) {
-        String tenantRoleUrl= host+":8083/rolemanagementservice/v1/tenantrole";
+        String tenantRoleUrl= host+":8080/rolemanagementservice/v1/tenantrole";
         makePostRequest(tenantRoleUrl,"tenantRole1",accessToken,"{\"tenantId\":1, \"roleId\":1}");
         makePostRequest(tenantRoleUrl,"tenantRole2",accessToken,"{\"tenantId\":2, \"roleId\":1}");
         makePostRequest(tenantRoleUrl,"tenantRole3",accessToken,"{\"tenantId\":3, \"roleId\":1}");
 
-        String tenantRolePermissionUrl= host+":8083/rolemanagementservice/v1/tenantrolepermission";
+        String tenantRolePermissionUrl= host+":8080/rolemanagementservice/v1/tenantrolepermission";
         makePostRequest(tenantRolePermissionUrl,"assignPermission1",accessToken,"{\"tenantRoleId\":1, \"permissionId\":1}");
         makePostRequest(tenantRolePermissionUrl,"assignPermission2",accessToken,"{\"tenantRoleId\":1, \"permissionId\":2}");
         makePostRequest(tenantRolePermissionUrl,"assignPermission3",accessToken,"{\"tenantRoleId\":1, \"permissionId\":3}");
@@ -66,7 +66,7 @@ public class AccessTokenUtil {
 
     private static void roleCreation(String accessToken) {
         System.out.println("Starting roles...");
-        String roleUrl= host + ":8083/rolemanagementservice/v1/role";
+        String roleUrl= host + ":8080/rolemanagementservice/v1/role";
         List<String> roles = Arrays.asList(
                 "{ \"name\": \"System Administrator\", \"description\": \"The BOSS!\", \"terminationDate\": \"2030-12-12T00:00:00\" }",
                 "{ \"name\": \"Permission Administrator\", \"description\": \"The Role for Permission Management Testing purposes!\", \"terminationDate\": \"2030-12-12T00:00:00\" }",
@@ -87,7 +87,7 @@ public class AccessTokenUtil {
 
     private static void resourceCreation(String accessToken) {
         System.out.println("Starting resource...");
-        String resourceUrl= host +":8085/permissionmanagementservice/v1/resource";
+        String resourceUrl= host +":8080/permissionmanagementservice/v1/resource";
         String user = "{ \"name\": \"User Management\" }";
         String permission = "{ \"name\": \"Permission Management\" }";
         String role = "{ \"name\": \"Role Management\" }";
@@ -101,7 +101,7 @@ public class AccessTokenUtil {
 
     private static void permissionCreation(String accessToken){
         System.out.println("Start permission...");
-        String permissionUrl = host + ":8085/permissionmanagementservice/v1/permission";
+        String permissionUrl = host + ":8080/permissionmanagementservice/v1/permission";
         String permission1 = "{ \"name\": \"User Management - Create\", \"actionId\": 1, \"resourceId\": 1 }";
         String permission2 = "{ \"name\": \"User Management - Read\", \"actionId\": 2, \"resourceId\": 1 }";
         String permission3 = "{ \"name\": \"User Management - Update\", \"actionId\": 3, \"resourceId\": 1 }";
@@ -114,7 +114,7 @@ public class AccessTokenUtil {
 
     private static void actionCreation(String accessToken) {
         System.out.println("Starting action...");
-        String actionUrl= host +":8085/permissionmanagementservice/v1/action";
+        String actionUrl= host +":8080/permissionmanagementservice/v1/action";
         String action1 ="{ \"name\": \"Create\" }";
         String action2 ="{ \"name\": \"Read\" }";
         String action3 ="{ \"name\": \"Update\" }";
@@ -138,7 +138,7 @@ public class AccessTokenUtil {
         String tenant2 ="{\"tenantKey\": \"EVCorp\", \"name\": \"Client Tenant\", \"tenantType\": \"Client\", \"tenantStart\": \"2030-01-22\", \"tenantEnd\": \"2040-01-22\", \"clientAddress\": \"Sophiestrasse 33\", \"clientZipCode\": \"38118\", \"clientCity\":\"Braunschweig\", \"clientCountry\":\"Germany\", \"clientPhoneNumber\":933876547, \"clientEmail\":\"email@email.com\", \"parentId\":1, \"clientId\":1}";
         String tenant3 ="{\"tenantKey\": \"EVCorp\", \"name\": \"Sub Tenant\", \"tenantType\": \"Sub\", \"tenantStart\": \"2030-01-22\", \"tenantEnd\": \"2040-01-22\", \"parentId\":2, \"clientId\":2}";
 
-        String tenantUrl= host +":8082/tenantmanagementservice/v1/tenant";
+        String tenantUrl= host +":8080/tenantmanagementservice/v1/tenant";
 
         makePostRequest(tenantUrl,"tenant1",accessToken,tenant1);
         makePostRequest(tenantUrl,"tenant2",accessToken,tenant2);

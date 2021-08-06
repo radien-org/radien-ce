@@ -381,7 +381,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             boolean isSameUser = selectedUserToUnAssign.getUserId().equals(webAuthorizationChecker.getCurrentUserId());
             boolean isSameTenant = tenant.getId().equals(activeTenantDataModelManager.getActiveTenant().getTenantId());
 
-            this.tenantRoleUserRESTServiceAccess.unAssignUser(selectedUserToUnAssign.getId());
+            this.tenantRoleUserRESTServiceAccess.delete(selectedUserToUnAssign.getId());
             this.prepareUserDataTable();
             this.selectedUserToUnAssign = new TenantRoleUser();
             handleMessage(FacesMessage.SEVERITY_INFO,

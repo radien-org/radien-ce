@@ -34,8 +34,7 @@ import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonNumber;
@@ -59,8 +58,7 @@ import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
  *
  * @author Newton Carvalho
  */
-@Stateless
-@Default
+@RequestScoped
 public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implements TenantRoleUserRESTServiceAccess {
 
     private static final long serialVersionUID = -3294029074149507760L;
@@ -294,13 +292,13 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      * @throws SystemException in case of any error
      */
     @Override
-    public Boolean unAssignUser(Long tenantRoleUserId) throws SystemException {
+    public Boolean delete(Long tenantRoleUserId) throws SystemException {
         try {
-            return unAssignUserCore(tenantRoleUserId);
+            return deleteCore(tenantRoleUserId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return unAssignUserCore(tenantRoleUserId);
+                return deleteCore(tenantRoleUserId);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -313,7 +311,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      * @return Boolean indicating if operation was concluded successfully
      * @throws SystemException in case of any error
      */
-    private Boolean unAssignUserCore(Long tenantRoleUserId) throws SystemException {
+    private Boolean deleteCore(Long tenantRoleUserId) throws SystemException {
         try {
             TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(
                     oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));

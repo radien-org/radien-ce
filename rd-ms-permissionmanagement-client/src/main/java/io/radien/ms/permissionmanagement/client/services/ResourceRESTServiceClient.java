@@ -25,14 +25,13 @@ import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
-import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
+import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Optional;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -40,16 +39,15 @@ import javax.json.JsonArray;
 import javax.json.JsonReader;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Optional;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation for Rest Service Client regarding Resource domain object
  * @author Newton Carvalho
  */
-@Stateless @Default
+@RequestScoped
 public class ResourceRESTServiceClient extends AuthorizationChecker implements ResourceRESTServiceAccess {
 
 	private static final long serialVersionUID = 9067873232102652213L;

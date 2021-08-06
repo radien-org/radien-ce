@@ -77,5 +77,5 @@ public interface TenantRoleUserRESTServiceAccess {
      * @param tenantRoleUserId identifier that maps a TenantRoleUser entity
      * @throws SystemException in case of any error
      */
-    Boolean unAssignUser(Long tenantRoleUserId) throws SystemException;
+    Boolean delete(Long tenantRoleUserId) throws SystemException;
 }

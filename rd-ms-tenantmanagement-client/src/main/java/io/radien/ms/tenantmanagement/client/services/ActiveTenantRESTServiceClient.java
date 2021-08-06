@@ -27,26 +27,25 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.util.ActiveTenantModelMapper;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Active Tenant REST service requests to the client
  *
  * @author Bruno Gama
  */
-@Stateless
+@RequestScoped
 public class ActiveTenantRESTServiceClient extends AuthorizationChecker implements ActiveTenantRESTServiceAccess {
 	private static final long serialVersionUID = -4351385833751601092L;
 

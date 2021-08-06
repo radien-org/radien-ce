@@ -392,11 +392,11 @@ public class TenantRoleUserRESTServiceClientTest {
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
                 thenReturn(client);
 
-        Boolean result = target.unAssignUser(1L);
+        Boolean result = target.delete(1L);
         assertNotNull(result);
         assertTrue(result);
 
-        result = target.unAssignUser(1L);
+        result = target.delete(1L);
         assertNotNull(result);
         assertFalse(result);
     }
@@ -422,8 +422,8 @@ public class TenantRoleUserRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        assertTrue(target.unAssignUser(1L));
-        SystemException se = assertThrows(SystemException.class, () -> target.unAssignUser(2L));
+        assertTrue(target.delete(1L));
+        SystemException se = assertThrows(SystemException.class, () -> target.delete(2L));
         assertEquals(1, se.getMessages().size());
         assertEquals(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString(), se.getMessages().get(0));
     }
@@ -444,7 +444,7 @@ public class TenantRoleUserRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.unAssignUser(1L);
+        target.delete(1L);
     }
 
 }

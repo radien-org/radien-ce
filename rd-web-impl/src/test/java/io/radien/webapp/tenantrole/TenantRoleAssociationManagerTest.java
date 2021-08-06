@@ -1004,7 +1004,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
         tenantRoleAssociationManager.setSelectedUserToUnAssign(tenantRoleUserToBeDissociated);
 
-        when(tenantRoleUserRESTServiceAccess.unAssignUser(tenantRoleUserToBeDissociated.getId())).
+        when(tenantRoleUserRESTServiceAccess.delete(tenantRoleUserToBeDissociated.getId())).
                 then(i -> Boolean.TRUE);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
@@ -1074,7 +1074,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
 
         Exception e = new RuntimeException("Error (un)assigning user");
-        when(tenantRoleUserRESTServiceAccess.unAssignUser(tenantRoleUser.getId())).
+        when(tenantRoleUserRESTServiceAccess.delete(tenantRoleUser.getId())).
                 thenThrow(e);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
