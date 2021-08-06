@@ -24,8 +24,8 @@ radien User Management Microservice
 * GET Data
   ------
 ### - ___Get user by ID:___
-    curl -H -X GET 'http://localhost:8081/usermanagementservice/v1/user'
-    curl -X GET 'http://localhost:8081/usermanagementservice/v1/user/{id}'
+    curl -H -X GET 'http://localhost:8080/usermanagementservice/v1/user'
+    curl -X GET 'http://localhost:8080/usermanagementservice/v1/user/{id}'
 #
 * POST Data
   ------
@@ -41,7 +41,7 @@ radien User Management Microservice
         "lastUpdateUser": 1,
         "createDate": null,
         "lastUpdate": null
-      }' http://localhost:8081/usermanagementservice/v1/user/{id}
+      }' http://localhost:8080/usermanagementservice/v1/user/{id}
 
 #
 * DELETE Data

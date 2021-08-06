@@ -28,22 +28,20 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import org.apache.cxf.bus.extension.ExtensionException;
-
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
-import java.net.MalformedURLException;
+import org.apache.cxf.bus.extension.ExtensionException;
 
 import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
 
@@ -59,8 +57,7 @@ import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
  *
  * @author Newton Carvalho
  */
-@Stateless
-@Default
+@RequestScoped
 public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implements TenantRoleUserRESTServiceAccess {
 
     private static final long serialVersionUID = -3294029074149507760L;

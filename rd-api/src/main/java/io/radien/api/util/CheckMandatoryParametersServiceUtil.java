@@ -22,13 +22,16 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Default;
+
 /**
  * This class serves as helper class to check any parameters that
  * Those are Mandatory to checkable in any service of the application
  *
  * @author Rajesh Gavvala
  */
-@Stateless
+@RequestScoped
 public class CheckMandatoryParametersServiceUtil implements Serializable {
     private static final long serialVersionUID = 2657613283703586737L;
 
