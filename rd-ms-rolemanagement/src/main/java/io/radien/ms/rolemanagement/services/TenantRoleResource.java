@@ -80,7 +80,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getAll(int pageNo, int pageSize) {
-        log.info("Retrieving TenantRole associations using pagination. Page number {}. Page Size {}}.",
+        log.info("Retrieving TenantRole associations using pagination. Page number {}. Page Size {}.",
                 pageNo, pageSize);
         try {
             return Response.ok().entity(this.tenantRoleBusinessService.getAll(pageNo, pageSize)).build();

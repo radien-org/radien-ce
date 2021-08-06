@@ -25,7 +25,7 @@ import javax.persistence.PersistenceContextType;
  * Contract/tenant management entity holder for the correct persistence unit
  * @author Bruno Gama
  */
-@Stateful
+@Stateful(name = "entityManagerHolderForTenant")
 public class EntityManagerHolder {
 
     @PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)

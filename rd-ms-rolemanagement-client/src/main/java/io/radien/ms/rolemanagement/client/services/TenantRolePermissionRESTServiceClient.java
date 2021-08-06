@@ -30,8 +30,7 @@ import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRolePermissionModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
@@ -49,8 +48,7 @@ import org.apache.cxf.bus.extension.ExtensionException;
  *
  * @author Newton Carvalho
  */
-@Stateless
-@Default
+@RequestScoped
 public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker implements TenantRolePermissionRESTServiceAccess {
 
     @Inject

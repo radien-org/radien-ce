@@ -19,6 +19,7 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
 import io.radien.ms.usermanagement.client.providers.UserMessageBodyWriter;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
+import javax.enterprise.context.RequestScoped;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import javax.ejb.Stateless;
@@ -29,7 +30,8 @@ import java.net.URL;
  * Utility class that produces Rest Clients for User management
  * @author Bruno Gama
  */
-@Stateless
+//@Stateless(name = "userClientServiceUtil")
+@RequestScoped
 public class ClientServiceUtil {
 
     /**

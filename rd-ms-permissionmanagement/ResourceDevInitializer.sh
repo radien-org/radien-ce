@@ -26,9 +26,9 @@ ACCESS_TOKEN=$(curl -L -X POST 'https://idp-int.radien.io/auth/realms/radien/pro
 echo "---> Going to create 4 resources, one for each service"
 
 ## Create the 4 basic resources
-curl -L -X POST 'http://localhost:8085/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "User Management" }'
-curl -L -X POST 'http://localhost:8085/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Permission Management" }'
-curl -L -X POST 'http://localhost:8085/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Role Management" }'
-curl -L -X POST 'http://localhost:8085/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Tenant Management" }'
+curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "User Management" }'
+curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Permission Management" }'
+curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Role Management" }'
+curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/resource' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Tenant Management" }'
 
 echo "-----------------------------------------------------------------------------------------------------------------"
