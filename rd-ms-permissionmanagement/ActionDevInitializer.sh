@@ -30,5 +30,6 @@ curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/action' -H
 curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/action' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Read" }'
 curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/action' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Update" }'
 curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/action' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "Delete" }'
+curl -L -X POST 'http://localhost:8080/permissionmanagementservice/v1/action' -H 'Authorization: Bearer '$ACCESS_TOKEN -H 'Content-Type: application/json' --data-raw '{ "name": "All" }'
 
 echo "-----------------------------------------------------------------------------------------------------------------"

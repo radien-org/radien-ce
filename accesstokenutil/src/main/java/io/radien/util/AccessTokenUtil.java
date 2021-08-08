@@ -210,7 +210,7 @@ public class AccessTokenUtil {
         makePostRequest(permissionUrl,"permission19",accessToken,permission19);
         makePostRequest(permissionUrl,"permission20",accessToken,permission20);
 
-        // Action regarding Resource
+        // Permissions regarding Action
         String permission21 = "{ \"name\": \"Action Management - Create\", \"actionId\": 1, \"resourceId\": 5 }";
         String permission22 = "{ \"name\": \"Action Management - Read\", \"actionId\": 2, \"resourceId\": 5 }";
         String permission23 = "{ \"name\": \"Action Management - Update\", \"actionId\": 3, \"resourceId\": 5 }";
@@ -223,7 +223,7 @@ public class AccessTokenUtil {
         makePostRequest(permissionUrl,"permission24",accessToken,permission24);
         makePostRequest(permissionUrl,"permission25",accessToken,permission25);
 
-        // Tenant regarding Resource
+        // Permissions regarding Tenant
         String permission26 = "{ \"name\": \"Tenant Management - Create\", \"actionId\": 1, \"resourceId\": 6 }";
         String permission27 = "{ \"name\": \"Tenant Management - Read\", \"actionId\": 2, \"resourceId\": 6 }";
         String permission28 = "{ \"name\": \"Tenant Management - Update\", \"actionId\": 3, \"resourceId\": 6 }";
@@ -236,7 +236,7 @@ public class AccessTokenUtil {
         makePostRequest(permissionUrl,"permission29",accessToken,permission29);
         makePostRequest(permissionUrl,"permission30",accessToken,permission30);
 
-        // Tenant Role regarding Resource
+        // Permissions regarding Tenant Role
         String permission31 = "{ \"name\": \"Tenant Role Management - Create\", \"actionId\": 1, \"resourceId\": 7 }";
         String permission32 = "{ \"name\": \"Tenant Role Management - Read\", \"actionId\": 2, \"resourceId\": 7 }";
         String permission33 = "{ \"name\": \"Tenant Role Management - Update\", \"actionId\": 3, \"resourceId\": 7 }";
@@ -249,7 +249,7 @@ public class AccessTokenUtil {
         makePostRequest(permissionUrl,"permission34",accessToken,permission34);
         makePostRequest(permissionUrl,"permission35",accessToken,permission35);
 
-        // Tenant Role Permission regarding Resource
+        // Permissions regarding Tenant Role Permission
         String permission36 = "{ \"name\": \"Tenant Role Permission Management - Create\", \"actionId\": 1, \"resourceId\": 8 }";
         String permission37 = "{ \"name\": \"Tenant Role Permission Management - Read\", \"actionId\": 2, \"resourceId\": 8 }";
         String permission38 = "{ \"name\": \"Tenant Role Permission Management - Update\", \"actionId\": 3, \"resourceId\": 8 }";
@@ -262,7 +262,7 @@ public class AccessTokenUtil {
         makePostRequest(permissionUrl,"permission39",accessToken,permission39);
         makePostRequest(permissionUrl,"permission40",accessToken,permission40);
 
-        // Tenant Role User regarding Resource
+        // Permissions regarding Tenant Role User
         String permission41 = "{ \"name\": \"Tenant Role User Management - Create\", \"actionId\": 1, \"resourceId\": 9 }";
         String permission42 = "{ \"name\": \"Tenant Role User Management - Read\", \"actionId\": 2, \"resourceId\": 9 }";
         String permission43 = "{ \"name\": \"Tenant Role User Management - Update\", \"actionId\": 3, \"resourceId\": 9 }";
