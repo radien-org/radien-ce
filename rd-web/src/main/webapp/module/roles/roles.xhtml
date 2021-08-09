@@ -94,7 +94,8 @@
 					<b:button id="cancel-permission-button" style="float:right;"
 							  onclick="$('.formValidationModalClassPermission').modal('show')"
 							  value="#{msg.cancel}"
-							  iconAwesome="fa-rotate-left">
+							  iconAwesome="fa-rotate-left"
+							  rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}">
 					</b:button>
 
 					<b:modal id="modalPermission"
@@ -113,6 +114,7 @@
 					<b:commandButton style="float:right;"
 									 value="#{msg.save}"
 									 iconAwesome="fa-save"
+									 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"
 									 action="#{rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant}"/>
 				</p:rowExpansion>
 				<br />
@@ -122,7 +124,8 @@
 					  onclick="$('.formValidationModalClassDelete').modal('show')"
 					  value="#{msg.delete}"
 					  icon="trash"
-					  update=":roleManagementTableDiv">
+					  update=":roleManagementTableDiv"
+					  rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}">
 			</b:button>
 
 			<b:modal id="modal"
@@ -143,7 +146,8 @@
 			<b:commandButton value="#{msg.edit}"
 							 tooltip="#{msg.editRecordInformation}"
 							 iconAwesome="fa-edit"
-							 action="#{roleDataModel.editRecords}"/>
+							 action="#{roleDataModel.editRecords}"
+							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
 			<b:commandButton id="refresh" value="#{msg.refreshValues}"
 							 ajax="false"
 							 iconAwesome="fa-refresh"
@@ -151,12 +155,14 @@
 							 tooltip="#{msg.refreshTooltip}"
 							 actionListener="#{roleDataModel.onload}"
 							 immediate="true" update="@form:roleManagementTableDiv"
-							 auto-update="true"/>
+							 auto-update="true"
+							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
 			<b:commandButton value="#{msg.rd_add_role}"
 							 action="role"
 							 iconAwesome="fa-cube"
 							 tooltip="#{msg.create_new_record}"
-							 iconAlign="center"/>
+							 iconAlign="center"
+							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
 		</h:form>
 	</ui:define>
 </ui:composition>
