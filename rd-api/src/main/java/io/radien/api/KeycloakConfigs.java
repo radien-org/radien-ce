@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.config;
+package io.radien.api;
 
 import io.radien.api.SystemProperties;
 
@@ -35,7 +35,9 @@ public enum KeycloakConfigs implements SystemProperties {
     USER_PATH("KEYCLOAK_USER_PATH"),
     RADIEN_CLIENT_ID("SCRIPT_CLIENT_ID_VALUE"),
     RADIEN_SECRET("SCRIPT_CLIENT_SECRET_VALUE"),
-    RADIEN_TOKEN_PATH("REALMS_TOKEN_PATH");
+    RADIEN_TOKEN_PATH("REALMS_TOKEN_PATH"),
+    RADIEN_USERNAME("SCRIPT_USERNAME_VALUE"),
+    RADIEN_PASSWORD("SCRIPT_PASSWORD_VALUE");
 
     private String propKey;
 

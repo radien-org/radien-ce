@@ -1,57 +1,84 @@
+/*
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.util;
 
+import io.radien.api.KeycloakConfigs;
+import io.radien.api.OAFProperties;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
 
+/**
+ * Console application that uses REST Clients to consume the respective endpoints responsible
+ * for creating (initialize) the following entities into the Radien database: Action, Resource, Permission,
+ * Role, Tenant, TenantRole and TenantPermission
+ */
 public class AccessTokenUtil {
 
-    private final static String host = "http://localhost";
+    /**
+     * Method that retrieves a config property
+     * @param propertyKey
+     * @return
+     */
+    public static String getConfigProperty(String propertyKey) {
+        Config config = ConfigProvider.getConfig();
+        return config.getValue(propertyKey, String.class);
+    }
 
-    private final static String ROLE_HOST_PORT_KEY = "role.management.host.port";
-    private final static String PERMISSION_HOST_PORT_KEY = "permission.management.host.port";
-    private final static String TENANT_HOST_PORT_KEY = "tenant.management.host.port";
-
-    private final static String DEFAULT_ROLE_MANAGEMENT_HOST_PORT = host + ":8080";
-    private final static String DEFAULT_PERMISSION_MANAGEMENT_HOST_PORT = host + ":8080";
-    private final static String DEFAULT_TENANT_MANAGEMENT_HOST_PORT = host + ":8080";
-
+    /**
+     * Retrieve the URL that corresponds to Role Management Endpoint
+     * @return String that corresponds to the Role Management URL
+     */
     public static String getRoleManagementBaseURL() {
-        String hostPort = System.getenv(ROLE_HOST_PORT_KEY);
-        if (hostPort == null) {
-            hostPort = DEFAULT_ROLE_MANAGEMENT_HOST_PORT;
-        }
-        return hostPort + "/rolemanagementservice/v1";
+        return getConfigProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT.propKey());
     }
 
+    /**
+     * Retrieve the URL that corresponds to Permission Management Endpoint
+     * @return String that corresponds to the Permission Management URL
+     */
     public static String getPermissionManagementBaseURL() {
-        String hostPort = System.getenv(PERMISSION_HOST_PORT_KEY);
-        if (hostPort == null) {
-            hostPort = DEFAULT_PERMISSION_MANAGEMENT_HOST_PORT;
-        }
-        return hostPort + "/permissionmanagementservice/v1";
+        return getConfigProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT.propKey());
     }
 
+    /**
+     * Retrieve the URL that corresponds to Tenant Management Endpoint
+     * @return String that corresponds to the Tenant Management URL
+     */
     public static String getTenantManagementBaseURL() {
-        String hostPort = System.getenv(TENANT_HOST_PORT_KEY);
-        if (hostPort == null) {
-            hostPort = DEFAULT_TENANT_MANAGEMENT_HOST_PORT;
-        }
-        return hostPort + "/tenantmanagementservice/v1";
+        return getConfigProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT.propKey());
     }
 
-    public static void main(String[] args) {
-        if(args.length < 5) {
-            System.out.println("Usage URL ClientId ClientSecret Username Password");
-            System.exit(1);
-        }
-        String url = args[0];
-        String clientId = args[1];
-        String clientSecret = args[2];
-        String username = args[3];
-        String password = args[4];
+    /**
+     * Method responsible for retrieving an access token generated via Keycloak.
+     * The access token is a crucial parameter to invoke the endpoints (regarding
+     * Tenant, Role, Permission, etc)
+     * @return String that corresponds to the access token
+     */
+    public static String getAccessToken() {
+        String url = getConfigProperty(KeycloakConfigs.IDP_URL.propKey()) +
+                getConfigProperty(KeycloakConfigs.RADIEN_TOKEN_PATH.propKey());
+        String clientId = getConfigProperty(KeycloakConfigs.RADIEN_CLIENT_ID.propKey());
+        String clientSecret = getConfigProperty(KeycloakConfigs.RADIEN_SECRET.propKey());
+        String username = getConfigProperty(KeycloakConfigs.RADIEN_USERNAME.propKey());
+        String password = getConfigProperty(KeycloakConfigs.RADIEN_PASSWORD.propKey());
 
         HttpResponse<HashMap> response = Unirest.post(url)
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -63,7 +90,15 @@ public class AccessTokenUtil {
                 .asObject(HashMap.class);
         String accessToken = (String)response.getBody().get("access_token");
         System.out.println(response.getBody().get("access_token"));
+        return accessToken;
+    }
 
+    /**
+     * Main method that orchestrates all the steps to create Action, Resource, Permission, Tenant, etc
+     * @param args console argument
+     */
+    public static void main(String[] args) {
+        String accessToken = getAccessToken();
         tenantCreation(accessToken);
         actionCreation(accessToken);
         resourceCreation(accessToken);
@@ -72,6 +107,11 @@ public class AccessTokenUtil {
         tenantRoleCreation(accessToken);
     }
 
+    /**
+     * Given a generated Access Token, consumes TenantRole Endpoint to create the first basic
+     * TenantRoles associations.
+     * @param accessToken Access Token generated via KeyCloak
+     */
     private static void tenantRoleCreation(String accessToken) {
         String tenantRoleUrl= getRoleManagementBaseURL() + "/tenantrole";
         makePostRequest(tenantRoleUrl,"tenantRole1",accessToken,"{\"tenantId\":1, \"roleId\":1}");
@@ -90,13 +130,12 @@ public class AccessTokenUtil {
         makePostRequest(String.format(assignPermissionLayout,1,1,1),"assignPermission7",accessToken,"");
         makePostRequest(String.format(assignPermissionLayout,1,2,1),"assignPermission8",accessToken,"");
         makePostRequest(String.format(assignPermissionLayout,1,3,1),"assignPermission9",accessToken,"");
-
-        String assignUserLayout = tenantRoleUrl + "/assign/user/%d/tenant/%d/role/%d";
-        makePostRequest(String.format(assignUserLayout,1,2,1),"assignUser1ToTenantRole2",accessToken,"");
-        makePostRequest(String.format(assignUserLayout,1,1,1),"assignUser1ToTenantRole1",accessToken,"");
-        makePostRequest(String.format(assignUserLayout,1,3,1),"assignUser1ToTenantRole3",accessToken,"");
     }
 
+    /**
+     * Given a generated Access Token, consumes Role Endpoint to create the first basic Roles.
+     * @param accessToken Access Token generated via KeyCloak
+     */
     private static void roleCreation(String accessToken) {
         System.out.println("Starting roles...");
         String roleUrl= getRoleManagementBaseURL() + "/role";
@@ -118,21 +157,16 @@ public class AccessTokenUtil {
         }
     }
 
+    /**
+     * Given a generated Access Token, consumes Resource Endpoint to create the first basic Resources:
+     * User, Roles, Permission, Resource, Action, Tenant, TenantRole, TenantRolePermission and
+     * TenantRoleUser.
+     * @param accessToken Access Token generated via KeyCloak
+     */
     private static void resourceCreation(String accessToken) {
         System.out.println("Starting resource...");
         String resourceUrl= getPermissionManagementBaseURL() + "/resource";
 
-        /**
-         * User
-         * Roles
-         * Permission
-         * Resource
-         * Action
-         * Tenant
-         * TenantRole
-         * TenantRolePermission
-         * TenantRoleUser
-         */
         String user = "{ \"name\": \"User\" }";
         String roles = "{ \"name\": \"Roles\" }";
         String permission = "{ \"name\": \"Permission\" }";
@@ -154,6 +188,10 @@ public class AccessTokenUtil {
         makePostRequest(resourceUrl,"resource tenant role user",accessToken,tenantRoleUser);
     }
 
+    /**
+     * Given a generated Access Token, consumes Permission Endpoint to create the first basic Permissions
+     * @param accessToken Access Token generated via KeyCloak
+     */
     private static void permissionCreation(String accessToken){
         System.out.println("Start permission...");
         String permissionUrl = getPermissionManagementBaseURL() + "/permission";
@@ -276,14 +314,12 @@ public class AccessTokenUtil {
         makePostRequest(permissionUrl,"permission45",accessToken,permission45);
     }
 
+    /**
+     * Given a generated Access Token, consumes Action Endpoint to create the first basic actions:
+     * Create, Read, Update, Delete and All
+     * @param accessToken Access Token generated via KeyCloak
+     */
     private static void actionCreation(String accessToken) {
-        /**
-         * Create
-         * Read
-         * Update
-         * Delete
-         * All
-         */
         System.out.println("Starting action...");
         String actionUrl= getPermissionManagementBaseURL() + "/action";
         String action1 ="{ \"name\": \"Create\" }";
@@ -299,6 +335,11 @@ public class AccessTokenUtil {
         makePostRequest(actionUrl,"action5",accessToken,action5);
     }
 
+    /**
+     * Method that checks response and print status
+     * @param response response to be checked
+     * @param msg status to be print
+     */
     public static void checkResponse(HttpResponse response,String msg){
         if(!response.isSuccess()){
             System.exit(1);
@@ -306,6 +347,10 @@ public class AccessTokenUtil {
         }
     }
 
+    /**
+     * Given a generated Access Token, consumes Tenant Endpoint to create the first basic Tenants
+     * @param accessToken Access Token generated via KeyCloak
+     */
     public static void tenantCreation(String accessToken){
         String tenant1 ="{\"tenantKey\": \"EVCorp\", \"name\": \"Root Tenant\", \"tenantType\": \"Root\", \"tenantStart\": \"2030-01-22\", \"tenantEnd\": \"2040-01-22\"}";
         String tenant2 ="{\"tenantKey\": \"EVCorp\", \"name\": \"Client Tenant\", \"tenantType\": \"Client\", \"tenantStart\": \"2030-01-22\", \"tenantEnd\": \"2040-01-22\", \"clientAddress\": \"Sophiestrasse 33\", \"clientZipCode\": \"38118\", \"clientCity\":\"Braunschweig\", \"clientCountry\":\"Germany\", \"clientPhoneNumber\":933876547, \"clientEmail\":\"email@email.com\", \"parentId\":1, \"clientId\":1}";
@@ -319,6 +364,14 @@ public class AccessTokenUtil {
 
     }
 
+    /**
+     * Core method that invokes a endpoint. It uses a REst client to do that.
+     * @param url endpoint url
+     * @param identifier String that identifies a request
+     * @param accessToken access token generated via KeyCloak
+     * @param body request body
+     * @return HashMap that corresponds to the obtained response
+     */
     public static HashMap makePostRequest(String url,String identifier, String accessToken, String body){
         HttpResponse<HashMap> response = Unirest.post(url)
                 .header("Authorization", "Bearer "+accessToken)
