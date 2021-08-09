@@ -15,8 +15,6 @@
  */
 package io.radien.api;
 
-import io.radien.api.SystemProperties;
-
 /**
  * Keycloak configurations enumerated class
  *
