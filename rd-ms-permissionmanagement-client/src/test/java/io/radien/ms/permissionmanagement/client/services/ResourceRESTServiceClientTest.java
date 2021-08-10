@@ -27,6 +27,7 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
+import java.io.ByteArrayOutputStream;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +51,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
 /**
@@ -98,7 +100,7 @@ public class ResourceRESTServiceClientTest {
 
         Response response = Response.ok(is).build();
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
-        when(resourceClient.getResources(resourceName,true,true)).thenReturn(response);
+        when(resourceClient.getResources(resourceName,null,true,true)).thenReturn(response);
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
         assertEquals(Optional.empty(),target.getResourceByName(resourceName));
     }
@@ -128,7 +130,7 @@ public class ResourceRESTServiceClientTest {
         Response response = Response.ok(is).build();
 
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
-        when(resourceClient.getResources(resourceName,true,true))
+        when(resourceClient.getResources(resourceName,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).
                 thenReturn(resourceClient);
@@ -174,7 +176,7 @@ public class ResourceRESTServiceClientTest {
         Response response = Response.ok(is).build();
 
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
-        when(resourceClient.getResources(resourceName,true,true))
+        when(resourceClient.getResources(resourceName,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
         Optional<SystemResource> result = target.getResourceByName(resourceName);
@@ -201,7 +203,7 @@ public class ResourceRESTServiceClientTest {
     public void testGetResourceByNameProcessingException() throws Exception {
         String resourceName = "resource-1";
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
-        when(resourceClient.getResources(resourceName,true,true))
+        when(resourceClient.getResources(resourceName,null,true,true))
                 .thenThrow(new ProcessingException(testValue));
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).
                 thenReturn(resourceClient);
@@ -415,7 +417,7 @@ public class ResourceRESTServiceClientTest {
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
 
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getResources(anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException(testValue));
+        when(resourceClient.getResources(anyString(), nullable(List.class),anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException(testValue));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn(testValue);
@@ -486,5 +488,125 @@ public class ResourceRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.delete(2L);
+    }
+
+    /**
+     * Test to get multiple resources by a list of ids
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetResourcesByIdsWithResults() throws MalformedURLException, SystemException {
+        Resource resource1 = ResourceFactory.create("p1", null);
+        resource1.setId(1L);
+
+        Resource resource2 = ResourceFactory.create("p2", null);
+        resource2.setId(2L);
+
+        List<Long> ids = Arrays.asList(resource1.getId(), resource2.getId());
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(ResourceFactory.convertToJsonObject(resource1));
+        builder.add(ResourceFactory.convertToJsonObject(resource2));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.getResources(null,ids,true,true)).thenReturn(response);
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+
+        List<? extends SystemResource> outcome = target.getResourcesByIds(ids);
+        assertNotNull(outcome);
+        assertEquals(2, outcome.size());
+    }
+
+    /**
+     * Test to get resources by ids but extension exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetResourcesByIdsExtensionException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        target.getResourcesByIds(new ArrayList());
+    }
+
+    /**
+     * Test to get resources by ids but processing exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetResourcesByIdsProcessingException() throws MalformedURLException, SystemException {
+        List<Long> ids = new ArrayList();
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.getResources(null,ids,true,true))
+                .thenThrow(new ProcessingException("test"));
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        target.getResourcesByIds(ids);
+    }
+
+    /**
+     * Method to attempt to get a list of resources based on their ids but with token expired
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetResourcesByIdsTokenExpiration() throws MalformedURLException, SystemException {
+        List<Long> ids = Arrays.asList(9L, 10L, 11L);
+
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getResources(null,ids,true,true)).thenThrow(new TokenExpiredException("teste"));
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        target.getResourcesByIds(ids);
+    }
+
+    /**
+     * In this scenario the list of resources is retrieved (based on their ids) by reattempt (retry)
+     * after a JWT token expires
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetResourcesByIdsByReattempt() throws MalformedURLException, SystemException {
+        Resource resource3 = ResourceFactory.create("test", null);
+        resource3.setId(999L);
+
+        List<Long> ids = Collections.singletonList(resource3.getId());
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(ResourceFactory.convertToJsonObject(resource3));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getResources(null,ids,true,true)).
+                thenThrow(new TokenExpiredException("test")).
+                thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        List<? extends SystemResource> outcome = target.getResourcesByIds(ids);
+        assertNotNull(outcome);
+        assertEquals(1, outcome.size());
     }
 }

@@ -15,6 +15,7 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
@@ -269,6 +270,15 @@ public class ResourceService implements ResourceServiceAccess {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         } else {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
+        }
+
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = resourceRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
         }
 
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, resourceRoot, global);
