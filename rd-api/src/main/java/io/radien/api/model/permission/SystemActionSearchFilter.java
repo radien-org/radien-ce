@@ -15,12 +15,14 @@
  */
 package io.radien.api.model.permission;
 
+import io.radien.api.search.SystemSearchableByIds;
+
 /**
  * Contract description for actions search filter
  *
  * @author Newton Carvalho
  */
-public interface SystemActionSearchFilter {
+public interface SystemActionSearchFilter extends SystemSearchableByIds {
 
     /**
      * System Action search filter name getter

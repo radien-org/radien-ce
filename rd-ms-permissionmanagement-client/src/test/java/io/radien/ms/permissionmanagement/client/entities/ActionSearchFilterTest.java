@@ -62,11 +62,12 @@ public class ActionSearchFilterTest {
      */
     @Test
     public void testConstructor() {
-        ActionSearchFilter actionSearchFilter = new ActionSearchFilter(act1,true, true);
+        ActionSearchFilter actionSearchFilter = new ActionSearchFilter(act1,null,true, true);
         Assert.assertTrue(actionSearchFilter.isExact());
         Assert.assertTrue(actionSearchFilter.isLogicConjunction());
         Assert.assertNotNull(actionSearchFilter.getName());
         Assert.assertEquals(act1, actionSearchFilter.getName());
+        Assert.assertNull(actionSearchFilter.getIds());
     }
 
 }

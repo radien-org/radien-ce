@@ -178,7 +178,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
             ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
-            Response response = client.getActions(name,true,true);
+            Response response = client.getActions(name,null,true,true);
             List<? extends SystemAction> list = map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -231,6 +231,43 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
             }
         } catch (ProcessingException | MalformedURLException e) {
             throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Calls the requester to retrieve from DB a collection containing actions. The retrieval process will be
+     * based on a list containing action identifiers. In case of JWT expiration, the process will be attempt once more
+     * @param ids list of action identifiers
+     * @return a list of actions found (matching the identifiers)
+     * @throws SystemException in case of any found error
+     */
+    public List<? extends SystemAction> getActionsByIds(List<Long> ids) throws SystemException {
+        try {
+            return getActionsByIdsRequester(ids);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getActionsByIdsRequester(ids);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Retrieves from DB a collection containing actions. The retrieval process will be based on a list of identifiers
+     * @param ids list of identifiers
+     * @throws SystemException in case of any error
+     */
+    private List<? extends SystemAction> getActionsByIdsRequester(List<Long> ids) throws SystemException {
+        try {
+            ActionResourceClient client = clientServiceUtil.getActionResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getActions(null, ids,true, true);
+            return map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
         }
     }
 
