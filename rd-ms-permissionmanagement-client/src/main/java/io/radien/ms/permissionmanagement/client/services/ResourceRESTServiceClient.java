@@ -217,7 +217,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      */
     private List<? extends SystemResource> getResourcesByIdsRequester(List<Long> ids) throws SystemException {
         try {
-            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(oaf.
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
             Response response = client.getResources(null, ids,true, true);
             return map((InputStream) response.getEntity());
