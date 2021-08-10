@@ -16,7 +16,6 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.SystemActionSearchFilter;
-import io.radien.api.search.SearchFilterCriteria;
 import io.radien.api.search.SearchableByIds;
 import java.util.Collection;
 

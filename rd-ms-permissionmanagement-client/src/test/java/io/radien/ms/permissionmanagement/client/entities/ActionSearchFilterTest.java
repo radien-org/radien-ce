@@ -16,7 +16,6 @@
 
 package io.radien.ms.permissionmanagement.client.entities;
 
-import io.radien.api.model.permission.SystemActionSearchFilter;
 import org.junit.Assert;
 import org.junit.Test;
 
