@@ -16,7 +16,6 @@
 
 package io.radien.ms.permissionmanagement.client.entities;
 
-import io.radien.api.model.permission.SystemResourceSearchFilter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -62,7 +61,7 @@ public class ResourceSearchFilterTest {
      */
     @Test
     public void testConstructor() {
-        ResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter(act1,true, true);
+        ResourceSearchFilter resourceSearchFilter = new ResourceSearchFilter(act1,null,true, true);
         Assert.assertTrue(resourceSearchFilter.isExact());
         Assert.assertTrue(resourceSearchFilter.isLogicConjunction());
         Assert.assertNotNull(resourceSearchFilter.getName());

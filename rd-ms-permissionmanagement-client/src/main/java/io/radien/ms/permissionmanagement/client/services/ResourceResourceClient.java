@@ -60,6 +60,7 @@ public interface ResourceResourceClient {
     /**
      * Finds all resources that matches a name
      * @param name resource name
+     * @param ids resource ids to be found
      * @param isExact indicates if the match is for approximated value or not
      * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
      * @return In case of successful operation returns 200 (http status)
@@ -69,6 +70,7 @@ public interface ResourceResourceClient {
     @GET
     @Path("find")
     public Response getResources(@QueryParam("name") String name,
+                                 @QueryParam("ids") List<Long> ids,
                         @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 

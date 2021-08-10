@@ -106,7 +106,7 @@ public class ResourceResourceTest {
      */
     @Test
     public void testGetResourcesBy() {
-        Response response = resourceResource.getResources("resource-name",true,true);
+        Response response = resourceResource.getResources("resource-name",null,true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -116,7 +116,7 @@ public class ResourceResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(resourceServiceAccess).getResources(any());
-        Response response = resourceResource.getResources("resource-name",true,true);
+        Response response = resourceResource.getResources("resource-name",null,true,true);
         assertEquals(500,response.getStatus());
     }
 
