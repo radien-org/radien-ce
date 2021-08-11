@@ -22,12 +22,11 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
 import io.radien.ms.permissionmanagement.model.ActionEntity;
-
+import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Controller implementation responsible for deal with CRUD
@@ -69,17 +68,18 @@ public class ActionResource implements ActionResourceClient {
 	/**
 	 * Finds all actions that matches a name
 	 * @param name action name
+	 * @param ids action ids to be found
 	 * @param isExact indicates if the match is for approximated value or not
 	 * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
 	 * @return In case of successful operation returns 200 (http status)
 	 * and the collection (filled or not).<br>
 	 * Otherwise, in case of operational error, returns 500
 	 */
-	public Response getActions(String name, boolean isExact,
+	public Response getActions(String name, List<Long> ids, boolean isExact,
 							   boolean isLogicalConjunction) {
 
 		try {
-			return Response.ok(actionServiceAccess.getActions(new ActionSearchFilter(name,
+			return Response.ok(actionServiceAccess.getActions(new ActionSearchFilter(name, ids,
 					isExact, isLogicalConjunction))).build();
 		} catch (Exception e) {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);

@@ -106,7 +106,7 @@ public class ActionResourceTest {
      */
     @Test
     public void testGetActionsBy() {
-        Response response = actionResource.getActions("action-name",true,true);
+        Response response = actionResource.getActions("action-name",null,true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -116,7 +116,7 @@ public class ActionResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(actionServiceAccess).getActions(any());
-        Response response = actionResource.getActions("action-name",true,true);
+        Response response = actionResource.getActions("action-name",null,true,true);
         assertEquals(500,response.getStatus());
     }
 
