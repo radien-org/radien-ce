@@ -158,8 +158,9 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	@Override
 	public Response create(ActiveTenant activeTenant) {
 		try {
-            activeTenantServiceAccess.create(new ActiveTenantEntity(activeTenant));
-			return Response.ok(activeTenant.getId()).build();
+			ActiveTenantEntity activeTenantEntity = new ActiveTenantEntity(activeTenant);
+            activeTenantServiceAccess.create(activeTenantEntity);
+			return Response.ok(activeTenantEntity.getId()).build();
 		} catch (ActiveTenantException | UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){

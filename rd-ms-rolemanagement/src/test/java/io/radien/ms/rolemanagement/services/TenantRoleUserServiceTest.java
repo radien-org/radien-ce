@@ -46,7 +46,12 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -507,11 +512,14 @@ public class TenantRoleUserServiceTest {
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role1User1.getTenantRoleId()));
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role2User1.getTenantRoleId()));
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role3User1.getTenantRoleId()));
+        assertFalse(tenantRoleUserServiceAccess.isAssociatedWithTenant(user1, tenant1));
+
 
         // Check if association cannot be found for user2
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role1User2.getTenantRoleId()));
         assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role2User2.getTenantRoleId()));
         assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role3User2.getTenantRoleId()));
+        assertTrue(tenantRoleUserServiceAccess.isAssociatedWithTenant(user2, tenant1));
     }
 
     /**
@@ -542,5 +550,37 @@ public class TenantRoleUserServiceTest {
         } catch (TenantRoleUserException e) {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_EXISTS.toString()));
         }
+    }
+
+    /**
+     * Test for method {@link TenantRoleUserService#isAssociatedWithTenant(Long, Long)}
+     * inferring the behaviour when the expected parameters are not informed (tenant id is null)
+     */
+    @Test
+    public void testIsAssociatedWithTenantWhenTenantIdIsNull() {
+        Long tenantId = 1L, userId = 1L;
+        EJBException e = assertThrows(EJBException.class, () -> tenantRoleUserServiceAccess.isAssociatedWithTenant(
+                userId, null));
+
+        String expectedErrorMsg = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.
+                toString("tenant id");
+        assertNotNull(e.getCause());
+        assertEquals(expectedErrorMsg, e.getCause().getMessage());
+    }
+
+    /**
+     * Test for method {@link TenantRoleUserService#isAssociatedWithTenant(Long, Long)}
+     * inferring the behaviour when the expected parameters are not informed (user id is null)
+     */
+    @Test
+    public void testIsAssociatedWithTenantWhenUserIdIsNull() throws TenantRoleUserException {
+        Long tenantId = 1L;
+        EJBException e = assertThrows(EJBException.class, () -> tenantRoleUserServiceAccess.isAssociatedWithTenant(
+                null, tenantId));
+
+        String expectedErrorMsg = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.
+                toString("user id");
+        assertNotNull(e.getCause());
+        assertEquals(expectedErrorMsg, e.getCause().getMessage());
     }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
@@ -61,8 +62,9 @@ import static java.util.stream.Collectors.toList;
  * @author Nuno Santana
  * @author Marco Weiland
  */
-@Stateless
-@Default
+//@Stateless
+//@Default
+@RequestScoped
 @RegisterProvider(UserResponseExceptionMapper.class)
 public class UserRESTServiceClient extends AuthorizationChecker implements UserRESTServiceAccess {
     private static final long serialVersionUID = -8231324104338674760L;

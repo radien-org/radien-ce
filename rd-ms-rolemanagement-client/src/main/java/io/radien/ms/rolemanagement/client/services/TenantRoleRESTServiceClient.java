@@ -34,20 +34,18 @@ import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import io.radien.ms.rolemanagement.client.util.TenantRoleModelMapper;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tenant Role REST Service Client
@@ -61,8 +59,7 @@ import java.util.Optional;
  *
  * @author Newton Carvalho
  */
-@Stateless
-@Default
+@RequestScoped
 public class TenantRoleRESTServiceClient extends AuthorizationChecker implements TenantRoleRESTServiceAccess {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleRESTServiceClient.class);
