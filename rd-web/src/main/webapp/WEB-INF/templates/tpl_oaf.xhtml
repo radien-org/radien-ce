@@ -91,12 +91,11 @@
 									<f:attribute name="navigationNode" value="tenantroles" />
 								</b:navCommandLink>
 							</b:dropMenu>
-							<b:dropMenu value="#{msg.rd_permissions_menu}" rendered="#{userSession.active}">
-								<b:navCommandLink value="#{msg.rd_permissions}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
-									<f:param name="navigationNode" value="permissions" />
-									<f:attribute name="navigationNode" value="permissions" />
-								</b:navCommandLink>
-							</b:dropMenu>
+							<b:navCommandLink value="#{msg.rd_permissions_menu}" rendered="#{userSession.active}"
+								action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+								<f:param name="navigationNode" value="permissions" />
+								<f:attribute name="navigationNode" value="permissions" />
+							</b:navCommandLink>
 							<b:navCommandLink value="#{msg.rd_tenants_menu}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
 								<f:param name="navigationNode" value="tenants" />
 								<f:attribute name="navigationNode" value="tenants" />
