@@ -65,17 +65,19 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
             userActiveTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUser().getId(), null, null, false);
 
             //choose the already selected active tenant
-            for (SystemActiveTenant actTenant : userActiveTenants) {
-                if(userActiveTenants.size()==1) {
-                    if(!actTenant.getIsTenantActive()) {
-                        actTenant.setIsTenantActive(true);
-                        activeTenantRESTServiceAccess.update(actTenant);
+            if(!userActiveTenants.isEmpty()){
+                for (SystemActiveTenant actTenant : userActiveTenants) {
+                    if(activeTenantValue == null) {
+                        if (!actTenant.getIsTenantActive()) {
+                            actTenant.setIsTenantActive(true);
+                            activeTenantRESTServiceAccess.update(actTenant);
+                        }
+                        activeTenant = actTenant;
+                        activeTenantValue = actTenant.getTenantName();
+                    } else if (actTenant.getIsTenantActive()) {
+                        activeTenant = actTenant;
+                        activeTenantValue = actTenant.getTenantName();
                     }
-                    activeTenant = actTenant;
-                    activeTenantValue = actTenant.getTenantName();
-                } else if (actTenant.getIsTenantActive()) {
-                    activeTenant = actTenant;
-                    activeTenantValue = actTenant.getTenantName();
                 }
             }
         } catch (Exception e) {

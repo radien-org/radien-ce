@@ -69,6 +69,12 @@
 											  action="#{userDataModel.userRoles}"
 											  actionListener="#{userTenantRolesManager.clearAssignableOrUnAssignedRoles}"/>
 
+							<b:navCommandLink value="#{msg.rd_unAssign}"
+											  tooltip="#{msg.rd_select_unAssign_user_activeTenant}"
+											  iconAwesome="fa-remove"
+											  action="#{userDataModel.userUnAssign}"
+											  actionListener="#{unAssignTenantUser.setTenantUserFieldsAsNull}"/>
+
 						</b:dropButton>
 
 						<b:commandButton id="refresh" value="#{msg.refreshValues}"

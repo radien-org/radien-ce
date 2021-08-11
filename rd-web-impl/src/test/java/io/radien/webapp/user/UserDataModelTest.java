@@ -602,4 +602,15 @@ public class UserDataModelTest {
         assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userRoles());
 
     }
+
+    @Test
+    public void testUserUnAssign(){
+        SystemUser user = new User(); user.setId(2L);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USER_UN_ASSIGN_PATH.getValue(), userDataModel.userUnAssign());
+
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userUnAssign());
+
+    }
 }
