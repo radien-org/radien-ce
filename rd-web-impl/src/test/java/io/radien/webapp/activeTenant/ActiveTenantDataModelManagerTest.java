@@ -115,7 +115,7 @@ public class ActiveTenantDataModelManagerTest {
         when(userSession.getUser()).thenReturn(user);
 
         List<SystemActiveTenant> listOfSystemActiveTenants = new ArrayList();
-        listOfSystemActiveTenants.add(ActiveTenantFactory.create(10L, 10L, "test", false));
+        listOfSystemActiveTenants.add(ActiveTenantFactory.create(10L, 10L, "test", true));
 
         doReturn(listOfSystemActiveTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(any(), any(), any(), anyBoolean());
 
@@ -139,6 +139,7 @@ public class ActiveTenantDataModelManagerTest {
 
         doReturn(listOfSystemActiveTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(any(), any(), any(), anyBoolean());
 
+        activeTenantDataModelManager.setActiveTenantValue(null);
         activeTenantDataModelManager.init();
 
         SystemActiveTenant newActiveActiveTenant = ActiveTenantFactory.create(12L, 12L, "test", true);

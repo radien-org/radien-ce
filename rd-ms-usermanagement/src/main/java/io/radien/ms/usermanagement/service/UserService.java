@@ -528,7 +528,7 @@ public class UserService implements UserServiceAccess{
 	private void addNewFoundIssue (Integer index, Map<Integer, DataIssue> map, String issueDescription) {
 		DataIssue di = map.get(index);
 		if (di == null) {
-			di = new DataIssue(index+1, issueDescription);
+			di = new DataIssue(index+1L, issueDescription);
 			map.put(index, di);
 		}
 		else {

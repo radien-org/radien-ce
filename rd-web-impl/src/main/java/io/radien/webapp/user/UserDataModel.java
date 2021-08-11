@@ -295,6 +295,17 @@ public class UserDataModel extends AbstractManager implements Serializable {
         return DataModelEnum.USERS_PATH.getValue();
     }
 
+    /**
+     * Redirects to user unAssign page
+     * when it invoke
+     * @return users HTML page
+     */
+    public String userUnAssign() {
+        if (selectedUser != null) {
+            return DataModelEnum.USER_UN_ASSIGN_PATH.getValue();
+        }
+        return DataModelEnum.USERS_PATH.getValue();
+    }
 
     /**
      * Redirects user to the home page

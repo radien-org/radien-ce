@@ -378,19 +378,19 @@ public class ActionServiceTest {
         actionServiceAccess.save(testById7);
 
         List<? extends SystemAction> actionsAnd = actionServiceAccess.getActions(
-                new ActionSearchFilter("zz",true,true));
+                new ActionSearchFilter("zz",null,true,true));
         assertEquals(1, actionsAnd.size());
 
         List<? extends SystemAction> actionsOr = actionServiceAccess.getActions(
-                new ActionSearchFilter("aa", true,false));
+                new ActionSearchFilter("aa", null,true,false));
         assertEquals(1, actionsOr.size());
 
         List<? extends SystemAction> actionsNotExact = actionServiceAccess.getActions(
-                new ActionSearchFilter("aa", false,true));
+                new ActionSearchFilter("aa", null, false,true));
         assertEquals(4, actionsNotExact.size());
 
         List<? extends SystemAction> actions = actionServiceAccess.getActions(
-                new ActionSearchFilter("aabac", false,false));
+                new ActionSearchFilter("aabac", null, false,false));
 
         assertEquals(2, actions.size());
 
@@ -403,13 +403,36 @@ public class ActionServiceTest {
         assertEquals(2, actions.size());
 
         actions = actionServiceAccess.getActions(
-                new ActionSearchFilter(null, false,true));
+                new ActionSearchFilter(null, null,false,true));
 
         // In necessary to count with the first ever inserted (variable "actionTest")
         assertEquals(8, actions.size());
 
-        actions = actionServiceAccess.getActions(new ActionSearchFilter("xxx", true,true));
+        actions = actionServiceAccess.getActions(new ActionSearchFilter("xxx", null,true,true));
 
         assertEquals(1, actions.size());
+    }
+
+    /**
+     * Test to try to get actions by filtering them by a list of ids
+     * @throws UniquenessConstraintException in case of one or multiple fields with incorrect or invalid data
+     */
+    @Test
+    public void testFilterActionsByListOfIds() throws UniquenessConstraintException {
+        SystemAction testById1 = ActionFactory.create("action-dummy-1", 1L);
+        SystemAction testById2 = ActionFactory.create("action-dummy-2", 1L);
+        SystemAction testById3 = ActionFactory.create("action-dummy-3", 1L);
+        SystemAction testById4 = ActionFactory.create("action-dummy-4", 1L);
+
+        actionServiceAccess.save(testById1);
+        actionServiceAccess.save(testById2);
+        actionServiceAccess.save(testById3);
+        actionServiceAccess.save(testById4);
+
+        List<Long> ids = Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId(), testById4.getId());
+
+        List<? extends SystemAction> filteredActions = actionServiceAccess.getActions(
+                new ActionSearchFilter(null, ids, true, true));
+        assertEquals(4, filteredActions.size());
     }
 }
