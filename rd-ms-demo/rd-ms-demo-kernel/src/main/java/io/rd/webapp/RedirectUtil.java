@@ -78,6 +78,8 @@ public @Model @RequestScoped class RedirectUtil implements RedirectHandler {
 			} catch (IOException e) {
 				log.error("Problem with redirect to " + uri, e);
 			}
+		}else {
+			log.error("Null External Context");
 		}
 		FacesContext fc = JSFDemoUtil.getFacesContext();
 		fc.getApplication().getNavigationHandler().handleNavigation(fc, null, "pretty:"+ url +"?faces-redirect=true");
