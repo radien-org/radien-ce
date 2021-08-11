@@ -66,6 +66,8 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 		if(externalContext != null){
 			Locale requestLocale = externalContext.getRequestLocale();
 			FacesContext.getCurrentInstance().getViewRoot().setLocale(requestLocale);
+		}else {
+			log.error("Null External Context");
 		}
 		String tzOffset = getClientTzOffset();
 		log.info(tzOffset);
