@@ -20,73 +20,68 @@
 					<hr />
 				</h:panelGroup>
 			</b:row>
-			<p:dataTable id="dataTable" value="#{permissionDataModel.lazyModel}"
-						 var="permission"
-						 paginator="true" rows="10"
-						 lazy="true"
-						 paginatorPosition="bottom"
-						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
-						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
-						 rowsPerPageTemplate="5,10,20,50"
-						 styleClass = "tableDesign"
-						 selectionMode="single"
-						 selection="#{permissionDataModel.selectedPermission}">
+		<p:dataTable id="dataTable" value="#{permissionDataModel.lazyModel}"
+					 var="permission"
+					 paginator="true" rows="10"
+					 lazy="true"
+					 paginatorPosition="bottom"
+					 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+					 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+					 rowsPerPageTemplate="5,10,20,50"
+					 styleClass = "tableDesign"
+					 selectionMode="single"
+					 selection="#{permissionDataModel.selectedPermission}">
 
-				<p:ajax event="rowSelect" listener="#{permissionDataModel.onRowSelect}" update="@form:permissionManagementTableDiv"
-						oncomplete="$('.formValidationModalClass').modal('show')"/>
-				<p:column headerText="Id" sortBy="#{permission.id}">
-					<h:outputText value="#{permission.id}"/>
-				</p:column>
+			<p:ajax event="rowSelect" listener="#{permissionDataModel.onRowSelect}" update="@form:permissionManagementTableDiv"
+					oncomplete="$('.formValidationModalClass').modal('show')"/>
+			<p:column headerText="#{msg.id}" sortBy="#{permission.id}">
+				<h:outputText value="#{permission.id}"/>
+			</p:column>
 
-				<p:column headerText="Name">
-					<h:outputText value="#{permission.name}"/>
-				</p:column>
-				<p:column headerText="#{msg.editUpper}">
-					<b:commandButton value="#{msg.edit}"
-									 iconAwesome="fa-function"
-									 iconAlign="center"
-									 action="#{permissionManager.edit(permission)}"/>
-				</p:column>
-			</p:dataTable>
+			<p:column headerText="#{msg.name}">
+				<h:outputText value="#{permission.name}"/>
+			</p:column>
+			<p:column headerText="#{msg.rd_action}">
+				<h:outputText value="#{permissionDataModel.lazyModel.getActionName(permission.actionId)}"/>
+			</p:column>
+			<p:column headerText="#{msg.rd_resource}">
+				<h:outputText value="#{permissionDataModel.lazyModel.getResourceName(permission.resourceId)}"/>
+			</p:column>
 
-			<b:modal title="Selected Permission Details" styleClass="formValidationModalClass"
-					 closable="false" closeOnEscape="true" rendered="#{not empty permissionDataModel.selectedPermission}" auto-update="true">
-				<b:dataTable value="#{permissionDataModel.selectedPermission}"
-							 var="selectedPermission"
-							 widgetVar="tableWidgetVar"
-							 responsive="true"
-							 paginated="false"
-							 searching="false"
-							 scroll-horizontally="true">
-					<b:dataTableColumn value="#{selectedPermission.id}" />
-					<b:dataTableColumn value="#{selectedPermission.name}" />
-					<b:dataTableColumn label="#{msg.editUpper}">
-						<b:commandButton value="#{msg.edit}"
-										 iconAwesome="fa-function"
-										 iconAlign="center"
-										 action="#{permissionManager.edit(selectedPermission)}"/>
-					</b:dataTableColumn>
-				</b:dataTable>
-				<f:facet name="footer">
-					<b:button value="Close" dismiss="modal" />
-				</f:facet>
-			</b:modal>
-		</h:form>
+		</p:dataTable>
 
-		<h:form id="permissionManagementButtons">
-			<b:commandButton id="refresh" value="Refresh Values"
-							 ajax="false"
-							 iconAwesome="fa-refresh"
-							 icon-spin="true"
-							 iconAlign="right"
-							 tooltip="Refresh existent Permission data table!"
-							 actionListener="#{permissionDataModel.onload}"
-							 immediate="true" update="@form:permissionManagementTableDiv"
-							 auto-update="true"/>
-			<b:commandButton value="#{msg.rd_add_permission}"
-							 action="permission"
-							 iconAwesome="fa-user"
-							 iconAlign="center"/>
+		<b:modal id="modal"
+				 title="#{msg.confirmation}"
+				 styleClass="formValidationModalClassDelete"
+				 closable="false"
+				 close-on-escape="false" backdrop="false"
+				 rendered="#{not empty permissionDataModel.selectedPermission}">
+			<p>#{msg.deleteConfirmation}</p>
+			<f:facet name="footer">
+				<b:commandButton value="#{msg.no}" dismiss="modal"/>
+				<b:commandButton value="#{msg.yes}" look="warning"
+								 permissionListener="#{permissionDataModel.delete}"
+								 oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
+			</f:facet>
+		</b:modal>
+
+		<b:commandButton value="#{msg.edit}"
+						 tooltip="#{msg.editRecordInformation}"
+						 iconAwesome="fa-edit"
+						 action="#{permissionDataModel.editRecords}"/>
+		<b:commandButton id="refresh" value="#{msg.refreshValues}"
+						 ajax="false"
+						 iconAwesome="fa-refresh"
+						 icon-spin="true"
+						 tooltip="#{msg.refreshTooltip}"
+						 actionListener="#{permissionDataModel.onload}"
+						 immediate="true" update="@form:permissionManagementTableDiv"
+						 auto-update="true"/>
+		<b:commandButton value="#{msg.rd_add_permission}"
+						 action="permission"
+						 iconAwesome="fa-cube"
+						 tooltip="#{msg.create_new_record}"
+						 iconAlign="center"/>
 		</h:form>
     </ui:define>
 </ui:composition>
