@@ -69,13 +69,15 @@ public @Model @RequestScoped class RedirectUtil implements RedirectHandler {
 	@Override
 	public void redirectTo(String url) {
 		ExternalContext ec = JSFDemoUtil.getExternalContext();
-		assert ec != null;
-		String uri = ec.getRequestContextPath() + url;
-		try {
-			ec.redirect(uri);
-			return;
-		} catch (IOException e) {
-			log.error("Problem with redirect to " + uri, e);
+
+		if(ec != null){
+			String uri = ec.getRequestContextPath() + url;
+			try {
+				ec.redirect(uri);
+				return;
+			} catch (IOException e) {
+				log.error("Problem with redirect to " + uri, e);
+			}
 		}
 		FacesContext fc = JSFDemoUtil.getFacesContext();
 		fc.getApplication().getNavigationHandler().handleNavigation(fc, null, "pretty:"+ url +"?faces-redirect=true");

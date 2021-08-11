@@ -23,6 +23,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Model;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -61,8 +62,11 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 	}
 
 	public void timezoneChangedListener(AjaxBehaviorEvent event) {
-		Locale requestLocale = JSFDemoUtil.getExternalContext().getRequestLocale();
-		FacesContext.getCurrentInstance().getViewRoot().setLocale(requestLocale);
+		ExternalContext externalContext = JSFDemoUtil.getExternalContext();
+		if(externalContext != null){
+			Locale requestLocale = externalContext.getRequestLocale();
+			FacesContext.getCurrentInstance().getViewRoot().setLocale(requestLocale);
+		}
 		String tzOffset = getClientTzOffset();
 		log.info(tzOffset);
 		TimeZone tz = TimeZone.getTimeZone(tzOffset);
