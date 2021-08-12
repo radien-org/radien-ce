@@ -15,6 +15,7 @@
  */
 package io.rd.web.impl.i18n;
 
+import io.rd.webapp.JSFDemoUtil;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -22,6 +23,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Model;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -32,7 +34,6 @@ import javax.inject.Named;
 import io.rd.api.OAFAccess;
 import io.rd.api.webapp.i18n.LocaleManagerAccess;
 import io.rd.webapp.AbstractLocaleManager;
-import io.rd.webapp.JSFUtil;
 
 /**
  * Class responsible for managing the i8n on openappframe resource bundle
@@ -61,8 +62,13 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 	}
 
 	public void timezoneChangedListener(AjaxBehaviorEvent event) {
-		Locale requestLocale = JSFUtil.getExternalContext().getRequestLocale();
-		FacesContext.getCurrentInstance().getViewRoot().setLocale(requestLocale);
+		ExternalContext externalContext = JSFDemoUtil.getExternalContext();
+		if(externalContext != null){
+			Locale requestLocale = externalContext.getRequestLocale();
+			FacesContext.getCurrentInstance().getViewRoot().setLocale(requestLocale);
+		}else {
+			log.error("Null External Context");
+		}
 		String tzOffset = getClientTzOffset();
 		log.info(tzOffset);
 		TimeZone tz = TimeZone.getTimeZone(tzOffset);
