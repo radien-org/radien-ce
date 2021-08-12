@@ -70,6 +70,7 @@ public enum DataModelEnum {
     /**
      * Permission Management
      */
+    PERMISSION_MAIN_PAGE("permissions"),
     PERMISSION_DETAIL_PAGE("permission"),
     PERMISSION_MESSAGE("rd_permission"),
     PERMISSIONS_MESSAGE("rd_permissions"),
@@ -104,6 +105,7 @@ public enum DataModelEnum {
     USERS_DISPATCH_PATH("/module/users"),
     USERS_ROLES_PATH("pretty:userRoles"),
     USER_DELETE_PATH("pretty:userDelete"),
+    USER_UN_ASSIGN_PATH("pretty:userUnAssign"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
     USER_ASSIGNING_TENANT_ERROR("rd_tenant_association_creation_error"),
@@ -148,6 +150,7 @@ public enum DataModelEnum {
     TENANT_RD_TENANT("rd_tenant"),
     TENANT_RD_TENANTS("rd_tenants"),
     TENANT_NOT_FOUND_MESSAGE("rd_tenant_not_found"),
+    ROOT_TENANT("rd_root_tenant_create_edit"),
 
     /**
      * Tenant Management
@@ -193,7 +196,8 @@ public enum DataModelEnum {
     USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS("rd_user_tenant_roles_association_assigned_success"),
     USER_RD_TENANT_ROLE_ASSIGNED_ERROR("rd_user_tenant_roles_association_assigned_error"),
     USER_RD_TENANT_ROLE_UNASSIGNED_SUCCESS("rd_user_tenant_roles_association_unassigned_success"),
-    USER_RD_TENANT_ROLE_UNASSIGNED_ERROR("rd_user_tenant_roles_association_unassigned_error");
+    USER_RD_TENANT_ROLE_UNASSIGNED_ERROR("rd_user_tenant_roles_association_unassigned_error"),
+    USER_RD_ROOT_TENANT_ROLE_ADMINISTRATOR_ACCESS_ERROR("rd_user_root_tenant_role_administrator_access_error");
   
     private String value;
 
