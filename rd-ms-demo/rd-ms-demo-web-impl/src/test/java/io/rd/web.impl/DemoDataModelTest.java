@@ -19,10 +19,8 @@ import io.rd.api.model.SystemDemo;
 import io.rd.api.service.DemoRESTServiceAccess;
 import io.rd.exception.SystemException;
 import io.rd.ms.client.entities.Demo;
-import io.rd.web.impl.AbstractManager;
-import io.rd.web.impl.DemoDataModel;
 
-import io.rd.webapp.JSFUtil;
+import io.rd.webapp.JSFDemoUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,7 +64,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.management.*")
-@PrepareForTest({FacesContext.class, JSFUtil.class})
+@PrepareForTest({FacesContext.class, JSFDemoUtil.class})
 public class DemoDataModelTest extends AbstractManager {
 
     @InjectMocks
@@ -162,7 +160,7 @@ public class DemoDataModelTest extends AbstractManager {
             success = false;
         }
         assertTrue(success);
-        assertEquals("correspondingKeyValue", JSFUtil.getMessage("msg", "save_success"));
+        assertEquals("correspondingKeyValue", JSFDemoUtil.getMessage("msg", "save_success"));
     }
 
     @Test
@@ -178,7 +176,7 @@ public class DemoDataModelTest extends AbstractManager {
             success = false;
         }
         assertTrue(success);
-        assertEquals("correspondingKeyValue", JSFUtil.getMessage("msg", "save_error"));
+        assertEquals("correspondingKeyValue", JSFDemoUtil.getMessage("msg", "save_error"));
     }
 
     @Test
@@ -193,7 +191,7 @@ public class DemoDataModelTest extends AbstractManager {
             success = false;
         }
         assertTrue(success);
-        assertEquals("correspondingKeyValue", JSFUtil.getMessage("msg", "edit_success"));
+        assertEquals("correspondingKeyValue", JSFDemoUtil.getMessage("msg", "edit_success"));
     }
 
     @Test
@@ -209,7 +207,7 @@ public class DemoDataModelTest extends AbstractManager {
             success = false;
         }
         assertTrue(success);
-        assertEquals("correspondingKeyValue", JSFUtil.getMessage("msg", "edit_error"));
+        assertEquals("correspondingKeyValue", JSFDemoUtil.getMessage("msg", "edit_error"));
     }
 
     @Test
@@ -227,7 +225,7 @@ public class DemoDataModelTest extends AbstractManager {
             success = false;
         }
         assertTrue(success);
-        assertEquals("correspondingKeyValue", JSFUtil.getMessage("msg", "delete_success"));
+        assertEquals("correspondingKeyValue", JSFDemoUtil.getMessage("msg", "delete_success"));
     }
 
     @Test
@@ -244,7 +242,7 @@ public class DemoDataModelTest extends AbstractManager {
             success = false;
         }
         assertTrue(success);
-        assertEquals("correspondingKeyValue", JSFUtil.getMessage("msg", "delete_error"));
+        assertEquals("correspondingKeyValue", JSFDemoUtil.getMessage("msg", "delete_error"));
     }
 
 
@@ -283,7 +281,7 @@ public class DemoDataModelTest extends AbstractManager {
     @Test
     public void returnHome_test(){
         Object expected = demoDataModel.getSelectedDemo();
-        assertSame(expected, null);
+        assertSame(null, expected);
         assertFalse(demoDataModel.returnHome().contains("returnHome"));
     }
 
@@ -305,7 +303,7 @@ public class DemoDataModelTest extends AbstractManager {
         when(systemDemoMock.getName()).thenReturn("name-1");
         demoDataModel.onRowSelect(selectEvent);
         FacesMessage msg = new FacesMessage("entity_selected", String.valueOf(selectEvent.getObject()));
-        assertEquals("correspondingKeyValue", JSFUtil.getMessage("msg", String.format("{0}",msg.getDetail())));
+        assertEquals("correspondingKeyValue", JSFDemoUtil.getMessage("msg", String.format("{0}",msg.getDetail())));
     }
 
     @Test

@@ -19,13 +19,10 @@ import io.rd.api.model.SystemDemo;
 import io.rd.api.service.DemoRESTServiceAccess;
 
 import io.rd.ms.client.entities.Demo;
-import io.rd.web.impl.AbstractManager;
-import io.rd.webapp.JSFUtil;
+import io.rd.webapp.JSFDemoUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 
@@ -47,7 +44,11 @@ import java.io.Serializable;
 @SessionScoped
 public class DemoDataModel extends AbstractManager implements Serializable {
     private static final long serialVersionUID = 6812608123262000035L;
-    private static final Logger log = LoggerFactory.getLogger(DemoDataModel.class);
+
+    private static final String URL_CREATE_ENTITY = "pretty:createEntity";
+    private static final String URL_EDIT_ENTITY = "pretty:editEntity";
+    private static final String URL_ENTITY = "pretty:entities";
+
 
     @Inject
     private DemoRESTServiceAccess service;
@@ -93,10 +94,10 @@ public class DemoDataModel extends AbstractManager implements Serializable {
         try{
             if(createDemo != null){
                 service.save(createDemo);
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_save_success"), JSFUtil.getMessage("rd_entity"));
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFDemoUtil.getMessage("rd_save_success"), JSFDemoUtil.getMessage("rd_entity"));
             }
         }catch (Exception e){
-            handleError(e, JSFUtil.getMessage("rd_save_error"), JSFUtil.getMessage("rd_entity"));
+            handleError(e, JSFDemoUtil.getMessage("rd_save_error"), JSFDemoUtil.getMessage("rd_entity"));
         }
     }
 
@@ -104,10 +105,10 @@ public class DemoDataModel extends AbstractManager implements Serializable {
         try{
             if(updateDemo != null){
                 service.save(updateDemo);
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_edit_success"), JSFUtil.getMessage("rd_entity"));
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFDemoUtil.getMessage("rd_edit_success"), JSFDemoUtil.getMessage("rd_entity"));
             }
         }catch (Exception e){
-            handleError(e, JSFUtil.getMessage("rd_edit_error"), JSFUtil.getMessage("rd_entity"));
+            handleError(e, JSFDemoUtil.getMessage("rd_edit_error"), JSFDemoUtil.getMessage("rd_entity"));
         }
     }
 
@@ -115,28 +116,28 @@ public class DemoDataModel extends AbstractManager implements Serializable {
         try{
             if(selectedDemo != null){
                 service.deleteDemo(selectedDemo.getId());
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage("rd_delete_success"), JSFUtil.getMessage("rd_entity"));
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFDemoUtil.getMessage("rd_delete_success"), JSFDemoUtil.getMessage("rd_entity"));
             }
         }catch (Exception e){
-            handleError(e, JSFUtil.getMessage("rd_delete_error"), JSFUtil.getMessage("rd_entity"));
+            handleError(e, JSFDemoUtil.getMessage("rd_delete_error"), JSFDemoUtil.getMessage("rd_entity"));
         }
     }
 
     public String createDemo() {
-        return "pretty:createEntity";
+        return URL_CREATE_ENTITY;
     }
 
     public String editDemo() {
         if(selectedDemo != null) {
-            return "pretty:editEntity";
+            return URL_EDIT_ENTITY;
         }
-        return "pretty:entities";
+        return URL_ENTITY;
     }
 
     public String returnHome() {
         demo = new Demo();
         selectedDemo=null;
-        return "pretty:entities";
+        return URL_ENTITY;
     }
 
     public SystemDemo getDemo() {
