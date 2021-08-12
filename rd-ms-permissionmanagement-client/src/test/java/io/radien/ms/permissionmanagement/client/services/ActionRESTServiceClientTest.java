@@ -27,6 +27,23 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.ms.permissionmanagement.client.util.ActionModelMapper;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,24 +52,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.*;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
 /**
@@ -111,7 +123,7 @@ public class ActionRESTServiceClientTest {
 
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
 
-        when(resourceClient.getActions(a,true,true)).thenReturn(response);
+        when(resourceClient.getActions(a,null,true,true)).thenReturn(response);
 
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
@@ -150,7 +162,7 @@ public class ActionRESTServiceClientTest {
         Response response = Response.ok(is).build();
 
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-        when(resourceClient.getActions(a,true,true))
+        when(resourceClient.getActions(a,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
@@ -193,7 +205,7 @@ public class ActionRESTServiceClientTest {
         Response response = Response.ok(is).build();
 
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-        when(resourceClient.getActions(actionName,true,true))
+        when(resourceClient.getActions(actionName,null,true,true))
                 .thenReturn(response);
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         Optional<SystemAction> result = target.getActionByName(actionName);
@@ -219,7 +231,7 @@ public class ActionRESTServiceClientTest {
     public void testGetActionByNameProcessingException() throws Exception {
         String a = "a";
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-        when(resourceClient.getActions(a,true,true))
+        when(resourceClient.getActions(a,null,true,true))
                 .thenThrow(new ProcessingException("test"));
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
 
@@ -423,7 +435,7 @@ public class ActionRESTServiceClientTest {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
 
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getActions(anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(resourceClient.getActions(anyString(), nullable(List.class),anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -495,5 +507,125 @@ public class ActionRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.delete(2L);
+    }
+
+    /**
+     * Test to get multiple actions by a list of ids
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetActionsByIdsWithResults() throws MalformedURLException, SystemException {
+        Action action1 = ActionFactory.create("p1", null);
+        action1.setId(1L);
+
+        Action action2 = ActionFactory.create("p2", null);
+        action2.setId(2L);
+
+        List<Long> ids = Arrays.asList(action1.getId(), action2.getId());
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(ActionFactory.convertToJsonObject(action1));
+        builder.add(ActionFactory.convertToJsonObject(action2));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(resourceClient.getActions(null,ids,true,true)).thenReturn(response);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+
+        List<? extends SystemAction> outcome = target.getActionsByIds(ids);
+        assertNotNull(outcome);
+        assertEquals(2, outcome.size());
+    }
+
+    /**
+     * Test to get actions by ids but extension exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetActionsByIdsExtensionException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        target.getActionsByIds(new ArrayList());
+    }
+
+    /**
+     * Test to get actions by ids but processing exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetActionsByIdsProcessingException() throws MalformedURLException, SystemException {
+        List<Long> ids = new ArrayList();
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(resourceClient.getActions(null,ids,true,true))
+                .thenThrow(new ProcessingException("test"));
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        target.getActionsByIds(ids);
+    }
+
+    /**
+     * Method to attempt to get a list of actions based on their ids but with token expired
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetActionsByIdsTokenExpiration() throws MalformedURLException, SystemException {
+        List<Long> ids = Arrays.asList(9L, 10L, 11L);
+
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getActions(null,ids,true,true)).thenThrow(new TokenExpiredException("teste"));
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        target.getActionsByIds(ids);
+    }
+
+    /**
+     * In this scenario the list of actions is retrieved (based on their ids) by reattempt (retry)
+     * after a JWT token expires
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetActionsByIdsByReattempt() throws MalformedURLException, SystemException {
+        Action action3 = ActionFactory.create("test", null);
+        action3.setId(999L);
+
+        List<Long> ids = Collections.singletonList(action3.getId());
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        builder.add(ActionFactory.convertToJsonObject(action3));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getActions(null,ids,true,true)).
+                thenThrow(new TokenExpiredException("test")).
+                thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        List<? extends SystemAction> outcome = target.getActionsByIds(ids);
+        assertNotNull(outcome);
+        assertEquals(1, outcome.size());
     }
 }

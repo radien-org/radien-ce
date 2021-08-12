@@ -18,6 +18,7 @@ package io.rd.webapp;
 import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.ExternalContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.HttpServletRequest;
@@ -47,10 +48,14 @@ public abstract class AbstractNavigation implements Serializable {
 
 	@PostConstruct
 	protected void init() {
-
-		HttpServletRequest request = (HttpServletRequest) JSFUtil.getExternalContext()
-				.getRequest();
-		request.getRequestURI();
+		HttpServletRequest request;
+		ExternalContext externalContext = JSFDemoUtil.getExternalContext();
+		if(externalContext != null){
+			request = (HttpServletRequest) externalContext.getRequest();
+			request.getRequestURI();
+		}else {
+			log.error("Null External Context");
+		}
 
 		defaultLandingPage = getOAF().getProperty(OAFProperties.SYS_CFG_DEFAULT_LANDING_PAGE);
 		activeNavigationNode = defaultLandingPage;
@@ -74,12 +79,12 @@ public abstract class AbstractNavigation implements Serializable {
 	}
 
 	public void navigationAction(ActionEvent event) {
-		String navigationNode = JSFUtil.getString(event, paramNavigationNode, defaultLandingPage);
+		String navigationNode = JSFDemoUtil.getString(event, paramNavigationNode, defaultLandingPage);
 		setActiveNavigationNode(navigationNode);
 	}
 
 	public void navigationAction(AjaxBehaviorEvent event) {
-		String navigationNode = JSFUtil.getString(event, paramNavigationNode, defaultLandingPage);
+		String navigationNode = JSFDemoUtil.getString(event, paramNavigationNode, defaultLandingPage);
 		setActiveNavigationNode(navigationNode);
 	}
 

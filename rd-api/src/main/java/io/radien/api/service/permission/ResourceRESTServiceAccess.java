@@ -74,4 +74,13 @@ public interface ResourceRESTServiceAccess extends Appframeable {
      */
     public boolean delete(long resourceId) throws SystemException;
 
+    /**
+     * Retrieves from DB a collection containing resources. The retrieval process will be
+     * based on a list containing identifiers
+     * @param ids list containing resource identifiers
+     * @return a list of resources found using the informed identifiers
+     * @throws SystemException in case of any found error
+     */
+    public List<? extends SystemResource> getResourcesByIds(List<Long> ids) throws SystemException;
+
 }

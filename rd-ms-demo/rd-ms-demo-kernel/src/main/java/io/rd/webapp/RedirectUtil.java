@@ -16,8 +16,6 @@
 package io.rd.webapp;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -70,15 +68,20 @@ public @Model @RequestScoped class RedirectUtil implements RedirectHandler {
 
 	@Override
 	public void redirectTo(String url) {
-		ExternalContext ec = JSFUtil.getExternalContext();
-		String uri = ec.getRequestContextPath() + url;
-		try {
-			ec.redirect(uri);
-			return;
-		} catch (IOException e) {
-			log.error("Problem with redirect to " + uri, e);
+		ExternalContext ec = JSFDemoUtil.getExternalContext();
+
+		if(ec != null){
+			String uri = ec.getRequestContextPath() + url;
+			try {
+				ec.redirect(uri);
+				return;
+			} catch (IOException e) {
+				log.error("Problem with redirect to " + uri, e);
+			}
+		}else {
+			log.error("Null External Context");
 		}
-		FacesContext fc = JSFUtil.getFacesContext();
+		FacesContext fc = JSFDemoUtil.getFacesContext();
 		fc.getApplication().getNavigationHandler().handleNavigation(fc, null, "pretty:"+ url +"?faces-redirect=true");
 	}
 

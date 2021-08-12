@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.config;
 
+import io.radien.api.KeycloakConfigs;
 import junit.framework.TestCase;
 import org.junit.Test;
 
