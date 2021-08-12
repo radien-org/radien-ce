@@ -70,6 +70,7 @@ public enum DataModelEnum {
     /**
      * Permission Management
      */
+    PERMISSION_MAIN_PAGE("permissions"),
     PERMISSION_DETAIL_PAGE("permission"),
     PERMISSION_MESSAGE("rd_permission"),
     PERMISSIONS_MESSAGE("rd_permissions"),
