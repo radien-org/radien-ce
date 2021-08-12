@@ -16,14 +16,15 @@
 package io.radien.ms.permissionmanagement.client.entities;
 
 import io.radien.api.model.permission.SystemResourceSearchFilter;
-import io.radien.api.search.SearchFilterCriteria;
+import io.radien.api.search.SearchableByIds;
+import java.util.Collection;
 
 /**
  * Encapsulates the parameters applied to search for actions
  *
  * @author Newton Carvalho
  */
-public class ResourceSearchFilter extends SearchFilterCriteria implements SystemResourceSearchFilter {
+public class ResourceSearchFilter extends SearchableByIds implements SystemResourceSearchFilter {
 
     private String name;
 
@@ -35,12 +36,14 @@ public class ResourceSearchFilter extends SearchFilterCriteria implements System
     /**
      * Resource search filter constructor
      * @param name to be searched
+     * @param ids to be searched and found
      * @param isExact should the search value match exactly or not
      * @param isLogicConjunction true in case search option is and conjunction
      */
     public ResourceSearchFilter(String name,
+                                Collection<Long> ids,
                                 boolean isExact, boolean isLogicConjunction) {
-        super(isExact, isLogicConjunction);
+        super(ids, isExact, isLogicConjunction);
         this.name = name;
     }
 

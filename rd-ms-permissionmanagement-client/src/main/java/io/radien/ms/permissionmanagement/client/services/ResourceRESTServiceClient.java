@@ -178,7 +178,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
-            Response response = client.getResources(name,true,true);
+            Response response = client.getResources(name,null,true,true);
             List<? extends SystemResource> list = map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -186,6 +186,43 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Calls the requester to retrieve from DB a collection containing resources. The retrieval process will be
+     * based on a list containing resource identifiers. In case of JWT expiration, the process will be attempt once more
+     * @param ids list of resource identifiers
+     * @return a list of resources found (matching the identifiers)
+     * @throws SystemException in case of any found error
+     */
+    public List<? extends SystemResource> getResourcesByIds(List<Long> ids) throws SystemException {
+        try {
+            return getResourcesByIdsRequester(ids);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getResourcesByIdsRequester(ids);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Retrieves from DB a collection containing resources. The retrieval process will be based on a list of identifiers
+     * @param ids list of identifiers
+     * @throws SystemException in case of any error
+     */
+    private List<? extends SystemResource> getResourcesByIdsRequester(List<Long> ids) throws SystemException {
+        try {
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getResources(null, ids,true, true);
+            return map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }
     }
