@@ -18,7 +18,7 @@ package io.radien.ms.usermanagement.service;
 import io.radien.api.SystemProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.ms.usermanagement.config.KeycloakConfigs;
+import io.radien.api.KeycloakConfigs;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.representations.idm.UserRepresentation;
