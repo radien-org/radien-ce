@@ -20,8 +20,7 @@ import io.rd.api.entity.Page;
 import io.rd.api.model.SystemDemo;
 import io.rd.api.service.DemoRESTServiceAccess;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
+import io.rd.exception.SystemException;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -82,10 +81,8 @@ public class LazyDemoDataModel extends LazyDataModel<SystemDemo> {
             datasource = page.getResults();
 
             rowCount = (long)page.getTotalResults();
-        } catch (Exception  e) {
-            log.error("Error trying to load records", e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Error retrieving records", e.getMessage()));
+        } catch (SystemException e) {
+            log.error(e.getMessage(),e);
         }
 
         setRowCount(Math.toIntExact(rowCount));
