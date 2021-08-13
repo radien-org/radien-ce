@@ -227,7 +227,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	@Override
 	public Response create(List<io.radien.ms.usermanagement.client.entities.User> userList) {
 		try {
-			List<UserEntity> users = userList.stream().map(u -> new UserEntity(u)).collect(Collectors.toList());
+			List<UserEntity> users = userList.stream().map(UserEntity::new).collect(Collectors.toList());
 			BatchSummary batchSummary = this.userBusinessService.create(users);
 			return BatchResponse.get(batchSummary);
 		}
