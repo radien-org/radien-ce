@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
+import io.radien.ms.usermanagement.entities.UserEntity;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -28,7 +29,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.util.UserModelMapper;
 
 
@@ -37,7 +37,7 @@ import io.radien.ms.usermanagement.util.UserModelMapper;
  *
  * @author mawe
  */
-public class UserModelMessageBodyWriter implements MessageBodyWriter<User> {
+public class UserModelMessageBodyWriter implements MessageBodyWriter<UserEntity> {
 
 	/**
 	 * Validates if the given received type is a user object
@@ -49,7 +49,7 @@ public class UserModelMessageBodyWriter implements MessageBodyWriter<User> {
 	 */
 	 @Override
 	    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-	        return type.equals(User.class);
+	        return type.equals(UserEntity.class);
 	    }
 
 	/**
@@ -62,7 +62,7 @@ public class UserModelMessageBodyWriter implements MessageBodyWriter<User> {
 	 * @return the number of received objects
 	 */
 	@Override
-	public long getSize(User model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+	public long getSize(UserEntity model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return 0;
 	}
 
@@ -79,7 +79,7 @@ public class UserModelMessageBodyWriter implements MessageBodyWriter<User> {
 	 * implementation if a specific HTTP error response needs to be produced.
 	 */
 	@Override
-	public void writeTo(User model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+	public void writeTo(UserEntity model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
 		JsonWriter jsonWriter = Json.createWriter(entityStream);
 		JsonObject jsonObject = UserModelMapper.map(model);
 		jsonWriter.writeObject(jsonObject);

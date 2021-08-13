@@ -15,7 +15,7 @@
  */
 package io.radien.ms.usermanagement.util;
 
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class UserModelMapperTest extends TestCase {
                 "\"sub\": \"89c760fc-2962-4fe8-ad4d-02e02bc48593\"\n" +
                 "}";
         InputStream in = new ByteArrayInputStream(example.getBytes());
-        User user = UserModelMapper.map(in);
+        UserEntity user = UserModelMapper.map(in);
         assertEquals("a",user.getFirstname());
         assertEquals("b",user.getLastname());
         assertEquals((Long) 28L, user.getId());
@@ -63,7 +63,7 @@ public class UserModelMapperTest extends TestCase {
         String email = "a@b.pt";
         String sub = "e8b54882-97e4-46e5-97c3-a2abd9c3d951";
         Long createdUser = 2L;
-        User user = UserFactory.create(firstName,lastName,logon,sub,email, createdUser);
+        UserEntity user = UserFactory.create(firstName,lastName,logon,sub,email, createdUser);
         JsonObject jsonObject = UserModelMapper.map(user);
 
         assertEquals(user.getFirstname(),jsonObject.getString("firstname"));
@@ -82,7 +82,7 @@ public class UserModelMapperTest extends TestCase {
         String sub = "uuidReallyUnique";
         String email = "a@b.pt";
         Long createdUser = 2L;
-        User user = UserFactory.create(firstName,lastName,logon,sub,email, createdUser);
+        UserEntity user = UserFactory.create(firstName,lastName,logon,sub,email, createdUser);
         JsonArray jsonArray = UserModelMapper.map(Collections.singletonList(user));
         assertEquals(1,jsonArray.size());
         JsonObject jsonObject = jsonArray.getJsonObject(0);

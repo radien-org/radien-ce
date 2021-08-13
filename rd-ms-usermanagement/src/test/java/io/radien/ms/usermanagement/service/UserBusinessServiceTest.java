@@ -270,7 +270,7 @@ public class UserBusinessServiceTest extends TestCase {
 
     @Test
     public void testSaveBatch() {
-        List<io.radien.ms.usermanagement.entities.User> users = new ArrayList<>();
+        List<io.radien.ms.usermanagement.entities.UserEntity> users = new ArrayList<>();
         int numberOfElementsToInsert = 100;
         when(userServiceAccess.create(anyList())).thenReturn(new BatchSummary(numberOfElementsToInsert));
         BatchSummary batchSummary = userServiceAccess.create(users);

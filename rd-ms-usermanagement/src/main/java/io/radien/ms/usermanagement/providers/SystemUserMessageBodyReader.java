@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
+import io.radien.ms.usermanagement.entities.UserEntity;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -27,7 +28,6 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import io.radien.api.model.user.SystemUser;
-import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.util.UserModelMapper;
 
 /**
@@ -49,7 +49,7 @@ public class SystemUserMessageBodyReader implements MessageBodyReader<SystemUser
 	 */
 	@Override
 	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-		return type.equals(User.class);
+		return type.equals(UserEntity.class);
 	}
 
 	/**

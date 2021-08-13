@@ -15,7 +15,7 @@
  */
 package io.radien.ms.usermanagement.legacy;
 
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ import javax.json.JsonObjectBuilder;
 public class UserFactoryTest extends TestCase {
 
     JsonObject json;
-    User user;
+    UserEntity user;
 
     /**
      * Constructor class method were we are going to create the JSON and the user for
@@ -71,7 +71,7 @@ public class UserFactoryTest extends TestCase {
      */
     @Test
     public void testConvert() {
-        User constructedNewUser = UserFactory.convert(json);
+        UserEntity constructedNewUser = UserFactory.convert(json);
 
         assertEquals(user.getId(), constructedNewUser.getId());
         assertEquals(user.getLogon(), constructedNewUser.getLogon());

@@ -17,8 +17,8 @@ package io.radien.ms.usermanagement.legacy;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.usermanagement.entities.User;
 
+import io.radien.ms.usermanagement.entities.UserEntity;
 import javax.enterprise.context.RequestScoped;
 import javax.json.JsonObjectBuilder;
 import javax.json.Json;
@@ -49,8 +49,8 @@ public class UserFactory implements Serializable {
 	 * @param email user email
 	 * @return a User object to be used
 	 */
-	public static User create(String firstname, String lastname, String logon, String sub, String email, Long createdUser) {
-		User u = new User();
+	public static UserEntity create(String firstname, String lastname, String logon, String sub, String email, Long createdUser) {
+		UserEntity u = new UserEntity();
 		u.setFirstname(firstname);
 		u.setLastname(lastname);
 		u.setLogon(logon);
@@ -72,7 +72,7 @@ public class UserFactory implements Serializable {
 	 * @return the SystemUserObject
 	 */
 	//TODO: Complete the object conversion fields missing
-	public static User convert(JsonObject person) {
+	public static UserEntity convert(JsonObject person) {
 		Long id = FactoryUtilService.getLongFromJson("id", person);
 		String logon = FactoryUtilService.getStringFromJson("logon", person);
 		String userEmail = FactoryUtilService.getStringFromJson("userEmail", person);
@@ -82,7 +82,7 @@ public class UserFactory implements Serializable {
 		String lastname = FactoryUtilService.getStringFromJson("lastname",person);
 		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);
 
-		User user = new User();
+		UserEntity user = new UserEntity();
 		user.setId(id);
 		user.setLogon(logon);
 		user.setUserEmail(userEmail);

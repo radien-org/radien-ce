@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
+import io.radien.ms.usermanagement.entities.UserEntity;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -30,7 +31,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import io.radien.ms.usermanagement.entities.User;
 import io.radien.ms.usermanagement.util.UserModelMapper;
 
 /**
@@ -40,7 +40,7 @@ import io.radien.ms.usermanagement.util.UserModelMapper;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class UserModelListMessageBodyWriter implements MessageBodyWriter<List<User>> {
+public class UserModelListMessageBodyWriter implements MessageBodyWriter<List<UserEntity>> {
 
 	/**
 	 * Validates if the given received type is a user object
@@ -65,7 +65,7 @@ public class UserModelListMessageBodyWriter implements MessageBodyWriter<List<Us
 	 * @return the number of received objects
 	 */
 	@Override
-	public long getSize(List<User> t, Class<?> type, Type genericType,
+	public long getSize(List<UserEntity> t, Class<?> type, Type genericType,
 						Annotation[] annotations, MediaType mediaType) {
 		return 0;
 	}
@@ -83,7 +83,7 @@ public class UserModelListMessageBodyWriter implements MessageBodyWriter<List<Us
 	 * implementation if a specific HTTP error response needs to be produced.
 	 */
 	@Override
-	public void writeTo(List<User> t, Class<?> type, Type genericType, Annotation[] annotations,
+	public void writeTo(List<UserEntity> t, Class<?> type, Type genericType, Annotation[] annotations,
 			MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
 			throws WebApplicationException {
       JsonWriter jsonWriter = Json.createWriter(entityStream);

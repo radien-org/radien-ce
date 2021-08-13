@@ -15,7 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class UserModelListMessageBodyWriterTest extends TestCase {
                         "}]";
         UserModelListMessageBodyWriter target = new UserModelListMessageBodyWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        User u = UserFactory.create("a","b","logon","sub","email@server.pt", null);
+        UserEntity u = UserFactory.create("a","b","logon","sub","email@server.pt", null);
         target.writeTo(Collections.singletonList(u),null,null,null,null,null,baos);
         assertEquals(result,baos.toString());
     }
