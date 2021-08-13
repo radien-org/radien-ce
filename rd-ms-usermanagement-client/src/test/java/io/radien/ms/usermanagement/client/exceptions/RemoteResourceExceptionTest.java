@@ -19,14 +19,17 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 /**
- *
+ * Class that aggregates UnitTest cases for {@link RemoteResourceException}
  *
  * @author Rajesh Gavvala
  */
 public class RemoteResourceExceptionTest {
 
+    /**
+     * Test Suite
+     * Remote resource exception
+     */
     @Test
     public void testRemoteResourceException(){
         RemoteResourceException exception = new RemoteResourceException();
