@@ -15,18 +15,20 @@
  */
 package io.radien.ms.usermanagement.entities;
 
-import io.radien.ms.usermanagement.legacy.UserFactory;
+import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.services.UserFactory;
+
 import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.util.Date;
 
-public class UserTest extends TestCase {
+public class UserEntityTest extends TestCase {
 
     User user;
     private final Date terminationDate = new Date();
 
-    public UserTest() {
+    public UserEntityTest() {
         user = UserFactory.create("testFirstName", "testLastname", "logonTest",
                 "89f43c61-3ea5-4d8a-b08b-3a437eaed84e", "emailtest@emailtest.pt", 3L);
         user.setId(2L);

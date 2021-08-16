@@ -15,6 +15,8 @@
  */
 package io.radien.ms.usermanagement.entities;
 
+import io.radien.ms.usermanagement.client.entities.User;
+
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -24,7 +26,6 @@ import javax.persistence.TableGenerator;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Column;
 import javax.persistence.GenerationType;
-
 /**
  * JPA entity representing a user in the open appframe system
  *
@@ -32,20 +33,20 @@ import javax.persistence.GenerationType;
  */
 @Entity
 @Table(name = "USR01")
-public class User extends io.radien.ms.usermanagement.client.entities.User {
+public class UserEntity extends io.radien.ms.usermanagement.client.entities.User {
 
 	private static final long serialVersionUID = -3532886874455311100L;
 
 	/**
 	 * User entity empty constructor
 	 */
-	public User(){ }
+	public UserEntity(){ }
 
 	/**
 	 * User entity constructor
-	 * @param user {@link io.radien.ms.usermanagement.client.entities.User} to be used/created
+	 * @param user {@link User} to be used/created
 	 */
-	public User(io.radien.ms.usermanagement.client.entities.User user){
+	public UserEntity(User user){
 		super(user);
 	}
 

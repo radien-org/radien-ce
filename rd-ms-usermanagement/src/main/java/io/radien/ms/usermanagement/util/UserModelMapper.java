@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.util;
 
+import io.radien.ms.usermanagement.entities.UserEntity;
 import java.io.InputStream;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import io.radien.ms.usermanagement.entities.User;
+
 import io.radien.ms.usermanagement.legacy.UserFactory;
 
 /**
@@ -33,13 +34,14 @@ import io.radien.ms.usermanagement.legacy.UserFactory;
  */
 public class UserModelMapper {
 
+    private UserModelMapper(){}
 
     /**
      * Maps one user information into a Json Object
      * @param model user object to be converted
      * @return json object with the given user information
      */
-    public static JsonObject map(User model) {
+    public static JsonObject map(UserEntity model) {
         return UserFactory.convertToJsonObject(model);
     }
 
@@ -48,7 +50,7 @@ public class UserModelMapper {
      * @param models list of users to be converted
      * @return a json array with all the given list information
      */
-    public static JsonArray map(List<User> models) {
+    public static JsonArray map(List<UserEntity> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
             JsonObject jsonObject = map(model);
@@ -62,7 +64,7 @@ public class UserModelMapper {
      * @param is to be mapped
      * @return the converted and mapped user
      */
-    public static User map(InputStream is) {
+    public static UserEntity map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
 

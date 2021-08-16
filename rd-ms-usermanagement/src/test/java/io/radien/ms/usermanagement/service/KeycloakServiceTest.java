@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.*;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -55,7 +55,7 @@ public class KeycloakServiceTest extends TestCase {
         doNothing().when(client).sendUpdatePasswordEmail(any());
 
         String firstName = "a";
-        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
+        UserEntity u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
         String sub = target.createUser(u);
 
         assertEquals("", sub);
@@ -72,7 +72,7 @@ public class KeycloakServiceTest extends TestCase {
         doNothing().when(client).deleteUser(any());
 
         String firstName = "a";
-        User u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
+        UserEntity u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
 
         boolean success = false;
 
