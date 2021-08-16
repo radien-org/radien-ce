@@ -15,19 +15,17 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import io.radien.webapp.tenantrole.LazyTenantRoleUserDataModel;
+import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import javax.faces.application.FacesMessage;
@@ -295,16 +293,6 @@ public class UserDataModelTest {
     }
 
     /**
-     * Test for method {@link UserDataModel#getSelectedTenantRoleUser()}
-     */
-    @Test
-    public void testGetSelectedTenantRoleUser() {
-        TenantRoleUser tru = new TenantRoleUser();
-        userDataModel.setSelectedTenantRoleUser(tru);
-        assertEquals(tru, userDataModel.getSelectedTenantRoleUser());
-    }
-
-    /**
      * Test for method {@link UserDataModel#getHasUserAdministratorRoleAccess()}
      */
     @Test
@@ -320,8 +308,8 @@ public class UserDataModelTest {
     public void testGetLazyUserDataModel() {
         userDataModel.setService(mock(UserRESTServiceAccess.class));
         TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess = mock(TenantRoleUserRESTServiceAccess.class);
-        LazyDataModel<? extends SystemTenantRoleUser> lazyUserDataModel =
-                new LazyTenantRoleUserDataModel(tenantRoleUserRESTServiceAccess, userDataModel.getService());
+        LazyDataModel<? extends SystemUser> lazyUserDataModel =
+                new LazyTenantingUserDataModel(tenantRoleUserRESTServiceAccess, userDataModel.getService());
         userDataModel.setLazyUserDataModel(lazyUserDataModel);
         assertEquals(lazyUserDataModel, userDataModel.getLazyUserDataModel());
     }
@@ -340,7 +328,7 @@ public class UserDataModelTest {
 
         userDataModel.init();
 
-        assertEquals(activeTenant.getTenantId(), ((LazyTenantRoleUserDataModel) userDataModel.
+        assertEquals(activeTenant.getTenantId(), ((LazyTenantingUserDataModel) userDataModel.
                 getLazyUserDataModel()).getTenantId());
     }
 
@@ -396,7 +384,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testCreateRecord() {
-        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.createRecord());
+        assertEquals(DataModelEnum.USER_PATH.getValue(), userDataModel.createRecord());
         assertNotNull(userDataModel.getUser());
         assertTrue(userDataModel.getUser().isEnabled());
     }
@@ -413,18 +401,27 @@ public class UserDataModelTest {
     }
 
     /**
+     * Test for method {@link UserDataModel#deleteRecord()}
+     */
+    @Test
+    public void testDeleteRecord(){
+        userDataModel.setSelectedUser(new User());
+        assertEquals(DataModelEnum.USER_DELETE_PATH.getValue(), userDataModel.deleteRecord());
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.deleteRecord());
+    }
+
+    /**
      * Test for method {@link UserDataModel#onRowSelect(SelectEvent)}
      */
     @Test
     public void testOnRowSelect() {
         Long userId = 1L;
         User user = new User(); user.setId(userId);
-        TenantRoleUser tenantRoleUser = new TenantRoleUser(); tenantRoleUser.setUserId(user.getId());
-        SelectEvent<SystemTenantRoleUser> event = mock(SelectEvent.class);
-        when(event.getObject()).thenReturn(tenantRoleUser);
-        LazyTenantRoleUserDataModel lazyTenantRoleUserDataModel = mock(LazyTenantRoleUserDataModel.class);
-        when(lazyTenantRoleUserDataModel.getUser(userId)).thenReturn(user);
-        userDataModel.setLazyUserDataModel(lazyTenantRoleUserDataModel);
+        SelectEvent<SystemUser> event = mock(SelectEvent.class);
+        when(event.getObject()).thenReturn(user);
+        LazyTenantingUserDataModel LazyTenantingUserDataModel = mock(LazyTenantingUserDataModel.class);
+        userDataModel.setLazyUserDataModel(LazyTenantingUserDataModel);
 
         userDataModel.onRowSelect(event);
 
@@ -602,7 +599,18 @@ public class UserDataModelTest {
         assertEquals(DataModelEnum.USERS_ROLES_PATH.getValue(), userDataModel.userRoles());
 
         userDataModel.setSelectedUser(null);
-        assertEquals(DataModelEnum.PRETTY_USER.getValue(), userDataModel.userRoles());
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userRoles());
+
+    }
+
+    @Test
+    public void testUserUnAssign(){
+        SystemUser user = new User(); user.setId(2L);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USER_UN_ASSIGN_PATH.getValue(), userDataModel.userUnAssign());
+
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userUnAssign());
 
     }
 }

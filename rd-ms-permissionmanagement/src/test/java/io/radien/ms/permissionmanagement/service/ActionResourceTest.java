@@ -18,7 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -85,7 +85,7 @@ public class ActionResourceTest {
      */
     @Test
     public void testGetById() throws ActionNotFoundException {
-        when(actionServiceAccess.get(1L)).thenReturn(new Action());
+        when(actionServiceAccess.get(1L)).thenReturn(new ActionEntity());
         Response response = actionResource.getById(1L);
         assertEquals(200,response.getStatus());
     }
@@ -106,7 +106,7 @@ public class ActionResourceTest {
      */
     @Test
     public void testGetActionsBy() {
-        Response response = actionResource.getActions("action-name",true,true);
+        Response response = actionResource.getActions("action-name",null,true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -116,7 +116,7 @@ public class ActionResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(actionServiceAccess).getActions(any());
-        Response response = actionResource.getActions("action-name",true,true);
+        Response response = actionResource.getActions("action-name",null,true,true);
         assertEquals(500,response.getStatus());
     }
 

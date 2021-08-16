@@ -15,7 +15,7 @@
  */
 package io.radien.ms.rolemanagement.providers;
 
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import io.radien.ms.rolemanagement.util.RoleModelMapper;
 
 import javax.json.Json;
@@ -34,7 +34,7 @@ import java.lang.reflect.Type;
  *
  * @author Bruno Gama
  */
-public class RoleModelMessageBodyWriter implements MessageBodyWriter<Role> {
+public class RoleModelMessageBodyWriter implements MessageBodyWriter<RoleEntity> {
 
     /**
      * Validates if the given received type is a role object
@@ -46,7 +46,7 @@ public class RoleModelMessageBodyWriter implements MessageBodyWriter<Role> {
      */
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(Role.class);
+        return type.equals(RoleEntity.class);
     }
 
     /**
@@ -59,7 +59,7 @@ public class RoleModelMessageBodyWriter implements MessageBodyWriter<Role> {
      * @return the number of received objects
      */
     @Override
-    public long getSize(Role role, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(RoleEntity role, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return 0;
     }
 
@@ -76,7 +76,7 @@ public class RoleModelMessageBodyWriter implements MessageBodyWriter<Role> {
      * implementation if a specific HTTP error response needs to be produced.
      */
     @Override
-    public void writeTo(Role role, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws WebApplicationException {
+    public void writeTo(RoleEntity role, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws WebApplicationException {
         JsonWriter jsonWriter = Json.createWriter(entityStream);
         JsonObject jsonObject = RoleModelMapper.map(role);
         jsonWriter.writeObject(jsonObject);

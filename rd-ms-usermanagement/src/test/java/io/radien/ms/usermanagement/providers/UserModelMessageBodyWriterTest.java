@@ -15,7 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class UserModelMessageBodyWriterTest extends TestCase {
     @Test
     public void testIsWriteable() {
         UserModelMessageBodyWriter target = new UserModelMessageBodyWriter();
-        assertTrue(target.isWriteable(User.class,null,null,null));
+        assertTrue(target.isWriteable(UserEntity.class,null,null,null));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class UserModelMessageBodyWriterTest extends TestCase {
                 "\"enabled\":true" +
                 "}";
         UserModelMessageBodyWriter target = new UserModelMessageBodyWriter();
-        User user = UserFactory.create("a","b","logon","sub","email@server.pt", null);
+        UserEntity user = UserFactory.create("a","b","logon","sub","email@server.pt", null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(user,null,null,null, null,null, baos);
 

@@ -15,13 +15,10 @@
  */
 package io.radien.ms.rolemanagement.client.util;
 
-import io.radien.ms.rolemanagement.client.exception.LinkedAuthorizationResponseExceptionMapper;
 import io.radien.ms.rolemanagement.client.exception.RoleResponseExceptionMapper;
-import io.radien.ms.rolemanagement.client.providers.LinkedAuthorizationMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.RoleMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.TenantRoleMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.TenantRoleUserMessageBodyWriter;
-import io.radien.ms.rolemanagement.client.services.LinkedAuthorizationResourceClient;
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
@@ -55,24 +52,6 @@ public class ClientServiceUtil {
                 .register(RoleMessageBodyWriter.class)
                 .build(RoleResourceClient.class);
     }
-
-    /**
-     * Communication requester constructor for the linked authorization side
-     * @param urlStr linked authorization resource client URL
-     * @return a Linked Authorization Resource Client that can perform multiple requests and
-     * with the correct exceptions, mappers an message writers
-     * @throws MalformedURLException in case of error in the given URL or communication cannot be performed
-     */
-    public LinkedAuthorizationResourceClient getLinkedAuthorizationResourceClient(String urlStr) throws MalformedURLException {
-        URL url = new URL(urlStr);
-        return RestClientBuilder.
-                newBuilder()
-                .baseUrl(url)
-                .register(LinkedAuthorizationResponseExceptionMapper.class)
-                .register(LinkedAuthorizationMessageBodyWriter.class)
-                .build(LinkedAuthorizationResourceClient.class);
-    }
-
 
     /**
      * Communication requester constructor for the tenant role side

@@ -25,14 +25,13 @@ import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
-import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
 import io.radien.ms.permissionmanagement.client.util.ClientServiceUtil;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
+import io.radien.ms.permissionmanagement.client.util.ResourceModelMapper;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Optional;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -40,16 +39,15 @@ import javax.json.JsonArray;
 import javax.json.JsonReader;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Optional;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation for Rest Service Client regarding Resource domain object
  * @author Newton Carvalho
  */
-@Stateless @Default
+@RequestScoped
 public class ResourceRESTServiceClient extends AuthorizationChecker implements ResourceRESTServiceAccess {
 
 	private static final long serialVersionUID = 9067873232102652213L;
@@ -180,7 +178,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
             ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
-            Response response = client.getResources(name,true,true);
+            Response response = client.getResources(name,null,true,true);
             List<? extends SystemResource> list = map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
@@ -188,6 +186,43 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
                 return Optional.empty();
             }
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Calls the requester to retrieve from DB a collection containing resources. The retrieval process will be
+     * based on a list containing resource identifiers. In case of JWT expiration, the process will be attempt once more
+     * @param ids list of resource identifiers
+     * @return a list of resources found (matching the identifiers)
+     * @throws SystemException in case of any found error
+     */
+    public List<? extends SystemResource> getResourcesByIds(List<Long> ids) throws SystemException {
+        try {
+            return getResourcesByIdsRequester(ids);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getResourcesByIdsRequester(ids);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Retrieves from DB a collection containing resources. The retrieval process will be based on a list of identifiers
+     * @param ids list of identifiers
+     * @throws SystemException in case of any error
+     */
+    private List<? extends SystemResource> getResourcesByIdsRequester(List<Long> ids) throws SystemException {
+        try {
+            ResourceResourceClient client = clientServiceUtil.getResourceResourceClient(getOAF().
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getResources(null, ids,true, true);
+            return map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }
     }

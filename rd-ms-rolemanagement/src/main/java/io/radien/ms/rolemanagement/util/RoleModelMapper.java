@@ -15,7 +15,7 @@
  */
 package io.radien.ms.rolemanagement.util;
 
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
 
 import javax.json.JsonObject;
@@ -42,7 +42,7 @@ public class RoleModelMapper {
      * @param model role that has the information to be converted
      * @return a json object created based the role
      */
-    public static JsonObject map(Role model) {
+    public static JsonObject map(RoleEntity model) {
         return RoleFactory.convertToJsonObject(model);
     }
 
@@ -51,7 +51,7 @@ public class RoleModelMapper {
      * @param models role that have the information to be converted
      * @return a json array created based on the multiple roles
      */
-    public static JsonArray map(List<Role> models) {
+    public static JsonArray map(List<RoleEntity> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
             JsonObject jsonObject = map(model);
@@ -65,7 +65,7 @@ public class RoleModelMapper {
      * @param is inputted information to be converted into the object
      * @return a role object based in the received information
      */
-    public static Role map(InputStream is) {
+    public static RoleEntity map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
 

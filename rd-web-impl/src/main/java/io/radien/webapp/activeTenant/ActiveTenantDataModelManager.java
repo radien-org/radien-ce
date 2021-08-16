@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.activeTenant;
 
+import com.ocpsoft.pretty.PrettyContext;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.exception.SystemException;
@@ -64,17 +65,19 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
             userActiveTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUser().getId(), null, null, false);
 
             //choose the already selected active tenant
-            for (SystemActiveTenant actTenant : userActiveTenants) {
-                if(userActiveTenants.size()==1) {
-                    if(!actTenant.getIsTenantActive()) {
-                        actTenant.setIsTenantActive(true);
-                        activeTenantRESTServiceAccess.update(actTenant);
+            if(!userActiveTenants.isEmpty()){
+                for (SystemActiveTenant actTenant : userActiveTenants) {
+                    if(activeTenantValue == null) {
+                        if (!actTenant.getIsTenantActive()) {
+                            actTenant.setIsTenantActive(true);
+                            activeTenantRESTServiceAccess.update(actTenant);
+                        }
+                        activeTenant = actTenant;
+                        activeTenantValue = actTenant.getTenantName();
+                    } else if (actTenant.getIsTenantActive()) {
+                        activeTenant = actTenant;
+                        activeTenantValue = actTenant.getTenantName();
                     }
-                    activeTenant = actTenant;
-                    activeTenantValue = actTenant.getTenantName();
-                } else if (actTenant.getIsTenantActive()) {
-                    activeTenant = actTenant;
-                    activeTenantValue = actTenant.getTenantName();
                 }
             }
         } catch (Exception e) {
@@ -88,12 +91,13 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      */
     public List<String> getUserTenants() {
         List<String> actTenantNames = new ArrayList<>();
-        for(SystemActiveTenant actTenant : userActiveTenants) {
-            actTenantNames.add(actTenant.getTenantName());
+        if (userActiveTenants != null) {
+            for (SystemActiveTenant actTenant : userActiveTenants) {
+                actTenantNames.add(actTenant.getTenantName());
+            }
+
+            actTenantNames.sort(Comparator.comparing(String::toString));
         }
-
-        actTenantNames.sort(Comparator.comparing(String::toString));
-
         return actTenantNames;
     }
 
@@ -128,12 +132,30 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                 }
                 //then we check if it still exists the association for the user if so then...
                 validateCorrectTenantAndActivateItToUser(valueChange);
-                redirectToHomePage();
+                //check if we are at users listing screen
+                if (isOnUsersListingScreen()) {
+                    redirectToPage(DataModelEnum.USERS_DISPATCH_PATH.getValue());
+                } else {
+                    redirectToHomePage();
+                }
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantValue);
             }
         } catch (Exception exception) {
             handleError(exception, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()));
         }
+    }
+
+    /**
+     * Before redirect to home page, this method allows to know if the current view
+     * corresponds to the users listing screen.
+     * If does, redirection to HOME page should not happen, the navigation should
+     * be redirect to the USERS LISTING page.
+     *
+     * @return true if view corresponds to the users listing screen, otherwise false
+     */
+    protected boolean isOnUsersListingScreen() {
+        String viewId = "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
+        return viewId.equals(DataModelEnum.USERS_PATH.getValue());
     }
 
     /**

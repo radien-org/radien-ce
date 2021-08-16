@@ -24,6 +24,8 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -53,6 +55,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -198,6 +201,114 @@ public class TenantRoleRESTServiceClientTest {
 
         target.getTenantRoleById(1L);
     }
+
+    /**
+     * Test the get id method for a given tenant and role identifier
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetIdByTenantRole() throws MalformedURLException, SystemException {
+        Response response = Response.ok(1L).build();
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(client.getIdByTenantRole(1L,1L)).thenReturn(response);
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Optional<Long> result = target.getIdByTenantRole(1L,1L);
+
+        assertNotNull(result);
+        assertTrue(result.isPresent());
+    }
+
+    /**
+     * Test the get id method for a given tenant and role identifier
+     * (But for a scenario/situation where the id could not be found)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetIdByTenantRoleWithNotFoundException() throws MalformedURLException, SystemException {
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(client.getIdByTenantRole(1L,1L)).thenThrow(new NotFoundException());
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Optional<Long> result = target.getIdByTenantRole(1L,1L);
+
+        assertNotNull(result);
+        assertFalse(result.isPresent());
+    }
+
+    /**
+     * Test the get id method for a given tenant and role identifier
+     * (But for a scenario/situation where token expired exception occurs)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetIdByTenantRoleWithTokenExpiredException() throws MalformedURLException, SystemException {
+
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        when(client.getIdByTenantRole(1L,1L)).
+                thenThrow(TokenExpiredException.class).
+                thenReturn(Response.ok(1L).build()).
+                thenThrow(TokenExpiredException.class).
+                thenThrow(TokenExpiredException.class);
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Optional<Long> result = target.getIdByTenantRole(1L,1L);
+
+        assertNotNull(result);
+        assertTrue(result.isPresent());
+
+        SystemException se = assertThrows(SystemException.class, ()-> target.getIdByTenantRole(1L,1L));
+        assertNotNull(se.getMessages());
+        assertEquals(1, se.getMessages().size());
+        assertEquals(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString(), se.getMessages().get(0));
+    }
+
+
+    /**
+     * Test the get id method for a given tenant and role identifier
+     * (But for a scenario/situation where some diffente exception occurs in the middle of the process)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetIdByTenantRoleWithException() throws MalformedURLException, SystemException {
+        String expectedErrorMsg = "error";
+        Exception thrownException = new ProcessingException(expectedErrorMsg);
+        String expectedWrappedExceptionMsg = String.format("wrapped exception: %s with message: %s",
+                thrownException.getClass().getName(), expectedErrorMsg);
+
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        when(client.getIdByTenantRole(1L,1L)).
+                thenThrow(new ProcessingException(expectedErrorMsg));
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        SystemException se = assertThrows(SystemException.class, ()-> target.getIdByTenantRole(1L,1L));
+        assertNotNull(se.getMessages());
+        assertEquals(1, se.getMessages().size());
+        assertEquals(expectedWrappedExceptionMsg, se.getMessages().get(0));
+    }
+
 
     /**
      * Method to test saving the association tenant role

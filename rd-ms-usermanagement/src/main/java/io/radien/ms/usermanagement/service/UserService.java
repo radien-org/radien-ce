@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.ms.usermanagement.entities.UserEntity;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -51,7 +52,6 @@ import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
-import io.radien.ms.usermanagement.entities.User;
 
 import java.util.stream.IntStream;
 
@@ -80,7 +80,7 @@ public class UserService implements UserServiceAccess{
 		if (userSub == null || userSub.trim().length() == 0) {
 			throw new IllegalArgumentException(GenericErrorCodeMessage.USER_FIELD_MANDATORY.toString("user subject"));
 		}
-		String query = "Select u.id From User u where u.sub = :pUserSub";
+		String query = "Select u.id From UserEntity u where u.sub = :pUserSub";
 		TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
 		typedQuery.setParameter("pUserSub", userSub);
 		try {
@@ -100,7 +100,7 @@ public class UserService implements UserServiceAccess{
 	 */
 	@Override
 	public SystemUser get(Long userId) throws UserNotFoundException {
-		User result = em.find(User.class, userId);
+		UserEntity result = em.find(UserEntity.class, userId);
 		if(result == null){
 			throw new UserNotFoundException(userId.toString());
 		}
@@ -120,12 +120,12 @@ public class UserService implements UserServiceAccess{
 		}
 
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-		Root<User> userRoot = criteriaQuery.from(User.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 		criteriaQuery.select(userRoot);
 		criteriaQuery.where(userRoot.get(SystemVariables.ID.getFieldName()).in(userIds));
 
-		TypedQuery<User> q=em.createQuery(criteriaQuery);
+		TypedQuery<UserEntity> q=em.createQuery(criteriaQuery);
 
 		return new ArrayList<>(q.getResultList());
 	}
@@ -143,8 +143,8 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-		Root<User> userRoot = criteriaQuery.from(User.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 
 		criteriaQuery.select(userRoot);
 
@@ -166,7 +166,7 @@ public class UserService implements UserServiceAccess{
 			criteriaQuery.orderBy(orders);
 		}
 
-		TypedQuery<User> q=em.createQuery(criteriaQuery);
+		TypedQuery<UserEntity> q=em.createQuery(criteriaQuery);
 
 		q.setFirstResult((pageNo-1) * pageSize);
 		q.setMaxResults(pageSize);
@@ -183,7 +183,7 @@ public class UserService implements UserServiceAccess{
 	 * Count the number of users existent in the DB.
 	 * @return the count of users
 	 */
-	private long getCount(Predicate global, Root<User> userRoot) {
+	private long getCount(Predicate global, Root<UserEntity> userRoot) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
@@ -203,7 +203,7 @@ public class UserService implements UserServiceAccess{
 	 */
 	@Override
 	public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException {
-		List<User> alreadyExistentRecords = searchDuplicatedEmailOrLogon(user);
+		List<UserEntity> alreadyExistentRecords = searchDuplicatedEmailOrLogon(user);
 
 		if(user.getId() == null) {
 			if(alreadyExistentRecords.isEmpty()) {
@@ -224,11 +224,11 @@ public class UserService implements UserServiceAccess{
 	 * @return list of users with duplicated information.
 	 */
 	//TODO: validate the subject also
-	private List<User> searchDuplicatedEmailOrLogon(SystemUser user) {
-		List<User> alreadyExistentRecords;
+	private List<UserEntity> searchDuplicatedEmailOrLogon(SystemUser user) {
+		List<UserEntity> alreadyExistentRecords;
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-		Root<User> userRoot = criteriaQuery.from(User.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 		criteriaQuery.select(userRoot);
 		Predicate global = criteriaBuilder.or(
 				criteriaBuilder.equal(userRoot.get(SystemVariables.LOGON.getFieldName()), user.getLogon()),
@@ -237,7 +237,7 @@ public class UserService implements UserServiceAccess{
 			global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get(SystemVariables.ID.getFieldName()), user.getId()));
 		}
 		criteriaQuery.where(global);
-		TypedQuery<User> q = em.createQuery(criteriaQuery);
+		TypedQuery<UserEntity> q = em.createQuery(criteriaQuery);
 		alreadyExistentRecords = q.getResultList();
 		return alreadyExistentRecords;
 	}
@@ -249,7 +249,7 @@ public class UserService implements UserServiceAccess{
 	 * @param newUserInformation user information to update into the requested one
 	 * @throws UniquenessConstraintException in case of requested information to be updated already exists in the DB
 	 */
-	private void validateUniquenessRecords(List<User> alreadyExistentRecords, SystemUser newUserInformation) throws UniquenessConstraintException {
+	private void validateUniquenessRecords(List<UserEntity> alreadyExistentRecords, SystemUser newUserInformation) throws UniquenessConstraintException {
 		if (alreadyExistentRecords.size() == 2) {
 			throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
 		} else if(!alreadyExistentRecords.isEmpty()) {
@@ -273,8 +273,8 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public void delete(Long userId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<User> criteriaDelete = cb.createCriteriaDelete(User.class);
-		Root<User> userRoot = criteriaDelete.from(User.class);
+		CriteriaDelete<UserEntity> criteriaDelete = cb.createCriteriaDelete(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaDelete.from(UserEntity.class);
 
 		criteriaDelete.where(cb.equal(userRoot.get(SystemVariables.ID.getFieldName()),userId));
 		em.createQuery(criteriaDelete).executeUpdate();
@@ -287,8 +287,8 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public void delete(Collection<Long> userIds) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<User> criteriaDelete = cb.createCriteriaDelete(User.class);
-		Root<User> userRoot = criteriaDelete.from(User.class);
+		CriteriaDelete<UserEntity> criteriaDelete = cb.createCriteriaDelete(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaDelete.from(UserEntity.class);
 
 		criteriaDelete.where(userRoot.get(SystemVariables.ID.getFieldName()).in(userIds));
 		em.createQuery(criteriaDelete).executeUpdate();
@@ -301,15 +301,15 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public List<? extends SystemUser> getUsers(SystemUserSearchFilter filter) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-		Root<User> userRoot = criteriaQuery.from(User.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 
 		criteriaQuery.select(userRoot);
 
 		Predicate global = getFilteredPredicate((UserSearchFilter) filter, criteriaBuilder, userRoot);
 
 		criteriaQuery.where(global);
-		TypedQuery<User> q=em.createQuery(criteriaQuery);
+		TypedQuery<UserEntity> q=em.createQuery(criteriaQuery);
 
 		return q.getResultList();
 	}
@@ -321,10 +321,10 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public List<? extends SystemUser> getUserList() {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-		Root<User> userRoot = criteriaQuery.from(User.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 		criteriaQuery.select(userRoot);
-		TypedQuery<User> q=em.createQuery(criteriaQuery);
+		TypedQuery<UserEntity> q=em.createQuery(criteriaQuery);
 		return q.getResultList();
 	}
 
@@ -336,7 +336,7 @@ public class UserService implements UserServiceAccess{
 	 * @param userRoot database table to search the information
 	 * @return a constructed predicate with the fields needed to be search
 	 */
-	private Predicate getFilteredPredicate(UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot) {
+	private Predicate getFilteredPredicate(UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<UserEntity> userRoot) {
 		Predicate global;
 
 		// is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
@@ -378,7 +378,7 @@ public class UserService implements UserServiceAccess{
 	 * @param global complete where clause to be merged into the constructed information
 	 * @return a constructed predicate with the fields needed to be search
 	 */
-	private Predicate getFieldPredicate(String name, String value, UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<User> userRoot, Predicate global) {
+	private Predicate getFieldPredicate(String name, String value, UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<UserEntity> userRoot, Predicate global) {
 		if(value != null) {
 			Predicate subPredicate;
 			if (filter.isExact()) {
@@ -512,7 +512,7 @@ public class UserService implements UserServiceAccess{
 	private List<String> retrieveDataFromDB(String property, Collection<String> parameters) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
-		Root<User> userRoot = criteriaQuery.from(User.class);
+		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 
 		criteriaQuery.select(userRoot.get(property)).where(userRoot.get(property).in(parameters));
 		TypedQuery<String> typedQuery = em.createQuery(criteriaQuery);
@@ -528,7 +528,7 @@ public class UserService implements UserServiceAccess{
 	private void addNewFoundIssue (Integer index, Map<Integer, DataIssue> map, String issueDescription) {
 		DataIssue di = map.get(index);
 		if (di == null) {
-			di = new DataIssue(index+1, issueDescription);
+			di = new DataIssue(index+1L, issueDescription);
 			map.put(index, di);
 		}
 		else {

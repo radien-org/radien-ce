@@ -21,7 +21,7 @@ import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ResourceResourceClient;
-import io.radien.ms.permissionmanagement.model.Resource;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -69,17 +69,18 @@ public class ResourceResource implements ResourceResourceClient {
 	/**
 	 * Finds all resources that matches a name
 	 * @param name resource name
+	 * @param ids resource ids to be found
 	 * @param isExact indicates if the match is for approximated value or not
 	 * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
 	 * @return In case of successful operation returns 200 (http status)
 	 * and the collection (filled or not).
 	 * Otherwise, in case of operational error, returns 500
 	 */
-	public Response getResources(String name, boolean isExact,
+	public Response getResources(String name, List<Long> ids, boolean isExact,
 							   boolean isLogicalConjunction) {
 
 		try {
-			return Response.ok(resourceServiceAccess.getResources(new ResourceSearchFilter(name,
+			return Response.ok(resourceServiceAccess.getResources(new ResourceSearchFilter(name, ids,
 					isExact, isLogicalConjunction))).build();
 		} catch (Exception e) {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
@@ -128,7 +129,7 @@ public class ResourceResource implements ResourceResourceClient {
 	 */
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Resource resource) {
 		try {
-			resourceServiceAccess.save(new Resource(resource));
+			resourceServiceAccess.save(new ResourceEntity(resource));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());

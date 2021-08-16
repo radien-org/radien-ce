@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
@@ -39,8 +40,8 @@ import io.radien.exception.TenantRoleUserDuplicationException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
-import io.radien.ms.rolemanagement.entities.TenantRolePermission;
-import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
@@ -90,8 +91,6 @@ public class TenantRoleBusinessService implements Serializable {
 
     @Inject
     private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
-
-    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Retrieves TenantRole association using pagination approach
@@ -300,7 +299,7 @@ public class TenantRoleBusinessService implements Serializable {
             throw new TenantRoleUserDuplicationException(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
                     toString(tenant.toString(), role.toString()));
         }
-        TenantRoleUser tru = new TenantRoleUser();
+        TenantRoleUserEntity tru = new TenantRoleUserEntity();
         tru.setTenantRoleId(tenantRoleId);
         tru.setUserId(user);
         tru.setCreateDate(new Date());
@@ -319,8 +318,17 @@ public class TenantRoleBusinessService implements Serializable {
      * @param role role identifier (id)
      * @return the association id (if exists), otherwise throws a exception
      * @throws TenantRoleNotFoundException thrown if association does not exists
+     * @throws TenantRoleIllegalArgumentException thrown when either tenant or role are not informed
      */
-    private Long getTenantRoleId(Long tenant, Long role) throws TenantRoleNotFoundException{
+    public Long getTenantRoleId(Long tenant, Long role) throws TenantRoleNotFoundException, TenantRoleIllegalArgumentException{
+        if (tenant == null) {
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel()));
+        }
+        if (role == null) {
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel()));
+        }
         return this.tenantRoleServiceAccess.getTenantRoleId(tenant, role).
                 orElseThrow(() -> new TenantRoleNotFoundException(TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
                         tenant.toString(), role.toString())));
@@ -374,7 +382,7 @@ public class TenantRoleBusinessService implements Serializable {
             throw new TenantRoleException(TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE.
                     toString(tenant.toString(), role.toString()));
         }
-        TenantRolePermission trp = new TenantRolePermission();
+        TenantRolePermissionEntity trp = new TenantRolePermissionEntity();
         trp.setTenantRoleId(tenantRoleId);
         trp.setPermissionId(permission);
         trp.setCreateDate(new Date());

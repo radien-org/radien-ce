@@ -1,13 +1,13 @@
 package io.radien.ms.permissionmanagement.legacy;
 
 
-import io.radien.ms.permissionmanagement.model.Action;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 
 import java.util.Date;
 
 public class ActionFactory {
-    public static Action create(String name, Long createUser){
-        Action action = new Action();
+    public static ActionEntity create(String name, Long createUser){
+        ActionEntity action = new ActionEntity();
         action.setName(name);
         action.setCreateUser(createUser);
         Date now = new Date();

@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.ms.usermanagement.entities.UserEntity;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -35,7 +36,6 @@ import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
 
-import io.radien.ms.usermanagement.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,7 +164,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 			if (!isSelfOnboard(user) && !checkUserRoles()) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
-			userBusinessService.save(new User(user),user.isDelegatedCreation());
+			userBusinessService.save(new UserEntity(user),user.isDelegatedCreation());
 		} catch (Exception e) {
 			return getResponseFromException(e);
 		}
@@ -227,7 +227,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	@Override
 	public Response create(List<io.radien.ms.usermanagement.client.entities.User> userList) {
 		try {
-			List<User> users = userList.stream().map(u -> new User(u)).collect(Collectors.toList());
+			List<UserEntity> users = userList.stream().map(UserEntity::new).collect(Collectors.toList());
 			BatchSummary batchSummary = this.userBusinessService.create(users);
 			return BatchResponse.get(batchSummary);
 		}
@@ -267,7 +267,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	public Response sendUpdatePasswordEmail(long id){
 		try {
 			SystemUser user = userBusinessService.get(id);
-			userBusinessService.sendUpdatePasswordEmail(new User((io.radien.ms.usermanagement.client.entities.User) user));
+			userBusinessService.sendUpdatePasswordEmail(new UserEntity((io.radien.ms.usermanagement.client.entities.User) user));
 			return Response.ok().build();
 		} catch(Exception e) {
 			return getResponseFromException(e);

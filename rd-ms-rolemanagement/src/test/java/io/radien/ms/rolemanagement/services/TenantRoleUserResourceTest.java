@@ -83,6 +83,31 @@ public class TenantRoleUserResourceTest {
     }
 
     /**
+     * Tests response from getUsers method
+     */
+    @Test
+    public void testGetUsersIds() {
+        Response response = tenantRoleUserResource.getAllUserIds(1L,1L,
+                2, 3);
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Tests response from getUsers method when exceptions occur
+     * during the processing
+     */
+    @Test
+    public void testGetUsersIdsWithException() {
+        doThrow(new RuntimeException("error")).
+                when(tenantRoleUserServiceAccess).getAllUserIds(1L,1L,
+                2, 3);
+        Response response = tenantRoleUserResource.getAllUserIds(1L,1L,
+                2, 3);
+        assertEquals(500, response.getStatus());
+    }
+
+
+    /**
      * Test asserts Response from
      * UnAssignedUserTenantRoles
      */

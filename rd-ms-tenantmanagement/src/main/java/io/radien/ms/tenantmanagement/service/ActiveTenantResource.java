@@ -25,6 +25,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantResourceClient;
+import io.radien.ms.tenantmanagement.entities.ActiveTenantEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,8 +158,9 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	@Override
 	public Response create(ActiveTenant activeTenant) {
 		try {
-            activeTenantServiceAccess.create(new io.radien.ms.tenantmanagement.entities.ActiveTenant(activeTenant));
-			return Response.ok(activeTenant.getId()).build();
+			ActiveTenantEntity activeTenantEntity = new ActiveTenantEntity(activeTenant);
+            activeTenantServiceAccess.create(activeTenantEntity);
+			return Response.ok(activeTenantEntity.getId()).build();
 		} catch (ActiveTenantException | UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){
@@ -176,7 +178,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	public Response update(long id, ActiveTenant activeTenant) {
 		try {
 			activeTenant.setId(id);
-            activeTenantServiceAccess.update(new io.radien.ms.tenantmanagement.entities.ActiveTenant(activeTenant));
+            activeTenantServiceAccess.update(new ActiveTenantEntity(activeTenant));
 			return Response.ok().build();
 		}catch (ActiveTenantException | UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());

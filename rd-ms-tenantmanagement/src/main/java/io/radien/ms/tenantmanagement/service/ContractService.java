@@ -21,7 +21,7 @@ import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.tenant.ContractServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.tenantmanagement.entities.Contract;
+import io.radien.ms.tenantmanagement.entities.ContractEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class ContractService implements ContractServiceAccess {
      */
     @Override
     public SystemContract get(Long contractId) {
-        return emh.getEm().find(Contract.class, contractId);
+        return emh.getEm().find(ContractEntity.class, contractId);
     }
 
     /**
@@ -76,13 +76,13 @@ public class ContractService implements ContractServiceAccess {
         log.info("Going to create a new pagination!");
         EntityManager entityManager = emh.getEm();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Contract> criteriaQuery = criteriaBuilder.createQuery(Contract.class);
-        Root<Contract> contractRoot = criteriaQuery.from(Contract.class);
+        CriteriaQuery<ContractEntity> criteriaQuery = criteriaBuilder.createQuery(ContractEntity.class);
+        Root<ContractEntity> contractRoot = criteriaQuery.from(ContractEntity.class);
 
         criteriaQuery.select(contractRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
-        TypedQuery<Contract> q= entityManager.createQuery(criteriaQuery);
+        TypedQuery<ContractEntity> q= entityManager.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
@@ -101,7 +101,7 @@ public class ContractService implements ContractServiceAccess {
      * Count the number of contracts existent in the DB.
      * @return the count of contracts
      */
-    private long getCount(Predicate global, Root<Contract> userRoot) {
+    private long getCount(Predicate global, Root<ContractEntity> userRoot) {
 
         log.info("Going to count the existent records.");
         EntityManager em = emh.getEm();
@@ -124,7 +124,7 @@ public class ContractService implements ContractServiceAccess {
     @Override
     public long getTotalRecordsCount() {
         CriteriaBuilder criteriaBuilder = emh.getEm().getCriteriaBuilder();
-        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(Contract.class));
+        return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(ContractEntity.class));
     }
 
     /**
@@ -138,8 +138,8 @@ public class ContractService implements ContractServiceAccess {
     public List<? extends SystemContract> get(String name) {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Contract> criteriaQuery = criteriaBuilder.createQuery(Contract.class);
-        Root<Contract> userRoot = criteriaQuery.from(Contract.class);
+        CriteriaQuery<ContractEntity> criteriaQuery = criteriaBuilder.createQuery(ContractEntity.class);
+        Root<ContractEntity> userRoot = criteriaQuery.from(ContractEntity.class);
 
         criteriaQuery.select(userRoot);
 
@@ -150,7 +150,7 @@ public class ContractService implements ContractServiceAccess {
             criteriaQuery.where(global);
         }
 
-        TypedQuery<Contract> q = em.createQuery(criteriaQuery);
+        TypedQuery<ContractEntity> q = em.createQuery(criteriaQuery);
         return q.getResultList();
     }
 
@@ -162,7 +162,7 @@ public class ContractService implements ContractServiceAccess {
      */
     @Override
     public void create(SystemContract contract) throws UniquenessConstraintException {
-        List<Contract> alreadyExistentRecords = searchDuplicatedFields(contract);
+        List<ContractEntity> alreadyExistentRecords = searchDuplicatedFields(contract);
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(contract);
         } else {
@@ -178,7 +178,7 @@ public class ContractService implements ContractServiceAccess {
      */
     @Override
     public void update(SystemContract contract) throws UniquenessConstraintException {
-        List<Contract> alreadyExistentRecords = searchDuplicatedFields(contract);
+        List<ContractEntity> alreadyExistentRecords = searchDuplicatedFields(contract);
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(contract);
         } else {
@@ -192,12 +192,12 @@ public class ContractService implements ContractServiceAccess {
      * @param contract user information to look up.
      * @return list of users with duplicated information.
      */
-    private List<Contract> searchDuplicatedFields(SystemContract contract) {
+    private List<ContractEntity> searchDuplicatedFields(SystemContract contract) {
         EntityManager em = emh.getEm();
-        List<Contract> alreadyExistentRecords;
+        List<ContractEntity> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Contract> criteriaQuery = criteriaBuilder.createQuery(Contract.class);
-        Root<Contract> root = criteriaQuery.from(Contract.class);
+        CriteriaQuery<ContractEntity> criteriaQuery = criteriaBuilder.createQuery(ContractEntity.class);
+        Root<ContractEntity> root = criteriaQuery.from(ContractEntity.class);
         criteriaQuery.select(root);
         Predicate global = criteriaBuilder.or(
                 criteriaBuilder.equal(root.get("name"), contract.getName()));
@@ -205,7 +205,7 @@ public class ContractService implements ContractServiceAccess {
             global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), contract.getId()));
         }
         criteriaQuery.where(global);
-        TypedQuery<Contract> q = em.createQuery(criteriaQuery);
+        TypedQuery<ContractEntity> q = em.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
     }
@@ -219,8 +219,8 @@ public class ContractService implements ContractServiceAccess {
     public boolean delete(Long contractId) {
         EntityManager em = emh.getEm();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Contract> criteriaDelete = cb.createCriteriaDelete(Contract.class);
-        Root<Contract> userRoot = criteriaDelete.from(Contract.class);
+        CriteriaDelete<ContractEntity> criteriaDelete = cb.createCriteriaDelete(ContractEntity.class);
+        Root<ContractEntity> userRoot = criteriaDelete.from(ContractEntity.class);
 
         criteriaDelete.where(cb.equal(userRoot.get("id"), contractId));
         int ret = em.createQuery(criteriaDelete).executeUpdate();
@@ -236,8 +236,8 @@ public class ContractService implements ContractServiceAccess {
     public void delete(Collection<Long> contractIds) {
         EntityManager em = emh.getEm();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Contract> criteriaDelete = cb.createCriteriaDelete(Contract.class);
-        Root<Contract> userRoot = criteriaDelete.from(Contract.class);
+        CriteriaDelete<ContractEntity> criteriaDelete = cb.createCriteriaDelete(ContractEntity.class);
+        Root<ContractEntity> userRoot = criteriaDelete.from(ContractEntity.class);
 
         criteriaDelete.where(userRoot.get("id").in(contractIds));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -253,7 +253,7 @@ public class ContractService implements ContractServiceAccess {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Contract> contractRoot = criteriaQuery.from(Contract.class);
+        Root<ContractEntity> contractRoot = criteriaQuery.from(ContractEntity.class);
 
         criteriaQuery.select(criteriaBuilder.count(contractRoot));
         criteriaQuery.where(criteriaBuilder.equal(contractRoot.get("id"), contractId));

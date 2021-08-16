@@ -30,7 +30,7 @@ public class ${entityResourceName}Test {
         ${entityResourceName.toLowerCase()} = ${entityResourceName}Factory.create("TestName");
         ${entityResourceName.toLowerCase()}.setId(1L);
 
-        new ${entityResourceName}((io.rd.ms.client.entities.${entityResourceName}) ${entityResourceName.toLowerCase()});
+        new ${entityResourceName}((${package}.ms.client.entities.${entityResourceName}) ${entityResourceName.toLowerCase()});
     }
 
     @Test

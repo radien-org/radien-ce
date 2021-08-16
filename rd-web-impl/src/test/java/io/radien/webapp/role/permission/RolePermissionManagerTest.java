@@ -96,7 +96,6 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     private Set<Long> unassignedRolePermissions = new HashSet<>();
 
     private static final int TOTAL_PERMISSION_RESULTS = 5;
-    private static final int TOTAL_LINKED_AUTHORIZATION_RESULTS = 2;
 
     /**
      * Prepares require objects when requires to invoke

@@ -22,7 +22,7 @@ import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
-import io.radien.ms.tenantmanagement.entities.ActiveTenant;
+import io.radien.ms.tenantmanagement.entities.ActiveTenantEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,7 +63,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      */
     @Override
     public SystemActiveTenant get(Long id) {
-        return emh.getEm().find(ActiveTenant.class, id);
+        return emh.getEm().find(ActiveTenantEntity.class, id);
     }
 
     /**
@@ -77,14 +77,14 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     public List<? extends SystemActiveTenant> getByUserAndTenant(Long userId, Long tenantId) {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<ActiveTenant> criteriaQuery = criteriaBuilder.createQuery(ActiveTenant.class);
-        Root<ActiveTenant> root = criteriaQuery.from(ActiveTenant.class);
+        CriteriaQuery<ActiveTenantEntity> criteriaQuery = criteriaBuilder.createQuery(ActiveTenantEntity.class);
+        Root<ActiveTenantEntity> root = criteriaQuery.from(ActiveTenantEntity.class);
 
         criteriaQuery.select(root);
 
         criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(USER_ID.getFieldName()), userId),
                 criteriaBuilder.equal(root.get(TENANT_ID.getFieldName()), tenantId)));
-        TypedQuery<ActiveTenant> q = em.createQuery(criteriaQuery);
+        TypedQuery<ActiveTenantEntity> q = em.createQuery(criteriaQuery);
 
         return q.getResultList();
     }
@@ -102,8 +102,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     public Page<SystemActiveTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
         EntityManager entityManager = emh.getEm();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ActiveTenant> criteriaQuery = criteriaBuilder.createQuery(ActiveTenant.class);
-        Root<ActiveTenant> activeTenantRoot = criteriaQuery.from(ActiveTenant.class);
+        CriteriaQuery<ActiveTenantEntity> criteriaQuery = criteriaBuilder.createQuery(ActiveTenantEntity.class);
+        Root<ActiveTenantEntity> activeTenantRoot = criteriaQuery.from(ActiveTenantEntity.class);
 
         criteriaQuery.select(activeTenantRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -120,7 +120,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
             }
             criteriaQuery.orderBy(orders);
         }
-        TypedQuery<ActiveTenant> q= entityManager.createQuery(criteriaQuery);
+        TypedQuery<ActiveTenantEntity> q= entityManager.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo-1) * pageSize);
         q.setMaxResults(pageSize);
@@ -142,15 +142,15 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     public List<? extends SystemActiveTenant> get(SystemActiveTenantSearchFilter filter) {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<ActiveTenant> criteriaQuery = criteriaBuilder.createQuery(ActiveTenant.class);
-        Root<ActiveTenant> root = criteriaQuery.from(ActiveTenant.class);
+        CriteriaQuery<ActiveTenantEntity> criteriaQuery = criteriaBuilder.createQuery(ActiveTenantEntity.class);
+        Root<ActiveTenantEntity> root = criteriaQuery.from(ActiveTenantEntity.class);
 
         criteriaQuery.select(root);
 
         Predicate global = getFilteredPredicate((ActiveTenantSearchFilter) filter, criteriaBuilder, root);
 
         criteriaQuery.where(global);
-        TypedQuery<ActiveTenant> q = em.createQuery(criteriaQuery);
+        TypedQuery<ActiveTenantEntity> q = em.createQuery(criteriaQuery);
 
         return q.getResultList();
 
@@ -169,7 +169,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      * @param activeTenantRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot) {
+    private Predicate getFilteredPredicate(ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot) {
         Predicate global;
         if(filter.isLogicConjunction()) {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -193,7 +193,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      * @param global predicate to be added
      * @return a constructed predicate
      */
-    private Predicate getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenant> activeTenantRoot, Predicate global) {
+    private Predicate getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot, Predicate global) {
         if(value != null) {
             Predicate subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
             if (value instanceof String && !filter.isExact()) {
@@ -252,8 +252,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
         }
         EntityManager em = emh.getEm();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
-        Root<ActiveTenant> activeTenantRoot = criteriaDelete.from(ActiveTenant.class);
+        CriteriaDelete<ActiveTenantEntity> criteriaDelete = cb.createCriteriaDelete(ActiveTenantEntity.class);
+        Root<ActiveTenantEntity> activeTenantRoot = criteriaDelete.from(ActiveTenantEntity.class);
 
         List<Predicate> predicates = new ArrayList<>();
         if (tenantId != null) {
@@ -275,8 +275,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
     public void delete(Collection<Long> activeTenantId) {
         EntityManager em = emh.getEm();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
-        Root<ActiveTenant> userRoot = criteriaDelete.from(ActiveTenant.class);
+        CriteriaDelete<ActiveTenantEntity> criteriaDelete = cb.createCriteriaDelete(ActiveTenantEntity.class);
+        Root<ActiveTenantEntity> userRoot = criteriaDelete.from(ActiveTenantEntity.class);
 
         criteriaDelete.where(userRoot.get(ID.getFieldName()).in(activeTenantId));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -293,7 +293,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<ActiveTenant> contractRoot = criteriaQuery.from(ActiveTenant.class);
+        Root<ActiveTenantEntity> contractRoot = criteriaQuery.from(ActiveTenantEntity.class);
 
         criteriaQuery.select(criteriaBuilder.count(contractRoot));
 
@@ -309,7 +309,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      * Count the number of active tenants existent in the DB.
      * @return the count of active tenants
      */
-    private long getCount(Predicate global, Root<ActiveTenant> userRoot) {
+    private long getCount(Predicate global, Root<ActiveTenantEntity> userRoot) {
         EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -331,8 +331,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
      */
     protected boolean delete(Long activeTenant, EntityManager entityManager) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaDelete<ActiveTenant> criteriaDelete = cb.createCriteriaDelete(ActiveTenant.class);
-        Root<ActiveTenant> userRoot = criteriaDelete.from(ActiveTenant.class);
+        CriteriaDelete<ActiveTenantEntity> criteriaDelete = cb.createCriteriaDelete(ActiveTenantEntity.class);
+        Root<ActiveTenantEntity> userRoot = criteriaDelete.from(ActiveTenantEntity.class);
         criteriaDelete.where(cb.equal(userRoot.get(ID.getFieldName()), activeTenant));
         int ret = entityManager.createQuery(criteriaDelete).executeUpdate();
         return ret > 0;

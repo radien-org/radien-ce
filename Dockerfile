@@ -1,5 +1,5 @@
 FROM scratch as builder
-COPY target/*.war /
+COPY **/*.war **/target/*.war /
 
 FROM radien/base:latest 
 WORKDIR /

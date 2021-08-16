@@ -26,6 +26,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Contract;
 import io.radien.exception.NotFoundException;
 import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
+import io.radien.ms.tenantmanagement.entities.ContractEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +129,7 @@ public class ContractResource implements ContractResourceClient {
 	@Override
 	public Response create(Contract contract) {
 		try {
-            contractService.create(new io.radien.ms.tenantmanagement.entities.Contract(contract));
+            contractService.create(new ContractEntity(contract));
 			return Response.ok(contract.getId()).build();
 		}catch (UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
@@ -147,7 +148,7 @@ public class ContractResource implements ContractResourceClient {
 	public Response update(long id, Contract contract) {
 		try {
 			contract.setId(id);
-            contractService.update(new io.radien.ms.tenantmanagement.entities.Contract(contract));
+            contractService.update(new ContractEntity(contract));
 			return Response.ok().build();
 		}catch (UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());

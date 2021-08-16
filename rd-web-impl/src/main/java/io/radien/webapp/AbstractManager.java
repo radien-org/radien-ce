@@ -76,7 +76,17 @@ public abstract class AbstractManager implements Serializable {
      * @throws IOException in case of redirection error
      */
     protected void redirectToHomePage() throws IOException {
+        redirectToPage(DataModelEnum.PUBLIC_INDEX_PATH.getValue());
+    }
+
+
+    /**
+     * Redirect the navigation to a specified page
+     * @param pagePath uri or (sub) path that designates the page (ex: /module/users, or /public/index)
+     * @throws IOException in case of any i/o issue during the dispatch process
+     */
+    protected void redirectToPage(String pagePath) throws IOException {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + DataModelEnum.PUBLIC_INDEX_PATH.getValue());
+        context.redirect(context.getRequestContextPath() + pagePath);
     }
 }

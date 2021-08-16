@@ -19,7 +19,6 @@ import io.radien.api.Appframeable;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.exception.SystemException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -72,5 +71,14 @@ public interface ActionRESTServiceAccess extends Appframeable {
      * @throws SystemException in case of URL specification
      */
     public boolean delete(long actionId) throws SystemException;
+
+    /**
+     * Retrieves from DB a collection containing actions. The retrieval process will be
+     * based on a list containing identifiers
+     * @param ids list containing action identifiers
+     * @return a list of actions found using the informed identifiers
+     * @throws SystemException in case of any found error
+     */
+    public List<? extends SystemAction> getActionsByIds(List<Long> ids) throws SystemException;
 
 }

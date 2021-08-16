@@ -39,12 +39,26 @@ public interface TenantRoleUserRESTServiceAccess {
     Page<? extends SystemTenantRoleUser> getUsers(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
 
     /**
-     * UnAssign/dissociate/remove/delete UserTenantRole(s)
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @param roleIds Collection of Role ids
-     * @return Boolean indicating if operation was concluded successfully
+     * Under a pagination approach, retrieves the Ids for Users associations that exist
+     * for a TenantRole
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
+     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return Page containing TenantRoleUser instances
      * @throws SystemException in case of any error
      */
+    Page<Long> getUsersIds(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
+
+
+        /**
+         * UnAssign/dissociate/remove/delete UserTenantRole(s)
+         * @param userId User identifier
+         * @param tenantId Tenant identifier
+         * @param roleIds Collection of Role ids
+         * @return Boolean indicating if operation was concluded successfully
+         * @throws SystemException in case of any error
+         */
     Boolean deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException;
 }

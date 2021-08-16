@@ -15,7 +15,7 @@
  */
 package io.radien.ms.rolemanagement.providers;
 
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import io.radien.ms.rolemanagement.factory.RoleFactory;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +31,7 @@ public class RoleModelMessageBodyWriterTest {
     @Test
     public void testIsWriteable() {
         RoleModelMessageBodyWriter target = new RoleModelMessageBodyWriter();
-        assertTrue(target.isWriteable(Role.class,null,null,null));
+        assertTrue(target.isWriteable(RoleEntity.class,null,null,null));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class RoleModelMessageBodyWriterTest {
                 "\"lastUpdateUser\":null" +
                 "}";
         RoleModelMessageBodyWriter target = new RoleModelMessageBodyWriter();
-        Role user = RoleFactory.create("nameValue","descriptionValue",2L);
+        RoleEntity user = RoleFactory.create("nameValue","descriptionValue",2L);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(user,null,null,null, null,null, baos);
 

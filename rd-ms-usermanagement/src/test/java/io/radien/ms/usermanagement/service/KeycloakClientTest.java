@@ -16,7 +16,7 @@
 package io.radien.ms.usermanagement.service;
 
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import junit.framework.TestCase;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class KeycloakClientTest extends TestCase {
     KeycloakClient client;
 
     public void testKeycloakClient(){
-        User u = new User();
+        UserEntity u = new UserEntity();
         u.setLogon("abc");
         u.setSub("test");
         client = new KeycloakClient()

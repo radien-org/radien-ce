@@ -59,6 +59,25 @@ public interface TenantRoleUserResourceClient {
                     @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
 
+    /**
+     * Retrieves TenantRoleUser association (Ids) using pagination approach
+     * (in other words, retrieves the Users associations that exist for a TenantRole)
+     * @param tenantId tenant identifier for a TenantRole
+     * @param roleId role identifier for a TenantRole
+     * @param pageNo page number
+     * @param pageSize page size
+     * @return In case of successful operation returns OK (http status 200)
+     * and a Page containing TenantRole associations Ids (Chunk/Portion compatible
+     * with parameter Page number and Page size).<br>
+     * Otherwise, in case of operational error, returns Internal Server Error (500)
+     */
+    @GET
+    @Path("/userIds")
+    Response getAllUserIds(@QueryParam("tenantId") Long tenantId,
+                           @QueryParam("roleId") Long roleId,
+                           @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize);
+
     @DELETE
     Response deleteUnAssignedUserTenantRoles(@QueryParam("userId") Long userId,
                                        @QueryParam("tenantId") Long tenantId,

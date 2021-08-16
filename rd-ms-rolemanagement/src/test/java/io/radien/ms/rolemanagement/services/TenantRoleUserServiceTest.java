@@ -27,13 +27,14 @@ import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
-import io.radien.ms.rolemanagement.entities.TenantRole;
-import io.radien.ms.rolemanagement.entities.TenantRoleUser;
+import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
@@ -45,7 +46,12 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -117,13 +123,13 @@ public class TenantRoleUserServiceTest {
     @Test
     public void testCreate() throws UniquenessConstraintException {
 
-        SystemTenantRole systemTenantRole = new TenantRole();
+        SystemTenantRole systemTenantRole = new TenantRoleEntity();
         systemTenantRole.setRoleId(baseRoleId);
         systemTenantRole.setTenantId(baseTenantId);
         tenantRoleServiceAccess.save(systemTenantRole);
         baseTenantRoleId = systemTenantRole.getId();
 
-        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
         systemTenantRoleUser.setUserId(baseUserId);
         systemTenantRoleUser.setTenantRoleId(baseTenantRoleId);
 
@@ -140,7 +146,7 @@ public class TenantRoleUserServiceTest {
     @Order(2)
     @Test
     public void testCreateDuplicatedWithError() {
-        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
         systemTenantRoleUser.setUserId(baseUserId);
         systemTenantRoleUser.setTenantRoleId(baseTenantRoleId);
         Assertions.assertThrows(UniquenessConstraintException.class, () ->
@@ -155,7 +161,7 @@ public class TenantRoleUserServiceTest {
     @Order(3)
     public void testGetById() {
 
-        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
         systemTenantRoleUser.setTenantRoleId(1L);
         systemTenantRoleUser.setUserId(1L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(systemTenantRoleUser));
@@ -233,7 +239,7 @@ public class TenantRoleUserServiceTest {
     @Order(9)
     public void testDeleteTenantRoleUser() {
         // Insert first
-        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setUserId(69L);
         tenantRoleUser.setTenantRoleId(70L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
@@ -283,12 +289,12 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(12)
     public void testRetrieveSettingLogicConjunctionToFalse() {
-        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setUserId(404L);
         tenantRoleUser.setTenantRoleId(405L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
 
-        SystemTenantRoleUser tenantRoleUser2 = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser2 = new TenantRoleUserEntity();
         tenantRoleUser2.setUserId(406L);
         tenantRoleUser2.setTenantRoleId(407L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser2));
@@ -351,6 +357,14 @@ public class TenantRoleUserServiceTest {
         Assertions.assertEquals(1, p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertFalse(p.getResults().isEmpty());
+
+        Page<Long> p2 = tenantRoleUserServiceAccess.getAllUserIds(baseTenantId, baseRoleId,
+                1, 100);
+        Assertions.assertTrue(p2.getTotalResults() > 0);
+
+        List<Long> mappedIds = p.getResults().stream().map(SystemTenantRoleUser::getUserId).
+                distinct().collect(Collectors.toList());
+        Assertions.assertEquals(mappedIds, p2.getResults());
     }
 
     /**
@@ -368,6 +382,14 @@ public class TenantRoleUserServiceTest {
         Assertions.assertEquals(0,p.getTotalPages());
         Assertions.assertNotNull(p.getResults());
         Assertions.assertTrue(p.getResults().isEmpty());
+
+        Page<Long> p2 = tenantRoleUserServiceAccess.getAllUserIds(10000L,10001L,
+                1, 100);
+        Assertions.assertNotNull(p);
+        Assertions.assertEquals(0,p2.getTotalResults());
+        Assertions.assertEquals(0,p2.getTotalPages());
+        Assertions.assertNotNull(p2.getResults());
+        Assertions.assertTrue(p2.getResults().isEmpty());
     }
 
     /**
@@ -376,7 +398,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(17)
     public void testGetTenantRoleUserId() {
-        SystemTenantRoleUser sru = new TenantRoleUser();
+        SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(101010L);
         sru.setUserId(101L);
         Assertions.assertDoesNotThrow(() -> this.tenantRoleUserServiceAccess.create(sru));
@@ -404,7 +426,7 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(16)
     public void testGetTenantRoleUserIdNullUser() {
-        SystemTenantRoleUser sru = new TenantRoleUser();
+        SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(301010L);
         sru.setUserId(601L);
         Assertions.assertDoesNotThrow(() -> this.tenantRoleUserServiceAccess.create(sru));
@@ -434,7 +456,7 @@ public class TenantRoleUserServiceTest {
      * @return SystemTenantRole instance for the given parameters
      */
     protected SystemTenantRole createTenantRole(Long tenant, Long role) throws UniquenessConstraintException {
-        SystemTenantRole tenantRole = new TenantRole();
+        SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setTenantId(tenant);
         tenantRole.setRoleId(role);
         tenantRoleServiceAccess.save(tenantRole);
@@ -449,7 +471,7 @@ public class TenantRoleUserServiceTest {
      * @return SystemTenantRoleUser instance for the given parameters
      */
     protected SystemTenantRoleUser createTenantRoleUser(SystemTenantRole tr, Long user) throws UniquenessConstraintException {
-        SystemTenantRoleUser tenantRoleUser = new TenantRoleUser();
+        SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setTenantRoleId(tr.getId());
         tenantRoleUser.setUserId(user);
         tenantRoleUserServiceAccess.create(tenantRoleUser);
@@ -490,11 +512,14 @@ public class TenantRoleUserServiceTest {
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role1User1.getTenantRoleId()));
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role2User1.getTenantRoleId()));
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user1, tenant1Role3User1.getTenantRoleId()));
+        assertFalse(tenantRoleUserServiceAccess.isAssociatedWithTenant(user1, tenant1));
+
 
         // Check if association cannot be found for user2
         assertFalse(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role1User2.getTenantRoleId()));
         assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role2User2.getTenantRoleId()));
         assertTrue(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(user2, tenant1Role3User2.getTenantRoleId()));
+        assertTrue(tenantRoleUserServiceAccess.isAssociatedWithTenant(user2, tenant1));
     }
 
     /**
@@ -504,7 +529,7 @@ public class TenantRoleUserServiceTest {
      */
     @Test
     public void testGetTenantRoleUserIds() throws TenantRoleUserException {
-        SystemTenantRoleUser sru = new TenantRoleUser();
+        SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(117L);
         sru.setUserId(118L);
         Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
@@ -525,5 +550,37 @@ public class TenantRoleUserServiceTest {
         } catch (TenantRoleUserException e) {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_EXISTS.toString()));
         }
+    }
+
+    /**
+     * Test for method {@link TenantRoleUserService#isAssociatedWithTenant(Long, Long)}
+     * inferring the behaviour when the expected parameters are not informed (tenant id is null)
+     */
+    @Test
+    public void testIsAssociatedWithTenantWhenTenantIdIsNull() {
+        Long tenantId = 1L, userId = 1L;
+        EJBException e = assertThrows(EJBException.class, () -> tenantRoleUserServiceAccess.isAssociatedWithTenant(
+                userId, null));
+
+        String expectedErrorMsg = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.
+                toString("tenant id");
+        assertNotNull(e.getCause());
+        assertEquals(expectedErrorMsg, e.getCause().getMessage());
+    }
+
+    /**
+     * Test for method {@link TenantRoleUserService#isAssociatedWithTenant(Long, Long)}
+     * inferring the behaviour when the expected parameters are not informed (user id is null)
+     */
+    @Test
+    public void testIsAssociatedWithTenantWhenUserIdIsNull() throws TenantRoleUserException {
+        Long tenantId = 1L;
+        EJBException e = assertThrows(EJBException.class, () -> tenantRoleUserServiceAccess.isAssociatedWithTenant(
+                null, tenantId));
+
+        String expectedErrorMsg = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.
+                toString("user id");
+        assertNotNull(e.getCause());
+        assertEquals(expectedErrorMsg, e.getCause().getMessage());
     }
 }

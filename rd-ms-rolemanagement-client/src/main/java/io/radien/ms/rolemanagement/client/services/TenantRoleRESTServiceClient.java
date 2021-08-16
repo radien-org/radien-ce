@@ -24,6 +24,7 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -33,20 +34,18 @@ import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import io.radien.ms.rolemanagement.client.util.TenantRoleModelMapper;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tenant Role REST Service Client
@@ -60,8 +59,7 @@ import java.util.Optional;
  *
  * @author Newton Carvalho
  */
-@Stateless
-@Default
+@RequestScoped
 public class TenantRoleRESTServiceClient extends AuthorizationChecker implements TenantRoleRESTServiceAccess {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleRESTServiceClient.class);
@@ -116,6 +114,52 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
         }
         catch (Exception e) {
             throw new SystemException("Error trying to retrieve Tenant Role User associations", e);
+        }
+    }
+
+    /**
+     * Given a Tenant and a role identifier obtains the TenantRole Id
+     * (To do that it invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenant Tenant identifier (mandatory)
+     * @param role Role identifier (mandatory)
+     * @return Optional containing TenantRole Identifier (Empty if no id could be found)
+     * @throws SystemException in case of any error
+     */
+    public Optional<Long> getIdByTenantRole(Long tenant, Long role) throws SystemException {
+        try {
+            return getIdByTenantRoleCore(tenant, role);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getIdByTenantRoleCore(tenant, role);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that obtains the TenantRole Id (for given Tenant and role identifiers)
+     * @param tenant Tenant identifier (mandatory)
+     * @param role Role identifier (mandatory)
+     * @return Optional containing TenantRole Identifier (Empty if no id could be found)
+     * @throws SystemException in case of any error
+     */
+    protected Optional<Long> getIdByTenantRoleCore(Long tenant, Long role) throws SystemException {
+        try {
+            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getIdByTenantRole(tenant, role);
+            return Optional.of(response.readEntity(Long.class));
+        }
+        catch (NotFoundException nf) {
+            return Optional.empty();
+        }
+        catch (TokenExpiredException tke) {
+            throw  tke;
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
         }
     }
 

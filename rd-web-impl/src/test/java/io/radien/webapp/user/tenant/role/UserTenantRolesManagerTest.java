@@ -337,7 +337,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
     public void testReturnHome(){
         SystemUser systemUser = new User();
         doNothing().when(userDataModel).setSelectedUser(systemUser);
-        assertEquals(DataModelEnum.PRETTY_USER.getValue(),userTenantRolesManager.returnBackToUsersTable());
+        assertEquals(DataModelEnum.USERS_PATH.getValue(),userTenantRolesManager.returnBackToUsersTable());
     }
 
     /**

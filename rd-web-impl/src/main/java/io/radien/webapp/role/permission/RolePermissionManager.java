@@ -150,7 +150,7 @@ public class RolePermissionManager extends AbstractManager implements Serializab
 
     /**
      * This Method gathers unique set of assignable/unassailable permissions
-     * for an active user tenant. Validates & creates linked authorization permissions
+     * for an active user tenant. Validates & creates tenant role permissions
      * @return working HTML page of roles
      */
     public String assignOrUnassignedPermissionsToActiveUserTenant() {

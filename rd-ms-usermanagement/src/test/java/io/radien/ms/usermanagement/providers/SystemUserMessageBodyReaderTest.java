@@ -16,7 +16,7 @@
 package io.radien.ms.usermanagement.providers;
 
 import io.radien.api.model.user.SystemUser;
-import io.radien.ms.usermanagement.entities.User;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -24,14 +24,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
-
 public class SystemUserMessageBodyReaderTest extends TestCase {
 
     @Test
     public void testIsReadable() {
         SystemUserMessageBodyReader target = new SystemUserMessageBodyReader();
-        assertTrue(target.isReadable(User.class,null,null,null));
+        assertTrue(target.isReadable(UserEntity.class,null,null,null));
     }
 
     @Test

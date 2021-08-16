@@ -19,18 +19,17 @@ import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
-import io.radien.ms.permissionmanagement.model.Action;
-import io.radien.ms.permissionmanagement.model.Permission;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
 import junit.framework.TestCase;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
 
 public class PermissionTest extends TestCase {
 
-    Permission permission;
-    Action action;
+    PermissionEntity permission;
+    ActionEntity action;
     private final Date terminationDate = new Date();
 
     public PermissionTest() {
@@ -95,7 +94,7 @@ public class PermissionTest extends TestCase {
         systemAction.setId(22L);
         systemAction.setName("actionTest");
 
-        SystemPermission permission2 = new Permission(systemPermission);
+        SystemPermission permission2 = new PermissionEntity(systemPermission);
 
         assertEquals(permission2.getId(), systemPermission.getId());
         assertEquals(permission2.getActionId(), systemPermission.getActionId());

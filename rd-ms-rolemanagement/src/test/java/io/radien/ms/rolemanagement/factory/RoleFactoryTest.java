@@ -1,6 +1,6 @@
 package io.radien.ms.rolemanagement.factory;
 
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,7 +11,7 @@ import javax.json.JsonObjectBuilder;
 
 public class RoleFactoryTest {
 
-    Role role = new Role();
+    RoleEntity role = new RoleEntity();
     JsonObject json;
 
     public RoleFactoryTest() {
@@ -23,7 +23,7 @@ public class RoleFactoryTest {
     @Test
     public void testCreate() {
         RoleFactory roleFactory = new RoleFactory();
-        Role newRoleConstructed = roleFactory.create("nameValue", "descriptionValue", 2L);
+        RoleEntity newRoleConstructed = roleFactory.create("nameValue", "descriptionValue", 2L);
 
         assertEquals(role.getName(), newRoleConstructed.getName());
         assertEquals(role.getDescription(), newRoleConstructed.getDescription());
@@ -39,7 +39,7 @@ public class RoleFactoryTest {
         builder.add("createUser", 2L);
 
         json = builder.build();
-        Role newJsonRole = RoleFactory.convert(json);
+        RoleEntity newJsonRole = RoleFactory.convert(json);
 
         assertEquals(role.getName(), newJsonRole.getName());
         assertEquals(role.getDescription(), newJsonRole.getDescription());

@@ -20,7 +20,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemAction;
-import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
@@ -33,9 +32,9 @@ import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 
-import io.radien.ms.permissionmanagement.model.Action;
-import io.radien.ms.permissionmanagement.model.Permission;
-import io.radien.ms.permissionmanagement.model.Resource;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -129,7 +128,7 @@ public class PermissionServiceTest {
     @Test
     public void testAddPermission() throws UniquenessConstraintException {
         final String name = "TestReadPermission";
-        SystemPermission permission = new Permission();
+        SystemPermission permission = new PermissionEntity();
         permission.setName(name);
         permission.setResourceId(1L);
         permission.setActionId(111L);
@@ -153,10 +152,10 @@ public class PermissionServiceTest {
      */
     @Test
     public void testAddDuplicatedName() throws UniquenessConstraintException {
-        Permission u = PermissionFactory.create("permissionNameXYZ", null,2L);
+        PermissionEntity u = PermissionFactory.create("permissionNameXYZ", null,2L);
         permissionServiceAccess.save(u);
 
-        Permission u2 = PermissionFactory.create("permissionNameXYZ", null,2L);
+        PermissionEntity u2 = PermissionFactory.create("permissionNameXYZ", null,2L);
         Exception exception = assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(u2));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");;
         String actualMessage = exception.getMessage();
@@ -175,7 +174,7 @@ public class PermissionServiceTest {
      */
     @Test
     public void testGetById() throws PermissionNotFoundException, UniquenessConstraintException {
-        Permission u = PermissionFactory.create("testGetIdFirstName", null, 2L);
+        PermissionEntity u = PermissionFactory.create("testGetIdFirstName", null, 2L);
         permissionServiceAccess.save(u);
         SystemPermission result = permissionServiceAccess.get(u.getId());
         assertNotNull(result);
@@ -201,10 +200,10 @@ public class PermissionServiceTest {
      */
     @Test
     public void testGetByListOfIds() throws UniquenessConstraintException {
-        Permission p1 = PermissionFactory.create("testGetByListOfIdsFirstName1", null, 2L);
+        PermissionEntity p1 = PermissionFactory.create("testGetByListOfIdsFirstName1", null, 2L);
         permissionServiceAccess.save(p1);
 
-        Permission p2 = PermissionFactory.create("testGetByListOfIdsFirstName2", null,2L);
+        PermissionEntity p2 = PermissionFactory.create("testGetByListOfIdsFirstName2", null,2L);
         permissionServiceAccess.save(p2);
 
         List<Long> PermissionIds = Arrays.asList(p1.getId(), p2.getId());
@@ -256,15 +255,15 @@ public class PermissionServiceTest {
      */
     @Test
     public void testDeleteByListOfIds() throws PermissionNotFoundException, UniquenessConstraintException {
-        Permission p1 = PermissionFactory.create("testDeleteByListOfIdsFirstName1",
+        PermissionEntity p1 = PermissionFactory.create("testDeleteByListOfIdsFirstName1",
                 null, 2L);
         permissionServiceAccess.save(p1);
 
-        Permission p2 = PermissionFactory.create("testDeleteByListOfIdsFirstName2",
+        PermissionEntity p2 = PermissionFactory.create("testDeleteByListOfIdsFirstName2",
                 null, 2L);
         permissionServiceAccess.save(p2);
 
-        Permission p3 = PermissionFactory.create("testDeleteByListOfIdsFirstName3",
+        PermissionEntity p3 = PermissionFactory.create("testDeleteByListOfIdsFirstName3",
                 null, 2L);
         permissionServiceAccess.save(p3);
 
@@ -323,16 +322,16 @@ public class PermissionServiceTest {
      */
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
-        Permission p1 = PermissionFactory.create("permissionName1", null, 2L);
+        PermissionEntity p1 = PermissionFactory.create("permissionName1", null, 2L);
         permissionServiceAccess.save(p1);
 
-        Permission p2 = PermissionFactory.create("permissionName2", null, 2L);
+        PermissionEntity p2 = PermissionFactory.create("permissionName2", null, 2L);
         permissionServiceAccess.save(p2);
 
-        Permission p3 = PermissionFactory.create("permissionName3", null, 2L);
+        PermissionEntity p3 = PermissionFactory.create("permissionName3", null, 2L);
         permissionServiceAccess.save(p3);
 
-        Permission u4 = PermissionFactory.create("permissionName1", null, 2L);
+        PermissionEntity u4 = PermissionFactory.create("permissionName1", null, 2L);
 
         Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> permissionServiceAccess.save(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
@@ -350,19 +349,19 @@ public class PermissionServiceTest {
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
         String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
-        Permission p1 = PermissionFactory.create("permissionNamePerm1", null, 2L);
+        PermissionEntity p1 = PermissionFactory.create("permissionNamePerm1", null, 2L);
         permissionServiceAccess.save(p1);
 
-        Permission p2 = PermissionFactory.create("permissionNamePerm2", null, 2L);
+        PermissionEntity p2 = PermissionFactory.create("permissionNamePerm2", null, 2L);
         permissionServiceAccess.save(p2);
 
-        Permission p3 = PermissionFactory.create("permissionNamePerm1", null, 2L);
+        PermissionEntity p3 = PermissionFactory.create("permissionNamePerm1", null, 2L);
 
         Exception exceptionForFieldName = assertThrows(Exception.class, () -> permissionServiceAccess.save(p3));
         String actualMessage = exceptionForFieldName.getMessage();
         assertTrue(actualMessage.contains(expectedMessageName));
 
-        Permission u4 = PermissionFactory.create("permissionNamePerm2", null, 2L);
+        PermissionEntity u4 = PermissionFactory.create("permissionNamePerm2", null, 2L);
 
         Exception exceptionName2 = assertThrows(Exception.class, () -> permissionServiceAccess.save(u4));
         String messageFromException = exceptionName2.getMessage();
@@ -452,14 +451,14 @@ public class PermissionServiceTest {
         permissionFilter.setName("perm-radien-1");
         permissionFilter.setExact(true);
         List<? extends SystemPermission> permissions = permissionServiceAccess.getPermissions(permissionFilter);
-        Permission permission = (Permission) permissions.get(0);
+        PermissionEntity permission = (PermissionEntity) permissions.get(0);
 
         // Retrieve the action
         ActionSearchFilter filter = new ActionSearchFilter();
         filter.setName("read-contract");
         filter.setLogicConjunction(true);
         List<? extends SystemAction> actions = actionServiceAccess.getActions(filter);
-        Action action = (Action) actions.get(0);
+        ActionEntity action = (ActionEntity) actions.get(0);
 
         assertNotNull(action);
         assertEquals(action.getName(), sa.getName());
@@ -488,32 +487,32 @@ public class PermissionServiceTest {
         Long actionId2 = 101L;
         Long actionId3 = 11L;
 
-        SystemPermission p1 = new Permission();
+        SystemPermission p1 = new PermissionEntity();
         p1.setName("perm1");
         p1.setActionId(actionId1);
         permissionServiceAccess.save(p1);
 
-        SystemPermission p2 = new Permission();
+        SystemPermission p2 = new PermissionEntity();
         p2.setName("perm2");
         p2.setActionId(actionId2);
         permissionServiceAccess.save(p2);
 
-        SystemPermission p3 = new Permission();
+        SystemPermission p3 = new PermissionEntity();
         p3.setName("perm3");
         p3.setActionId(actionId3);
         permissionServiceAccess.save(p3);
 
-        SystemPermission p4 = new Permission();
+        SystemPermission p4 = new PermissionEntity();
         p4.setName("perm4");
         p4.setActionId(actionId3);
         permissionServiceAccess.save(p4);
 
-        SystemPermission p5 = new Permission();
+        SystemPermission p5 = new PermissionEntity();
         p5.setName("perm5");
         p5.setActionId(actionId3);
         permissionServiceAccess.save(p5);
 
-        SystemPermission p6 = new Permission();
+        SystemPermission p6 = new PermissionEntity();
         p6.setName("perm6");
         p6.setActionId(actionId2);
         permissionServiceAccess.save(p6);
@@ -549,25 +548,25 @@ public class PermissionServiceTest {
         Long resourceId2 = 10101L;
         Long actionId3 = 11L;
 
-        SystemPermission p1 = new Permission();
+        SystemPermission p1 = new PermissionEntity();
         p1.setName("perm1");
         p1.setActionId(actionId1);
         p1.setResourceId(resourceId1);
         permissionServiceAccess.save(p1);
 
-        SystemPermission p2 = new Permission();
+        SystemPermission p2 = new PermissionEntity();
         p2.setName("perm2");
         p2.setActionId(actionId2);
         p2.setResourceId(resourceId2);
         permissionServiceAccess.save(p2);
 
-        SystemPermission p3 = new Permission();
+        SystemPermission p3 = new PermissionEntity();
         p3.setName("perm3");
         p3.setActionId(actionId3);
         p3.setResourceId(resourceId2);
         permissionServiceAccess.save(p3);
 
-        SystemPermission p4 = new Permission();
+        SystemPermission p4 = new PermissionEntity();
         p4.setName("perm4");
         p4.setActionId(actionId3);
         p4.setResourceId(resourceId2);
@@ -623,7 +622,7 @@ public class PermissionServiceTest {
      */
     @Test
     public void testExistsPermissionMethod() throws UniquenessConstraintException {
-        Permission experiment = new Permission();
+        PermissionEntity experiment = new PermissionEntity();
         experiment.setName("create-contract");
 
         permissionServiceAccess.save(experiment);
@@ -669,29 +668,29 @@ public class PermissionServiceTest {
      */
     @Test
     public void testPermissionRetrievalByActionAndResourceNames() throws UniquenessConstraintException {
-        SystemAction a1 = new Action();
+        SystemAction a1 = new ActionEntity();
         a1.setName("delete");
         actionServiceAccess.save(a1);
 
-        SystemAction a2 = new Action();
+        SystemAction a2 = new ActionEntity();
         a2.setName("create");
         actionServiceAccess.save(a2);
 
-        SystemAction a3 = new Action();
+        SystemAction a3 = new ActionEntity();
         a3.setName("update");
         actionServiceAccess.save(a3);
 
-        SystemResource r1 = new Resource();
+        SystemResource r1 = new ResourceEntity();
         r1.setName("dealer");
         resourceServiceAccess.save(r1);
 
-        SystemPermission p1 = new Permission();
+        SystemPermission p1 = new PermissionEntity();
         p1.setName(a1.getName() + "-" + r1.getName());
         p1.setResourceId(r1.getId());
         p1.setActionId(a1.getId());
         permissionServiceAccess.save(p1);
 
-        SystemPermission p2 = new Permission();
+        SystemPermission p2 = new PermissionEntity();
         p2.setName(a2.getName() + "-" + r1.getName());
         p2.setResourceId(r1.getId());
         p2.setActionId(a2.getId());
@@ -709,12 +708,12 @@ public class PermissionServiceTest {
                 getPermissionByActionAndResourceNames("test", "test");
         assertNull(p4);
 
-        SystemPermission p5 = new Permission();
+        SystemPermission p5 = new PermissionEntity();
         p5.setName(a3.getName() + "-" + r1.getName());
         permissionServiceAccess.save(p5);
         assertNotNull(p5.getId());
 
-        SystemPermission p6 = new Permission();
+        SystemPermission p6 = new PermissionEntity();
         p6.setName("create-dealer");
         assertThrows(UniquenessConstraintException.class, () -> permissionServiceAccess.save(p6));
 

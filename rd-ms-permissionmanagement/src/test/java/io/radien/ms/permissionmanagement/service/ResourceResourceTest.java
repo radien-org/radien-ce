@@ -18,7 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.model.Resource;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -85,7 +85,7 @@ public class ResourceResourceTest {
      */
     @Test
     public void testGetById() throws ResourceNotFoundException {
-        when(resourceServiceAccess.get(1L)).thenReturn(new Resource());
+        when(resourceServiceAccess.get(1L)).thenReturn(new ResourceEntity());
         Response response = resourceResource.getById(1L);
         assertEquals(200,response.getStatus());
     }
@@ -106,7 +106,7 @@ public class ResourceResourceTest {
      */
     @Test
     public void testGetResourcesBy() {
-        Response response = resourceResource.getResources("resource-name",true,true);
+        Response response = resourceResource.getResources("resource-name",null,true,true);
         assertEquals(200,response.getStatus());
     }
 
@@ -116,7 +116,7 @@ public class ResourceResourceTest {
     @Test
     public void testGetPermissionsByException() {
         doThrow(new RuntimeException()).when(resourceServiceAccess).getResources(any());
-        Response response = resourceResource.getResources("resource-name",true,true);
+        Response response = resourceResource.getResources("resource-name",null,true,true);
         assertEquals(500,response.getStatus());
     }
 

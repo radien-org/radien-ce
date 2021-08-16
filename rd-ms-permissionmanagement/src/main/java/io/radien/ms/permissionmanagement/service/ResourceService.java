@@ -15,6 +15,7 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
@@ -22,7 +23,7 @@ import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
-import io.radien.ms.permissionmanagement.model.Resource;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -55,7 +56,7 @@ public class ResourceService implements ResourceServiceAccess {
      * Count the number of Resources existent in the DB.
      * @return the count of Resources
      */
-    private long getCount(Predicate global, Root<Resource> resourceRoot, CriteriaBuilder cb, EntityManager em) {
+    private long getCount(Predicate global, Root<ResourceEntity> resourceRoot, CriteriaBuilder cb, EntityManager em) {
         CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
 
         criteriaQuery.where(global);
@@ -74,7 +75,7 @@ public class ResourceService implements ResourceServiceAccess {
      */
     @Override
     public SystemResource get(Long resourceId)  {
-        return getEntityManager().find(Resource.class, resourceId);
+        return getEntityManager().find(ResourceEntity.class, resourceId);
     }
 
     /**
@@ -91,12 +92,12 @@ public class ResourceService implements ResourceServiceAccess {
 
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
-        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
+        CriteriaQuery<ResourceEntity> criteriaQuery = criteriaBuilder.createQuery(ResourceEntity.class);
+        Root<ResourceEntity> resourceRoot = criteriaQuery.from(ResourceEntity.class);
         criteriaQuery.select(resourceRoot);
         criteriaQuery.where(resourceRoot.get("id").in(resourceId));
 
-        TypedQuery<Resource> q=em.createQuery(criteriaQuery);
+        TypedQuery<ResourceEntity> q=em.createQuery(criteriaQuery);
 
         return new ArrayList<>(q.getResultList());
     }
@@ -117,8 +118,8 @@ public class ResourceService implements ResourceServiceAccess {
                                      boolean isAscending) {
         EntityManager em = this.getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
-        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
+        CriteriaQuery<ResourceEntity> criteriaQuery = criteriaBuilder.createQuery(ResourceEntity.class);
+        Root<ResourceEntity> resourceRoot = criteriaQuery.from(ResourceEntity.class);
 
         criteriaQuery.select(resourceRoot);
 
@@ -138,7 +139,7 @@ public class ResourceService implements ResourceServiceAccess {
             criteriaQuery.orderBy(orders);
         }
 
-        TypedQuery<Resource> q=em.createQuery(criteriaQuery);
+        TypedQuery<ResourceEntity> q=em.createQuery(criteriaQuery);
 
         q.setFirstResult((pageNo - 1) * pageSize);
         q.setMaxResults(pageSize);
@@ -159,7 +160,7 @@ public class ResourceService implements ResourceServiceAccess {
     @Override
     public void save(SystemResource resource) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
-        List<Resource> alreadyExistentRecords = searchDuplicatedName(resource, em);
+        List<ResourceEntity> alreadyExistentRecords = searchDuplicatedName(resource, em);
         if (!alreadyExistentRecords.isEmpty()) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
         }
@@ -175,18 +176,18 @@ public class ResourceService implements ResourceServiceAccess {
      * @param resource Resource information to look up.
      * @return list of Resources with duplicated information.
      */
-    private List<Resource> searchDuplicatedName(SystemResource resource, EntityManager em) {
-        List<Resource> alreadyExistentRecords;
+    private List<ResourceEntity> searchDuplicatedName(SystemResource resource, EntityManager em) {
+        List<ResourceEntity> alreadyExistentRecords;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
-        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
+        CriteriaQuery<ResourceEntity> criteriaQuery = criteriaBuilder.createQuery(ResourceEntity.class);
+        Root<ResourceEntity> resourceRoot = criteriaQuery.from(ResourceEntity.class);
         criteriaQuery.select(resourceRoot);
         Predicate global = criteriaBuilder.equal(resourceRoot.get("name"), resource.getName());
         if(resource.getId()!= null) {
             global=criteriaBuilder.and(global, criteriaBuilder.notEqual(resourceRoot.get("id"), resource.getId()));
         }
         criteriaQuery.where(global);
-        TypedQuery<Resource> q = em.createQuery(criteriaQuery);
+        TypedQuery<ResourceEntity> q = em.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
     }
@@ -199,8 +200,8 @@ public class ResourceService implements ResourceServiceAccess {
     public void delete(Long resourceId) {
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Resource> criteriaDelete = cb.createCriteriaDelete(Resource.class);
-        Root<Resource> resourceRoot = criteriaDelete.from(Resource.class);
+        CriteriaDelete<ResourceEntity> criteriaDelete = cb.createCriteriaDelete(ResourceEntity.class);
+        Root<ResourceEntity> resourceRoot = criteriaDelete.from(ResourceEntity.class);
 
         criteriaDelete.where(cb.equal(resourceRoot.get("id"),resourceId));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -217,8 +218,8 @@ public class ResourceService implements ResourceServiceAccess {
         }
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaDelete<Resource> criteriaDelete = cb.createCriteriaDelete(Resource.class);
-        Root<Resource> resourceRoot = criteriaDelete.from(Resource.class);
+        CriteriaDelete<ResourceEntity> criteriaDelete = cb.createCriteriaDelete(ResourceEntity.class);
+        Root<ResourceEntity> resourceRoot = criteriaDelete.from(ResourceEntity.class);
 
         criteriaDelete.where(resourceRoot.get("id").in(resourceIds));
         em.createQuery(criteriaDelete).executeUpdate();
@@ -232,15 +233,15 @@ public class ResourceService implements ResourceServiceAccess {
     public List<? extends SystemResource> getResources(SystemResourceSearchFilter filter) {
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Resource> criteriaQuery = criteriaBuilder.createQuery(Resource.class);
-        Root<Resource> resourceRoot = criteriaQuery.from(Resource.class);
+        CriteriaQuery<ResourceEntity> criteriaQuery = criteriaBuilder.createQuery(ResourceEntity.class);
+        Root<ResourceEntity> resourceRoot = criteriaQuery.from(ResourceEntity.class);
 
         criteriaQuery.select(resourceRoot);
 
         Predicate global = getFilteredPredicate((ResourceSearchFilter) filter, criteriaBuilder, resourceRoot);
 
         criteriaQuery.where(global);
-        TypedQuery<Resource> q=em.createQuery(criteriaQuery);
+        TypedQuery<ResourceEntity> q=em.createQuery(criteriaQuery);
 
         return q.getResultList();
     }
@@ -255,7 +256,7 @@ public class ResourceService implements ResourceServiceAccess {
      */
     private Predicate getFilteredPredicate(ResourceSearchFilter filter,
                                            CriteriaBuilder criteriaBuilder,
-                                           Root<Resource> resourceRoot) {
+                                           Root<ResourceEntity> resourceRoot) {
         Predicate global;
 
         // is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
@@ -269,6 +270,15 @@ public class ResourceService implements ResourceServiceAccess {
             global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         } else {
             global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
+        }
+
+        if (filter.getIds() != null && !filter.getIds().isEmpty()) {
+            Predicate in = resourceRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds());
+            if(filter.isLogicConjunction()) {
+                global = criteriaBuilder.and(global, in);
+            } else {
+                global = criteriaBuilder.or(global, in);
+            }
         }
 
         global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, resourceRoot, global);
@@ -289,7 +299,7 @@ public class ResourceService implements ResourceServiceAccess {
     private Predicate getFieldPredicate(String name, Object value,
                                         ResourceSearchFilter filter,
                                         CriteriaBuilder criteriaBuilder,
-                                        Root<Resource> resourceRoot,
+                                        Root<ResourceEntity> resourceRoot,
                                         Predicate global) {
         if(value != null) {
             Predicate subPredicate;

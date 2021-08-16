@@ -15,7 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.util;
 
-import io.radien.ms.tenantmanagement.client.ResponseExceptionMapper;
+import io.radien.ms.tenantmanagement.client.TenantResponseExceptionMapper;
 import io.radien.ms.tenantmanagement.client.providers.ActiveTenantMessageBodyWriter;
 import io.radien.ms.tenantmanagement.client.providers.ContractMessageBodyWriter;
 import io.radien.ms.tenantmanagement.client.providers.TenantMessageBodyWriter;
@@ -49,7 +49,7 @@ public class ClientServiceUtil {
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
-                .register(ResponseExceptionMapper.class)
+                .register(TenantResponseExceptionMapper.class)
                 .register(ContractMessageBodyWriter.class)
                 .build(ContractResourceClient.class);
     }
@@ -65,7 +65,7 @@ public class ClientServiceUtil {
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
-                .register(ResponseExceptionMapper.class)
+                .register(TenantResponseExceptionMapper.class)
                 .register(TenantMessageBodyWriter.class)
                 .build(TenantResourceClient.class);
     }
@@ -81,7 +81,7 @@ public class ClientServiceUtil {
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
-                .register(ResponseExceptionMapper.class)
+                .register(TenantResponseExceptionMapper.class)
                 .register(ActiveTenantMessageBodyWriter.class)
                 .build(ActiveTenantResourceClient.class);
     }

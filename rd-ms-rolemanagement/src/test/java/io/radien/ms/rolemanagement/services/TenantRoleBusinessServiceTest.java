@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
@@ -35,16 +36,20 @@ import io.radien.exception.NotFoundException;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleIllegalArgumentException;
+import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
-import io.radien.ms.rolemanagement.entities.Role;
-import io.radien.ms.rolemanagement.entities.TenantRole;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
+import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
 import org.junit.jupiter.api.*;
 
+import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLE;
+import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -166,7 +171,7 @@ public class TenantRoleBusinessServiceTest {
     protected SystemRole createRole(String name) throws RoleNotFoundException, UniquenessConstraintException {
         SystemRole sr = getRoleByName(name);
         if (sr == null) {
-            sr = new Role();
+            sr = new RoleEntity();
             sr.setName(name);
             roleServiceAccess.save(sr);
         }
@@ -191,7 +196,7 @@ public class TenantRoleBusinessServiceTest {
         SystemTenantRole tenantRole = tenantRoles.isEmpty() ? null : tenantRoles.get(0);
 
         if (tenantRole == null) {
-            tenantRole = new TenantRole();
+            tenantRole = new TenantRoleEntity();
             tenantRole.setRoleId(roleId);
             tenantRole.setTenantId(tenantId);
 
@@ -231,7 +236,7 @@ public class TenantRoleBusinessServiceTest {
         assertNotNull(tenantRole);
 
         // Try to create again using the same parameters
-        SystemTenantRole repeated = new TenantRole();
+        SystemTenantRole repeated = new TenantRoleEntity();
         repeated.setTenantId(tenantId);
         repeated.setRoleId(roleAdmin.getId());
 
@@ -241,7 +246,7 @@ public class TenantRoleBusinessServiceTest {
         // Try to insert with invalid Tenant
         Long mockedInvalidTenant = 9999L;
         Long mockedValidTenant = 8888L;
-        SystemTenantRole tenantRoleWithInvalidTenant = new TenantRole();
+        SystemTenantRole tenantRoleWithInvalidTenant = new TenantRoleEntity();
         tenantRoleWithInvalidTenant.setTenantId(mockedInvalidTenant);
         tenantRoleWithInvalidTenant.setRoleId(roleAdmin.getId());
 
@@ -257,7 +262,7 @@ public class TenantRoleBusinessServiceTest {
                 save(tenantRoleWithInvalidTenant));
 
         // Try to insert with invalid Role
-        SystemTenantRole tenantRoleWithInvalidRole = new TenantRole();
+        SystemTenantRole tenantRoleWithInvalidRole = new TenantRoleEntity();
         tenantRoleWithInvalidRole.setTenantId(mockedValidTenant);
         tenantRoleWithInvalidRole.setRoleId(1111111L);
         assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
@@ -568,14 +573,14 @@ public class TenantRoleBusinessServiceTest {
 
         // Doing (un)assignment process with null tenant
         Long invalidTenant = null;
-        String expectedErrorMessage = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("tenant id");
+        String expectedErrorMessage = TENANT_ROLE_FIELD_MANDATORY.toString("tenant id");
         TenantRoleException tre = assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
                 unassignUser(invalidTenant, guest.getId(), user1Id));
         assertEquals(expectedErrorMessage, tre.getMessage());
 
         // Doing (un)assignment process with null user
         Long validTenant = 1111111L, invalidUser = null;
-        expectedErrorMessage = GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("user id");
+        expectedErrorMessage = TENANT_ROLE_FIELD_MANDATORY.toString("user id");
         tre = assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
                 unassignUser(validTenant, guest.getId(), invalidUser));
         assertEquals(expectedErrorMessage, tre.getMessage());
@@ -1002,7 +1007,7 @@ public class TenantRoleBusinessServiceTest {
         Long tenantTestCase1 = 100L;
         SystemRole role = assertDoesNotThrow(() -> createRole("test"));
 
-        SystemTenantRole systemTenantRole = new TenantRole();
+        SystemTenantRole systemTenantRole = new TenantRoleEntity();
         systemTenantRole.setTenantId(tenantTestCase1);
         systemTenantRole.setRoleId(role.getId());
 
@@ -1146,5 +1151,33 @@ public class TenantRoleBusinessServiceTest {
         SystemException se = assertThrows(SystemException.class, () -> tenantRoleBusinessService.
                 retrieveTenant(notExistentTenantId));
         assertEquals(expectedErrorMsg, se.getMessage());
+    }
+
+    /**
+     * Test for method {@link TenantRoleBusinessService#getTenantRoleId(Long, Long)},
+     * handling invalid cases where params where not correctly informed
+     * @throws TenantRoleNotFoundException thrown if association does not exists
+     * @throws TenantRoleIllegalArgumentException thrown when either tenant or role are not informed
+     */
+    @Test
+    @Order(39)
+    public void retrieveTenantRoleIdForInvalidCase() throws TenantRoleNotFoundException, TenantRoleIllegalArgumentException{
+        Long tenant = 11111999999999L, role = 211119788676769999L;
+        String expectedMsgForNotFoundTenantRole = TENANT_ROLE_ASSOCIATION_TENANT_ROLE.toString(
+                tenant.toString(), role.toString());
+
+        TenantRoleNotFoundException notFoundException = assertThrows(TenantRoleNotFoundException.class, () ->
+                tenantRoleBusinessService.getTenantRoleId(tenant, role));
+        assertEquals(expectedMsgForNotFoundTenantRole, notFoundException.getMessage());
+
+        String expectedMsgForTenantNull = TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ID.getLabel());
+        TenantRoleIllegalArgumentException argumentException = assertThrows(TenantRoleIllegalArgumentException.class,
+                () -> tenantRoleBusinessService.getTenantRoleId(null, role));
+        assertEquals(expectedMsgForTenantNull, argumentException.getMessage());
+
+        String expectedMsgForRoleNull = TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ROLE_ID.getLabel());
+        argumentException = assertThrows(TenantRoleIllegalArgumentException.class,
+                () -> tenantRoleBusinessService.getTenantRoleId(tenant, null));
+        assertEquals(expectedMsgForRoleNull, argumentException.getMessage());
     }
 }

@@ -400,6 +400,6 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
             return DataModelEnum.USERS_ROLES_PATH.getValue();
         }
-        return DataModelEnum.PRETTY_USER.getValue();
+        return DataModelEnum.USERS_PATH.getValue();
     }
 }

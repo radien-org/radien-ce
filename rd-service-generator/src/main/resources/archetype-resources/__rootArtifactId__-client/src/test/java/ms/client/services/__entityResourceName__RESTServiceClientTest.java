@@ -66,7 +66,7 @@ public class ${entityResourceName}RESTServiceClientTest {
 
     private String get${entityResourceName}ManagementUrl(){
         String url = "http://${entityResourceName.toLowerCase()}Management";
-        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DEMOMANAGEMENT)).thenReturn(url);
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_${entityResourceName.toUpperCase()}MANAGEMENT)).thenReturn(url);
         return url;
     }
 

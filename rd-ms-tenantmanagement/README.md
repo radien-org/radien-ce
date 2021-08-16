@@ -11,7 +11,7 @@ radien Tenant Management Microservice
     java -jar target/tenantmanagementservice-exec.jar
 
 ### - ___Local TomEE Configuration:___
-    URL: https://localhost:8082/tenantmanagement/v1/contract
+    URL: https://localhost:8080/tenantmanagement/v1/contract
     HTTP Port: 8082
     HTTPS Port: 8445
     JMX Port: 1101
@@ -24,20 +24,20 @@ radien Tenant Management Microservice
 * GET Data
   ------
 ### - ___Get all tenants with pagination:___
-    curl --location --request GET 'http://localhost:8082/tenantmanagementservice/v1/contract?{fieldName}={fieldValue}' --data-raw ''
+    curl --location --request GET 'http://localhost:8080/tenantmanagementservice/v1/contract?{fieldName}={fieldValue}' --data-raw ''
 - Possible field names
   - "pageNo" Long
   - "pageSize" Long
 #
 ### - ___Get contract by ID:___
-    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
+    curl -X GET 'http://localhost:8080/tenantmanagementservice/v1/contract/{id}'
 ### - ___Get tenant by ID:___
-    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/tenant/{id}'
+    curl -X GET 'http://localhost:8080/tenantmanagementservice/v1/tenant/{id}'
 #
 ### - ___Get list of contracts:___
-    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/contract'
+    curl -X GET 'http://localhost:8080/tenantmanagementservice/v1/contract'
 ### - ___Get list of tenants:___
-    curl -X GET 'http://localhost:8082/tenantmanagementservice/v1/tenant'
+    curl -X GET 'http://localhost:8080/tenantmanagementservice/v1/tenant'
 #
 * POST Data
   ------
@@ -51,7 +51,7 @@ radien Tenant Management Microservice
         "lastUpdateUser": null,
         "createDate": null,
         "lastUpdate": null
-      }' http://localhost:8082/tenantmanagementservice/v1/contract
+      }' http://localhost:8080/tenantmanagementservice/v1/contract
 ### - ___Create tenant:___
     curl -H "Content-Type: application/json" -X POST \
       --data-raw '{
@@ -60,7 +60,7 @@ radien Tenant Management Microservice
         "lastUpdateUser": null,
         "createDate": null,
         "lastUpdate": null
-      }' http://localhost:8082/tenantmanagementservice/v1/tenant
+      }' http://localhost:8080/tenantmanagementservice/v1/tenant
 #
 * PUT Data
   ------
@@ -74,7 +74,7 @@ radien Tenant Management Microservice
         "lastUpdateUser": null,
         "createDate": null,
         "lastUpdate": null
-      }' http://localhost:8082/tenantmanagementservice/v1/contract/{id}
+      }' http://localhost:8080/tenantmanagementservice/v1/contract/{id}
 ### - ___Update tenant:___
     curl -H "Content-Type: application/json" -X POST \
       --data-raw '{
@@ -83,14 +83,14 @@ radien Tenant Management Microservice
         "lastUpdateUser": null,
         "createDate": null,
         "lastUpdate": null
-      }' http://localhost:8082/tenantmanagementservice/v1/tenant/{id}
+      }' http://localhost:8080/tenantmanagementservice/v1/tenant/{id}
 #
 
 * DELETE Data
   ------
 ### - ___Delete Contract by ID:___
-    curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/contract/{id}'
+    curl --location --request DELETE 'http://localhost:8080/tenantmanagementservice/v1/contract/{id}'
 ### - ___Delete Tenant by ID:___
-    curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/tenant/{id}'
+    curl --location --request DELETE 'http://localhost:8080/tenantmanagementservice/v1/tenant/{id}'
 ### - ___Delete Tenant by ID:___
-    curl --location --request DELETE 'http://localhost:8082/tenantmanagementservice/v1/tenant/deleteTenantHierarchy/{id}'
+    curl --location --request DELETE 'http://localhost:8080/tenantmanagementservice/v1/tenant/deleteTenantHierarchy/{id}'

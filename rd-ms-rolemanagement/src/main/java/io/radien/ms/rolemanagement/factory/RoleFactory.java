@@ -17,7 +17,7 @@ package io.radien.ms.rolemanagement.factory;
 
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.rolemanagement.entities.Role;
+import io.radien.ms.rolemanagement.entities.RoleEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +45,8 @@ public class RoleFactory implements Serializable {
      * @param description role type.
      * @return a Role object to be used.
      */
-    public static Role create(String name, String description, Long createdUser) {
-        Role role = new Role();
+    public static RoleEntity create(String name, String description, Long createdUser) {
+        RoleEntity role = new RoleEntity();
 
         role.setName(name);
         role.setDescription(description);
@@ -67,13 +67,13 @@ public class RoleFactory implements Serializable {
      * @param jsonRole receives a json object with all the information.
      * @return a Role object constructed by the given json.
      */
-    public static Role convert(JsonObject jsonRole) {
+    public static RoleEntity convert(JsonObject jsonRole) {
         Long id = FactoryUtilService.getLongFromJson("id", jsonRole);
         String name = FactoryUtilService.getStringFromJson("name", jsonRole);
         String description = FactoryUtilService.getStringFromJson("description", jsonRole);
         Long createUser = FactoryUtilService.getLongFromJson("createUser", jsonRole);
 
-        Role role = new Role();
+        RoleEntity role = new RoleEntity();
         role.setId(id);
         role.setName(name);
         role.setDescription(description);

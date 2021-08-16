@@ -530,8 +530,8 @@ public class UserResourceTest {
         assertNotNull(response.getEntity());
         assertEquals(response.getEntity().getClass(), BatchSummary.class);
         BatchSummary summary = (BatchSummary) response.getEntity();
-        assertEquals(summary.getTotalNonProcessed(), 4);
-        assertEquals(summary.getTotalProcessed(), 6);
+        assertEquals(4, summary.getTotalNonProcessed());
+        assertEquals(6, summary.getTotalProcessed());
         assertEquals(BatchSummary.ProcessingStatus.PARTIAL_SUCCESS, summary.getInternalStatus());
     }
 
