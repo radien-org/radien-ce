@@ -19,21 +19,20 @@ import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.api.util.FactoryUtilService;
 
-import javax.json.Json;
+import io.radien.ms.usermanagement.client.util.UserFactoryUtil;
+import java.util.Map;
+
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 import java.util.stream.Collectors;
-
 /**
  * User Management object factory. Converts and maps information from Json or to Json into a User or from a User object
  *
  * @author Bruno Gama
  */
-public class UserFactory {
+public class UserFactory extends UserFactoryUtil {
 
     /**
      * Create a user with already predefine fields.
@@ -47,18 +46,9 @@ public class UserFactory {
      * @return a User object to be used
      */
     public static User create(String firstname, String lastname, String logon, String sub, String email, Long createdUser){
-        User u = new User();
-        u.setFirstname(firstname);
-        u.setLastname(lastname);
-        u.setLogon(logon);
-        u.setEnabled(true);
-        u.setSub(sub);
-        u.setCreateUser(createdUser);
-        Date now = new Date();
-        u.setLastUpdate(now);
-        u.setCreateDate(now);
-        u.setUserEmail(email);
-        return u;
+        User user = new User();
+        user.setEnabled(true);
+        return (User) createUser(user, firstname, lastname, logon, sub, email, createdUser);
     }
 
     /**
@@ -68,31 +58,15 @@ public class UserFactory {
      * @param person the JSONObject to convert
      * @return the SystemUserObject
      */
-    //TODO: Complete the object conversion fields missing
     public static User convert(JsonObject person) {
-        Long id = FactoryUtilService.getLongFromJson("id", person);
-        String logon = FactoryUtilService.getStringFromJson("logon", person);
-        String userEmail = FactoryUtilService.getStringFromJson("userEmail", person);
-        Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
-        String sub = FactoryUtilService.getStringFromJson("sub", person);
-        String firstname = FactoryUtilService.getStringFromJson("firstname", person);
-        String lastname = FactoryUtilService.getStringFromJson("lastname",person);
-        Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",person);
+        Map<String, Object> userMappedValues = convertJsonObject(person);
         Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);
-
+        Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",person);
 
         User user = new User();
-        user.setId(id);
-        user.setLogon(logon);
-        user.setUserEmail(userEmail);
-        user.setCreateUser(createUser);
         // TODO: Set password protected
         // TODO: user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()))
-        user.setCreateDate(new Date());
-        user.setLastUpdate(new Date());
-        user.setSub(sub);
-        user.setFirstname(firstname);
-        user.setLastname(lastname);
+        user.setId((Long) userMappedValues.get("id"));
         //If not present is set to boolean default
         if(enabled != null) {
             user.setEnabled(enabled);
@@ -100,30 +74,19 @@ public class UserFactory {
         if(delegatedCreation != null){
             user.setDelegatedCreation(delegatedCreation);
         }
-        return user;
+        return (User) createUser(user, (String) userMappedValues.get("firstname"), (String) userMappedValues.get("lastname"),
+                (String) userMappedValues.get("logon"), (String) userMappedValues.get("sub"),
+                (String) userMappedValues.get("userEmail"), (Long) userMappedValues.get("createUser"));
     }
 
     /**
      * Converts a System user to a Json Object
      *
-     * @param person system user to be converted to json
+     * @param user system user to be converted to json
      * @return json object with keys and values constructed
      */
-    //TODO: Complete the object conversion fields missing
-    public static JsonObject convertToJsonObject(User person) {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-
-        FactoryUtilService.addValueLong(builder, "id", person.getId());
-        FactoryUtilService.addValue(builder, "logon", person.getLogon());
-        FactoryUtilService.addValue(builder, "userEmail", person.getUserEmail());
-        FactoryUtilService.addValueLong(builder, "createUser", person.getCreateUser());
-        FactoryUtilService.addValueLong(builder, "lastUpdateUser", person.getLastUpdateUser());
-        FactoryUtilService.addValue(builder, "sub", person.getSub());
-        FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
-        FactoryUtilService.addValue(builder, "lastname", person.getLastname());
-        FactoryUtilService.addValueBoolean(builder, "delegatedCreation", person.isDelegatedCreation());
-        FactoryUtilService.addValueBoolean(builder, "enabled", person.isEnabled());
-        return  builder.build();
+    public static JsonObject convertToJsonObject(User user) {
+        return convertSystemUserToJsonObject(user);
     }
 
     public static List<User> convert(JsonArray jsonArray) {
@@ -136,18 +99,6 @@ public class UserFactory {
      * @return the Page encapsulating information regarding Action entities
      */
     public static Page<User> convertJsonToPage(JsonObject page) {
-        int currentPage = FactoryUtilService.getIntFromJson("currentPage", page);
-        JsonArray results = FactoryUtilService.getArrayFromJson("results", page);
-        int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
-        int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
-
-        ArrayList<User> pageResults = new ArrayList<>();
-
-        if(results != null){
-            for(int i = 0;i<results.size();i++){
-                pageResults.add(convert(results.getJsonObject(i)));
-            }
-        }
-        return new Page<>(pageResults, currentPage, totalResults, totalPages);
+        return convertToUserPageObject(page);
     }
 }

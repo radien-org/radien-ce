@@ -17,18 +17,16 @@ package io.radien.ms.usermanagement.client.services;
 
 import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.api.util.FactoryUtilService;
 
-import javax.json.JsonArray;
+import io.radien.ms.usermanagement.client.util.UserFactoryUtil;
 import javax.json.JsonObject;
-import java.util.ArrayList;
 
 /**
  * Page factory converter. This class converts a received json object into a page of users
  *
  * @author Nuno Santana
  */
-public class PageFactory {
+public class PageFactory extends UserFactoryUtil {
 
     /**
      * Converts a JsonObject to a Page object
@@ -37,16 +35,6 @@ public class PageFactory {
      * @return the SystemUserObject
      */
     public static Page<User> convert(JsonObject page) {
-        int currentPage = FactoryUtilService.getIntFromJson("currentPage", page);
-        JsonArray results = FactoryUtilService.getArrayFromJson("results", page);
-        int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
-        int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
-        ArrayList<User> pageResults = new ArrayList<>();
-        if(results != null){
-            for(int i = 0;i<results.size();i++){
-                pageResults.add(UserFactory.convert(results.getJsonObject(i)));
-            }
-        }
-        return new Page<>(pageResults,currentPage,totalResults,totalPages);
+        return convertToUserPageObject(page);
     }
 }

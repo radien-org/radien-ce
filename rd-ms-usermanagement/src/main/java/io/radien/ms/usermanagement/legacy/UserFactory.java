@@ -18,14 +18,13 @@ package io.radien.ms.usermanagement.legacy;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.util.FactoryUtilService;
 
+import io.radien.ms.usermanagement.client.util.UserFactoryUtil;
 import io.radien.ms.usermanagement.entities.UserEntity;
-import javax.enterprise.context.RequestScoped;
-import javax.json.JsonObjectBuilder;
-import javax.json.Json;
-import javax.json.JsonObject;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.util.Map;
+import javax.enterprise.context.RequestScoped;
+
+import javax.json.JsonObject;
 
 /**
  * Factory class responsible for producing User related objects
@@ -34,7 +33,7 @@ import java.util.Date;
  * @author Nuno Santana
  */
 @RequestScoped
-public class UserFactory implements Serializable {
+public class UserFactory extends UserFactoryUtil {
 
 	private static final long serialVersionUID = -5005556415803181075L;
 
@@ -50,74 +49,46 @@ public class UserFactory implements Serializable {
 	 * @return a User object to be used
 	 */
 	public static UserEntity create(String firstname, String lastname, String logon, String sub, String email, Long createdUser) {
-		UserEntity u = new UserEntity();
-		u.setFirstname(firstname);
-		u.setLastname(lastname);
-		u.setLogon(logon);
-		u.setEnabled(true);
-		u.setSub(sub);
-		u.setCreateUser(createdUser);
-		Date now = new Date();
-		u.setLastUpdate(now);
-		u.setCreateDate(now);
-		u.setUserEmail(email);
-		return u;
+		UserEntity user = new UserEntity();
+		user.setEnabled(true);
+		return (UserEntity) createUser(user, firstname, lastname, logon, sub, email, createdUser);
 	}
 
 	/**
 	 * Converts a JSONObject to a SystemUser object Used by the Application
 	 * DataInit to seed Data in the database
 	 *
-	 * @param person the JSONObject to convert
+	 * @param userEntity the JSONObject to convert
 	 * @return the SystemUserObject
 	 */
-	//TODO: Complete the object conversion fields missing
-	public static UserEntity convert(JsonObject person) {
-		Long id = FactoryUtilService.getLongFromJson("id", person);
-		String logon = FactoryUtilService.getStringFromJson("logon", person);
-		String userEmail = FactoryUtilService.getStringFromJson("userEmail", person);
-		Long createUser = FactoryUtilService.getLongFromJson("createUser", person);
-		String sub = FactoryUtilService.getStringFromJson("sub", person);
-		String firstname = FactoryUtilService.getStringFromJson("firstname", person);
-		String lastname = FactoryUtilService.getStringFromJson("lastname",person);
-		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);
-
+	public static UserEntity convert(JsonObject userEntity) {
 		UserEntity user = new UserEntity();
-		user.setId(id);
-		user.setLogon(logon);
-		user.setUserEmail(userEmail);
-		user.setCreateDate(new Date());
-		user.setLastUpdate(new Date());
-		user.setSub(sub);
-		user.setFirstname(firstname);
-		user.setLastname(lastname);
-		user.setCreateUser(createUser);
+		Map<String, Object> userEntityMappedValues = convertJsonObject(userEntity);
+		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",userEntity);
+		Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",userEntity);
+
+		user.setId((Long) userEntityMappedValues.get("id"));
+		if(enabled != null) {
+			user.setDelegatedCreation(enabled);
+		}
+
 		if(delegatedCreation != null) {
 			user.setDelegatedCreation(delegatedCreation);
 		}
-
-		return user;
+		return (UserEntity) createUser(user, (String) userEntityMappedValues.get("firstname"), (String) userEntityMappedValues.get("lastname"),
+				(String) userEntityMappedValues.get("logon"), (String) userEntityMappedValues.get("sub"),
+				(String) userEntityMappedValues.get("userEmail"), (Long) userEntityMappedValues.get("createUser"));
 	}
 
 	/**
 	 * Converts a System user to a Json Object
 	 *
-	 * @param person system user to be converted to json
+	 * @param userEntity system user to be converted to json
 	 * @return json object with keys and values constructed
 	 */
-	public static JsonObject convertToJsonObject(SystemUser person) {
-		JsonObjectBuilder builder = Json.createObjectBuilder();
-
-		FactoryUtilService.addValueLong(builder, "id", person.getId());
-		FactoryUtilService.addValue(builder, "logon", person.getLogon());
-		FactoryUtilService.addValue(builder, "userEmail", person.getUserEmail());
-		FactoryUtilService.addValueLong(builder, "createUser", person.getCreateUser());
-		FactoryUtilService.addValueLong(builder, "lastUpdateUser", person.getLastUpdateUser());
-		FactoryUtilService.addValue(builder, "sub", person.getSub());
-		FactoryUtilService.addValue(builder, "firstname", person.getFirstname());
-		FactoryUtilService.addValue(builder, "lastname", person.getLastname());
-		FactoryUtilService.addValueBoolean(builder, "delegatedCreation", person.isDelegatedCreation());
-		FactoryUtilService.addValueBoolean(builder, "enabled", person.isEnabled());
-		return  builder.build();
+	public static JsonObject convertToJsonObject(SystemUser userEntity) {
+		return convertSystemUserToJsonObject(userEntity);
 	}
+
+
 }
