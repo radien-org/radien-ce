@@ -99,13 +99,13 @@ public class UserFactoryUtil implements Serializable {
 
         //TODO: Complete the object conversion fields missing
         FactoryUtilService.addValueLong(builder, "id", systemUser.getId());
-        FactoryUtilService.addValue(builder, FIRSTNAME, systemUser.getFirstname());
-        FactoryUtilService.addValue(builder, LASTNAME, systemUser.getLastname());
         FactoryUtilService.addValue(builder, LOGON, systemUser.getLogon());
         FactoryUtilService.addValue(builder, USER_EMAIL, systemUser.getUserEmail());
         FactoryUtilService.addValueLong(builder, CREATE_USER, systemUser.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", systemUser.getLastUpdateUser());
         FactoryUtilService.addValue(builder, "sub", systemUser.getSub());
+        FactoryUtilService.addValue(builder, FIRSTNAME, systemUser.getFirstname());
+        FactoryUtilService.addValue(builder, LASTNAME, systemUser.getLastname());
         FactoryUtilService.addValueBoolean(builder, "delegatedCreation", systemUser.isDelegatedCreation());
         FactoryUtilService.addValueBoolean(builder, "enabled", systemUser.isEnabled());
         return  builder.build();
