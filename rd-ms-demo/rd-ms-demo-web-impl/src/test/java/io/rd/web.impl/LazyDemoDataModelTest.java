@@ -18,6 +18,7 @@ package io.rd.web.impl;
 import io.rd.api.entity.Page;
 import io.rd.api.model.SystemDemo;
 import io.rd.api.service.DemoRESTServiceAccess;
+import io.rd.exception.SystemException;
 import io.rd.ms.client.entities.Demo;
 
 import org.junit.Before;
@@ -56,7 +57,7 @@ public class LazyDemoDataModelTest {
     private List<? extends SystemDemo> datasource;
 
     @Before
-    public void before() throws MalformedURLException {
+    public void before() throws SystemException {
         MockitoAnnotations.initMocks(this);
         new LazyDemoDataModel(service);
 

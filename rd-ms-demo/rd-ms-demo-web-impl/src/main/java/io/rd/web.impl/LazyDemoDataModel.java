@@ -20,15 +20,13 @@ import io.rd.api.entity.Page;
 import io.rd.api.model.SystemDemo;
 import io.rd.api.service.DemoRESTServiceAccess;
 
+import io.rd.exception.SystemException;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.WebApplicationException;
-import java.net.MalformedURLException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,10 +81,8 @@ public class LazyDemoDataModel extends LazyDataModel<SystemDemo> {
             datasource = page.getResults();
 
             rowCount = (long)page.getTotalResults();
-        } catch (MalformedURLException  e) {
-            e.printStackTrace();
-        } catch (WebApplicationException e){
-            errorMsg = e.getMessage();
+        } catch (SystemException e) {
+            log.error(e.getMessage(),e);
         }
 
         setRowCount(Math.toIntExact(rowCount));

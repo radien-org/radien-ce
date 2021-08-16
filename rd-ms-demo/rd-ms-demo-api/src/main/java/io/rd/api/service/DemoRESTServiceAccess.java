@@ -15,7 +15,6 @@
  */
 package io.rd.api.service;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 import io.rd.api.Appframeable;
@@ -30,7 +29,7 @@ import io.rd.exception.SystemException;
 public interface DemoRESTServiceAccess extends Appframeable{
     public boolean save(SystemDemo demo) throws SystemException;
 
-    public Page<? extends SystemDemo> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException;
+    public Page<? extends SystemDemo> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 
     public boolean deleteDemo(long id);
 }

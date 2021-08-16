@@ -55,6 +55,9 @@ public @RequestScoped class SecurityConfig extends WebSecurityConfigurerAdapter 
 	@Value("${api}")
 	private String apiPrefix;
 
+	@Value("${auth.csrfEnabled}")
+	private boolean csrfEnabled;
+
 	@Autowired
 	private OAuth2RestTemplate restTemplate;
 
@@ -103,7 +106,10 @@ public @RequestScoped class SecurityConfig extends WebSecurityConfigurerAdapter 
 	protected void configure(HttpSecurity http) throws Exception {
 
 		// disable scrf protection with jsf
-		http.csrf().disable();
+		if(!csrfEnabled) {
+			http.csrf().disable();
+		}
+
 		http.headers().frameOptions().sameOrigin();
 
 		RequestMatcher requestMatcher = request -> {
