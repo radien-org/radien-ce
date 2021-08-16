@@ -17,20 +17,23 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.config.KeycloakEmailActions;
+
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+
 import org.keycloak.representations.idm.UserRepresentation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * Keycloak client side configuration contructor class
  *
@@ -42,7 +45,7 @@ public class KeycloakClient {
     private static final String GRANT_TYPE="grant_type";
     private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
 
-    private HashMap<String, String> result;
+    private HashMap<Object, Object> result;
     private String idpUrl;
     private String clientId;
     private String username;
@@ -155,7 +158,7 @@ public class KeycloakClient {
      * @return the current active and request access token
      */
     public String getAccessToken() {
-        return result.get("access_token");
+        return result.get("access_token").toString();
     }
 
     /**
@@ -163,7 +166,7 @@ public class KeycloakClient {
      * @return the current active and request refresh token
      */
     public String getRefreshToken() {
-        return result.get(REFRESH_TOKEN);
+        return result.get(REFRESH_TOKEN).toString();
     }
 
     /**
@@ -171,8 +174,8 @@ public class KeycloakClient {
      * @return http response hash map with all the login fields
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public Map login() throws RemoteResourceException {
-        HttpResponse<HashMap> response = Unirest.post(idpUrl + tokenPath)
+    public Map<Object, Object> login() throws RemoteResourceException {
+        HttpResponse<?> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, clientId)
                 //.field("redirect_uri", "https://localhost:8443/web/login")
@@ -181,7 +184,7 @@ public class KeycloakClient {
                 .field("password", password)
                 .asObject(HashMap.class);
         if (response.isSuccess()) {
-            result = response.getBody();
+            result = (HashMap<Object, Object>) response.getBody();
             return result;
         } else {
             //TODO: improve Error handling
@@ -261,14 +264,14 @@ public class KeycloakClient {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public void refreshToken() throws RemoteResourceException {
-        HttpResponse<HashMap> response = Unirest.post(idpUrl + tokenPath)
+        HttpResponse<?> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, clientId)
                 .field(GRANT_TYPE, REFRESH_TOKEN)
                 .field(REFRESH_TOKEN, getRefreshToken())
                 .asObject(HashMap.class);
         if (response.isSuccess()) {
-            result = response.getBody();
+            result = (HashMap<Object, Object>) response.getBody();
         } else {
             //TODO: improve Error handling
             throw new RemoteResourceException("Unable to refresh token");
@@ -282,16 +285,16 @@ public class KeycloakClient {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public String refreshToken(String refreshToken) throws RemoteResourceException {
-        HttpResponse<HashMap> response = Unirest.post(idpUrl + radienTokenPath)
+        HttpResponse<?> response = Unirest.post(idpUrl + radienTokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, radienClientId)
                 .field("client_secret", radienSecret)
                 .field(GRANT_TYPE, REFRESH_TOKEN)
                 .field(REFRESH_TOKEN, refreshToken)
-                .asObject(HashMap.class);
+                .asObject(HttpResponse.class);
         if (response.isSuccess()) {
-            result = response.getBody();
-            return result.get("access_token");
+            result = (HashMap<Object, Object>) response.getBody();
+            return result.get("access_token").toString();
         } else {
             //TODO: improve Error handling
             //  error_description=Token is not active, error=invalid_grant
