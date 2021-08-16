@@ -41,6 +41,12 @@ import javax.json.JsonObjectBuilder;
 public class UserFactoryUtil implements Serializable {
     private static final long serialVersionUID = -1770715848784023573L;
 
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
+    private static final String LOGON = "logon";
+    private static final String USER_EMAIL = "userEmail";
+    private static final String CREATE_USER = "createUser";
+
     /**
      * Creates User object with defined user attributes
      * @param user user object
@@ -74,11 +80,11 @@ public class UserFactoryUtil implements Serializable {
         Map<String, Object> systemUserMapValues = new HashMap<>();
 
         systemUserMapValues.put("id", FactoryUtilService.getLongFromJson("id", jsonSystemUserObject));
-        systemUserMapValues.put("firstname", FactoryUtilService.getStringFromJson("firstname", jsonSystemUserObject));
-        systemUserMapValues.put("lastname", FactoryUtilService.getStringFromJson("lastname", jsonSystemUserObject));
-        systemUserMapValues.put("logon", FactoryUtilService.getStringFromJson("logon", jsonSystemUserObject));
-        systemUserMapValues.put("userEmail", FactoryUtilService.getStringFromJson("userEmail", jsonSystemUserObject));
-        systemUserMapValues.put("createUser", FactoryUtilService.getLongFromJson("createUser", jsonSystemUserObject));
+        systemUserMapValues.put(FIRSTNAME, FactoryUtilService.getStringFromJson(FIRSTNAME, jsonSystemUserObject));
+        systemUserMapValues.put(LASTNAME, FactoryUtilService.getStringFromJson(LASTNAME, jsonSystemUserObject));
+        systemUserMapValues.put(LOGON, FactoryUtilService.getStringFromJson(LOGON, jsonSystemUserObject));
+        systemUserMapValues.put(USER_EMAIL, FactoryUtilService.getStringFromJson(USER_EMAIL, jsonSystemUserObject));
+        systemUserMapValues.put(CREATE_USER, FactoryUtilService.getLongFromJson(CREATE_USER, jsonSystemUserObject));
         systemUserMapValues.put("sub", FactoryUtilService.getStringFromJson("sub", jsonSystemUserObject));
         return systemUserMapValues;
     }
@@ -93,13 +99,13 @@ public class UserFactoryUtil implements Serializable {
 
         //TODO: Complete the object conversion fields missing
         FactoryUtilService.addValueLong(builder, "id", systemUser.getId());
-        FactoryUtilService.addValue(builder, "logon", systemUser.getLogon());
-        FactoryUtilService.addValue(builder, "userEmail", systemUser.getUserEmail());
-        FactoryUtilService.addValueLong(builder, "createUser", systemUser.getCreateUser());
+        FactoryUtilService.addValue(builder, FIRSTNAME, systemUser.getFirstname());
+        FactoryUtilService.addValue(builder, LASTNAME, systemUser.getLastname());
+        FactoryUtilService.addValue(builder, LOGON, systemUser.getLogon());
+        FactoryUtilService.addValue(builder, USER_EMAIL, systemUser.getUserEmail());
+        FactoryUtilService.addValueLong(builder, CREATE_USER, systemUser.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", systemUser.getLastUpdateUser());
         FactoryUtilService.addValue(builder, "sub", systemUser.getSub());
-        FactoryUtilService.addValue(builder, "firstname", systemUser.getFirstname());
-        FactoryUtilService.addValue(builder, "lastname", systemUser.getLastname());
         FactoryUtilService.addValueBoolean(builder, "delegatedCreation", systemUser.isDelegatedCreation());
         FactoryUtilService.addValueBoolean(builder, "enabled", systemUser.isEnabled());
         return  builder.build();
