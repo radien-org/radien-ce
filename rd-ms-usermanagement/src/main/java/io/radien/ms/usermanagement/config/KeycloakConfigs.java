@@ -26,19 +26,18 @@ public enum KeycloakConfigs implements SystemProperties {
 
     ADMIN_URL("keycloak.admin.url"),
     ADMIN_REALM("keycloak.admin.realm"),
-    ADMIN_CLIENT_ID("KEYCLOAK_CLIENT_ID"),
-    ADMIN_USER("KEYCLOAK_ADMIN"),
-    ADMIN_PASSWORD("KEYCLOAK_PASSWORD"),
-    APP_REALM("SCRIPT_CLIENT_ID_VALUE"),
-    IDP_URL("KEYCLOAK_IDP_URL"),
-    TOKEN_PATH("KEYCLOAK_TOKEN_PATH"),
-    USER_PATH("KEYCLOAK_USER_PATH"),
-    RADIEN_CLIENT_ID("SCRIPT_CLIENT_ID_VALUE"),
-    RADIEN_SECRET("SCRIPT_CLIENT_SECRET_VALUE"),
-    RADIEN_TOKEN_PATH("REALMS_TOKEN_PATH");
+    ADMIN_CLIENT_ID("keycloak.admin.client.id"),
+    ADMIN_USER("keycloak.admin.user"),
+    ADMIN_PASSWORD("keycloak.admin.password"),
+    APP_REALM("keycloak.app.realm"),
+    IDP_URL("idp.url"),
+    TOKEN_PATH("token.path"),
+    USER_PATH("user.path"),
+    RADIEN_CLIENT_ID("radien.client.id"),
+    RADIEN_SECRET("radien.secret"),
+    RADIEN_TOKEN_PATH("radien.token.path");
 
     private String propKey;
-
 
     /**
      * Keycloak configuration constructor
