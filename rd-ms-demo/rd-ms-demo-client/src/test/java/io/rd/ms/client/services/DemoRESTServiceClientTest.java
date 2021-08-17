@@ -19,10 +19,12 @@ import io.rd.api.OAFAccess;
 import io.rd.api.OAFProperties;
 import io.rd.api.entity.Page;
 import io.rd.api.model.SystemDemo;
+import io.rd.exception.SystemException;
 import io.rd.ms.client.entities.Demo;
 import io.rd.ms.client.util.ClientServiceUtil;
 import io.rd.ms.client.util.DemoModelMapper;
 
+import javax.ejb.EJBException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -106,11 +108,11 @@ public class DemoRESTServiceClientTest {
     public void save_exception_test() throws MalformedURLException {
         when(resourceClient.save(demo1)).thenReturn(Response.serverError().entity("error msg").build());
         when(clientServiceUtil.getDemoResourceClient(any())).thenThrow(MalformedURLException.class);
-        demoRESTServiceClient.save(new Demo());
+        assertFalse(demoRESTServiceClient.save(new Demo()));
     }
 
     @Test
-    public void getAll_test() throws MalformedURLException {
+    public void getAll_test() throws MalformedURLException, SystemException {
         List<Demo> list = new ArrayList<>();
         list.add(DemoFactory.create("name-1"));
         Page<SystemDemo> page = new Page<>(list, 1, 1, 1);
@@ -137,7 +139,7 @@ public class DemoRESTServiceClientTest {
     }
 
     @Test
-    public void getAll_exception_test() throws MalformedURLException {
+    public void getAll_exception_test() throws MalformedURLException, SystemException {
         List<Demo> list = new ArrayList<>();
         list.add(DemoFactory.create("name-1"));
         Page<SystemDemo> page = new Page<>(list, 100, 100, 1000);
@@ -155,7 +157,7 @@ public class DemoRESTServiceClientTest {
         when(resourceClient.getAll(any(), anyInt(), anyInt(), any(), anyBoolean())).thenReturn(Response.serverError().entity("error msg").build());
         when(clientServiceUtil.getDemoResourceClient(any())).thenThrow(MalformedURLException.class);
 
-        Page<? extends SystemDemo> receivedPage = demoRESTServiceClient.getAll(null, 1, 10, null, false);
+        assertNotNull(demoRESTServiceClient.getAll(null, 1, 10, null, false));
 
     }
 
@@ -191,7 +193,7 @@ public class DemoRESTServiceClientTest {
     public void deleteDemo_exception_test() throws MalformedURLException {
         when(resourceClient.delete(demo1.getId())).thenReturn(Response.serverError().entity("error msg").build());
         when(clientServiceUtil.getDemoResourceClient(any())).thenThrow(MalformedURLException.class);
-        demoRESTServiceClient.deleteDemo(5L);
+        assertFalse(demoRESTServiceClient.deleteDemo(5L));
     }
 
 }

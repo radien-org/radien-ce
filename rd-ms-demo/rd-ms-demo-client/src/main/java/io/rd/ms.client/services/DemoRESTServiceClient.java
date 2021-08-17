@@ -15,6 +15,7 @@
  */
 package io.rd.ms.client.services;
 
+import io.rd.exception.SystemException;
 import java.io.InputStream;
 
 import java.net.MalformedURLException;
@@ -70,7 +71,9 @@ public class DemoRESTServiceClient implements DemoRESTServiceAccess {
 			if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
 				return true;
 			} else {
-				log.error(response.readEntity(String.class));
+				if(log.isErrorEnabled()){
+					log.error(response.readEntity(String.class));
+				}
 			}
 		} catch (MalformedURLException e) {
 			log.error(e.getMessage(), e);
@@ -79,7 +82,7 @@ public class DemoRESTServiceClient implements DemoRESTServiceAccess {
 	}
 
 	@Override
-	public Page<? extends SystemDemo> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException {
+	public Page<? extends SystemDemo> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
 		Page<Demo> pageDemos = null;
 		try {
 			pageDemos = getPageDemos(search, pageNo, pageSize, sortBy, isAscending);
@@ -112,7 +115,9 @@ public class DemoRESTServiceClient implements DemoRESTServiceAccess {
 			if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
 				deleteDemo = true;
 			} else {
-				log.error(response.readEntity(String.class));
+				if(log.isErrorEnabled()){
+					log.error(response.readEntity(String.class));
+				}
 			}
 		} catch (MalformedURLException e) {
 			log.error(e.getMessage(), e);

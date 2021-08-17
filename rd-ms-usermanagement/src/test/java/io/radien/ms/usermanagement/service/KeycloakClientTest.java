@@ -18,6 +18,7 @@ package io.radien.ms.usermanagement.service;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import junit.framework.TestCase;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +33,12 @@ public class KeycloakClientTest extends TestCase {
         u.setLogon("abc");
         u.setSub("test");
         client = new KeycloakClient()
-                .clientId("admin-cli")
-                .username("adminsantana")
-                .password("NM7uR6ybEx3eu3J")
-                .idpUrl("https://idp-int.radien.io")
-                .tokenPath("/auth/realms/master/protocol/openid-connect/token")
-                .userPath("/auth/admin/realms/radien/users");
+                .clientId(ConfigProvider.getConfig().getValue("KEYCLOAK_CLIENT_ID", String.class))
+                .username(ConfigProvider.getConfig().getValue("KEYCLOAK_ADMIN", String.class))
+                .password(ConfigProvider.getConfig().getValue("KEYCLOAK_PASSWORD", String.class))
+                .idpUrl(ConfigProvider.getConfig().getValue("KEYCLOAK_IDP_URL", String.class))
+                .tokenPath(ConfigProvider.getConfig().getValue("KEYCLOAK_TOKEN_PATH", String.class))
+                .userPath(ConfigProvider.getConfig().getValue("KEYCLOAK_USER_PATH", String.class));
         try {
             client.login();
             String id = client.createUser(KeycloakFactory.convertToUserRepresentation(u));
