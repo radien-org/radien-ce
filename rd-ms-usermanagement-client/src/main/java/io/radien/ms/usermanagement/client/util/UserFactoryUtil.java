@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.util;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.util.FactoryUtilService;
@@ -40,12 +41,6 @@ import javax.json.JsonObjectBuilder;
  */
 public class UserFactoryUtil implements Serializable {
     private static final long serialVersionUID = -1770715848784023573L;
-
-    private static final String FIRSTNAME = "firstname";
-    private static final String LASTNAME = "lastname";
-    private static final String LOGON = "logon";
-    private static final String USER_EMAIL = "userEmail";
-    private static final String CREATE_USER = "createUser";
 
     /**
      * Creates User object with defined user attributes
@@ -79,13 +74,13 @@ public class UserFactoryUtil implements Serializable {
     public static Map<String, Object> convertJsonObject(JsonObject jsonSystemUserObject){
         Map<String, Object> systemUserMapValues = new HashMap<>();
 
-        systemUserMapValues.put("id", FactoryUtilService.getLongFromJson("id", jsonSystemUserObject));
-        systemUserMapValues.put(FIRSTNAME, FactoryUtilService.getStringFromJson(FIRSTNAME, jsonSystemUserObject));
-        systemUserMapValues.put(LASTNAME, FactoryUtilService.getStringFromJson(LASTNAME, jsonSystemUserObject));
-        systemUserMapValues.put(LOGON, FactoryUtilService.getStringFromJson(LOGON, jsonSystemUserObject));
-        systemUserMapValues.put(USER_EMAIL, FactoryUtilService.getStringFromJson(USER_EMAIL, jsonSystemUserObject));
-        systemUserMapValues.put(CREATE_USER, FactoryUtilService.getLongFromJson(CREATE_USER, jsonSystemUserObject));
-        systemUserMapValues.put("sub", FactoryUtilService.getStringFromJson("sub", jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.ID.getFieldName(), FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.FIRST_NAME.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.FIRST_NAME.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.LAST_NAME.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.LAST_NAME.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.LOGON.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.LOGON.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.USER_EMAIL.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.USER_EMAIL.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.CREATE_USER.getFieldName(), FactoryUtilService.getLongFromJson(SystemVariables.CREATE_USER.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.SUB.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.SUB.getFieldName(), jsonSystemUserObject));
         return systemUserMapValues;
     }
 
@@ -98,16 +93,16 @@ public class UserFactoryUtil implements Serializable {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
         //TODO: Complete the object conversion fields missing
-        FactoryUtilService.addValueLong(builder, "id", systemUser.getId());
-        FactoryUtilService.addValue(builder, LOGON, systemUser.getLogon());
-        FactoryUtilService.addValue(builder, USER_EMAIL, systemUser.getUserEmail());
-        FactoryUtilService.addValueLong(builder, CREATE_USER, systemUser.getCreateUser());
-        FactoryUtilService.addValueLong(builder, "lastUpdateUser", systemUser.getLastUpdateUser());
-        FactoryUtilService.addValue(builder, "sub", systemUser.getSub());
-        FactoryUtilService.addValue(builder, FIRSTNAME, systemUser.getFirstname());
-        FactoryUtilService.addValue(builder, LASTNAME, systemUser.getLastname());
-        FactoryUtilService.addValueBoolean(builder, "delegatedCreation", systemUser.isDelegatedCreation());
-        FactoryUtilService.addValueBoolean(builder, "enabled", systemUser.isEnabled());
+        FactoryUtilService.addValueLong(builder, SystemVariables.ID.getFieldName(), systemUser.getId());
+        FactoryUtilService.addValue(builder, SystemVariables.LOGON.getFieldName(), systemUser.getLogon());
+        FactoryUtilService.addValue(builder, SystemVariables.USER_EMAIL.getFieldName(), systemUser.getUserEmail());
+        FactoryUtilService.addValueLong(builder, SystemVariables.CREATE_USER.getFieldName(), systemUser.getCreateUser());
+        FactoryUtilService.addValueLong(builder, SystemVariables.LAST_UPDATE_USER.getFieldName(), systemUser.getLastUpdateUser());
+        FactoryUtilService.addValue(builder, SystemVariables.SUB.getFieldName(), systemUser.getSub());
+        FactoryUtilService.addValue(builder, SystemVariables.FIRST_NAME.getFieldName(), systemUser.getFirstname());
+        FactoryUtilService.addValue(builder, SystemVariables.LAST_NAME.getFieldName(), systemUser.getLastname());
+        FactoryUtilService.addValueBoolean(builder, SystemVariables.USER_DELEGATION.getFieldName(), systemUser.isDelegatedCreation());
+        FactoryUtilService.addValueBoolean(builder, SystemVariables.USER_ENABLED.getFieldName(), systemUser.isEnabled());
         return  builder.build();
     }
 
