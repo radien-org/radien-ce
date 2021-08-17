@@ -15,6 +15,7 @@
  */
 package io.radien.api.util;
 
+import io.radien.api.SystemVariables;
 import java.io.Serializable;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public class ModelServiceUtil implements Serializable {
         }
 
         if (isFilterIds) {
-            Predicate in = objectRoot.get("id").in(filterIds);
+            Predicate in = objectRoot.get(SystemVariables.ID.getFieldName()).in(filterIds);
             if(filterIsLogicConjunction) {
                 global = criteriaBuilder.and(global, in);
             } else {

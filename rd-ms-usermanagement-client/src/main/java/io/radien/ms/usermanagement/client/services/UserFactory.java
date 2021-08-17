@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.api.util.FactoryUtilService;
@@ -60,13 +61,13 @@ public class UserFactory extends UserFactoryUtil {
      */
     public static User convert(JsonObject person) {
         Map<String, Object> userMappedValues = convertJsonObject(person);
-        Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",person);
-        Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",person);
+        Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson(SystemVariables.USER_DELEGATION.getFieldName(),person);
+        Boolean enabled = FactoryUtilService.getBooleanFromJson(SystemVariables.USER_ENABLED.getFieldName(),person);
 
         User user = new User();
         // TODO: Set password protected
         // TODO: user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()))
-        user.setId((Long) userMappedValues.get("id"));
+        user.setId((Long) userMappedValues.get(SystemVariables.ID.getFieldName()));
         //If not present is set to boolean default
         if(enabled != null) {
             user.setEnabled(enabled);
@@ -74,9 +75,13 @@ public class UserFactory extends UserFactoryUtil {
         if(delegatedCreation != null){
             user.setDelegatedCreation(delegatedCreation);
         }
-        return (User) createUser(user, (String) userMappedValues.get("firstname"), (String) userMappedValues.get("lastname"),
-                (String) userMappedValues.get("logon"), (String) userMappedValues.get("sub"),
-                (String) userMappedValues.get("userEmail"), (Long) userMappedValues.get("createUser"));
+        return (User) createUser(user,
+                (String) userMappedValues.get( SystemVariables.FIRST_NAME.getFieldName()),
+                (String) userMappedValues.get(SystemVariables.LAST_NAME.getFieldName()),
+                (String) userMappedValues.get(SystemVariables.LOGON.getFieldName()),
+                (String) userMappedValues.get(SystemVariables.SUB.getFieldName()),
+                (String) userMappedValues.get(SystemVariables.USER_EMAIL.getFieldName()),
+                (Long)   userMappedValues.get(SystemVariables.CREATE_USER.getFieldName()));
     }
 
     /**

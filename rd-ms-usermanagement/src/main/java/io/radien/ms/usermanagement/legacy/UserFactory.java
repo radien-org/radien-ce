@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.legacy;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.util.FactoryUtilService;
 
@@ -64,10 +65,10 @@ public class UserFactory extends UserFactoryUtil {
 	public static UserEntity convert(JsonObject userEntity) {
 		UserEntity user = new UserEntity();
 		Map<String, Object> userEntityMappedValues = convertJsonObject(userEntity);
-		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson("delegatedCreation",userEntity);
-		Boolean enabled = FactoryUtilService.getBooleanFromJson("enabled",userEntity);
+		Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson(SystemVariables.USER_DELEGATION.getFieldName(),userEntity);
+		Boolean enabled = FactoryUtilService.getBooleanFromJson(SystemVariables.USER_ENABLED.getFieldName(),userEntity);
 
-		user.setId((Long) userEntityMappedValues.get("id"));
+		user.setId((Long) userEntityMappedValues.get(SystemVariables.ID.getFieldName()));
 		if(enabled != null) {
 			user.setDelegatedCreation(enabled);
 		}
@@ -75,9 +76,13 @@ public class UserFactory extends UserFactoryUtil {
 		if(delegatedCreation != null) {
 			user.setDelegatedCreation(delegatedCreation);
 		}
-		return (UserEntity) createUser(user, (String) userEntityMappedValues.get("firstname"), (String) userEntityMappedValues.get("lastname"),
-				(String) userEntityMappedValues.get("logon"), (String) userEntityMappedValues.get("sub"),
-				(String) userEntityMappedValues.get("userEmail"), (Long) userEntityMappedValues.get("createUser"));
+		return (UserEntity) createUser(user,
+				(String) userEntityMappedValues.get(SystemVariables.FIRST_NAME.getFieldName()),
+				(String) userEntityMappedValues.get(SystemVariables.LAST_NAME.getFieldName()),
+				(String) userEntityMappedValues.get(SystemVariables.LOGON.getFieldName()),
+				(String) userEntityMappedValues.get(SystemVariables.SUB.getFieldName()),
+				(String) userEntityMappedValues.get(SystemVariables.USER_EMAIL.getFieldName()),
+				(Long) 	 userEntityMappedValues.get(SystemVariables.CREATE_USER.getFieldName()));
 	}
 
 	/**
