@@ -223,7 +223,6 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 		Predicate global = criteriaBuilder.or(
 				criteriaBuilder.equal(userRoot.get(SystemVariables.LOGON.getFieldName()), user.getLogon()),
 				criteriaBuilder.equal(userRoot.get(SystemVariables.USER_EMAIL.getFieldName()), user.getUserEmail()));
-				criteriaBuilder.equal(userRoot.get(SystemVariables.SUB.getFieldName()), user.getSub());
 		if(user.getId()!= null) {
 			global=criteriaBuilder.and(global, criteriaBuilder.notEqual(userRoot.get(SystemVariables.ID.getFieldName()), user.getId()));
 		}
