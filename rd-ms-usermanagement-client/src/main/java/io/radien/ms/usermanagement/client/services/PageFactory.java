@@ -36,5 +36,6 @@ public class PageFactory extends UserFactoryUtil {
      */
     public static Page<User> convert(JsonObject page) {
         return convertToUserPageObject(page);
+
     }
 }
