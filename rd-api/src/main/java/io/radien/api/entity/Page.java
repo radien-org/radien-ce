@@ -18,6 +18,7 @@ package io.radien.api.entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.json.JsonArray;
 
 /**
  * Page type constructor for the generic show information
@@ -29,6 +30,7 @@ public class Page<T extends Serializable> implements Serializable {
 
     private static final long serialVersionUID = 6812608123262067424L;
     private List<? extends T> results;
+    private transient JsonArray jsonValues;
     private int currentPage;
     private int totalResults;
     private int totalPages;
@@ -52,6 +54,20 @@ public class Page<T extends Serializable> implements Serializable {
      */
     public Page(List<? extends T> results, int currentPage, int totalResults, int totalPages) {
         this.results = results;
+        this.currentPage = currentPage;
+        this.totalResults = totalResults;
+        this.totalPages = totalPages;
+    }
+
+    /**
+     * Page constructor. Will create a page by the given requested information
+     * @param jsonValues JSON Array values
+     * @param currentPage where the user is requesting to see the information
+     * @param totalResults total number of results to be show
+     * @param totalPages total number of pages that can be show
+     */
+    public Page(JsonArray jsonValues, int currentPage, int totalResults, int totalPages) {
+        this.jsonValues = jsonValues;
         this.currentPage = currentPage;
         this.totalResults = totalResults;
         this.totalPages = totalPages;
@@ -119,5 +135,21 @@ public class Page<T extends Serializable> implements Serializable {
      */
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
+    }
+
+    /**
+     * Page getter for Json Values
+     * @return JsonArray object
+     */
+    public JsonArray getJsonValues() {
+        return jsonValues;
+    }
+
+    /**
+     * Setter for the Page Json Array
+     * @param jsonValues to set
+     */
+    public void setJsonValues(JsonArray jsonValues) {
+        this.jsonValues = jsonValues;
     }
 }

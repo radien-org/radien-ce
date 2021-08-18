@@ -17,6 +17,8 @@ package io.radien.ms.usermanagement.client.util;
 
 import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.services.UserFactory;
+import javax.json.JsonObject;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -44,12 +46,12 @@ public class PageModelMapperTest extends TestCase {
                 "\"totalResults\": 4\n" +
                 "}";
         InputStream in = new ByteArrayInputStream(example.getBytes());
-        Page<User> page = PageModelMapper.map(in);
+        Page<?> page = PageModelMapper.map(in);
         assertEquals(1,page.getTotalPages());
         assertEquals(4,page.getTotalResults());
         assertEquals(-1,page.getCurrentPage());
-        assertEquals(1,page.getResults().size());
-        User u = page.getResults().get(0);
+        assertEquals(1,page.getJsonValues().size());
+        User u = UserFactory.convert((JsonObject) page.getJsonValues().get(0));
         assertEquals("a",u.getFirstname());
         assertEquals(28L,(long) u.getId());
         assertFalse(u.isEnabled());

@@ -17,7 +17,7 @@ package io.radien.ms.usermanagement.client.util;
 
 import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.services.PageFactory;
+import io.radien.api.util.PageFactory;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -32,15 +32,20 @@ import java.io.InputStream;
 public class PageModelMapper {
 
     /**
+     * Empty constructor
+     */
+    private PageModelMapper(){}
+
+    /**
      * Mapper for a received input stream into a page of possible users
      * @param is to be mapped
      * @return a page of user information
      */
-    public static Page<User> map(InputStream is) {
+    public static Page<?> map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
 
-            return PageFactory.convert(jsonObject);
+            return PageFactory.convertToPageObject(jsonObject);
         }
     }
 }

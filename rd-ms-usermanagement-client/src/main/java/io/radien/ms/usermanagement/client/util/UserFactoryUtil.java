@@ -20,6 +20,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.util.FactoryUtilService;
 
+import io.radien.api.util.PageFactory;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 
@@ -112,17 +113,14 @@ public class UserFactoryUtil implements Serializable {
      * @return User Page Object
      */
     public static Page<User> convertToUserPageObject(JsonObject jsonObject){
-        int currentPage = FactoryUtilService.getIntFromJson("currentPage", jsonObject);
-        JsonArray results = FactoryUtilService.getArrayFromJson("results", jsonObject);
-        int totalPages = FactoryUtilService.getIntFromJson("totalPages", jsonObject);
-        int totalResults = FactoryUtilService.getIntFromJson("totalResults", jsonObject);
+        Page<?> page = PageFactory.convertToPageObject(jsonObject);
+        JsonArray jsonValues = page.getJsonValues();
         ArrayList<User> pageResults = new ArrayList<>();
-        if(results != null){
-            for(int i = 0;i<results.size();i++){
-                pageResults.add(UserFactory.convert(results.getJsonObject(i)));
+        if(jsonValues != null){
+            for(int i = 0;i<jsonValues.size();i++){
+                pageResults.add(UserFactory.convert(jsonValues.getJsonObject(i)));
             }
         }
-        return new Page<>(pageResults,currentPage,totalResults,totalPages);
+        return new Page<>(pageResults, page.getCurrentPage(), page.getTotalResults(), page.getTotalPages());
     }
-
 }

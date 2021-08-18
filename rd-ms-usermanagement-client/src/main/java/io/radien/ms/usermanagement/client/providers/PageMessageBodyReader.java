@@ -63,7 +63,7 @@ public class PageMessageBodyReader implements MessageBodyReader<Page> {
 	 * implementation if a specific HTTP error response needs to be produced.
 	 */
 	@Override
-	public Page readFrom(Class<Page> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
+	public Page<?> readFrom(Class<Page> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
 		return PageModelMapper.map(entityStream);
 	}
 }

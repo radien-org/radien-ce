@@ -13,30 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client.services;
+package io.radien.api.util;
 
 import io.radien.api.entity.Page;
-import io.radien.ms.usermanagement.client.entities.User;
-import junit.framework.TestCase;
+
 import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 
-public class PageFactoryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+/**
+ * PageFactory Test class
+ *
+ * @author Nuno Santana
+ * @author Rajesh Gavvala
+ */
+public class PageFactoryTest {
+
+    /**
+     * Test Method convertToPageObject()
+     * Asserts JSONObjectBuilder
+     */
     @Test
-    public void testConvert() {
+    public void testConvertToPageObject() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         builder.add("currentPage",-1);
-        builder.add("results",jsonArrayBuilder.build());
+        builder.add("results",jsonArrayBuilder);
         builder.add("totalPages",1);
         builder.add("totalResults",4);
-        Page<User> page = PageFactory.convert(builder.build());
+        Page<?> page = PageFactory.convertToPageObject(builder.build());
         assertEquals(-1,page.getCurrentPage());
-        assertEquals(0,page.getResults().size());
+        assertNull(page.getResults());
         assertEquals(1,page.getTotalPages());
         assertEquals(4,page.getTotalResults());
     }
