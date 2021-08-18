@@ -15,13 +15,12 @@
  */
 package io.radien.ms.rolemanagement.services;
 
-import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
-import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
-import java.util.Collection;
+import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.client.services.TenantRolePermissionResourceClient;
+import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -34,75 +33,49 @@ import org.slf4j.LoggerFactory;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRoleUserResource implements TenantRoleUserResourceClient {
+public class TenantRolePermissionResource implements TenantRolePermissionResourceClient {
 
-    private static final Logger log = LoggerFactory.getLogger(TenantRoleUserResource.class);
-
-    @Inject
-    private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
+    private static final Logger log = LoggerFactory.getLogger(TenantRolePermissionResource.class);
 
     @Inject
-    private TenantRoleUserBusinessService tenantRoleUserBusinessService;
+    private TenantRolePermissionBusinessService tenantRolePermissionBusinessService;
 
     /**
-     * Retrieves TenantRoleUser association using pagination approach
-     * (in other words, retrieves the Users associations that exist for a TenantRole)
+     * Retrieves TenantRolePermission association using pagination approach
+     * (in other words, retrieves the Permissions associations that exist for a TenantRole)
      * @param tenantId tenant identifier for a TenantRole
      * @param roleId role identifier for a TenantRole
      * @param pageNo page number
      * @param pageSize page size
      * @return In case of successful operation returns OK (http status 200)
-     * and a Page containing TenantRole associations (Chunk/Portion compatible
-     * with parameter Page number and Page size).<br>
+     * and a Page containing TenantRolePermission associations (Chunk/Portion compatible
+     * with parameter Page number and Page size).
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @Override
     public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role users. tenant id {} role id {}, pageNumber {} and pageSize {}",
-                tenantId, roleId, pageNo, pageSize);
+        log.info("Retrieving TenantRole Permission associations using pagination. Page number {}. Page Size {}.",
+                pageNo, pageSize);
         try {
-            return Response.ok().entity(tenantRoleUserServiceAccess.
+            return Response.ok().entity(this.tenantRolePermissionBusinessService.
                     getAll(tenantId, roleId, pageNo, pageSize)).build();
-        } catch (Exception e) {
+        }
+        catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
 
     /**
-     * Retrieves TenantRoleUser association (Ids) using pagination approach
-     * (in other words, retrieves the Users associations that exist for a TenantRole)
-     * @param tenantId tenant identifier for a TenantRole
-     * @param roleId role identifier for a TenantRole
-     * @param pageNo page number
-     * @param pageSize page size
-     * @return In case of successful operation returns OK (http status 200)
-     * and a Page containing TenantRole associations Ids (Chunk/Portion compatible
-     * with parameter Page number and Page size).<br>
-     * Otherwise, in case of operational error, returns Internal Server Error (500)
-     */
-    @Override
-    public Response getAllUserIds(Long tenantId, Long roleId, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role users ids. tenant id {} role id {}, pageNumber {} and pageSize {}",
-                tenantId, roleId, pageNo, pageSize);
-        try {
-            return Response.ok().entity(tenantRoleUserServiceAccess.
-                    getAllUserIds(tenantId, roleId, pageNo, pageSize)).build();
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * Deletes a Tenant Role User association using the id as search parameter.
+     * Deletes a Tenant Role Permission association using the id as search parameter.
      * @param id Tenant Role id association to guide the search process
      * @return 200 code message in case of success (Tenant Role association found)
-     * 400 if tenant role user association could not be found ,
+     * 400 if tenant role permission association could not be found ,
      * 500 code message if there is any error.
      */
     public Response delete(long id) {
         try {
-            log.info("Deleting TenantRole User association for id {}", id);
-            return Response.ok().entity(tenantRoleUserBusinessService.delete(id)).build();
+            log.info("Deleting TenantRole Permission association for id {}", id);
+            return Response.ok().entity(tenantRolePermissionBusinessService.delete(id)).build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
@@ -111,20 +84,20 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
     }
 
     /**
-     * Assign/associate/add user to a TenantRole domain
+     * Assign/associate/add permission to a TenantRole domain
      * The association will always be under a specific role
-     * @param tenantRoleUser represents the association between Tenant, Role and User
+     * @param tenantRolePermission represents the association between Tenant, Role and Permission
      * @return Response OK if operation concludes with success.
      * Response status 400 in case of association already existing or
      * other consistency issues found.
      * Response 500 in case of any other error (i.e communication issue with REST client services)
      */
     @Override
-    public Response assignUser(TenantRoleUser tenantRoleUser) {
+    public Response assignPermission(TenantRolePermission tenantRolePermission) {
         try {
-            log.info("Associating/adding user {} to tenant-role {}", tenantRoleUser.getTenantRoleId(),
-                    tenantRoleUser.getUserId());
-            tenantRoleUserBusinessService.assignUser(new io.radien.ms.rolemanagement.entities.TenantRoleUserEntity(tenantRoleUser));
+            log.info("Associating/adding permission {} to tenant-role {}", tenantRolePermission.getTenantRoleId(),
+                    tenantRolePermission.getPermissionId());
+            tenantRolePermissionBusinessService.assignPermission(new io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity(tenantRolePermission));
             return Response.ok().build();
         } catch (TenantRoleException | UniquenessConstraintException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
@@ -134,21 +107,21 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
     }
 
     /**
-     * (Un)Assign/Dissociate/remove user from TenantRole domain
+     * (Un)Assign/Dissociate/remove permission from TenantRole domain
      * @param tenantId Tenant identifier (Mandatory)
-     * @param roleIds Roles identifiers
-     * @param userId User identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param permissionId Permission identifier (Mandatory)
      * @return Response OK if operation concludes with success.
      * Response status 400 in case of association already existing or other consistency issues found.
      * Response 500 in case of any other error (i.e communication issue with REST client services)
      */
     @Override
-    public Response unAssignUser(Long tenantId, Collection<Long> roleIds, Long userId) {
+    public Response unAssignPermission(Long tenantId, Long roleId, Long permissionId) {
         try {
-            log.info("Dissociating/removing user {} from tenant {} roles {}", userId, tenantId, roleIds);
-            tenantRoleUserBusinessService.unAssignUser(tenantId, roleIds, userId);
+            log.info("Dissociating/removing permission {} from tenant {} role {}", permissionId, tenantId, roleId);
+            tenantRolePermissionBusinessService.unAssignPermission(tenantId, roleId, permissionId);
             return Response.ok().build();
-        } catch (TenantRoleException e) {
+        } catch (TenantRoleException | EJBException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);

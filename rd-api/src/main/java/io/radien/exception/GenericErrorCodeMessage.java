@@ -88,6 +88,8 @@ public enum GenericErrorCodeMessage {
     TENANT_ROLE_PERMISSIONS_ASSOCIATED_WITH_TENANT_ROLE("TR13", "error.permission.associated.with.tenant.role", "There are permissions associated with tenant role "),
     TENANT_ROLE_USERS_ASSOCIATED_WITH_TENANT_ROLE("TR14", "error.user.associated.with.tenant.role","There are users associated with tenant role "),
     TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS("TR15", "error.no.association.found.for.params", "No user associations found for the given parameters: tenant %s role %s and user %s."),
+    TENANT_ROLE_NO_TENANT_ROLE_PERMISSION_FOUND("TR16", "error.no.tenant.role.permission.found.id", "No Tenant Role Permission found for id %s."),
+    TENANT_ROLE_NO_TENANT_ROLE_USER_FOUND("TR17", "error.no.tenant.role.user.found.id", "No Tenant Role User found for id %s."),
 
     /**
      * Tenant User Role Error Code Messages

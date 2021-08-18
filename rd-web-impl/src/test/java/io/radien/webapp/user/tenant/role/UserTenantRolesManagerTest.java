@@ -15,63 +15,53 @@
  */
 package io.radien.webapp.user.tenant.role;
 
-import io.radien.exception.SystemException;
-
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.tenantrole.SystemTenantRole;
-
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
-
+import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
-
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.user.UserDataModel;
-
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
-
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 /**
  * Class that aggregates UnitTest cases for UserTenantRolesManager
  *
@@ -274,8 +264,8 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         systemTenantRole.setRoleId(1L);
 
         doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
-        doReturn(true).when(tenantRoleRESTServiceAccess).assignUser(anyLong(), anyLong(), anyLong());
-        doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anySet());
+        doReturn(true).when(tenantRoleUserRESTServiceAccess).assignUser(any());
+        doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), anyCollection(), anyLong());
 
         userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
     }
@@ -298,8 +288,8 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         systemTenantRole.setRoleId(1L);
 
         doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
-        doThrow(RuntimeException.class).when(tenantRoleRESTServiceAccess).assignUser(anyLong(), anyLong(), anyLong());
-        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).deleteUnAssignedUserTenantRoles(anyLong(), anyLong(), anySet());
+        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).assignUser(any());
+        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), anyCollection(), anyLong());
 
         userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
     }

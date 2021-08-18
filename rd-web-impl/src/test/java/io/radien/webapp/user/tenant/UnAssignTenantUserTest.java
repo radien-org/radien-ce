@@ -17,8 +17,8 @@ package io.radien.webapp.user.tenant;
 
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.exception.SystemException;
 
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
@@ -69,7 +69,7 @@ public class UnAssignTenantUserTest extends JSFUtilAndFaceContextMessagesTest {
     private UserDataModel userDataModel;
 
     @Mock
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
@@ -104,7 +104,7 @@ public class UnAssignTenantUserTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testUnAssignSelectedTenantUser() throws SystemException {
-        doReturn(true).when(tenantRoleRESTServiceAccess).unassignUser(anyLong(), any(), anyLong());
+        doReturn(true).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), any(), anyLong());
 
         assertEquals( DataModelEnum.USERS_PATH.getValue(), unAssignTenantUser.unAssignSelectedTenantUser());
         assertFalse(unAssignTenantUser.isUserSelectedAndHasUserAdminRoleAccess());
@@ -117,7 +117,7 @@ public class UnAssignTenantUserTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test(expected = Exception.class)
     public void testUnAssignSelectedTenantUserException() throws SystemException {
-        doThrow(SystemException.class).when(tenantRoleRESTServiceAccess).unassignUser(anyLong(), any(), anyLong());
+        doThrow(SystemException.class).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), any(), anyLong());
         unAssignTenantUser.unAssignSelectedTenantUser();
     }
 

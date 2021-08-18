@@ -15,9 +15,8 @@
  */
 package io.radien.webapp.user.tenant;
 
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.exception.SystemException;
-
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
@@ -46,7 +45,7 @@ public class UnAssignTenantUser extends AbstractManager {
     private UserDataModel userDataModel;
 
     @Inject
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     @Inject
     private ActiveTenantDataModelManager activeTenantDataModelManager;
@@ -62,7 +61,7 @@ public class UnAssignTenantUser extends AbstractManager {
     public String unAssignSelectedTenantUser() throws SystemException {
         try{
             if(userDataModel.getSelectedUser() != null) {
-                tenantRoleRESTServiceAccess.unassignUser(activeTenantDataModelManager.getActiveTenant().getId(), null,
+                tenantRoleUserRESTServiceAccess.unAssignUser(activeTenantDataModelManager.getActiveTenant().getId(), null,
                         userDataModel.getSelectedUser().getId());
 
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_RD_TENANT_ROLE_UNASSIGNED_SUCCESS.getValue()));

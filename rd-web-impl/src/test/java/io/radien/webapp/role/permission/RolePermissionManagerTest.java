@@ -18,15 +18,20 @@ package io.radien.webapp.role.permission;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.Role;
+import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
+import io.radien.webapp.util.TenantRoleUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,7 +48,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -79,7 +83,13 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     @Mock
+    private TenantRolePermissionRESTServiceAccess tenantRolePermissionRESTServiceAccess;
+
+    @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
+
+    @Mock
+    private TenantRoleUtil tenantRoleUtil;
 
     private final ToggleEvent toggleEvent = mock(ToggleEvent.class);
 
@@ -302,7 +312,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
 
         doReturn(retrievedSystemPermissionList).when(tenantRoleRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
         doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
-        doReturn(true).when(tenantRoleRESTServiceAccess).unassignPermission(anyLong(), anyLong(), anyLong());
+        doReturn(true).when(tenantRolePermissionRESTServiceAccess).unAssignPermission(anyLong(), anyLong(), anyLong());
 
         String roles_url = rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant();
         assertEquals(DataModelEnum.ROLE_MAIN_PAGE.getValue(), roles_url);
@@ -333,16 +343,22 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     /**
      * Test for method {@link RolePermissionManager#doAssignedPermissionsForRole()}
      * @throws SystemException in case of any error thrown by TenantRole Rest client
+     * @throws TenantRoleIllegalArgumentException in case of insufficient params for {@link TenantRoleUtil#getTenantRoleId(Long, Long)}
      */
     @Test
-    public void testDoAssignedPermissionsForRole() throws SystemException {
+    public void testDoAssignedPermissionsForRole() throws SystemException, TenantRoleIllegalArgumentException {
         rolePermissionManager.setSystemPermissionsIdsList(retrievedSystemPermissionList.stream().
                 map(SystemPermission::getId).collect(Collectors.toList()));
         rolePermissionManager.setAssignableRolePermissions(new HashSet<>(Arrays.asList(1L, 10000L, 10001L)));
         when(tenantRoleRESTServiceAccess.exists(systemActiveTenant.getTenantId(), systemRole.getId())).
                 then(i -> Boolean.FALSE).then(i -> Boolean.TRUE);
         when(tenantRoleRESTServiceAccess.save(any())).thenReturn(Boolean.TRUE);
-        when(tenantRoleRESTServiceAccess.assignPermission(anyLong(), anyLong(), anyLong())).then(i -> Boolean.TRUE);
+        when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).then(i -> Boolean.TRUE);
+
+        SystemTenantRole tenantRole = new TenantRole();
+        tenantRole.setId(111L);
+        when(tenantRoleUtil.getTenantRoleId(systemActiveTenant.getTenantId(), systemRole.getId())).
+                thenReturn(tenantRole.getId());
         rolePermissionManager.doAssignedPermissionsForRole();
         assertEquals(0, rolePermissionManager.getAssignableRolePermissions().size());
     }
@@ -356,7 +372,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
         rolePermissionManager.setSystemPermissionsIdsList(retrievedSystemPermissionList.stream().
                 map(SystemPermission::getId).collect(Collectors.toList()));
         rolePermissionManager.setUnassignedRolePermissions(unassignedRolePermissions);
-        when(tenantRoleRESTServiceAccess.unassignPermission(anyLong(), anyLong(), anyLong())).then(i -> Boolean.TRUE);
+        when(tenantRolePermissionRESTServiceAccess.unAssignPermission(anyLong(), anyLong(), anyLong())).then(i -> Boolean.TRUE);
         rolePermissionManager.doUnassignedPermissionsForRole();
         assertEquals(0, rolePermissionManager.getUnassignedRolePermissions().size());
     }

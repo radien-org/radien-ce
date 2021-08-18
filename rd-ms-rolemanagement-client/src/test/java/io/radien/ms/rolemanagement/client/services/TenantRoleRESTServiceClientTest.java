@@ -33,7 +33,17 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Optional;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -41,23 +51,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -655,262 +653,6 @@ public class TenantRoleRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.getTenants(1L, 2L);
-    }
-
-    /**
-     * Test the assignment of a user to the association
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test
-    public void testAssignUser() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(client.assignUser(1L, 2L, 3L)).
-                thenReturn(Response.ok(Boolean.TRUE).build());
-        when(client.assignUser(1L, 2L, 4L)).
-                thenReturn(Response.status(303).build());
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
-                thenReturn(client);
-
-        Boolean result = target.assignUser(1L, 2L, 3L);
-        assertNotNull(result);
-        assertTrue(result);
-
-        result = target.assignUser(1L, 2L, 4L);
-        assertNotNull(result);
-        assertFalse(result);
-    }
-
-    /**
-     * Test the assignment of a user to the association but with token expired
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testAssignUserTokenExpiration() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-        when(client.assignUser(1L, 2L, 3L)).thenThrow(new TokenExpiredException("test"));
-
-        target.assignUser(1L, 2L, 3L);
-    }
-
-    /**
-     * Test the assignment of a user to the association but with exception being throw
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testAssignUserException() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.assignUser(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.assignUser(1L, 2L, 3L);
-    }
-
-    /**
-     * Test the un-assignment of a user to the association
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test
-    public void testUnAssignUser() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(client.unassignUser(1L, 2L, 3L)).
-                thenReturn(Response.ok(Boolean.TRUE).build());
-        when(client.unassignUser(1L, 2L, 4L)).
-                thenReturn(Response.status(303).build());
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
-                thenReturn(client);
-
-        Boolean result = target.unassignUser(1L, 2L, 3L);
-        assertNotNull(result);
-        assertTrue(result);
-
-        result = target.unassignUser(1L, 2L, 4L);
-        assertNotNull(result);
-        assertFalse(result);
-    }
-
-    /**
-     * Test the un-assignment of a user to the association but with token expired
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testUnAssignUserTokenExpiration() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.unassignUser(1L, 2L, 3L)).thenThrow(new TokenExpiredException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-       target.unassignUser(1L, 2L, 3L);
-    }
-
-    /**
-     * Test the un-assignment of a user to the association but with exception being throw
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testUnAssignUserException() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.unassignUser(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.unassignUser(1L, 2L, 3L);
-    }
-
-    /**
-     * Test the assignment of a permission to the association but with token expiration
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testAssignPermissionTokenExpiration() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.assignPermission(1L, 2L, 3L)).thenThrow(new TokenExpiredException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.assignPermission(1L, 2L, 3L);
-    }
-
-    /**
-     * Test the assignment of a permission to the association but with exception to be throw
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testAssignPermissionException() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.assignPermission(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.assignPermission(1L, 2L, 3L);
-    }
-
-    /**
-     * Test the assignment of a permission to the association
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test
-    public void testAssignPermission() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(client.assignPermission(1L, 2L, 3L)).
-                thenReturn(Response.ok(Boolean.TRUE).build());
-        when(client.assignPermission(1L, 2L, 4L)).
-                thenReturn(Response.status(303).build());
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
-                thenReturn(client);
-
-        Boolean result = target.assignPermission(1L, 2L, 3L);
-        assertNotNull(result);
-        assertTrue(result);
-
-        result = target.assignPermission(1L, 2L, 4L);
-        assertNotNull(result);
-        assertFalse(result);
-    }
-
-    /**
-     * Test the un-assignment of a permission to the association
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test
-    public void testUnAssignPermission() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(client.unassignPermission(1L, 2L, 3L)).
-                thenReturn(Response.ok(Boolean.TRUE).build());
-        when(client.unassignPermission(1L, 2L, 4L)).
-                thenReturn(Response.status(303).build());
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
-                thenReturn(client);
-
-        Boolean result = target.unassignPermission(1L, 2L, 3L);
-        assertNotNull(result);
-        assertTrue(result);
-
-        result = target.unassignPermission(1L, 2L, 4L);
-        assertNotNull(result);
-        assertFalse(result);
-    }
-
-    /**
-     * Test the un-assignment of a permission to the association but with token expired
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testUnAssignPermissionTokenExpiration() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.unassignPermission(1L, 2L, 3L)).thenThrow(new TokenExpiredException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.unassignPermission(1L, 2L, 3L);
-    }
-
-    /**
-     * Test the un-assignment of a permission to the association but with exception being throw
-     * @throws MalformedURLException for url informed incorrectly
-     * @throws SystemException in case of any communication issue       
-     */
-    @Test(expected = SystemException.class)
-    public void testUnAssignPermissionException() throws MalformedURLException, SystemException {
-        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
-
-        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.unassignPermission(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.unassignPermission(1L, 2L, 3L);
     }
 
     /**

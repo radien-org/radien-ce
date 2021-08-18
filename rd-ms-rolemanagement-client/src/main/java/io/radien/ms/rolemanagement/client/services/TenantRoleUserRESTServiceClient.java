@@ -25,6 +25,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
@@ -110,9 +111,6 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
             Response response = client.getAll(tenantId, roleId, pageNo, pageSize);
             return TenantRoleUserModelMapper.mapToPage((InputStream) response.getEntity());
         }
-        catch (TokenExpiredException t) {
-            throw t;
-        }
         catch (ExtensionException | ProcessingException | MalformedURLException |
                 InternalServerErrorException e){
             throw new SystemException(e);
@@ -161,9 +159,6 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
             Response response = client.getAllUserIds(tenantId, roleId, pageNo, pageSize);
             return getPageIds((InputStream) response.getEntity());
         }
-        catch (TokenExpiredException t) {
-            throw t;
-        }
         catch (ExtensionException | ProcessingException | MalformedURLException |
                 InternalServerErrorException e){
             throw new SystemException(e);
@@ -193,45 +188,139 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
         return idsPage;
     }
 
+
     /**
-     * Delete unassigned User Tenant Role(s)
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @param roleIds Collection of Role ids
+     * Assign/associate/add user to a Tenant (TenantRole domain)
+     * The association will always be under a specific role.
+     * To perform the action above, It will invoke the equivalent core method counterpart, and
+     * will handle Token Expiration error as well
+     * @param tenantRoleUser association between Tenant, Role and User
      * @return Boolean indicating if operation was concluded successfully
      * @throws SystemException in case of any error
      */
     @Override
-    public Boolean deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException{
+    public Boolean assignUser(SystemTenantRoleUser tenantRoleUser) throws SystemException {
         try {
-            return deleteUnAssignedUserTenantRolesCore(userId, tenantId, roleIds);
-        } catch (TokenExpiredException tokenExpiredException) {
+            return assignUserCore(tenantRoleUser);
+        } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return deleteUnAssignedUserTenantRolesCore(userId, tenantId, roleIds);
-            } catch (TokenExpiredException tokenExpiredException1){
+                return assignUserCore(tenantRoleUser);
+            } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
 
     /**
-     * Unassigned User Tenant Role(s) invoke via unAssignedUserTenantRolesCore()
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @param roleIds roleIds Collection of Role ids
-     * @return boolean value true if the unassigned User Tenant Role(s) successfully else false
-     * @throws TokenExpiredException if case of JWT expiration
+     * Assign/associate/add user to a Tenant (TenantRole domain)
+     * The association will always be under a specific role.
+     * @param tenantRoleUser association between Tenant, Role and User
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws TokenExpiredException is case of JWT token expiration
      * @throws SystemException in case of any error
      */
-    private Boolean deleteUnAssignedUserTenantRolesCore(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException {
+    private Boolean assignUserCore(SystemTenantRoleUser tenantRoleUser) throws SystemException {
         try {
             TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.deleteUnAssignedUserTenantRoles(userId, tenantId, roleIds);
+            Response response = client.assignUser((TenantRoleUser) tenantRoleUser);
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
-        } catch (ExtensionException | ProcessingException | MalformedURLException e) {
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
             throw new SystemException(e);
         }
     }
+
+    /**
+     * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
+     * To perform the action above, It will invoke the equivalent core method counterpart, and
+     * will handle Token Expiration error as well
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleIds Role identifier (Mandatory)
+     * @param userId User identifier (Mandatory)
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Boolean unAssignUser(Long tenantId, Collection<Long> roleIds, Long userId) throws SystemException {
+        try {
+            return unAssignUserCore(tenantId, roleIds, userId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return unAssignUserCore(tenantId, roleIds, userId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleIds Roles identifiers
+     * @param userId User identifier (Mandatory)
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws TokenExpiredException in case of JWT expiration
+     * @throws SystemException in case of any error
+     */
+    private Boolean unAssignUserCore(Long tenantId, Collection<Long> roleIds, Long userId) throws SystemException {
+        try {
+            TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.unAssignUser(tenantId, roleIds, userId);
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
+
+
+
+    /**
+     * (Un)Assign/Dissociate/remove user from a TenantRole domain
+     * Simply deletes a TenantRoleUser that eventually exists.
+     * To perform the action above, It will invoke the equivalent core method counterpart, and
+     * will handle Token Expiration error as well.
+     *
+     * It relies on a core method to perform this task.
+     *
+     * @param tenantRoleUserId identifier that maps a TenantRoleUser entity
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Boolean delete(Long tenantRoleUserId) throws SystemException {
+        try {
+            return deleteCore(tenantRoleUserId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteCore(tenantRoleUserId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that removes user from a TenantRole domain
+     * @param tenantRoleUserId identifier that maps a TenantRoleUser entity
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    private Boolean deleteCore(Long tenantRoleUserId) throws SystemException {
+        try {
+            TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(
+                    oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.delete(tenantRoleUserId);
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
+
 }

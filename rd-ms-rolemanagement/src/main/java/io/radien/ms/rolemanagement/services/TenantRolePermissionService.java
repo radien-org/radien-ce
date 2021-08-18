@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
@@ -23,28 +24,96 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaDelete;
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Repository (Service access implementation) for managing Tenant Role Permission entities
  * @author Newton Carvalho
  */
 @Stateful
-public class TenantRolePermissionService implements TenantRolePermissionServiceAccess {
+public class TenantRolePermissionService extends AbstractTenantRoleDomainService implements TenantRolePermissionServiceAccess {
 
     @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;
+
+    private static final Logger log = LoggerFactory.getLogger(TenantRolePermissionService.class);
+
+    /**
+     * Gets all the tenant role permission associations into a pagination mode.
+     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
+     * @param role search param that corresponds to the TenantRole.roleId (Optional)
+     * @param pageNo of the requested information. Where the tenant is.
+     * @param pageSize total number of pages returned in the request.
+     * @return a page containing system tenant role permission associations.
+     */
+    @Override
+    public Page<SystemTenantRolePermission> getAll(Long tenant, Long role, int pageNo, int pageSize) {
+        log.info("Retrieving tenant role permission associations using pagination mode, tenant {} role{}, page {}, size{}",
+                tenant, role, pageNo, pageSize);
+
+        EntityManager em = getEntityManager();
+        List<Long> tenantRoleIds = (tenant != null || role != null) ? getTenantRoleIds(em, tenant, role) : null;
+        if (tenantRoleIds != null && tenantRoleIds.isEmpty()) {
+            return new Page<>(new ArrayList<>(), pageNo, 0, 0);
+        }
+
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<TenantRolePermissionEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRolePermissionEntity.class);
+        Root<TenantRolePermissionEntity> tenantRoleRoot = criteriaQuery.from(TenantRolePermissionEntity.class);
+
+        criteriaQuery.select(tenantRoleRoot);
+        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        if (tenantRoleIds != null) {
+            global = criteriaBuilder.and(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()).in(tenantRoleIds));
+            criteriaQuery.where(global);
+        }
+
+        TypedQuery<TenantRolePermissionEntity> q= em.createQuery(criteriaQuery);
+
+        q.setFirstResult((pageNo-1) * pageSize);
+        q.setMaxResults(pageSize);
+
+        List<? extends SystemTenantRolePermission> systemTenantRolesPermissions = q.getResultList();
+
+        int totalRecords = Math.toIntExact(getCount(global, tenantRoleRoot, em));
+        int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
+
+        log.info("Pagination ready to be shown");
+
+        return new Page<>(systemTenantRolesPermissions, pageNo, totalRecords, totalPages);
+    }
+
+    /**
+     * Count the number of existent associations (Tenant role user) in the DB.
+     * @return the count of tenant role user associations
+     */
+    private long getCount(Predicate global, Root<TenantRolePermissionEntity> tenantRoleUserRoot, EntityManager em) {
+
+        log.info("Gathering/counting the associations for tenant role permission");
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+        criteriaQuery.where(global);
+
+        criteriaQuery.select(criteriaBuilder.count(tenantRoleUserRoot));
+
+        TypedQuery<Long> q= em.createQuery(criteriaQuery);
+
+        return q.getSingleResult();
+    }
 
     /**
      * Gets the System Tenant Role Permission searching by the PK (id).

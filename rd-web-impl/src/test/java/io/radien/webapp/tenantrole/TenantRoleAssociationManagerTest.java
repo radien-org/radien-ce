@@ -23,7 +23,9 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
@@ -91,6 +93,12 @@ public class TenantRoleAssociationManagerTest {
     private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     @Mock
+    private TenantRolePermissionRESTServiceAccess tenantRolePermissionRESTServiceAccess;
+
+    @Mock
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
+
+    @Mock
     private RoleRESTServiceAccess roleRESTServiceAccess;
 
     @Mock
@@ -149,8 +157,14 @@ public class TenantRoleAssociationManagerTest {
         doReturn(Boolean.FALSE).when(tenantRoleRESTServiceAccess).
                 exists(tenant.getId(), role.getId());
         doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).save(any());
-        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).assignUser(tenant.getId(),
-                role.getId(), userId);
+
+        when(tenantRoleRESTServiceAccess.getIdByTenantRole(
+                tenantRoleAssociationManager.getTenant().getId(),
+                tenantRoleAssociationManager.getRole().getId())).
+                thenReturn(Optional.of(1L));
+        tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
+
+        doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).assignUser(any());
 
         String urlMapping = tenantRoleAssociationManager.associateUser(userId);
 
@@ -174,8 +188,10 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
         tenantRoleAssociationManager.setTenantRole(tenantRole);
 
-        when(tenantRoleRESTServiceAccess.getIdByTenantRole(tenant.getId(), role.getId())).thenReturn(Optional.of(1L));
-        when(tenantRoleRESTServiceAccess.save(tenantRole)).thenReturn(Boolean.TRUE);
+        when(tenantRoleRESTServiceAccess.getIdByTenantRole(
+                tenantRoleAssociationManager.getTenant().getId(),
+                tenantRoleAssociationManager.getRole().getId())).
+                thenReturn(Optional.of(1L));
         tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
         tenantRoleAssociationManager.associateTenantRole();
 
@@ -231,8 +247,7 @@ public class TenantRoleAssociationManagerTest {
                 exists(tenant.getId(), role.getId());
 
         doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).save(any());
-        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).assignUser(tenant.getId(),
-                role.getId(), userId);
+        doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).assignUser(any());
 
         String urlMapping = tenantRoleAssociationManager.associateUser(userId);
 
@@ -452,7 +467,6 @@ public class TenantRoleAssociationManagerTest {
      * to expose the information related to the TenantRole that wil be edited.
      * Return uri mapping referring the value tenantrole
      * @throws SystemException in case of any rest client communication issue
-     * @Exception still thrown by role rest client
      */
     @Test
     public void testEditTenantRole() throws Exception {
@@ -625,7 +639,7 @@ public class TenantRoleAssociationManagerTest {
 
         List<SystemPermission> expectedAssociatedPermissions = new ArrayList<>();
         expectedAssociatedPermissions.add(permission);
-        when(tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), null)).
+        when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).
                 then(i -> Boolean.TRUE);
         when(tenantRoleRESTServiceAccess.getPermissions(tenant.getId(),
                 role.getId(), null)).then(i -> expectedAssociatedPermissions);
@@ -694,7 +708,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
 
         Exception e = new RuntimeException("Error assigning permission");
-        when(tenantRoleRESTServiceAccess.assignPermission(tenant.getId(), role.getId(), permission.getId())).
+        when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).
                 thenThrow(e);
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
@@ -727,7 +741,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setRole(role);
         tenantRoleAssociationManager.setTenant(tenant);
 
-        when(tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(),
+        when(tenantRolePermissionRESTServiceAccess.unAssignPermission(tenant.getId(), role.getId(),
                 permissionToBeDissociated.getId())).then(i -> Boolean.TRUE);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
@@ -794,7 +808,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
 
         Exception e = new RuntimeException("Error (un)assigning permission");
-        when(tenantRoleRESTServiceAccess.unassignPermission(tenant.getId(), role.getId(), permission.getId())).
+        when(tenantRolePermissionRESTServiceAccess.unAssignPermission(tenant.getId(), role.getId(), permission.getId())).
                 thenThrow(e);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignPermission();
@@ -874,7 +888,12 @@ public class TenantRoleAssociationManagerTest {
 
         when(userRESTServiceAccess.getUserByLogon(user.getLogon())).thenReturn(Optional.of(user));
 
-        when(tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId())).
+        when(tenantRoleRESTServiceAccess.getIdByTenantRole(
+                tenantRoleAssociationManager.getTenant().getId(),
+                tenantRoleAssociationManager.getRole().getId())).thenReturn(Optional.of(1L));
+        tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
+
+        when(tenantRoleUserRESTServiceAccess.assignUser(any())).
                 then(i -> Boolean.TRUE);
 
         String returnUriMappingId = tenantRoleAssociationManager.assignUser();
@@ -941,7 +960,14 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
 
         Exception e = new RuntimeException("Error assigning user");
-        when(tenantRoleRESTServiceAccess.assignUser(tenant.getId(), role.getId(), user.getId())).
+
+        when(tenantRoleRESTServiceAccess.getIdByTenantRole(
+                tenantRoleAssociationManager.getTenant().getId(),
+                tenantRoleAssociationManager.getRole().getId())).
+                thenReturn(Optional.of(1L));
+        tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
+
+        when(tenantRoleUserRESTServiceAccess.assignUser(any())).
                 thenThrow(e);
 
         String returnUriMappingId = tenantRoleAssociationManager.assignUser();
@@ -972,13 +998,14 @@ public class TenantRoleAssociationManagerTest {
         SystemUser userToBeDissociated = new User(); userToBeDissociated.setId(3L);
         SystemTenantRoleUser tenantRoleUserToBeDissociated = new TenantRoleUser();
         tenantRoleUserToBeDissociated.setUserId(userToBeDissociated.getId());
+        tenantRoleUserToBeDissociated.setId(10101010L);
 
         tenantRoleAssociationManager.setRole(role);
         tenantRoleAssociationManager.setTenant(tenant);
         tenantRoleAssociationManager.setSelectedUserToUnAssign(tenantRoleUserToBeDissociated);
 
-        when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(),
-                userToBeDissociated.getId())).then(i -> Boolean.TRUE);
+        when(tenantRoleUserRESTServiceAccess.delete(tenantRoleUserToBeDissociated.getId())).
+                then(i -> Boolean.TRUE);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();
 
@@ -1047,7 +1074,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setTenant(tenant);
 
         Exception e = new RuntimeException("Error (un)assigning user");
-        when(tenantRoleRESTServiceAccess.unassignUser(tenant.getId(), role.getId(), user.getId())).
+        when(tenantRoleUserRESTServiceAccess.delete(tenantRoleUser.getId())).
                 thenThrow(e);
 
         String returnUriMappingId = tenantRoleAssociationManager.unAssignUser();

@@ -16,8 +16,7 @@
 package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
-import java.util.Collection;
+import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -32,25 +31,25 @@ import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 /**
- * Tenant Role User REST requests and services
+ * Tenant Role Permission REST requests and services
  * @author Bruno Gama
  */
-@Path("tenantroleuser")
+@Path("tenantrolepermission")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
-public interface TenantRoleUserResourceClient {
+public interface TenantRolePermissionResourceClient {
 
     /**
-     * Retrieves TenantRoleUser association using pagination approach
-     * (in other words, retrieves the Users associations that exist for a TenantRole)
+     * Retrieves TenantRolePermission association using pagination approach
+     * (in other words, retrieves the Permissions associations that exist for a TenantRole)
      * @param tenantId tenant identifier for a TenantRole
      * @param roleId role identifier for a TenantRole
      * @param pageNo page number
      * @param pageSize page size
      * @return In case of successful operation returns OK (http status 200)
-     * and a Page containing TenantRole associations (Chunk/Portion compatible
-     * with parameter Page number and Page size).<br>
+     * and a Page containing TenantRolePermission associations (Chunk/Portion compatible
+     * with parameter Page number and Page size).
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @GET
@@ -59,31 +58,11 @@ public interface TenantRoleUserResourceClient {
                     @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                     @DefaultValue("10") @QueryParam("pageSize") int pageSize);
 
-
     /**
-     * Retrieves TenantRoleUser association (Ids) using pagination approach
-     * (in other words, retrieves the Users associations that exist for a TenantRole)
-     * @param tenantId tenant identifier for a TenantRole
-     * @param roleId role identifier for a TenantRole
-     * @param pageNo page number
-     * @param pageSize page size
-     * @return In case of successful operation returns OK (http status 200)
-     * and a Page containing TenantRole associations Ids (Chunk/Portion compatible
-     * with parameter Page number and Page size).<br>
-     * Otherwise, in case of operational error, returns Internal Server Error (500)
-     */
-    @GET
-    @Path("/userIds")
-    Response getAllUserIds(@QueryParam("tenantId") Long tenantId,
-                           @QueryParam("roleId") Long roleId,
-                           @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-                           @DefaultValue("10") @QueryParam("pageSize") int pageSize);
-
-    /**
-     * Deletes a Tenant Role User association using the id as search parameter.
-     * @param id Tenant Role User id association to guide the search process
-     * @return 200 code message in case of success (Tenant Role User association found)
-     * 400 if tenant role User association could not be found ,
+     * Deletes a Tenant Role Permission association using the id as search parameter.
+     * @param id Tenant Role id association to guide the search process
+     * @return 200 code message in case of success (Tenant Role association found)
+     * 400 if tenant role permission association could not be found ,
      * 500 code message if there is any error.
      */
     @DELETE
@@ -93,7 +72,7 @@ public interface TenantRoleUserResourceClient {
     /**
      * Assign/associate/add permission to a TenantRole domain
      * The association will always be under a specific role
-     * @param tenantRoleUser represents the association between Tenant, Role and User
+     * @param tenantRolePermission represents the association between Tenant, Role and Permission
      * @return Response OK if operation concludes with success.
      * Response status 400 in case of association already existing or
      * other consistency issues found.
@@ -101,20 +80,20 @@ public interface TenantRoleUserResourceClient {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    Response assignUser(TenantRoleUser tenantRoleUser);
+    Response assignPermission(TenantRolePermission tenantRolePermission);
 
     /**
-     * (Un)Assign/Dissociate/remove user from a TenantRole domain
+     * (Un)Assign/Dissociate/remove permission from a TenantRole domain
      * @param tenantId Tenant identifier (Mandatory)
-     * @param roleIds Roles identifiers
-     * @param userId User identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param permissionId Permission identifier (Mandatory)
      * @return Response OK if operation concludes with success.
-     * Response status 400 in case of violations regarding business rules
+     * Response status 400 in case of association already existing or other consistency issues found.
      * Response 500 in case of any other error (i.e communication issue with REST client services)
      */
     @DELETE
-    Response unAssignUser(@QueryParam("tenantId") Long tenantId,
-                          @QueryParam("roleIds") Collection<Long> roleIds,
-                          @QueryParam("userId") Long userId);
+    Response unAssignPermission(@QueryParam("tenantId") Long tenantId,
+                                @QueryParam("roleId") Long roleId,
+                                @QueryParam("permissionId") Long permissionId);
 
 }

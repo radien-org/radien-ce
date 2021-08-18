@@ -116,20 +116,24 @@ public class AccessTokenUtil {
         String tenantRoleUrl= getRoleManagementBaseURL() + "/tenantrole";
         makePostRequest(tenantRoleUrl,"tenantRole1",accessToken,"{\"tenantId\":1, \"roleId\":1}");
         makePostRequest(tenantRoleUrl,"tenantRole2",accessToken,"{\"tenantId\":2, \"roleId\":1}");
-        makePostRequest(tenantRoleUrl,"tenantRole1",accessToken,"{\"tenantId\":3, \"roleId\":1}");
+        makePostRequest(tenantRoleUrl,"tenantRole3",accessToken,"{\"tenantId\":3, \"roleId\":1}");
 
-        String assignPermissionLayout = tenantRoleUrl + "/assign/permission/%d/tenant/%d/role/%d";
-        makePostRequest(String.format(assignPermissionLayout,1,1,1),"assignPermission1",accessToken,"");
-        makePostRequest(String.format(assignPermissionLayout,2,1,1),"assignPermission2",accessToken,"");
-        makePostRequest(String.format(assignPermissionLayout,3,1,1),"assignPermission3",accessToken,"");
-        makePostRequest(String.format(assignPermissionLayout,4,1,1),"assignPermission4",accessToken,"");
+        String tenantRolePermissionUrl= getRoleManagementBaseURL() + "/tenantrolepermission";
+        makePostRequest(tenantRolePermissionUrl,"assignPermission1",accessToken,"{\"tenantRoleId\":1, \"permissionId\":1}");
+        makePostRequest(tenantRolePermissionUrl,"assignPermission2",accessToken,"{\"tenantRoleId\":1, \"permissionId\":2}");
+        makePostRequest(tenantRolePermissionUrl,"assignPermission3",accessToken,"{\"tenantRoleId\":1, \"permissionId\":3}");
+        makePostRequest(tenantRolePermissionUrl,"assignPermission4",accessToken,"{\"tenantRoleId\":1, \"permissionId\":4}");
 
-        makePostRequest(String.format(assignPermissionLayout,4,2,1),"assignPermission5",accessToken,"");
-        makePostRequest(String.format(assignPermissionLayout,4,3,1),"assignPermission6",accessToken,"");
+        makePostRequest(tenantRolePermissionUrl,"assignPermission5",accessToken,"{\"tenantRoleId\":2, \"permissionId\":4}");
+        makePostRequest(tenantRolePermissionUrl,"assignPermission6",accessToken,"{\"tenantRoleId\":3, \"permissionId\":4}");
 
-        makePostRequest(String.format(assignPermissionLayout,1,1,1),"assignPermission7",accessToken,"");
-        makePostRequest(String.format(assignPermissionLayout,1,2,1),"assignPermission8",accessToken,"");
-        makePostRequest(String.format(assignPermissionLayout,1,3,1),"assignPermission9",accessToken,"");
+        makePostRequest(tenantRolePermissionUrl,"assignPermission8",accessToken,"{\"tenantRoleId\":2, \"permissionId\":1}");
+        makePostRequest(tenantRolePermissionUrl,"assignPermission9",accessToken,"{\"tenantRoleId\":3, \"permissionId\":1}");
+
+        String tenantRoleUserUrl= getRoleManagementBaseURL() + "/tenantroleuser";
+        makePostRequest(tenantRoleUserUrl,"assignUser1ToTenantRole1",accessToken,"{\"tenantRoleId\":1, \"userId\":1}");
+        makePostRequest(tenantRoleUserUrl,"assignUser1ToTenantRole2",accessToken,"{\"tenantRoleId\":2, \"userId\":1}");
+        makePostRequest(tenantRoleUserUrl,"assignUser1ToTenantRole3",accessToken,"{\"tenantRoleId\":3, \"userId\":1}");
     }
 
     /**

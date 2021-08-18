@@ -27,27 +27,26 @@ import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.List;
+import java.util.Optional;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaDelete;
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Repository (Service access implementation) for managing Tenant Role User entities
  * @author Newton Carvalho
  */
 @Stateful
-public class TenantRoleUserService implements TenantRoleUserServiceAccess {
+public class TenantRoleUserService extends AbstractTenantRoleDomainService implements TenantRoleUserServiceAccess {
 
     @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;
@@ -62,30 +61,6 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     @Override
     public SystemTenantRoleUser get(Long tenantRoleUserId) {
         return getEntityManager().find(TenantRoleUserEntity.class, tenantRoleUserId);
-    }
-
-    /**
-     * Gets all the tenant role ids for the following parameters.
-     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
-     * @param role search param that corresponds to the TenantRole.roleId (Optional)
-     * @return a list containing ids
-     */
-    protected List<Long> getTenantRoleIds(EntityManager em, Long tenant, Long role) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRoleEntity> root = criteriaQuery.from(TenantRoleEntity.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        if (tenant != null) {
-            predicates.add(criteriaBuilder.equal(root.get(SystemVariables.TENANT_ID.getFieldName()), tenant));
-        }
-        if (role != null) {
-            predicates.add(criteriaBuilder.equal(root.get(SystemVariables.ROLE_ID.getFieldName()), role));
-        }
-        criteriaQuery.select(root.get(SystemVariables.ID.getFieldName())).
-                where(predicates.toArray(new Predicate[]{}));
-        TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
-        return typedQuery.getResultList();
     }
 
     /**
@@ -408,14 +383,13 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
-<<<<<<< HEAD
      * Gets Ids (of tenant role user associations) for the given parameters
      * @param tenant tenant identifier (mandatory)
-     * @param role role identifier
+     * @param roles roles identifiers
      * @param user user identifier (mandatory)
      * @return list containing ids
      */
-    public Collection<Long> getTenantRoleUserIds(Long tenant, Long role, Long user) {
+    public Collection<Long> getTenantRoleUserIds(Long tenant, Collection<Long> roles, Long user) {
         if (user == null || tenant == null) {
             throw new IllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_FIELD_MANDATORY.toString("user id and tenant id"));
@@ -430,8 +404,8 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()), tenant));
-        if (role != null) {
-            predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()), role));
+        if (roles != null && !roles.isEmpty()) {
+            predicates.add(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()).in(roles));
         }
         predicates.add(cb.equal(tenantRoleRoot.get(SystemVariables.ID.getFieldName()),
                 tenantRoleUserRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName())));
@@ -445,8 +419,6 @@ public class TenantRoleUserService implements TenantRoleUserServiceAccess {
     }
 
     /**
-=======
->>>>>>> main
      * Delete tenant role user associations for given parameters
      * @param ids list containing tenant role user identifiers (mandatory)
      * @return true in case of success, false if no registers could be fetch the informed ids

@@ -17,10 +17,9 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
-
 import io.radien.exception.ProcessingException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -28,16 +27,13 @@ import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
-
-import javax.annotation.PostConstruct;
-
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Model;
-
-import javax.faces.application.FacesMessage;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Model;
+import javax.faces.application.FacesMessage;
+import javax.inject.Inject;
 
 /**
  * Class Responsible to update/save logged in user profile
@@ -58,10 +54,10 @@ public class UserProfileManager extends AbstractManager {
     private UserSession userSession;
 
     @Inject
-    private TenantRESTServiceAccess tenantRESTServiceAccess;
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     @Inject
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     private List<SystemTenant> assignedTenants;
 
@@ -198,7 +194,7 @@ public class UserProfileManager extends AbstractManager {
                 throw new ProcessingException(JSFUtil.getMessage("rd_tenant_not_selected"));
             }
             // Invoking backend method to delete tenant associations (once its approved and merged)
-            tenantRoleRESTServiceAccess.unassignUser(selectedTenantToUnAssign.getId(), null,
+            tenantRoleUserRESTServiceAccess.unAssignUser(selectedTenantToUnAssign.getId(), null,
                     userSession.getUserId());
             selectedTenantToUnAssign = null;
             this.assignedTenants = retrieveAssignedTenants();

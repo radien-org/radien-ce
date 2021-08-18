@@ -18,8 +18,10 @@ package io.radien.ms.rolemanagement.client.util;
 import io.radien.ms.rolemanagement.client.exception.RoleResponseExceptionMapper;
 import io.radien.ms.rolemanagement.client.providers.RoleMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.TenantRoleMessageBodyWriter;
+import io.radien.ms.rolemanagement.client.providers.TenantRolePermissionMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.providers.TenantRoleUserMessageBodyWriter;
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
+import io.radien.ms.rolemanagement.client.services.TenantRolePermissionResourceClient;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -85,5 +87,22 @@ public class ClientServiceUtil {
                 .register(RoleResponseExceptionMapper.class)
                 .register(TenantRoleUserMessageBodyWriter.class)
                 .build(TenantRoleUserResourceClient.class);
+    }
+
+    /**
+     * Communication requester constructor for the tenant role permission side
+     * @param urlStr Tenant Role Resource client URL
+     * @return a Tenant Role Permission Resource Client that can perform multiple requests and
+     * with the correct exceptions, mappers an message writers
+     * @throws MalformedURLException in case of error in the given URL or communication cannot be performed
+     */
+    public TenantRolePermissionResourceClient getTenantRolePermissionResourceClient(String urlStr) throws MalformedURLException {
+        URL url = new URL(urlStr);
+        return RestClientBuilder.
+                newBuilder()
+                .baseUrl(url)
+                .register(RoleResponseExceptionMapper.class)
+                .register(TenantRolePermissionMessageBodyWriter.class)
+                .build(TenantRolePermissionResourceClient.class);
     }
 }

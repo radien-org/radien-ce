@@ -52,13 +52,30 @@ public interface TenantRoleUserRESTServiceAccess {
     Page<Long> getUsersIds(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
 
 
-        /**
-         * UnAssign/dissociate/remove/delete UserTenantRole(s)
-         * @param userId User identifier
-         * @param tenantId Tenant identifier
-         * @param roleIds Collection of Role ids
-         * @return Boolean indicating if operation was concluded successfully
-         * @throws SystemException in case of any error
-         */
-    Boolean deleteUnAssignedUserTenantRoles(Long userId, Long tenantId, Collection<Long> roleIds) throws SystemException;
+    /**
+     * Assign/associate/add user to a TenantRole domain
+     * The association will always be under a specific role
+     * @param tenantRoleUser association between Tenant, Role and User
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    Boolean assignUser(SystemTenantRoleUser tenantRoleUser) throws SystemException;
+
+    /**
+     * (Un)Assign/Dissociate/remove user from a TenantRole domain
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleIds Roles identifiers
+     * @param userId User identifier (Mandatory)
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    Boolean unAssignUser(Long tenantId, Collection<Long> roleIds, Long userId) throws SystemException;
+
+    /**
+     * (Un)Assign/Dissociate/remove user from a TenantRole domain
+     * Simply deletes a TenantRoleUser that eventually exists
+     * @param tenantRoleUserId identifier that maps a TenantRoleUser entity
+     * @throws SystemException in case of any error
+     */
+    Boolean delete(Long tenantRoleUserId) throws SystemException;
 }

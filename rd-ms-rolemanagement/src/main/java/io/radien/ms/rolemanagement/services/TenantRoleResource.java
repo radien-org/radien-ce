@@ -16,7 +16,6 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.tenantrole.SystemTenantRole;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.TenantRoleException;
@@ -26,13 +25,12 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Resource implementation responsible for deal with operations
@@ -42,7 +40,7 @@ import java.util.List;
 @RequestScoped
 public class TenantRoleResource implements TenantRoleResourceClient {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(TenantRoleResource.class);
 
     @Inject
     private TenantRoleBusinessService tenantRoleBusinessService;
@@ -80,7 +78,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getAll(int pageNo, int pageSize) {
-        log("Retrieving TenantRole associations using pagination. Page number %d. Page Size %d.",
+        log.info("Retrieving TenantRole associations using pagination. Page number {}. Page Size {}.",
                 pageNo, pageSize);
         try {
             return Response.ok().entity(this.tenantRoleBusinessService.getAll(pageNo, pageSize)).build();
@@ -101,7 +99,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getSpecific(Long tenantId, Long roleId, boolean isLogicalConjunction) {
-        log("Retrieving TenantRole associations for tenant %d role %d using logical function %b",
+        log.info("Retrieving TenantRole associations for tenant {} role {} using logical function {}",
                 tenantId, roleId, isLogicalConjunction);
         try {
             return Response.ok(tenantRoleBusinessService.getSpecific(tenantId, roleId, isLogicalConjunction)).build();
@@ -119,7 +117,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     @Override
     public Response getById(Long id) {
         try {
-            log("Retrieving TenantRole association for id %d", id);
+            log.info("Retrieving TenantRole association for id {}", id);
             return Response.ok().entity(tenantRoleBusinessService.getById(id)).build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
@@ -138,7 +136,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     @Override
     public Response delete(long id) {
         try {
-            log("Deleting TenantRole association for id %d", id);
+            log.info("Deleting TenantRole association for id {}", id);
             return Response.ok().entity(tenantRoleBusinessService.delete(id)).build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
@@ -157,7 +155,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     @Override
     public Response save(TenantRole tenantRole) {
         try {
-            log("Creating association for Tenant %d and Role %d", tenantRole.getTenantId(), tenantRole.getRoleId());
+            log.info("Creating association for Tenant {} and Role {}", tenantRole.getTenantId(), tenantRole.getRoleId());
             tenantRoleBusinessService.save(new TenantRoleEntity(tenantRole));
             return Response.ok().build();
         } catch (UniquenessConstraintException | TenantRoleException e) {
@@ -176,7 +174,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response exists(Long tenantId, Long roleId) {
-        log("Checking if Tenant Role association exists for tenant %d and role %d", tenantId, roleId);
+        log.info("Checking if Tenant Role association exists for tenant {} and role {}", tenantId, roleId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.existsAssociation(tenantId, roleId)).build();
         } catch(Exception e) {
@@ -193,7 +191,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getPermissions(Long tenantId, Long roleId, Long userId) {
-        log("Retrieving permissions for tenant %d role %d and user %d", tenantId, roleId, userId);
+        log.info("Retrieving permissions for tenant {} role {} and user {}", tenantId, roleId, userId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.
                     getPermissions(tenantId, roleId, userId)).build();
@@ -210,7 +208,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getTenants(Long userId, Long roleId) {
-        log("Retrieving tenants for user %d and role %d", userId, roleId);
+        log.info("Retrieving tenants for user {} and role {}", userId, roleId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.
                     getTenants(userId, roleId)).build();
@@ -227,7 +225,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response getRolesForUserTenant(Long userId, Long tenantId) {
-        log(GenericErrorCodeMessage.INFO_TENANT_USER.toString(String.valueOf(userId), String.valueOf(tenantId)));
+        log.info("Retrieving Roles for user {} and tenant {}", userId, tenantId);
         try {
             return Response.ok().entity(tenantRoleBusinessService.getRolesForUserTenant(userId, tenantId)).build();
         } catch (RoleNotFoundException e) {
@@ -246,7 +244,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response isRoleExistentForUser(Long userId, String roleName, Long tenantId) {
-        log("Checking if role %s exists for user %d under tenant %d", roleName, userId, tenantId);
+        log.info("Checking if role {} exists for user {} under tenant {}", roleName, userId, tenantId);
         if (userId == null || roleName == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -270,7 +268,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response isAnyRoleExistentForUser(Long userId, List<String> roleNames, Long tenantId) {
-        log("Checking if user %d has roles for tenantId %d", userId, tenantId);
+        log.info("Checking if user {} has roles for tenantId {}", userId, tenantId);
         if (userId == null || roleNames == null || roleNames.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -293,7 +291,7 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      */
     @Override
     public Response isPermissionExistentForUser(Long userId, Long permissionId, Long tenantId) {
-        log("Checking if permission %d exists for user %d under tenant %d", permissionId, userId, tenantId);
+        log.info("Checking if permission {} exists for user {} under tenant {}", permissionId, userId, tenantId);
         if (userId == null || permissionId == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -302,108 +300,6 @@ public class TenantRoleResource implements TenantRoleResourceClient {
                     isPermissionExistentForUser(userId, permissionId, tenantId)).build();
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * Assign/associate/add user to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @Override
-    public Response assignUser(Long tenantId, Long roleId, Long userId) {
-        try {
-            log("Associating/adding user %d to tenant %d role %d", userId, tenantId, roleId);
-            tenantRoleBusinessService.assignUser(tenantId, roleId, userId);
-            return Response.ok().build();
-        } catch (TenantRoleException | UniquenessConstraintException e) {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * (Un)Assign/Dissociate/remove user from a Tenant (TenantRole domain)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier
-     * @param userId User identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @Override
-    public Response unassignUser(Long tenantId, Long roleId, Long userId) {
-        try {
-            log("Dissociating/removing user %d from tenant %d role %d", userId, tenantId, roleId);
-            tenantRoleBusinessService.unassignUser(tenantId, roleId, userId);
-            return Response.ok().build();
-        } catch (TenantRoleException e) {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * Assign/associate/add permission to a Tenant (TenantRole domain)
-     * The association will always be under a specific role
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @Override
-    public Response assignPermission(Long tenantId, Long roleId, Long permissionId) {
-        try {
-            log("Associating/adding permission %d to tenant %d role %d", permissionId, tenantId, roleId);
-            tenantRoleBusinessService.assignPermission(tenantId, roleId, permissionId);
-            return Response.ok().build();
-        } catch (TenantRoleException | UniquenessConstraintException e) {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * (Un)Assign/Dissociate/remove permission from a Tenant (TenantRole domain)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param permissionId Permission identifier (Mandatory)
-     * @return Response OK if operation concludes with success.
-     * Response status 400 in case of association already existing or other consistency issues found.
-     * Response 500 in case of any other error (i.e communication issue with REST client services)
-     */
-    @Override
-    public Response unassignPermission(Long tenantId, Long roleId, Long permissionId) {
-        try {
-            log("Dissociating/removing permission %d from tenant %d role %d", permissionId, tenantId, roleId);
-            tenantRoleBusinessService.unassignPermission(tenantId, roleId, permissionId);
-            return Response.ok().build();
-        } catch (TenantRoleException e) {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
-     * Utility method to log messages (in a cleaner approach)
-     * @param msg message to be logged
-     * @param params message params
-     */
-    private void log(String msg, Object... params) {
-        if (msg != null) {
-            String formattedMsg = params != null ? String.format(msg, params) : msg;
-            log.error(formattedMsg);
         }
     }
 }
