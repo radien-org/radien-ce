@@ -17,23 +17,39 @@ package io.radien.ms.usermanagement.client.providers;
 
 import io.radien.api.entity.Page;
 import io.radien.ms.usermanagement.client.entities.User;
-import junit.framework.TestCase;
+import io.radien.ms.usermanagement.client.services.UserFactory;
+
 import org.junit.Test;
 
+import javax.json.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class PageMessageBodyReaderTest extends TestCase {
+/**
+ * Unit tests for the class
+ * PageMessageBodyReader
+ */
+public class PageMessageBodyReaderTest {
 
+    /**
+     * Test method isReadable()
+     * Asserts equality and boolean validations
+     */
     @Test
     public void testIsReadable() {
         PageMessageBodyReader target = new PageMessageBodyReader();
         assertTrue(target.isReadable(Page.class,null,null,null));
     }
 
+    /**
+     * Test method readForm()
+     * Asserts true
+     */
     @Test
     public void testReadFrom() throws IOException {
         String example = "{\n" +
@@ -53,12 +69,12 @@ public class PageMessageBodyReaderTest extends TestCase {
                 "}";
         PageMessageBodyReader target = new PageMessageBodyReader();
         InputStream in = new ByteArrayInputStream(example.getBytes());
-        Page<User> page = target.readFrom(null,null,null,null,null,in);
+        Page<?> page = target.readFrom(null,null,null,null,null,in);
         assertEquals(1,page.getTotalPages());
         assertEquals(4,page.getTotalResults());
         assertEquals(-1,page.getCurrentPage());
-        assertEquals(1,page.getResults().size());
-        User u = page.getResults().get(0);
+        assertEquals(1,page.getJsonValues().size());
+        User u = UserFactory.convert((JsonObject) page.getJsonValues().get(0));
         assertEquals("a",u.getFirstname());
         assertEquals(28L,(long) u.getId());
         assertFalse(u.isEnabled());

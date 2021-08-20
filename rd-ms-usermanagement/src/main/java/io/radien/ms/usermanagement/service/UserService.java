@@ -15,7 +15,10 @@
  */
 package io.radien.ms.usermanagement.service;
 
-import io.radien.ms.usermanagement.entities.UserEntity;
+import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserNotFoundException;
+import io.radien.exception.GenericErrorCodeMessage;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -24,8 +27,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import javax.ejb.Stateful;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.EntityManager;
@@ -38,23 +41,22 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import io.radien.api.SystemVariables;
-import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
+import io.radien.api.util.ModelServiceUtil;
 
-import java.util.stream.IntStream;
+import io.radien.ms.usermanagement.entities.UserEntity;
+import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 
+import javax.ejb.Stateful;
 /**
  * User management requests and accesses into the db to gather information or validating
  *
@@ -63,12 +65,13 @@ import java.util.stream.IntStream;
  * @author Marco Weiland
  */
 @Stateful
-public class UserService implements UserServiceAccess{
+public class UserService extends ModelServiceUtil implements UserServiceAccess {
 	private static final long serialVersionUID = -8258219044233966135L;
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
+
 	@PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
-	private EntityManager em;
+	private transient EntityManager em;
 
 	/**
 	 * Requests the user id based on the received user subject
@@ -100,7 +103,7 @@ public class UserService implements UserServiceAccess{
 	 */
 	@Override
 	public SystemUser get(Long userId) throws UserNotFoundException {
-		UserEntity result = em.find(UserEntity.class, userId);
+		UserEntity result = em.find( UserEntity.class, userId);
 		if(result == null){
 			throw new UserNotFoundException(userId.toString());
 		}
@@ -143,7 +146,7 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery( UserEntity.class);
 		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 
 		criteriaQuery.select(userRoot);
@@ -157,12 +160,7 @@ public class UserService implements UserServiceAccess{
 		}
 
 		if(sortBy != null && !sortBy.isEmpty()){
-			List<Order> orders;
-			if(isAscending){
-				orders = sortBy.stream().map(i->criteriaBuilder.asc(userRoot.get(i))).collect(Collectors.toList());
-			} else {
-				orders = sortBy.stream().map(i->criteriaBuilder.desc(userRoot.get(i))).collect(Collectors.toList());
-			}
+			List<Order> orders = getListOrderSortBy(isAscending, userRoot, criteriaBuilder, sortBy);
 			criteriaQuery.orderBy(orders);
 		}
 
@@ -176,7 +174,7 @@ public class UserService implements UserServiceAccess{
 		int totalRecords = Math.toIntExact(getCount(global, userRoot));
 		int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
-		return new Page<SystemUser>(systemUsers, pageNo, totalRecords, totalPages);
+		return new Page<>(systemUsers, pageNo, totalRecords, totalPages);
 	}
 
 	/**
@@ -185,14 +183,7 @@ public class UserService implements UserServiceAccess{
 	 */
 	private long getCount(Predicate global, Root<UserEntity> userRoot) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-
-		criteriaQuery.where(global);
-
-		criteriaQuery.select(criteriaBuilder.count(userRoot));
-
-		TypedQuery<Long> q=em.createQuery(criteriaQuery);
-		return q.getSingleResult();
+		return getCountFromModelService(criteriaBuilder, global, userRoot, em);
 	}
 
 	/**
@@ -223,7 +214,6 @@ public class UserService implements UserServiceAccess{
 	 * @param user user information to look up.
 	 * @return list of users with duplicated information.
 	 */
-	//TODO: validate the subject also
 	private List<UserEntity> searchDuplicatedEmailOrLogon(SystemUser user) {
 		List<UserEntity> alreadyExistentRecords;
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -253,15 +243,17 @@ public class UserService implements UserServiceAccess{
 		if (alreadyExistentRecords.size() == 2) {
 			throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
 		} else if(!alreadyExistentRecords.isEmpty()) {
-			boolean isSameUserEmail = alreadyExistentRecords.get(0).getUserEmail().equals(newUserInformation.getUserEmail());
-			boolean isSameLogon = alreadyExistentRecords.get(0).getLogon().equals(newUserInformation.getLogon());
+			SystemUser alreadyExistentRecord = alreadyExistentRecords.get(0);
+			boolean isSameUserEmail = alreadyExistentRecord.getUserEmail().equals(newUserInformation.getUserEmail());
+			boolean isSameLogon = alreadyExistentRecord.getLogon().equals(newUserInformation.getLogon());
 
-			if(!isSameUserEmail && isSameLogon) {
-				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
-			} else if(isSameUserEmail && !isSameLogon) {
-				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
-			} else if(isSameUserEmail && isSameLogon) {
+
+			if(isSameUserEmail && isSameLogon) {
 				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon"));
+			} else if(isSameUserEmail) {
+				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+			} else if(isSameLogon) {
+				throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon"));
 			}
 		}
 	}
@@ -273,8 +265,8 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public void delete(Long userId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<UserEntity> criteriaDelete = cb.createCriteriaDelete(UserEntity.class);
-		Root<UserEntity> userRoot = criteriaDelete.from(UserEntity.class);
+		CriteriaDelete<UserEntity> criteriaDelete = cb.createCriteriaDelete( UserEntity.class);
+		Root<UserEntity> userRoot = criteriaDelete.from( UserEntity.class);
 
 		criteriaDelete.where(cb.equal(userRoot.get(SystemVariables.ID.getFieldName()),userId));
 		em.createQuery(criteriaDelete).executeUpdate();
@@ -287,8 +279,8 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public void delete(Collection<Long> userIds) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<UserEntity> criteriaDelete = cb.createCriteriaDelete(UserEntity.class);
-		Root<UserEntity> userRoot = criteriaDelete.from(UserEntity.class);
+		CriteriaDelete<UserEntity> criteriaDelete = cb.createCriteriaDelete( UserEntity.class);
+		Root<UserEntity> userRoot = criteriaDelete.from( UserEntity.class);
 
 		criteriaDelete.where(userRoot.get(SystemVariables.ID.getFieldName()).in(userIds));
 		em.createQuery(criteriaDelete).executeUpdate();
@@ -301,7 +293,7 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public List<? extends SystemUser> getUsers(SystemUserSearchFilter filter) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery( UserEntity.class);
 		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 
 		criteriaQuery.select(userRoot);
@@ -321,8 +313,8 @@ public class UserService implements UserServiceAccess{
 	@Override
 	public List<? extends SystemUser> getUserList() {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
-		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery( UserEntity.class);
+		Root<UserEntity> userRoot = criteriaQuery.from( UserEntity.class);
 		criteriaQuery.select(userRoot);
 		TypedQuery<UserEntity> q=em.createQuery(criteriaQuery);
 		return q.getResultList();
@@ -339,27 +331,9 @@ public class UserService implements UserServiceAccess{
 	private Predicate getFilteredPredicate(UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<UserEntity> userRoot) {
 		Predicate global;
 
-		// is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
-		// the predicate is build with the logic (start,operator,newPredicate)
-		// where start represents the already joined predicates
-		// operator is "and" or "or"
-		// depending on the operator the start may need to be true or false
-		// true and predicate1 and predicate2
-		// false or predicate1 or predicate2
-		if(filter.isLogicConjunction()) {
-			global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-		} else {
-			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
-		}
-
-		if (filter.getIds() != null && !filter.getIds().isEmpty()) {
-			Predicate in = userRoot.get("id").in(filter.getIds());
-			if(filter.isLogicConjunction()) {
-				global = criteriaBuilder.and(global, in);
-			} else {
-				global = criteriaBuilder.or(global, in);
-			}
-		}
+		boolean isFilterIds = filter.getIds() != null && !filter.getIds().isEmpty();
+		List<Long>  filterIds = (List<Long>) filter.getIds();
+		global = getFilteredPredicateFromModelService(isFilterIds, filterIds, filter.isLogicConjunction(), criteriaBuilder,userRoot);
 
 		global = getFieldPredicate(SystemVariables.SUB.getFieldName(), filter.getSub(), filter, criteriaBuilder, userRoot, global);
 		global = getFieldPredicate(SystemVariables.USER_EMAIL.getFieldName(), filter.getEmail(), filter, criteriaBuilder, userRoot, global);
@@ -380,18 +354,7 @@ public class UserService implements UserServiceAccess{
 	 */
 	private Predicate getFieldPredicate(String name, String value, UserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<UserEntity> userRoot, Predicate global) {
 		if(value != null) {
-			Predicate subPredicate;
-			if (filter.isExact()) {
-				subPredicate = criteriaBuilder.equal(userRoot.get(name), value);
-			} else {
-				subPredicate = criteriaBuilder.like(userRoot.get(name),"%"+value+"%");
-			}
-
-			if(filter.isLogicConjunction()) {
-				global = criteriaBuilder.and(global, subPredicate);
-			} else {
-				global = criteriaBuilder.or(global, subPredicate);
-			}
+			return getFieldPredicateFromModelService(value, filter.isExact(), filter.isLogicConjunction(), criteriaBuilder, userRoot.get(name), global);
 		}
 		return global;
 	}
@@ -512,7 +475,7 @@ public class UserService implements UserServiceAccess{
 	private List<String> retrieveDataFromDB(String property, Collection<String> parameters) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
-		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
+		Root<UserEntity> userRoot = criteriaQuery.from( UserEntity.class);
 
 		criteriaQuery.select(userRoot.get(property)).where(userRoot.get(property).in(parameters));
 		TypedQuery<String> typedQuery = em.createQuery(criteriaQuery);

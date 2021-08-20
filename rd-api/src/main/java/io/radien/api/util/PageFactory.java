@@ -13,40 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client.services;
+package io.radien.api.util;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
-import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.api.util.FactoryUtilService;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import java.util.ArrayList;
-
 /**
  * Page factory converter. This class converts a received json object into a page of users
  *
  * @author Nuno Santana
+ * @author Rajesh Gavvala
  */
 public class PageFactory {
+    /**
+     * Empty private constructor
+     */
+    private PageFactory(){}
 
     /**
      * Converts a JsonObject to a Page object
      *
-     * @param page the JsonObject to convert
+     * @param jsonObject the JsonObject to convert
      * @return the SystemUserObject
      */
-    public static Page<User> convert(JsonObject page) {
-        int currentPage = FactoryUtilService.getIntFromJson("currentPage", page);
-        JsonArray results = FactoryUtilService.getArrayFromJson("results", page);
-        int totalPages = FactoryUtilService.getIntFromJson("totalPages", page);
-        int totalResults = FactoryUtilService.getIntFromJson("totalResults", page);
-        ArrayList<User> pageResults = new ArrayList<>();
-        if(results != null){
-            for(int i = 0;i<results.size();i++){
-                pageResults.add(UserFactory.convert(results.getJsonObject(i)));
-            }
-        }
-        return new Page<>(pageResults,currentPage,totalResults,totalPages);
+    public static Page<?> convertToPageObject(JsonObject jsonObject) {
+        int currentPage = FactoryUtilService.getIntFromJson(SystemVariables.PAGE_CURRENT.getFieldName(), jsonObject);
+        JsonArray results = FactoryUtilService.getArrayFromJson(SystemVariables.PAGE_RESULTS.getFieldName(), jsonObject);
+        int totalPages = FactoryUtilService.getIntFromJson(SystemVariables.PAGE_TOTALS.getFieldName(), jsonObject);
+        int totalResults = FactoryUtilService.getIntFromJson(SystemVariables.PAGE_TOTAL_RESULTS.getFieldName(), jsonObject);
+        return new Page<>(results, currentPage, totalResults, totalPages);
     }
+
 }
