@@ -96,5 +96,11 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+		<dependency>
+			<groupId>org.eclipse.microprofile</groupId>
+			<artifactId>microprofile</artifactId>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
 </project>

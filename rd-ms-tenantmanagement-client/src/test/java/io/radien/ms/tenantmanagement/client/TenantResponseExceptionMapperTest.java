@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client;
+package io.radien.ms.tenantmanagement.client;
 
 import io.radien.exception.BadRequestException;
 import io.radien.exception.InternalServerErrorException;
@@ -21,11 +21,10 @@ import io.radien.exception.ModelResponseExceptionMapper;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import javax.ws.rs.core.Response;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -37,13 +36,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 /**
- * Class that aggregates UnitTest cases for UserResponseExceptionMapper
+ * Class that aggregates UnitTest cases for TenantResponseExceptionMapper
  *
  * @author Rajesh Gavvala
  */
-public class UserResponseExceptionMapperTest {
+public class TenantResponseExceptionMapperTest  {
     @InjectMocks
-    private UserResponseExceptionMapper userResponseExceptionMapper;
+    private TenantResponseExceptionMapper tenantResponseExceptionMapper;
 
     @Mock
     private ModelResponseExceptionMapper modelResponseExceptionMapper;
@@ -63,19 +62,19 @@ public class UserResponseExceptionMapperTest {
     @Test
     public void testHandles() {
         doReturn(false).when(modelResponseExceptionMapper).handles(200, null);
-        boolean handlesException200 = userResponseExceptionMapper.userHandles(200, null);
+        boolean handlesException200 = tenantResponseExceptionMapper.tenantHandles(200, null);
 
         doReturn(true).when(modelResponseExceptionMapper).handles(400, null);
-        boolean handlesException400 = userResponseExceptionMapper.userHandles(400, null);
+        boolean handlesException400 = tenantResponseExceptionMapper.tenantHandles(400, null);
 
         doReturn(true).when(modelResponseExceptionMapper).handles(401, null);
-        boolean handlesException401 = userResponseExceptionMapper.userHandles(401, null);
+        boolean handlesException401 = tenantResponseExceptionMapper.tenantHandles(401, null);
 
         doReturn(true).when(modelResponseExceptionMapper).handles(404, null);
-        boolean handlesException404 = userResponseExceptionMapper.userHandles(404, null);
+        boolean handlesException404 = tenantResponseExceptionMapper.tenantHandles(404, null);
 
         doReturn(true).when(modelResponseExceptionMapper).handles(500, null);
-        boolean handlesException500 = userResponseExceptionMapper.userHandles(500, null);
+        boolean handlesException500 = tenantResponseExceptionMapper.tenantHandles(500, null);
 
         assertFalse(handlesException200);
         assertTrue(handlesException400);
@@ -92,10 +91,10 @@ public class UserResponseExceptionMapperTest {
     public void testToThrowable() {
         String respMessage_BadRequest = "400 : BadRequest.";
         Response mockResponse_BadRequest = getMockResponse(Response.Status.BAD_REQUEST, respMessage_BadRequest);
-        doReturn(new io.radien.exception.BadRequestException(mockResponse_BadRequest.readEntity(String.class))).when(modelResponseExceptionMapper).toThrowable(mockResponse_BadRequest);
+        doReturn(new BadRequestException(mockResponse_BadRequest.readEntity(String.class))).when(modelResponseExceptionMapper).toThrowable(mockResponse_BadRequest);
 
-        Exception exception_BadRequest = userResponseExceptionMapper.toThrowable(mockResponse_BadRequest);
-        assertTrue(exception_BadRequest instanceof BadRequestException );
+        Exception exception_BadRequest = tenantResponseExceptionMapper.toThrowable(mockResponse_BadRequest);
+        assertTrue(exception_BadRequest instanceof BadRequestException);
         assertEquals(respMessage_BadRequest,exception_BadRequest.getMessage());
 
         String respMessage_TokenExpiredException = "401 : TokenException.";
@@ -103,7 +102,7 @@ public class UserResponseExceptionMapperTest {
         doReturn(new TokenExpiredException(mockResponse_TokenExpiredException.readEntity(String.class))).
                 when(modelResponseExceptionMapper).toThrowable(mockResponse_TokenExpiredException);
 
-        Exception exception_TokenExpiredException = userResponseExceptionMapper.userToThrowable(mockResponse_TokenExpiredException);
+        Exception exception_TokenExpiredException = tenantResponseExceptionMapper.tenantToThrowable(mockResponse_TokenExpiredException);
         assertTrue(exception_TokenExpiredException instanceof TokenExpiredException );
         assertEquals(respMessage_TokenExpiredException,exception_TokenExpiredException.getMessage());
 
@@ -112,17 +111,17 @@ public class UserResponseExceptionMapperTest {
         doReturn(new NotFoundException(mockResponse_NotFoundException.readEntity(String.class))).
                 when(modelResponseExceptionMapper).toThrowable(mockResponse_NotFoundException);
 
-        Exception exception_NotFoundException = userResponseExceptionMapper.userToThrowable(mockResponse_NotFoundException);
+        Exception exception_NotFoundException = tenantResponseExceptionMapper.tenantToThrowable(mockResponse_NotFoundException);
         assertTrue(exception_NotFoundException instanceof NotFoundException);
         assertEquals(respMessage_NotFoundException,exception_NotFoundException.getMessage());
 
         String respMessage_InternalServerException = "500 : Internal Server.";
         Response mockResponse_InternalServerException = getMockResponse(Response.Status.INTERNAL_SERVER_ERROR, respMessage_InternalServerException);
-        doReturn(new io.radien.exception.InternalServerErrorException(mockResponse_InternalServerException.readEntity(String.class))).
+        doReturn(new InternalServerErrorException(mockResponse_InternalServerException.readEntity(String.class))).
                 when(modelResponseExceptionMapper).toThrowable(mockResponse_InternalServerException);
 
-        Exception exception_InternalServerException = userResponseExceptionMapper.userToThrowable(mockResponse_InternalServerException);
-        assertTrue(exception_InternalServerException instanceof InternalServerErrorException );
+        Exception exception_InternalServerException = tenantResponseExceptionMapper.tenantToThrowable(mockResponse_InternalServerException);
+        assertTrue(exception_InternalServerException instanceof InternalServerErrorException);
         assertEquals(respMessage_InternalServerException,exception_InternalServerException.getMessage());
 
     }
