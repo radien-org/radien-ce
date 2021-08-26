@@ -15,27 +15,26 @@
  */
 package io.radien.exception;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
- * Exception to be thrown when no linked authorization has been found
+ * Class that aggregates UnitTest UniquenessConstraintException
  *
- * @author Bruno Gama
+ * @author Rajesh Gavvala
  */
-public class LinkedAuthorizationNotFoundException extends Exception{
-
-    private static final long serialVersionUID = 6857546626930960120L;
-
+public class UniquenessConstraintExceptionTest {
     /**
-     * Linked Authorization Not Found Exception empty constructor
+     * Asserts UniquenessConstraintException
      */
-    public LinkedAuthorizationNotFoundException() {
-        super();
-    }
+    @Test
+    public void testUniquenessConstraintException(){
+        UniquenessConstraintException exception = new UniquenessConstraintException();
+        assertNotNull(exception);
 
-    /**
-     * Linked Authorization Not Found Exception message constructor
-     * @param message to be added into the linked authorization not found exception
-     */
-    public LinkedAuthorizationNotFoundException(String message) {
-        super(message);
+        UniquenessConstraintException exception1 = new UniquenessConstraintException("uniquenessConstraint_exception");
+        assertEquals("uniquenessConstraint_exception",exception1.getMessage());
     }
 }

@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.search;
-
-import io.radien.api.search.SearchableByIds;
+package io.radien.api.search;
 
 import org.junit.Test;
 
@@ -25,6 +23,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class to infer the behaviour of {@link SearchableByIds}
@@ -49,6 +48,8 @@ public class SearchableByIdsTest {
         List<Long> ids = Arrays.asList(1L, 2L, 3L, 4L);
         SearchableByIds searchableByIds = new SearchableByIds(ids);
         assertEquals(ids, searchableByIds.getIds());
+        SearchableByIds searchableByIds1 = new SearchableByIds(ids, true, true);
+        assertTrue(searchableByIds1.isExact());
     }
 
     /**

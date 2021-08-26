@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.exception.tenantroleuser;
+package io.radien.exception;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 /**
- * Exception to express if not found TenantRoleUser domain object
+ * Class that aggregates UnitTest ProcessingException
  *
  * @author Rajesh Gavvala
  */
-public class TenantRoleUserNotFoundException extends TenantRoleUserException {
-
+public class ProcessingExceptionTest {
     /**
-     * TenantRoleUser exception constructor by a given message
-     * @param message to create the TenantRoleUser exception with
+     * Asserts ProcessingException
      */
-    public TenantRoleUserNotFoundException(String message) {
-        super(message);
-    }
-}
+    @Test
+    public void testProcessingException(){
+        ProcessingException exception = new ProcessingException();
+        assertNull(exception.getMessage());
 
+        ProcessingException exception_processing = new ProcessingException("permission_exception");
+        assertEquals("permission_exception",exception_processing.getMessage());
+    }
+
+}
