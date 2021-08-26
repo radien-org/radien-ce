@@ -24,7 +24,6 @@ import org.powermock.api.mockito.PowerMockito;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 /**
  * Abstract virtual test class that contracts the method
  * handleJSFAndFaceContextMessages() to be invoked when
@@ -33,6 +32,7 @@ import static org.mockito.Mockito.when;
  * @author Rajesh Gavvala
  */
 public abstract class JSFUtilAndFaceContextMessagesTest {
+    FacesContext facesContext;
 
     /**
      * This method constructs and handles JSF util and
@@ -57,5 +57,31 @@ public abstract class JSFUtilAndFaceContextMessagesTest {
         when(JSFUtil.getFacesContext()).thenReturn(facesContext);
         when(JSFUtil.getExternalContext()).thenReturn(externalContext);
         when(JSFUtil.getMessage(anyString())).thenAnswer(i -> i.getArguments()[0]);
+    }
+
+    /**
+     * This method constructs and handles JSF util and
+     * FaceContext messages
+     * Returns mock FacesContext object
+     */
+    public final FacesContext getFacesContext(){
+        PowerMockito.mockStatic(FacesContext.class);
+        PowerMockito.mockStatic(JSFUtil.class);
+
+        facesContext = mock(FacesContext.class);
+        when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
+
+        ExternalContext externalContext = mock(ExternalContext.class);
+        when(facesContext.getExternalContext())
+                .thenReturn(externalContext);
+
+        Flash flash = mock(Flash.class);
+        when(externalContext.getFlash()).thenReturn(flash);
+
+        when(JSFUtil.getFacesContext()).thenReturn(facesContext);
+        when(JSFUtil.getExternalContext()).thenReturn(externalContext);
+        when(JSFUtil.getMessage(anyString())).thenAnswer(i -> i.getArguments()[0]);
+
+        return facesContext;
     }
 }
