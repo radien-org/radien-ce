@@ -16,14 +16,12 @@
 package io.radien.api.util;
 
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.tenantroleuser.TenantRoleUserException;
+import io.radien.exception.TenantRoleUserException;
 
 import java.io.Serializable;
 import java.util.Collection;
 
-import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 
 /**
  * This class serves as helper class to check any parameters that
