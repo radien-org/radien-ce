@@ -15,19 +15,25 @@
  */
 package io.radien.exception;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 /**
- * Exception to express if not found TenantRole domain object
+ * Class that aggregates UnitTest TokenExpiredException
  *
  * @author Rajesh Gavvala
  */
-public class TenantRoleNotFoundException extends TenantRoleException {
-
+public class TokenExpiredExceptionTest {
     /**
-     * TenantRole exception constructor by a given message
-     * @param message to create the TenantRole exception with
+     * Asserts TokenExpiredException
      */
-    public TenantRoleNotFoundException(String message) {
-        super(message);
+    @Test
+    public void testTokenExpiredException(){
+        TokenExpiredException exception = new TokenExpiredException();
+        assertNotNull(exception);
+
+        TokenExpiredException exception1 = new TokenExpiredException("tokenExpired_exception");
+        assertEquals("tokenExpired_exception",exception1.getMessage());
     }
 }
-

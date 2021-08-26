@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.exception.tenantroleuser;
+package io.radien.exception;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 /**
- * Exception to express inconsistencies regarding TenantRoleUser domain object
+ * Class that aggregates UnitTest ResourceNotFoundException
  *
  * @author Rajesh Gavvala
  */
-public class TenantRoleUserException extends Exception {
-
+public class ResourceNotFoundExceptionTest {
     /**
-     * TenantRoleUser exception constructor by a given message
-     * @param message to create the TenantRoleUser exception with
+     * Asserts ResourceNotFoundException
      */
-    public TenantRoleUserException(String message) {
-        super(message);
+    @Test
+    public void testResourceNotFoundException(){
+        ResourceNotFoundException exception = new ResourceNotFoundException("resourceNotFound_exception");
+        assertEquals("resourceNotFound_exception",exception.getMessage());
     }
 }
