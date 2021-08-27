@@ -175,4 +175,11 @@ public interface ContentServiceAccess extends ServiceAccess {
 	//TODO: What is this?
 	String getOrCreateDocumentsPath(String path);
 
+	/**
+	 * Attempts to return a content based on its identifier and active flag
+	 * @param viewId the content identifier
+	 * @param activeOnly flag that indicates if the content is active or not
+	 * @return the {@link EnterpriseContent} if it finds it, or else null
+	 */
+	EnterpriseContent getByViewId(String viewId, boolean activeOnly);
 }

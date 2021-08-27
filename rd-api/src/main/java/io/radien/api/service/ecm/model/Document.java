@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class Document extends AbstractECMModel implements EnterpriseContent {
 
 	private static final long serialVersionUID = -1606222544052586973L;
-	private Long id;
 
 	/**
 	 * ECM Document constructor
@@ -63,22 +62,4 @@ public class Document extends AbstractECMModel implements EnterpriseContent {
 	public String toString() {
 		return name;
 	}
-
-	/**
-	 * ECM Document id getter
-	 * @return the document id
-	 */
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * Document id setter
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 }
