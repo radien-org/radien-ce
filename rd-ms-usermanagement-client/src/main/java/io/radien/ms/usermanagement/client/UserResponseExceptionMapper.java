@@ -15,26 +15,39 @@
  */
 package io.radien.ms.usermanagement.client;
 
-import io.radien.exception.ModelResponseExceptionMapper;
+import io.radien.exception.NotFoundException;
+import io.radien.exception.TokenExpiredException;
+import io.radien.ms.usermanagement.client.exceptions.BadRequestException;
+import io.radien.ms.usermanagement.client.exceptions.InternalServerErrorException;
+import io.radien.ms.usermanagement.client.exceptions.ForbiddenException;
+import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+
 /**
  * User mapper for the exceptions
  * @author Bruno Gama
  */
 @Provider
-public class UserResponseExceptionMapper extends ModelResponseExceptionMapper {
+public class UserResponseExceptionMapper implements
+        ResponseExceptionMapper<Exception> {
 
     /**
      * Validates if by a given status code the error message can be handle by the following mapper
      * @param statusCode to be validated
-     * @param headers to be passed
+     * @param headers
      * @return true in case handler can handle exception
      */
-    public boolean userHandles(int statusCode, MultivaluedMap<String, Object> headers) {
-        return handles(statusCode, headers);
+    @Override
+    public boolean handles(int statusCode, MultivaluedMap<String, Object> headers) {
+        return statusCode == 400        // Bad Request
+                || statusCode == 401
+                || statusCode == 403
+                || statusCode == 404    // Not Found
+                || statusCode == 500    // Internal Server Error
+                ;
     }
 
     /**
@@ -42,8 +55,16 @@ public class UserResponseExceptionMapper extends ModelResponseExceptionMapper {
      * @param response message to be validated
      * @return a exception
      */
-    public Exception userToThrowable(Response response) {
-        return toThrowable(response);
+    @Override
+    public Exception toThrowable(Response response) {
+        switch(response.getStatus()) {
+            case 400: return new BadRequestException(response.readEntity(String.class));
+            case 401: return new TokenExpiredException(response.readEntity(String.class));
+            case 403: return new ForbiddenException(response.readEntity(String.class));
+            case 404: return new NotFoundException(response.readEntity(String.class));
+            case 500: return new InternalServerErrorException(response.readEntity(String.class));
+            default: return null;
+        }
     }
 
 }
