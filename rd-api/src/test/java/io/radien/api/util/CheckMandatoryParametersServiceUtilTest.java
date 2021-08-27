@@ -15,7 +15,7 @@
  */
 package io.radien.api.util;
 
-import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;

@@ -15,21 +15,19 @@
  */
 package io.radien.exception;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 /**
- * Class that aggregates UnitTest ResourceNotFoundException
+ * Exception to express if not found TenantRole domain object
  *
  * @author Rajesh Gavvala
  */
-public class ResourceNotFoundExceptionTest {
+public class TenantRoleNotFoundException extends TenantRoleException {
+
     /**
-     * Asserts ResourceNotFoundException
+     * TenantRole exception constructor by a given message
+     * @param message to create the TenantRole exception with
      */
-    @Test
-    public void testResourceNotFoundException(){
-        ResourceNotFoundException exception = new ResourceNotFoundException("resourceNotFound_exception");
-        assertEquals("resourceNotFound_exception",exception.getMessage());
+    public TenantRoleNotFoundException(String message) {
+        super(message);
     }
 }
+
