@@ -1,0 +1,1 @@
+java -jar target/rd-ms-template-exec.jar

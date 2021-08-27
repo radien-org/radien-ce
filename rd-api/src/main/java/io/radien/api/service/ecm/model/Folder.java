@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class Folder extends AbstractECMModel implements EnterpriseContent {
 
 	private static final long serialVersionUID = 2618986654707693235L;
+	private Long id;
 
 	/**
 	 * ECM Folder properties constructor
@@ -54,5 +55,23 @@ public class Folder extends AbstractECMModel implements EnterpriseContent {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	/**
+	 * Folder id getter
+	 * @return the folder id
+	 */
+	@Override
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * Folder id setter
+	 * @param id to be set
+	 */
+	@Override
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

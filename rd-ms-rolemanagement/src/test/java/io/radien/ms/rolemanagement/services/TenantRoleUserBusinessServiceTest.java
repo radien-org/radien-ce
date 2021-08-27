@@ -20,7 +20,7 @@ import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.tenantroleuser.TenantRoleUserException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

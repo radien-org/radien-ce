@@ -126,20 +126,7 @@ public enum OAFProperties implements SystemProperties{
 	SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM("system.supported.languages"),
     SYSTEM_MS_CONFIG_DEFAULT_LANG_ECM("system.default.language"),
 
-    AUTH_LOGOUT_URI("auth.logoutUri"),
-
-    OAF_NODE_TYPES("jcr/oafnodetypes.cnd"),
-    SYSTEM_CMS_CFG_NODE_ROOT("system.jcr.node.root"),
-    SYSTEM_CMS_CFG_NODE_HTML("system.jcr.node.html"),
-    SYSTEM_CMS_CFG_NODE_NEWS_FEED("system.jcr.node.newsfeed"),
-    SYSTEM_CMS_CFG_NODE_NOTIFICATION("system.jcr.node.notifications"),
-    SYSTEM_CMS_CFG_NODE_DOCS("system.jcr.node.documents"),
-    SYSTEM_CMS_CFG_NODE_IMAGE("system.jcr.node.images"),
-    SYSTEM_CMS_CFG_NODE_IFRAME("system.jcr.node.iframe"),
-    SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS("system.jcr.document.autocreate.folder.names"),
-    SYSTEM_CMS_CFG_NODE_APP_INFO("system.jcr.node.appinfo"),
-    SYSTEM_CMS_CFG_NODE_STATIC_CONTENT("system.jcr.node.staticcontent"),
-    SYSTEM_CMS_CFG_NODE_TAG("system.jcr.node.tag");
+    AUTH_LOGOUT_URI("auth.logoutUri");
 
     private String propKey;
 

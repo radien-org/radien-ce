@@ -15,131 +15,77 @@
  */
 package io.radien.ms.usermanagement.client;
 
-import io.radien.exception.BadRequestException;
-import io.radien.exception.InternalServerErrorException;
-import io.radien.exception.ModelResponseExceptionMapper;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
-
-import org.junit.Before;
+import io.radien.ms.usermanagement.client.exceptions.BadRequestException;
+import io.radien.ms.usermanagement.client.exceptions.ForbiddenException;
+import io.radien.ms.usermanagement.client.exceptions.InternalServerErrorException;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import static org.junit.Assert.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-/**
- * Class that aggregates UnitTest cases for UserResponseExceptionMapper
- *
- * @author Rajesh Gavvala
- */
 public class UserResponseExceptionMapperTest {
-    @InjectMocks
-    private UserResponseExceptionMapper userResponseExceptionMapper;
 
-    @Mock
-    private ModelResponseExceptionMapper modelResponseExceptionMapper;
-
-    /**
-     * Prepares require objects when requires to invoke
-     */
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks( this );
-    }
-
-    /**
-     * Test method handles() that
-     * Asserts handle exception status codes
-     */
     @Test
-    public void testHandles() {
-        doReturn(false).when(modelResponseExceptionMapper).handles(200, null);
-        boolean handlesException200 = userResponseExceptionMapper.userHandles(200, null);
-
-        doReturn(true).when(modelResponseExceptionMapper).handles(400, null);
-        boolean handlesException400 = userResponseExceptionMapper.userHandles(400, null);
-
-        doReturn(true).when(modelResponseExceptionMapper).handles(401, null);
-        boolean handlesException401 = userResponseExceptionMapper.userHandles(401, null);
-
-        doReturn(true).when(modelResponseExceptionMapper).handles(404, null);
-        boolean handlesException404 = userResponseExceptionMapper.userHandles(404, null);
-
-        doReturn(true).when(modelResponseExceptionMapper).handles(500, null);
-        boolean handlesException500 = userResponseExceptionMapper.userHandles(500, null);
+    public void handles() {
+        UserResponseExceptionMapper uRexceptionMapper = new UserResponseExceptionMapper();
+        boolean handlesException200 = uRexceptionMapper.handles(200, null);
+        boolean handlesException400 = uRexceptionMapper.handles(400, null);
+        boolean handlesException401 = uRexceptionMapper.handles(401, null);
+        boolean handlesException403 = uRexceptionMapper.handles(403, null);
+        boolean handlesException404 = uRexceptionMapper.handles(404, null);
+        boolean handlesException500 = uRexceptionMapper.handles(500, null);
 
         assertFalse(handlesException200);
         assertTrue(handlesException400);
         assertTrue(handlesException401);
+        assertTrue(handlesException403);
         assertTrue(handlesException404);
         assertTrue(handlesException500);
     }
 
-    /**
-     * Test method toThrowable()
-     * Asserts throwable exception status codes
-     */
+    // TODO: toThrowable Exception validation to be performed
     @Test
-    public void testToThrowable() {
-        String respMessage_BadRequest = "400 : BadRequest.";
-        Response mockResponse_BadRequest = getMockResponse(Response.Status.BAD_REQUEST, respMessage_BadRequest);
-        doReturn(new io.radien.exception.BadRequestException(mockResponse_BadRequest.readEntity(String.class))).when(modelResponseExceptionMapper).toThrowable(mockResponse_BadRequest);
+    public void toThrowable() {
+        String msg = "messageException";
+        UserResponseExceptionMapper target = new UserResponseExceptionMapper();
 
-        Exception exception_BadRequest = userResponseExceptionMapper.toThrowable(mockResponse_BadRequest);
-        assertTrue(exception_BadRequest instanceof BadRequestException );
-        assertEquals(respMessage_BadRequest,exception_BadRequest.getMessage());
+        Response responseOk = Response.status(Status.OK).entity(msg).build();
+        Exception exceptionOk = target.toThrowable(responseOk);
 
-        String respMessage_TokenExpiredException = "401 : TokenException.";
-        Response mockResponse_TokenExpiredException = getMockResponse(Response.Status.UNAUTHORIZED, respMessage_TokenExpiredException);
-        doReturn(new TokenExpiredException(mockResponse_TokenExpiredException.readEntity(String.class))).
-                when(modelResponseExceptionMapper).toThrowable(mockResponse_TokenExpiredException);
+        Response responseBadRequest = Response.status(Status.BAD_REQUEST).entity(msg).build();
+        Exception exceptionBadRequest = target.toThrowable(responseBadRequest);
 
-        Exception exception_TokenExpiredException = userResponseExceptionMapper.userToThrowable(mockResponse_TokenExpiredException);
-        assertTrue(exception_TokenExpiredException instanceof TokenExpiredException );
-        assertEquals(respMessage_TokenExpiredException,exception_TokenExpiredException.getMessage());
+        Response responseTokenExpired = Response.status(Status.UNAUTHORIZED).entity(msg).build();
+        Exception exceptionTokenExpired = target.toThrowable(responseTokenExpired);
 
-        String respMessage_NotFoundException = "404 : NotFound.";
-        Response mockResponse_NotFoundException = getMockResponse(Response.Status.NOT_FOUND, respMessage_NotFoundException);
-        doReturn(new NotFoundException(mockResponse_NotFoundException.readEntity(String.class))).
-                when(modelResponseExceptionMapper).toThrowable(mockResponse_NotFoundException);
+        Response responseForbidden = Response.status(Status.FORBIDDEN).entity(msg).build();
+        Exception exceptionForbidden = target.toThrowable(responseForbidden);
 
-        Exception exception_NotFoundException = userResponseExceptionMapper.userToThrowable(mockResponse_NotFoundException);
-        assertTrue(exception_NotFoundException instanceof NotFoundException);
-        assertEquals(respMessage_NotFoundException,exception_NotFoundException.getMessage());
+        Response responseNotFound = Response.status(Status.NOT_FOUND).entity(msg).build();
+        Exception exceptionNotFound = target.toThrowable(responseNotFound);
 
-        String respMessage_InternalServerException = "500 : Internal Server.";
-        Response mockResponse_InternalServerException = getMockResponse(Response.Status.INTERNAL_SERVER_ERROR, respMessage_InternalServerException);
-        doReturn(new io.radien.exception.InternalServerErrorException(mockResponse_InternalServerException.readEntity(String.class))).
-                when(modelResponseExceptionMapper).toThrowable(mockResponse_InternalServerException);
+        Response responseInternalServerError = Response.status(Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        Exception exceptionInternalServerError = target.toThrowable(responseInternalServerError);
 
-        Exception exception_InternalServerException = userResponseExceptionMapper.userToThrowable(mockResponse_InternalServerException);
-        assertTrue(exception_InternalServerException instanceof InternalServerErrorException );
-        assertEquals(respMessage_InternalServerException,exception_InternalServerException.getMessage());
+        assertTrue(exceptionBadRequest instanceof BadRequestException);
+        assertEquals(msg,exceptionBadRequest.getMessage());
 
-    }
+        assertTrue(exceptionForbidden instanceof ForbiddenException);
+        assertEquals(msg,exceptionForbidden.getMessage());
 
-    /**
-     * Method that handles status response
-     *
-     * @param status to be passed
-     * @param msgEntity status message to be passed
-     * @return mock response
-     */
-    private Response getMockResponse(Response.Status status, String msgEntity) {
-        Response mockResponse = mock(Response.class);
-        Mockito.when(mockResponse.readEntity(String.class)).thenReturn(msgEntity);
-        Mockito.when(mockResponse.getStatus()).thenReturn(status.getStatusCode());
-        Mockito.when(mockResponse.getStatusInfo()).thenReturn(status);
+        assertTrue(exceptionTokenExpired instanceof TokenExpiredException);
+        assertEquals(msg,exceptionTokenExpired.getMessage());
 
-        return mockResponse;
+        assertTrue(exceptionNotFound instanceof NotFoundException);
+        assertEquals(msg,exceptionNotFound.getMessage());
+
+        assertNull(exceptionOk);
+
+        assertTrue(exceptionInternalServerError instanceof InternalServerErrorException);
+        assertEquals(msg,exceptionInternalServerError.getMessage());
     }
 }
