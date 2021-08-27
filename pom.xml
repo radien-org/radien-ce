@@ -15,6 +15,7 @@
 		<module>rd-web-api</module>
 		<module>rd-web-impl</module>
 		<module>rd-web</module>
+		<module>rd-ms-template</module>
 		<module>rd-ms-openid-client</module>
 		<module>rd-ms-openid</module>
 		<module>rd-ms-authz-client</module>
