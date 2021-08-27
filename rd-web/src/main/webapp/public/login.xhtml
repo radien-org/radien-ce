@@ -13,7 +13,7 @@
                 <b:column span="2">
                     <h:panelGroup rendered="#{!sessionManager.validSession}">
                         <h:outputText value="#{msg.please_login_msg}"></h:outputText>
-                        <b:inputText id="login" value="#{sessionManager.login}" placeholder="#{msg.rd_user_logon}">
+                        <b:inputText id="login" value="#{sessionManager.login}" placeholder="#{msg.logon}">
                             <f:facet name="prepend">
                                 <b:iconAwesome name="user"></b:iconAwesome>
                             </f:facet>
