@@ -40,38 +40,6 @@
 	                        <f:attribute name="navigationNode" value="logintrigger" />
 	                    </b:navCommandLink>
 
-
-	                    <b:navCommandLink value="#{msg.ecm}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}"
-										  rendered="#{userSession.active and activeTenantDataModelManager.isTenantActive()}">
-	                        <f:param name="navigationNode" value="ecm" />
-	                        <f:attribute name="navigationNode" value="ecm" />
-	                    </b:navCommandLink>
-
-
-						<b:dropMenu value="#{msg.rd_user_contracts_menu}" rendered="#{userSession.active and activeTenantDataModelManager.isTenantActive()}">
-							<b:navCommandLink value="#{msg.rd_contract_region_south_west}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
-								<f:param name="navigationNode" value="users" />
-								<f:attribute name="navigationNode" value="users" />
-							</b:navCommandLink>
-							<b:navCommandLink value="#{msg.rd_contract_1}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
-								<f:param name="navigationNode" value="users" />
-								<f:attribute name="navigationNode" value="users" />
-							</b:navCommandLink>
-							<b:navCommandLink value="#{msg.rd_contract_2}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
-								<f:param name="navigationNode" value="roles" />
-								<f:attribute name="navigationNode" value="roles" />
-							</b:navCommandLink>
-							<b:navCommandLink value="#{msg.rd_contract_3}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
-								<f:param name="navigationNode" value="permissions" />
-								<f:attribute name="navigationNode" value="permissions" />
-							</b:navCommandLink>
-							<b:navCommandLink value="#{msg.rd_contract_4}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
-								<f:param name="navigationNode" value="contracts" />
-								<f:attribute name="navigationNode" value="contracts" />
-							</b:navCommandLink>
-						</b:dropMenu>
-
-
 						<b:dropMenu value="#{msg.rd_system_menu}" rendered="#{userSession.active and activeTenantDataModelManager.isTenantActive()}">
 							<b:navCommandLink value="#{msg.rd_users_menu}" action="#{navigation.navigate}"
 											  actionListener="#{navigation.navigationAction}"

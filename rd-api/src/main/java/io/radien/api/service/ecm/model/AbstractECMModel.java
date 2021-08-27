@@ -43,7 +43,7 @@ public abstract class AbstractECMModel extends AbstractModel {
 	private String app;
 
 	protected transient byte[] image;
-	transient byte[] fileStream;
+	protected transient byte[] fileStream;
 	protected String mimeType;
 	protected long fileSize;
 	private List<String> tags;
@@ -52,7 +52,7 @@ public abstract class AbstractECMModel extends AbstractModel {
 	private String imageName;
 	private String jcrPath;
 	private String parentPath;
-	
+
 	private boolean versionable;
 	private String versionComment;
 	private Date validDate;

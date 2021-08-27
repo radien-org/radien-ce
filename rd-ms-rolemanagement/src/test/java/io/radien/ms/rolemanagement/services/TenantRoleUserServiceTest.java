@@ -24,7 +24,7 @@ import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.tenantroleuser.TenantRoleUserException;
+import io.radien.exception.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
