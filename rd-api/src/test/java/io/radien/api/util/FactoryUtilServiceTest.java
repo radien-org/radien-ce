@@ -193,6 +193,8 @@ public class FactoryUtilServiceTest {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         FactoryUtilService.addValue(builder, "anyKey", now);
 
+        assertNull(FactoryUtilService.getStringFromJson("anyKey", json));
+
     }
 
     /**
