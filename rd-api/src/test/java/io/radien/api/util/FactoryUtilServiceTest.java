@@ -15,12 +15,24 @@
  */
 package io.radien.api.util;
 
-import junit.framework.TestCase;
+import java.time.LocalDateTime;
+import java.util.Date;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+
 import org.junit.Test;
 
-import javax.json.*;
-
-public class FactoryUtilServiceTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+/**
+ * Class that aggregates UnitTest FactoryUtilService
+ *
+ */
+public class FactoryUtilServiceTest {
 
     JsonObject json;
 
@@ -66,6 +78,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertEquals("testLastname", lastname);
     }
 
+    /**
+     * Asserts getIntFromJson()
+     */
     @Test
     public void testGetIntFromJson() {
         int integerTest = FactoryUtilService.getIntFromJson("integerTest", json);
@@ -73,7 +88,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertEquals(123, integerTest);
     }
 
-
+    /**
+     * Asserts getLongFromJson()
+     */
     @Test
     public void testGetLongFromJson() {
         Long createUser = FactoryUtilService.getLongFromJson("createUser", json);
@@ -81,18 +98,27 @@ public class FactoryUtilServiceTest extends TestCase {
         assertEquals((Long) 2L, createUser);
     }
 
+    /**
+     * Asserts getBooleanFromJson()
+     */
     @Test
     public void testGetBooleanFromJson() {
         boolean booleanValue = FactoryUtilService.getBooleanFromJson("booleanTest", json);
         assertFalse(booleanValue);
     }
 
+    /**
+     * Asserts getDoubleFromJson()
+     */
     @Test
     public void testGetDoubleFromJson() {
-        double doubleValue = FactoryUtilService.getDoubleFromJson("doubleTest", json);
-        assertEquals(2.0, doubleValue);
+        Double doubleValue = FactoryUtilService.getDoubleFromJson("doubleTest", json);
+        assertEquals(java.util.Optional.of(2.0), java.util.Optional.of(doubleValue));
     }
 
+    /**
+     * Asserts getArrayFromJson()
+     */
     @Test
     public void testGetArrayFromJson() {
         JsonArray array = FactoryUtilService.getArrayFromJson("arrayTest", json);
@@ -107,12 +133,18 @@ public class FactoryUtilServiceTest extends TestCase {
         assertEquals(arrayBuilder.build(), array);
     }
 
+    /**
+     * Asserts getArrayFromJson()
+     */
     @Test
     public void testGetArrayFromJsonNonExistingKey() {
         JsonArray array = FactoryUtilService.getArrayFromJson("mandalorian", json);
         assertNull(array);
     }
 
+    /**
+     * Asserts addValueBoolean()
+     */
     @Test
     public void testAddValueBoolean(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -121,14 +153,20 @@ public class FactoryUtilServiceTest extends TestCase {
         assertFalse(FactoryUtilService.getBooleanFromJson("newBooleanTest" ,json));
     }
 
+    /**
+     * Asserts addValueDouble()
+     */
     @Test
     public void testAddValueDouble(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
         FactoryUtilService.addValueDouble(builder, "newDoubleTest",3.0);
         JsonObject json = builder.build();
-        assertEquals(3.0, FactoryUtilService.getDoubleFromJson("newDoubleTest" ,json));
+        assertEquals(java.util.Optional.of(3.0), java.util.Optional.of(FactoryUtilService.getDoubleFromJson("newDoubleTest" ,json)));
     }
 
+    /**
+     * Asserts addValue()
+     */
     @Test
     public void testAddValue() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -145,6 +183,21 @@ public class FactoryUtilServiceTest extends TestCase {
         assertEquals("personContact", contact);
     }
 
+    /**
+     * Asserts AddValue()
+     * parameter as date
+     */
+    @Test
+    public void testAddValueDate() {
+        Date now = new Date();
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValue(builder, "anyKey", now);
+
+    }
+
+    /**
+     * Asserts AddValueLong()
+     */
     @Test
     public void testAddValueLong() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -161,6 +214,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertEquals((Long) 3L, updatedUser);
     }
 
+    /**
+     * Asserts addValueLong()
+     */
     @Test
     public void testAddValueLongNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -169,6 +225,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertNull(FactoryUtilService.getLongFromJson("id" ,json));
     }
 
+    /**
+     * Asserts addValue()
+     */
     @Test
     public void testAddValueNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -177,6 +236,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertNull(FactoryUtilService.getStringFromJson("id" ,json));
     }
 
+    /**
+     * Asserts addValueDouble()
+     */
     @Test
     public void testAddValueDoubleNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -185,6 +247,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertNull(FactoryUtilService.getStringFromJson("id" ,json));
     }
 
+    /**
+     * Asserts addValueInt()
+     */
     @Test
     public void testAddValueIntNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -193,6 +258,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertNull(FactoryUtilService.getIntFromJson("id" ,json));
     }
 
+    /**
+     * Asserts addValueArray()
+     */
     @Test
     public void testAddValueArrayNull(){
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -201,6 +269,9 @@ public class FactoryUtilServiceTest extends TestCase {
         assertNull(FactoryUtilService.getIntFromJson("elements" ,json));
     }
 
+    /**
+     * Asserts addValueArray()
+     */
     @Test
     public void testAddValueArray(){
         JsonObjectBuilder wrapperObj = Json.createObjectBuilder();
@@ -210,5 +281,21 @@ public class FactoryUtilServiceTest extends TestCase {
         arrayBuilder.add(arrayElement);
         FactoryUtilService.addValueArray(wrapperObj, "elements",arrayBuilder.build());
         assertEquals(1,FactoryUtilService.getArrayFromJson("elements" ,wrapperObj.build()).size());
+    }
+
+    /**
+     * Asserts getLocalDateTimeFromJson()
+     */
+    @Test
+    public void testGetLocalDateTimeFromJson(){
+        LocalDateTime now = LocalDateTime.now();
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValue(builder, "anyKey", now);
+        JsonObject json = builder.build();
+
+        assertEquals(now, FactoryUtilService.getLocalDateTimeFromJson("anyKey", json));
+        FactoryUtilService.addValue(builder, "anyKey", null);
+        JsonObject json1 = builder.build();
+        assertNull(FactoryUtilService.getLocalDateTimeFromJson("anyKey", json1));
     }
 }
