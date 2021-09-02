@@ -1,0 +1,55 @@
+[
+{ "name": "User Management - Create", "actionId": 1, "resourceId": 1 },
+{ "name": "User Management - Read", "actionId": 2, "resourceId": 1 },
+{ "name": "User Management - Update", "actionId": 3, "resourceId": 1 },
+{ "name": "User Management - Delete", "actionId": 4, "resourceId": 1 },
+{ "name": "User Management - All", "actionId": 5, "resourceId": 1 },
+
+{ "name": "Roles Management - Create", "actionId": 1, "resourceId": 2 },
+{ "name": "Roles Management - Read", "actionId": 2, "resourceId": 2 },
+{ "name": "Roles Management - Update", "actionId": 3, "resourceId": 2 },
+{ "name": "Roles Management - Delete", "actionId": 4, "resourceId": 2 },
+{ "name": "Roles Management - All", "actionId": 5, "resourceId": 2 },
+
+{ "name": "Permission Management - Create", "actionId": 1, "resourceId": 3 },
+{ "name": "Permission Management - Read", "actionId": 2, "resourceId": 3 },
+{ "name": "Permission Management - Update", "actionId": 3, "resourceId": 3 },
+{ "name": "Permission Management - Delete", "actionId": 4, "resourceId": 3 },
+{ "name": "Permission Management - All", "actionId": 5, "resourceId": 3 },
+
+{ "name": "Resource Management - Create", "actionId": 1, "resourceId": 4 },
+{ "name": "Resource Management - Read", "actionId": 2, "resourceId": 4 },
+{ "name": "Resource Management - Update", "actionId": 3, "resourceId": 4 },
+{ "name": "Resource Management - Delete", "actionId": 4, "resourceId": 4 },
+{ "name": "Resource Management - All", "actionId": 5, "resourceId": 4 },
+
+{ "name": "Action Management - Create", "actionId": 1, "resourceId": 5 },
+{ "name": "Action Management - Read", "actionId": 2, "resourceId": 5 },
+{ "name": "Action Management - Update", "actionId": 3, "resourceId": 5 },
+{ "name": "Action Management - Delete", "actionId": 4, "resourceId": 5 },
+{ "name": "Action Management - All", "actionId": 5, "resourceId": 5 },
+
+{ "name": "Tenant Management - Create", "actionId": 1, "resourceId": 6 },
+{ "name": "Tenant Management - Read", "actionId": 2, "resourceId": 6 },
+{ "name": "Tenant Management - Update", "actionId": 3, "resourceId": 6 },
+{ "name": "Tenant Management - Delete", "actionId": 4, "resourceId": 6 },
+{ "name": "Tenant Management - All", "actionId": 5, "resourceId": 6 },
+
+{ "name": "Tenant Role Management - Create", "actionId": 1, "resourceId": 7 },
+{ "name": "Tenant Role Management - Read", "actionId": 2, "resourceId": 7 },
+{ "name": "Tenant Role Management - Update", "actionId": 3, "resourceId": 7 },
+{ "name": "Tenant Role Management - Delete", "actionId": 4, "resourceId": 7 },
+{ "name": "Tenant Role Management - All", "actionId": 5, "resourceId": 7 },
+
+{ "name": "Tenant Role Permission Management - Create", "actionId": 1, "resourceId": 8 },
+{ "name": "Tenant Role Permission Management - Read", "actionId": 2, "resourceId": 8 },
+{ "name": "Tenant Role Permission Management - Update", "actionId": 3, "resourceId": 8 },
+{ "name": "Tenant Role Permission Management - Delete", "actionId": 4, "resourceId": 8 },
+{ "name": "Tenant Role Permission Management - All", "actionId": 5, "resourceId": 8 },
+
+{ "name": "Tenant Role User Management - Create", "actionId": 1, "resourceId": 9 },
+{ "name": "Tenant Role User Management - Read", "actionId": 2, "resourceId": 9 },
+{ "name": "Tenant Role User Management - Update", "actionId": 3, "resourceId": 9 },
+{ "name": "Tenant Role User Management - Delete", "actionId": 4, "resourceId": 9 },
+{ "name": "Tenant Role User Management - All", "actionId": 5, "resourceId": 9 }
+]

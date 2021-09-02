@@ -1,0 +1,12 @@
+[
+{"tenantRoleId":1, "permissionId":1},
+{"tenantRoleId":1, "permissionId":2},
+{"tenantRoleId":1, "permissionId":3},
+{"tenantRoleId":1, "permissionId":4},
+
+{"tenantRoleId":2, "permissionId":4},
+{"tenantRoleId":3, "permissionId":4},
+
+{"tenantRoleId":2, "permissionId":1},
+{"tenantRoleId":3, "permissionId":1}
+]
