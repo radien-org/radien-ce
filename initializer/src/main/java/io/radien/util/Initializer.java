@@ -21,6 +21,11 @@ import io.radien.api.OAFProperties;
 import java.io.File;
 
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +41,8 @@ import kong.unirest.Unirest;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.spi.ConfigSource;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Console application that uses REST Clients to consume the respective endpoints responsible
@@ -173,19 +180,23 @@ public class Initializer {
      * @param accessToken Access Token generated via KeyCloak
      */
     private static void tenantRoleCreation(String accessToken) {
-        String tenantRoleUrl= getRoleManagementBaseURL() + "/tenantrole";
-
-        List<String> postBodies = getPostBodies("initializer.tenantRole.file.location");
+        String tenantRoleUrl = getRoleManagementBaseURL() + "/tenantrole";
+        String location = getConfigProperty("initializer.tenantRole.file.location");
+        System.out.println(getMd5(location));
+        List<String> postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, tenantRoleUrl, "tenantRole");
 
-        String tenantRolePermissionUrl= getRoleManagementBaseURL() + "/tenantrolepermission";
-        postBodies = getPostBodies("initializer.tenantRolePermission.file.location");
+        String tenantRolePermissionUrl = getRoleManagementBaseURL() + "/tenantrolepermission";
+        location = getConfigProperty("initializer.tenantRolePermission.file.location");
+        System.out.println(getMd5(location));
+        postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, tenantRolePermissionUrl, "tenantRolePermission");
 
-        String tenantRoleUserUrl= getRoleManagementBaseURL() + "/tenantroleuser";
-        postBodies = getPostBodies("initializer.tenantRoleUser.file.location");
+        String tenantRoleUserUrl = getRoleManagementBaseURL() + "/tenantroleuser";
+        location = getConfigProperty("initializer.tenantRoleUser.file.location");
+        System.out.println(getMd5(location));
+        postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, tenantRoleUserUrl, "tenantRoleUser");
-
     }
 
     /**
@@ -196,7 +207,9 @@ public class Initializer {
         System.out.println("Starting roles...");
         String roleUrl= getRoleManagementBaseURL() + "/role";
 
-        List<String> postBodies = getPostBodies("initializer.role.file.location");
+        String location = getConfigProperty("initializer.role.file.location");
+        System.out.println(getMd5(location));
+        List<String> postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, roleUrl, "role");
     }
 
@@ -210,7 +223,9 @@ public class Initializer {
         System.out.println("Starting resource...");
         String resourceUrl= getPermissionManagementBaseURL() + "/resource";
 
-        List<String> postBodies = getPostBodies("initializer.resource.file.location");
+        String location = getConfigProperty("initializer.resource.file.location");
+        System.out.println(getMd5(location));
+        List<String> postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, resourceUrl, "resource");
     }
 
@@ -222,7 +237,9 @@ public class Initializer {
         System.out.println("Start permission...");
         String permissionUrl = getPermissionManagementBaseURL() + "/permission";
 
-        List<String> postBodies = getPostBodies("initializer.permission.file.location");
+        String location = getConfigProperty("initializer.permission.file.location");
+        System.out.println(getMd5(location));
+        List<String> postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, permissionUrl, "action");
 
     }
@@ -236,7 +253,9 @@ public class Initializer {
         System.out.println("Starting action...");
         String actionUrl= getPermissionManagementBaseURL() + "/action";
 
-        List<String> postBodies = getPostBodies("initializer.action.file.location");
+        String location = getConfigProperty("initializer.action.file.location");
+        System.out.println(getMd5(location));
+        List<String> postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, actionUrl, "action");
     }
 
@@ -258,7 +277,10 @@ public class Initializer {
      * @param accessToken Access Token generated via KeyCloak
      */
     public static void tenantCreation(String accessToken){
-        List<String> postBodies = getPostBodies("initializer.tenant.file.location");
+
+        String location = getConfigProperty("initializer.tenant.file.location");
+        System.out.println(getMd5(location));
+        List<String> postBodies = getPostBodies(location);
 
         String tenantUrl= getTenantManagementBaseURL() + "/tenant";
         executePostForBodies(accessToken, postBodies, tenantUrl, "tenant");
@@ -271,9 +293,7 @@ public class Initializer {
         }
     }
 
-    private static List<String> getPostBodies(String fileLocationPropertyKey) {
-        String location = getConfigProperty(fileLocationPropertyKey);
-
+    private static List<String> getPostBodies(String location) {
         JSONParser parser = new JSONParser();
         List<String> postBodies = new ArrayList<>();
         try {
@@ -309,5 +329,19 @@ public class Initializer {
         System.out.println(identifier + " " + response.getStatus());
         checkResponse(response,identifier);
         return response.getBody();
+    }
+
+    public static String getMd5(String filePath){
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(Files.readAllBytes(Paths.get(filePath)));
+            byte[] digest = md.digest();
+            return DatatypeConverter
+                    .printHexBinary(digest).toUpperCase();
+        } catch (NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+            System.exit(3);
+        }
+        return null;
     }
 }
