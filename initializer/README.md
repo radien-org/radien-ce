@@ -15,7 +15,7 @@ Utilitarian Console program that:
 <pre><code>mvn package</code></pre>
   
 2 - For execute  
-<pre><code>java -jar <b>accessTokenUtil-jar-with-dependencies.jar</b></code></pre>
+<pre><code>java -jar <b>initializer-jar-with-dependencies.jar</b></code></pre>
   
 #Parameters
  - system.ms.endpoint.rolemanagement: URL that refers the (endpoint) for Role Management Microservice 

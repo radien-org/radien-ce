@@ -30,7 +30,7 @@ import org.eclipse.microprofile.config.ConfigProvider;
  * for creating (initialize) the following entities into the Radien database: Action, Resource, Permission,
  * Role, Tenant, TenantRole and TenantPermission
  */
-public class AccessTokenUtil {
+public class Initializer {
 
     /**
      * Method that retrieves a config property
@@ -377,6 +377,7 @@ public class AccessTokenUtil {
      * @return HashMap that corresponds to the obtained response
      */
     public static HashMap makePostRequest(String url,String identifier, String accessToken, String body){
+        System.out.println(url);
         HttpResponse<HashMap> response = Unirest.post(url)
                 .header("Authorization", "Bearer "+accessToken)
                 .header("Content-Type","application/json")
