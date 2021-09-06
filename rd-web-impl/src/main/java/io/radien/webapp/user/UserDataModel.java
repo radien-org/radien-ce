@@ -16,13 +16,11 @@
 package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemActiveTenant;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
@@ -30,7 +28,6 @@ import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import io.radien.webapp.tenantrole.LazyTenantRoleUserDataModel;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.io.Serializable;
 import java.text.MessageFormat;
