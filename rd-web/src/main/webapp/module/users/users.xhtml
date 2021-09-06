@@ -39,6 +39,30 @@
 
 				<f:facet name="header">
 					<div class="text-right">
+						<b:button id="confirm-user-password-reset-button"
+								  onclick="$('.formValidationModalConfirmUserPasswordReset').modal('show')"
+								  value="#{msg.reset_password}"
+								  tooltip="#{msg.reset_password_with_email_warning}"
+								  iconAwesome="fa-key"
+								  rendered="#{userDataModel.allowedToResetPassword}"
+									/>
+						<b:modal id="model"
+								 title="#{msg.confirmation}"
+								 styleClass="formValidationModalConfirmUserPasswordReset"
+								 closable="false"
+								 close-on-escape="false" backdrop="false">
+							<p>#{userDataModel.getResetPasswordMessage()}</p>
+							<f:facet name="footer">
+								<b:commandButton value="#{msg.no}"
+												 tooltip="#{msg.no}"
+												 onclick="{ $('.formValidationModalConfirmUserPasswordReset').modal('hide') } "
+								/>
+								<b:commandButton value="#{msg.yes}" look="warning"
+												 action="#{userDataModel.sendUpdatePasswordEmail}"
+												 oncomplete="{ $('.formValidationModalConfirmUserPasswordReset').modal('hide') } "/>
+							</f:facet>
+						</b:modal>
+
 						<b:commandButton value="#{msg.create}"
 										  tooltip="#{msg.rd_create_new_user}"
 										  iconAwesome="fa-cube"

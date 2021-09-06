@@ -15,8 +15,10 @@
  */
 package io.radien.webapp.authz;
 
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
@@ -32,6 +34,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.JSFUtil.getMessage;
+import static java.text.MessageFormat.format;
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
+
 /**
  * Web Authorization checker validator
  */
@@ -44,6 +51,9 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
 
     @Inject
     UserSessionEnabled userSession;
+
+    @Inject
+    PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Override
     public HttpServletRequest getServletRequest() {
@@ -125,6 +135,24 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
             return super.hasGrantMultipleRoles(roleNames);
         }
         catch (Exception e) {
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Check if the current logged user has permission to reset password for any user
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @return true if the current logged user has grant to do that, otherwise false
+     */
+    public boolean hasPermissionToResetPassword(Long tenant) {
+        try {
+            String name = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getPermissionName();
+            SystemPermission permission = permissionRESTServiceAccess.getPermissionByName(name).orElseThrow(() ->
+                    new SystemException(format(getMessage(PERMISSION_NOT_FOUND_MESSAGE.getValue(), name))));
+            return hasGrant(permission.getId(), tenant);
+        }
+        catch(Exception e) {
             log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
             return false;
         }

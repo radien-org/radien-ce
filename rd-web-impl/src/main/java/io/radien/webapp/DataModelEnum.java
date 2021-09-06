@@ -99,6 +99,7 @@ public enum DataModelEnum {
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
     USER_SEND_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
     USER_SEND_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
+    USER_RESET_PASSWORD_CONFIRM_MESSAGE("userResetPasswordConfirmation"),
     USER_PATH("pretty:user"),
     PRETTY_USER("pretty:user"),
     USERS_PATH("pretty:users"),

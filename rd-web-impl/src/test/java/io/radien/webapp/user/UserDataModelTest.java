@@ -23,10 +23,12 @@ import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
+import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -204,6 +206,15 @@ public class UserDataModelTest {
 
         Boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
         assertFalse(expected);
+    }
+
+    /**
+     * Test getter and setter methods regarding allowedToResetPassword
+     */
+    @Test
+    public void testGetterSetterAllowedToResetPassword() {
+        this.userDataModel.setAllowedToResetPassword(true);
+        assertTrue(this.userDataModel.isAllowedToResetPassword());
     }
 
     /**
@@ -449,6 +460,22 @@ public class UserDataModelTest {
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
         assertEquals(DataModelEnum.USER_SEND_UPDATE_PASSWORD_EMAIL_SUCCESS.getValue(), captured.getSummary());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#getResetPasswordMessage()}
+     */
+    @Test
+    public void testGetResetPasswordMessage() {
+        User user = new User(); user.setLogon("login.test");
+        userDataModel.setSelectedUser(user);
+        String expectedMessage = MessageFormat.format(JSFUtil.getMessage(
+                DataModelEnum.USER_RESET_PASSWORD_CONFIRM_MESSAGE.getValue()), user.getLogon());
+        assertEquals(expectedMessage, userDataModel.getResetPasswordMessage());
+        userDataModel.setSelectedUser(null);
+        expectedMessage = MessageFormat.format(JSFUtil.getMessage(
+                DataModelEnum.USER_RESET_PASSWORD_CONFIRM_MESSAGE.getValue()), "");
+        assertEquals(expectedMessage, userDataModel.getResetPasswordMessage());
     }
 
     /**
