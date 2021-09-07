@@ -7,5 +7,6 @@
 { "name": "Tenant" },
 { "name": "Tenant Role" },
 { "name": "Tenant Role Permission" },
-{ "name": "Tenant Role User" }
+{ "name": "Tenant Role User" },
+{ "name": "Third Party Password" }
 ]
