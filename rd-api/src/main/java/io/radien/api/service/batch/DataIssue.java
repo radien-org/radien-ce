@@ -29,6 +29,11 @@ public class DataIssue {
     private java.util.List<String> reasons;
 
     /**
+     * Empty constructor
+     */
+    private DataIssue(){}
+
+    /**
      * Data issues (process items) to be used in the batch summary
      * @param rowId of the item
      * @param reasons in case of multiple failure
