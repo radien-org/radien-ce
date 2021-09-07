@@ -36,6 +36,7 @@ import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import static io.radien.api.OAFProperties.SYSTEM_MS_TENANTMANAGEMENT_ACTIVE;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND;
 
@@ -82,7 +83,10 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
         }
 
         this.tenantRoleUserServiceAccess.create(tru);
-        if(!activeTenantRESTServiceAccess.isActiveTenantExistent(tru.getUserId(), tenantRole.getTenantId())) {
+        String active= getOafAccess().getProperty(SYSTEM_MS_TENANTMANAGEMENT_ACTIVE);
+
+        boolean tenantMgmtActive = active == null || !active.equalsIgnoreCase("false");
+        if(tenantMgmtActive && !activeTenantRESTServiceAccess.isActiveTenantExistent(tru.getUserId(), tenantRole.getTenantId())) {
             SystemTenant retrievedTenant = retrieveTenant(tenantRole.getTenantId());
             ActiveTenant activeTenant = ActiveTenantFactory.create(tru.getUserId(),
                     retrievedTenant.getId(), retrievedTenant.getName(), false);

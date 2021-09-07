@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.OAFAccess;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
 import io.radien.api.model.tenantrole.SystemTenantRole;
@@ -66,6 +67,7 @@ public abstract class AbstractTenantRoleBusinessServiceTest {
     protected static TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
     protected static RoleServiceAccess roleServiceAccess;
     protected static EJBContainer container;
+    protected static OAFAccess oafAccess;
 
     protected static String lookupString;
 
