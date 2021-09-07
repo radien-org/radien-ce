@@ -38,6 +38,9 @@ public class SystemExceptionTest extends TestCase {
 
         SystemException exception4 = new SystemException("message", exception1);
         assertNotNull(exception4);
+
+        SystemException exception5 = new SystemException("message", new Exception("exception"));
+        assertNotNull(exception5);
     }
 
     @Test
