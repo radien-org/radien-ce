@@ -259,15 +259,15 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(GenericErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString());
         }
 
-        if (tenant.getTenantType() == TenantType.ROOT_TENANT) {
+        if (tenant.getTenantType() == TenantType.ROOT_TENANT.getName()) {
             validateRootTenant(tenant);
         }
 
-        if(tenant.getTenantType() == TenantType.CLIENT_TENANT) {
+        if(tenant.getTenantType() == TenantType.CLIENT_TENANT.getName()) {
             validateClientTenant(tenant);
         }
 
-        if(tenant.getTenantType() == TenantType.SUB_TENANT) {
+        if(tenant.getTenantType() == TenantType.SUB_TENANT.getName()) {
             validateSubTenant(tenant);
         }
     }
@@ -316,7 +316,7 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
         }
 
-        if(get(tenant.getParentId()).getTenantType() == TenantType.SUB_TENANT) {
+        if(get(tenant.getParentId()).getTenantType() == TenantType.SUB_TENANT.getName()) {
             throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString());
         }
     }

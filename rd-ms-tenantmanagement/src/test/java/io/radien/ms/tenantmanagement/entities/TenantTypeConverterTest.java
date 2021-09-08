@@ -28,7 +28,7 @@ public class TenantTypeConverterTest {
     @Test
     public void convertToDatabaseColumn() {
         TenantTypeConverter converter = new TenantTypeConverter();
-        Long type = converter.convertToDatabaseColumn(TenantType.ROOT_TENANT);
+        Long type = converter.convertToDatabaseColumn(TenantType.ROOT_TENANT.getName());
 
         assertEquals((Long) 1L, type);
     }
@@ -36,17 +36,17 @@ public class TenantTypeConverterTest {
     @Test
     public void convertToEntityAttribute() {
         TenantTypeConverter converter = new TenantTypeConverter();
-        TenantType type = converter.convertToEntityAttribute(2L);
+        String type = converter.convertToEntityAttribute(2L);
 
-        assertEquals(TenantType.CLIENT_TENANT, type);
+        assertEquals(TenantType.CLIENT_TENANT.getName(), type);
     }
 
     @Test
     public void testToString() {
         TenantTypeConverter converter = new TenantTypeConverter();
-        TenantType type = converter.convertToEntityAttribute(2L);
-        String toString = type.toString();
+        String type = converter.convertToEntityAttribute(2L);
+        TenantType tenantType = TenantType.getByName(type);
 
-        assertEquals(toString, "{\"id\":" + type.getId() + ", \"name\":\"" + type.getName() + "\"}");
+        assertEquals(tenantType.toString(), "{\"id\":" + tenantType.getId() + ", \"name\":\"" + tenantType.getName() + "\"}");
     }
 }

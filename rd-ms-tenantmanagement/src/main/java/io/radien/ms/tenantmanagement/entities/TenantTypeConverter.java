@@ -26,7 +26,7 @@ import javax.persistence.Converter;
  * @author Newton Carvalho
  */
 @Converter
-public class TenantTypeConverter implements AttributeConverter<TenantType, Long> {
+public class TenantTypeConverter implements AttributeConverter<String, Long> {
 
     /**
      * Converts the value stored in the entity attribute into the data representation to be stored in the database.
@@ -34,8 +34,9 @@ public class TenantTypeConverter implements AttributeConverter<TenantType, Long>
      * @return the converted data to be stored in the database column
      */
     @Override
-    public Long convertToDatabaseColumn(TenantType attribute) {
-        return attribute != null ? attribute.getId() : null;
+    public Long convertToDatabaseColumn(String attribute) {
+        TenantType tenantType = TenantType.getByName(attribute);
+        return attribute != null ? tenantType.getId() : null;
     }
 
     /**
@@ -47,7 +48,8 @@ public class TenantTypeConverter implements AttributeConverter<TenantType, Long>
      * @return the converted value to be stored in the entity attribute
      */
     @Override
-    public TenantType convertToEntityAttribute(Long idFromDb) {
-        return TenantType.getById(idFromDb);
+    public String convertToEntityAttribute(Long idFromDb) {
+        TenantType tenantType = TenantType.getById(idFromDb);
+        return tenantType.getName();
     }
 }

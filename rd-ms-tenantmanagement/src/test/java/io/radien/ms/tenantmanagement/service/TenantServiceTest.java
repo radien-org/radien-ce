@@ -76,7 +76,7 @@ public class TenantServiceTest {
             rootTenant = new TenantEntity();
             rootTenant.setName("rootName");
             rootTenant.setTenantKey("rd");
-            rootTenant.setTenantType(TenantType.ROOT_TENANT);
+            rootTenant.setTenantType(TenantType.ROOT_TENANT.getName());
             tenantServiceAccess.create(rootTenant);
         }
         else {
@@ -98,23 +98,6 @@ public class TenantServiceTest {
         assertNotNull(result);
     }
 
-
-    /**
-     * Add second root tenant. Should throw exception.
-     */
-    @Test
-    public void testCreateDoubleRootException() {
-        SystemTenant tenant = new TenantEntity();
-        tenant.setName("nameCreation");
-        tenant.setTenantType(TenantType.ROOT_TENANT);
-        tenant.setTenantStart(LocalDate.now());
-        tenant.setTenantKey(RandomStringUtils.randomAlphabetic(4));
-        Exception exception = assertThrows(TenantException.class, () -> tenantServiceAccess.create(tenant));
-        String expectedMessage = GenericErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString();
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
 
     /**
      * Add tenant test with duplicated name.
@@ -143,7 +126,7 @@ public class TenantServiceTest {
         SystemTenant c = createTenant("testUpdateDuplicated");
         Exception exception = assertThrows(UniquenessConstraintException.class, () ->
                 tenantServiceAccess.update(new TenantEntity(new io.radien.ms.tenantmanagement.client.entities.Tenant(
-                        null,"testUpdateDuplicated", "key-x", TenantType.CLIENT_TENANT, null, null,
+                        null,"testUpdateDuplicated", "key-x", TenantType.CLIENT_TENANT.getName(), null, null,
                         null, null, null,null, null,
                         null, rootTenant.getId(), null))));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
@@ -165,7 +148,7 @@ public class TenantServiceTest {
     public void testGetById() throws UniquenessConstraintException, TenantException {
         String name = "testGetById";
         SystemTenant c = new TenantEntity(new io.radien.ms.tenantmanagement.client.entities.Tenant(
-                11111L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT, null, null,
+                11111L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT.getName(), null, null,
                 null, null, null,null, null,
                 null, rootTenant.getId(), null));
         tenantServiceAccess.create(c);
@@ -256,7 +239,7 @@ public class TenantServiceTest {
     private SystemTenant createTenant(String name) throws UniquenessConstraintException, TenantException {
         SystemTenant tenant = new TenantEntity();
         tenant.setName(name);
-        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenant.setParentId(rootTenant.getId());
         tenant.setTenantKey(RandomStringUtils.randomAlphabetic(4));
         tenantServiceAccess.create(tenant);
@@ -274,7 +257,7 @@ public class TenantServiceTest {
         SystemTenant c = new TenantEntity();
         c.setId(100L);
         c.setName(name);
-        c.setTenantType(TenantType.CLIENT_TENANT);
+        c.setTenantType(TenantType.CLIENT_TENANT.getName());
         c.setParentId(rootTenant.getId());
         c.setTenantKey(RandomStringUtils.randomAlphabetic(4));
         tenantServiceAccess.create(c);
@@ -288,7 +271,7 @@ public class TenantServiceTest {
         SystemTenant c = new TenantEntity();
         c.setId(102L);
         c.setName(name);
-        c.setTenantType(TenantType.CLIENT_TENANT);
+        c.setTenantType(TenantType.CLIENT_TENANT.getName());
         c.setParentId(rootTenant.getId());
         c.setTenantKey(RandomStringUtils.randomAlphabetic(4));
         tenantServiceAccess.create(c);
@@ -312,7 +295,7 @@ public class TenantServiceTest {
     public void testGet() throws UniquenessConstraintException, TenantException {
         String name = "testGet";
         SystemTenant c = new TenantEntity(new io.radien.ms.tenantmanagement.client.entities.Tenant(
-                200L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT, null, null,
+                200L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT.getName(), null, null,
                 null, null, null,null, null,
                 null, rootTenant.getId(), null));
         tenantServiceAccess.create(c);
@@ -331,7 +314,7 @@ public class TenantServiceTest {
     public void testGetIsLogicConjunction() throws UniquenessConstraintException, TenantException {
         String name = "testGetIsLogicalConjunction";
         SystemTenant c = new TenantEntity(new io.radien.ms.tenantmanagement.client.entities.Tenant(
-                923L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT, null, null,
+                923L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT.getName(), null, null,
                 null, null, null,null, null,
                 null, rootTenant.getId(), null));
         tenantServiceAccess.create(c);
@@ -351,7 +334,7 @@ public class TenantServiceTest {
     public void testExists() throws UniquenessConstraintException, NotFoundException, TenantException {
         String name = "testExists";
         SystemTenant c = new TenantEntity(new io.radien.ms.tenantmanagement.client.entities.Tenant(
-                300L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT, null, null,
+                300L,name, RandomStringUtils.randomAlphabetic(4), TenantType.CLIENT_TENANT.getName(), null, null,
                 null, null, null,null, null,
                 null, rootTenant.getId(), null));
         tenantServiceAccess.create(c);
@@ -364,7 +347,7 @@ public class TenantServiceTest {
     @Test
     public void testAddRootTenant() {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.ROOT_TENANT);
+        tenant.setTenantType(TenantType.ROOT_TENANT.getName());
         tenant.setTenantKey("key1");
         tenant.setName("radien-default");
         tenant.setTenantStart(LocalDate.now());
@@ -381,7 +364,7 @@ public class TenantServiceTest {
     @Test
     public void testAddSubTenant() throws UniquenessConstraintException, TenantException {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenant.setTenantKey("keyClient");
         tenant.setParentId(rootTenant.getId());
         tenant.setName("volkswagen-accountancy-client");
@@ -391,7 +374,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenant);
 
         TenantEntity tenantSub = new TenantEntity();
-        tenantSub.setTenantType(TenantType.SUB_TENANT);
+        tenantSub.setTenantType(TenantType.SUB_TENANT.getName());
         tenantSub.setTenantKey("key111");
         tenantSub.setParentId(tenant.getId());
         tenantSub.setClientId(tenant.getId());
@@ -403,7 +386,7 @@ public class TenantServiceTest {
 
         SystemTenant systemTenant = tenantServiceAccess.get(tenantSub.getId());
         assertNotNull(systemTenant);
-        assertEquals(TenantType.SUB_TENANT, systemTenant.getTenantType());
+        assertEquals(TenantType.SUB_TENANT.getName(), systemTenant.getTenantType());
 
         TenantSearchFilter filter = new TenantSearchFilter("volkswagen-accountancy", null, null,false, false);
         List<? extends SystemTenant> list =
@@ -420,7 +403,7 @@ public class TenantServiceTest {
     @Test
     public void testGetTenantsByIds() throws UniquenessConstraintException, TenantException {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenant.setTenantKey("keyClient");
         tenant.setParentId(rootTenant.getId());
         tenant.setName("bmw");
@@ -428,7 +411,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenant);
 
         TenantEntity tenantSub = new TenantEntity();
-        tenantSub.setTenantType(TenantType.SUB_TENANT);
+        tenantSub.setTenantType(TenantType.SUB_TENANT.getName());
         tenantSub.setTenantKey("key111");
         tenantSub.setParentId(tenant.getId());
         tenantSub.setClientId(tenant.getId());
@@ -437,7 +420,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenantSub);
 
         TenantEntity tenantSub2 = new TenantEntity();
-        tenantSub2.setTenantType(TenantType.SUB_TENANT);
+        tenantSub2.setTenantType(TenantType.SUB_TENANT.getName());
         tenantSub2.setTenantKey("key111");
         tenantSub2.setParentId(tenant.getId());
         tenantSub2.setClientId(tenant.getId());
@@ -464,7 +447,7 @@ public class TenantServiceTest {
     @Test
     public void rootUnderClientException() throws UniquenessConstraintException, TenantException {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenant.setTenantKey("keyClient1");
         tenant.setParentId(rootTenant.getId());
         tenant.setName("volkswagen-accountancy-client1");
@@ -474,7 +457,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenant);
 
         TenantEntity tenantRoot = new TenantEntity();
-        tenantRoot.setTenantType(TenantType.ROOT_TENANT);
+        tenantRoot.setTenantType(TenantType.ROOT_TENANT.getName());
         tenantRoot.setTenantKey("keyRoot1");
         tenantRoot.setParentId(tenant.getId());
         tenantRoot.setName("volkswagen-accountancy-root1");
@@ -485,7 +468,7 @@ public class TenantServiceTest {
         assertEquals(GenericErrorCodeMessage.TENANT_ROOT_WITH_PARENT.toString(), e.getMessage());
 
         TenantEntity tenantRoot2 = new TenantEntity();
-        tenantRoot2.setTenantType(TenantType.ROOT_TENANT);
+        tenantRoot2.setTenantType(TenantType.ROOT_TENANT.getName());
         tenantRoot2.setTenantKey("keyRoot1");
         tenantRoot2.setClientId(tenant.getId());
         tenantRoot2.setName("volkswagen-accountancy-root1");
@@ -504,7 +487,7 @@ public class TenantServiceTest {
     @Test
     public void clientUnderSubException() throws UniquenessConstraintException, TenantException {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.SUB_TENANT);
+        tenant.setTenantType(TenantType.SUB_TENANT.getName());
         tenant.setTenantKey("keySub1");
         tenant.setParentId(rootTenant.getId());
         tenant.setClientId(rootTenant.getId());
@@ -515,7 +498,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenant);
 
         TenantEntity tenantRoot = new TenantEntity();
-        tenantRoot.setTenantType(TenantType.CLIENT_TENANT);
+        tenantRoot.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenantRoot.setTenantKey("keyRoot1");
         tenantRoot.setParentId(tenant.getId());
         tenantRoot.setName("volkswagen-accountancy-root1");
@@ -532,7 +515,7 @@ public class TenantServiceTest {
     @Test
     public void subTenantRuleValidationNoParent() {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.SUB_TENANT);
+        tenant.setTenantType(TenantType.SUB_TENANT.getName());
         tenant.setTenantKey("keySub1");
         tenant.setClientId(rootTenant.getId());
         tenant.setName("volkswagen-accountancy-Sub1");
@@ -549,7 +532,7 @@ public class TenantServiceTest {
     @Test
     public void subTenantRuleValidationNoClient() {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.SUB_TENANT);
+        tenant.setTenantType(TenantType.SUB_TENANT.getName());
         tenant.setTenantKey("keySub1");
         tenant.setParentId(rootTenant.getId());
         tenant.setName("volkswagen-accountancy-Sub1");
@@ -566,7 +549,7 @@ public class TenantServiceTest {
     @Test
     public void subTenantRuleValidationNotFoundParent() {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.SUB_TENANT);
+        tenant.setTenantType(TenantType.SUB_TENANT.getName());
         tenant.setTenantKey("keySub1");
         tenant.setClientId(rootTenant.getId());
         tenant.setParentId(555L);
@@ -584,7 +567,7 @@ public class TenantServiceTest {
     @Test
     public void subTenantRuleValidationNotFountClient() {
         TenantEntity tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.SUB_TENANT);
+        tenant.setTenantType(TenantType.SUB_TENANT.getName());
         tenant.setTenantKey("keySub1");
         tenant.setParentId(rootTenant.getId());
         tenant.setClientId(200L);
@@ -605,7 +588,7 @@ public class TenantServiceTest {
     public void testRetrieveAllPossibleTenants() throws UniquenessConstraintException, TenantException {
 
         SystemTenant tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenant.setTenantKey(RandomStringUtils.randomAlphabetic(4));
         tenant.setName("volkswagen-marketing");
         tenant.setTenantStart(LocalDate.now());
@@ -613,7 +596,7 @@ public class TenantServiceTest {
         tenantServiceAccess.create(tenant);
 
         tenant = new TenantEntity();
-        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenant.setTenantKey(RandomStringUtils.randomAlphabetic(4));
         tenant.setName("volkswagen-human-resources");
         tenant.setTenantStart(LocalDate.now());
@@ -644,7 +627,7 @@ public class TenantServiceTest {
         e = assertThrows(TenantException.class, ()->tenantServiceAccess.create(tenant));
         assertEquals(GenericErrorCodeMessage.TENANT_FIELD_NOT_INFORMED.toString("tenantType"), e.getMessage());
 
-        tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
         tenant.setTenantEnd(LocalDate.now().minus(3, ChronoUnit.MONTHS));
         tenant.setTenantStart(LocalDate.now());
 
@@ -661,7 +644,7 @@ public class TenantServiceTest {
         assertEquals(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString(), e.getMessage());
 
         SystemTenant newTenantRoot = new TenantEntity();
-        newTenantRoot.setTenantType(TenantType.ROOT_TENANT);
+        newTenantRoot.setTenantType(TenantType.ROOT_TENANT.getName());
         newTenantRoot.setName("root");
         newTenantRoot.setTenantKey("root-1");
         newTenantRoot.setTenantStart(LocalDate.now());
