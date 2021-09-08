@@ -94,7 +94,7 @@ public class TenantRESTServiceClientTest {
         MockitoAnnotations.initMocks(this);
 
         dummyTenant.setId(2L);
-        dummyTenant.setTenantType(TenantType.ROOT_TENANT);
+        dummyTenant.setTenantType(TenantType.ROOT_TENANT.getName());
         dummyTenant.setTenantKey("tenantKey");
         dummyTenant.setName("name");
     }
@@ -203,11 +203,11 @@ public class TenantRESTServiceClientTest {
     public void testGetTenantsByIds() throws MalformedURLException, SystemException {
         Tenant t1 = new Tenant();
         t1.setId(1L);
-        t1.setTenantType(TenantType.ROOT_TENANT);
+        t1.setTenantType(TenantType.ROOT_TENANT.getName());
 
         Tenant t2 = new Tenant();
         t2.setId(2L);
-        t2.setTenantType(TenantType.SUB_TENANT);
+        t2.setTenantType(TenantType.SUB_TENANT.getName());
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         jsonArrayBuilder.add(TenantModelMapper.map(t1));

@@ -60,7 +60,7 @@ public class TenantMessageBodyWriterTest extends TestCase {
                 "\"createUser\":null," +
                 "\"lastUpdateUser\":null}";
         TenantMessageBodyWriter target = new TenantMessageBodyWriter();
-        Tenant tenant = TenantFactory.create("name","tenantKey", TenantType.ROOT_TENANT,null, null, null, null, null, null, null, null, null, null, null);
+        Tenant tenant = TenantFactory.create("name","tenantKey", TenantType.ROOT_TENANT.getName(),null, null, null, null, null, null, null, null, null, null, null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(tenant,null,null,null, null,null, baos);
 
