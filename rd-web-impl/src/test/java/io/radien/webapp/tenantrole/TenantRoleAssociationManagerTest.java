@@ -396,9 +396,9 @@ public class TenantRoleAssociationManagerTest {
         Long currentUserId = 1L;
         List<SystemTenant> expectedTenants = new ArrayList<>();
 
-        SystemTenant tenant = new Tenant(); tenant.setId(1L); tenant.setTenantType(TenantType.ROOT_TENANT.getName());
+        SystemTenant tenant = new Tenant(); tenant.setId(1L); tenant.setTenantType(TenantType.ROOT_TENANT.getDescription());
         expectedTenants.add(tenant);
-        tenant = new Tenant(); tenant.setId(2L); tenant.setTenantType(TenantType.CLIENT_TENANT.getName());
+        tenant = new Tenant(); tenant.setId(2L); tenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         expectedTenants.add(tenant);
 
         doReturn(currentUserId).when(this.webAuthorizationChecker).getCurrentUserId();

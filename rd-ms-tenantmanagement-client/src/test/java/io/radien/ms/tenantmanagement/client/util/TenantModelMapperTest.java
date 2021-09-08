@@ -49,7 +49,7 @@ public class TenantModelMapperTest {
 
     @Test
     public void testMapJsonObject() {
-        Tenant tenant = TenantFactory.create("a", "tenantKey", TenantType.ROOT_TENANT.getName(), LocalDate.now(), null,
+        Tenant tenant = TenantFactory.create("a", "tenantKey", TenantType.ROOT_TENANT.getDescription(), LocalDate.now(), null,
                 null, null, null, null, null, null, null, null, 1L);
         JsonObject jsonObject = TenantModelMapper.map(tenant);
 

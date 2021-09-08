@@ -123,7 +123,7 @@ public class UserProfileManagerTest {
         String description;
         for (Long tenantId:tenantIds) {
             description = "tenant-" + tenantId;
-            Tenant tenant = create(description, description, TenantType.SUB_TENANT.getName(), null,
+            Tenant tenant = create(description, description, TenantType.SUB_TENANT.getDescription(), null,
                     null, null,null, null, null,
                     null, null, null, null, null);
             tenants.add(tenant);

@@ -47,7 +47,7 @@ public class TenantTest {
 
     @Test
     public void testTenantTest() {
-        io.radien.ms.tenantmanagement.client.entities.Tenant t = new io.radien.ms.tenantmanagement.client.entities.Tenant(1L, "name", "tenantKey", TenantType.ROOT_TENANT.getName(), null, null, "address", "zip", "city", "country", 123L, "email", 1L, 1L);
+        io.radien.ms.tenantmanagement.client.entities.Tenant t = new io.radien.ms.tenantmanagement.client.entities.Tenant(1L, "name", "tenantKey", TenantType.ROOT_TENANT.getDescription(), null, null, "address", "zip", "city", "country", 123L, "email", 1L, 1L);
 
         assertNull(t.getClientAddress());
         assertNull(t.getClientZipCode());

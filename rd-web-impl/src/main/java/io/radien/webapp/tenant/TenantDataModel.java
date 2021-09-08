@@ -140,9 +140,9 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     private void fillParentClientId(SystemTenant systemTenantToSave) throws SystemException {
-        if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT.getName())) {
+        if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT.getDescription())) {
             retrieveParentTenantId(systemTenantToSave);
-        } else if(systemTenantToSave.getTenantType().equals(TenantType.SUB_TENANT.getName())) {
+        } else if(systemTenantToSave.getTenantType().equals(TenantType.SUB_TENANT.getDescription())) {
             retrieveParentTenantId(systemTenantToSave);
             retrieveClientTenantId(systemTenantToSave);
         }
@@ -203,7 +203,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
             Optional<SystemTenant> tenantToBeSearch = service.getTenantById(tenantId);
 
             if(tenantToBeSearch.isPresent()) {
-                if(tenantToBeSearch.get().getTenantType().equals(TenantType.CLIENT_TENANT.getName())) {
+                if(tenantToBeSearch.get().getTenantType().equals(TenantType.CLIENT_TENANT.getDescription())) {
                     systemTenantToSave.setClientId(tenantToBeSearch.get().getId());
                 } else {
                     requestUpperTenant(systemTenantToSave, tenantToBeSearch.get().getParentId());
@@ -272,7 +272,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     private void validateMandatoryFields(SystemTenant r) throws Exception {
-        if(r != null && r.getTenantType().equals(TenantType.CLIENT_TENANT.getName())) {
+        if(r != null && r.getTenantType().equals(TenantType.CLIENT_TENANT.getDescription())) {
             clientAddressValidation(r);
             clientZipCodeValidation(r);
             clientCityValidation(r);

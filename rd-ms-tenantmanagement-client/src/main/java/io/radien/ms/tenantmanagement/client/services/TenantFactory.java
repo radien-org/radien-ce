@@ -169,7 +169,7 @@ public class TenantFactory {
         if (StringUtils.isEmpty(typeAsString)) {
             throw new IllegalStateException("Field type is mandatory");
         }
-        TenantType tenantType = TenantType.getByName(typeAsString);
+        TenantType tenantType = TenantType.getByDescription(typeAsString);
         // TODO @Newton: Necessary to understand why TenantMessageBodyWriter is not being invoked
         if (tenantType == null) {
             String tenantTypeNotFound = GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString();
@@ -183,7 +183,7 @@ public class TenantFactory {
         if (tenantType == null) {
             throw new IllegalStateException(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString());
         }
-        return tenantType.getName();
+        return tenantType.getDescription();
     }
 
     /**

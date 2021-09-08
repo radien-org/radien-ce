@@ -110,7 +110,7 @@ public class Tenant extends AbstractModel implements SystemTenant {
      */
     private void isClientTenantWithMultipleFields(String tenantType, String clientAddress, String clientZipCode, String clientCity, String clientCountry,
                                                   Long clientPhoneNumber, String clientEmail, Long clientId) {
-        if(tenantType != null && tenantType.equals(TenantType.CLIENT_TENANT.getName())) {
+        if(tenantType != null && tenantType.equals(TenantType.CLIENT_TENANT.getDescription())) {
             this.clientAddress = clientAddress;
             this.clientZipCode = clientZipCode;
             this.clientCity = clientCity;
@@ -135,7 +135,7 @@ public class Tenant extends AbstractModel implements SystemTenant {
      * @param tenant information to be created
      */
     private void isClientTenant(Tenant tenant) {
-        if(tenantType != null && tenantType.equals(TenantType.CLIENT_TENANT.getName())) {
+        if(tenantType != null && tenantType.equals(TenantType.CLIENT_TENANT.getDescription())) {
             this.clientAddress = tenant.getClientAddress();
             this.clientZipCode = tenant.getClientZipCode();
             this.clientCity = tenant.getClientCity();

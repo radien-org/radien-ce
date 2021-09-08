@@ -40,7 +40,7 @@ public class TenantFactoryTest extends TestCase {
         tenant.setName("nameValue");
         tenant.setCreateUser(2L);
         tenant.setTenantKey("tenantKey");
-        tenant.setTenantType(TenantType.ROOT_TENANT.getName());
+        tenant.setTenantType(TenantType.ROOT_TENANT.getDescription());
         tenant.setTenantStart(null);
         tenant.setTenantEnd(null);
     }
@@ -60,7 +60,7 @@ public class TenantFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("name", "nameValue");
         builder.add("tenantKey", "tenantKey");
-        builder.add("tenantType", TenantType.ROOT_TENANT.getName());
+        builder.add("tenantType", TenantType.ROOT_TENANT.getDescription());
         builder.addNull("tenantStart");
         builder.addNull("tenantEnd");
         builder.addNull("clientAddress");
@@ -122,7 +122,7 @@ public class TenantFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("name", "nameValue");
         builder.add("tenantKey", "tenantKey");
-        builder.add("tenantType", TenantType.ROOT_TENANT.getName());
+        builder.add("tenantType", TenantType.ROOT_TENANT.getDescription());
         builder.add("tenantStart", "2020-03-03");
         builder.add("tenantEnd", "2021-03-03");
         builder.addNull("clientAddress");
@@ -149,7 +149,7 @@ public class TenantFactoryTest extends TestCase {
     public void testConvertList() throws ParseException {
         List<Tenant> listOfCreatedTenants = new ArrayList<>();
 
-        Tenant tenant = TenantFactory.create("name", "tenantKey", TenantType.ROOT_TENANT.getName(),
+        Tenant tenant = TenantFactory.create("name", "tenantKey", TenantType.ROOT_TENANT.getDescription(),
                 null, null, null, null, null, null, null,
                 null, null, null, null);
 
@@ -172,7 +172,7 @@ public class TenantFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("name", "nameValue");
         builder.add("tenantKey", "tenantKey");
-        builder.add("tenantType", TenantType.ROOT_TENANT.getName());
+        builder.add("tenantType", TenantType.ROOT_TENANT.getDescription());
         builder.addNull("tenantStart");
         builder.addNull("tenantEnd");
         builder.addNull("clientAddress");
