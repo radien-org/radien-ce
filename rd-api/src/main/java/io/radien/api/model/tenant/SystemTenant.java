@@ -80,13 +80,13 @@ public interface SystemTenant extends Model {
 	 * System tenant type getter
 	 * @return system tenant type
 	 */
-	public SystemTenantType getTenantType();
+	public String getTenantType();
 
 	/**
 	 * System tenant type setter
 	 * @param tenantType to be set
 	 */
-	public void setTenantType(SystemTenantType tenantType);
+	public void setTenantType(String tenantType);
 
 	/**
 	 * System tenant client address getter
