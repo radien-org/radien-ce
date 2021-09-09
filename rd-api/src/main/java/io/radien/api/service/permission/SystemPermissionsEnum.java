@@ -95,7 +95,7 @@ public enum SystemPermissionsEnum {
 
     /**
      * Get Permission specific name
-     * @return role name as string value
+     * @return permission name as string value
      */
     public String getPermissionName() {
         return permissionName;

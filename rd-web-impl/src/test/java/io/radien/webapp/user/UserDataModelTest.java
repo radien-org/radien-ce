@@ -15,11 +15,23 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.model.permission.SystemAction;
+import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.ActionRESTServiceAccess;
+import io.radien.api.service.permission.PermissionRESTServiceAccess;
+import io.radien.api.service.permission.ResourceRESTServiceAccess;
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemPermissionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.permissionmanagement.client.entities.Action;
+import io.radien.ms.permissionmanagement.client.entities.Permission;
+import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
@@ -29,6 +41,8 @@ import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -46,10 +60,14 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.radien.webapp.DataModelEnum.ACTION_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE;
+import static io.radien.webapp.DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
@@ -69,6 +87,18 @@ public class UserDataModelTest {
 
     @Mock
     private UserRESTServiceAccess userRESTServiceAccess;
+
+
+    @Mock
+    private ActionRESTServiceAccess actionRESTServiceAccess;
+
+
+    @Mock
+    private ResourceRESTServiceAccess resourceRESTServiceAccess;
+
+
+    @Mock
+    private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
@@ -225,7 +255,6 @@ public class UserDataModelTest {
         this.userDataModel.setHasTenantAdministratorRoleAccess(true);
         assertTrue(this.userDataModel.isHasTenantAdministratorRoleAccess());
     }
-
 
     /**
      * Test getter and setter methods regarding userForTenantAssociation
@@ -639,5 +668,123 @@ public class UserDataModelTest {
         userDataModel.setSelectedUser(null);
         assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userUnAssign());
 
+    }
+
+    /**
+     * Test for method {@link UserDataModel#getPermissionToResetPassword()} when Resource could not be found
+     * @throws SystemException thrown when errors occurs during Rest client executions
+     */
+    @Test
+    public void testGetPermissionToResetPasswordWhenResourceNotFound() throws SystemException {
+        when(resourceRESTServiceAccess.getResourceByName(SystemResourcesEnum.THIRD_PARTY_PASSWORD.getResourceName())).
+                thenReturn(Optional.empty());
+        String expectedMsgError = "Message(s): " + MessageFormat.format(JSFUtil.getMessage(
+                RESOURCE_NOT_FOUND_MESSAGE.getValue()), SystemResourcesEnum.THIRD_PARTY_PASSWORD.getResourceName());
+        SystemException outcomeException = assertThrows(SystemException.class, () -> userDataModel.getPermissionToResetPassword());
+        assertEquals(expectedMsgError, outcomeException.getMessage());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#getPermissionToResetPassword()} when Action could not be found
+     * @throws SystemException thrown when errors occurs during Rest client executions
+     */
+    @Test
+    public void testGetPermissionToResetPasswordWhenActionNotFound() throws SystemException {
+        when(resourceRESTServiceAccess.getResourceByName(any())).thenReturn(Optional.of(new Resource()));
+        when(actionRESTServiceAccess.getActionByName(SystemActionsEnum.ACTION_UPDATE.getActionName())).
+                thenReturn(Optional.empty());
+        String expectedMsgError = "Message(s): " + MessageFormat.format(JSFUtil.getMessage(
+                ACTION_NOT_FOUND_MESSAGE.getValue()), SystemActionsEnum.ACTION_UPDATE.getActionName());
+        SystemException outcomeException = assertThrows(SystemException.class, () -> userDataModel.getPermissionToResetPassword());
+        assertEquals(expectedMsgError, outcomeException.getMessage());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#getPermissionToResetPassword()} when the Permission in self
+     * could not be found
+     * @throws SystemException thrown when errors occurs during Rest client executions
+     */
+    @Test
+    public void testGetPermissionToResetPasswordWhenPermissionNotFound() throws SystemException {
+        SystemResource resource = new Resource(); resource.setId(1L);
+        when(resourceRESTServiceAccess.getResourceByName(any())).thenReturn(Optional.of(resource));
+        SystemAction action = new Action(); action.setId(2L);
+        when(actionRESTServiceAccess.getActionByName(any())).thenReturn(Optional.of(action));
+        String expectedMsgError = "Message(s): " + MessageFormat.format(JSFUtil.getMessage(
+                PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE.getValue()),
+                SystemActionsEnum.ACTION_UPDATE.getActionName(),
+                SystemResourcesEnum.THIRD_PARTY_PASSWORD.getResourceName());
+        SystemException outcomeException = assertThrows(SystemException.class, () -> userDataModel.getPermissionToResetPassword());
+        assertEquals(expectedMsgError, outcomeException.getMessage());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#getPermissionToResetPassword()}
+     * @throws SystemException thrown when errors occurs during Rest client executions
+     */
+    @Test
+    public void testGetPermissionToResetPassword() throws SystemException {
+        SystemAction action = new Action();
+        action.setName(SystemActionsEnum.ACTION_UPDATE.getActionName());
+        action.setId(1L);
+
+        SystemResource resource = new Resource();
+        resource.setName(SystemResourcesEnum.THIRD_PARTY_PASSWORD.getResourceName());
+        resource.setId(1L);
+
+        SystemPermission permission = new Permission();
+        permission.setName(SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getPermissionName());
+        permission.setId(11111L);
+        permission.setActionId(action.getId());
+        permission.setResourceId(resource.getId());
+
+        when(actionRESTServiceAccess.getActionByName(SystemActionsEnum.ACTION_UPDATE.getActionName())).
+                thenReturn(Optional.of(action));
+        when(resourceRESTServiceAccess.getResourceByName(SystemResourcesEnum.THIRD_PARTY_PASSWORD.getResourceName())).
+                thenReturn(Optional.of(resource));
+
+        List<SystemPermission> returnList = Collections.singletonList(permission);
+
+        doReturn(returnList).when(permissionRESTServiceAccess).getPermissionByActionAndResource(action.getId(),
+                resource.getId());
+
+        assertEquals(permission, userDataModel.getPermissionToResetPassword());
+    }
+
+    /**
+     * Test to validate if the current user has permission to reset password
+     * @throws SystemException in case of any issue while validating or obtaining permission
+     */
+    @Test
+    public void testHasPermissionToResetPassword() throws SystemException {
+        Long tenantId = 1L;
+
+        SystemAction action = new Action();
+        action.setName(SystemActionsEnum.ACTION_UPDATE.getActionName());
+        action.setId(1L);
+
+        SystemResource resource = new Resource();
+        resource.setName(SystemResourcesEnum.THIRD_PARTY_PASSWORD.getResourceName());
+        resource.setId(1L);
+
+        SystemPermission permission = new Permission();
+        permission.setName(SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getPermissionName());
+        permission.setId(11111L);
+        permission.setActionId(action.getId());
+        permission.setResourceId(resource.getId());
+
+        when(actionRESTServiceAccess.getActionByName(
+                SystemActionsEnum.ACTION_UPDATE.getActionName())).thenReturn(Optional.of(action));
+        when(resourceRESTServiceAccess.getResourceByName(SystemResourcesEnum.THIRD_PARTY_PASSWORD.getResourceName())).
+                thenReturn(Optional.of(resource));
+
+        List<SystemPermission> returnList = Collections.singletonList(permission);
+
+        doReturn(returnList).when(permissionRESTServiceAccess).getPermissionByActionAndResource(action.getId(),
+                resource.getId());
+
+        when(webAuthorizationChecker.hasGrant(permission.getId(), tenantId)).thenReturn(Boolean.TRUE);
+
+        assertTrue(userDataModel.hasPermissionToResetPassword(tenantId));
     }
 }

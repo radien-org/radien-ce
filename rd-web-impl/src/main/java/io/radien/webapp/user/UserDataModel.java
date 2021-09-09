@@ -15,11 +15,18 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.model.permission.SystemAction;
+import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.ActionRESTServiceAccess;
+import io.radien.api.service.permission.PermissionRESTServiceAccess;
+import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
@@ -31,6 +38,7 @@ import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
@@ -40,6 +48,14 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
+
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_UPDATE;
+import static io.radien.api.service.permission.SystemResourcesEnum.THIRD_PARTY_PASSWORD;
+import static io.radien.webapp.DataModelEnum.ACTION_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE;
+import static io.radien.webapp.DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.JSFUtil.getMessage;
+import static java.text.MessageFormat.format;
 
 /**
  * @author Rajesh Gavvala
@@ -51,6 +67,15 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
     @Inject
     private UserRESTServiceAccess service;
+
+    @Inject
+    private ActionRESTServiceAccess actionRESTServiceAccess;
+
+    @Inject
+    private ResourceRESTServiceAccess resourceRESTServiceAccess;
+
+    @Inject
+    private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Inject
     private UserSessionEnabled userSessionEnabled;
@@ -91,7 +116,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
                 }
 
                 Long tenantId = getCurrentActiveTenantId();
-                allowedToResetPassword = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+                allowedToResetPassword = hasPermissionToResetPassword(tenantId);
 
                 if (hasUserAdministratorRoleAccess) {
                     // Must retrieve user compatible with the Active Tenant
@@ -105,6 +130,46 @@ public class UserDataModel extends AbstractManager implements Serializable {
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
+        }
+    }
+
+    /**
+     * Retrieves the permission to change a 3rd party password
+     * @throws SystemException thrown if the required permission could not be found
+     * @return SystemPermission the searched permission
+     */
+    protected SystemPermission getPermissionToResetPassword() throws SystemException {
+        String resourceName = THIRD_PARTY_PASSWORD.getResourceName();
+        SystemResource resource = resourceRESTServiceAccess.getResourceByName(resourceName).orElseThrow(() ->
+                new SystemException(format(getMessage(RESOURCE_NOT_FOUND_MESSAGE.getValue()), resourceName)));
+
+        String actionName = ACTION_UPDATE.getActionName();
+        SystemAction action = actionRESTServiceAccess.getActionByName(actionName).orElseThrow(() ->
+                new SystemException(format(getMessage(ACTION_NOT_FOUND_MESSAGE.getValue()), actionName)));
+
+        List<? extends SystemPermission> permissions = permissionRESTServiceAccess.
+                getPermissionByActionAndResource(action.getId(), resource.getId());
+
+        if (permissions.isEmpty()) {
+            throw new SystemException(format(getMessage(PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE.getValue()),
+                    actionName, resourceName));
+        }
+        return permissions.get(0);
+    }
+
+    /**
+     * Check if the current logged user has permission to reset password for any user
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @return true if the current logged user has grant to do that, otherwise false
+     */
+    public boolean hasPermissionToResetPassword(Long tenant) {
+        try {
+            SystemPermission permission = getPermissionToResetPassword();
+            return webAuthorizationChecker.hasGrant(permission.getId(), tenant);
+        }
+        catch(SystemException e) {
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+            return false;
         }
     }
 

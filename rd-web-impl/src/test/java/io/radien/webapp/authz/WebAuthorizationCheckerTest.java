@@ -15,19 +15,14 @@
  */
 package io.radien.webapp.authz;
 
-import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
-import io.radien.api.service.permission.PermissionRESTServiceAccess;
-import io.radien.api.service.permission.SystemPermissionsEnum;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.openid.entities.Principal;
-import io.radien.ms.permissionmanagement.client.entities.Permission;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
@@ -67,9 +62,6 @@ public class WebAuthorizationCheckerTest {
 
     @Mock
     UserSessionEnabled userSession;
-
-    @Mock
-    PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Before
     public void before() {
@@ -217,51 +209,4 @@ public class WebAuthorizationCheckerTest {
 
         assertFalse(webAuthorizationChecker.hasTenantAdministratorRoleAccess());
     }
-
-    /**
-     * Test to validate if the current user has permission to reset password
-     * @throws SystemException in case of any issue while validating or obtaining permission
-     */
-    @Test
-    public void hasPermissionToResetPassword() throws SystemException {
-        Long userId = 22L;
-        Long tenantId = 1L;
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-        when(this.userSession.getUserId()).thenReturn(userId);
-
-        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-
-        SystemPermission permission = new Permission();
-        permission.setName(SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getPermissionName());
-        permission.setId(11111L);
-        permission.setActionId(111L);
-        permission.setResourceId(122L);
-
-        when(permissionRESTServiceAccess.getPermissionByName(
-                SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getPermissionName())).
-                thenReturn(Optional.of(permission));
-
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isPermissionExistentForUser(userId,
-                permission.getId(), tenantId);
-
-        assertTrue(webAuthorizationChecker.hasPermissionToResetPassword(tenantId));
-    }
-
-    /**
-     * Test to validate if the current user has permission to reset password, but under a scenario
-     * where the suitable permission was not correctly defined
-     * @throws SystemException in case of any issue while validating or obtaining permission
-     */
-    @Test
-    public void hasPermissionToResetPasswordWhenPermissionNotFound() throws SystemException {
-        Long userId = 22L;
-        Long tenantId = 1L;
-        when(permissionRESTServiceAccess.getPermissionByName(
-                SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getPermissionName())).
-                thenReturn(Optional.empty());
-        assertFalse(webAuthorizationChecker.hasPermissionToResetPassword(tenantId));
-    }
-
 }

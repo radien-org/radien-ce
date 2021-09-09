@@ -75,6 +75,7 @@ public enum DataModelEnum {
     PERMISSION_MESSAGE("rd_permission"),
     PERMISSIONS_MESSAGE("rd_permissions"),
     PERMISSION_NOT_FOUND_MESSAGE("rd_permission_not_found"),
+    PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE("rd_permission_not_found_for_action_resource"),
 
     /**
      * Role Management
