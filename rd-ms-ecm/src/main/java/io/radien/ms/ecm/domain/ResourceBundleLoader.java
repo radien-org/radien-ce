@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.radien.ms.ecm.util;
+package io.radien.ms.ecm.domain;
 
 import io.radien.ms.ecm.client.entities.I18NProperty;
 import io.radien.ms.ecm.client.entities.LabelTypeEnum;
@@ -68,13 +68,7 @@ public class ResourceBundleLoader implements Serializable {
                 String language = resourceBundle.getLocale().toLanguageTag();
                 if(StringUtils.isBlank(resourceBundle.getLocale().toLanguageTag()) || language.equals("und")) {
                     language = defaultLanguage;
-                    //THIS LOG MESSAGE MUST NOT BE CHANGED, IT IS USED TO CREATE AUTMATES ALERTS ON MISSING KEYS / TRANSLATIONS
-                    try {
-                        log.error("[MessagesResourceBundle] could not load language/locale for bundlekey: {} and language: {}",bundleKey,language);
-                    } catch (Exception e) {
-                        log.error("[MessagesResourceBundle] could not load language/locale",e);
-                    }
-
+                    log.warn("[MessagesResourceBundle] could not load language/locale for bundlekey: {} and language: {} - load default language {}",bundleKey, language, defaultLanguage);
                 }
                 Translation translation = new Translation();
                 translation.setLanguage(language);

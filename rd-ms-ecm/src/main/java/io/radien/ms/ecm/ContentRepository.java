@@ -29,7 +29,9 @@ import io.radien.ms.ecm.factory.ContentFactory;
 import io.radien.ms.ecm.util.OafConstants;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.commons.NamespaceHelper;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.apache.jackrabbit.util.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,7 +268,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		} catch (Exception e) {
 			log.error("Error registering node type", e);
 		}
-
 	}
 
 	public List<EnterpriseContent> getByContentType(ContentType contentType, boolean activeOnly,
@@ -362,6 +363,14 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		}
 
 		return fooList;
+	}
+
+	public String getRootNodePath() throws ContentRepositoryNotAvailableException {
+		try {
+			return session.getRootNode().getPath();
+		} catch (RepositoryException e) {
+			throw new ContentRepositoryNotAvailableException();
+		}
 	}
 
 	protected Node getRootNode() throws ContentRepositoryNotAvailableException {

@@ -15,6 +15,7 @@
  */
 package io.radien.ms.ecm.util;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jnosql.artemis.ConfigurationUnit;
 import org.jnosql.diana.api.document.DocumentCollectionManager;
 import org.jnosql.diana.api.document.DocumentCollectionManagerFactory;
@@ -32,7 +33,9 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class EntityManagerProducer {
-    private static final String DATABASE = "cms_radien";
+    @Inject
+    @ConfigProperty(name = "oak.mongo.db")
+    private String database;
 
     @Inject
     @ConfigurationUnit(name = "document")
@@ -40,7 +43,7 @@ public class EntityManagerProducer {
 
     @Produces
     public DocumentCollectionManager getEntityManager() {
-        return managerFactory.get(DATABASE);
+        return managerFactory.get(database);
     }
 
     public void close(@Disposes DocumentCollectionManager entityManager) {

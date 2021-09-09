@@ -24,18 +24,18 @@ package io.radien.ms.ecm.util;
 public class OafConstants {
 
 	/** the node properties file */
-	public static final String OAF_MIXIN_NODE_PROPS = "oaf:OafNodeProperties";
+	public static final String OAF_MIXIN_NODE_PROPS = "rd:NodeType";
 
-	public static final String OAF_VIEW_ID = "oaf:viewId";
-	public static final String OAF_CONTENT_LANG = "oaf:language";
-	public static final String OAF_CONTENT_TYPE = "oaf:contentType";
-	public static final String OAF_ACTIVE = "oaf:active";
-	public static final String OAF_HTML_CONTENT = "oaf:htmlContent";
-	public static final String OAF_SYSTEM = "oaf:system";
-	public static final String OAF_FILE_SIZE = "oaf:fileSize";
+	public static final String OAF_VIEW_ID = "rd:viewId";
+	public static final String OAF_CONTENT_LANG = "rd:language";
+	public static final String OAF_CONTENT_TYPE = "rd:contentType";
+	public static final String OAF_ACTIVE = "rd:active";
+	public static final String OAF_HTML_CONTENT = "rd:htmlContent";
+	public static final String OAF_SYSTEM = "rd:system";
+	public static final String OAF_FILE_SIZE = "rd:fileSize";
 
-	public static final String OAF_IMAGE = "oaf:image";
-	public static final String OAF_IMAGE_NAME = "oaf:imageName";
-	public static final String OAF_IMAGE_MIME_TYPE = "oaf:imageMimeType";
+	public static final String OAF_IMAGE = "rd:image";
+	public static final String OAF_IMAGE_NAME = "rd:imageName";
+	public static final String OAF_IMAGE_MIME_TYPE = "rd:imageMimeType";
 
 }

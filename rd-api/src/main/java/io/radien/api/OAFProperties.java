@@ -95,6 +95,9 @@ public enum OAFProperties implements SystemProperties{
 
     SYSTEM_CMS_REPO_CONF_DIR("org.apache.jackrabbit.repository.conf"),
     SYSTEM_CMS_REPO_HOME_DIR("system.jcr.home"),
+    SYSTEM_CMS_REPO_SOURCE("system.jcr.source"),
+    SYSTEM_CMS_REPO_MONGO_DB_NAME("oak.mongo.db"),
+    SYSTEM_CMS_REPO_MONGO_DB_URI("oak.mongo.uri"),
     CMS_MS_URL("cms.ms.url"),
 
     SCHEDULER_MS_URL("scheduler.ms.url"),
