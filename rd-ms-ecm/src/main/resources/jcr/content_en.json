@@ -1,0 +1,15 @@
+[
+  {
+    "viewId": "contact",
+    "contentType": "html",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "Contact",
+    "htmlContent": "For any information please contact us through the email <a href=mailto:m.weiland@radien.io> m.weiland@radien.io</a>",
+    "image": "logo.png",
+    "tags": [
+      "Radien"
+    ]
+  }
+]

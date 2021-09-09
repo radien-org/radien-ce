@@ -25,14 +25,15 @@ import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.RestTreeNode;
+import io.radien.ms.ecm.constants.CmsConstants;
+import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.factory.ContentFactory;
-import io.radien.ms.ecm.util.OafConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.commons.NamespaceHelper;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
-import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.apache.jackrabbit.util.Text;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +41,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
+import javax.jcr.*;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -55,6 +52,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Main implementation of the
@@ -64,11 +62,24 @@ import java.util.List;
 public @RequestScoped @Default class ContentRepository implements Serializable, Appframeable {
 
 	private static final Logger log = LoggerFactory.getLogger(ContentRepository.class);
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3705349362214763287L;
+
+	private static final String FILE_SEPARATOR = "/";
+
+	private static final String JCR_OR = " or [";
+	private static final String JCR_AND = " and [";
+	private static final String JCR_AND_ESCAPED = "' " + JCR_AND;
+	public static final String JCR_END_OBJ = "] = '";
+	public static final String IS_TRUE = "] = 'true' ";
+
 	@Inject
 	private OAFAccess oaf;
 	@Inject
+	private Config properties;
+	@Inject
 	private ContentFactory contentFactory;
+	@Inject
+	private ContentDataProvider dataProvider;
 	@Inject
 	private Session session;
 
@@ -162,7 +173,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 						break;
 				}
 
-				content.addMixin(OafConstants.OAF_MIXIN_NODE_PROPS);
+				content.addMixin(CmsConstants.RADIEN_MIXIN_NODE_PROPS);
 
 			}
 
@@ -215,10 +226,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		try {
 			queryManager = session.getWorkspace().getQueryManager();
 
-			String expression = "" + "select * from " + "[" + JcrConstants.NT_BASE + "] as node " + "where ["
-					+ OafConstants.OAF_VIEW_ID + "] = '" + viewId + "' ";
+			String expression = "" + "select * from " + "[" + CmsConstants.RADIEN_MIXIN_NODE_PROPS + "] as node " + "where ["
+					+ CmsConstants.RADIEN_VIEW_ID + "] = '" + viewId + "' ";
 			if (activeOnly) {
-				expression += " and [" + OafConstants.OAF_ACTIVE + "] = '" + activeOnly + "' ";
+				expression += " and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
 			}
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
@@ -257,6 +268,61 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	}
 
+	public Optional<List<EnterpriseContent>> getByViewIdLanguage(String viewId, boolean activeOnly, String language)
+			throws ContentRepositoryNotAvailableException {
+		List<Node> nodeList = getNodeByViewIdLanguage(session, viewId, activeOnly, language);
+		if (nodeList.isEmpty()) {
+			return Optional.empty();
+		}
+
+		try {
+			List<EnterpriseContent> ecList = new ArrayList<>();
+			for (Node node : nodeList) {
+				ecList.add(contentFactory.convertJCRNode(node));
+			}
+			return Optional.ofNullable(ecList);
+		} catch (RepositoryException e) {
+			throw new ContentRepositoryNotAvailableException();
+		}
+	}
+
+	private List<Node> getNodeByViewIdLanguage(Session session, String viewId, boolean activeOnly, String language)
+			throws ContentRepositoryNotAvailableException {
+
+		List<Node> results = new ArrayList<>();
+
+		// Obtain the query manager for the session via the workspace ...
+		QueryManager queryManager;
+		try {
+			queryManager = session.getWorkspace().getQueryManager();
+
+			String expression = "select * from " + "[" + CmsConstants.RADIEN_MIXIN_NODE_PROPS + "] as node " + "where ["
+					+ CmsConstants.RADIEN_VIEW_ID + JCR_END_OBJ + viewId + "' ";
+
+			if (StringUtils.isNotBlank(language)) {
+				expression += JCR_AND + CmsConstants.RADIEN_CONTENT_LANG + JCR_END_OBJ + language + "' ";
+			}
+
+			if (activeOnly) {
+				expression += JCR_AND + CmsConstants.RADIEN_ACTIVE + IS_TRUE;
+			}
+
+			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
+
+			QueryResult result = query.execute();
+
+			final NodeIterator nodes = result.getNodes();
+			while (nodes.hasNext()) {
+				results.add((Node) nodes.next());
+			}
+
+		} catch (RepositoryException e) {
+			throw new ContentRepositoryNotAvailableException();
+		}
+
+		return results;
+	}
+
 	public void registerCNDNodeTypes(String cndFileName) {
 		NodeType[] nodeTypes;
 		try {
@@ -270,6 +336,38 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		}
 	}
 
+	public void updateFolderSupportedLanguages(String contentPath, String nameEscaped) throws RepositoryException, ContentRepositoryNotAvailableException {
+		try {
+			Node contentNode = session.getNode(contentPath);
+			Node rootNode = session.getRootNode().getNode("radien");
+			addSupportedLocalesFolder(contentNode, rootNode, nameEscaped);
+			session.save();
+		} catch (RepositoryException e) {
+			log.error("Repository exception. Not possible to update {}", nameEscaped, e);
+			throw e;
+		}
+	}
+
+	private Node addSupportedLocalesFolder(Node content, Node parent, String nameEscaped) throws RepositoryException {
+		if (nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class)) ||
+				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, String.class)) ||
+				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_APP_INFO, String.class)) ||
+				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_STATIC_CONTENT, String.class)) ||
+				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_IFRAME, String.class))) {
+
+			for (String lang : dataProvider.getSupportedLanguages()) {
+				try {
+					if (StringUtils.isNotBlank(lang)) {
+						content = parent.addNode(nameEscaped + FILE_SEPARATOR + lang, JcrConstants.NT_FOLDER);
+					}
+				} catch(ItemExistsException e) {
+					log.info("Language {} already exists, skipping...", lang);
+				}
+			}
+		}
+		return content;
+	}
+
 	public List<EnterpriseContent> getByContentType(ContentType contentType, boolean activeOnly,
 													boolean includeSystemContent) throws ContentRepositoryNotAvailableException {
 
@@ -281,10 +379,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + contentType.key() + "' " + "and ["
-					+ OafConstants.OAF_SYSTEM + "] = '" + includeSystemContent + "' ";
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + contentType.key() + "' " + "and ["
+					+ CmsConstants.RADIEN_SYSTEM + "] = '" + includeSystemContent + "' ";
 			if (activeOnly) {
-				expression += "and [" + OafConstants.OAF_ACTIVE + "] = '" + activeOnly + "' ";
+				expression += "and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
 			}
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
@@ -332,10 +430,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ OafConstants.OAF_SYSTEM + "] = '" + enableSystemContent + "' " + "and (" + "["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + ContentType.HTML.key() + "' " + " or ["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + ContentType.NEWS_FEED.key() + "' " + " or ["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + ContentType.NOTIFICATION.key() + "' " + ") ";
+					+ CmsConstants.RADIEN_SYSTEM + "] = '" + enableSystemContent + "' " + "and (" + "["
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.HTML.key() + "' " + " or ["
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NEWS_FEED.key() + "' " + " or ["
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NOTIFICATION.key() + "' " + ") ";
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 			// TODO: IMPLEMENT PAGINATING

@@ -140,6 +140,18 @@ public interface EnterpriseContent extends Model, Comparable<EnterpriseContent> 
     void setAuthor(String author);
 
     /**
+     * ECM last edit date date getter
+     * @return the ecm last edit date
+     */
+    Date getLastEditDate();
+
+    /**
+     * ECM last edit date setter
+     * @param lastEditDate to be set
+     */
+    void setLastEditDate(Date lastEditDate);
+
+    /**
      * Checks if ECM is still active
      * @return true in case ecm is still active
      */

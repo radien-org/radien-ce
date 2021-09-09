@@ -35,6 +35,7 @@ public abstract class AbstractECMModel extends AbstractModel {
 	protected String htmlContent = "";
 	protected ContentType contentType = ContentType.HTML;
 	protected String author;
+	private Date lastEditDate;
 	protected boolean active = true;
 	private String permissions = "";
 
@@ -176,6 +177,22 @@ public abstract class AbstractECMModel extends AbstractModel {
 	 */
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+
+	/**
+	 * ECM LastEditDate getter
+	 * @return ecm lastEditDate
+	 */
+	public Date getLastEditDate() {
+		return lastEditDate;
+	}
+
+	/**
+	 * ECM LastEditDate setter
+	 * @param lastEditDate to be set
+	 */
+	public void setLastEditDate(Date lastEditDate) {
+		this.lastEditDate = lastEditDate;
 	}
 
 	/**

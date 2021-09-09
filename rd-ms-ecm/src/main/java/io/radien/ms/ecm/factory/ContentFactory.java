@@ -23,7 +23,6 @@ import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.constants.CmsConstants;
-import io.radien.ms.ecm.util.OafConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -111,7 +110,7 @@ public @RequestScoped class ContentFactory implements Serializable {
 			mixinNodeTypes = node.getMixinNodeTypes();
 			for (NodeType type : mixinNodeTypes) {
 				if (!isOAFNode) {
-					isOAFNode = type.getName().equalsIgnoreCase(OafConstants.OAF_MIXIN_NODE_PROPS);
+					isOAFNode = type.getName().equalsIgnoreCase(CmsConstants.RADIEN_MIXIN_NODE_PROPS);
 				}
 			}
 		} catch (RepositoryException e) {
@@ -134,27 +133,27 @@ public @RequestScoped class ContentFactory implements Serializable {
 
 			if (isOafNode(node) && systemContent != null) {
 				try {
-					systemContent.setViewId(node.getProperty(OafConstants.OAF_VIEW_ID).getString());
-					systemContent.setHtmlContent(node.getProperty(OafConstants.OAF_HTML_CONTENT).getString());
+					systemContent.setViewId(node.getProperty(CmsConstants.RADIEN_VIEW_ID).getString());
+					systemContent.setHtmlContent(node.getProperty(CmsConstants.RADIEN_HTML_CONTENT).getString());
 					systemContent.setContentType(
-							ContentType.getByKey(node.getProperty(OafConstants.OAF_CONTENT_TYPE).getString()));
-					systemContent.setActive(node.getProperty(OafConstants.OAF_ACTIVE).getBoolean());
-					systemContent.setSystem(node.getProperty(OafConstants.OAF_SYSTEM).getBoolean());
-					systemContent.setLanguage(node.getProperty(OafConstants.OAF_CONTENT_LANG).getString());
+							ContentType.getByKey(node.getProperty(CmsConstants.RADIEN_CONTENT_TYPE).getString()));
+					systemContent.setActive(node.getProperty(CmsConstants.RADIEN_ACTIVE).getBoolean());
+					systemContent.setSystem(node.getProperty(CmsConstants.RADIEN_SYSTEM).getBoolean());
+					systemContent.setLanguage(node.getProperty(CmsConstants.RADIEN_CONTENT_LANG).getString());
 					systemContent.setCreateDate(node.getProperty(JcrConstants.JCR_CREATED).getDate().getTime());
 
 					InputStream stream = null;
 					try {
 						Binary bin = null;
-						if (node.hasProperty(CmsConstants.OAF_IMAGE)) {
-							bin = node.getProperty(CmsConstants.OAF_IMAGE).getBinary();
+						if (node.hasProperty(CmsConstants.RADIEN_IMAGE)) {
+							bin = node.getProperty(CmsConstants.RADIEN_IMAGE).getBinary();
 						}
 						if (bin != null) {
 							stream = bin.getStream();
 							byte[] imageArray = ByteStreams.toByteArray(stream);
 							systemContent.setImage(imageArray);
-							systemContent.setImageMimeType(node.getProperty(CmsConstants.OAF_IMAGE_MIME_TYPE).getString());
-							systemContent.setImageName(node.getProperty(CmsConstants.OAF_IMAGE_NAME).getString());
+							systemContent.setImageMimeType(node.getProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE).getString());
+							systemContent.setImageName(node.getProperty(CmsConstants.RADIEN_IMAGE_NAME).getString());
 						}
 					} catch (Exception e) {
 						log.error("Error getting oaf:image from JCR", e);
@@ -162,7 +161,7 @@ public @RequestScoped class ContentFactory implements Serializable {
 
 					try {
 						if (systemContent.getContentType() == ContentType.DOCUMENT) {
-							systemContent.setFileSize(node.getProperty(OafConstants.OAF_FILE_SIZE).getLong());
+							systemContent.setFileSize(node.getProperty(CmsConstants.RADIEN_FILE_SIZE).getLong());
 						}
 
 					} catch (PathNotFoundException e) {
@@ -236,12 +235,12 @@ public @RequestScoped class ContentFactory implements Serializable {
 
 		try {
 
-			node.setProperty(OafConstants.OAF_VIEW_ID, obj.getViewId());
-			node.setProperty(OafConstants.OAF_CONTENT_TYPE, obj.getContentType().key());
-			node.setProperty(OafConstants.OAF_ACTIVE, obj.isActive());
-			node.setProperty(OafConstants.OAF_HTML_CONTENT, obj.getHtmlContent());
-			node.setProperty(OafConstants.OAF_SYSTEM, obj.isSystem());
-			node.setProperty(OafConstants.OAF_CONTENT_LANG, obj.getLanguage());
+			node.setProperty(CmsConstants.RADIEN_VIEW_ID, obj.getViewId());
+			node.setProperty(CmsConstants.RADIEN_CONTENT_TYPE, obj.getContentType().key());
+			node.setProperty(CmsConstants.RADIEN_ACTIVE, obj.isActive());
+			node.setProperty(CmsConstants.RADIEN_HTML_CONTENT, obj.getHtmlContent());
+			node.setProperty(CmsConstants.RADIEN_SYSTEM, obj.isSystem());
+			node.setProperty(CmsConstants.RADIEN_CONTENT_LANG, obj.getLanguage());
 
 			obj.setJcrPath(node.getPath());
 			obj.setParentPath(node.getParent().getPath());
@@ -256,9 +255,9 @@ public @RequestScoped class ContentFactory implements Serializable {
 					binary = session.getValueFactory().createBinary(stream);
 
 					if (binary != null) {
-						node.setProperty(CmsConstants.OAF_IMAGE, binary);
-						node.setProperty(CmsConstants.OAF_IMAGE_NAME, obj.getImageName());
-						node.setProperty(CmsConstants.OAF_IMAGE_MIME_TYPE, obj.getImageMimeType());
+						node.setProperty(CmsConstants.RADIEN_IMAGE, binary);
+						node.setProperty(CmsConstants.RADIEN_IMAGE_NAME, obj.getImageName());
+						node.setProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE, obj.getImageMimeType());
 					}
 				} catch (Exception e){
 					log.error("Error attaching image {} to EnterpriseContent - {}", obj.getImageName(), obj.getName(), e);
@@ -266,9 +265,9 @@ public @RequestScoped class ContentFactory implements Serializable {
 			}
 
 			if (binary != null) {
-				node.setProperty(OafConstants.OAF_IMAGE, binary);
-				node.setProperty(OafConstants.OAF_IMAGE_NAME, obj.getImageName());
-				node.setProperty(OafConstants.OAF_IMAGE_MIME_TYPE, obj.getImageMimeType());
+				node.setProperty(CmsConstants.RADIEN_IMAGE, binary);
+				node.setProperty(CmsConstants.RADIEN_IMAGE_NAME, obj.getImageName());
+				node.setProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE, obj.getImageMimeType());
 			}
 
 			switch (obj.getContentType()) {
@@ -287,7 +286,7 @@ public @RequestScoped class ContentFactory implements Serializable {
 						contentNode.setProperty(JcrConstants.JCR_DATA, file);
 						contentNode.setProperty(JcrConstants.JCR_MIMETYPE, obj.getMimeType());
 						contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, now);
-						node.setProperty(CmsConstants.OAF_FILE_SIZE, file.getSize());
+						node.setProperty(CmsConstants.RADIEN_FILE_SIZE, file.getSize());
 
 					}
 					break;
