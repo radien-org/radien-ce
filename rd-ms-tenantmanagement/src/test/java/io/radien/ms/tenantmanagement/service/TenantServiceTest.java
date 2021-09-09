@@ -100,6 +100,23 @@ public class TenantServiceTest {
 
 
     /**
+     * Add second root tenant. Should throw exception.
+     */
+    @Test
+    public void testCreateDoubleRootException() {
+        SystemTenant tenant = new TenantEntity();
+        tenant.setName("rootName");
+        tenant.setTenantType(TenantType.ROOT_TENANT.getDescription());
+        tenant.setTenantStart(LocalDate.now());
+        tenant.setTenantKey(RandomStringUtils.randomAlphabetic(4));
+        Exception exceptionUniqueness = assertThrows(UniquenessConstraintException.class, () -> tenantServiceAccess.create(tenant));
+        String expectedMessageUniqueness = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
+        String actualMessageUniqueness = exceptionUniqueness.getMessage();
+
+        assertEquals(expectedMessageUniqueness, actualMessageUniqueness);
+    }
+
+    /**
      * Add tenant test with duplicated name.
      * Will create and save the tenant, with an already existent name.
      * Expected result: Throw treated exception Error 101 Message There is more than one tenant with the same name.
