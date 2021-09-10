@@ -192,11 +192,43 @@ public class Initializer {
         postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, tenantRolePermissionUrl, "tenantRolePermission");
 
+        createActiveTenants(accessToken);
+
         String tenantRoleUserUrl = getRoleManagementBaseURL() + "/tenantroleuser";
         location = getConfigProperty("initializer.tenantRoleUser.file.location");
         System.out.println(getMd5(location));
         postBodies = getPostBodies(location);
         executePostForBodies(accessToken, postBodies, tenantRoleUserUrl, "tenantRoleUser");
+    }
+
+    /**
+     * Create active tenants references, taking in account the tenantRoleUser file as parameter
+     * @param accessToken  Access Token generated via KeyCloak
+     */
+    private static void createActiveTenants(String accessToken) {
+        String location = getConfigProperty("initializer.tenantRoleUser.file.location");
+        List<JSONObject> jsonObjects = getJsons(location);
+        for (JSONObject json:jsonObjects) {
+            Long tenantRoleId = (Long) json.get("tenantRoleId");
+            Long userId = (Long) json.get("userId");
+
+            String urlGetTenantRoleById = getRoleManagementBaseURL() + "/tenantrole/" + tenantRoleId;
+            HashMap map = makeGetRequest(urlGetTenantRoleById, "retrievingTenantRole", accessToken);
+
+            Long tenantId = ((Double) map.get("tenantId")).longValue();
+            String urlGetTenantById = getTenantManagementBaseURL() + "/tenant/" + tenantId;
+            map = makeGetRequest(urlGetTenantById, "retrievingTenant", accessToken);
+
+            String tenantName = map.get("name").toString();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("tenantId", tenantId);
+            jsonObject.put("tenantName", tenantName);
+            jsonObject.put("userId", userId);
+            jsonObject.put("isTenantActive", "false");
+
+            String activeTenantUrl = getTenantManagementBaseURL() + "/activeTenant";
+            makePostRequest(activeTenantUrl, "activeTenant", accessToken, jsonObject.toJSONString());
+        }
     }
 
     /**
@@ -265,7 +297,7 @@ public class Initializer {
      * @param identifier to be print
      */
     public static void checkResponse(HttpResponse response,String identifier){
-        if(!response.isSuccess()){
+        if(response.getStatus() >= 400){
             System.out.println(identifier);
             System.out.println(response.getBody().toString());
             System.exit(1);
@@ -311,6 +343,23 @@ public class Initializer {
         return postBodies;
     }
 
+    private static List<JSONObject> getJsons(String location) {
+        JSONParser parser = new JSONParser();
+        List<JSONObject> postBodies = new ArrayList<>();
+        try {
+            JSONArray array = (JSONArray) parser.parse(new FileReader(location));
+            for(int i=0;i<array.size();i++){
+                JSONObject obj = (JSONObject) array.get(i);
+                postBodies.add(obj);
+            }
+        } catch( Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            System.exit(2);
+        }
+        return postBodies;
+    }
+
     /**
      * Core method that invokes a endpoint. It uses a REst client to do that.
      * @param url endpoint url
@@ -327,6 +376,24 @@ public class Initializer {
                 .body(body).asObject(HashMap.class);
 
 
+        System.out.println(identifier + " " + response.getStatus());
+        checkResponse(response,identifier);
+        return response.getBody();
+    }
+
+    /**
+     * Similar to {@link Initializer#makePostRequest(String, String, String, String)}
+     * this invokes an Http Get method endpoint
+     * @param url endpoint url
+     * @param identifier String that identifies a request
+     * @param accessToken access token generated via KeyCloak
+     * @return HashMap that corresponds to the obtained response
+     */
+    public static HashMap makeGetRequest(String url,String identifier, String accessToken){
+        System.out.println(url);
+        HttpResponse<HashMap> response = Unirest.get(url)
+                .header("Authorization", "Bearer "+accessToken)
+                .asObject(HashMap.class);
         System.out.println(identifier + " " + response.getStatus());
         checkResponse(response,identifier);
         return response.getBody();
