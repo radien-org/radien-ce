@@ -49,8 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
-import static io.radien.api.service.permission.SystemActionsEnum.ACTION_UPDATE;
-import static io.radien.api.service.permission.SystemResourcesEnum.THIRD_PARTY_PASSWORD;
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
 import static io.radien.webapp.DataModelEnum.ACTION_NOT_FOUND_MESSAGE;
 import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE;
 import static io.radien.webapp.DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE;
@@ -139,11 +138,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return SystemPermission the searched permission
      */
     protected SystemPermission getPermissionToResetPassword() throws SystemException {
-        String resourceName = THIRD_PARTY_PASSWORD.getResourceName();
+        String resourceName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.
+                getResource().getResourceName();
         SystemResource resource = resourceRESTServiceAccess.getResourceByName(resourceName).orElseThrow(() ->
                 new SystemException(format(getMessage(RESOURCE_NOT_FOUND_MESSAGE.getValue()), resourceName)));
 
-        String actionName = ACTION_UPDATE.getActionName();
+        String actionName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName();
         SystemAction action = actionRESTServiceAccess.getActionByName(actionName).orElseThrow(() ->
                 new SystemException(format(getMessage(ACTION_NOT_FOUND_MESSAGE.getValue()), actionName)));
 
