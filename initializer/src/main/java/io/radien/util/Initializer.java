@@ -297,11 +297,10 @@ public class Initializer {
      * @param identifier to be print
      */
     public static void checkResponse(HttpResponse response,String identifier){
-        if(response.getStatus() >= 400){
+        if(!response.isSuccess()){
             System.out.println(identifier);
             System.out.println(response.getBody().toString());
             System.exit(1);
-
         }
     }
 
