@@ -56,10 +56,10 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
 
     /**
      * Gets specific tenant role user association by the id
-     * @param tenantRolePermissionId to be searched for
+     * @param tenantRoleUserId to be searched for
      * @return the requested system tenant role user association
      */
-    SystemTenantRoleUser get(Long tenantRolePermissionId) ;
+    SystemTenantRoleUser get(Long tenantRoleUserId) ;
 
     /**
      * Gets a list of system tenant role user associations requested by a search filter

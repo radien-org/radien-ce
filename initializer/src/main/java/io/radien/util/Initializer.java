@@ -262,13 +262,14 @@ public class Initializer {
     /**
      * Method that checks response and print status
      * @param response response to be checked
-     * @param msg status to be print
+     * @param identifier to be print
      */
-    public static void checkResponse(HttpResponse response,String msg){
+    public static void checkResponse(HttpResponse response,String identifier){
         if(!response.isSuccess()){
+            System.out.println(identifier);
+            System.out.println(response.getBody().toString());
             System.exit(1);
-            System.err.println(msg);
-            System.err.println(response.getBody());
+
         }
     }
 

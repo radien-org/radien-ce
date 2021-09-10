@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.radien.api.service.batch;
 
 import javax.json.bind.annotation.JsonbProperty;
@@ -36,6 +35,13 @@ public class BatchSummary {
 
     @JsonbProperty("issues")
     private Collection<DataIssue> nonProcessedItems;
+
+    /**
+     * Empty constructor
+     */
+    private BatchSummary() {
+    }
+
 
     /**
      * Batch summary constructor

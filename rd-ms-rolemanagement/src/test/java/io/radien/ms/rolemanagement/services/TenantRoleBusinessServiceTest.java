@@ -15,6 +15,8 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
@@ -121,22 +123,28 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         lookupString = "java:global/rd-ms-rolemanagement//RoleService";
         roleServiceAccess = (RoleServiceAccess) context.lookup(lookupString);
 
+        oafAccess = mock(OAFAccess.class);
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_TENANTMANAGEMENT_ACTIVE)).thenReturn("");
+
         tenantRoleBusinessService = new TenantRoleBusinessService();
         tenantRoleBusinessService.setRoleServiceAccess(roleServiceAccess);
         tenantRoleBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
         tenantRoleBusinessService.setTenantRoleUserServiceAccess(tenantRoleUserServiceAccess);
         tenantRoleBusinessService.setTenantRESTServiceAccess(mock(TenantRESTServiceAccess.class));
+        tenantRoleBusinessService.setOAFAccess(oafAccess);
 
         tenantRolePermissionBusinessService = new TenantRolePermissionBusinessService();
         tenantRolePermissionBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
         tenantRolePermissionBusinessService.setRoleServiceAccess(roleServiceAccess);
         tenantRolePermissionBusinessService.setTenantRolePermissionService(tenantRolePermissionServiceAccess);
+        tenantRolePermissionBusinessService.setOAFAccess(oafAccess);
 
         tenantRoleUserBusinessService = new TenantRoleUserBusinessService();
         tenantRoleUserBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
         tenantRoleUserBusinessService.setTenantRoleUserServiceAccess(tenantRoleUserServiceAccess);
         tenantRoleUserBusinessService.setTenantRESTServiceAccess(mock(TenantRESTServiceAccess.class));
         tenantRoleUserBusinessService.setActiveTenantRESTServiceAccess(mock(ActiveTenantRESTServiceAccess.class));
+        tenantRoleUserBusinessService.setOAFAccess(oafAccess);
     }
 
     /**
@@ -1179,7 +1187,6 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         tenantRolePermissionBusinessService.setTenantRolePermissionService(tenantRolePermissionServiceAccess);
         Long tenant = 1000000L;
         SystemRole role = createRole("a test role");
-
         SystemTenantRole tr = createTenantRole(role.getId(), tenant);
         PermissionRESTServiceAccess restServiceAccess = mock(PermissionRESTServiceAccess.class);
         when(restServiceAccess.isPermissionExistent(anyLong(), any())).thenReturn(Boolean.TRUE);
