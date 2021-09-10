@@ -21,7 +21,7 @@ package io.radien.api.model;
  * Concrete class that encapsulates an Id,
  * to be extendable by other classes
  */
-public class ModelId implements SystemId {
+public class ModelValueId implements SystemId {
     protected Long id;
 
     @Override

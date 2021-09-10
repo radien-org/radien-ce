@@ -15,23 +15,23 @@
  */
 package io.radien.api;
 
-import io.radien.api.model.ModelId;
+import io.radien.api.model.ModelValueId;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Test class for {@link ModelId}
+ * Test class for {@link ModelValueId}
  */
-public class ModelIdTest {
+public class ModelValueIdTest {
 
     /**
-     * Test for method {@link ModelId#setId(Long)}
+     * Test for method {@link ModelValueId#setId(Long)}
      */
     @Test
     public void testSetter() {
         Long id = 1111L;
-        ModelId modelId = new ModelId();
-        modelId.setId(id);
-        Assert.assertEquals(id, modelId.getId());
+        ModelValueId modelValueId = new ModelValueId();
+        modelValueId.setId(id);
+        Assert.assertEquals(id, modelValueId.getId());
     }
 }
