@@ -17,7 +17,7 @@ public class App
 
         Producer producer = new Producer("queue");
 
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10; i++) {
             HashMap message = new HashMap();
             message.put("message number", i);
             producer.sendMessage(message);
