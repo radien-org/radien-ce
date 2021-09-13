@@ -19,6 +19,7 @@ import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.OAFAccess;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.permission.ActionRESTServiceAccess;
@@ -55,6 +56,7 @@ import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_FOR_ACTION_RES
 import static io.radien.webapp.DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE;
 import static io.radien.webapp.JSFUtil.getMessage;
 import static java.text.MessageFormat.format;
+import static io.radien.api.OAFProperties.SYSTEM_MS_TENANTMANAGEMENT_ACTIVE;
 
 /**
  * @author Rajesh Gavvala
@@ -88,6 +90,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @Inject
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
+    @Inject
+    private OAFAccess oafAccess;
+
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
 
     private SystemUser selectedUser;
@@ -106,7 +111,10 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            if(activeTenantDataModelManager.isTenantActive()) {
+            String active= oafAccess.getProperty(SYSTEM_MS_TENANTMANAGEMENT_ACTIVE);
+
+            boolean tenantMgmtActive = active == null || !active.equalsIgnoreCase("false");
+            if( tenantMgmtActive && activeTenantDataModelManager.isTenantActive()) {
                 if (!hasUserAdministratorRoleAccess) {
                     hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
                 }
@@ -123,6 +131,10 @@ public class UserDataModel extends AbstractManager implements Serializable {
                             service);
                     ((LazyTenantingUserDataModel) lazyUserDataModel).setTenantId(tenantId);
                 }
+            } else if(!tenantMgmtActive) {
+                lazyUserDataModel = new LazyTenantingUserDataModel(tenantRoleUserRESTServiceAccess,
+                        service);
+                ((LazyTenantingUserDataModel) lazyUserDataModel).setTenantId(1L);
             } else {
                 redirectToHomePage();
             }

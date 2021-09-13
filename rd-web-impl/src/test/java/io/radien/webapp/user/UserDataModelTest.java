@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.OAFAccess;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemResource;
@@ -105,6 +106,9 @@ public class UserDataModelTest {
 
     @Mock
     private UserSessionEnabled userSessionEnabled;
+
+    @Mock
+    private OAFAccess oafAccess;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
