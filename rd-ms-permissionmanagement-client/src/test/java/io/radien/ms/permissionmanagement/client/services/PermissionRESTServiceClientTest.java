@@ -21,6 +21,9 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.BadRequestException;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -957,6 +960,131 @@ public class PermissionRESTServiceClientTest {
         assertNotNull(outcome);
         assertEquals(1, outcome.size());
     }
+
+    /**
+     * Method to attempt to get a permission id based on action and resource names informed as parameters
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetIdByActionAndResourceWhenTokenExpiration() throws MalformedURLException, SystemException {
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getIdByResourceAndAction(any(), any())).thenThrow(new TokenExpiredException("test"));
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        target.getIdByResourceAndAction("user", "create");
+    }
+
+    /**
+     * In this scenario a permission id is retrieved (based on action and resource names)
+     * by reattempt (retry) after a JWT token expires
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetIdByActionAndResourceByReattempt() throws MalformedURLException, SystemException {
+        String action = "create", resource = "user";
+
+        Long id = 111L;
+        Response response = Response.ok(id).build();
+
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getIdByResourceAndAction(any(), any())).
+                thenThrow(new TokenExpiredException("test")).
+                thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        Optional optional = target.getIdByResourceAndAction(resource, action);
+        assertTrue(optional.isPresent());
+        assertEquals(id, optional.get());
+    }
+
+    /**
+     * Test to get permission Id by action and resource but extension exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetIdByActionAndResourceWhenExtensionException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenThrow(new ExtensionException(new Exception()));
+        target.getIdByResourceAndAction("user", "create");
+    }
+
+    /**
+     * Test to get permission Id by action and resource but processing exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetIdByActionAndResourceWhenProcessingException() throws MalformedURLException, SystemException {
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(resourceClient.getIdByResourceAndAction(any(), any()))
+                .thenThrow(new ProcessingException("test"));
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        target.getIdByResourceAndAction("user", "create");
+    }
+
+    /**
+     * Test to get permission Id by action and resource but malformed url exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetIdByActionAndResourceWhenMalformedURLException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).
+                thenThrow(new MalformedURLException("test"));
+        target.getIdByResourceAndAction("user", "create");
+    }
+
+    /**
+     * Test to get permission Id by action and resource but bad request exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetIdByActionAndResourceWhenBadRequestException() throws MalformedURLException, SystemException {
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(resourceClient.getIdByResourceAndAction(any(), any()))
+                .thenThrow(new BadRequestException("test"));
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        target.getIdByResourceAndAction("user", "create");
+    }
+
+    /**
+     * Test to get permission Id by action and resource but internal server error exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetIdByActionAndResourceWhenInternalServerErrorException() throws MalformedURLException, SystemException {
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(resourceClient.getIdByResourceAndAction(any(), any()))
+                .thenThrow(new InternalServerErrorException("test"));
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        target.getIdByResourceAndAction("user", "create");
+    }
+
+    /**
+     * Test to get permission Id by action and resource but not found exception being throw
+     * In other words, Id could not be found for the informed parameters
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetIdByActionAndResourceWhenNotFoundException() throws MalformedURLException, SystemException {
+        PermissionResourceClient resourceClient = Mockito.mock(PermissionResourceClient.class);
+        when(resourceClient.getIdByResourceAndAction(any(), any()))
+                .thenThrow(new NotFoundException("test"));
+        when(clientServiceUtil.getPermissionResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        Optional result = target.getIdByResourceAndAction("user", "create");
+        assertFalse(result.isPresent());
+    }
+
 
 
 }

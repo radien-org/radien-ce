@@ -19,16 +19,22 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.PermissionIllegalArgumentException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
 import io.radien.ms.permissionmanagement.model.PermissionEntity;
 
+import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import org.apache.commons.codec.binary.StringUtils;
 
 /**
  * Controller implementation responsible for deal with CRUD
@@ -113,6 +119,29 @@ public class PermissionResource implements PermissionResourceClient {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}
+
+	/**
+	 * Retrieve the permission Id using the combination of resource and action as parameters
+	 * @param resource resource name (Mandatory)
+	 * @param action action name (Mandatory)
+	 * @return Response OK (200) with the retrieved id (if exists). If not exist will return 404 status.
+	 * In case of insufficient params (tenant or role not informed) It will return 400 status.
+	 * For any other kind of (unpredictable) error this endpoint will return status 500
+	 */
+	public Response getIdByResourceAndAction(String resource, String action) {
+		try {
+			Optional optional = this.permissionServiceAccess.getIdByActionAndResource(resource, action);
+			return optional.isPresent() ? Response.ok(optional.get()).build() :
+					GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+		}
+		catch (PermissionIllegalArgumentException p) {
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(p.getMessage());
+		}
+		catch (Exception e) {
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
 
 	/**
 	 * Deletes an permission by its identifier

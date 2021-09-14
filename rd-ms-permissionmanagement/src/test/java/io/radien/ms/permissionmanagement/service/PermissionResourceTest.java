@@ -17,10 +17,12 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.service.permission.PermissionServiceAccess;
+import io.radien.exception.PermissionIllegalArgumentException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.model.PermissionEntity;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -364,4 +366,65 @@ public class PermissionResourceTest {
         Response response = permissionResource.hasPermission("add", "contract");
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
     }
+
+    /**
+     * Test the endpoint {@link PermissionResource#getIdByResourceAndAction(String, String)}
+     * for a successful situation where the Permission Id can be retrieved by an Action and Resource (Names)
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     */
+    @Test
+    public void testGetIdSuccessCase() throws PermissionIllegalArgumentException {
+        String action = "Create", resource = "User";
+        Long id = 111L;
+        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
+                thenReturn(Optional.of(id));
+        Response response = permissionResource.getIdByResourceAndAction(resource, action);
+        assertEquals(Response.Status.OK, response.getStatusInfo().toEnum());
+    }
+
+    /**
+     * Test the endpoint {@link PermissionResource#getIdByResourceAndAction(String, String)}
+     * for a unsuccessful situation where the Permission Id cannot be retrieved by an Action and Resource (Names)
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     */
+    @Test
+    public void testGetIdUnSuccessCase() throws PermissionIllegalArgumentException {
+        String action = "Create", resource = "User";
+        Long id = 111L;
+        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
+                thenReturn(Optional.empty());
+        Response response = permissionResource.getIdByResourceAndAction(resource, action);
+        assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo().toEnum());
+    }
+
+    /**
+     * Test the endpoint {@link PermissionResource#getIdByResourceAndAction(String, String)}
+     * for a unsuccessful situation where Action or Resource were not informed
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     */
+    @Test
+    public void testGetIdInsufficientParametersCase() throws PermissionIllegalArgumentException {
+        String action = "", resource = "User";
+        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
+                thenThrow(new PermissionIllegalArgumentException("invalid"));
+        Response response = permissionResource.getIdByResourceAndAction(resource, action);
+        assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo().toEnum());
+    }
+
+
+    /**
+     * Test the endpoint {@link PermissionResource#getIdByResourceAndAction(String, String)}
+     * for a unsuccessful situation where an internal server error is triggered by an exception
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     */
+    @Test
+    public void testGetIdWhenInternalServerErrorCase() throws PermissionIllegalArgumentException {
+        String action = "Create", resource = "User";
+        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
+                thenThrow(new RuntimeException("error"));
+        Response response = permissionResource.getIdByResourceAndAction(resource, action);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
+    }
+
+
 }

@@ -23,6 +23,7 @@ import io.radien.exception.SystemException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
+import javax.ws.rs.core.Response;
 
 /**
  * Contract for Rest Service Client regarding SystemPermission domain object
@@ -74,6 +75,15 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      * @throws SystemException in case of any found error
      */
     public List<? extends SystemPermission> getPermissionsByIds(List<Long> ids) throws SystemException;
+
+    /**
+     * Retrieve the permission Id using the combination of resource and action as parameters
+     * @param resource resource name (Mandatory)
+     * @param action action name (Mandatory)
+     * @return Optional containing Id (If there is a permission for the informed parameter), otherwise a empty one
+     * @throws SystemException  in case of not being able to find the information
+     */
+    public Optional<Long> getIdByResourceAndAction(String resource, String action) throws SystemException;
 
     /**
      * Retrieves a Permission by Id
