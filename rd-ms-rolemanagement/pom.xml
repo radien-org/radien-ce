@@ -31,6 +31,11 @@
 				<version>${version.maven-war-plugin}</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<archive>
+						<manifestEntries>
+							<distname>${project.build.finalName}</distname>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 

@@ -121,7 +121,7 @@ public class AuthenticationFilter implements Filter {
         }
 
         //public
-        if(req.getRequestURI().endsWith("v1/user/refresh") || (req.getRequestURI().endsWith("service/v1/health"))){
+        if(req.getRequestURI().endsWith("v1/user/refresh") || (req.getRequestURI().endsWith("service/v1/health")) || (req.getRequestURI().endsWith("service/v1/info"))){
             chain.doFilter(request, response);
 
         } else if (failed) {

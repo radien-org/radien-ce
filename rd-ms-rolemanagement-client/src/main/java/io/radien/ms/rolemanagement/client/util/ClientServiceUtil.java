@@ -25,6 +25,8 @@ import io.radien.ms.rolemanagement.client.services.TenantRolePermissionResourceC
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import java.net.MalformedURLException;
@@ -37,7 +39,7 @@ import java.net.URL;
  */
 @RequestScoped
 public class ClientServiceUtil {
-
+    private static final Logger log = LoggerFactory.getLogger(ClientServiceUtil.class);
     /**
      * Communication requester constructor for the role side
      * @param urlStr role resource client URL
@@ -47,6 +49,7 @@ public class ClientServiceUtil {
      */
     public RoleResourceClient getRoleResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
+        log.info(urlStr);
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
@@ -64,6 +67,7 @@ public class ClientServiceUtil {
      */
     public TenantRoleResourceClient getTenantResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
+        log.info(urlStr);
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
@@ -81,6 +85,7 @@ public class ClientServiceUtil {
      */
     public TenantRoleUserResourceClient getTenantRoleUserResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
+        log.info(urlStr);
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
@@ -98,6 +103,7 @@ public class ClientServiceUtil {
      */
     public TenantRolePermissionResourceClient getTenantRolePermissionResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
+        log.info(urlStr);
         return RestClientBuilder.
                 newBuilder()
                 .baseUrl(url)
