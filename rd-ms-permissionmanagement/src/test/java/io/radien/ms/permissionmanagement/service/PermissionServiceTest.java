@@ -755,6 +755,10 @@ public class PermissionServiceTest {
 
         optional = permissionServiceAccess.getIdByActionAndResource(r1.getName(), "create");
         assertFalse(optional.isPresent());
+
+        actionServiceAccess.delete(a1.getId());
+        resourceServiceAccess.delete(r1.getId());
+        permissionServiceAccess.delete(p1.getId());
     }
 
     /**
