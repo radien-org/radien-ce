@@ -406,7 +406,7 @@ public class ActionServiceTest {
                 new ActionSearchFilter(null, null,false,true));
 
         // In necessary to count with the first ever inserted (variable "actionTest")
-        assertTrue(actions.size()>1);
+        assertTrue(actions.size()>0);
 
         actions = actionServiceAccess.getActions(new ActionSearchFilter("xxx", null,true,true));
 

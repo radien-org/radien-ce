@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,6 +34,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -50,6 +55,11 @@ import javax.xml.bind.DatatypeConverter;
  * Role, Tenant, TenantRole and TenantPermission
  */
 public class Initializer {
+
+    public static final String JSON_EXTENSION = ".json";
+    public static final String CONTROL_FILE_NAME_INIT_PATTERN = "loaded-on-env-";
+    public static final String RADIEN_ENV_PROPERTY = "RADIEN_ENV";
+    public static final String INITIALIZER_CONFIG_DIR_PROPERTY = "initializer.configuration.location";
 
     /**
      * Method that retrieves a config property
@@ -175,28 +185,36 @@ public class Initializer {
     }
 
     /**
+     * Given a generated Access Token, consumes Tenant Endpoint to create the first basic Tenants
+     * @param accessToken Access Token generated via KeyCloak
+     */
+    public static void tenantCreation(String accessToken){
+        System.out.println("Starting tenant...");
+        String location = getConfigProperty("initializer.tenant.directory.location");
+        String tenantUrl= getTenantManagementBaseURL() + "/tenant";
+        loadEntitiesFromDirectory(location, accessToken, tenantUrl, "tenant");
+    }
+
+    /**
      * Given a generated Access Token, consumes TenantRole Endpoint to create the first basic
      * TenantRoles associations.
      * @param accessToken Access Token generated via KeyCloak
      */
     private static void tenantRoleCreation(String accessToken) {
+        System.out.println("Starting tenant role...");
         String tenantRoleUrl = getRoleManagementBaseURL() + "/tenantrole";
-        String location = getConfigProperty("initializer.tenantRole.file.location");
-        System.out.println(getMd5(location));
-        List<String> postBodies = getPostBodies(location);
-        executePostForBodies(accessToken, postBodies, tenantRoleUrl, "tenantRole");
+        String location = getConfigProperty("initializer.tenantRole.directory.location");
+        loadEntitiesFromDirectory(location, accessToken, tenantRoleUrl, "tenantRole");
 
+        System.out.println("Starting tenant role permission...");
         String tenantRolePermissionUrl = getRoleManagementBaseURL() + "/tenantrolepermission";
-        location = getConfigProperty("initializer.tenantRolePermission.file.location");
-        System.out.println(getMd5(location));
-        postBodies = getPostBodies(location);
-        executePostForBodies(accessToken, postBodies, tenantRolePermissionUrl, "tenantRolePermission");
+        location = getConfigProperty("initializer.tenantRolePermission.directory.location");
+        loadEntitiesFromDirectory(location, accessToken, tenantRolePermissionUrl, "tenantRolePermission");
 
+        System.out.println("Starting tenant role user...");
         String tenantRoleUserUrl = getRoleManagementBaseURL() + "/tenantroleuser";
-        location = getConfigProperty("initializer.tenantRoleUser.file.location");
-        System.out.println(getMd5(location));
-        postBodies = getPostBodies(location);
-        executePostForBodies(accessToken, postBodies, tenantRoleUserUrl, "tenantRoleUser");
+        location = getConfigProperty("initializer.tenantRoleUser.directory.location");
+        loadEntitiesFromDirectory(location, accessToken, tenantRoleUserUrl, "tenantRoleUser");
     }
 
     /**
@@ -207,10 +225,8 @@ public class Initializer {
         System.out.println("Starting roles...");
         String roleUrl= getRoleManagementBaseURL() + "/role";
 
-        String location = getConfigProperty("initializer.role.file.location");
-        System.out.println(getMd5(location));
-        List<String> postBodies = getPostBodies(location);
-        executePostForBodies(accessToken, postBodies, roleUrl, "role");
+        String location = getConfigProperty("initializer.role.directory.location");
+        loadEntitiesFromDirectory(location, accessToken, roleUrl, "role");
     }
 
     /**
@@ -223,10 +239,8 @@ public class Initializer {
         System.out.println("Starting resource...");
         String resourceUrl= getPermissionManagementBaseURL() + "/resource";
 
-        String location = getConfigProperty("initializer.resource.file.location");
-        System.out.println(getMd5(location));
-        List<String> postBodies = getPostBodies(location);
-        executePostForBodies(accessToken, postBodies, resourceUrl, "resource");
+        String location = getConfigProperty("initializer.resource.directory.location");
+        loadEntitiesFromDirectory(location, accessToken, resourceUrl, "resource");
     }
 
     /**
@@ -234,14 +248,11 @@ public class Initializer {
      * @param accessToken Access Token generated via KeyCloak
      */
     private static void permissionCreation(String accessToken){
-        System.out.println("Start permission...");
+        System.out.println("Starting permission...");
         String permissionUrl = getPermissionManagementBaseURL() + "/permission";
 
-        String location = getConfigProperty("initializer.permission.file.location");
-        System.out.println(getMd5(location));
-        List<String> postBodies = getPostBodies(location);
-        executePostForBodies(accessToken, postBodies, permissionUrl, "action");
-
+        String location = getConfigProperty("initializer.permission.directory.location");
+        loadEntitiesFromDirectory(location, accessToken, permissionUrl, "permission");
     }
 
     /**
@@ -253,10 +264,119 @@ public class Initializer {
         System.out.println("Starting action...");
         String actionUrl= getPermissionManagementBaseURL() + "/action";
 
-        String location = getConfigProperty("initializer.action.file.location");
-        System.out.println(getMd5(location));
-        List<String> postBodies = getPostBodies(location);
-        executePostForBodies(accessToken, postBodies, actionUrl, "action");
+        String location = getConfigProperty("initializer.action.directory.location");
+        loadEntitiesFromDirectory(location, accessToken, actionUrl, "action");
+    }
+
+    /**
+     * Given a directory location, load the entities from json files identified by a discriminator param.
+     * For example, given a discriminator named action, it will load entities from all files that matches the
+     * pattern action-(index).json
+     * @param directoryLocation String that defines a directory location
+     * @param accessToken JWT token to be informed a header parameter for the endpoint responsible to perform the
+     *                    loading process
+     * @param url String that identifies the url for the endpoint responsible to perform the loading process
+     * @param identifier discriminator that describes the json files that contains the entities to be loaded
+     */
+    protected static void loadEntitiesFromDirectory(String directoryLocation, String accessToken,
+                                                    String url, String identifier) {
+        try {
+            List<Path> paths = getFilesPaths(directoryLocation, identifier);
+            Set<String> namesForFilesAlreadyLoaded = getFilesAlreadyLoaded(getConfigProperty(INITIALIZER_CONFIG_DIR_PROPERTY),
+                    getConfigProperty(RADIEN_ENV_PROPERTY));
+            for (Path path:paths) {
+                String location = path.toString();
+                if (!namesForFilesAlreadyLoaded.contains(path.getFileName().toString())) {
+                    System.out.println(location + " - " + getMd5(location));
+                    List<String> postBodies = getPostBodies(location);
+                    executePostForBodies(accessToken, postBodies, url, identifier);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(5);
+        }
+    }
+
+    /**
+     * Given a directory, load json files (Path) whose names matches a pattern (names starting with
+     * some informed starting substring).
+     *
+     * These files will load and shown in a sequential order determined by an index contained in the name.
+     *
+     * @param directoryLocation String that describes a directory
+     * @param nameStartingWith Pattern that describes the seeked json files
+     * @return
+     */
+    protected static List<Path> getFilesPaths(String directoryLocation, String nameStartingWith) throws IOException {
+        List<Path> paths = Files.list(Paths.get(directoryLocation)).
+                filter(path -> {
+                    String name = path.getFileName().toString();
+                    String startingToken = nameStartingWith+"-";
+                    return name.startsWith(startingToken) && name.endsWith(JSON_EXTENSION) && hasNumericIndex(name);
+                }).sorted((path1, path2) ->  {
+                    Integer indexForPath1 = Integer.valueOf(getIndex(path1.getFileName().toString()));
+                    Integer indexForPath2 = Integer.valueOf(getIndex(path2.getFileName().toString()));
+                    return indexForPath1 > indexForPath2 ? 1 : (indexForPath1 == indexForPath2 ? 0 : -1);
+                }).collect(Collectors.toList());
+        return paths;
+    }
+
+    /**
+     * Check if a Json file name has an index descriptor
+     * (i.e action-21.json contains 21 as index)
+     * @param fileName name for a Json file
+     * @return true if contains an index, otherwise false
+     */
+    public static boolean hasNumericIndex(String fileName) {
+        String indexAsString = getIndex(fileName);
+        try {
+            Integer.parseInt(indexAsString);
+        } catch(NumberFormatException n) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Given a file name, extract the index that eventually exists before
+     * the extension descriptor (i.e action-1111.json should return 111)
+     * @param fileName name for a Json file
+     * @return String that corresponds of a index
+     */
+    public static String getIndex(String fileName) {
+        StringBuilder sb = new StringBuilder();
+
+        // Regex to extract the string between expected two delimiters
+        String regex = "\\-(.*?)\\.json";
+
+        // Compile the Regex
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(fileName);
+        while (m.find()) {
+            sb.append(m.group(1));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Given an execution directory reads the control file that contains
+     * references for the json files already loaded.
+     *
+     * The control file name corresponds to the constant
+     * loaded-on-env- + {ENV} environment description.
+     *
+     * @param locationDirectory String that describes the directory location
+     *                          where the control file is seeked
+     * @param env String that describes the environment
+     * @return Set containing name of all already loaded files
+     * @throws IOException thrown in case of any i/o error
+     */
+    public static Set<String> getFilesAlreadyLoaded(String locationDirectory,
+                                                    String env) throws IOException {
+        String fileName = CONTROL_FILE_NAME_INIT_PATTERN + env;
+        Path path = Paths.get(locationDirectory + File.separator + fileName);
+        return Files.lines(path).filter(line -> !line.startsWith("#")).collect(Collectors.toSet());
     }
 
     /**
@@ -274,26 +394,23 @@ public class Initializer {
     }
 
     /**
-     * Given a generated Access Token, consumes Tenant Endpoint to create the first basic Tenants
-     * @param accessToken Access Token generated via KeyCloak
+     * Execute post requests for the following parameters
+     * @param accessToken JWT token to be informed as header parameter for the endpoint
+     * @param postBodies list containing string representation of json objects to be submitted
+     * @param url url for endpoint that will handle the request
+     * @param identifier discriminator/identifier for the entities that will be loaded
      */
-    public static void tenantCreation(String accessToken){
-
-        String location = getConfigProperty("initializer.tenant.file.location");
-        System.out.println(getMd5(location));
-        List<String> postBodies = getPostBodies(location);
-
-        String tenantUrl= getTenantManagementBaseURL() + "/tenant";
-        executePostForBodies(accessToken, postBodies, tenantUrl, "tenant");
-
-    }
-
     private static void executePostForBodies(String accessToken, List<String> postBodies, String url, String identifier) {
         for (int i = 0; i < postBodies.size(); i++) {
             makePostRequest(url, identifier + i, accessToken, postBodies.get(i));
         }
     }
 
+    /**
+     * Given a file described by its path (location), retrieves the json strings contained within it
+     * @param location string that describes json file path
+     * @return list containing strings (for json objects)
+     */
     private static List<String> getPostBodies(String location) {
         JSONParser parser = new JSONParser();
         List<String> postBodies = new ArrayList<>();
@@ -332,6 +449,11 @@ public class Initializer {
         return response.getBody();
     }
 
+    /**
+     * Extract the md5 hash code value from a file
+     * @param filePath path that describes a file
+     * @return md5 hash code value
+     */
     public static String getMd5(String filePath){
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
