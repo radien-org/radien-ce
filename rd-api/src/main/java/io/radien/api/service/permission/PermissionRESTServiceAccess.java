@@ -23,7 +23,6 @@ import io.radien.exception.SystemException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
-import javax.ws.rs.core.Response;
 
 /**
  * Contract for Rest Service Client regarding SystemPermission domain object

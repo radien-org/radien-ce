@@ -29,12 +29,8 @@ import io.radien.ms.permissionmanagement.model.PermissionEntity;
 import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import org.apache.commons.codec.binary.StringUtils;
 
 /**
  * Controller implementation responsible for deal with CRUD
@@ -130,7 +126,7 @@ public class PermissionResource implements PermissionResourceClient {
 	 */
 	public Response getIdByResourceAndAction(String resource, String action) {
 		try {
-			Optional optional = this.permissionServiceAccess.getIdByActionAndResource(resource, action);
+			Optional<Long> optional = this.permissionServiceAccess.getIdByActionAndResource(resource, action);
 			return optional.isPresent() ? Response.ok(optional.get()).build() :
 					GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		}

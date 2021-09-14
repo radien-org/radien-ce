@@ -15,7 +15,6 @@
  */
 package io.radien.ms.permissionmanagement.client.services;
 
-import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.permissionmanagement.client.entities.GlobalHeaders;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
