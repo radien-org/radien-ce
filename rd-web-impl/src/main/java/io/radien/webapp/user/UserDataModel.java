@@ -15,7 +15,6 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.OAFAccess;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
@@ -43,8 +42,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
-import static io.radien.api.OAFProperties.SYSTEM_MS_TENANTMANAGEMENT_ACTIVE;
-
 /**
  * @author Rajesh Gavvala
  */
@@ -68,9 +65,6 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @Inject
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
-    @Inject
-    private OAFAccess oafAccess;
-
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
 
     private SystemUser selectedUser;
@@ -88,10 +82,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            String active= oafAccess.getProperty(SYSTEM_MS_TENANTMANAGEMENT_ACTIVE);
-
-            boolean tenantMgmtActive = active == null || !active.equalsIgnoreCase("false");
-            if( tenantMgmtActive && activeTenantDataModelManager.isTenantActive()) {
+            if(activeTenantDataModelManager.isTenantActive()) {
                 if (!hasUserAdministratorRoleAccess) {
                     hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
                 }
@@ -107,10 +98,6 @@ public class UserDataModel extends AbstractManager implements Serializable {
                             service);
                     ((LazyTenantingUserDataModel) lazyUserDataModel).setTenantId(tenantId);
                 }
-            } else if(!tenantMgmtActive) {
-                lazyUserDataModel = new LazyTenantingUserDataModel(tenantRoleUserRESTServiceAccess,
-                        service);
-                ((LazyTenantingUserDataModel) lazyUserDataModel).setTenantId(1L);
             } else {
                 redirectToHomePage();
             }
