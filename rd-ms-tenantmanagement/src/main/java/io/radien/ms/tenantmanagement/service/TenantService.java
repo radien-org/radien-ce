@@ -38,8 +38,10 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Order;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -128,10 +130,14 @@ public class TenantService implements TenantServiceAccess {
         Root<TenantEntity> root = criteriaQuery.from(TenantEntity.class);
 
         criteriaQuery.select(root);
-
-        Predicate global = getFilteredPredicate((TenantSearchFilter) filter, criteriaBuilder, root);
-
-        criteriaQuery.where(global);
+        List<Predicate> predicateList = getFilteredPredicate((TenantSearchFilter) filter, criteriaBuilder, root);
+        if(!predicateList.isEmpty()) {
+            if (((TenantSearchFilter) filter).isLogicConjunction()) {
+                criteriaQuery.where(criteriaBuilder.and(predicateList.toArray(new Predicate[]{})));
+            } else {
+                criteriaQuery.where(criteriaBuilder.or(predicateList.toArray(new Predicate[]{})));
+            }
+        }
         TypedQuery<TenantEntity> q = em.createQuery(criteriaQuery);
 
         return q.getResultList();
@@ -151,27 +157,18 @@ public class TenantService implements TenantServiceAccess {
      * @param tenantRoot table to be search
      * @return a filtered predicate
      */
-    private Predicate getFilteredPredicate(TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<TenantEntity> tenantRoot) {
-        Predicate global;
-        if(filter.isLogicConjunction()) {
-            global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        } else {
-            global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
-        }
+    private List<Predicate> getFilteredPredicate(TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<TenantEntity> tenantRoot) {
+        List<Predicate> list = new ArrayList<>();
 
         if (filter.getIds() != null && !filter.getIds().isEmpty()) {
             Predicate in = tenantRoot.get("id").in(filter.getIds());
-            if(filter.isLogicConjunction()) {
-                global = criteriaBuilder.and(global, in);
-            } else {
-                global = criteriaBuilder.or(global, in);
-            }
+            list.add(in);
         }
 
-        global = getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, tenantRoot, global);
-        global = getFieldPredicate("tenantType", filter.getTenantType(), filter, criteriaBuilder, tenantRoot, global);
+        getFieldPredicate("name", filter.getName(), filter, criteriaBuilder, tenantRoot).ifPresent(list::add);
+        getFieldPredicate("tenantType", filter.getTenantType(), filter, criteriaBuilder, tenantRoot).ifPresent(list::add);;
 
-        return global;
+        return list;
     }
 
     /**
@@ -184,7 +181,7 @@ public class TenantService implements TenantServiceAccess {
      * @param global predicate to be added
      * @return a constructed predicate
      */
-    private Predicate getFieldPredicate(String name, Object value, TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<TenantEntity> tenantRoot, Predicate global) {
+    private Optional<Predicate> getFieldPredicate(String name, Object value, TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<TenantEntity> tenantRoot) {
         if(value != null) {
             Predicate subPredicate;
             if (value instanceof String && !filter.isExact()) {
@@ -194,13 +191,9 @@ public class TenantService implements TenantServiceAccess {
                 subPredicate = criteriaBuilder.equal(tenantRoot.get(name), value);
             }
 
-            if(filter.isLogicConjunction()) {
-                global = criteriaBuilder.and(global, subPredicate);
-            } else {
-                global = criteriaBuilder.or(global, subPredicate);
-            }
+            return Optional.of(subPredicate);
         }
-        return global;
+        return Optional.empty();
     }
 
     /**
