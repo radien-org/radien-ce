@@ -94,6 +94,18 @@ public interface PermissionResourceClient {
     public Response getById(@PathParam("id") Long id);
 
     /**
+     * Retrieve the permission Id using the combination of resource and action as parameters
+     * @param resource resource name (Mandatory)
+     * @param action action name (Mandatory)
+     * @return Response OK (200) with the retrieved id (if exists). If not exist will return 404 status.
+     * In case of insufficient params (tenant or role not informed) It will return 400 status.
+     * For any other kind of (unpredictable) error this endpoint will return status 500
+     */
+    @GET
+    @Path("/id")
+    public Response getIdByResourceAndAction(@QueryParam("resource") String resource, @QueryParam("action") String action);
+
+    /**
      * Deletes an permission by its identifier
      * @param id permission identifier
      * @return Returns 200 status, Otherwise, in case of operational error return 500 status

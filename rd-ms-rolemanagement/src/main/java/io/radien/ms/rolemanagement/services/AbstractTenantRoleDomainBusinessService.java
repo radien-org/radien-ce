@@ -15,7 +15,6 @@
  */
 package io.radien.ms.rolemanagement.services;
 
-import io.radien.api.OAFAccess;
 import io.radien.api.SystemVariables;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
@@ -23,21 +22,15 @@ import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Optional;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
-import static io.radien.api.OAFProperties.SYSTEM_MS_TENANTMANAGEMENT_ACTIVE;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATION_TENANT_ROLE;
 
 /**
@@ -45,8 +38,6 @@ import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_ASSOCIATIO
  * by TenantRole, TenantRoleUser and TenantRolePermission
  */
 public abstract class AbstractTenantRoleDomainBusinessService {
-
-    private static final Logger log = LoggerFactory.getLogger(AbstractTenantRoleDomainBusinessService.class);
 
     @Inject
     private TenantRoleServiceAccess tenantRoleServiceAccess;
@@ -59,9 +50,6 @@ public abstract class AbstractTenantRoleDomainBusinessService {
 
     @Inject
     private RoleServiceAccess roleServiceAccess;
-
-    @Inject
-    private OAFAccess oafAccess;
 
     /**
      * Utility method to retrieve tenant and reduce cognitive complexity
@@ -128,13 +116,7 @@ public abstract class AbstractTenantRoleDomainBusinessService {
      */
     protected void checkIfParamsExists(Long tenantId, Long roleId, Long permissionId)
             throws SystemException, TenantRoleException {
-
-        String active= oafAccess.getProperty(SYSTEM_MS_TENANTMANAGEMENT_ACTIVE);
-
-        boolean tenantMgmtActive = active == null || !active.equalsIgnoreCase("false");
-
-        if (tenantId != null && ((tenantMgmtActive && !getTenantRESTServiceAccess().isTenantExistent(tenantId))
-                        || ( !tenantMgmtActive && tenantId!=1L))) {
+        if (tenantId != null && !getTenantRESTServiceAccess().isTenantExistent(tenantId)) {
             throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_NO_TENANT_FOUND.toString(String.valueOf(tenantId)));
         }
@@ -215,13 +197,4 @@ public abstract class AbstractTenantRoleDomainBusinessService {
     public void setTenantRoleServiceAccess(TenantRoleServiceAccess tenantRoleServiceAccess) {
         this.tenantRoleServiceAccess = tenantRoleServiceAccess;
     }
-
-    public void setOAFAccess(OAFAccess oafAccess){
-        this.oafAccess = oafAccess;
-    }
-
-    public OAFAccess getOafAccess(){
-        return oafAccess;
-    }
-
 }
