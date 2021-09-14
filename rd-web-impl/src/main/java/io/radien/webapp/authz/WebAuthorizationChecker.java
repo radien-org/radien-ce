@@ -18,7 +18,6 @@ package io.radien.webapp.authz;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
-import io.radien.api.service.permission.SystemPermissionsEnum;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;

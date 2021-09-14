@@ -15,9 +15,6 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.model.permission.SystemAction;
-import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
@@ -26,7 +23,6 @@ import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
@@ -38,7 +34,6 @@ import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.io.Serializable;
 import java.text.MessageFormat;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
@@ -48,13 +43,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
-
-import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
-import static io.radien.webapp.DataModelEnum.ACTION_NOT_FOUND_MESSAGE;
-import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE;
-import static io.radien.webapp.DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE;
-import static io.radien.webapp.JSFUtil.getMessage;
-import static java.text.MessageFormat.format;
 
 /**
  * @author Rajesh Gavvala
