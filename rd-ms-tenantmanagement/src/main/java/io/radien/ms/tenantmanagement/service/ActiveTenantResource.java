@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.model.ModelValueId;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
@@ -160,7 +161,8 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 		try {
 			ActiveTenantEntity activeTenantEntity = new ActiveTenantEntity(activeTenant);
             activeTenantServiceAccess.create(activeTenantEntity);
-			return Response.ok(activeTenantEntity.getId()).build();
+			ModelValueId modelValueId = new ModelValueId(); modelValueId.setId(activeTenantEntity.getId());
+			return Response.ok(modelValueId).build();
 		} catch (ActiveTenantException | UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
 		} catch (Exception e){

@@ -22,22 +22,13 @@ import java.util.Date;
  *
  * @author Marco Weiland
  */
-public abstract class AbstractModel implements Model {
+public abstract class AbstractModel extends ModelValueId implements Model {
 	private static final long serialVersionUID = 1468276722471664639L;
 
-	protected Long id;
 	private Date createDate;
 	private Date lastUpdate;
 	private Long createUser;
 	private Long lastUpdateUser;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	/**
 	 * Record creation date getter

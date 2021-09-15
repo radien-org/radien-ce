@@ -48,6 +48,7 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 
 import javax.xml.bind.DatatypeConverter;
+import org.json.simple.parser.ParseException;
 
 /**
  * Console application that uses REST Clients to consume the respective endpoints responsible
@@ -211,10 +212,68 @@ public class Initializer {
         location = getConfigProperty("initializer.tenantRolePermission.directory.location");
         loadEntitiesFromDirectory(location, accessToken, tenantRolePermissionUrl, "tenantRolePermission");
 
+        loadTenantRoleUsers(accessToken);
+    }
+
+    private static void loadTenantRoleUsers(String accessToken) {
         System.out.println("Starting tenant role user...");
         String tenantRoleUserUrl = getRoleManagementBaseURL() + "/tenantroleuser";
-        location = getConfigProperty("initializer.tenantRoleUser.directory.location");
-        loadEntitiesFromDirectory(location, accessToken, tenantRoleUserUrl, "tenantRoleUser");
+        String directory = getConfigProperty("initializer.tenantRoleUser.directory.location");
+        String identifier = "tenantRoleUser";
+        try {
+            List<Path> paths = getFilesPaths(directory, identifier);
+            Set<String> namesForFilesAlreadyLoaded = getFilesAlreadyLoaded(getConfigProperty(INITIALIZER_CONFIG_DIR_PROPERTY),
+                    getConfigProperty(RADIEN_ENV_PROPERTY));
+            for (Path path:paths) {
+                String location = path.toString();
+                if (!namesForFilesAlreadyLoaded.contains(path.getFileName().toString())) {
+                    System.out.println(location + " - " + getMd5(location));
+                    List<String> postBodies = getPostBodies(location);
+                    createActiveTenants(accessToken, postBodies);
+                    executePostForBodies(accessToken, postBodies, tenantRoleUserUrl, identifier);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(5);
+        }
+    }
+
+    /**
+     * Create active tenants references, taking in account the tenantRoleUser information
+     * @param accessToken Access Token generated via KeyCloak
+     * @param tenantRoleUserBodies
+     */
+    private static void createActiveTenants(String accessToken, List<String> tenantRoleUserBodies) {
+        JSONParser parser = new JSONParser();
+        for (String tenantRoleUserBody: tenantRoleUserBodies) {
+            JSONObject json = null;
+            try {
+                json = (JSONObject) parser.parse(tenantRoleUserBody);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                System.exit(9);
+            }
+            Long tenantRoleId = (Long) json.get("tenantRoleId");
+            Long userId = (Long) json.get("userId");
+
+            String urlGetTenantRoleById = getRoleManagementBaseURL() + "/tenantrole/" + tenantRoleId;
+            HashMap map = makeGetRequest(urlGetTenantRoleById, "retrievingTenantRole", accessToken);
+
+            Long tenantId = ((Double) map.get("tenantId")).longValue();
+            String urlGetTenantById = getTenantManagementBaseURL() + "/tenant/" + tenantId;
+            map = makeGetRequest(urlGetTenantById, "retrievingTenant", accessToken);
+
+            String tenantName = map.get("name").toString();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("tenantId", tenantId);
+            jsonObject.put("tenantName", tenantName);
+            jsonObject.put("userId", userId);
+            jsonObject.put("isTenantActive", "false");
+
+            String activeTenantUrl = getTenantManagementBaseURL() + "/activeTenant";
+            makePostRequest(activeTenantUrl, "activeTenant", accessToken, jsonObject.toJSONString());
+        }
     }
 
     /**
@@ -276,7 +335,7 @@ public class Initializer {
      * @param accessToken JWT token to be informed a header parameter for the endpoint responsible to perform the
      *                    loading process
      * @param url String that identifies the url for the endpoint responsible to perform the loading process
-     * @param identifier discriminator that describes the json files that contains the entities to be loaded
+     * @param identifier discriminator that corresponds to the kind of entity described via json file
      */
     protected static void loadEntitiesFromDirectory(String directoryLocation, String accessToken,
                                                     String url, String identifier) {
@@ -389,7 +448,6 @@ public class Initializer {
             System.out.println(identifier);
             System.out.println(response.getBody().toString());
             System.exit(1);
-
         }
     }
 
@@ -421,7 +479,6 @@ public class Initializer {
                 postBodies.add(obj.toJSONString());
             }
         } catch( Exception e) {
-            System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(2);
         }
@@ -444,6 +501,24 @@ public class Initializer {
                 .body(body).asObject(HashMap.class);
 
 
+        System.out.println(identifier + " " + response.getStatus());
+        checkResponse(response,identifier);
+        return response.getBody();
+    }
+
+    /**
+     * Similar to {@link Initializer#makePostRequest(String, String, String, String)}
+     * this invokes an Http Get method endpoint
+     * @param url endpoint url
+     * @param identifier String that identifies a request
+     * @param accessToken access token generated via KeyCloak
+     * @return HashMap that corresponds to the obtained response
+     */
+    public static HashMap makeGetRequest(String url,String identifier, String accessToken){
+        System.out.println(url);
+        HttpResponse<HashMap> response = Unirest.get(url)
+                .header("Authorization", "Bearer "+accessToken)
+                .asObject(HashMap.class);
         System.out.println(identifier + " " + response.getStatus());
         checkResponse(response,identifier);
         return response.getBody();

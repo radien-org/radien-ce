@@ -25,19 +25,7 @@ import java.util.Date;
  *
  * @author Marco Weiland
  */
-public interface Model extends Serializable {
-
-	/**
-	 * Model id getter
-	 * @return model id
-	 */
-	Long getId();
-
-	/**
-	 * Model id setter
-	 * @param id to be set
-	 */
-	void setId(Long id);
+public interface Model extends SystemId, Serializable {
 
 	/**
 	 * Record creation date getter
