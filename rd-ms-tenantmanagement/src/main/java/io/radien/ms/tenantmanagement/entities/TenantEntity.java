@@ -88,8 +88,7 @@ public class TenantEntity extends io.radien.ms.tenantmanagement.client.entities.
 	 */
 	@Column
 	@Override
-	@Convert(converter = TenantTypeConverter.class)
-	public TenantType getTenantType() {
+	public String getTenantType() {
 		return super.getTenantType();
 	}
 

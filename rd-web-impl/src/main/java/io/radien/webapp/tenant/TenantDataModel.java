@@ -25,11 +25,11 @@ import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
+
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
-import io.radien.webapp.role.LazyRoleDataModel;
 import io.radien.webapp.security.UserSession;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
@@ -91,7 +91,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
                 redirectToHomePage();
             }
         } catch (Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+            handleError(e, JSFUtil.getMessage( DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
     }
@@ -140,9 +140,9 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     private void fillParentClientId(SystemTenant systemTenantToSave) throws SystemException {
-        if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT)) {
+        if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT_TENANT.getDescription())) {
             retrieveParentTenantId(systemTenantToSave);
-        } else if(systemTenantToSave.getTenantType().equals(TenantType.SUB_TENANT)) {
+        } else if(systemTenantToSave.getTenantType().equals(TenantType.SUB_TENANT.getDescription())) {
             retrieveParentTenantId(systemTenantToSave);
             retrieveClientTenantId(systemTenantToSave);
         }
@@ -203,7 +203,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
             Optional<SystemTenant> tenantToBeSearch = service.getTenantById(tenantId);
 
             if(tenantToBeSearch.isPresent()) {
-                if(tenantToBeSearch.get().getTenantType().equals(TenantType.CLIENT_TENANT)) {
+                if(tenantToBeSearch.get().getTenantType().equals(TenantType.CLIENT_TENANT.getDescription())) {
                     systemTenantToSave.setClientId(tenantToBeSearch.get().getId());
                 } else {
                     requestUpperTenant(systemTenantToSave, tenantToBeSearch.get().getParentId());
@@ -272,7 +272,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     private void validateMandatoryFields(SystemTenant r) throws Exception {
-        if(r != null && r.getTenantType().equals(TenantType.CLIENT_TENANT)) {
+        if(r != null && r.getTenantType().equals(TenantType.CLIENT_TENANT.getDescription())) {
             clientAddressValidation(r);
             clientZipCodeValidation(r);
             clientCityValidation(r);

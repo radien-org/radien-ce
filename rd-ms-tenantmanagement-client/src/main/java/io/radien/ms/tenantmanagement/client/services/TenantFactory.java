@@ -64,7 +64,7 @@ public class TenantFactory {
      * @param clientId tenant id of the client tenant this tenant belongs to
      * @param createdUser user which has given the command to create the tenant
      */
-    public static Tenant create(String name, String key, TenantType type, LocalDate start, LocalDate end,
+    public static Tenant create(String name, String key, String type, LocalDate start, LocalDate end,
                                 String clientAddress, String clientZipCode, String clientCity, String clientCountry,
                                 Long clientPhoneNumber, String clientEmail, Long parentId, Long clientId, Long createdUser){
         Tenant tenant = new Tenant();
@@ -107,7 +107,7 @@ public class TenantFactory {
         String start = FactoryUtilService.getStringFromJson("tenantStart", jsonTenant);
         String end = FactoryUtilService.getStringFromJson("tenantEnd", jsonTenant);
 
-        TenantType type = getTypeFromJson(jsonTenant);
+        String type = getTypeFromJson(jsonTenant);
 
         String clientAddress = FactoryUtilService.getStringFromJson("clientAddress", jsonTenant);
         String clientZipCode = FactoryUtilService.getStringFromJson("clientZipCode", jsonTenant);
@@ -164,12 +164,12 @@ public class TenantFactory {
      * @param jsonTenant information to be set
      * @return a correct tenant type
      */
-    private static TenantType getTypeFromJson(JsonObject jsonTenant) {
+    private static String getTypeFromJson(JsonObject jsonTenant) {
         String typeAsString = FactoryUtilService.getStringFromJson("tenantType", jsonTenant);
         if (StringUtils.isEmpty(typeAsString)) {
             throw new IllegalStateException("Field type is mandatory");
         }
-        TenantType tenantType = TenantType.getByName(typeAsString);
+        TenantType tenantType = TenantType.getByDescription(typeAsString);
         // TODO @Newton: Necessary to understand why TenantMessageBodyWriter is not being invoked
         if (tenantType == null) {
             String tenantTypeNotFound = GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString();
@@ -183,7 +183,7 @@ public class TenantFactory {
         if (tenantType == null) {
             throw new IllegalStateException(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString());
         }
-        return tenantType;
+        return tenantType.getDescription();
     }
 
     /**
@@ -198,7 +198,7 @@ public class TenantFactory {
         FactoryUtilService.addValueLong(builder, "id", tenant.getId());
         FactoryUtilService.addValue(builder, "name", tenant.getName());
         FactoryUtilService.addValue(builder, "tenantKey", tenant.getTenantKey());
-        FactoryUtilService.addValue(builder, "tenantType", tenant.getTenantType().getName());
+        FactoryUtilService.addValue(builder, "tenantType", tenant.getTenantType());
         FactoryUtilService.addValue(builder, "tenantStart", tenant.getTenantStart());
         FactoryUtilService.addValue(builder, "tenantEnd", tenant.getTenantEnd());
 

@@ -107,7 +107,7 @@ public class TenantDataModelTest {
         tenant = new Tenant();
         tenant.setName("name");
         tenant.setTenantKey("key");
-        tenant.setTenantType(TenantType.ROOT_TENANT);
+        tenant.setTenantType(TenantType.ROOT_TENANT.getDescription());
         tenantDataModel.setTenantStartDate(new Date());
         tenantDataModel.setTenantEndDate(new Date());
 
@@ -185,7 +185,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -216,7 +216,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -231,7 +231,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
         clientTenant.setClientEmail("email1");
@@ -258,7 +258,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientEmail("email1");
@@ -273,7 +273,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -288,7 +288,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -303,7 +303,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city1");
         clientTenant.setClientCountry("country1");
         clientTenant.setClientEmail("email1");
@@ -318,7 +318,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.SUB_TENANT);
+        clientTenant.setTenantType(TenantType.SUB_TENANT.getDescription());
 
         ActiveTenant activeTenant = new ActiveTenant();
         activeTenant.setIsTenantActive(true);
@@ -336,7 +336,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.SUB_TENANT);
+        clientTenant.setTenantType(TenantType.SUB_TENANT.getDescription());
 
         ActiveTenant activeTenant = new ActiveTenant();
         activeTenant.setIsTenantActive(true);
@@ -353,7 +353,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.SUB_TENANT);
+        clientTenant.setTenantType(TenantType.SUB_TENANT.getDescription());
 
         ActiveTenant activeTenant = new ActiveTenant();
         activeTenant.setIsTenantActive(true);
@@ -383,7 +383,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city");
         clientTenant.setClientAddress("address");
         clientTenant.setClientCountry("country");
@@ -411,7 +411,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city");
         clientTenant.setClientAddress("address");
         clientTenant.setClientCountry("country");
@@ -444,7 +444,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT_TENANT.getDescription());
         clientTenant.setClientCity("city");
         clientTenant.setClientAddress("address");
         clientTenant.setClientCountry("country");
