@@ -15,10 +15,15 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
+import io.radien.api.SystemVariables;
+import io.radien.exception.PermissionIllegalArgumentException;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
@@ -235,6 +240,50 @@ public class PermissionService implements PermissionServiceAccess {
 
         criteriaDelete.where(permissionRoot.get("id").in(permissionIds));
         em.createQuery(criteriaDelete).executeUpdate();
+    }
+
+    /**
+     * Retrieve the permission Id using the combination of resource and action as parameters
+     * @param resource resource name (Mandatory)
+     * @param action action name (Mandatory)
+     * @return Optional containing Id (If there is a permission for the informed parameter),
+     * otherwise a empty one
+     * @throws PermissionIllegalArgumentException in case of parameters not correctly informed
+     */
+    public Optional<Long> getIdByActionAndResource(String resource, String action)
+            throws PermissionIllegalArgumentException {
+
+        if (resource == null || resource.trim().length() == 0) {
+            throw new PermissionIllegalArgumentException(GenericErrorCodeMessage.
+                    PERMISSION_PARAMETERS_NOT_INFORMED.toString(SystemVariables.RESOURCE_NAME.getLabel()));
+        }
+
+        if (action == null || action.trim().length() == 0) {
+            throw new PermissionIllegalArgumentException(GenericErrorCodeMessage.
+                    PERMISSION_PARAMETERS_NOT_INFORMED.toString(SystemVariables.ACTION_NAME.getLabel()));
+        }
+
+        EntityManager em = getEntityManager();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<PermissionEntity> permissionRoot = cq.from(PermissionEntity.class);
+        Root<ResourceEntity> resourceRoot = cq.from(ResourceEntity.class);
+        Root<ActionEntity> actionRoot = cq.from(ActionEntity.class);
+
+        cq.select(permissionRoot.get(SystemVariables.ID.getFieldName())).
+                where(
+                        cb.equal(permissionRoot.get(SystemVariables.RESOURCE_ID.getFieldName()),
+                                resourceRoot.get(SystemVariables.ID.getFieldName())),
+                        cb.equal(permissionRoot.get(SystemVariables.ACTION_ID.getFieldName()),
+                                actionRoot.get(SystemVariables.ID.getFieldName())),
+                        cb.equal(resourceRoot.get(SystemVariables.NAME.getFieldName()), resource),
+                        cb.equal(actionRoot.get(SystemVariables.NAME.getFieldName()), action)
+                );
+
+        TypedQuery<Long> typedQuery = em.createQuery(cq);
+        List<Long> list = typedQuery.getResultList();
+        return !list.isEmpty() ? Optional.of(list.get(0)) : Optional.empty();
     }
 
     /**

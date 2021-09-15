@@ -19,11 +19,13 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.PermissionIllegalArgumentException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.PermissionNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Contract description for the Data Service responsible for handle Permissions (CRUD)
@@ -77,6 +79,17 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * @param permissionIds to be deleted.
      */
     public void delete(Collection<Long> permissionIds);
+
+    /**
+     * Retrieve the permission Id using the combination of resource and action as parameters
+     * @param resource resource name (Mandatory)
+     * @param action action name (Mandatory)
+     * @return Optional containing Id (If there is a permission for the informed parameter),
+     * otherwise a empty one
+     * @throws PermissionIllegalArgumentException in case of parameters not correctly informed
+     */
+    public Optional<Long> getIdByActionAndResource(String resource, String action)
+            throws PermissionIllegalArgumentException;
 
     /**
      * Get PermissionsBy unique columns

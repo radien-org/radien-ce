@@ -24,6 +24,10 @@ public enum SystemVariables {
 
     ID("id", "ID"),
     NAME("name", "Name"),
+    ACTION_ID("actionId", "Action Id"),
+    RESOURCE_ID("resourceId", "Resource Id"),
+    ACTION_NAME("actionName", "Action Name"),
+    RESOURCE_NAME("resourceName", "Resource Name"),
     FIRST_NAME("firstname", "Firstname"),
     LAST_NAME("lastname", "Lastname"),
     LOGON("logon", "Logon"),

@@ -16,18 +16,34 @@
 package io.radien.webapp.user;
 
 import io.radien.api.OAFAccess;
+import io.radien.api.model.permission.SystemAction;
+import io.radien.api.model.permission.SystemPermission;
+import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.ActionRESTServiceAccess;
+import io.radien.api.service.permission.PermissionRESTServiceAccess;
+import io.radien.api.service.permission.ResourceRESTServiceAccess;
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemPermissionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.permissionmanagement.client.entities.Action;
+import io.radien.ms.permissionmanagement.client.entities.Permission;
+import io.radien.ms.permissionmanagement.client.entities.Resource;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
+import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -45,10 +61,14 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.radien.webapp.DataModelEnum.ACTION_NOT_FOUND_MESSAGE;
+import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE;
+import static io.radien.webapp.DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
@@ -68,6 +88,18 @@ public class UserDataModelTest {
 
     @Mock
     private UserRESTServiceAccess userRESTServiceAccess;
+
+
+    @Mock
+    private ActionRESTServiceAccess actionRESTServiceAccess;
+
+
+    @Mock
+    private ResourceRESTServiceAccess resourceRESTServiceAccess;
+
+
+    @Mock
+    private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
@@ -211,6 +243,15 @@ public class UserDataModelTest {
     }
 
     /**
+     * Test getter and setter methods regarding allowedToResetPassword
+     */
+    @Test
+    public void testGetterSetterAllowedToResetPassword() {
+        this.userDataModel.setAllowedToResetPassword(true);
+        assertTrue(this.userDataModel.isAllowedToResetPassword());
+    }
+
+    /**
      * Test getter and setter methods regarding hasTenantAdministratorRoles
      */
     @Test
@@ -218,7 +259,6 @@ public class UserDataModelTest {
         this.userDataModel.setHasTenantAdministratorRoleAccess(true);
         assertTrue(this.userDataModel.isHasTenantAdministratorRoleAccess());
     }
-
 
     /**
      * Test getter and setter methods regarding userForTenantAssociation
@@ -453,6 +493,22 @@ public class UserDataModelTest {
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
         assertEquals(DataModelEnum.USER_SEND_UPDATE_PASSWORD_EMAIL_SUCCESS.getValue(), captured.getSummary());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#getResetPasswordMessage()}
+     */
+    @Test
+    public void testGetResetPasswordMessage() {
+        User user = new User(); user.setLogon("login.test");
+        userDataModel.setSelectedUser(user);
+        String expectedMessage = MessageFormat.format(JSFUtil.getMessage(
+                DataModelEnum.USER_RESET_PASSWORD_CONFIRM_MESSAGE.getValue()), user.getLogon());
+        assertEquals(expectedMessage, userDataModel.getResetPasswordMessage());
+        userDataModel.setSelectedUser(null);
+        expectedMessage = MessageFormat.format(JSFUtil.getMessage(
+                DataModelEnum.USER_RESET_PASSWORD_CONFIRM_MESSAGE.getValue()), "");
+        assertEquals(expectedMessage, userDataModel.getResetPasswordMessage());
     }
 
     /**

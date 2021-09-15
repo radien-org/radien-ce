@@ -15,13 +15,15 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.ActionRESTServiceAccess;
+import io.radien.api.service.permission.PermissionRESTServiceAccess;
+import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
@@ -29,9 +31,9 @@ import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import io.radien.webapp.tenantrole.LazyTenantRoleUserDataModel;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
@@ -54,6 +56,15 @@ public class UserDataModel extends AbstractManager implements Serializable {
     private UserRESTServiceAccess service;
 
     @Inject
+    private ActionRESTServiceAccess actionRESTServiceAccess;
+
+    @Inject
+    private ResourceRESTServiceAccess resourceRESTServiceAccess;
+
+    @Inject
+    private PermissionRESTServiceAccess permissionRESTServiceAccess;
+
+    @Inject
     private UserSessionEnabled userSessionEnabled;
 
     @Inject
@@ -73,6 +84,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
     private boolean hasUserAdministratorRoleAccess = false;
     private boolean hasTenantAdministratorRoleAccess = false;
+    private boolean allowedToResetPassword = false;
 
     /**
      * Post construction method for user management page
@@ -90,10 +102,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
                     hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
                 }
 
+                Long tenantId = getCurrentActiveTenantId();
+                allowedToResetPassword = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+
                 if (hasUserAdministratorRoleAccess) {
                     // Must retrieve user compatible with the Active Tenant
-                    Long tenantId = activeTenantDataModelManager.getActiveTenant() != null ?
-                            activeTenantDataModelManager.getActiveTenant().getTenantId() : null;
                     lazyUserDataModel = new LazyTenantingUserDataModel(tenantRoleUserRESTServiceAccess,
                             service);
                     ((LazyTenantingUserDataModel) lazyUserDataModel).setTenantId(tenantId);
@@ -105,6 +118,15 @@ public class UserDataModel extends AbstractManager implements Serializable {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
         }
+    }
+
+    /**
+     * Retrieve the active tenant id for the current user
+     * @return long value that corresponds to the tenant id
+     */
+    protected Long getCurrentActiveTenantId() {
+        SystemActiveTenant activeTenant = activeTenantDataModelManager.getActiveTenant();
+        return activeTenant != null ? activeTenant.getTenantId() : null;
     }
 
     /**
@@ -178,6 +200,24 @@ public class UserDataModel extends AbstractManager implements Serializable {
     }
 
     /**
+     * Getter method for the flag property that indicates if the current user has grant
+     * to reset a password or not
+     * @return true for positive case, otherwise false
+     */
+    public boolean isAllowedToResetPassword() {
+        return allowedToResetPassword;
+    }
+
+    /**
+     * Setter method for the flag property that indicates if the current user has grant
+     * to reset a password or not
+     * @param allowedToResetPassword boolean value that if express the user has permission or not to reset password
+     */
+    public void setAllowedToResetPassword(boolean allowedToResetPassword) {
+        this.allowedToResetPassword = allowedToResetPassword;
+    }
+
+    /**
      * Method to update a given user information that have been edited
      * @param updateUser new user information to be saved
      */
@@ -229,6 +269,17 @@ public class UserDataModel extends AbstractManager implements Serializable {
         }catch (Exception e){
             handleError(e, JSFUtil.getMessage(DataModelEnum.SENT_UPDATE_PASSWORD_EMAIL_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
+    }
+
+    /**
+     * Assemblies a message to be shown in the frontend when an administrator
+     * requests to reset the password of a selected user
+     * @return message to be shown
+     */
+    public String getResetPasswordMessage() {
+        String userLogin = selectedUser != null? selectedUser.getLogon() : "";
+        return MessageFormat.format(JSFUtil.getMessage(DataModelEnum.USER_RESET_PASSWORD_CONFIRM_MESSAGE.getValue()),
+                userLogin);
     }
 
     /**

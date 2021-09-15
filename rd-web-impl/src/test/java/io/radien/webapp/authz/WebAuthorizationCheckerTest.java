@@ -18,11 +18,13 @@ package io.radien.webapp.authz;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.openid.entities.Principal;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
@@ -33,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -62,6 +65,9 @@ public class WebAuthorizationCheckerTest {
 
     @Mock
     UserSessionEnabled userSession;
+
+    @Mock
+    PermissionRESTServiceAccess permissionRESTServiceAccess;
 
     @Before
     public void before() {
@@ -209,4 +215,89 @@ public class WebAuthorizationCheckerTest {
 
         assertFalse(webAuthorizationChecker.hasTenantAdministratorRoleAccess());
     }
+
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToResetPassword(Long)} running
+     * on successful case (user having access)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasPermissionToResetPassword() throws SystemException {
+        Long permissionId = 222L;
+        Long tenantId = 10L;
+        Long userId = 1111L;
+        String resourceName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName();
+
+        when(this.userSession.getUserId()).thenReturn(userId);
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenReturn(Optional.of(permissionId));
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        Response expectedResponse = Response.ok().entity(Boolean.TRUE).build();
+        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
+                userId, permissionId, tenantId);
+
+        boolean result = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+        assertTrue(result);
+    }
+
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToResetPassword(Long)} running
+     * on unsuccessful case (user have no access)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasNoPermissionToResetPassword() throws SystemException {
+        Long permissionId = 222L;
+        Long tenantId = 10L;
+        Long userId = 333L;
+        String resourceName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName();
+
+        when(this.userSession.getUserId()).thenReturn(userId);
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenReturn(Optional.of(permissionId));
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        Response expectedResponse = Response.ok().entity(Boolean.FALSE).build();
+        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
+                userId, permissionId, tenantId);
+
+        boolean result = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+        assertFalse(result);
+    }
+
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToResetPassword(Long)} running
+     * on unsuccessful case (Permission could not be found)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasGrantToResetPasswordWhenPermissionNotFound() throws SystemException {
+        Long tenantId = 10L;
+        String resourceName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName();
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenReturn(Optional.empty());
+        boolean result = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+        assertFalse(result);
+    }
+
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToResetPassword(Long)} running
+     * on unsuccessful case (Exception occurring during the check process)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasGrantToResetPasswordWhenExceptionOccurs() throws SystemException {
+        Long tenantId = 10L;
+        String resourceName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName();
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenThrow(new SystemException("error"));
+        boolean result = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+        assertFalse(result);
+    }
+
+
+
 }

@@ -25,9 +25,11 @@ import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.PermissionIllegalArgumentException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
+import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
@@ -35,6 +37,7 @@ import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 import io.radien.ms.permissionmanagement.model.ActionEntity;
 import io.radien.ms.permissionmanagement.model.PermissionEntity;
 import io.radien.ms.permissionmanagement.model.ResourceEntity;
+import java.util.Optional;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -721,5 +724,89 @@ public class PermissionServiceTest {
         assertNotNull(p7);
         assertEquals(p7.getActionId(), a2.getId());
         assertEquals(p7.getResourceId(), r1.getId());
+    }
+
+    /**
+     * Method to test the retrieval of a permission id based on the action and resource name
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     * @throws UniquenessConstraintException in case of repeated information during insert process
+     */
+    @Test
+    public void testGetIdByActionAndResource() throws PermissionIllegalArgumentException, UniquenessConstraintException {
+        SystemAction a1 = new ActionEntity();
+        a1.setName("reset");
+        actionServiceAccess.save(a1);
+
+        SystemResource r1 = new ResourceEntity();
+        r1.setName("password");
+        resourceServiceAccess.save(r1);
+
+        SystemPermission p1 = new PermissionEntity();
+        p1.setName("reset password");
+        p1.setResourceId(r1.getId());
+        p1.setActionId(a1.getId());
+        permissionServiceAccess.save(p1);
+
+        Optional optional = permissionServiceAccess.getIdByActionAndResource(r1.getName(),
+                a1.getName());
+
+        assertTrue(optional.isPresent());
+        assertEquals(p1.getId(), optional.get());
+
+        optional = permissionServiceAccess.getIdByActionAndResource(r1.getName(), "create");
+        assertFalse(optional.isPresent());
+
+        actionServiceAccess.delete(a1.getId());
+        resourceServiceAccess.delete(r1.getId());
+        permissionServiceAccess.delete(p1.getId());
+    }
+
+    /**
+     * Method to test the retrieval of a permission id based on the action and resource name,
+     * but for situations where mandatory parameter Action is null
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     * @throws UniquenessConstraintException in case of repeated information during insert process
+     */
+    @Test(expected = PermissionIllegalArgumentException.class)
+    public void testGetIdByActionAndResourceWhenActionIsNull()
+            throws PermissionIllegalArgumentException {
+        permissionServiceAccess.getIdByActionAndResource("password", null);
+    }
+
+    /**
+     * Method to test the retrieval of a permission id based on the action and resource name,
+     * but for situations where mandatory parameter Action is empty
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     * @throws UniquenessConstraintException in case of repeated information during insert process
+     */
+    @Test(expected = PermissionIllegalArgumentException.class)
+    public void testGetIdByActionAndResourceWhenActionIsEmpty()
+            throws PermissionIllegalArgumentException {
+        permissionServiceAccess.getIdByActionAndResource("password", "");
+    }
+
+
+    /**
+     * Method to test the retrieval of a permission id based on the action and resource name,
+     * but for situations where mandatory parameter Resource is null
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     * @throws UniquenessConstraintException in case of repeated information during insert process
+     */
+    @Test(expected = PermissionIllegalArgumentException.class)
+    public void testGetIdByActionAndResourceWhenResourceIsNull()
+            throws PermissionIllegalArgumentException {
+        permissionServiceAccess.getIdByActionAndResource(null, "create");
+    }
+
+    /**
+     * Method to test the retrieval of a permission id based on the action and resource name,
+     * but for situations where mandatory parameter Resource is empty
+     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
+     * @throws UniquenessConstraintException in case of repeated information during insert process
+     */
+    @Test(expected = PermissionIllegalArgumentException.class)
+    public void testGetIdByActionAndResourceWhenResourceIsEmpty()
+            throws PermissionIllegalArgumentException {
+        permissionServiceAccess.getIdByActionAndResource("", "create");
     }
 }

@@ -20,7 +20,10 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -458,6 +461,49 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             return ListPermissionModelMapper.map((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Calls a core method to retrieve the permission Id using the combination of resource and action as parameters.
+     *  In case of JWT expiration, the process will be attempt once more.
+     * @param resource resource name (Mandatory)
+     * @param action action name (Mandatory)
+     * @return Optional containing Id (If there is a permission for the informed parameter), otherwise a empty one
+     * @throws SystemException  in case of not being able to find the information
+     */
+    public Optional<Long> getIdByResourceAndAction(String resource, String action) throws SystemException {
+        try {
+            return getIdByResourceAndActionRequester(resource, action);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getIdByResourceAndActionRequester(resource, action);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Core method that retrieves the permission Id using the combination of resource and action as parameters.
+     * @param resource resource name (Mandatory)
+     * @param action action name (Mandatory)
+     * @return Optional containing Id (If there is a permission for the informed parameter), otherwise a empty one
+     * @throws SystemException  in case of not being able to find the information
+     */
+    private Optional<Long> getIdByResourceAndActionRequester(String resource, String action) throws SystemException {
+        try {
+            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getIdByResourceAndAction(resource, action);
+            return Optional.of(response.readEntity(Long.class));
+        }
+        catch(NotFoundException nfe) {
+            return Optional.empty();
+        }
+        catch (BadRequestException | InternalServerErrorException | ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
         }
     }
