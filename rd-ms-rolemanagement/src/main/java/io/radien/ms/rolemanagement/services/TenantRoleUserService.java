@@ -129,12 +129,12 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<TenantRoleUserEntity> tenantRoleRoot = criteriaQuery.from(TenantRoleUserEntity.class);
+        Root<TenantRoleUserEntity> tenantRoleUserRoot = criteriaQuery.from(TenantRoleUserEntity.class);
 
-        criteriaQuery.select(tenantRoleRoot.get(SystemVariables.USER_ID.getFieldName())).distinct(true);
+        criteriaQuery.select(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName())).distinct(true);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if (tenantRoleIds != null) {
-            global = criteriaBuilder.and(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()).in(tenantRoleIds));
+            global = criteriaBuilder.and(tenantRoleUserRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()).in(tenantRoleIds));
             criteriaQuery.where(global);
         }
 
@@ -145,7 +145,7 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
         List<Long> systemTenantRolesUsers = q.getResultList();
 
-        int totalRecords = Math.toIntExact(getCount(global, tenantRoleRoot, em.getCriteriaBuilder(),
+        int totalRecords = Math.toIntExact(getCount(global, tenantRoleUserRoot, em.getCriteriaBuilder(),
                 em));
         int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
@@ -185,7 +185,7 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
         criteriaQuery.where(global);
 
-        criteriaQuery.select(cb.count(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName())));
+        criteriaQuery.select(cb.countDistinct(tenantRoleUserRoot.get(SystemVariables.USER_ID.getFieldName())));
 
         TypedQuery<Long> q= em.createQuery(criteriaQuery);
 
