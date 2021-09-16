@@ -25,6 +25,10 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
+import io.radien.ms.authz.util.BiFunction;
+import io.radien.ms.authz.util.Consumer;
+import io.radien.ms.authz.util.Function;
+import io.radien.ms.authz.util.FunctionReturn;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import javax.enterprise.inject.spi.CDI;
@@ -363,6 +367,59 @@ public abstract class AuthorizationChecker implements Serializable {
             oafAccess = CDI.current().select(OAFAccess.class).get();
         }
         return oafAccess;
+    }
+
+    public <T> T get(FunctionReturn<T> function) throws SystemException {
+        try {
+            return function.apply();
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return function.apply();
+            } catch (TokenExpiredException expiredException) {
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+
+    public <T,R> R get(Function<T,R> function, T input) throws SystemException {
+        try {
+            return function.apply(input);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return function.apply(input);
+            } catch (TokenExpiredException expiredException) {
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    public <T,U,R> R get(BiFunction<T,U,R> function, T input1,U input2 ) throws SystemException {
+        try {
+            return function.apply(input1,input2);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return function.apply(input1,input2);
+            } catch (TokenExpiredException expiredException) {
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    public <I> void add(Consumer<I> consumer, I i) throws SystemException {
+        try {
+            consumer.accept(i);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                consumer.accept(i);
+            } catch (TokenExpiredException expiredException) {
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
     }
 }
 
