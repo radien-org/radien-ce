@@ -32,7 +32,7 @@ public enum SystemResourcesEnum {
     TENANT_ROLE_PERMISSION("Tenant Role Permission"),
     TENANT_ROLE_USER("Tenant Role User"),
     THIRD_PARTY_PASSWORD("Third Party Password"),
-    THIRD_PARTY_EMAIL("Third Party Password");
+    THIRD_PARTY_EMAIL("Third Party Email");
 
     private String resourceName;
 
