@@ -181,7 +181,7 @@ public class TenantFactory {
             }
         }
         if (tenantType == null) {
-            throw new IllegalStateException(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString());
+            throw new IllegalStateException(GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString(typeAsString));
         }
         return tenantType.getDescription();
     }
