@@ -217,6 +217,6 @@ public class TenantFactoryTest extends TestCase {
         json = builder.build();
 
         Exception exception = assertThrows(IllegalStateException.class, () -> TenantFactory.convert(json));
-        assertEquals(exception.getMessage(), GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString());
+        assertEquals(exception.getMessage(), GenericErrorCodeMessage.TENANT_TYPE_NOT_FOUND.toString("test"));
     }
 }
