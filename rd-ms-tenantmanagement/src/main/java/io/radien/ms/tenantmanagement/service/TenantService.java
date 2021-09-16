@@ -252,15 +252,15 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(GenericErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString());
         }
 
-        if (Objects.equals(tenant.getTenantType(), TenantType.ROOT_TENANT)) {
+        if (Objects.equals(tenant.getTenantType(), TenantType.ROOT)) {
             validateRootTenant(tenant);
         }
 
-        if(Objects.equals(tenant.getTenantType(), TenantType.CLIENT_TENANT)) {
+        if(Objects.equals(tenant.getTenantType(), TenantType.CLIENT)) {
             validateClientTenant(tenant);
         }
 
-        if(Objects.equals(tenant.getTenantType(), TenantType.SUB_TENANT)) {
+        if(Objects.equals(tenant.getTenantType(), TenantType.SUB)) {
             validateSubTenant(tenant);
         }
     }
@@ -289,7 +289,7 @@ public class TenantService implements TenantServiceAccess {
         }
 
         // There must only exist one Root Tenant
-        List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT_TENANT.getDescription(), null,false, false));
+        List<? extends SystemTenant> list = this.get(new TenantSearchFilter(null, TenantType.ROOT.getDescription(), null,false, false));
         if ((!list.isEmpty()) && (tenant.getId() == null || list.size() > 1 || !list.get(0).getId().equals(tenant.getId()))) {
                 throw new TenantException(GenericErrorCodeMessage.TENANT_ROOT_ALREADY_INSERTED.toString());
         }
@@ -309,7 +309,7 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
         }
 
-        if(get( tenant.getParentId() ).getTenantType().equals(TenantType.SUB_TENANT)) {
+        if(get( tenant.getParentId() ).getTenantType().equals(TenantType.SUB)) {
             throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString());
         }
     }

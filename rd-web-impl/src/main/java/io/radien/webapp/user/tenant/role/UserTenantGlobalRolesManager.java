@@ -70,7 +70,7 @@ public class UserTenantGlobalRolesManager extends AbstractManager {
                     systemTenant = optionalSystemTenant.get();
                 }
 
-                if(systemTenant != null && systemTenant.getTenantType().equals(TenantType.ROOT_TENANT)){
+                if(systemTenant != null && systemTenant.getTenantType().equals(TenantType.ROOT)){
                     roleAdministratorInRootContext = webAuthorizationChecker
                             .hasGrant(systemActiveTenant.getId(), SystemRolesEnum.ROLE_ADMINISTRATOR.getRoleName());
                 }
