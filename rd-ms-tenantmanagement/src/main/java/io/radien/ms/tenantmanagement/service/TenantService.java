@@ -179,7 +179,6 @@ public class TenantService implements TenantServiceAccess {
      * @param filter complete filter
      * @param criteriaBuilder to be used
      * @param tenantRoot table to be used
-     * @param global predicate to be added
      * @return a constructed predicate
      */
     private Optional<Predicate> getFieldPredicate(String name, Object value, TenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<TenantEntity> tenantRoot) {
@@ -253,15 +252,15 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(GenericErrorCodeMessage.TENANT_END_DATE_IS_IS_INVALID.toString());
         }
 
-        if (Objects.equals(tenant.getTenantType(), TenantType.ROOT_TENANT.getDescription())) {
+        if (Objects.equals(tenant.getTenantType(), TenantType.ROOT_TENANT)) {
             validateRootTenant(tenant);
         }
 
-        if(Objects.equals(tenant.getTenantType(), TenantType.CLIENT_TENANT.getDescription())) {
+        if(Objects.equals(tenant.getTenantType(), TenantType.CLIENT_TENANT)) {
             validateClientTenant(tenant);
         }
 
-        if(Objects.equals(tenant.getTenantType(), TenantType.SUB_TENANT.getDescription())) {
+        if(Objects.equals(tenant.getTenantType(), TenantType.SUB_TENANT)) {
             validateSubTenant(tenant);
         }
     }
@@ -310,7 +309,7 @@ public class TenantService implements TenantServiceAccess {
             throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_NOT_FOUND.toString());
         }
 
-        if(get( tenant.getParentId() ).getTenantType().equals(TenantType.SUB_TENANT.getDescription())) {
+        if(get( tenant.getParentId() ).getTenantType().equals(TenantType.SUB_TENANT)) {
             throw new TenantException(GenericErrorCodeMessage.TENANT_PARENT_TYPE_IS_INVALID.toString());
         }
     }

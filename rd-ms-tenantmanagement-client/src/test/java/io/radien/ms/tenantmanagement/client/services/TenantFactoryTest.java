@@ -40,7 +40,7 @@ public class TenantFactoryTest extends TestCase {
         tenant.setName("nameValue");
         tenant.setCreateUser(2L);
         tenant.setTenantKey("tenantKey");
-        tenant.setTenantType(TenantType.ROOT_TENANT.getDescription());
+        tenant.setTenantType(TenantType.ROOT_TENANT);
         tenant.setTenantStart(null);
         tenant.setTenantEnd(null);
     }
@@ -149,7 +149,7 @@ public class TenantFactoryTest extends TestCase {
     public void testConvertList() throws ParseException {
         List<Tenant> listOfCreatedTenants = new ArrayList<>();
 
-        Tenant tenant = TenantFactory.create("name", "tenantKey", TenantType.ROOT_TENANT.getDescription(),
+        Tenant tenant = TenantFactory.create("name", "tenantKey", TenantType.ROOT_TENANT,
                 null, null, null, null, null, null, null,
                 null, null, null, null);
 

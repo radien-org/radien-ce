@@ -52,7 +52,7 @@ public class TenantMessageBodyReaderTest extends TestCase {
         assertEquals("tenantKey",tenant.getTenantKey());
         assertNull(tenant.getCreateUser());
         assertNull(tenant.getLastUpdateUser());
-        assertEquals(TenantType.ROOT_TENANT.getDescription(),tenant.getTenantType());
+        assertEquals(TenantType.ROOT_TENANT,tenant.getTenantType());
     }
 
     @Test
