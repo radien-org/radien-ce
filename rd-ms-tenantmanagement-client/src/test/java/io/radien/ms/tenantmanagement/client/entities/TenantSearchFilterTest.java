@@ -50,14 +50,14 @@ public class TenantSearchFilterTest extends TestCase {
     @Test
     public void testGetType() {
         assertNotNull(searchFilter.getTenantType());
-        assertEquals(TenantType.ROOT_TENANT, searchFilter.getTenantType());
+        assertEquals(TenantType.ROOT, searchFilter.getTenantType());
     }
 
     @Test
     public void testSetType() {
-        searchFilter.setTenantType(TenantType.CLIENT_TENANT);
+        searchFilter.setTenantType(TenantType.CLIENT);
         assertNotNull(searchFilter.getTenantType());
-        assertEquals(TenantType.CLIENT_TENANT, searchFilter.getTenantType());
+        assertEquals(TenantType.CLIENT, searchFilter.getTenantType());
     }
 
     @Test

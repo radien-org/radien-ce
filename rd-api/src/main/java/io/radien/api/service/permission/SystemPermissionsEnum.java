@@ -28,6 +28,7 @@ import static io.radien.api.service.permission.SystemResourcesEnum.TENANT;
 import static io.radien.api.service.permission.SystemResourcesEnum.TENANT_ROLE;
 import static io.radien.api.service.permission.SystemResourcesEnum.TENANT_ROLE_PERMISSION;
 import static io.radien.api.service.permission.SystemResourcesEnum.TENANT_ROLE_USER;
+import static io.radien.api.service.permission.SystemResourcesEnum.THIRD_PARTY_EMAIL;
 import static io.radien.api.service.permission.SystemResourcesEnum.THIRD_PARTY_PASSWORD;
 import static io.radien.api.service.permission.SystemResourcesEnum.USER;
 
@@ -111,7 +112,18 @@ public enum SystemPermissionsEnum {
     THIRD_PARTY_PASSWORD_MANAGEMENT_DELETE("Third Party Password Management - Delete",
             THIRD_PARTY_PASSWORD, ACTION_DELETE),
     THIRD_PARTY_PASSWORD_MANAGEMENT_ALL("Third Party Password Management - All",
-            THIRD_PARTY_PASSWORD, ACTION_ALL);
+            THIRD_PARTY_PASSWORD, ACTION_ALL),
+
+    THIRD_PARTY_EMAIL_MANAGEMENT_CREATE("Third Party Email Management - Create",
+                                        THIRD_PARTY_EMAIL, ACTION_CREATE),
+    THIRD_PARTY_EMAIL_MANAGEMENT_READ("Third Party Password Management - Read",
+                                         THIRD_PARTY_EMAIL, ACTION_READ),
+    THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE("Third Party Password Management - Update",
+                                           THIRD_PARTY_EMAIL, ACTION_UPDATE),
+    THIRD_PARTY_EMAIL_MANAGEMENT_DELETE("Third Party Password Management - Delete",
+                                           THIRD_PARTY_EMAIL, ACTION_DELETE),
+    THIRD_PARTY_EMAIL_MANAGEMENT_ALL("Third Party Password Management - All",
+                                        THIRD_PARTY_EMAIL, ACTION_ALL);
 
     private final String permissionName;
     private final SystemActionsEnum action;

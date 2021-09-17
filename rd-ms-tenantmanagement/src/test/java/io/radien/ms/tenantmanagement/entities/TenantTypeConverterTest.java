@@ -28,7 +28,7 @@ public class TenantTypeConverterTest {
     @Test
     public void convertToDatabaseColumn() {
         TenantTypeConverter converter = new TenantTypeConverter();
-        Long type = converter.convertToDatabaseColumn(TenantType.ROOT_TENANT.getDescription());
+        Long type = converter.convertToDatabaseColumn(TenantType.ROOT);
 
         assertEquals((Long) 1L, type);
     }
@@ -36,16 +36,17 @@ public class TenantTypeConverterTest {
     @Test
     public void convertToEntityAttribute() {
         TenantTypeConverter converter = new TenantTypeConverter();
-        String type = converter.convertToEntityAttribute(2L);
+        TenantType type = converter.convertToEntityAttribute(2L);
 
-        assertEquals(TenantType.CLIENT_TENANT.getDescription(), type);
+        assertEquals(TenantType.CLIENT, type);
     }
 
     @Test
     public void testToString() {
         TenantTypeConverter converter = new TenantTypeConverter();
-        String type = converter.convertToEntityAttribute(2L);
+        TenantType type = converter.convertToEntityAttribute(2L);
 
         assertNotNull(type);
+        assertEquals(TenantType.CLIENT, type);
     }
 }
