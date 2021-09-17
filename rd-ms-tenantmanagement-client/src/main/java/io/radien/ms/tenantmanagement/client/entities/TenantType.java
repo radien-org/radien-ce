@@ -25,9 +25,9 @@ import java.util.Arrays;
  */
 public enum TenantType implements SystemTenantType {
 
-    ROOT_TENANT(1L, "ROOT"),
-    CLIENT_TENANT(2L, "CLIENT"),
-    SUB_TENANT(3L, "SUB");
+    ROOT(1L, "Root"),
+    CLIENT(2L, "Client"),
+    SUB(3L, "Sub");
 
     /**
      * Tenant type constructor

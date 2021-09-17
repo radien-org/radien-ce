@@ -125,7 +125,7 @@ public class LazyTenantRoleAssociationDataModelTest {
         List<SystemTenant> tenants = new ArrayList<>();
         ids.forEach(id -> {
             SystemTenant tenant = TenantFactory.create(String.valueOf(id), String.valueOf(id),
-                    TenantType.SUB_TENANT.getDescription(), null, null, null,
+                    TenantType.SUB, null, null, null,
                     null, null, null, null,
                     null, null, null, null);
             tenant.setId(id);
