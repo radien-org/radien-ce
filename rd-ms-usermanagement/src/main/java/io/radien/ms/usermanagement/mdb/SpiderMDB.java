@@ -2,6 +2,7 @@ package io.radien.ms.usermanagement.mdb;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -122,6 +123,7 @@ public class SpiderMDB implements MessageListener {
 		 *  supported by ActiveMQ.
 		 */
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+		factory.setTrustedPackages(Collections.singletonList("io.radien"));
 		try (Connection connection = factory.createConnection("admin", "admin")) {
 			connection.start();
 
