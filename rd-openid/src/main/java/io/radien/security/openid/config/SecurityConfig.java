@@ -89,7 +89,7 @@ public @RequestScoped class SecurityConfig extends WebSecurityConfigurerAdapter 
 			try {
 				if (reqURI.contains(ResourceHandler.RESOURCE_IDENTIFIER)) {
 					if(log.isInfoEnabled()){
-						log.info(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(), reqURI);
+						log.info(GenericErrorCodeMessage.RESOURCE_URL_PATH.toString(reqURI));
 					}
 					return true;
 				}
