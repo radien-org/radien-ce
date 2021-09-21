@@ -367,9 +367,8 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * Method for the request to update the user password and send it via email to him
      * @param id of the user to update the password
      * @return true in case of success
-     * @throws TokenExpiredException in case of any issue while attempting communication with the client side
      */
-    private boolean updatePasswordEmail(long id) throws TokenExpiredException {
+    private boolean updatePasswordEmail(long id) {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             Response response = client.sendUpdatePasswordEmail(id);
@@ -380,6 +379,49 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             }
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param userId of the user to update and execute action email verify
+     * @param userEmail of the user to update an email
+     * @return true in case of success
+     */
+    @Override
+    public boolean updateUserEmailAndExecuteActionEmailVerify(long userId, String userEmail) {
+        boolean setUserEmailAndExecuteActionEmailVerify = false;
+        try {
+            setUserEmailAndExecuteActionEmailVerify = updateUserEmailAndVerify(userId, userEmail);
+        } catch (TokenExpiredException e) {
+            try {
+                refreshToken();
+                setUserEmailAndExecuteActionEmailVerify = updateUserEmailAndVerify(userId, userEmail);
+            } catch (SystemException | TokenExpiredException tokenExpiredException) {
+                log.error(tokenExpiredException.getMessage(), tokenExpiredException);
+            }
+        }
+        return setUserEmailAndExecuteActionEmailVerify;
+    }
+
+    /**
+     * Method for the request to update the user email and sends a verification email
+     * @param userId userId of the user to update and execute action email verify
+     * @param userEmail of the user to update an email
+     * @return true in case of success
+     */
+    private boolean updateUserEmailAndVerify(long userId, String userEmail) {
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.updateUserEmailAndExecuteActionEmailVerify(userId, userEmail);
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                logErrorEnabledResponse(response);
+            }
+        } catch (MalformedURLException e) {
+            log.error( e.getMessage(), e );
         }
         return false;
     }

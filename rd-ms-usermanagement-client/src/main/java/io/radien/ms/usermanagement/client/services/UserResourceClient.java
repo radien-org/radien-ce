@@ -23,6 +23,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -142,6 +143,17 @@ public interface UserResourceClient {
     @POST
     @Path("/{id}/sendUpdatePasswordEmail")
     public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
+
+    /**
+     * Will updated email and also send email to verify to the user in case of success will return a 204 code message
+     * @param id userId of the user to update and execute action email verify
+     * @param userEmail of the user to update an email
+     * @return ok in case the email has been updated with the email verification sent
+     */
+    @PUT
+    @Path("/{id}/updateUserEmail/{userEmail}/executeActionEmailVerify")
+    public Response updateUserEmailAndExecuteActionEmailVerify(@NotNull @PathParam("id") long id,
+                                                               @NotNull @PathParam("userEmail") String userEmail);
 
     /**
      * Will update the refresh token, to update the access of the specific user
