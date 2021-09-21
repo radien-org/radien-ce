@@ -693,7 +693,10 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         User userWithUserId = new User(); userWithUserId.setId(1L);
         userDataModel.updateUserEmailAndExecuteActionEmailVerify(userWithUserId);
         User userWithUserEmail = new User(); userWithUserId.setUserEmail("myemail@email.com");
+        userDataModel.setUser(userWithUserEmail);
         userDataModel.updateUserEmailAndExecuteActionEmailVerify(userWithUserEmail);
+        assertNull(userDataModel.getUser().getId());
+
     }
 
     /**
