@@ -17,6 +17,8 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.model.user.SystemUser;
 
+import javax.json.Json;
+
 import org.keycloak.representations.idm.UserRepresentation;
 /**
  * Keycloak mapping and conversion from user information into user representation to be processed
@@ -45,5 +47,19 @@ public class KeycloakFactory {
         result.setEmail(user.getUserEmail());
         result.setEnabled(user.isEnabled());
         return result;
+    }
+
+    /**
+     * Converter method that will translate/convert
+     * to a Json String keycloak attributes
+     * @param user email to be mapped
+     * @return Json String
+     */
+    public static String convertToJsonStringRepresentation(SystemUser user) {
+        return Json.createObjectBuilder()
+                .add("emailVerified", false)
+                .add("email", user.getUserEmail())
+                .build()
+                .toString();
     }
 }

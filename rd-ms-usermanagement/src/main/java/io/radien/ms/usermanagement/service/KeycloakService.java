@@ -107,6 +107,18 @@ public class KeycloakService {
     }
 
     /**
+     * Method to request the keycloak client to send new updated email to verify for the specific user
+     * @param user to be update email
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public void updateUserEmailAndExecuteActionEmailVerify(SystemUser user) throws RemoteResourceException{
+        String jsonString = KeycloakFactory.convertToJsonStringRepresentation(user);
+        KeycloakClient client = getKeycloakClient();
+        client.updateUserEmailAndEmailVerifiedAttribute(user.getSub(), jsonString);
+        client.sendUpdatedEmailVerify(user.getSub());
+    }
+
+    /**
      * Method to request the keycloak client to refresh access token by a given refresh token (after validation)
      * @param refreshToken to be validated if can refresh access token
      * @return the new access token

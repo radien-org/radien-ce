@@ -609,6 +609,39 @@ public class UserResourceTest {
     }
 
     /**
+     * Tests the set email verify method and should finish with success
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
+    @Test
+    public void testUpdateUserEmailAndExecuteActionEmailVerify() throws UserNotFoundException {
+        when(userBusinessService.get(1L)).thenReturn(new User());
+        Response response = userResource.updateUserEmailAndExecuteActionEmailVerify(1L, "email@email.com");
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests the set email verify method and should finish with generic 500 code message error
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
+    @Test
+    public void testUpdateUserEmailAndExecuteActionEmailVerifyGenericError() throws UserNotFoundException {
+        doThrow(new RuntimeException()).when(userBusinessService).get(1L);
+        Response response = userResource.updateUserEmailAndExecuteActionEmailVerify(1L, "email@email.com");
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Tests the set email verify method and should finish with generic 404 code message error
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
+    @Test
+    public void testUpdateUserEmailAndExecuteActionEmailVerify404() throws UserNotFoundException {
+        when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
+        Response response = userResource.updateUserEmailAndExecuteActionEmailVerify(1L, "email@email.com");
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
      * Tests the refresh token with success
      */
     @Test

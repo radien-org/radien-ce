@@ -15,9 +15,11 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 
+
+import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -35,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /**
- * Keycloak client side configuration contructor class
+ * Keycloak client side configuration constructor class
  *
  * @author Nuno Santana
  */
@@ -239,7 +241,7 @@ public class KeycloakClient {
                 .asObject(String.class);
         if (!response.isSuccess()) {
             log.error("status {},body {}",response.getStatus(),response.getBody());
-            throw new RemoteResourceException("Unable to send update password email");
+            throw new RemoteResourceException(GenericErrorCodeMessage.ERROR_SEND_UPDATE_PASSWORD_EMAIL.toString());
         }
     }
 
@@ -320,6 +322,40 @@ public class KeycloakClient {
                 .asString();
         if(!response.isSuccess()){
             throw new RemoteResourceException("Unable to update user");
+        }
+    }
+
+    /**
+     * Keycloak updates specific and requested user email and emailVerified object
+     * @param sub of the user information to be updated
+     * @param jsonString jsonString information to be added or updated
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public void updateUserEmailAndEmailVerifiedAttribute(String sub, String jsonString) throws RemoteResourceException {
+        HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub)
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body(jsonString)
+                .asString();
+        if(!response.isSuccess()){
+            throw new RemoteResourceException(GenericErrorCodeMessage.ERROR_SEND_UPDATE_EMAIL_VERIFY.toString());
+        }
+    }
+
+    /**
+     * Method to send a new updated email for the verification of the requested user that will be found via his subject
+     * @param sub of the user to be found
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public void sendUpdatedEmailVerify(String sub) throws RemoteResourceException {
+        HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub + "/execute-actions-email")
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body("[\"" + KeycloakEmailActions.VERIFY_EMAIL+ "\"]")
+                .asObject(String.class);
+        if (!response.isSuccess()) {
+            log.error( "status {},body {}", response.getStatus(), response.getBody() );
+            throw new RemoteResourceException(GenericErrorCodeMessage.ERROR_SEND_EXECUTE_ACTION_EMAIL_VERIFY.toString());
         }
     }
 

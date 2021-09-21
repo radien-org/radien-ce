@@ -120,7 +120,7 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSave() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testSaveException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = UserFactory.create("a","b","l","s","e",1L);
         doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
@@ -326,6 +326,24 @@ public class UserBusinessServiceTest extends TestCase {
         }
         assertTrue(success);
     }
+
+    /**
+     * Test method updateUserEmailAndExecuteActionEmailVerify()
+     */
+    @Test
+    public void testUpdateUserEmailAndExecuteActionEmailVerify() throws Exception {
+        User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+        doNothing().when(keycloakService,"updateUserEmailAndExecuteActionEmailVerify", ArgumentMatchers.any());
+        boolean success = true;
+        try {
+            userBusinessService.updateUserEmailAndExecuteActionEmailVerify(user);
+        } catch (Exception e) {
+            success = false;
+        }
+        assertTrue(success);
+    }
+
 
     @Test
     public void testRefreshToken() {
