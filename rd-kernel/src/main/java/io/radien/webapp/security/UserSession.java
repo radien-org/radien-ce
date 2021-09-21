@@ -104,7 +104,8 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		if (this.user == null){
 			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email,-1L);
 		}
-
+		String msg = String.format("userId:%d",getUserId());
+		log.info(msg);
 	}
 
 	/**
