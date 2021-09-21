@@ -1,0 +1,112 @@
+@startuml
+
+title __PERMISSION's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace permission {
+      class io.radien.webapp.permission.LazyPermissionDataModel {
+          {static} - EMPTY_ACTION : SystemAction
+          {static} - EMPTY_RESOURCE : SystemResource
+          - actionMapRef : Map<Long, SystemAction>
+          - resourceMapRef : Map<Long, SystemResource>
+          {static} - serialVersionUID : long
+          + LazyPermissionDataModel()
+          + getActionName()
+          + getData()
+          + getResourceName()
+          + getRowData()
+          # getNonMappedIds()
+          # updateActionReferencesForExhibition()
+          # updateResourceReferencesForExhibition()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace permission {
+      class io.radien.webapp.permission.PermissionConverter {
+          + getAsObject()
+          + getAsString()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace permission {
+      class io.radien.webapp.permission.PermissionDataModel {
+          - lazyModel : LazyDataModel<? extends SystemPermission>
+          + editRecords()
+          + getActionRESTServiceAccess()
+          + getLazyModel()
+          + getPermissionManager()
+          + getPreviousSelectedPermission()
+          + getResourceRESTServiceAccess()
+          + getSelectedPermission()
+          + getService()
+          + init()
+          + onRowSelect()
+          + onload()
+          + setActionRESTServiceAccess()
+          + setLazyModel()
+          + setPermissionManager()
+          + setPreviousSelectedPermission()
+          + setResourceRESTServiceAccess()
+          + setSelectedPermission()
+          + setService()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace permission {
+      class io.radien.webapp.permission.PermissionManager {
+          + edit()
+          + filterActionsByName()
+          + filterResourcesByName()
+          + getPermission()
+          + getSelectedAction()
+          + getSelectedResource()
+          + save()
+          + setPermission()
+          + setSelectedAction()
+          + setSelectedResource()
+      }
+    }
+  }
+  
+
+  io.radien.webapp.permission.LazyPermissionDataModel -up-|> io.radien.webapp.LazyAbstractDataModel
+  io.radien.webapp.permission.LazyPermissionDataModel o-- io.radien.api.service.permission.ActionRESTServiceAccess : actionRESTServiceAccess
+  io.radien.webapp.permission.LazyPermissionDataModel o-- io.radien.api.service.permission.ResourceRESTServiceAccess : resourceRESTServiceAccess
+  io.radien.webapp.permission.LazyPermissionDataModel o-- io.radien.api.service.permission.PermissionRESTServiceAccess : service
+  io.radien.webapp.permission.PermissionConverter .up.|> javax.faces.convert.Converter
+  io.radien.webapp.permission.PermissionConverter o-- io.radien.api.service.permission.PermissionRESTServiceAccess : permissionRESTServiceAccess
+  io.radien.webapp.permission.PermissionDataModel .up.|> java.io.Serializable
+  io.radien.webapp.permission.PermissionDataModel -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.permission.PermissionDataModel o-- io.radien.api.service.permission.ActionRESTServiceAccess : actionRESTServiceAccess
+  io.radien.webapp.permission.PermissionDataModel o-- io.radien.webapp.activeTenant.ActiveTenantDataModelManager : activeTenantDataModelManager
+  io.radien.webapp.permission.PermissionDataModel o-- io.radien.webapp.permission.PermissionManager : permissionManager
+  io.radien.webapp.permission.PermissionDataModel o-- io.radien.api.model.permission.SystemPermission : previousSelectedPermission
+  io.radien.webapp.permission.PermissionDataModel o-- io.radien.api.service.permission.ResourceRESTServiceAccess : resourceRESTServiceAccess
+  io.radien.webapp.permission.PermissionDataModel o-- io.radien.api.model.permission.SystemPermission : selectedPermission
+  io.radien.webapp.permission.PermissionDataModel o-- io.radien.api.service.permission.PermissionRESTServiceAccess : service
+  io.radien.webapp.permission.PermissionManager -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.permission.PermissionManager o-- io.radien.api.model.permission.SystemPermission : permission
+  io.radien.webapp.permission.PermissionManager o-- io.radien.api.model.permission.SystemAction : selectedAction
+  io.radien.webapp.permission.PermissionManager o-- io.radien.api.model.permission.SystemResource : selectedResource
+  io.radien.webapp.permission.PermissionManager o-- io.radien.api.service.permission.ActionRESTServiceAccess : actionRESTServiceAccess
+  io.radien.webapp.permission.PermissionManager o-- io.radien.api.service.permission.PermissionRESTServiceAccess : permissionRESTServiceAccess
+  io.radien.webapp.permission.PermissionManager o-- io.radien.api.service.permission.ResourceRESTServiceAccess : resourceRESTServiceAccess
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

@@ -1,0 +1,275 @@
+@startuml
+
+title __RD-MS-PERMISSIONMANAGEMENT-CLIENT's Class Diagram__\n
+
+  namespace io.radien.ms.permissionmanagement.client {
+    class io.radien.ms.permissionmanagement.client.PermissionResponseExceptionMapper {
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.Action {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.AssociationStatus {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.GlobalHeaders {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.Permission {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.Resource {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyReader {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyWriter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyReader {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyWriter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyReader {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyWriter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      class io.radien.ms.permissionmanagement.client.services.ActionFactory {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      class io.radien.ms.permissionmanagement.client.services.ActionRESTServiceClient {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      interface io.radien.ms.permissionmanagement.client.services.ActionResourceClient {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      class io.radien.ms.permissionmanagement.client.services.PermissionFactory {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      class io.radien.ms.permissionmanagement.client.services.PermissionRESTServiceClient {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      interface io.radien.ms.permissionmanagement.client.services.PermissionResourceClient {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      class io.radien.ms.permissionmanagement.client.services.ResourceFactory {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      class io.radien.ms.permissionmanagement.client.services.ResourceRESTServiceClient {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace services {
+      interface io.radien.ms.permissionmanagement.client.services.ResourceResourceClient {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace util {
+      class io.radien.ms.permissionmanagement.client.util.ActionModelMapper {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace util {
+      class io.radien.ms.permissionmanagement.client.util.ClientServiceUtil {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace util {
+      class io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace util {
+      class io.radien.ms.permissionmanagement.client.util.PermissionModelMapper {
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace util {
+      class io.radien.ms.permissionmanagement.client.util.ResourceModelMapper {
+      }
+    }
+  }
+  
+
+  io.radien.ms.permissionmanagement.client.PermissionResponseExceptionMapper -up-|> io.radien.exception.ModelResponseExceptionMapper
+  io.radien.ms.permissionmanagement.client.entities.Action -up-|> io.radien.api.model.permission.AbstractActionModel
+  io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter .up.|> io.radien.api.model.permission.SystemActionSearchFilter
+  io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter -up-|> io.radien.api.search.SearchableByIds
+  io.radien.ms.permissionmanagement.client.entities.GlobalHeaders .up.|> org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory
+  io.radien.ms.permissionmanagement.client.entities.GlobalHeaders o-- io.radien.api.security.TokensPlaceHolder : tokensPlaceHolder
+  io.radien.ms.permissionmanagement.client.entities.Permission .up.|> io.radien.api.model.permission.SystemPermission
+  io.radien.ms.permissionmanagement.client.entities.Permission -up-|> io.radien.api.model.permission.AbstractPermissionModel
+  io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter .up.|> io.radien.api.model.permission.SystemPermissionSearchFilter
+  io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter -up-|> io.radien.api.search.SearchableByIds
+  io.radien.ms.permissionmanagement.client.entities.Resource -up-|> io.radien.api.model.permission.AbstractResourceModel
+  io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter .up.|> io.radien.api.model.permission.SystemResourceSearchFilter
+  io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter -up-|> io.radien.api.search.SearchableByIds
+  io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.permissionmanagement.client.services.ActionRESTServiceClient .up.|> io.radien.api.service.permission.ActionRESTServiceAccess
+  io.radien.ms.permissionmanagement.client.services.ActionRESTServiceClient -up-|> io.radien.ms.authz.security.AuthorizationChecker
+  io.radien.ms.permissionmanagement.client.services.ActionRESTServiceClient o-- io.radien.ms.permissionmanagement.client.util.ClientServiceUtil : clientServiceUtil
+  io.radien.ms.permissionmanagement.client.services.ActionRESTServiceClient o-- io.radien.api.OAFAccess : oaf
+  io.radien.ms.permissionmanagement.client.services.PermissionRESTServiceClient .up.|> io.radien.api.service.permission.PermissionRESTServiceAccess
+  io.radien.ms.permissionmanagement.client.services.PermissionRESTServiceClient -up-|> io.radien.ms.authz.security.AuthorizationChecker
+  io.radien.ms.permissionmanagement.client.services.PermissionRESTServiceClient o-- io.radien.ms.permissionmanagement.client.util.ClientServiceUtil : clientServiceUtil
+  io.radien.ms.permissionmanagement.client.services.PermissionRESTServiceClient o-- io.radien.api.OAFAccess : oaf
+  io.radien.ms.permissionmanagement.client.services.ResourceRESTServiceClient .up.|> io.radien.api.service.permission.ResourceRESTServiceAccess
+  io.radien.ms.permissionmanagement.client.services.ResourceRESTServiceClient -up-|> io.radien.ms.authz.security.AuthorizationChecker
+  io.radien.ms.permissionmanagement.client.services.ResourceRESTServiceClient o-- io.radien.ms.permissionmanagement.client.util.ClientServiceUtil : clientServiceUtil
+  io.radien.ms.permissionmanagement.client.services.ResourceRESTServiceClient o-- io.radien.api.OAFAccess : oaf
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

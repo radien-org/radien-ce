@@ -1,0 +1,167 @@
+@startuml
+
+title __ENTITIES's Class Diagram__\n
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.GlobalHeaders {
+        + update()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.Role {
+        - description : String
+        - id : Long
+        - name : String
+        {static} - serialVersionUID : long
+        - terminationDate : Date
+        + Role()
+        + Role()
+        + getDescription()
+        + getId()
+        + getName()
+        + getTerminationDate()
+        + setDescription()
+        + setId()
+        + setName()
+        + setTerminationDate()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.RoleSearchFilter {
+        - description : String
+        - name : String
+        + RoleSearchFilter()
+        + RoleSearchFilter()
+        + getDescription()
+        + getName()
+        + setDescription()
+        + setName()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.TenantRole {
+        - id : Long
+        - roleId : Long
+        - tenantId : Long
+        + TenantRole()
+        + TenantRole()
+        + getId()
+        + getRoleId()
+        + getTenantId()
+        + setId()
+        + setRoleId()
+        + setTenantId()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.TenantRolePermission {
+        - id : Long
+        - permissionId : Long
+        - tenantRoleId : Long
+        + TenantRolePermission()
+        + TenantRolePermission()
+        + getId()
+        + getPermissionId()
+        + getTenantRoleId()
+        + setId()
+        + setPermissionId()
+        + setTenantRoleId()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter {
+        - permissionId : Long
+        - tenantRoleId : Long
+        + TenantRolePermissionSearchFilter()
+        + TenantRolePermissionSearchFilter()
+        + getPermissionId()
+        + getTenantRoleId()
+        + setPermissionId()
+        + setTenantRoleId()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter {
+        - roleId : Long
+        - tenantId : Long
+        + TenantRoleSearchFilter()
+        + TenantRoleSearchFilter()
+        + getRoleId()
+        + getTenantId()
+        + setRoleId()
+        + setTenantId()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.TenantRoleUser {
+        - id : Long
+        - tenantRoleId : Long
+        - userId : Long
+        + TenantRoleUser()
+        + TenantRoleUser()
+        + getId()
+        + getTenantRoleId()
+        + getUserId()
+        + setId()
+        + setTenantRoleId()
+        + setUserId()
+    }
+  }
+  
+
+  namespace io.radien.ms.rolemanagement.client.entities {
+    class io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter {
+        - tenantRoleId : Long
+        - userId : Long
+        + TenantRoleUserSearchFilter()
+        + TenantRoleUserSearchFilter()
+        + getTenantRoleId()
+        + getUserId()
+        + setTenantRoleId()
+        + setUserId()
+    }
+  }
+  
+
+  io.radien.ms.rolemanagement.client.entities.GlobalHeaders .up.|> org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory
+  io.radien.ms.rolemanagement.client.entities.GlobalHeaders o-- io.radien.api.security.TokensPlaceHolder : tokensPlaceHolder
+  io.radien.ms.rolemanagement.client.entities.Role .up.|> io.radien.api.model.role.SystemRole
+  io.radien.ms.rolemanagement.client.entities.Role -up-|> io.radien.api.model.role.AbstractRoleModel
+  io.radien.ms.rolemanagement.client.entities.RoleSearchFilter .up.|> io.radien.api.model.role.SystemRoleSearchFilter
+  io.radien.ms.rolemanagement.client.entities.RoleSearchFilter -up-|> io.radien.api.search.SearchableByIds
+  io.radien.ms.rolemanagement.client.entities.TenantRole .up.|> io.radien.api.model.tenantrole.SystemTenantRole
+  io.radien.ms.rolemanagement.client.entities.TenantRole -up-|> io.radien.api.model.AbstractModel
+  io.radien.ms.rolemanagement.client.entities.TenantRolePermission .up.|> io.radien.api.model.tenantrole.SystemTenantRolePermission
+  io.radien.ms.rolemanagement.client.entities.TenantRolePermission -up-|> io.radien.api.model.AbstractModel
+  io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter .up.|> io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter
+  io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter -up-|> io.radien.api.search.SearchFilterCriteria
+  io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter .up.|> io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter
+  io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter -up-|> io.radien.api.search.SearchFilterCriteria
+  io.radien.ms.rolemanagement.client.entities.TenantRoleUser .up.|> io.radien.api.model.tenantrole.SystemTenantRoleUser
+  io.radien.ms.rolemanagement.client.entities.TenantRoleUser -up-|> io.radien.api.model.AbstractModel
+  io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter .up.|> io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter
+  io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter -up-|> io.radien.api.search.SearchFilterCriteria
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

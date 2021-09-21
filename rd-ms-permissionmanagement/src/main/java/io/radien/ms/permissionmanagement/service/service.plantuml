@@ -1,0 +1,164 @@
+@startuml
+
+title __SERVICE's Class Diagram__\n
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.ActionResource {
+          + delete()
+          + getActions()
+          + getAll()
+          + getById()
+          + save()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.ActionService {
+          + delete()
+          + delete()
+          + get()
+          + get()
+          + getActions()
+          + getAll()
+          + save()
+          # getEntityManager()
+          - getCount()
+          - getFieldPredicate()
+          - getFilteredPredicate()
+          - searchDuplicatedName()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.EntityManagerHolder {
+          - entityManager : EntityManager
+          + getEntityManager()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.PermissionBusinessService {
+          - BASE_MSG : String
+          - emf : EntityManagerFactory
+          - log : Logger
+          + associate()
+          + dissociation()
+          # checkIfActionExists()
+          # checkIfResourceExists()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.PermissionResource {
+          + associate()
+          + delete()
+          + dissociate()
+          + exists()
+          + getAll()
+          + getById()
+          + getIdByResourceAndAction()
+          + getPermissions()
+          + getTotalRecordsCount()
+          + hasPermission()
+          + save()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.PermissionService {
+          + PermissionService()
+          + delete()
+          + delete()
+          + exists()
+          + get()
+          + get()
+          + getAll()
+          + getIdByActionAndResource()
+          + getPermissionByActionAndResourceNames()
+          + getPermissions()
+          + getTotalRecordsCount()
+          + save()
+          # existsForResourceAndAction()
+          # getEntityManager()
+          - getCount()
+          - getFieldPredicate()
+          - getFilteredPredicate()
+          - searchDuplicatedName()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.ResourceResource {
+          + delete()
+          + getAll()
+          + getById()
+          + getResources()
+          + save()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace service {
+      class io.radien.ms.permissionmanagement.service.ResourceService {
+          + delete()
+          + delete()
+          + get()
+          + get()
+          + getAll()
+          + getResources()
+          + save()
+          # getEntityManager()
+          - getCount()
+          - getFieldPredicate()
+          - getFilteredPredicate()
+          - searchDuplicatedName()
+      }
+    }
+  }
+  
+
+  io.radien.ms.permissionmanagement.service.ActionResource .up.|> io.radien.ms.permissionmanagement.client.services.ActionResourceClient
+  io.radien.ms.permissionmanagement.service.ActionResource o-- io.radien.api.service.permission.ActionServiceAccess : actionServiceAccess
+  io.radien.ms.permissionmanagement.service.ActionService .up.|> io.radien.api.service.permission.ActionServiceAccess
+  io.radien.ms.permissionmanagement.service.ActionService o-- io.radien.ms.permissionmanagement.service.EntityManagerHolder : holder
+  io.radien.ms.permissionmanagement.service.PermissionBusinessService o-- io.radien.api.service.permission.PermissionServiceAccess : permissionServiceAccess
+  io.radien.ms.permissionmanagement.service.PermissionResource .up.|> io.radien.ms.permissionmanagement.client.services.PermissionResourceClient
+  io.radien.ms.permissionmanagement.service.PermissionResource o-- io.radien.ms.permissionmanagement.service.PermissionBusinessService : businessService
+  io.radien.ms.permissionmanagement.service.PermissionResource o-- io.radien.api.service.permission.PermissionServiceAccess : permissionServiceAccess
+  io.radien.ms.permissionmanagement.service.PermissionService .up.|> io.radien.api.service.permission.PermissionServiceAccess
+  io.radien.ms.permissionmanagement.service.PermissionService o-- io.radien.ms.permissionmanagement.service.EntityManagerHolder : holder
+  io.radien.ms.permissionmanagement.service.ResourceResource .up.|> io.radien.ms.permissionmanagement.client.services.ResourceResourceClient
+  io.radien.ms.permissionmanagement.service.ResourceResource o-- io.radien.api.service.permission.ResourceServiceAccess : resourceServiceAccess
+  io.radien.ms.permissionmanagement.service.ResourceService .up.|> io.radien.api.service.permission.ResourceServiceAccess
+  io.radien.ms.permissionmanagement.service.ResourceService o-- io.radien.ms.permissionmanagement.service.EntityManagerHolder : holder
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

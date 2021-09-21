@@ -18,6 +18,7 @@ package io.radien.webapp.security;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.JSFUtil;
 import java.io.IOException;
 import javax.faces.context.ExternalContext;
@@ -37,6 +38,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -75,6 +77,17 @@ public class UserSessionTest {
         when(JSFUtil.getFacesContext()).thenReturn(facesContext);
         when(JSFUtil.getExternalContext()).thenReturn(externalContext);
         when(JSFUtil.getMessage(anyString())).thenAnswer(i -> i.getArguments()[0]);
+    }
+
+    /**
+     * Test method for
+     * {@link UserSession#getUser()}
+     * {@link UserSession#setUser(SystemUser)}
+     */
+    @Test
+    public void testGetterSetterUser(){
+        userSession.setUser(new User());
+        assertNotNull(userSession.getUser());
     }
 
     /**

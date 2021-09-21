@@ -1,0 +1,230 @@
+@startuml
+
+title __PERMISSION's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ActionRESTServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + getActionById()
+            {abstract} + getActionByName()
+            {abstract} + getActionsByIds()
+            {abstract} + getAll()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ActionServiceAccess {
+            {abstract} + delete()
+            {abstract} + delete()
+            {abstract} + get()
+            {abstract} + get()
+            {abstract} + getActions()
+            {abstract} + getAll()
+            {abstract} + save()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.PermissionRESTServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + getAll()
+            {abstract} + getIdByResourceAndAction()
+            {abstract} + getPermissionByActionAndResource()
+            {abstract} + getPermissionById()
+            {abstract} + getPermissionByName()
+            {abstract} + getPermissions()
+            {abstract} + getPermissionsByIds()
+            {abstract} + getTotalRecordsCount()
+            {abstract} + isPermissionExistent()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.PermissionServiceAccess {
+            {abstract} + delete()
+            {abstract} + delete()
+            {abstract} + exists()
+            {abstract} + get()
+            {abstract} + get()
+            {abstract} + getAll()
+            {abstract} + getIdByActionAndResource()
+            {abstract} + getPermissionByActionAndResourceNames()
+            {abstract} + getPermissions()
+            {abstract} + getTotalRecordsCount()
+            {abstract} + save()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ResourceRESTServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + getAll()
+            {abstract} + getResourceById()
+            {abstract} + getResourceByName()
+            {abstract} + getResourcesByIds()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ResourceServiceAccess {
+            {abstract} + delete()
+            {abstract} + delete()
+            {abstract} + get()
+            {abstract} + get()
+            {abstract} + getAll()
+            {abstract} + getResources()
+            {abstract} + save()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        enum SystemActionsEnum {
+          ACTION_ALL
+          ACTION_CREATE
+          ACTION_DELETE
+          ACTION_READ
+          ACTION_UPDATE
+          actionName
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        enum SystemPermissionsEnum {
+          ACTION_MANAGEMENT_ALL
+          ACTION_MANAGEMENT_CREATE
+          ACTION_MANAGEMENT_DELETE
+          ACTION_MANAGEMENT_READ
+          ACTION_MANAGEMENT_UPDATE
+          PERMISSION_MANAGEMENT_ALL
+          PERMISSION_MANAGEMENT_CREATE
+          PERMISSION_MANAGEMENT_DELETE
+          PERMISSION_MANAGEMENT_READ
+          PERMISSION_MANAGEMENT_UPDATE
+          RESOURCE_MANAGEMENT_ALL
+          RESOURCE_MANAGEMENT_CREATE
+          RESOURCE_MANAGEMENT_DELETE
+          RESOURCE_MANAGEMENT_READ
+          RESOURCE_MANAGEMENT_UPDATE
+          ROLES_MANAGEMENT_ALL
+          ROLES_MANAGEMENT_CREATE
+          ROLES_MANAGEMENT_DELETE
+          ROLES_MANAGEMENT_READ
+          ROLES_MANAGEMENT_UPDATE
+          TENANT_MANAGEMENT_ALL
+          TENANT_MANAGEMENT_CREATE
+          TENANT_MANAGEMENT_DELETE
+          TENANT_MANAGEMENT_READ
+          TENANT_MANAGEMENT_UPDATE
+          TENANT_ROLE_MANAGEMENT_ALL
+          TENANT_ROLE_MANAGEMENT_CREATE
+          TENANT_ROLE_MANAGEMENT_DELETE
+          TENANT_ROLE_MANAGEMENT_READ
+          TENANT_ROLE_MANAGEMENT_UPDATE
+          TENANT_ROLE_PERMISSION_MANAGEMENT_ALL
+          TENANT_ROLE_PERMISSION_MANAGEMENT_CREATE
+          TENANT_ROLE_PERMISSION_MANAGEMENT_DELETE
+          TENANT_ROLE_PERMISSION_MANAGEMENT_READ
+          TENANT_ROLE_PERMISSION_MANAGEMENT_UPDATE
+          TENANT_ROLE_USER_MANAGEMENT_ALL
+          TENANT_ROLE_USER_MANAGEMENT_CREATE
+          TENANT_ROLE_USER_MANAGEMENT_DELETE
+          TENANT_ROLE_USER_MANAGEMENT_READ
+          TENANT_ROLE_USER_MANAGEMENT_UPDATE
+          THIRD_PARTY_EMAIL_MANAGEMENT_ALL
+          THIRD_PARTY_EMAIL_MANAGEMENT_CREATE
+          THIRD_PARTY_EMAIL_MANAGEMENT_DELETE
+          THIRD_PARTY_EMAIL_MANAGEMENT_READ
+          THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE
+          THIRD_PARTY_PASSWORD_MANAGEMENT_ALL
+          THIRD_PARTY_PASSWORD_MANAGEMENT_CREATE
+          THIRD_PARTY_PASSWORD_MANAGEMENT_DELETE
+          THIRD_PARTY_PASSWORD_MANAGEMENT_READ
+          THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE
+          USER_MANAGEMENT_ALL
+          USER_MANAGEMENT_CREATE
+          USER_MANAGEMENT_DELETE
+          USER_MANAGEMENT_READ
+          USER_MANAGEMENT_UPDATE
+          action
+          permissionName
+          resource
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        enum SystemResourcesEnum {
+          ACTION
+          PERMISSION
+          RESOURCE
+          ROLES
+          TENANT
+          TENANT_ROLE
+          TENANT_ROLE_PERMISSION
+          TENANT_ROLE_USER
+          THIRD_PARTY_EMAIL
+          THIRD_PARTY_PASSWORD
+          USER
+          resourceName
+        }
+      }
+    }
+  }
+  
+
+  io.radien.api.service.permission.SystemPermissionsEnum o-- io.radien.api.service.permission.SystemActionsEnum : action
+  io.radien.api.service.permission.SystemPermissionsEnum o-- io.radien.api.service.permission.SystemResourcesEnum : resource
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

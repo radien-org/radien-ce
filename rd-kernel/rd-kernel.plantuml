@@ -1,0 +1,315 @@
+@startuml
+
+title __RD-KERNEL's Class Diagram__\n
+
+  namespace io.radien.kernel {
+    abstract class io.radien.kernel.AbstractAppframePlugin {
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    abstract class io.radien.kernel.OAF {
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    class io.radien.kernel.OpenAppframe {
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    class io.radien.kernel.UTF8Control {
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace eventbus {
+      class io.radien.kernel.eventbus.EventBus {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace eventbus {
+      namespace event {
+        abstract class io.radien.kernel.eventbus.event.AbstractSystemEvent {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace eventbus {
+      namespace event {
+        class io.radien.kernel.eventbus.event.InitApplicationEvent {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace interceptor {
+      class io.radien.kernel.interceptor.MethodRuntimeInterceptor {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace interceptor {
+      interface io.radien.kernel.interceptor.RuntimeIntercepted {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      abstract class io.radien.kernel.listener.AbstractOAFInitListener {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.FacesApplicationInitialisationListener {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.OAFInitListener {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.SessionTimeoutListener {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.UACompatibleHeaderPhaseListener {
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace service {
+      class io.radien.kernel.service.ConfigService {
+      }
+    }
+  }
+  
+
+  namespace io.radien.util {
+    abstract class io.radien.util.AbstractOAFHTTPServlet {
+    }
+  }
+  
+
+  namespace io.radien.util {
+    class io.radien.util.HttpConnectionUtil {
+    }
+  }
+  
+
+  namespace io.radien.util {
+    class io.radien.util.OAFHttpRequest {
+    }
+  }
+  
+
+  namespace io.radien.util {
+    class io.radien.util.OAFHttpResponse {
+    }
+  }
+  
+
+  namespace io.radien.util {
+    class io.radien.util.StringFormatUtil {
+    }
+  }
+  
+
+  namespace io.radien.util {
+    class io.radien.util.ZoneComparator {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    abstract class io.radien.webapp.AbstractLocaleManager {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    abstract class io.radien.webapp.AbstractNavigation {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    abstract class io.radien.webapp.AbstractOafResourceBundle {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    abstract class io.radien.webapp.AbstractWebapp {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    class io.radien.webapp.HTTPSessionHandler {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    class io.radien.webapp.JSFUtil {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    class io.radien.webapp.Navigation {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    interface io.radien.webapp.RedirectHandler {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    class io.radien.webapp.RedirectUtil {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    interface io.radien.webapp.SessionHandler {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    class io.radien.webapp.UserDetails {
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      abstract class io.radien.webapp.security.AbstractAuthorizationFilter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      abstract class io.radien.webapp.security.AbstractWebFilter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      class io.radien.webapp.security.AuthorizationFilter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      class io.radien.webapp.security.OIDCAuthorizationFilter {
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      class io.radien.webapp.security.UserSession {
+      }
+    }
+  }
+  
+
+  io.radien.kernel.AbstractAppframePlugin -up-|> io.radien.kernel.OAF
+  io.radien.kernel.OAF .up.|> io.radien.api.OAFAccess
+  io.radien.kernel.OAF o-- io.radien.kernel.eventbus.EventBus : eventBus
+  io.radien.kernel.OpenAppframe -up-|> io.radien.kernel.OAF
+  io.radien.kernel.UTF8Control -up-|> java.util.ResourceBundle.Control
+  io.radien.kernel.eventbus.EventBus .up.|> java.io.Serializable
+  io.radien.kernel.eventbus.event.AbstractSystemEvent .up.|> io.radien.api.Event
+  io.radien.kernel.eventbus.event.InitApplicationEvent .up.|> io.radien.api.Event
+  io.radien.kernel.eventbus.event.InitApplicationEvent -up-|> io.radien.kernel.eventbus.event.AbstractSystemEvent
+  io.radien.kernel.listener.AbstractOAFInitListener .up.|> javax.servlet.ServletContextListener
+  io.radien.kernel.listener.FacesApplicationInitialisationListener .up.|> javax.faces.event.SystemEventListener
+  io.radien.kernel.listener.OAFInitListener -up-|> io.radien.kernel.listener.AbstractOAFInitListener
+  io.radien.kernel.listener.SessionTimeoutListener .up.|> javax.servlet.http.HttpSessionListener
+  io.radien.kernel.listener.UACompatibleHeaderPhaseListener .up.|> javax.faces.event.PhaseListener
+  io.radien.kernel.service.ConfigService .up.|> io.radien.api.Configurable
+  io.radien.kernel.service.ConfigService .up.|> java.io.Serializable
+  io.radien.util.AbstractOAFHTTPServlet .up.|> io.radien.api.Appframeable
+  io.radien.util.AbstractOAFHTTPServlet -up-|> javax.servlet.http.HttpServlet
+  io.radien.util.OAFHttpRequest -up-|> javax.servlet.http.HttpServletRequestWrapper
+  io.radien.util.OAFHttpResponse -up-|> javax.servlet.http.HttpServletResponseWrapper
+  io.radien.util.ZoneComparator .up.|> java.util.Comparator
+  io.radien.webapp.AbstractLocaleManager .up.|> io.radien.api.webapp.i18n.LocaleManagerAccess
+  io.radien.webapp.AbstractNavigation .up.|> java.io.Serializable
+  io.radien.webapp.AbstractOafResourceBundle -up-|> java.util.ResourceBundle
+  io.radien.webapp.AbstractWebapp .up.|> io.radien.api.Appframeable
+  io.radien.webapp.HTTPSessionHandler .up.|> io.radien.webapp.SessionHandler
+  io.radien.webapp.Navigation -up-|> io.radien.webapp.AbstractNavigation
+  io.radien.webapp.Navigation o-- io.radien.api.OAFAccess : oaf
+  io.radien.webapp.RedirectUtil .up.|> io.radien.webapp.RedirectHandler
+  io.radien.webapp.RedirectUtil o-- io.radien.api.OAFAccess : oaf
+  io.radien.webapp.security.AbstractAuthorizationFilter -up-|> io.radien.webapp.security.AbstractWebFilter
+  io.radien.webapp.security.AbstractAuthorizationFilter o-- io.radien.api.security.UserSessionEnabled : session
+  io.radien.webapp.security.AbstractAuthorizationFilter o-- io.radien.webapp.RedirectUtil : webapp
+  io.radien.webapp.security.AbstractWebFilter .up.|> io.radien.api.Appframeable
+  io.radien.webapp.security.AbstractWebFilter .up.|> javax.servlet.Filter
+  io.radien.webapp.security.AuthorizationFilter -up-|> io.radien.webapp.security.AbstractAuthorizationFilter
+  io.radien.webapp.security.AuthorizationFilter o-- io.radien.api.OAFAccess : baseApp
+  io.radien.webapp.security.OIDCAuthorizationFilter -up-|> io.radien.webapp.security.AuthorizationFilter
+  io.radien.webapp.security.UserSession .up.|> io.radien.api.security.TokensPlaceHolder
+  io.radien.webapp.security.UserSession .up.|> io.radien.api.security.UserSessionEnabled
+  io.radien.webapp.security.UserSession o-- io.radien.api.OAFAccess : oaf
+  io.radien.webapp.security.UserSession o-- io.radien.api.model.user.SystemUser : user
+  io.radien.webapp.security.UserSession o-- io.radien.api.service.user.UserRESTServiceAccess : userClientService
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

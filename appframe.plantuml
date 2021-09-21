@@ -1,0 +1,159 @@
+@startuml
+
+title __APPFRAME's Component Diagram__\n
+
+  component "rd-web" {
+        [rd-web-impl]
+        [rd-web-api]
+  }
+
+
+  component "rd-ms-ecm" {
+        [rd-ms-ecm-client]
+  }
+
+
+  component "rd-ms-demo" {
+        [rd-ms-demo-service]
+        [rd-ms-demo-client]
+        [rd-ms-demo-kernel]
+        [rd-ms-demo-api]
+        [rd-ms-demo-web]
+    component "rd-ms-demo-web" {
+          [rd-ms-demo-web-impl]
+    }
+
+
+  }
+
+
+  component "rd-ms-openid" {
+        [rd-ms-openid-client]
+  }
+
+
+  component "rd-service-generator" {
+        [archetype-resources]
+  }
+
+
+  component "rd-ms-usermanagement" {
+        [rd-ms-usermanagement-client]
+  }
+
+
+  component "rd-ms-rolemanagement" {
+        [rd-ms-rolemanagement-client]
+  }
+
+
+  component "rd-ms-tenantmanagement" {
+        [rd-ms-tenantmanagement-client]
+  }
+
+
+  component "rd-ms-permissionmanagement" {
+        [rd-ms-permissionmanagement-client]
+  }
+
+
+  [rd-kernel] --> [rd-api]
+  [rd-kernel] --> [rd-ms-authz-client]
+  [rd-kernel] --> [rd-ms-openid-client]
+  [rd-kernel] --> [rd-ms-usermanagement-client]
+  [rd-kernel] --> [rd-openid]
+  [rd-ms-authz-client] --> [rd-api]
+  [rd-ms-authz-client] --> [rd-ms-openid-client]
+  [rd-ms-config-lib] --> [rd-api]
+  [rd-ms-demo-client] --> [rd-ms-demo-api]
+  [rd-ms-demo-kernel] --> [rd-ms-demo-api]
+  [rd-ms-demo-kernel] --> [rd-ms-demo-client]
+  [rd-ms-demo-service] --> [rd-ms-demo-api]
+  [rd-ms-demo-service] --> [rd-ms-demo-client]
+  [rd-ms-demo-web] --> [rd-ms-demo-api]
+  [rd-ms-demo-web] --> [rd-ms-demo-client]
+  [rd-ms-demo-web] --> [rd-ms-demo-kernel]
+  [rd-ms-demo-web] --> [rd-ms-demo-web-impl]
+  [rd-ms-demo-web-impl] --> [rd-ms-demo-api]
+  [rd-ms-demo-web-impl] --> [rd-ms-demo-client]
+  [rd-ms-demo-web-impl] --> [rd-ms-demo-kernel]
+  [rd-ms-ecm] --> [rd-api]
+  [rd-ms-ecm] --> [rd-aws-utils]
+  [rd-ms-ecm] --> [rd-ms-ecm-client]
+  [rd-ms-ecm-client] --> [rd-api]
+  [rd-ms-ecm-client] --> [rd-aws-utils]
+  [rd-ms-openid] --> [rd-api]
+  [rd-ms-openid] --> [rd-ms-openid-client]
+  [rd-ms-openid-client] --> [rd-api]
+  [rd-ms-permissionmanagement] --> [rd-api]
+  [rd-ms-permissionmanagement] --> [rd-ms-authz-client]
+  [rd-ms-permissionmanagement] --> [rd-ms-config-lib]
+  [rd-ms-permissionmanagement] --> [rd-ms-openid]
+  [rd-ms-permissionmanagement] --> [rd-ms-openid-client]
+  [rd-ms-permissionmanagement] --> [rd-ms-permissionmanagement-client]
+  [rd-ms-permissionmanagement-client] --> [rd-api]
+  [rd-ms-permissionmanagement-client] --> [rd-ms-authz-client]
+  [rd-ms-permissionmanagement-client] --> [rd-ms-openid-client]
+  [rd-ms-rolemanagement] --> [rd-api]
+  [rd-ms-rolemanagement] --> [rd-ms-authz-client]
+  [rd-ms-rolemanagement] --> [rd-ms-config-lib]
+  [rd-ms-rolemanagement] --> [rd-ms-openid]
+  [rd-ms-rolemanagement] --> [rd-ms-openid-client]
+  [rd-ms-rolemanagement] --> [rd-ms-permissionmanagement-client]
+  [rd-ms-rolemanagement] --> [rd-ms-rolemanagement-client]
+  [rd-ms-rolemanagement] --> [rd-ms-tenantmanagement-client]
+  [rd-ms-rolemanagement-client] --> [rd-api]
+  [rd-ms-rolemanagement-client] --> [rd-ms-authz-client]
+  [rd-ms-rolemanagement-client] --> [rd-ms-openid-client]
+  [rd-ms-rolemanagement-client] --> [rd-ms-permissionmanagement-client]
+  [rd-ms-rolemanagement-client] --> [rd-ms-tenantmanagement-client]
+  [rd-ms-tenantmanagement] --> [rd-api]
+  [rd-ms-tenantmanagement] --> [rd-ms-authz-client]
+  [rd-ms-tenantmanagement] --> [rd-ms-openid]
+  [rd-ms-tenantmanagement] --> [rd-ms-openid-client]
+  [rd-ms-tenantmanagement] --> [rd-ms-tenantmanagement-client]
+  [rd-ms-tenantmanagement-client] --> [rd-api]
+  [rd-ms-tenantmanagement-client] --> [rd-ms-authz-client]
+  [rd-ms-tenantmanagement-client] --> [rd-ms-openid-client]
+  [rd-ms-usermanagement] --> [rd-api]
+  [rd-ms-usermanagement] --> [rd-ms-authz-client]
+  [rd-ms-usermanagement] --> [rd-ms-config-lib]
+  [rd-ms-usermanagement] --> [rd-ms-openid]
+  [rd-ms-usermanagement] --> [rd-ms-openid-client]
+  [rd-ms-usermanagement] --> [rd-ms-usermanagement-client]
+  [rd-ms-usermanagement-client] --> [rd-api]
+  [rd-ms-usermanagement-client] --> [rd-ms-authz-client]
+  [rd-ms-usermanagement-client] --> [rd-ms-openid-client]
+  [rd-openid] --> [rd-api]
+  [rd-persistence] --> [rd-api]
+  [rd-web] --> [rd-api]
+  [rd-web] --> [rd-kernel]
+  [rd-web] --> [rd-ms-authz-client]
+  [rd-web] --> [rd-ms-openid-client]
+  [rd-web] --> [rd-ms-permissionmanagement-client]
+  [rd-web] --> [rd-ms-rolemanagement-client]
+  [rd-web] --> [rd-ms-tenantmanagement-client]
+  [rd-web] --> [rd-ms-usermanagement-client]
+  [rd-web] --> [rd-openid]
+  [rd-web] --> [rd-web-api]
+  [rd-web] --> [rd-web-impl]
+  [rd-web-impl] --> [rd-api]
+  [rd-web-impl] --> [rd-kernel]
+  [rd-web-impl] --> [rd-ms-authz-client]
+  [rd-web-impl] --> [rd-ms-openid-client]
+  [rd-web-impl] --> [rd-ms-permissionmanagement-client]
+  [rd-web-impl] --> [rd-ms-rolemanagement-client]
+  [rd-web-impl] --> [rd-ms-tenantmanagement-client]
+  [rd-web-impl] --> [rd-ms-usermanagement-client]
+  [rd-web-impl] --> [rd-openid]
+  [rd-web-impl] --> [rd-web-api]
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

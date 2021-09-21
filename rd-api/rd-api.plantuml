@@ -1,0 +1,1331 @@
+@startuml
+
+title __RD-API's Class Diagram__\n
+
+  namespace io.radien.api {
+    interface io.radien.api.Appframeable {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    interface io.radien.api.Configurable {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    interface io.radien.api.Event {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    interface io.radien.api.IAppframe {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    enum KeycloakConfigs {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    interface io.radien.api.Model {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    interface io.radien.api.OAFAccess {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    enum OAFProperties {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    interface io.radien.api.SystemProperties {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    enum SystemVariables {
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace entity {
+      class io.radien.api.entity.Page {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace kernel.messages {
+      enum SystemMessageTypes {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace kernel.messages {
+      enum SystemMessages {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      abstract class io.radien.api.model.AbstractModel {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      interface io.radien.api.model.Model {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      class io.radien.api.model.ModelValueId {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      interface io.radien.api.model.SystemId {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace identity {
+        abstract class io.radien.api.model.identity.AbstractContactModel {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace identity {
+        abstract class io.radien.api.model.identity.AbstractIdentityModel {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace identity {
+        interface io.radien.api.model.identity.SystemIdentity {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace identity {
+        interface io.radien.api.model.identity.SystemIdentityContact {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        abstract class io.radien.api.model.permission.AbstractActionModel {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        abstract class io.radien.api.model.permission.AbstractPermissionModel {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        abstract class io.radien.api.model.permission.AbstractResourceModel {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        interface io.radien.api.model.permission.SystemAction {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        interface io.radien.api.model.permission.SystemActionSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        interface io.radien.api.model.permission.SystemPermission {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        interface io.radien.api.model.permission.SystemPermissionSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        interface io.radien.api.model.permission.SystemResource {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace permission {
+        interface io.radien.api.model.permission.SystemResourceSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace role {
+        abstract class io.radien.api.model.role.AbstractRoleModel {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace role {
+        interface io.radien.api.model.role.SystemRole {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace role {
+        interface io.radien.api.model.role.SystemRoleSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        interface io.radien.api.model.tenant.SystemActiveTenant {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        interface io.radien.api.model.tenant.SystemActiveTenantSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        interface io.radien.api.model.tenant.SystemContract {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        interface io.radien.api.model.tenant.SystemTenant {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        interface io.radien.api.model.tenant.SystemTenantSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        interface io.radien.api.model.tenant.SystemTenantType {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.model.tenantrole.SystemTenantRole {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.model.tenantrole.SystemTenantRolePermission {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.model.tenantrole.SystemTenantRoleUser {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace user {
+        abstract class io.radien.api.model.user.AbstractUserModel {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace user {
+        interface io.radien.api.model.user.SystemUser {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace user {
+        interface io.radien.api.model.user.SystemUserSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace search {
+      class io.radien.api.search.SearchFilterCriteria {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace search {
+      class io.radien.api.search.SearchableByIds {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace search {
+      interface io.radien.api.search.SystemSearchFilterCriteria {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace search {
+      interface io.radien.api.search.SystemSearchableByIds {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace security {
+      interface io.radien.api.security.TokensPlaceHolder {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace security {
+      interface io.radien.api.security.UserSessionEnabled {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      interface io.radien.api.service.DataAccessLayer {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      interface io.radien.api.service.ServiceAccess {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace batch {
+        class io.radien.api.service.batch.BatchSummary {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace batch {
+        class io.radien.api.service.batch.DataIssue {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        interface io.radien.api.service.ecm.ContentServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace exception {
+          class io.radien.api.service.ecm.exception.ContentNotAvailableException {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace exception {
+          class io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace exception {
+          class io.radien.api.service.ecm.exception.ElementNotFoundException {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace exception {
+          class io.radien.api.service.ecm.exception.NameNotValidException {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          abstract class io.radien.api.service.ecm.model.AbstractECMModel {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.Content {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          enum ContentType {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.ContentVersion {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.Document {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          interface io.radien.api.service.ecm.model.EnterpriseContent {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.Folder {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.GenericEnterpriseContent {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.RestTreeNode {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          interface io.radien.api.service.ecm.model.SystemContentVersion {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace util {
+          class io.radien.api.service.ecm.util.EnterpriseContentDeserializer {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        interface io.radien.api.service.mail.MailServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        interface io.radien.api.service.mail.MailTemplateAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          interface io.radien.api.service.mail.model.Mail {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          enum MailContentType {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          enum MailType {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          interface io.radien.api.service.mail.model.SystemMailTemplate {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ActionRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ActionServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.PermissionRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.PermissionServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ResourceRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        interface io.radien.api.service.permission.ResourceServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        enum SystemActionsEnum {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        enum SystemPermissionsEnum {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace permission {
+        enum SystemResourcesEnum {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace role {
+        interface io.radien.api.service.role.RoleRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace role {
+        interface io.radien.api.service.role.RoleServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace role {
+        enum SystemRolesEnum {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ActiveTenantRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ActiveTenantServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ContractRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ContractServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.TenantRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.TenantServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.service.tenantrole.TenantRoleServiceAccess {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        namespace ole {
+          interface io.radien.api.service.tenantrole.TenantRoleUserServiceAccess {
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace user {
+        interface io.radien.api.service.user.UserRESTServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace user {
+        interface io.radien.api.service.user.UserServiceAccess {
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.CheckMandatoryParametersServiceUtil {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.FactoryUtilService {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.ModelServiceUtil {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.PageFactory {
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace webapp.i18n {
+      interface io.radien.api.webapp.i18n.LocaleManagerAccess {
+      }
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.AccountExpiredException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.AccountNotValidException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ActionNotFoundException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ActiveTenantException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.AuthenticationFailedException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.BadRequestException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    enum GenericErrorCodeMessage {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.GenericErrorMessagesToResponseMapper {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.InternalServerErrorException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.LinkedAuthorizationException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ModelResponseExceptionMapper {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.NotFoundException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.PermissionIllegalArgumentException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.PermissionNotFoundException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ProcessingException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ResourceNotFoundException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.RoleNotFoundException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.SessionNotValidException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.SystemException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleIllegalArgumentException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleNotFoundException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleUserDuplicationException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleUserException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TokenExpiredException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.UniquenessConstraintException {
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.UserNotFoundException {
+    }
+  }
+  
+
+  io.radien.api.KeycloakConfigs .up.|> io.radien.api.SystemProperties
+  io.radien.api.OAFProperties .up.|> io.radien.api.SystemProperties
+  io.radien.api.entity.Page .up.|> java.io.Serializable
+  io.radien.api.kernel.messages.SystemMessages o-- io.radien.api.kernel.messages.SystemMessageTypes : errorType
+  io.radien.api.model.AbstractModel .up.|> io.radien.api.model.Model
+  io.radien.api.model.AbstractModel -up-|> io.radien.api.model.ModelValueId
+  io.radien.api.model.ModelValueId .up.|> io.radien.api.model.SystemId
+  io.radien.api.model.identity.AbstractContactModel .up.|> io.radien.api.model.identity.SystemIdentityContact
+  io.radien.api.model.identity.AbstractContactModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.model.identity.AbstractContactModel o-- io.radien.api.model.identity.SystemIdentity : identity
+  io.radien.api.model.identity.AbstractIdentityModel .up.|> io.radien.api.model.identity.SystemIdentity
+  io.radien.api.model.identity.AbstractIdentityModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.model.permission.AbstractActionModel .up.|> io.radien.api.model.permission.SystemAction
+  io.radien.api.model.permission.AbstractActionModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.model.permission.AbstractPermissionModel .up.|> io.radien.api.model.permission.SystemPermission
+  io.radien.api.model.permission.AbstractPermissionModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.model.permission.AbstractResourceModel .up.|> io.radien.api.model.permission.SystemResource
+  io.radien.api.model.permission.AbstractResourceModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.model.role.AbstractRoleModel .up.|> io.radien.api.model.role.SystemRole
+  io.radien.api.model.role.AbstractRoleModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.model.user.AbstractUserModel .up.|> io.radien.api.model.user.SystemUser
+  io.radien.api.model.user.AbstractUserModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.search.SearchFilterCriteria .up.|> io.radien.api.search.SystemSearchFilterCriteria
+  io.radien.api.search.SearchableByIds .up.|> io.radien.api.search.SystemSearchableByIds
+  io.radien.api.search.SearchableByIds -up-|> io.radien.api.search.SearchFilterCriteria
+  io.radien.api.service.ecm.exception.ContentNotAvailableException -up-|> io.radien.exception.SystemException
+  io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException -up-|> io.radien.exception.SystemException
+  io.radien.api.service.ecm.exception.ElementNotFoundException -up-|> io.radien.exception.SystemException
+  io.radien.api.service.ecm.exception.NameNotValidException -up-|> io.radien.exception.SystemException
+  io.radien.api.service.ecm.model.AbstractECMModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.service.ecm.model.AbstractECMModel o-- io.radien.api.service.ecm.model.ContentType : contentType
+  io.radien.api.service.ecm.model.AbstractECMModel o-- io.radien.api.service.ecm.model.SystemContentVersion : version
+  io.radien.api.service.ecm.model.Content .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.Content -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.ContentVersion .up.|> io.radien.api.service.ecm.model.SystemContentVersion
+  io.radien.api.service.ecm.model.Document .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.Document -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.Folder .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.Folder -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.GenericEnterpriseContent .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.GenericEnterpriseContent -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.RestTreeNode .up.|> com.fasterxml.jackson.core.TreeNode
+  io.radien.api.service.ecm.model.RestTreeNode .up.|> java.io.Serializable
+  io.radien.api.service.ecm.util.EnterpriseContentDeserializer -up-|> com.fasterxml.jackson.databind.JsonDeserializer
+  io.radien.api.service.permission.SystemPermissionsEnum o-- io.radien.api.service.permission.SystemActionsEnum : action
+  io.radien.api.service.permission.SystemPermissionsEnum o-- io.radien.api.service.permission.SystemResourcesEnum : resource
+  io.radien.api.util.CheckMandatoryParametersServiceUtil .up.|> java.io.Serializable
+  io.radien.api.util.FactoryUtilService .up.|> java.io.Serializable
+  io.radien.api.util.ModelServiceUtil .up.|> java.io.Serializable
+  io.radien.exception.AccountExpiredException -up-|> io.radien.exception.SystemException
+  io.radien.exception.AccountNotValidException -up-|> io.radien.exception.SystemException
+  io.radien.exception.AuthenticationFailedException -up-|> io.radien.exception.SystemException
+  io.radien.exception.ModelResponseExceptionMapper .up.|> org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper
+  io.radien.exception.SessionNotValidException -up-|> io.radien.exception.SystemException
+  io.radien.exception.TenantRoleIllegalArgumentException -up-|> io.radien.exception.TenantRoleException
+  io.radien.exception.TenantRoleNotFoundException -up-|> io.radien.exception.TenantRoleException
+  io.radien.exception.TenantRoleUserDuplicationException -up-|> io.radien.exception.TenantRoleException
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

@@ -1,0 +1,353 @@
+@startuml
+
+title __MODEL's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          abstract class io.radien.api.service.ecm.model.AbstractECMModel {
+              # active : boolean
+              # author : String
+              # fileSize : long
+              # fileStream : byte[]
+              # htmlContent : String
+              # image : byte[]
+              # language : String
+              # mimeType : String
+              # name : String
+              # system : boolean
+              # viewId : String
+              - app : String
+              - imageMimeType : String
+              - imageName : String
+              - jcrPath : String
+              - parentPath : String
+              - permissions : String
+              {static} - serialVersionUID : long
+              - tags : List<String>
+              - updateOnLaunch : boolean
+              - validDate : Date
+              - versionComment : String
+              - versionable : boolean
+              - versionableName : String
+              + getApp()
+              + getAuthor()
+              + getContentType()
+              + getFile()
+              + getFileSize()
+              + getHtmlContent()
+              + getImage()
+              + getImageMimeType()
+              + getImageName()
+              + getJcrPath()
+              + getLanguage()
+              + getMimeType()
+              + getName()
+              + getParentPath()
+              + getPermissions()
+              + getTags()
+              + getValidDate()
+              + getVersion()
+              + getVersionComment()
+              + getVersionableName()
+              + getViewId()
+              + isActive()
+              + isSystem()
+              + isUpdateOnLaunch()
+              + isVersionable()
+              + setActive()
+              + setApp()
+              + setAuthor()
+              + setContentType()
+              + setFile()
+              + setFileSize()
+              + setHtmlContent()
+              + setImage()
+              + setImageMimeType()
+              + setImageName()
+              + setJcrPath()
+              + setLanguage()
+              + setMimeType()
+              + setName()
+              + setParentPath()
+              + setPermissions()
+              + setSystem()
+              + setTags()
+              + setUpdateOnLaunch()
+              + setValidDate()
+              + setVersion()
+              + setVersionComment()
+              + setVersionable()
+              + setVersionableName()
+              + setViewId()
+              + viewId()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.Content {
+              {static} - serialVersionUID : long
+              + Content()
+              + compareTo()
+              + toString()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          enum ContentType {
+            DOCUMENT
+            ERROR
+            FOLDER
+            HTML
+            IMAGE
+            NEWS_FEED
+            NOTIFICATION
+            TAG
+            key
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.ContentVersion {
+              - hotfixVersion : Long
+              - majorVersion : Long
+              - minorVersion : Long
+              - version : String
+              + ContentVersion()
+              + compareTo()
+              + getHotfixVersion()
+              + getMajorVersion()
+              + getMinorVersion()
+              + getVersion()
+              + setHotfixVersion()
+              + setMajorVersion()
+              + setMinorVersion()
+              + setVersion()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.Document {
+              {static} - serialVersionUID : long
+              + Document()
+              + compareTo()
+              + toString()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          interface io.radien.api.service.ecm.model.EnterpriseContent {
+              {abstract} + getApp()
+              {abstract} + getAuthor()
+              {abstract} + getContentType()
+              {abstract} + getFile()
+              {abstract} + getFileSize()
+              {abstract} + getHtmlContent()
+              {abstract} + getImage()
+              {abstract} + getImageMimeType()
+              {abstract} + getImageName()
+              {abstract} + getJcrPath()
+              {abstract} + getLanguage()
+              {abstract} + getMimeType()
+              {abstract} + getName()
+              {abstract} + getParentPath()
+              {abstract} + getPermissions()
+              {abstract} + getTags()
+              {abstract} + getValidDate()
+              {abstract} + getVersion()
+              {abstract} + getVersionComment()
+              {abstract} + getVersionableName()
+              {abstract} + getViewId()
+              {abstract} + isActive()
+              {abstract} + isSystem()
+              {abstract} + isUpdateOnLaunch()
+              {abstract} + isVersionable()
+              {abstract} + setActive()
+              {abstract} + setApp()
+              {abstract} + setAuthor()
+              {abstract} + setContentType()
+              {abstract} + setFile()
+              {abstract} + setFileSize()
+              {abstract} + setHtmlContent()
+              {abstract} + setImage()
+              {abstract} + setImageMimeType()
+              {abstract} + setImageName()
+              {abstract} + setJcrPath()
+              {abstract} + setLanguage()
+              {abstract} + setMimeType()
+              {abstract} + setName()
+              {abstract} + setParentPath()
+              {abstract} + setPermissions()
+              {abstract} + setSystem()
+              {abstract} + setTags()
+              {abstract} + setUpdateOnLaunch()
+              {abstract} + setValidDate()
+              {abstract} + setVersion()
+              {abstract} + setVersionComment()
+              {abstract} + setVersionable()
+              {abstract} + setVersionableName()
+              {abstract} + setViewId()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.Folder {
+              {static} - serialVersionUID : long
+              + Folder()
+              + compareTo()
+              + toString()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.GenericEnterpriseContent {
+              {static} - serialVersionUID : long
+              + GenericEnterpriseContent()
+              + compareTo()
+              + toString()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          class io.radien.api.service.ecm.model.RestTreeNode {
+              {static} - DEFAULT_TYPE : String
+              - children : List<TreeNode>
+              - data : Object
+              - expanded : boolean
+              - parent : TreeNode
+              - rowKey : String
+              - selectable : boolean
+              - selected : boolean
+              {static} - serialVersionUID : long
+              - type : String
+              + RestTreeNode()
+              + RestTreeNode()
+              + RestTreeNode()
+              + RestTreeNode()
+              + asToken()
+              + at()
+              + at()
+              + equals()
+              + fieldNames()
+              + get()
+              + get()
+              + hashCode()
+              + isArray()
+              + isContainerNode()
+              + isMissingNode()
+              + isObject()
+              + isValueNode()
+              + numberType()
+              + path()
+              + path()
+              + size()
+              + toString()
+              + traverse()
+              + traverse()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace ecm {
+        namespace model {
+          interface io.radien.api.service.ecm.model.SystemContentVersion {
+              {abstract} + getHotfixVersion()
+              {abstract} + getMajorVersion()
+              {abstract} + getMinorVersion()
+              {abstract} + getVersion()
+              {abstract} + setHotfixVersion()
+              {abstract} + setMajorVersion()
+              {abstract} + setMinorVersion()
+          }
+        }
+      }
+    }
+  }
+  
+
+  io.radien.api.service.ecm.model.AbstractECMModel -up-|> io.radien.api.model.AbstractModel
+  io.radien.api.service.ecm.model.AbstractECMModel o-- io.radien.api.service.ecm.model.ContentType : contentType
+  io.radien.api.service.ecm.model.AbstractECMModel o-- io.radien.api.service.ecm.model.SystemContentVersion : version
+  io.radien.api.service.ecm.model.Content .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.Content -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.ContentVersion .up.|> io.radien.api.service.ecm.model.SystemContentVersion
+  io.radien.api.service.ecm.model.Document .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.Document -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.Folder .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.Folder -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.GenericEnterpriseContent .up.|> io.radien.api.service.ecm.model.EnterpriseContent
+  io.radien.api.service.ecm.model.GenericEnterpriseContent -up-|> io.radien.api.service.ecm.model.AbstractECMModel
+  io.radien.api.service.ecm.model.RestTreeNode .up.|> com.fasterxml.jackson.core.TreeNode
+  io.radien.api.service.ecm.model.RestTreeNode .up.|> java.io.Serializable
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml
