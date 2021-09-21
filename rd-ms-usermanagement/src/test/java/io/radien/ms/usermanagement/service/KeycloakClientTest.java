@@ -34,9 +34,6 @@ import kong.unirest.Unirest;
 
 import org.keycloak.representations.idm.UserRepresentation;
 
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,15 +72,6 @@ public class KeycloakClientTest {
     @Mock
     RequestBodyEntity requestBodyEntity;
 
-    String url;
-    String clientId;
-    String clientSecret;
-    String username;
-    String password;
-    String userPath;
-    String adminClientId;
-    String tokenPath;
-
     /**
      * Prepares required mock objects
      */
@@ -95,24 +83,16 @@ public class KeycloakClientTest {
         httpRequestWithBody = PowerMockito.mock(HttpRequestWithBody.class);
         requestBodyEntity = PowerMockito.mock(RequestBodyEntity.class);
 
-        url = getConfigProperty(KeycloakConfigs.IDP_URL.propKey()) + getConfigProperty(KeycloakConfigs.RADIEN_TOKEN_PATH.propKey());
-        clientId = getConfigProperty(KeycloakConfigs.RADIEN_CLIENT_ID.propKey());
-        clientSecret = getConfigProperty(KeycloakConfigs.RADIEN_SECRET.propKey());
-        username = getConfigProperty(KeycloakConfigs.RADIEN_USERNAME.propKey());
-        password = getConfigProperty(KeycloakConfigs.RADIEN_PASSWORD.propKey());
-        userPath = getConfigProperty(KeycloakConfigs.USER_PATH.propKey());
-        adminClientId = getConfigProperty(KeycloakConfigs.ADMIN_CLIENT_ID.propKey());
-        tokenPath = getConfigProperty(KeycloakConfigs.TOKEN_PATH.propKey());
 
         keycloakClient = new KeycloakClient()
-                .clientId(adminClientId)
-                .username(username)
-                .password(password)
-                .idpUrl(url)
-                .tokenPath(tokenPath)
-                .radienClientId(clientId)
-                .radienSecret(clientSecret)
-                .userPath(userPath);
+                .clientId("adminClientId")
+                .username("username")
+                .password("password")
+                .idpUrl("url")
+                .tokenPath("tokenPath")
+                .radienClientId("clientId")
+                .radienSecret("clientSecret")
+                .userPath("userPath");
 
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("access_token", "TOKEN");
@@ -188,16 +168,6 @@ public class KeycloakClientTest {
 
         when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
         keycloakClient.updateUserEmailAndEmailVerifiedAttribute("test", "{}");
-    }
-
-    /**
-     * Gets config property value
-     * @param propertyKey to be set
-     * @return config property value
-     */
-    private static String getConfigProperty(String propertyKey) {
-        Config config = ConfigProvider.getConfig();
-        return config.getValue(propertyKey, String.class);
     }
 
     /**
