@@ -367,8 +367,9 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * Method for the request to update the user password and send it via email to him
      * @param id of the user to update the password
      * @return true in case of success
+     * @throws TokenExpiredException in case of any issue while attempting communication with the client side
      */
-    private boolean updatePasswordEmail(long id) {
+    private boolean updatePasswordEmail(long id) throws TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             Response response = client.sendUpdatePasswordEmail(id);
