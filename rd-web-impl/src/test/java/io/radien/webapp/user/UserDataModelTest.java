@@ -15,61 +15,50 @@
  */
 package io.radien.webapp.user;
 
-import io.radien.api.OAFAccess;
-import io.radien.api.model.permission.SystemAction;
-import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
-import io.radien.api.service.permission.ActionRESTServiceAccess;
-import io.radien.api.service.permission.PermissionRESTServiceAccess;
-import io.radien.api.service.permission.ResourceRESTServiceAccess;
-import io.radien.api.service.permission.SystemActionsEnum;
-import io.radien.api.service.permission.SystemPermissionsEnum;
-import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
+
 import io.radien.exception.SystemException;
-import io.radien.ms.permissionmanagement.client.entities.Action;
-import io.radien.ms.permissionmanagement.client.entities.Permission;
-import io.radien.ms.permissionmanagement.client.entities.Resource;
+
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.usermanagement.client.entities.User;
+
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
-import java.lang.reflect.Method;
+
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.context.Flash;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static io.radien.webapp.DataModelEnum.ACTION_NOT_FOUND_MESSAGE;
-import static io.radien.webapp.DataModelEnum.PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE;
-import static io.radien.webapp.DataModelEnum.RESOURCE_NOT_FOUND_MESSAGE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -77,8 +66,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-public class UserDataModelTest {
+/**
+ * Class that aggregates UnitTest cases for UserDataModel
+ */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
     private UserDataModel userDataModel;
@@ -89,47 +82,18 @@ public class UserDataModelTest {
     @Mock
     private UserRESTServiceAccess userRESTServiceAccess;
 
-
-    @Mock
-    private ActionRESTServiceAccess actionRESTServiceAccess;
-
-
-    @Mock
-    private ResourceRESTServiceAccess resourceRESTServiceAccess;
-
-
-    @Mock
-    private PermissionRESTServiceAccess permissionRESTServiceAccess;
-
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
     @Mock
     private UserSessionEnabled userSessionEnabled;
 
-    @Mock
-    private OAFAccess oafAccess;
-
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     FacesContext facesContext;
 
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
-        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
-        facesContext = Mockito.mock(FacesContext.class);
-        Flash flash = Mockito.mock(Flash.class);
-        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
-        Mockito.when(externalContext.getFlash()).thenReturn(flash);
-        try {
-            Method setter = FacesContext.class.getDeclaredMethod("setCurrentInstance",
-                    new Class[] { FacesContext.class });
-            setter.setAccessible(true);
-            setter.invoke(null, new Object[] { facesContext });
-        } catch (Exception e) {
-            logger.error("Error setting mocked FacesContext instance", e);
-        }
+        facesContext = getFacesContext();
     }
 
     /**
@@ -147,6 +111,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testIsTenantAssociationProcessAllowedSuccessCase() throws SystemException {
+
         when(activeTenantDataModelManager.isTenantActive()).thenReturn(true);
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
         SystemUser selectedUser = new User(); selectedUser.setId(3L); selectedUser.setLogon("a.b");
@@ -160,7 +125,7 @@ public class UserDataModelTest {
         // Set user
         this.userDataModel.setUser(user);
 
-        Boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
+        boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
         assertTrue(expected);
 
         // Set selectedUser
@@ -181,7 +146,7 @@ public class UserDataModelTest {
         // Call on load to check permission
         this.userDataModel.onload();
 
-        Boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
+        boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
         assertFalse(expected);
     }
 
@@ -191,25 +156,25 @@ public class UserDataModelTest {
      */
     @Test
     public void testIsTenantAssociationProcessAllowedFailNoUserAvailable() throws SystemException {
-        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
 
-        // Call on load to check permission
-        this.userDataModel.onload();
+       userDataModel.setHasTenantAdministratorRoleAccess(true);
 
-        Boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
+        boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
         assertFalse(expected);
     }
 
     /**
      * Test the method isTenantAssociationProcessAllowed()
-     * Failure Case - No found user available
+     * Success Case - User found available
      */
     @Test
-    public void testIsTenantAssociationProcessAllowedFailNoFoundUserAvailable() throws SystemException {
+    public void testIsTenantAssociationProcessAllowedFoundUserAvailable() throws SystemException {
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
+        Optional<SystemUser> optionalSystemUser = Optional.of(user);
+        userDataModel.setHasTenantAdministratorRoleAccess(true);
 
         doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
-        doReturn(Optional.empty()).when(userRESTServiceAccess).getUserByLogon(user.getLogon());
+        doReturn(optionalSystemUser).when(userRESTServiceAccess).getUserByLogon(user.getLogon());
 
         // Call on load to check permission
         this.userDataModel.onload();
@@ -217,8 +182,8 @@ public class UserDataModelTest {
         // Set user
         this.userDataModel.setUser(user);
 
-        Boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
-        assertFalse(expected);
+        boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
+        assertTrue(expected);
     }
 
     /**
@@ -228,8 +193,9 @@ public class UserDataModelTest {
     @Test
     public void testIsTenantAssociationProcessAllowedFailException() throws SystemException {
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
+        userDataModel.setHasTenantAdministratorRoleAccess(true);
 
-        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
+        doReturn(Boolean.FALSE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
         doThrow(new SystemException("test")).when(userRESTServiceAccess).getUserByLogon(user.getLogon());
 
         // Call on load to check permission
@@ -238,8 +204,7 @@ public class UserDataModelTest {
         // Set user
         this.userDataModel.setUser(user);
 
-        Boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
-        assertFalse(expected);
+        assertFalse(userDataModel.isTenantAssociationProcessAllowed());
     }
 
     /**
@@ -259,6 +224,7 @@ public class UserDataModelTest {
         this.userDataModel.setHasTenantAdministratorRoleAccess(true);
         assertTrue(this.userDataModel.isHasTenantAdministratorRoleAccess());
     }
+
 
     /**
      * Test getter and setter methods regarding userForTenantAssociation
@@ -363,6 +329,7 @@ public class UserDataModelTest {
      */
     @Test
     public void testInit() {
+        userDataModel.setHasTenantAdministratorRoleAccess(true);
         when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenReturn(Boolean.TRUE);
         when(webAuthorizationChecker.hasTenantAdministratorRoleAccess()).thenReturn(Boolean.TRUE);
 
@@ -377,10 +344,25 @@ public class UserDataModelTest {
     }
 
     /**
+     * Test for method {@link UserDataModel#init()}
+     * Asserts lazyUserDataModel object
+     */
+    @Test
+    public void testInitWhenNullTenantId() {
+        userDataModel.setHasUserAdministratorRoleAccess(false);
+        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenReturn(Boolean.FALSE);
+        userDataModel.setHasUserAdministratorRoleAccess(true);
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
+        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenThrow(new RuntimeException("error"));
+        userDataModel.init();
+        assertNull(userDataModel.getLazyUserDataModel().getRowData());
+    }
+
+    /**
      * Test for method {@link UserDataModel#init()} when exception occurs
      */
     @Test
-    public void testInitWhenExceptionOccurs() {
+    public void testInitExceptionOccurs() {
         when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
         when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenThrow(new RuntimeException("error"));
         userDataModel.init();
@@ -468,13 +450,7 @@ public class UserDataModelTest {
         userDataModel.setLazyUserDataModel(LazyTenantingUserDataModel);
 
         userDataModel.onRowSelect(event);
-
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.USERS_SELECTED_MESSAGE.getValue(), captured.getSummary());
+        assertNotNull(userDataModel.getSelectedUser());
     }
 
     /**
@@ -482,17 +458,21 @@ public class UserDataModelTest {
      */
     @Test
     public void testSendUpdatePasswordEmail() {
-        User user = new User(); user.setId(1L);
-        userDataModel.setSelectedUser(user);
-        when(userRESTServiceAccess.sendUpdatePasswordEmail(user.getId())).thenReturn(true);
+        User user = new User();
+        user.setId( 1L );
+        userDataModel.setSelectedUser( user );
+        when( userRESTServiceAccess.sendUpdatePasswordEmail( user.getId() ) ).thenReturn( true );
         userDataModel.sendUpdatePasswordEmail();
 
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass( FacesMessage.class );
+        verify( facesContext ).addMessage( nullable( String.class ), facesMessageCaptor.capture() );
 
         FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.USER_SEND_UPDATE_PASSWORD_EMAIL_SUCCESS.getValue(), captured.getSummary());
+        assertEquals( FacesMessage.SEVERITY_INFO, captured.getSeverity() );
+        assertEquals( DataModelEnum.SENT_UPDATE_PASSWORD_EMAIL_SUCCESS.getValue(), captured.getSummary() );
+
+        userDataModel.setSelectedUser(null);
+        userDataModel.sendUpdatePasswordEmail();
     }
 
     /**
@@ -511,6 +491,7 @@ public class UserDataModelTest {
         assertEquals(expectedMessage, userDataModel.getResetPasswordMessage());
     }
 
+
     /**
      * Test for method {@link UserDataModel#sendUpdatePasswordEmail()}
      */
@@ -526,7 +507,7 @@ public class UserDataModelTest {
 
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.USER_SEND_UPDATE_PASSWORD_EMAIL_ERROR.getValue(), captured.getSummary());
+        assertEquals(DataModelEnum.SENT_UPDATE_PASSWORD_EMAIL_ERROR.getValue(), captured.getSummary());
     }
 
     /**
@@ -538,17 +519,15 @@ public class UserDataModelTest {
         userDataModel.setSelectedUser(user);
         when(userRESTServiceAccess.deleteUser(user.getId())).thenReturn(true);
         userDataModel.deleteUser();
+        assertNotNull(userDataModel.getSelectedUser());
 
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.DELETE_SUCCESS.getValue(), captured.getSummary());
+        userDataModel.setSelectedUser(null);
+        userDataModel.deleteUser();
+        assertNull(userDataModel.getSelectedUser());
     }
 
     /**
-     * Test for method {@link UserDataModel#sendUpdatePasswordEmail()}
+     * Test for method {@link UserDataModel#deleteUser()}
      */
     @Test
     public void testDeleteUserWhenExceptionOccurs() {
@@ -580,13 +559,6 @@ public class UserDataModelTest {
         when(userRESTServiceAccess.updateUser(user)).thenReturn(true);
         userDataModel.updateUser(user);
         assertEquals(currentLoggedUserId, user.getCreateUser());
-
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
     }
 
     /**
@@ -604,16 +576,11 @@ public class UserDataModelTest {
         userDataModel.updateUser(user);
         assertEquals(currentLoggedUserId, user.getLastUpdateUser());
 
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.EDIT_SUCCESS_MESSAGE.getValue(), captured.getSummary());
+        userDataModel.updateUser(null);
     }
 
     /**
-     * Test for method {@link UserDataModel#sendUpdatePasswordEmail()}
+     * Test for method {@link UserDataModel#updateUser(SystemUser)}
      * when exception occurs for insert operation
      */
     @Test
@@ -633,7 +600,7 @@ public class UserDataModelTest {
     }
 
     /**
-     * Test for method {@link UserDataModel#sendUpdatePasswordEmail()}
+     * Test for method {@link UserDataModel#updateUser(SystemUser)}
      * when exception occurs for edit/update operation
      */
     @Test
@@ -652,6 +619,10 @@ public class UserDataModelTest {
         assertEquals(DataModelEnum.EDIT_ERROR_MESSAGE.getValue(), captured.getSummary());
     }
 
+    /**
+     * Test for method
+     * {@link UserDataModel#userRoles()}
+     */
     @Test
     public void testUserRoles(){
         SystemUser user = new User(); user.setId(2L);
@@ -663,6 +634,10 @@ public class UserDataModelTest {
 
     }
 
+    /**
+     * Test for method
+     * {@link UserDataModel#userUnAssign()}
+     */
     @Test
     public void testUserUnAssign(){
         SystemUser user = new User(); user.setId(2L);
@@ -672,5 +647,81 @@ public class UserDataModelTest {
         userDataModel.setSelectedUser(null);
         assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userUnAssign());
 
+    }
+
+    /**
+     * Test for method
+     * {@link UserDataModel#userEmailUpdate()}
+     */
+    @Test
+    public void testUserEmailUpdate(){
+        SystemUser user = new User(); user.setId(2L);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USER_EMAIL_UPDATE.getValue(), userDataModel.userEmailUpdate());
+
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userEmailUpdate());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#updateUserEmailAndExecuteActionEmailVerify(SystemUser)}
+     */
+    @Test
+    public void testSendUpdateUserEmailVerify() {
+        User user = new User(); user.setId(1L); user.setUserEmail("myemail@email.com");
+        userDataModel.setSelectedUser(user);
+        when(userRESTServiceAccess.updateUserEmailAndExecuteActionEmailVerify(user.getId(), "myemail@email.com")).thenReturn(true);
+        userDataModel.updateUserEmailAndExecuteActionEmailVerify(user);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class );
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture() );
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals(DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_SUCCESS.getValue(), captured.getSummary());
+
+    }
+
+    /**
+     * Test for method {@link UserDataModel#updateUserEmailAndExecuteActionEmailVerify(SystemUser)}
+     */
+    @Test
+    public void testSendUpdateUserEmailVerifyWithVariousUserOptions() {
+        User user = new User(); user.setId(1L); user.setUserEmail("myemail@email.com");
+        when(userRESTServiceAccess.updateUserEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail())).thenReturn(true);
+
+        User userWithUserId = new User(); userWithUserId.setId(1L);
+        userDataModel.updateUserEmailAndExecuteActionEmailVerify(userWithUserId);
+        User userWithUserEmail = new User(); userWithUserId.setUserEmail("myemail@email.com");
+        userDataModel.updateUserEmailAndExecuteActionEmailVerify(userWithUserEmail);
+    }
+
+    /**
+     * Test for method {@link UserDataModel#sendUpdatePasswordEmail()}
+     */
+    @Test
+    public void testSendUpdateUserEmailVerifyWhenExceptionOccurs() {
+        User user = new User(); user.setId(1L); user.setUserEmail("myemail@email.com");
+        userDataModel.setSelectedUser(user);
+        when(userRESTServiceAccess.updateUserEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail())).thenThrow(new RuntimeException("error"));
+        userDataModel.updateUserEmailAndExecuteActionEmailVerify(user);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass( FacesMessage.class );
+        verify( facesContext ).addMessage(nullable( String.class ), facesMessageCaptor.capture() );
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals( FacesMessage.SEVERITY_ERROR, captured.getSeverity() );
+        assertEquals( DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_ERROR.getValue(), captured.getSummary() );
+    }
+
+    /**
+     * Test for method
+     * {@link UserDataModel#isAllowedToUpdateUserEmail()}
+     * {@link UserDataModel#setAllowedToUpdateUserEmail(boolean)}
+     */
+    @Test
+    public void testGetterSetterAllowedToUpdateUserEmail() {
+        this.userDataModel.setAllowedToUpdateUserEmail(true);
+        assertTrue(this.userDataModel.isAllowedToUpdateUserEmail());
     }
 }
