@@ -30,6 +30,9 @@ import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +46,9 @@ import javax.inject.Inject;
  */
 @Stateless
 public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessService {
-    
+
+    protected Logger log = LoggerFactory.getLogger(TenantRoleBusinessService.class);
+
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
 
@@ -167,6 +172,8 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
      */
     public List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws RoleNotFoundException {
         checkIfMandatoryParametersWereInformed(userId);
+        String msg = String.format("Get Roles for User:%d Tenant:%d",userId,tenantId);
+        log.info(msg);
         List<Long> ids = this.getTenantRoleServiceAccess().getRoleIdsForUserTenant(userId, tenantId);
         if(ids == null || ids.isEmpty()){
             return new ArrayList<>();
