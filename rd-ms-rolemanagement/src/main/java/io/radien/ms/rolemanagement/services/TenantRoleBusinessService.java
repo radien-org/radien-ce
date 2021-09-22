@@ -165,12 +165,14 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
      * @param tenantId Tenant identifier
      * @return List containing roles
      */
-    public List<SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws RoleNotFoundException {
+    public List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws RoleNotFoundException {
         checkIfMandatoryParametersWereInformed(userId);
         List<Long> ids = this.getTenantRoleServiceAccess().getRoleIdsForUserTenant(userId, tenantId);
-
-        return Collections.unmodifiableList(getRoleServiceAccess().getSpecificRoles(new RoleSearchFilter(null,
-                null, ids, true,true)));
+        if(ids == null || ids.isEmpty()){
+            return new ArrayList<>();
+        }
+        return getRoleServiceAccess().getSpecificRoles(new RoleSearchFilter(null,
+                null, ids, true,true));
     }
 
     /**

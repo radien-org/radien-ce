@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.LoginHook;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
@@ -28,6 +29,8 @@ import java.io.IOException;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.ExternalContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -93,6 +96,24 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 				Optional<SystemUser> userBySub = userClientService.getUserBySub(userIdSubject);
 				if(userBySub.isPresent()) {
 					systemUser = userBySub.get();
+				}
+				String loginHook = getOAF().getProperty(OAFProperties.LOGIN_HOOK_ACTIVE);
+				if("true".equalsIgnoreCase(loginHook)){
+					Instance<LoginHook> hooks = CDI.current().select(LoginHook.class);
+					for(LoginHook hook:hooks){
+						int idx = hook.getClass().getSimpleName().indexOf("$");
+						String name;
+						if (idx != -1) {
+							name = hook.getClass().getSimpleName().substring(0, idx);
+						} else {
+							name = hook.getClass().getSimpleName();
+						}
+						String msg = String.format("Starting execution of %s",name);
+						log.info(msg);
+						hook.execute();
+						msg = String.format("Finished execution of %s",name);
+						log.info(msg);
+					}
 				}
 			} else {
 				systemUser = existingUser.get();
