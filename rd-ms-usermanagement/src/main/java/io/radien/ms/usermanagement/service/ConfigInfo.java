@@ -19,12 +19,15 @@ public class ConfigInfo {
     public void init(){
         Iterator<ConfigSource> iterator = ConfigProvider.getConfig().getConfigSources().iterator();
         log.info("Configuration sources begin");
+        StringBuilder stringBuilder = new StringBuilder();
         while (iterator.hasNext()){
             ConfigSource current = iterator.next();
-            log.info(current.getName());
+            stringBuilder.append(String.format("Source %s%n",current.getName()));
             for (String property : current.getProperties().keySet()) {
-                log.info("\t" + property);
+                stringBuilder.append(String.format("\tkey: %s%n", property));
             }
         }
+        String msg = stringBuilder.toString();
+        log.info(msg);
     }
 }
