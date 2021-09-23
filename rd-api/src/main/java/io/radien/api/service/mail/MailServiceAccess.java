@@ -73,6 +73,15 @@ public interface MailServiceAccess extends ServiceAccess {
 
 	/**
 	 * Mail service creation constructor
+	 * @param tO whom should the email be sent
+	 * @param template to be used
+	 * @return email object to be sent
+	 */
+	Mail create(String tO, SystemMailTemplate template);
+
+
+	/**
+	 * Mail service creation constructor
 	 * @param from should the email be sent
 	 * @param tO whom the email should be sent
 	 * @param subject of the email
