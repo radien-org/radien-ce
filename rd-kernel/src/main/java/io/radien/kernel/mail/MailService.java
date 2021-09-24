@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class MailService implements MailServiceAccess {
         props.setProperty("mail.smtp.auth", baseApp.getProperty(OAFProperties.SYS_MAIL_SMTP_AUTH));
         props.setProperty("mail.smtp.starttls.enable", baseApp.getProperty(OAFProperties.SYS_MAIL_STARTTLS_ENABLE));
         props.setProperty("mail.smtp.port", baseApp.getProperty(OAFProperties.SYS_MAIL_SMTP_PORT));
-
+        props.setProperty("mail.debug",Boolean.toString(log.isInfoEnabled()));
         Session session = Session.getDefaultInstance(props, new SMTPAuthenticator());
         session.setDebug(log.isInfoEnabled());
 
@@ -101,6 +102,11 @@ public class MailService implements MailServiceAccess {
                 message.setHeader("Content-Type", "text/html; charset=UTF-8");
 
             }
+
+            // send a multipart message// create and fill the first message part
+            MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            mimeBodyPart.setText(mailMessage.getBody(), StandardCharsets.UTF_8.toString(), mailMessage.getContentType().type());
+            multiPart.addBodyPart(mimeBodyPart);
 
             File file;
             if (mailMessage.getAttachments() != null && !mailMessage.getAttachments().isEmpty()) {
@@ -134,11 +140,13 @@ public class MailService implements MailServiceAccess {
                 }
             }
 
+
             // add the Multipart to the message
             message.setContent(multiPart);
 
+            log.info("Initiating Mail transport");
             Transport.send(message);
-
+            log.info("Finished Mail transport");
         } catch (Exception mex) {
             log.error("Error sending email", mex);
 
