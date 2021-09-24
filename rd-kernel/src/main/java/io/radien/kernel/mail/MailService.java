@@ -37,6 +37,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.mail.*;
 import javax.mail.internet.*;
+import javax.ws.rs.core.MediaType;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -98,14 +99,14 @@ public class MailService implements MailServiceAccess {
             // create the Multipart
             Multipart multiPart = new MimeMultipart();
 
-            if (mailMessage.getContentType() == MailContentType.HTML) {
-                message.setHeader("Content-Type", "text/html; charset=UTF-8");
-
-            }
 
             // send a multipart message// create and fill the first message part
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
-            mimeBodyPart.setText(mailMessage.getBody(), StandardCharsets.UTF_8.toString(), mailMessage.getContentType().type());
+            if(mailMessage.getContentType() == MailContentType.HTML) {
+                mimeBodyPart.setContent(mailMessage.getBody(), MediaType.TEXT_HTML+";charset="+StandardCharsets.UTF_8.name());
+            } else {
+                mimeBodyPart.setText(mailMessage.getBody(), StandardCharsets.UTF_8.toString(), mailMessage.getContentType().type());
+            }
             multiPart.addBodyPart(mimeBodyPart);
 
             File file;

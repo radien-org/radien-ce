@@ -112,9 +112,9 @@ public abstract class AbstractMailFactory {
 		// GENERIC
 		return ("<html><head><style type=\"text/css\">" + getHTMLBodyStyle() + getHTMLContentWrapperStyle()
 				+ getHTMLFooterStyle() + "</style></head><body>"
-				+ "<div class=\"content-wrapper\"><table><tr><td><img src=\"cid:image\"></td>"
+				+ "<div class=\"content-wrapper\"><table><tr><td>&nbsp;</td>"
 				+ "</tr><tr><td></td></tr><tr><td>" + htmlMessage + "</td></tr><tr>"
-				+ "<td></td></tr><tr><td><center><div class=\"footer\">" + "&copy;&nbsp;openappframe.org <br>"
+				+ "<td></td></tr><tr><td><center><div class=\"footer\">" + "&copy;&nbsp;radien.io <br>"
 				+ "</div></center></td></tr></table></div></body></html>");
 	}
 

@@ -102,6 +102,9 @@
 		<!-- Security -->
 		<version.jwks-rsa>0.15.0</version.jwks-rsa>
 
+		<!-- Templating -->
+		<version.antlr.st4>4.3.1</version.antlr.st4>
+
 		<!-- test -->
 		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
 		<version.junit>4.13.1</version.junit>
@@ -349,6 +352,14 @@
 				<groupId>com.auth0</groupId>
 				<artifactId>jwks-rsa</artifactId>
 				<version>${version.jwks-rsa}</version>
+			</dependency>
+
+			<!-- Templating -->
+			<!-- https://mvnrepository.com/artifact/org.antlr/ST4 -->
+			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>ST4</artifactId>
+				<version>${version.antlr.st4}</version>
 			</dependency>
 
 			<!-- Logging -->
