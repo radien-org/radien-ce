@@ -23,6 +23,8 @@ import io.radien.ms.tenantmanagement.client.services.ActiveTenantResourceClient;
 import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -38,6 +40,7 @@ import java.net.URL;
 @Named("ContractClientServiceUtil")
 public class ClientServiceUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(ClientServiceUtil.class);
     /**
      * Gets a Rest Client for Contracts
      * @param urlStr url of rest endpoint
@@ -45,6 +48,7 @@ public class ClientServiceUtil {
      * @throws MalformedURLException in case of any url issue
      */
     public ContractResourceClient getContractResourceClient(String urlStr) throws MalformedURLException {
+        log.info(urlStr);
         URL url = new URL(urlStr);
         return RestClientBuilder.
                 newBuilder()
@@ -61,6 +65,7 @@ public class ClientServiceUtil {
      * @throws MalformedURLException in case of any url issue
      */
     public TenantResourceClient getTenantResourceClient(String urlStr) throws MalformedURLException {
+        log.info(urlStr);
         URL url = new URL(urlStr);
         return RestClientBuilder.
                 newBuilder()
@@ -77,6 +82,7 @@ public class ClientServiceUtil {
      * @throws MalformedURLException in case of any url issue
      */
     public ActiveTenantResourceClient getActiveTenantResourceClient(String urlStr) throws MalformedURLException {
+        log.info(urlStr);
         URL url = new URL(urlStr);
         return RestClientBuilder.
                 newBuilder()
