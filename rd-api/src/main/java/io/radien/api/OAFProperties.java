@@ -139,7 +139,8 @@ public enum OAFProperties implements SystemProperties{
     SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS("system.jcr.document.autocreate.folder.names"),
     SYSTEM_CMS_CFG_NODE_APP_INFO("system.jcr.node.appinfo"),
     SYSTEM_CMS_CFG_NODE_STATIC_CONTENT("system.jcr.node.staticcontent"),
-    SYSTEM_CMS_CFG_NODE_TAG("system.jcr.node.tag");
+    SYSTEM_CMS_CFG_NODE_TAG("system.jcr.node.tag"),
+    LOGIN_HOOK_ACTIVE("login_hook_active");
 
     private String propKey;
 

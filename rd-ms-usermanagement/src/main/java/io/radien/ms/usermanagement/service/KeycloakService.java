@@ -22,6 +22,8 @@ import io.radien.api.KeycloakConfigs;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 
@@ -32,21 +34,27 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class KeycloakService {
-
+    private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
     /**
      * Method to retrieve active keycloak client
      * @return the active keycloak client session
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     private KeycloakClient getKeycloakClient() throws RemoteResourceException {
+
+
+        String idpUrl =getProperty(KeycloakConfigs.IDP_URL);
+        String tokenPath= getProperty(KeycloakConfigs.TOKEN_PATH);
+        String userPath = getProperty(KeycloakConfigs.USER_PATH);
+        log.info("Idp url:{} tokenPath:{} userPath:{}",idpUrl,tokenPath,userPath);
         KeycloakClient client = new KeycloakClient()
                 .clientId(getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
                 .username(getProperty(KeycloakConfigs.ADMIN_USER))
                 .password(getProperty(KeycloakConfigs.ADMIN_PASSWORD))
                 //TODO : ADD missing configurations
-                .idpUrl(getProperty(KeycloakConfigs.IDP_URL))
-                .tokenPath(getProperty(KeycloakConfigs.TOKEN_PATH))
-                .userPath(getProperty(KeycloakConfigs.USER_PATH))
+                .idpUrl(idpUrl)
+                .tokenPath(tokenPath)
+                .userPath(userPath)
                 .radienClientId(getProperty(KeycloakConfigs.RADIEN_CLIENT_ID))
                 .radienSecret(getProperty(KeycloakConfigs.RADIEN_SECRET))
                 .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH));
