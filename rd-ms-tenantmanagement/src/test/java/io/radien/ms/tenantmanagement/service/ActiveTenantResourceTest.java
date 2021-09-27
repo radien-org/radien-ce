@@ -89,7 +89,7 @@ public class ActiveTenantResourceTest {
      */
     @Test
     public void testGet() {
-        Response response = activeTenantResource.get(2L,2L,"test", false,true);
+        Response response = activeTenantResource.getActiveTenant(2L,2L,"test", false,true,false);
         assertEquals(200,response.getStatus());
     }
 
@@ -99,7 +99,7 @@ public class ActiveTenantResourceTest {
     @Test
     public void testGetException() {
         when(activeTenantServiceAccess.get((SystemActiveTenantSearchFilter) any())).thenThrow(new RuntimeException());
-        Response response = activeTenantResource.get(2L,2L,"test", false,true);
+        Response response = activeTenantResource.getActiveTenant(2L,2L,"test", false,true,false);
         assertEquals(500,response.getStatus());
     }
 
