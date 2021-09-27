@@ -210,7 +210,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 			if (filter.isExact() && !name.equals(TENANT_NAME.getFieldName())) {
 				subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
 			} else {
-				subPredicate = criteriaBuilder.like(activeTenantRoot.get(name), "%" + value + "%");
+				subPredicate = criteriaBuilder.like(criteriaBuilder.lower(activeTenantRoot.get(name)), "%" + value.toString().toLowerCase() + "%");
 			}
 
 			if (filter.isLogicConjunction()) {
