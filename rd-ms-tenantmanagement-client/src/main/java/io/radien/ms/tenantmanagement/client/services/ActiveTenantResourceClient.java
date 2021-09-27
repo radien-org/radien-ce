@@ -71,12 +71,14 @@ public interface ActiveTenantResourceClient {
      * @return 200 response code in case of success or 500 in case of any issue
      */
     @GET
-    @Path("/get")
-    public Response get(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId,
+    @Path("/find")
+    public Response getActiveTenant(@QueryParam("userId") Long userId,
+    					@QueryParam("tenantId") Long tenantId,
                         @QueryParam("tenantName") String tenantName,
                         @DefaultValue("false") @QueryParam("isTenantActive") boolean isTenantActive,
+                        @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
-
+    
     /**
      * Gets active tenant based on the given id
      * @param id to be searched for

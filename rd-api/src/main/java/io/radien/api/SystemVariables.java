@@ -43,6 +43,7 @@ public enum SystemVariables {
     PAGE_RESULTS("results", "Results"),
     TENANT_ID("tenantId", "Tenant ID"),
     TENANT_NAME("tenantName", "Tenant Name"),
+    IS_TENANT_ACTIVE("isTenantActive", "Is Tenant Active"),
     ROLE_ID("roleId", "Role ID"),
     ROLE_NAME("roleName", "Role Name"),
     USER_ID("userId", "User ID"),
