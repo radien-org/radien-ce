@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -59,8 +58,6 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 	@Inject
 	private EntityManagerHolder emh;
-	@PersistenceContext(unitName = "persistenceUnit")
-	private EntityManager entityManager;
 
 	/**
 	 * Gets the System Active Tenant searching by the PK (id).
@@ -150,7 +147,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	@Override
 	public List<? extends SystemActiveTenant> get(SystemActiveTenantSearchFilter filter) {
 
-		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		EntityManager em = emh.getEm();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<ActiveTenantEntity> criteriaQuery = criteriaBuilder.createQuery(ActiveTenantEntity.class);
 		Root<ActiveTenantEntity> activeTenantRoot = criteriaQuery.from(ActiveTenantEntity.class);
 
@@ -159,7 +157,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 		Predicate global = getFilteredPredicate((ActiveTenantSearchFilter) filter, criteriaBuilder, activeTenantRoot);
 
 		criteriaQuery.where(global);
-		TypedQuery<ActiveTenantEntity> q = entityManager.createQuery(criteriaQuery);
+		TypedQuery<ActiveTenantEntity> q = em.createQuery(criteriaQuery);
 
 		return q.getResultList();
 	}
