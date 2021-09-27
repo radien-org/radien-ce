@@ -667,10 +667,10 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      * Test for method {@link UserDataModel#updateUserEmailAndExecuteActionEmailVerify(SystemUser)}
      */
     @Test
-    public void testSendUpdateUserEmailVerify() {
+    public void testSendUpdateUserEmailVerify() throws SystemException {
         User user = new User(); user.setId(1L); user.setUserEmail("myemail@email.com");
         userDataModel.setSelectedUser(user);
-        when(userRESTServiceAccess.updateUserEmailAndExecuteActionEmailVerify(user.getId(), "myemail@email.com")).thenReturn(true);
+        when(userRESTServiceAccess.updateEmailAndExecuteActionEmailVerify(user.getId(), "myemail@email.com")).thenReturn(true);
         userDataModel.updateUserEmailAndExecuteActionEmailVerify(user);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class );
@@ -686,9 +686,9 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      * Test for method {@link UserDataModel#updateUserEmailAndExecuteActionEmailVerify(SystemUser)}
      */
     @Test
-    public void testSendUpdateUserEmailVerifyWithVariousUserOptions() {
+    public void testSendUpdateEmailVerifyWithVariousUserOptions() throws SystemException {
         User user = new User(); user.setId(1L); user.setUserEmail("myemail@email.com");
-        when(userRESTServiceAccess.updateUserEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail())).thenReturn(true);
+        when(userRESTServiceAccess.updateEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail())).thenReturn(true);
 
         User userWithUserId = new User(); userWithUserId.setId(1L);
         userDataModel.updateUserEmailAndExecuteActionEmailVerify(userWithUserId);
@@ -700,13 +700,13 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     }
 
     /**
-     * Test for method {@link UserDataModel#sendUpdatePasswordEmail()}
+     * Test for method {@link UserDataModel#updateUserEmailAndExecuteActionEmailVerify(SystemUser)}
      */
     @Test
-    public void testSendUpdateUserEmailVerifyWhenExceptionOccurs() {
+    public void testSendUpdateEmailVerifyWhenExceptionOccurs() throws SystemException {
         User user = new User(); user.setId(1L); user.setUserEmail("myemail@email.com");
         userDataModel.setSelectedUser(user);
-        when(userRESTServiceAccess.updateUserEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail())).thenThrow(new RuntimeException("error"));
+        when(userRESTServiceAccess.updateEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail())).thenThrow(new RuntimeException("error"));
         userDataModel.updateUserEmailAndExecuteActionEmailVerify(user);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass( FacesMessage.class );

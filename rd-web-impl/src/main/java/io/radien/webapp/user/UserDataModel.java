@@ -491,7 +491,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public void updateUserEmailAndExecuteActionEmailVerify(SystemUser user){
         try{
             if(user.getId() != null && user.getUserEmail() != null){
-                service.updateUserEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail());
+                service.updateEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail());
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_SUCCESS.getValue()),
                         JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }

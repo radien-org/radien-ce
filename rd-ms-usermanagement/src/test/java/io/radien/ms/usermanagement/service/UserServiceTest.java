@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
+import org.keycloak.representations.idm.UserRepresentation;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
@@ -674,5 +675,15 @@ public class UserServiceTest {
         assertNotNull(page);
         assertEquals((firstSetSize + secondSetSize) - 6, page.getTotalResults());
 
+    }
+
+    /**
+     * Test method {@link UserService#updateEmail(SystemUser)}
+     * @throws UserNotFoundException
+     */
+    @Test
+    public void testUpdateEmail() throws UserNotFoundException {
+        SystemUser result = userServiceAccess.get(uTest.getId());
+        userServiceAccess.updateEmail(result);
     }
 }

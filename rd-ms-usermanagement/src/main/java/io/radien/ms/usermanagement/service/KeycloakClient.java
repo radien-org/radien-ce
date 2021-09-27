@@ -16,6 +16,7 @@
 package io.radien.ms.usermanagement.service;
 
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 
 
@@ -328,14 +329,14 @@ public class KeycloakClient {
     /**
      * Keycloak updates specific and requested user email and emailVerified object
      * @param sub of the user information to be updated
-     * @param jsonString jsonString information to be added or updated
+     * @param userRepresentation information to be added or updated
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public void updateUserEmailAndEmailVerifiedAttribute(String sub, String jsonString) throws RemoteResourceException {
+    public void updateEmailAndExecuteActionEmailVerify(String sub, UserRepresentation userRepresentation) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .body(jsonString)
+                .body(userRepresentation)
                 .asString();
         if(!response.isSuccess()){
             throw new RemoteResourceException(GenericErrorCodeMessage.ERROR_SEND_UPDATE_EMAIL_VERIFY.toString());
@@ -347,7 +348,7 @@ public class KeycloakClient {
      * @param sub of the user to be found
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public void sendUpdatedEmailVerify(String sub) throws RemoteResourceException {
+    public void sendUpdatedEmailToVerify(String sub) throws RemoteResourceException {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub + "/execute-actions-email")
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)

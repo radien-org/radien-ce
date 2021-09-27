@@ -385,25 +385,15 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
     }
 
     /**
-     *
+     * Send the update user email to the active/requested user
      * @param userId of the user to update and execute action email verify
      * @param userEmail of the user to update an email
      * @return true in case of success
+     * @throws SystemException in case of token expiration or any issue on the application
      */
     @Override
-    public boolean updateUserEmailAndExecuteActionEmailVerify(long userId, String userEmail) {
-        boolean setUserEmailAndExecuteActionEmailVerify = false;
-        try {
-            setUserEmailAndExecuteActionEmailVerify = updateUserEmailAndVerify(userId, userEmail);
-        } catch (TokenExpiredException e) {
-            try {
-                refreshToken();
-                setUserEmailAndExecuteActionEmailVerify = updateUserEmailAndVerify(userId, userEmail);
-            } catch (SystemException | TokenExpiredException tokenExpiredException) {
-                log.error(tokenExpiredException.getMessage(), tokenExpiredException);
-            }
-        }
-        return setUserEmailAndExecuteActionEmailVerify;
+    public boolean updateEmailAndExecuteActionEmailVerify(long userId, String userEmail) throws SystemException {
+        return get(this::updateUserEmailAndVerify, userId, userEmail);
     }
 
     /**
@@ -412,17 +402,17 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @param userEmail of the user to update an email
      * @return true in case of success
      */
-    private boolean updateUserEmailAndVerify(long userId, String userEmail) {
+    private boolean updateUserEmailAndVerify(long userId, String userEmail) throws SystemException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-            Response response = client.updateUserEmailAndExecuteActionEmailVerify(userId, userEmail);
+            Response response = client.updateEmailAndExecuteActionEmailVerify(userId, userEmail, true);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
                 logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
-            log.error( e.getMessage(), e );
+            throw new SystemException(e);
         }
         return false;
     }

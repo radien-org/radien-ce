@@ -282,11 +282,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @return ok in case the email has been updated with the email verification sent
 	 */
 	@Override
-	public Response updateUserEmailAndExecuteActionEmailVerify(long userId, String userEmail){
+	public Response updateEmailAndExecuteActionEmailVerify(long userId, String userEmail, boolean emailVerify){
 		try {
 			SystemUser user = userBusinessService.get(userId);
 			user.setUserEmail(userEmail);
-			userBusinessService.updateUserEmailAndExecuteActionEmailVerify(new UserEntity((io.radien.ms.usermanagement.client.entities.User) user));
+			userBusinessService.updateEmailAndExecuteActionEmailVerify(new UserEntity((io.radien.ms.usermanagement.client.entities.User) user), emailVerify);
 			return Response.ok().build();
 		} catch(Exception e) {
 			return getResponseFromException(e);

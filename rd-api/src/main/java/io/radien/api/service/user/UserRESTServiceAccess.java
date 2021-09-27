@@ -103,8 +103,9 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @param userId to be set
      * @param userEmail to be set
      * @return true in case of success
+     * @throws SystemException in case of token expiration or any issue on the application
      */
-    public boolean updateUserEmailAndExecuteActionEmailVerify(long userId, String userEmail);
+    public boolean updateEmailAndExecuteActionEmailVerify(long userId, String userEmail) throws SystemException;
 
     /**
      * Deletes the requested user from the db

@@ -29,7 +29,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
-
 /**
  * User service requests between the rest services and the db
  *
@@ -176,10 +175,10 @@ public class UserBusinessService implements Serializable {
 	 * @param user to be update email
 	 * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
 	 */
-	public void updateUserEmailAndExecuteActionEmailVerify(User user) throws RemoteResourceException {
-		boolean creation = user.getId() == null;
-		if(!creation){
-			keycloakService.updateUserEmailAndExecuteActionEmailVerify(user);
+	public void updateEmailAndExecuteActionEmailVerify(User user, boolean emailVerify) throws RemoteResourceException, UserNotFoundException, UniquenessConstraintException {
+		if(user.getId() != null){
+			userServiceAccess.updateEmail(user);
+			keycloakService.updateEmailAndExecuteActionEmailVerify(user,emailVerify);
 		}
 	}
 

@@ -25,6 +25,7 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -331,17 +332,28 @@ public class UserBusinessServiceTest extends TestCase {
      * Test method updateUserEmailAndExecuteActionEmailVerify()
      */
     @Test
-    public void testUpdateUserEmailAndExecuteActionEmailVerify() throws Exception {
-        User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
-        when(userServiceAccess.get((Long) any())).thenReturn(user);
-        doNothing().when(keycloakService,"updateUserEmailAndExecuteActionEmailVerify", ArgumentMatchers.any());
+    public void testUpdateEmailAndExecuteActionEmailVerify() throws Exception {
+        User user = new UserEntity();
+        user.setId(1L);
+        user.setLogon("logon");
+        user.setUserEmail("email@email.com");
+        doNothing().when(userServiceAccess,"updateEmail", ArgumentMatchers.any());
         boolean success = true;
         try {
-            userBusinessService.updateUserEmailAndExecuteActionEmailVerify(user);
+            userBusinessService.updateEmailAndExecuteActionEmailVerify(user, true);
         } catch (Exception e) {
             success = false;
         }
         assertTrue(success);
+    }
+
+    /**
+     * Test method updateUserEmailAndExecuteActionEmailVerify()
+     */
+    @Test(expected = NullPointerException.class)
+    public void testUpdateUserEmailAndExecuteActionEmailVerifyException() throws Exception {
+        SystemUser user = new UserEntity();
+        userBusinessService.updateEmailAndExecuteActionEmailVerify((User) user, true);
     }
 
 

@@ -22,6 +22,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -46,7 +47,6 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface UserResourceClient {
-
     /**
      * Will request the service to retrieve all the users into a paginated response.
      *
@@ -145,15 +145,16 @@ public interface UserResourceClient {
     public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
 
     /**
-     * Will updated email and also send email to verify to the user in case of success will return a 204 code message
-     * @param id userId of the user to update and execute action email verify
-     * @param userEmail of the user to update an email
-     * @return ok in case the email has been updated with the email verification sent
+     * Will updated email and also send email to verify to the user in case of success will return a 200 code message
+     * @param id information to be updated
+     * @param email information to be updated
+     * @param emailVerify query parameter
+     * @return ok in case the email has been sent with the refreshed password
      */
-    @PUT
-    @Path("/{id}/updateUserEmail/{userEmail}/executeActionEmailVerify")
-    public Response updateUserEmailAndExecuteActionEmailVerify(@NotNull @PathParam("id") long id,
-                                                               @NotNull @PathParam("userEmail") String userEmail);
+    @PATCH
+    @Path("/{id}")
+    public Response updateEmailAndExecuteActionEmailVerify(@PathParam("id") long id, String email,
+                                                           @DefaultValue("true") @QueryParam("emailVerify") boolean emailVerify);
 
     /**
      * Will update the refresh token, to update the access of the specific user

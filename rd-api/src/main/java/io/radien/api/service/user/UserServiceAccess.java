@@ -106,4 +106,11 @@ public interface UserServiceAccess extends ServiceAccess {
      */
     public BatchSummary create(List<? extends SystemUser> users);
 
+    /**
+     * Saves/Updates the requested information into the db
+     * @param user information
+     * @throws UserNotFoundException in case of update and the user is not found
+     */
+    public void updateEmail(SystemUser user) throws UserNotFoundException;
+
 }

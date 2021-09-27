@@ -126,48 +126,74 @@ public class KeycloakClientTest {
     }
 
     /**
-     * Test for method {@link KeycloakClient#sendUpdatedEmailVerify(String)}
+     * Test for method {@link KeycloakClient#sendUpdatedEmailToVerify(String)}
      * @throws Exception if any error occurs
      */
     @Test
     public void testSendUpdatedEmailVerify() throws Exception {
         prepareMockObjectsForUpdatePasswordAndEmailVerify(true, inputBody_EmailVerify);
-        keycloakClient.sendUpdatedEmailVerify("test");
+        keycloakClient.sendUpdatedEmailToVerify("test");
         assertEquals("TOKEN", keycloakClient.getAccessToken());
     }
 
     /**
-     * Test for method {@link KeycloakClient#sendUpdatedEmailVerify(String)}
+     * Test for method {@link KeycloakClient#sendUpdatedEmailToVerify(String)}
      * Asserts an expected exception
      * @throws Exception if any error occurs
      */
     @Test(expected = RemoteResourceException.class)
     public void testSendUpdatedEmailVerifyException() throws Exception {
         prepareMockObjectsForUpdatePasswordAndEmailVerify(false, inputBody_EmailVerify);
-        keycloakClient.sendUpdatedEmailVerify("test");
+        keycloakClient.sendUpdatedEmailToVerify("test");
     }
 
-    @Test(expected = RemoteResourceException.class)
+    /**
+     * Test for method {@link KeycloakClient#updateUser(String, UserRepresentation)}
+     */
+    @Test
     public void testUpdateUser() throws Exception {
         UserRepresentation userRepresentation = mock(UserRepresentation.class);
-        prepareMockObjectsForUpdateUser(userRepresentation);
+        prepareMockObjectsForUpdateUser(userRepresentation, true);
         when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
         keycloakClient.updateUser("test", userRepresentation);
     }
 
-
+    /**
+     * Test for method {@link KeycloakClient#updateUser(String, UserRepresentation)}
+     */
     @Test(expected = RemoteResourceException.class)
-    public void testUpdateKeyCloakEmailVerifiedAttribute() throws Exception {
-        HttpResponse<String> httpResponse = PowerMockito.mock(HttpResponse.class);
-        httpResponse.isSuccess();
-
-        when(httpRequestWithBody.header(HttpHeaders.AUTHORIZATION, "Bearer TOKEN")).thenReturn(httpRequestWithBody);
-        when(httpRequestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(httpRequestWithBody);
-        when(httpRequestWithBody.body("{}")).thenReturn(requestBodyEntity);
-        when(requestBodyEntity.asString()).thenReturn(httpResponse);
-
+    public void testUpdateUserException() throws Exception {
+        UserRepresentation userRepresentation = mock(UserRepresentation.class);
+        prepareMockObjectsForUpdateUser(userRepresentation, false);
         when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
-        keycloakClient.updateUserEmailAndEmailVerifiedAttribute("test", "{}");
+        keycloakClient.updateUser("test", userRepresentation);
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#updateEmailAndExecuteActionEmailVerify(String, UserRepresentation)}
+     * @throws Exception if any error occurs
+     */
+    @Test
+    public void testUpdateKeyCloakEmailVerifiedAttribute() throws Exception {
+        UserRepresentation userRepresentation = mock(UserRepresentation.class);
+
+        prepareMockObjectsForUpdateEmailAndExecuteActionEmailVerify(userRepresentation, true);
+
+        keycloakClient.updateEmailAndExecuteActionEmailVerify("test", userRepresentation);
+        assertEquals("TOKEN", keycloakClient.getAccessToken());
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#updateEmailAndExecuteActionEmailVerify(String, UserRepresentation)}
+     * @throws Exception if any error occurs
+     */
+    @Test(expected = Exception.class)
+    public void testUpdateKeyCloakEmailVerifiedAttributeException() throws Exception {
+        UserRepresentation userRepresentation = mock(UserRepresentation.class);
+
+        prepareMockObjectsForUpdateEmailAndExecuteActionEmailVerify(userRepresentation, false);
+
+        keycloakClient.updateEmailAndExecuteActionEmailVerify("test", userRepresentation);
     }
 
     /**
@@ -191,10 +217,19 @@ public class KeycloakClientTest {
         when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
     }
 
-    private void prepareMockObjectsForUpdateUser(UserRepresentation userRepresentation){
+    /**
+     * Prepares mock objects for the invoke methods
+     * @param userRepresentation object information
+     */
+    private void prepareMockObjectsForUpdateUser(UserRepresentation userRepresentation, boolean response){
         userRepresentation.setEmailVerified(false);
         HttpResponse<String> httpResponse = PowerMockito.mock(HttpResponse.class);
-        httpResponse.isSuccess();
+
+        if(response){
+            when(httpResponse.isSuccess()).thenReturn(Boolean.TRUE);
+        } else {
+            when(httpResponse.isSuccess()).thenReturn(Boolean.FALSE);
+        }
 
         when(httpRequestWithBody.header(HttpHeaders.AUTHORIZATION, "Bearer TOKEN")).thenReturn(httpRequestWithBody);
         when(httpRequestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(httpRequestWithBody);
@@ -202,4 +237,28 @@ public class KeycloakClientTest {
         when(requestBodyEntity.asString()).thenReturn(httpResponse);
     }
 
+    /**
+     * Prepares mock objects for the invoke methods
+     * @param userRepresentation object information
+     * @param response requested response as boolean flag
+     */
+    private void prepareMockObjectsForUpdateEmailAndExecuteActionEmailVerify(UserRepresentation userRepresentation, boolean response){
+        HttpResponse<String> httpResponse = PowerMockito.mock(HttpResponse.class);
+
+        if(response){
+            when(httpResponse.isSuccess()).thenReturn(Boolean.TRUE);
+        } else {
+            when(httpResponse.isSuccess()).thenReturn(Boolean.FALSE);
+        }
+
+        userRepresentation.setEmail("email@email.com");
+        userRepresentation.setEmailVerified(false);
+
+        when(httpRequestWithBody.header(HttpHeaders.AUTHORIZATION, "Bearer TOKEN")).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.body(userRepresentation)).thenReturn(requestBodyEntity);
+        when(requestBodyEntity.asString()).thenReturn(httpResponse);
+
+        when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
+    }
 }

@@ -37,6 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -385,6 +386,20 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 	}
 
 	/**
+	 * Updates user email attribute in the db
+	 * @param user object info
+	 */
+	@Override
+	public void updateEmail(SystemUser user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<UserEntity> criteriaUpdate = cb.createCriteriaUpdate(UserEntity.class);
+		Root<UserEntity> root = criteriaUpdate.from(UserEntity.class);
+		criteriaUpdate.set(root.get(SystemVariables.USER_EMAIL.getFieldName()), user.getUserEmail());
+		criteriaUpdate.where(cb.equal(root.get(SystemVariables.ID.getFieldName()), user.getId()));
+		em.createQuery(criteriaUpdate).executeUpdate();
+	}
+
+	/**
 	 * Translates a given list of system users that have been tried to be inserted via batch mode
 	 * and will understand individually which one what was the issue for not being inserted in the batch
 	 * insertion
@@ -498,5 +513,4 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 			di.addReason(issueDescription);
 		}
 	}
-
 }

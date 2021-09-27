@@ -613,9 +613,9 @@ public class UserResourceTest {
      * @throws UserNotFoundException in case of searched user is not existent or not found
      */
     @Test
-    public void testUpdateUserEmailAndExecuteActionEmailVerify() throws UserNotFoundException {
+    public void testUpdateEmailAndExecuteActionEmailVerify() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenReturn(new User());
-        Response response = userResource.updateUserEmailAndExecuteActionEmailVerify(1L, "email@email.com");
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, "email@email.com", true);
         assertEquals(200,response.getStatus());
     }
 
@@ -626,7 +626,7 @@ public class UserResourceTest {
     @Test
     public void testUpdateUserEmailAndExecuteActionEmailVerifyGenericError() throws UserNotFoundException {
         doThrow(new RuntimeException()).when(userBusinessService).get(1L);
-        Response response = userResource.updateUserEmailAndExecuteActionEmailVerify(1L, "email@email.com");
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, "email@email.com", false);
         assertEquals(500,response.getStatus());
     }
 
@@ -637,7 +637,7 @@ public class UserResourceTest {
     @Test
     public void testUpdateUserEmailAndExecuteActionEmailVerify404() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
-        Response response = userResource.updateUserEmailAndExecuteActionEmailVerify(1L, "email@email.com");
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, "email@email.com", false);
         assertEquals(404,response.getStatus());
     }
 
