@@ -679,11 +679,14 @@ public class UserServiceTest {
 
     /**
      * Test method {@link UserService#updateEmail(SystemUser)}
-     * @throws UserNotFoundException
+     * @throws UserNotFoundException in case certain user could not be found
      */
-    @Test
+    @Test(expected = UserNotFoundException.class)
     public void testUpdateEmail() throws UserNotFoundException {
         SystemUser result = userServiceAccess.get(uTest.getId());
         userServiceAccess.updateEmail(result);
+
+        userServiceAccess.delete(uTest.getId());
+        userServiceAccess.get(uTest.getId());
     }
 }

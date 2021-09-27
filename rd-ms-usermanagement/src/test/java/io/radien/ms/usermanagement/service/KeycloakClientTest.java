@@ -15,8 +15,6 @@
  */
 package io.radien.ms.usermanagement.service;
 
-import io.radien.api.KeycloakConfigs;
-
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 
@@ -156,6 +154,7 @@ public class KeycloakClientTest {
         prepareMockObjectsForUpdateUser(userRepresentation, true);
         when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
         keycloakClient.updateUser("test", userRepresentation);
+        assertEquals("TOKEN", keycloakClient.getAccessToken());
     }
 
     /**
