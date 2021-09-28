@@ -290,7 +290,7 @@ public class JSFUtil {
 		addMessage(severity, title, message);
 	}
 
-	public void redirect(String destination){
+	public static void redirect(String destination){
 		getFacesContext().getApplication().getNavigationHandler().handleNavigation(JSFUtil.getFacesContext(), null, destination);
 	}
 }
