@@ -119,11 +119,11 @@ public class KeycloakService {
      * @param user to be update email
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public void updateEmailAndExecuteActionEmailVerify(SystemUser user, boolean emailVerify) throws RemoteResourceException{
+    public void updateEmailAndExecuteActionEmailVerify(String user, String sub, boolean emailVerify) throws RemoteResourceException{
         UserRepresentation userRepresentation = KeycloakFactory.convertUpdateEmailToUserRepresentation(user, emailVerify);
         KeycloakClient client = getKeycloakClient();
-        client.updateEmailAndExecuteActionEmailVerify(user.getSub(), userRepresentation);
-        client.sendUpdatedEmailToVerify(user.getSub());
+        client.updateEmailAndExecuteActionEmailVerify(sub, userRepresentation);
+        client.sendUpdatedEmailToVerify(sub);
     }
 
     /**

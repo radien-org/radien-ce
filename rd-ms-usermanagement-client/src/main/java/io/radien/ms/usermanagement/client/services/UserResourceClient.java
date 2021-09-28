@@ -144,15 +144,14 @@ public interface UserResourceClient {
     public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
 
     /**
-     * Will updated email and also send email to verify to the user in case of success will return a 200 code message
+     * Will updated email and also send email to verify to the user in case of success will return a 204 code message
      * @param id information to be updated
-     * @param email information to be updated
-     * @param emailVerify query parameter
+     * @param user information to be updated
      * @return ok in case the email has been sent with the refreshed password
      */
     @PATCH
     @Path("/{id}")
-    public Response updateEmailAndExecuteActionEmailVerify(@PathParam("id") long id, String email,
+    public Response updateEmailAndExecuteActionEmailVerify(@PathParam("id") long id, User user,
                                                            @DefaultValue("true") @QueryParam("emailVerify") boolean emailVerify);
 
     /**

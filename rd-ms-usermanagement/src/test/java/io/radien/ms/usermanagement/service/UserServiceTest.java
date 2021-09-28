@@ -28,6 +28,7 @@ import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 
+import java.util.Date;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -678,15 +679,20 @@ public class UserServiceTest {
     }
 
     /**
-     * Test method {@link UserService#updateEmail(SystemUser)}
+     * Test method {@link UserService#updateEmail(long, SystemUser)}
      * @throws UserNotFoundException in case certain user could not be found
      */
-    @Test(expected = UserNotFoundException.class)
+    @Test
     public void testUpdateEmail() throws UserNotFoundException {
-        SystemUser result = userServiceAccess.get(uTest.getId());
-        userServiceAccess.updateEmail(result);
+        SystemUser user = new UserEntity();
+        user.setUserEmail("email@email.com");
+        user.setId(1L);
+        user.setLastUpdate(new Date());
+        user.setLastUpdateUser(1L);
 
-        userServiceAccess.delete(uTest.getId());
-        userServiceAccess.get(uTest.getId());
+        SystemUser result = userServiceAccess.get(user.getId());
+        userServiceAccess.updateEmail(1L, result);
+
+        assertEquals(user.getId(), result.getId());
     }
 }

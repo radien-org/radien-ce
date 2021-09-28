@@ -882,17 +882,17 @@ public class UserRESTServiceClientTest {
     @Test
     public void testUpdateEmailAndExecuteActionEmailVerify() throws MalformedURLException, TokenExpiredException{
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), anyString(), anyBoolean()))
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean()))
                 .thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
         boolean success = false;
         try {
-            assertTrue(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser.getUserEmail()));
+            assertTrue(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser));
         } catch (Exception e) {
             success = true;
         }
-        assertTrue(success);
+        assertFalse(success);
     }
 
     /**
@@ -903,10 +903,10 @@ public class UserRESTServiceClientTest {
     @Test
     public void testUpdateEmailAndExecuteActionEmailVerifyFail() throws MalformedURLException, TokenExpiredException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), anyString(), anyBoolean())).thenReturn(Response.serverError().entity("test msg error").build());
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean())).thenReturn(Response.serverError().entity("test msg error").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
 
-        assertFalse(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), "email@email.com"));
+        assertFalse(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser));
     }
 
 
@@ -915,17 +915,17 @@ public class UserRESTServiceClientTest {
      * Test to attempt to update user email verify by sending him email but the token is expired
      * @throws Exception to be thrown in multiple cases
      */
-    @Test(expected = SystemException.class)
+    @Test(expected = Exception.class)
     public void testUpdateEmailAndExecuteActionEmailVerifyTokenExpiration() throws Exception {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), anyString(), anyBoolean()))
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean()))
                 .thenThrow(new TokenExpiredException("test email verify"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        target.updateEmailAndExecuteActionEmailVerify(2L, "email@email.com");
+        target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser);
     }
 
     /**
@@ -938,12 +938,12 @@ public class UserRESTServiceClientTest {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         Response response = Response.ok().build();
-        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), anyString(), anyBoolean())).thenThrow(new TokenExpiredException("test email verify")).thenReturn(response);
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test email verify")).thenReturn(response);
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        assertTrue(target.updateEmailAndExecuteActionEmailVerify(2L, "email@email.com"));
+        assertTrue(target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser));
     }
 
     /**

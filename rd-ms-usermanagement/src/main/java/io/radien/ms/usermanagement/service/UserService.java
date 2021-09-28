@@ -390,12 +390,12 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 	 * @param user object info
 	 */
 	@Override
-	public void updateEmail(SystemUser user) {
+	public void updateEmail(long id, SystemUser user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<UserEntity> criteriaUpdate = cb.createCriteriaUpdate(UserEntity.class);
 		Root<UserEntity> root = criteriaUpdate.from(UserEntity.class);
 		criteriaUpdate.set(root.get(SystemVariables.USER_EMAIL.getFieldName()), user.getUserEmail());
-		criteriaUpdate.where(cb.equal(root.get(SystemVariables.ID.getFieldName()), user.getId()));
+		criteriaUpdate.where(cb.equal(root.get(SystemVariables.ID.getFieldName()), id));
 		em.createQuery(criteriaUpdate).executeUpdate();
 	}
 

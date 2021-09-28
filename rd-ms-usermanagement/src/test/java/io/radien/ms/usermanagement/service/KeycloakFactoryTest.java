@@ -65,14 +65,14 @@ public class KeycloakFactoryTest {
     }
 
     /**
-     * Test method for {@link KeycloakFactory#convertUpdateEmailToUserRepresentation(SystemUser, boolean)}
+     * Test method for {@link KeycloakFactory#convertUpdateEmailToUserRepresentation(String, boolean)}
      */
     @Test
     public void convertUpdateEmailToUserRepresentation() {
         SystemUser user = UserFactory.create("firstName", "lastName",
                 "logon", "sub", "email@email.com", 2L);
 
-        UserRepresentation representations = KeycloakFactory.convertUpdateEmailToUserRepresentation(user, true);
+        UserRepresentation representations = KeycloakFactory.convertUpdateEmailToUserRepresentation(user.getUserEmail(), true);
         representations.setEmailVerified(false);
         assertEquals(user.getUserEmail(), representations.getEmail());
         assertFalse(representations.isEmailVerified());

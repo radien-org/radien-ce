@@ -72,6 +72,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
 
     private SystemUser selectedUser;
+    private SystemUser updateEmail = new User();
     private SystemUser userForTenantAssociation;
     private SystemUser user = new User();
 
@@ -486,12 +487,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
     /**
      * Updates email and sends verification email for a user
-     * @param user to be set
      */
-    public void updateUserEmailAndExecuteActionEmailVerify(SystemUser user){
+    public void updateUserEmailAndExecuteActionEmailVerify(){
         try{
-            if(user.getId() != null && user.getUserEmail() != null){
-                service.updateEmailAndExecuteActionEmailVerify(user.getId(), user.getUserEmail());
+            if(selectedUser.getId() != null && updateEmail.getUserEmail() != null){
+                service.updateEmailAndExecuteActionEmailVerify(selectedUser.getId(), updateEmail);
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_SUCCESS.getValue()),
                         JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
@@ -516,5 +516,21 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     public void setAllowedToUpdateUserEmail(boolean allowedToUpdateUserEmail) {
         this.allowedToUpdateUserEmail = allowedToUpdateUserEmail;
+    }
+
+    /**
+     * Getter method for the user which has email attribute
+     * @return User containing update email info
+     */
+    public SystemUser getUpdateEmail() {
+        return updateEmail;
+    }
+
+    /**
+     * Setter method for the user which has only emailed attribute
+     * @param updateEmail info
+     */
+    public void setUpdateEmail(SystemUser updateEmail) {
+        this.updateEmail = updateEmail;
     }
 }

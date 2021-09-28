@@ -171,15 +171,17 @@ public class UserBusinessService implements Serializable {
 	}
 
 	/**
-	 * Method to request the keycloak client to send new updated email to verify for the specific user
-	 * @param user to be update email
-	 * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+	 * Method to request the keycloak client to send new updated email to verify for the specific user and
+	 * Updates user email attribute in the db
+	 * @param id user object id
+	 * @param sub user object sub
+	 * @param user user object update email info
+	 * @param emailVerify boolean flag
+	 * @throws RemoteResourceException @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
 	 */
-	public void updateEmailAndExecuteActionEmailVerify(User user, boolean emailVerify) throws RemoteResourceException, UserNotFoundException {
-		if(user.getId() != null){
-			userServiceAccess.updateEmail(user);
-			keycloakService.updateEmailAndExecuteActionEmailVerify(user,emailVerify);
-		}
+	public void updateEmailAndExecuteActionEmailVerify(long id, String sub, User user, boolean emailVerify) throws RemoteResourceException {
+		userServiceAccess.updateEmail(id, user);
+		keycloakService.updateEmailAndExecuteActionEmailVerify(user.getUserEmail(), sub, emailVerify);
 	}
 
 	/**

@@ -21,9 +21,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import javax.ws.rs.ProcessingException;
@@ -387,32 +385,32 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
     /**
      * Send the update user email to the active/requested user
      * @param userId of the user to update and execute action email verify
-     * @param userEmail of the user to update an email
+     * @param user having an update an email attribute
      * @return true in case of success
      * @throws SystemException in case of token expiration or any issue on the application
      */
     @Override
-    public boolean updateEmailAndExecuteActionEmailVerify(long userId, String userEmail) throws SystemException {
-        return get(this::updateUserEmailAndVerify, userId, userEmail);
+    public boolean updateEmailAndExecuteActionEmailVerify(long userId, SystemUser user) throws SystemException {
+        return get(this::updateUserEmailAndVerify, userId, user);
     }
 
     /**
      * Method for the request to update the user email and sends a verification email
      * @param userId userId of the user to update and execute action email verify
-     * @param userEmail of the user to update an email
+     * @param user having an update an email attribute
      * @return true in case of success
      */
-    private boolean updateUserEmailAndVerify(long userId, String userEmail) throws SystemException {
+    private boolean updateUserEmailAndVerify(long userId, SystemUser user) {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-            Response response = client.updateEmailAndExecuteActionEmailVerify(userId, userEmail, true);
+            Response response = client.updateEmailAndExecuteActionEmailVerify(userId, (User) user, true);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
                 logErrorEnabledResponse(response);
             }
         } catch (MalformedURLException e) {
-            throw new SystemException(e);
+            log.error(e.getMessage(), e);
         }
         return false;
     }

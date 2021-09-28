@@ -337,10 +337,9 @@ public class UserBusinessServiceTest extends TestCase {
         user.setId(1L);
         user.setLogon("logon");
         user.setUserEmail("email@email.com");
-        doNothing().when(userServiceAccess,"updateEmail", ArgumentMatchers.any());
         boolean success = true;
         try {
-            userBusinessService.updateEmailAndExecuteActionEmailVerify(user, true);
+            userBusinessService.updateEmailAndExecuteActionEmailVerify(1L, "", user, true);
         } catch (Exception e) {
             success = false;
         }
@@ -353,7 +352,7 @@ public class UserBusinessServiceTest extends TestCase {
     @Test(expected = NullPointerException.class)
     public void testUpdateUserEmailAndExecuteActionEmailVerifyException() throws Exception {
         SystemUser user = new UserEntity();
-        userBusinessService.updateEmailAndExecuteActionEmailVerify((User) user, true);
+        userBusinessService.updateEmailAndExecuteActionEmailVerify(1L, "", (User) user, true);
     }
 
 

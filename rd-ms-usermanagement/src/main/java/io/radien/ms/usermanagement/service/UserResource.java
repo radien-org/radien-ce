@@ -276,17 +276,16 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	}
 
 	/**
-	 * Will updated email and also send email to verify to the user in case of success will return a 204 code message
+	 * Will updated email and also send email to verify to the user in case of success will return a 200 code message
 	 * @param userId userId of the user to update and execute action email verify
-	 * @param userEmail of the user to update an email
+	 * @param user of the user to update an email
 	 * @return ok in case the email has been updated with the email verification sent
 	 */
 	@Override
-	public Response updateEmailAndExecuteActionEmailVerify(long userId, String userEmail, boolean emailVerify){
+	public Response updateEmailAndExecuteActionEmailVerify(long userId, User user, boolean emailVerify){
 		try {
-			SystemUser user = userBusinessService.get(userId);
-			user.setUserEmail(userEmail);
-			userBusinessService.updateEmailAndExecuteActionEmailVerify(new UserEntity((io.radien.ms.usermanagement.client.entities.User) user), emailVerify);
+			SystemUser systemUser = userBusinessService.get(userId);
+			userBusinessService.updateEmailAndExecuteActionEmailVerify(systemUser.getId(), systemUser.getSub(), user, emailVerify);
 			return Response.ok().build();
 		} catch(Exception e) {
 			return getResponseFromException(e);

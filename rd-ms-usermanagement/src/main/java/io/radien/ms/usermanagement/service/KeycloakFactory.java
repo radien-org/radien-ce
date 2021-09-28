@@ -50,12 +50,12 @@ public class KeycloakFactory {
     /**
      * Converter method that will translate/convert a system user
      * email update information into a user representation
-     * @param user to be converted
+     * @param email to be converted
      * @return the user representation for keycloak understanding
      */
-    public static UserRepresentation convertUpdateEmailToUserRepresentation(SystemUser user, boolean emailVerify) {
+    public static UserRepresentation convertUpdateEmailToUserRepresentation(String email, boolean emailVerify) {
         UserRepresentation result = new UserRepresentation();
-        result.setEmail(user.getUserEmail());
+        result.setEmail(email);
         if(emailVerify){
             result.setEmailVerified(false);
         }

@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
@@ -614,8 +615,11 @@ public class UserResourceTest {
      */
     @Test
     public void testUpdateEmailAndExecuteActionEmailVerify() throws UserNotFoundException {
-        when(userBusinessService.get(1L)).thenReturn(new User());
-        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, "email@email.com", true);
+        SystemUser systemUser = new User();
+        systemUser.setId(1L);
+        systemUser.setUserEmail("email@email.com");
+        when(userBusinessService.get(1L)).thenReturn(systemUser);
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, (User) systemUser, true);
         assertEquals(200,response.getStatus());
     }
 
@@ -626,7 +630,7 @@ public class UserResourceTest {
     @Test
     public void testUpdateUserEmailAndExecuteActionEmailVerifyGenericError() throws UserNotFoundException {
         doThrow(new RuntimeException()).when(userBusinessService).get(1L);
-        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, "email@email.com", false);
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, new User(), false);
         assertEquals(500,response.getStatus());
     }
 
@@ -637,7 +641,7 @@ public class UserResourceTest {
     @Test
     public void testUpdateUserEmailAndExecuteActionEmailVerify404() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
-        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, "email@email.com", false);
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, new User(), false);
         assertEquals(404,response.getStatus());
     }
 

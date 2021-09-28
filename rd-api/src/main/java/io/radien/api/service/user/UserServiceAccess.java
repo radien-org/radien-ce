@@ -108,9 +108,9 @@ public interface UserServiceAccess extends ServiceAccess {
 
     /**
      * Saves/Updates the requested information into the db
-     * @param user information
-     * @throws UserNotFoundException in case of update and the user is not found
+     * @param id user to be updated
+     * @param user information contains email update info
      */
-    public void updateEmail(SystemUser user) throws UserNotFoundException;
+    public void updateEmail(long id, SystemUser user);
 
 }
