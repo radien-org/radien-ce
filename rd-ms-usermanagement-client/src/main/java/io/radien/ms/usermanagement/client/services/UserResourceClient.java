@@ -145,7 +145,7 @@ public interface UserResourceClient {
 
     /**
      * Will updated email and also send email to verify to the user in case of success will return a 204 code message
-     * @param id information to be updated
+     * @param id that identifies the user
      * @param user information to be updated
      * @return ok in case the email has been sent with the refreshed password
      */

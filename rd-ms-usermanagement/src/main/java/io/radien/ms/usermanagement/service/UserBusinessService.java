@@ -177,7 +177,7 @@ public class UserBusinessService implements Serializable {
 	 * @param sub user object sub
 	 * @param user user object update email info
 	 * @param emailVerify boolean flag
-	 * @throws RemoteResourceException @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+	 * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
 	 */
 	public void updateEmailAndExecuteActionEmailVerify(long id, String sub, User user, boolean emailVerify) throws RemoteResourceException {
 		userServiceAccess.updateEmail(id, user);
