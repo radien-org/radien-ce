@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
@@ -605,6 +606,42 @@ public class UserResourceTest {
     public void testSetAdminResetPassword404() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
         Response response = userResource.sendUpdatePasswordEmail(1L);
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
+     * Tests the set email verify method and should finish with success
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
+    @Test
+    public void testUpdateEmailAndExecuteActionEmailVerify() throws UserNotFoundException {
+        SystemUser systemUser = new User();
+        systemUser.setId(1L);
+        systemUser.setUserEmail("email@email.com");
+        when(userBusinessService.get(1L)).thenReturn(systemUser);
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, (User) systemUser, true);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests the set email verify method and should finish with generic 500 code message error
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
+    @Test
+    public void testUpdateUserEmailAndExecuteActionEmailVerifyGenericError() throws UserNotFoundException {
+        doThrow(new RuntimeException()).when(userBusinessService).get(1L);
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, new User(), false);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Tests the set email verify method and should finish with generic 404 code message error
+     * @throws UserNotFoundException in case of searched user is not existent or not found
+     */
+    @Test
+    public void testUpdateUserEmailAndExecuteActionEmailVerify404() throws UserNotFoundException {
+        when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, new User(), false);
         assertEquals(404,response.getStatus());
     }
 

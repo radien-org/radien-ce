@@ -107,6 +107,7 @@ public enum DataModelEnum {
     USERS_DISPATCH_PATH("/module/users"),
     USERS_ROLES_PATH("pretty:userRoles"),
     USER_DELETE_PATH("pretty:userDelete"),
+    USER_EMAIL_UPDATE("pretty:userEmailUpdate"),
     USER_UN_ASSIGN_PATH("pretty:userUnAssign"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
@@ -114,6 +115,8 @@ public enum DataModelEnum {
     USERS_PROFILE_PATH("pretty:userProfile"),
     SENT_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
     SENT_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
+    SENT_UPDATED_EMAIL_VERIFY_SUCCESS("rd_send_updated_email_verify_success"),
+    SENT_UPDATED_EMAIL_VERIFY_ERROR("rd_send_updated_email_verify_error"),
 
     /**
      * Tenant Role

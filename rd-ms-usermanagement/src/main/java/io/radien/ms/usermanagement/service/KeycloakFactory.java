@@ -46,4 +46,19 @@ public class KeycloakFactory {
         result.setEnabled(user.isEnabled());
         return result;
     }
+
+    /**
+     * Converter method that will translate/convert a system user information
+     * @param email user email attribute
+     * @param emailVerify boolean flag
+     * @return the user representation for keycloak understanding
+     */
+    public static UserRepresentation convertUpdateEmailToUserRepresentation(String email, boolean emailVerify) {
+        UserRepresentation result = new UserRepresentation();
+        result.setEmail(email);
+        if(emailVerify){
+            result.setEmailVerified(false);
+        }
+        return result;
+    }
 }

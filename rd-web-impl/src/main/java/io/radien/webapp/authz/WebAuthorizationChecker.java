@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE;
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
 
 /**
@@ -169,6 +170,16 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     public boolean hasPermissionToResetPassword(Long tenant) {
         return hasPermissionAccess(THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName(),
                 THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName(), tenant);
+    }
+
+    /**
+     * Check if the current logged user has permission to update email for any user
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @return true if the current logged user has grant to do that, otherwise false
+     */
+    public boolean hasPermissionToUpdateUserEmail(Long tenant) {
+        return hasPermissionAccess(THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName(),
+                THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName(), tenant);
     }
 
 }

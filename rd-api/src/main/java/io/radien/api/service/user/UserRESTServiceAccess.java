@@ -99,6 +99,15 @@ public interface UserRESTServiceAccess extends Appframeable{
     public boolean sendUpdatePasswordEmail(long id);
 
     /**
+     * Updates user email and sends email for verification
+     * @param userId to be set
+     * @param user object contains an email
+     * @return true in case of success
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public boolean updateEmailAndExecuteActionEmailVerify(long userId, SystemUser user) throws SystemException;
+
+    /**
      * Deletes the requested user from the db
      * @param id of the user to be deleted
      * @return true in case of deletion

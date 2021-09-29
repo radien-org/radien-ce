@@ -25,6 +25,7 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
+import io.radien.ms.usermanagement.entities.UserEntity;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -120,7 +121,7 @@ public class UserBusinessServiceTest extends TestCase {
     }
 
     @Test
-    public void testSave() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testSaveException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = UserFactory.create("a","b","l","s","e",1L);
         doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
         boolean success = false;
@@ -326,6 +327,34 @@ public class UserBusinessServiceTest extends TestCase {
         }
         assertTrue(success);
     }
+
+    /**
+     * Test method updateUserEmailAndExecuteActionEmailVerify()
+     */
+    @Test
+    public void testUpdateEmailAndExecuteActionEmailVerify() throws Exception {
+        User user = new UserEntity();
+        user.setId(1L);
+        user.setLogon("logon");
+        user.setUserEmail("email@email.com");
+        boolean success = true;
+        try {
+            userBusinessService.updateEmailAndExecuteActionEmailVerify(1L, "", user, true);
+        } catch (Exception e) {
+            success = false;
+        }
+        assertTrue(success);
+    }
+
+    /**
+     * Test method updateUserEmailAndExecuteActionEmailVerify()
+     */
+    @Test(expected = NullPointerException.class)
+    public void testUpdateUserEmailAndExecuteActionEmailVerifyException() throws Exception {
+        SystemUser user = new UserEntity();
+        userBusinessService.updateEmailAndExecuteActionEmailVerify(1L, "", (User) user, true);
+    }
+
 
     @Test
     public void testRefreshToken() {

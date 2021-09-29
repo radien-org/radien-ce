@@ -48,6 +48,10 @@
 		<pattern value="/module/users/userUnAssign" />
 		<view-id value="/module/users/userUnAssign.oaf" />
 	</url-mapping>
+	<url-mapping id="userEmailUpdate">
+		<pattern value="/module/users/userEmailUpdate" />
+		<view-id value="/module/users/userEmailUpdate.oaf" />
+	</url-mapping>
 
 	<!-- Rolesmanagement -->
 	<url-mapping id="roles">

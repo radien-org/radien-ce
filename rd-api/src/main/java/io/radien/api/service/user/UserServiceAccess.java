@@ -106,4 +106,11 @@ public interface UserServiceAccess extends ServiceAccess {
      */
     public BatchSummary create(List<? extends SystemUser> users);
 
+    /**
+     * Saves/Updates the requested information into the db
+     * @param id user to be updated
+     * @param user information contains email update info
+     */
+    public void updateEmail(long id, SystemUser user);
+
 }

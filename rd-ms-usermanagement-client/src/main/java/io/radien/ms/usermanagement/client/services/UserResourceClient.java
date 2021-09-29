@@ -22,6 +22,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -45,7 +46,6 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface UserResourceClient {
-
     /**
      * Will request the service to retrieve all the users into a paginated response.
      *
@@ -142,6 +142,17 @@ public interface UserResourceClient {
     @POST
     @Path("/{id}/sendUpdatePasswordEmail")
     public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
+
+    /**
+     * Will updated email and also send email to verify to the user in case of success will return a 204 code message
+     * @param id that identifies the user
+     * @param user information to be updated
+     * @return ok in case the email has been sent with the refreshed password
+     */
+    @PATCH
+    @Path("/{id}")
+    public Response updateEmailAndExecuteActionEmailVerify(@PathParam("id") long id, User user,
+                                                           @DefaultValue("true") @QueryParam("emailVerify") boolean emailVerify);
 
     /**
      * Will update the refresh token, to update the access of the specific user

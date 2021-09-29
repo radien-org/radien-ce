@@ -29,7 +29,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
-
 /**
  * User service requests between the rest services and the db
  *
@@ -169,6 +168,20 @@ public class UserBusinessService implements Serializable {
 		if(!creation){
 			keycloakService.sendUpdatePasswordEmail(user);
 		}
+	}
+
+	/**
+	 * Method to request the keycloak client to send new updated email to verify for the specific user and
+	 * Updates user email attribute in the db
+	 * @param id user object id
+	 * @param sub user object sub
+	 * @param user user object update email info
+	 * @param emailVerify boolean flag
+	 * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+	 */
+	public void updateEmailAndExecuteActionEmailVerify(long id, String sub, User user, boolean emailVerify) throws RemoteResourceException {
+		userServiceAccess.updateEmail(id, user);
+		keycloakService.updateEmailAndExecuteActionEmailVerify(user.getUserEmail(), sub, emailVerify);
 	}
 
 	/**

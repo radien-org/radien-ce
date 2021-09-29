@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -268,6 +269,23 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		try {
 			SystemUser user = userBusinessService.get(id);
 			userBusinessService.sendUpdatePasswordEmail(new UserEntity((io.radien.ms.usermanagement.client.entities.User) user));
+			return Response.ok().build();
+		} catch(Exception e) {
+			return getResponseFromException(e);
+		}
+	}
+
+	/**
+	 * Will updated email and also send email to verify to the user in case of success will return a 200 code message
+	 * @param userId userId of the user to update and execute action email verify
+	 * @param user of the user to update an email
+	 * @return ok in case the email has been updated with the email verification sent
+	 */
+	@Override
+	public Response updateEmailAndExecuteActionEmailVerify(long userId, User user, boolean emailVerify){
+		try {
+			SystemUser systemUser = userBusinessService.get(userId);
+			userBusinessService.updateEmailAndExecuteActionEmailVerify(systemUser.getId(), systemUser.getSub(), user, emailVerify);
 			return Response.ok().build();
 		} catch(Exception e) {
 			return getResponseFromException(e);

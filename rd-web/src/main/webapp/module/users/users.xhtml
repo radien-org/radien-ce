@@ -88,6 +88,12 @@
 											 iconAwesome="fa-user-plus"
 											 action="#{userDataModel.userProfile}"/>
 
+							<b:navCommandLink value="#{msg.rd_user_email_update}"
+											  tooltip="#{msg.rd_select_user_email_update}"
+											  iconAwesome="fa-edit"
+											  rendered="#{userDataModel.allowedToUpdateUserEmail}"
+											  action="#{userDataModel.userEmailUpdate}"/>
+
 							<b:navCommandLink value="#{msg.rd_role_assignment}"
 											  tooltip="#{msg.rd_select_user_to_assign_unassigned_user_tenant_roles}"
 											  iconAwesome="fa-expand"

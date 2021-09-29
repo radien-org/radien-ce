@@ -35,6 +35,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_ALL;
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE;
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_ALL;
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -223,21 +226,10 @@ public class WebAuthorizationCheckerTest {
      */
     @Test
     public void testHasPermissionToResetPassword() throws SystemException {
-        Long permissionId = 222L;
-        Long tenantId = 10L;
-        Long userId = 1111L;
         String resourceName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName();
         String actionName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName();
 
-        when(this.userSession.getUserId()).thenReturn(userId);
-        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
-                thenReturn(Optional.of(permissionId));
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        Response expectedResponse = Response.ok().entity(Boolean.TRUE).build();
-        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
-                userId, permissionId, tenantId);
-
-        boolean result = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+        boolean result = testHasPermissionToResetPassword(resourceName, actionName, true);
         assertTrue(result);
     }
 
@@ -248,21 +240,10 @@ public class WebAuthorizationCheckerTest {
      */
     @Test
     public void testHasNoPermissionToResetPassword() throws SystemException {
-        Long permissionId = 222L;
-        Long tenantId = 10L;
-        Long userId = 333L;
         String resourceName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName();
         String actionName = THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName();
 
-        when(this.userSession.getUserId()).thenReturn(userId);
-        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
-                thenReturn(Optional.of(permissionId));
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        Response expectedResponse = Response.ok().entity(Boolean.FALSE).build();
-        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
-                userId, permissionId, tenantId);
-
-        boolean result = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+        boolean result = testHasPermissionToResetPassword(resourceName, actionName, false);
         assertFalse(result);
     }
 
@@ -298,6 +279,95 @@ public class WebAuthorizationCheckerTest {
         assertFalse(result);
     }
 
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToUpdateUserEmail(Long)}
+     * on successful case (user having access)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasPermissionToUpdateUserEmailWithUpdate() throws SystemException {
+        String resourceNameUpdate = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionNameUpdate = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName();
+
+        boolean result = testHasPermissionToUpdateUserEmail(resourceNameUpdate, actionNameUpdate, true);
+        assertTrue(result);
+    }
+
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToResetPassword(Long)} running
+     * on unsuccessful case (user have no access)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasNoPermissionToUpdateEmail() throws SystemException {
+        String resourceNameUpdate = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionNameUpdate = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName();
+
+        boolean result = testHasPermissionToUpdateUserEmail(resourceNameUpdate, actionNameUpdate, false);
+        assertFalse(result);
+    }
+
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToResetPassword(Long)} running
+     * on unsuccessful case (Permission could not be found)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasPermissionToUpdateUserEmailWhenPermissionNotFound() throws SystemException {
+        Long tenantId = 10L;
+        String resourceName = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionName = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName();
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenReturn(Optional.empty());
+        boolean result = webAuthorizationChecker.hasPermissionToUpdateUserEmail(tenantId);
+        assertFalse(result);
+    }
+
+    /**
+     * Test for method {@link WebAuthorizationChecker#hasPermissionToResetPassword(Long)} running
+     * on unsuccessful case (Exception occurring during the check process)
+     * @throws SystemException thrown in case of errors during communication with the endpoint
+     */
+    @Test
+    public void testHasPermissionToUpdateUserEmailWhenExceptionOccurs() throws SystemException {
+        Long tenantId = 10L;
+        String resourceName = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName();
+        String actionName = THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName();
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenThrow(new SystemException("error"));
+        boolean result = webAuthorizationChecker.hasPermissionToUpdateUserEmail(tenantId);
+        assertFalse(result);
+    }
+
+    private boolean testHasPermissionToResetPassword(String resourceName, String actionName, boolean response) throws SystemException {
+        Long permissionId = 222L;
+        Long tenantId = 10L;
+        Long userId = 1111L;
+        when(this.userSession.getUserId()).thenReturn(userId);
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenReturn(Optional.of(permissionId));
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        Response expectedResponse = Response.ok().entity(response).build();
+        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
+                userId, permissionId, tenantId);
+
+        return webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+    }
+
+    private boolean testHasPermissionToUpdateUserEmail(String resourceName, String actionName, boolean response) throws SystemException {
+        Long permissionId = 222L;
+        Long tenantId = 10L;
+        Long userId = 1111L;
+        when(this.userSession.getUserId()).thenReturn(userId);
+        when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
+                thenReturn(Optional.of(permissionId));
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        Response expectedResponse = Response.ok().entity(response).build();
+        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
+                userId, permissionId, tenantId);
+
+       return webAuthorizationChecker.hasPermissionToUpdateUserEmail(tenantId);
+    }
 
 
 }

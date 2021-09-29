@@ -28,6 +28,7 @@ import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 
+import java.util.Date;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
+import org.keycloak.representations.idm.UserRepresentation;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
@@ -674,5 +676,23 @@ public class UserServiceTest {
         assertNotNull(page);
         assertEquals((firstSetSize + secondSetSize) - 6, page.getTotalResults());
 
+    }
+
+    /**
+     * Test method {@link UserService#updateEmail(long, SystemUser)}
+     * @throws UserNotFoundException in case certain user could not be found
+     */
+    @Test
+    public void testUpdateEmail() throws UserNotFoundException {
+        SystemUser user = new UserEntity();
+        user.setUserEmail("email@email.com");
+        user.setId(1L);
+        user.setLastUpdate(new Date());
+        user.setLastUpdateUser(1L);
+
+        SystemUser result = userServiceAccess.get(user.getId());
+        userServiceAccess.updateEmail(1L, result);
+
+        assertEquals(user.getId(), result.getId());
     }
 }

@@ -16,10 +16,22 @@
 package io.radien.ms.usermanagement.service;
 
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.ms.usermanagement.entities.UserEntity;
+import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 
-import javax.ws.rs.core.Response;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
+import kong.unirest.HttpRequestWithBody;
+import kong.unirest.HttpResponse;
+
+import kong.unirest.RequestBodyEntity;
 import kong.unirest.Unirest;
+
+import org.keycloak.representations.idm.UserRepresentation;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,95 +40,224 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
+import static org.powermock.api.mockito.PowerMockito.when;
+/**
+ * Class that aggregates UnitTest cases for KeycloakClient
+ * @author Rajesh Gavvala
+ */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({ "javax.net.ssl.*" })
+@PrepareForTest({ Unirest.class})
 public class KeycloakClientTest {
-
     @InjectMocks
     private KeycloakClient keycloakClient;
 
+    String inputBody_EmailVerify = "[\"" + KeycloakEmailActions.VERIFY_EMAIL + "\"]";
+    String inputBody_UpdatePassword = "[\"" + KeycloakEmailActions.UPDATE_PASSWORD + "\"]";
 
+    @Mock
+    HttpRequestWithBody httpRequestWithBody;
+    @Mock
+    RequestBodyEntity requestBodyEntity;
+
+    /**
+     * Prepares required mock objects
+     */
     @Before
-    public void setUp() {
+    public void setUp() throws IllegalAccessException {
         MockitoAnnotations.initMocks(this);
+        PowerMockito.mockStatic(Unirest.class);
+
+        httpRequestWithBody = PowerMockito.mock(HttpRequestWithBody.class);
+        requestBodyEntity = PowerMockito.mock(RequestBodyEntity.class);
+
 
         keycloakClient = new KeycloakClient()
-                .clientId("CLIENT ID")
-                .username("USER NAME")
-                .password("PASSWORD")
-                .idpUrl("IDP URL")
-                .tokenPath("TOKEN/PATH")
-                .radienClientId("RADIEN CLIENT ID")
-                .radienSecret("RADIEN SECRET")
-                .radienTokenPath("RADIEN TOKEN PATH")
-                .userPath("/USER/PATH");
+                .clientId("adminClientId")
+                .username("username")
+                .password("password")
+                .idpUrl("url")
+                .tokenPath("tokenPath")
+                .radienClientId("clientId")
+                .radienSecret("clientSecret")
+                .userPath("userPath");
 
-        KeycloakClient keycloakClient1 = new KeycloakClient();
-        assertNotNull(keycloakClient1);
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("access_token", "TOKEN");
+
+        Field field = PowerMockito.field(KeycloakClient.class, "result");
+        field.set(keycloakClient, hashMap);
 
     }
 
 
+    /**
+     * Test for method {@link KeycloakClient#sendUpdatePasswordEmail(String)}
+     * @throws Exception if any error occurs
+     */
+    @Test
+    public void testSendUpdatePasswordEmail() throws Exception {
+        prepareMockObjectsForUpdatePasswordAndEmailVerify(true, inputBody_UpdatePassword);
+        keycloakClient.sendUpdatePasswordEmail("test");
+        assertEquals("TOKEN", keycloakClient.getAccessToken());
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#sendUpdatePasswordEmail(String)}
+     * Asserts an expected exception
+     * @throws Exception if any error occurs
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testSendUpdatePasswordEmailException() throws Exception {
+        prepareMockObjectsForUpdatePasswordAndEmailVerify(false, inputBody_UpdatePassword);
+        keycloakClient.sendUpdatePasswordEmail("test");
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#sendUpdatedEmailToVerify(String)}
+     * @throws Exception if any error occurs
+     */
+    @Test
+    public void testSendUpdatedEmailVerify() throws Exception {
+        prepareMockObjectsForUpdatePasswordAndEmailVerify(true, inputBody_EmailVerify);
+        keycloakClient.sendUpdatedEmailToVerify("test");
+        assertEquals("TOKEN", keycloakClient.getAccessToken());
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#sendUpdatedEmailToVerify(String)}
+     * Asserts an expected exception
+     * @throws Exception if any error occurs
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testSendUpdatedEmailVerifyException() throws Exception {
+        prepareMockObjectsForUpdatePasswordAndEmailVerify(false, inputBody_EmailVerify);
+        keycloakClient.sendUpdatedEmailToVerify("test");
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#updateUser(String, UserRepresentation)}
+     */
+    @Test
+    public void testUpdateUser() throws Exception {
+        UserRepresentation userRepresentation = mock(UserRepresentation.class);
+        prepareMockObjectsForUpdateUser(userRepresentation, true);
+        when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
+        keycloakClient.updateUser("test", userRepresentation);
+        assertEquals("TOKEN", keycloakClient.getAccessToken());
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#updateUser(String, UserRepresentation)}
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testUpdateUserException() throws Exception {
+        UserRepresentation userRepresentation = mock(UserRepresentation.class);
+        prepareMockObjectsForUpdateUser(userRepresentation, false);
+        when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
+        keycloakClient.updateUser("test", userRepresentation);
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#updateEmailAndExecuteActionEmailVerify(String, UserRepresentation)}
+     * @throws Exception if any error occurs
+     */
+    @Test
+    public void testUpdateKeyCloakEmailVerifiedAttribute() throws Exception {
+        UserRepresentation userRepresentation = mock(UserRepresentation.class);
+
+        prepareMockObjectsForUpdateEmailAndExecuteActionEmailVerify(userRepresentation, true);
+
+        keycloakClient.updateEmailAndExecuteActionEmailVerify("test", userRepresentation);
+        assertEquals("TOKEN", keycloakClient.getAccessToken());
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#updateEmailAndExecuteActionEmailVerify(String, UserRepresentation)}
+     * @throws Exception if any error occurs
+     */
     @Test(expected = Exception.class)
-    public void testLoginException() throws RemoteResourceException {
-        keycloakClient.login();
+    public void testUpdateKeyCloakEmailVerifiedAttributeException() throws Exception {
+        UserRepresentation userRepresentation = mock(UserRepresentation.class);
+
+        prepareMockObjectsForUpdateEmailAndExecuteActionEmailVerify(userRepresentation, false);
+
+        keycloakClient.updateEmailAndExecuteActionEmailVerify("test", userRepresentation);
     }
 
+    /**
+     * Prepares mock objects for the invoke methods
+     * @param response to be set either true/false
+     * @param inputBody to be set
+     * @throws IllegalAccessException If field object is either inaccessible or final
+     */
+    private void prepareMockObjectsForUpdatePasswordAndEmailVerify(boolean response, String inputBody) throws IllegalAccessException {
+        HttpResponse<String> httpResponse = PowerMockito.mock(HttpResponse.class);
 
-    @Test(expected = Exception.class)
-    public void testCreateUserException() throws RemoteResourceException {
-        UserEntity u = new UserEntity();
-        u.setLogon("abc");
-        u.setSub("test");
-
-        keycloakClient.createUser(KeycloakFactory.convertToUserRepresentation(u));
+        if(response){
+            when(httpResponse.isSuccess()).thenReturn(Boolean.TRUE);
+        } else {
+            when(httpResponse.isSuccess()).thenReturn(Boolean.FALSE);
+        }
+        when(httpRequestWithBody.header(HttpHeaders.AUTHORIZATION, "Bearer TOKEN")).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.body(inputBody)).thenReturn(requestBodyEntity);
+        when(requestBodyEntity.asObject(String.class)).thenReturn(httpResponse);
+        when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
     }
 
-    @Test(expected = Exception.class)
-    public void testSendUpdatePasswordEmail() throws RemoteResourceException {
-        UserEntity u = new UserEntity();
-        u.setLogon("abc");
-        u.setSub("test");
+    /**
+     * Prepares mock objects for the invoke methods
+     * @param userRepresentation object information
+     */
+    private void prepareMockObjectsForUpdateUser(UserRepresentation userRepresentation, boolean response){
+        userRepresentation.setEmailVerified(false);
+        HttpResponse<String> httpResponse = PowerMockito.mock(HttpResponse.class);
 
-        keycloakClient.sendUpdatePasswordEmail(u.getSub());
+        if(response){
+            when(httpResponse.isSuccess()).thenReturn(Boolean.TRUE);
+        } else {
+            when(httpResponse.isSuccess()).thenReturn(Boolean.FALSE);
+        }
+
+        when(httpRequestWithBody.header(HttpHeaders.AUTHORIZATION, "Bearer TOKEN")).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.body(userRepresentation)).thenReturn(requestBodyEntity);
+        when(requestBodyEntity.asString()).thenReturn(httpResponse);
     }
 
-    @Test(expected = Exception.class)
-    public void testRefreshTokenException() throws RemoteResourceException {
+    /**
+     * Prepares mock objects for the invoke methods
+     * @param userRepresentation object information
+     * @param response requested response as boolean flag
+     */
+    private void prepareMockObjectsForUpdateEmailAndExecuteActionEmailVerify(UserRepresentation userRepresentation, boolean response){
+        HttpResponse<String> httpResponse = PowerMockito.mock(HttpResponse.class);
 
-        keycloakClient.refreshToken();
+        if(response){
+            when(httpResponse.isSuccess()).thenReturn(Boolean.TRUE);
+        } else {
+            when(httpResponse.isSuccess()).thenReturn(Boolean.FALSE);
+        }
+
+        userRepresentation.setEmail("email@email.com");
+        userRepresentation.setEmailVerified(false);
+
+        when(httpRequestWithBody.header(HttpHeaders.AUTHORIZATION, "Bearer TOKEN")).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(httpRequestWithBody);
+        when(httpRequestWithBody.body(userRepresentation)).thenReturn(requestBodyEntity);
+        when(requestBodyEntity.asString()).thenReturn(httpResponse);
+
+        when(Unirest.put(anyString())).thenReturn(httpRequestWithBody);
     }
-
-    @Test(expected = Exception.class)
-    public void testRefreshTokenWithException() throws RemoteResourceException {
-
-        keycloakClient.refreshToken(keycloakClient.getRefreshToken());
-    }
-
-    @Test(expected = Exception.class)
-    public void testUpdateUserException() throws RemoteResourceException {
-        UserEntity u = new UserEntity();
-        u.setLogon("abc");
-        u.setSub("test");
-
-        keycloakClient.updateUser("test", KeycloakFactory.convertToUserRepresentation(u));
-
-    }
-
-    @Test(expected = Exception.class)
-    public void testDeleteUserException() throws RemoteResourceException {
-        keycloakClient.deleteUser("test");
-    }
-
 }
