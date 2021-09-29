@@ -24,6 +24,7 @@ import static io.radien.api.SystemVariables.USER_ID;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
@@ -154,11 +155,16 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 		criteriaQuery.select(activeTenantRoot);
 
-		Predicate global = getFilteredPredicate((ActiveTenantSearchFilter) filter, criteriaBuilder, activeTenantRoot);
-
-		criteriaQuery.where(global);
-		TypedQuery<ActiveTenantEntity> q = em.createQuery(criteriaQuery);
-
+		List<Predicate> predicateList = getFilteredPredicate((ActiveTenantSearchFilter) filter, criteriaBuilder, activeTenantRoot);
+        if(!predicateList.isEmpty()) {
+            Predicate[] predicateArray = predicateList.toArray(new Predicate[]{});
+            if(((ActiveTenantSearchFilter)filter).isLogicConjunction()) {
+                criteriaQuery.where(criteriaBuilder.and(predicateArray));
+            } else {
+                criteriaQuery.where(criteriaBuilder.or(predicateArray));
+            }
+        }
+        TypedQuery<ActiveTenantEntity> q = em.createQuery(criteriaQuery);
 		return q.getResultList();
 	}
 
@@ -176,20 +182,15 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * @param activeTenantRoot table to be search
 	 * @return a filtered predicate
 	 */
-	private Predicate getFilteredPredicate(ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot) {
-		Predicate global;
-		if (filter.isLogicConjunction()) {
-			global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-		} else {
-			global = criteriaBuilder.isFalse(criteriaBuilder.literal(true));
-		}
-
-		global = getFieldPredicate(TENANT_ID.getFieldName(), filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot, global);
-		global = getFieldPredicate(USER_ID.getFieldName(), filter.getUserId(), filter, criteriaBuilder, activeTenantRoot, global);
-		global = getFieldPredicate(IS_TENANT_ACTIVE.getFieldName(), filter.getIsTenantActive(), filter, criteriaBuilder, activeTenantRoot, global);
-		global = getFieldPredicate(TENANT_NAME.getFieldName(), filter.getTenantName(), filter, criteriaBuilder, activeTenantRoot, global);
-
-		return global;
+	private List<Predicate> getFilteredPredicate(ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot) {
+        List<Predicate> list = new ArrayList<>();
+        
+        getFieldPredicate(USER_ID.getFieldName(), filter.getUserId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+        getFieldPredicate(TENANT_ID.getFieldName(), filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+        getFieldPredicate(IS_TENANT_ACTIVE.getFieldName(), filter.getIsTenantActive(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+        getFieldPredicate(TENANT_NAME.getFieldName(), filter.getTenantName(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+        
+        return list;
 	}
 
 	/**
@@ -202,22 +203,15 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * @param activeTenantRoot table to be used
 	 * @return a constructed predicate
 	 */
-	private Predicate getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot, Predicate global) {
-		if (value != null) {
-			Predicate subPredicate;
-			if (filter.isExact() && !name.equals(TENANT_NAME.getFieldName())) {
-				subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
-			} else {
-				subPredicate = criteriaBuilder.like(criteriaBuilder.lower(activeTenantRoot.get(name)), "%" + value.toString().toLowerCase() + "%");
-			}
-
-			if (filter.isLogicConjunction()) {
-				global = criteriaBuilder.and(global, subPredicate);
-			} else {
-				global = criteriaBuilder.or(global, subPredicate);
-			}
-		}
-		return global;
+        private Optional<Predicate> getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot) {
+    		if (value != null) {
+                Predicate subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
+                if (value instanceof String && !filter.isExact()) {
+                    subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");
+    			}
+                return Optional.ofNullable(subPredicate);
+    		}
+            return Optional.empty();
 	}
 
 	/**
