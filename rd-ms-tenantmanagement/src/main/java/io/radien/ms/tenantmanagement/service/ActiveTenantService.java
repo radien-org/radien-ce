@@ -156,15 +156,15 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 		criteriaQuery.select(activeTenantRoot);
 
 		List<Predicate> predicateList = getFilteredPredicate((ActiveTenantSearchFilter) filter, criteriaBuilder, activeTenantRoot);
-        if(!predicateList.isEmpty()) {
-            Predicate[] predicateArray = predicateList.toArray(new Predicate[]{});
-            if(((ActiveTenantSearchFilter)filter).isLogicConjunction()) {
-                criteriaQuery.where(criteriaBuilder.and(predicateArray));
-            } else {
-                criteriaQuery.where(criteriaBuilder.or(predicateArray));
-            }
-        }
-        TypedQuery<ActiveTenantEntity> q = em.createQuery(criteriaQuery);
+		if (!predicateList.isEmpty()) {
+			Predicate[] predicateArray = predicateList.toArray(new Predicate[] {});
+			if (((ActiveTenantSearchFilter) filter).isLogicConjunction()) {
+				criteriaQuery.where(criteriaBuilder.and(predicateArray));
+			} else {
+				criteriaQuery.where(criteriaBuilder.or(predicateArray));
+			}
+		}
+		TypedQuery<ActiveTenantEntity> q = em.createQuery(criteriaQuery);
 		return q.getResultList();
 	}
 
@@ -183,14 +183,14 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * @return a filtered predicate
 	 */
 	private List<Predicate> getFilteredPredicate(ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot) {
-        List<Predicate> list = new ArrayList<>();
-        
-        getFieldPredicate(USER_ID.getFieldName(), filter.getUserId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
-        getFieldPredicate(TENANT_ID.getFieldName(), filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
-        getFieldPredicate(IS_TENANT_ACTIVE.getFieldName(), filter.getIsTenantActive(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
-        getFieldPredicate(TENANT_NAME.getFieldName(), filter.getTenantName(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
-        
-        return list;
+		List<Predicate> list = new ArrayList<>();
+
+		getFieldPredicate(USER_ID.getFieldName(), filter.getUserId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+		getFieldPredicate(TENANT_ID.getFieldName(), filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+		getFieldPredicate(IS_TENANT_ACTIVE.getFieldName(), filter.getIsTenantActive(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+		getFieldPredicate(TENANT_NAME.getFieldName(), filter.getTenantName(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
+
+		return list;
 	}
 
 	/**
@@ -203,15 +203,15 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * @param activeTenantRoot table to be used
 	 * @return a constructed predicate
 	 */
-        private Optional<Predicate> getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot) {
-    		if (value != null) {
-                Predicate subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
-                if (value instanceof String && !filter.isExact()) {
-                    subPredicate = criteriaBuilder.like(activeTenantRoot.get(name),"%"+value+"%");
-    			}
-                return Optional.ofNullable(subPredicate);
-    		}
-            return Optional.empty();
+	private Optional<Predicate> getFieldPredicate(String name, Object value, ActiveTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<ActiveTenantEntity> activeTenantRoot) {
+		if (value != null) {
+			Predicate subPredicate = criteriaBuilder.equal(activeTenantRoot.get(name), value);
+			if (value instanceof String && !filter.isExact()) {
+				subPredicate = criteriaBuilder.like(activeTenantRoot.get(name), "%" + value + "%");
+			}
+			return Optional.ofNullable(subPredicate);
+		}
+		return Optional.empty();
 	}
 
 	/**
