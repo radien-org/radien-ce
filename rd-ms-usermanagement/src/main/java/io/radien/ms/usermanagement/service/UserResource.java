@@ -162,7 +162,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			if (!isSelfOnboard(user) && !checkUserRoles()) {
+			if (!isSelfOnboard(user) && !checkUserPermission(user.getId()==null)) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 			userBusinessService.save(new UserEntity(user),user.isDelegatedCreation());
@@ -210,6 +210,16 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
 		roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 		return hasGrantMultipleRoles(roleNames);
+	}
+
+	public boolean checkUserPermission(boolean create) throws SystemException{
+		String action;
+		if(create){
+			action="Create";
+		} else {
+			action="Update";
+		}
+		return hasPermission(null, action, "User");
 	}
 
 	/**
