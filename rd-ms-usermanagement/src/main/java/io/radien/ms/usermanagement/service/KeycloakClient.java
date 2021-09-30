@@ -33,9 +33,12 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 /**
  * Keycloak client side configuration constructor class
  *
@@ -356,6 +359,35 @@ public class KeycloakClient {
         if (!response.isSuccess()) {
             log.error( "status {},body {}", response.getStatus(), response.getBody() );
             throw new RemoteResourceException(GenericErrorCodeMessage.ERROR_SEND_EXECUTE_ACTION_EMAIL_VERIFY.toString());
+        }
+    }
+
+    /**
+     * Keycloak method to get user
+     * @param email of the user sub we want to retrieve
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public Optional<String> getSubFromEmail(String email) throws RemoteResourceException {
+        HttpResponse<ArrayList> response = Unirest.get(idpUrl + userPath + "?email=" + email)
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .asObject(ArrayList.class);
+        if (response.isSuccess()) {
+            List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody();
+            if(results.isEmpty()){
+                return Optional.empty();
+            }
+            if(results.size()>1){
+                log.error("Invalid number of results for Sub");
+                return Optional.empty();
+            }
+            return Optional.ofNullable((String)results.get(0).get("id"));
+        }else {
+            if(response.getBody()!= null) {
+                String msg = response.getBody().toString();
+                log.error(msg);
+            }
+            throw new RemoteResourceException("Unable to get Sub From Email");
         }
     }
 

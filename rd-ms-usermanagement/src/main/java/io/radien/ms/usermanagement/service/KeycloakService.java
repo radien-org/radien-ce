@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
+import java.util.Optional;
 
 /**
  * Keycloak request services and actions
@@ -71,6 +72,7 @@ public class KeycloakService {
     public String createUser(SystemUser user) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(user);
         KeycloakClient client = getKeycloakClient();
+        userRepresentation.setEmailVerified(false);
         String sub= client.createUser(userRepresentation);
         try {
             client.refreshToken();
@@ -137,6 +139,16 @@ public class KeycloakService {
     public String refeshToken(String refreshToken) throws RemoteResourceException {
         KeycloakClient client = getKeycloakClient();
         return client.refreshToken(refreshToken);
+    }
+
+    /**
+     * Method to request keycloak to the subjectId from the user with the specified email
+     * @param email of the user to fetch the subjectId
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public Optional<String> getSubFromEmail(String email) throws RemoteResourceException {
+        KeycloakClient client = getKeycloakClient();
+        return client.getSubFromEmail(email);
     }
 
     /**

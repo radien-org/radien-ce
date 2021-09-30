@@ -150,7 +150,7 @@ public abstract class AuthorizationChecker implements Serializable {
     }
 
     private Optional<Long> getPermissionIdCore( String actionName,String resourceName) throws SystemException{
-        Response response = getPermissionClient().getIdByResourceAndAction(actionName,resourceName);
+        Response response = getPermissionClient().getIdByResourceAndAction(resourceName,actionName);
         if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
             return Optional.ofNullable(response.readEntity(Long.class));
         } else {
