@@ -84,8 +84,7 @@ public class KeycloakClientTest {
 
         keycloakClient = new KeycloakClient()
                 .clientId("adminClientId")
-                .username("username")
-                .password("password")
+                .clientSecret("secret")
                 .idpUrl("url")
                 .tokenPath("tokenPath")
                 .radienClientId("clientId")
