@@ -50,8 +50,7 @@ public class KeycloakService {
         log.info("Idp url:{} tokenPath:{} userPath:{}",idpUrl,tokenPath,userPath);
         KeycloakClient client = new KeycloakClient()
                 .clientId(getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
-                .username(getProperty(KeycloakConfigs.ADMIN_USER))
-                .password(getProperty(KeycloakConfigs.ADMIN_PASSWORD))
+                .clientSecret(getProperty(KeycloakConfigs.ADMIN_CLIENT_SECRET))
                 //TODO : ADD missing configurations
                 .idpUrl(idpUrl)
                 .tokenPath(tokenPath)

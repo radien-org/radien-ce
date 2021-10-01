@@ -53,8 +53,7 @@ public class KeycloakClient {
     private HashMap<String, String> result;
     private String idpUrl;
     private String clientId;
-    private String username;
-    private String password;
+    private String clientSecret;
     private String tokenPath;
     private String userPath;
     private String radienClientId;
@@ -99,22 +98,12 @@ public class KeycloakClient {
     }
 
     /**
-     * Keycloak username setter with getter
-     * @param username to be set and/or updated
+     * Keycloak client secret setter with getter
+     * @param clientSecret to be set and/or updated
      * @return the current client username
      */
-    public KeycloakClient username(String username) {
-        this.username = username;
-        return this;
-    }
-
-    /**
-     * Keycloak password setter with getter
-     * @param password to be set and/or updated
-     * @return the current client password
-     */
-    public KeycloakClient password(String password) {
-        this.password = password;
+    public KeycloakClient clientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
         return this;
     }
 
@@ -184,9 +173,8 @@ public class KeycloakClient {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, clientId)
                 //.field("redirect_uri", "https://localhost:8443/web/login")
-                .field(GRANT_TYPE, "password")
-                .field("username", username)
-                .field("password", password)
+                .field(GRANT_TYPE, "client_credentials")
+                .field("client_secret", clientSecret)
                 .asObject(HashMap.class);
         if (response.isSuccess()) {
             result = (HashMap<String, String>) response.getBody();

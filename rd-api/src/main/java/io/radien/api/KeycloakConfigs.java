@@ -25,7 +25,7 @@ public enum KeycloakConfigs implements SystemProperties {
     ADMIN_URL("keycloak.admin.url"),
     ADMIN_REALM("keycloak.admin.realm"),
     ADMIN_CLIENT_ID("KEYCLOAK_CLIENT_ID"),
-    ADMIN_USER("KEYCLOAK_ADMIN"),
+    ADMIN_CLIENT_SECRET("KEYCLOAK_SECRET"),
     ADMIN_PASSWORD("KEYCLOAK_PASSWORD"),
     APP_REALM("SCRIPT_CLIENT_ID_VALUE"),
     IDP_URL("KEYCLOAK_IDP_URL"),
