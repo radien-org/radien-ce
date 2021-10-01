@@ -81,6 +81,7 @@ public abstract class AuthorizationChecker implements Serializable {
      * @throws SystemException in case of any issue while getting the current user or getting the token information
      */
     public boolean refreshToken() throws SystemException {
+        log.info("Trying to refresh token");
         try {
             getUserClient();
             getTokensPlaceHolder();
@@ -265,7 +266,8 @@ public abstract class AuthorizationChecker implements Serializable {
             throw new NotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString(), e);
         }
         catch(SystemException e) {
-            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(),e);
+            throw e;
         }
     }
 
@@ -332,7 +334,9 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public UserClient getUserClient() throws SystemException {
         if (userClient == null) {
-            userClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT),
+            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT);
+            log.info("UserManagement path:{}",url);
+            userClient = buildClient(url,
                     UserClient.class);
         }
         return userClient;
@@ -346,7 +350,9 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public TenantRoleClient getTenantRoleClient() throws SystemException{
         if (tenantRoleClient == null) {
-            tenantRoleClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
+            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT);
+            log.info("RoleManagement path:{}",url);
+            tenantRoleClient = buildClient(url,
                     TenantRoleClient.class);
         }
         return tenantRoleClient;
@@ -360,7 +366,9 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public PermissionClient getPermissionClient() throws SystemException{
         if (permissionClient == null) {
-            permissionClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT),
+            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT);
+            log.info("PermissionManagement path:{}",url);
+            permissionClient = buildClient(url,
                     PermissionClient.class);
         }
         return permissionClient;

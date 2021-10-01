@@ -47,9 +47,10 @@ public class KeycloakService {
         String idpUrl =getProperty(KeycloakConfigs.IDP_URL);
         String tokenPath= getProperty(KeycloakConfigs.TOKEN_PATH);
         String userPath = getProperty(KeycloakConfigs.USER_PATH);
-        log.info("Idp url:{} tokenPath:{} userPath:{}",idpUrl,tokenPath,userPath);
+        String clientId = getProperty(KeycloakConfigs.ADMIN_CLIENT_ID);
+        log.info("Idp url:{} tokenPath:{} userPath:{} clientId:{}",idpUrl,tokenPath,userPath,clientId);
         KeycloakClient client = new KeycloakClient()
-                .clientId(getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
+                .clientId(clientId)
                 .clientSecret(getProperty(KeycloakConfigs.ADMIN_CLIENT_SECRET))
                 //TODO : ADD missing configurations
                 .idpUrl(idpUrl)
