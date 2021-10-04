@@ -68,7 +68,7 @@
 
 		<!-- prettyfaces -->
 		<version.rewrite-config-prettyfaces>3.4.4.Final</version.rewrite-config-prettyfaces>
-		<version.rewrite-servlet>3.4.4.Final</version.rewrite-servlet>
+		<version.rewrite-servlet>3.5.1.Final</version.rewrite-servlet>
 
 		<!-- Eclipselink -->
 		<version.eclipselink>2.7.7</version.eclipselink>
