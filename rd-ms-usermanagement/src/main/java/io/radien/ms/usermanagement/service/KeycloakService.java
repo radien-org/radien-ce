@@ -75,7 +75,6 @@ public class KeycloakService {
         userRepresentation.setEmailVerified(false);
         String sub= client.createUser(userRepresentation);
         try {
-            client.refreshToken();
             client.sendUpdatePasswordEmail(sub);
         } catch (RemoteResourceException e){
             deleteUser(sub);
