@@ -135,7 +135,7 @@ public class KeycloakService {
      * @return the new access token
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public String refeshToken(String refreshToken) throws RemoteResourceException {
+    public String refreshToken(String refreshToken) throws RemoteResourceException {
         KeycloakClient client = getKeycloakClient();
         return client.refreshToken(refreshToken);
     }

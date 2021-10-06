@@ -294,6 +294,7 @@ public class KeycloakClient {
             if(response.getBody()!= null) {
                 String msg = response.getBody().toString();
                 log.error(msg);
+                log.error(refreshToken);
             }
             throw new RemoteResourceException("Unable to refresh token");
         }

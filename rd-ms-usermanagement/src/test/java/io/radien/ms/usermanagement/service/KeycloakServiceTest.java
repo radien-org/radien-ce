@@ -135,7 +135,7 @@ public class KeycloakServiceTest extends TestCase {
 
         doReturn("teste").when(client).refreshToken(any());
 
-        String refreshToken = target.refeshToken("test");
+        String refreshToken = target.refreshToken("test");
 
         assertEquals("teste", refreshToken);
     }

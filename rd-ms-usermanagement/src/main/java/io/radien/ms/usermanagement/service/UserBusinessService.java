@@ -207,7 +207,7 @@ public class UserBusinessService implements Serializable {
 	 * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
 	 */
 	public String refreshToken(String refreshToken) throws RemoteResourceException {
-		return keycloakService.refeshToken(refreshToken);
+		return keycloakService.refreshToken(refreshToken);
 	}
 
 }

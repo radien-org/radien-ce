@@ -309,6 +309,9 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	@Override
 	public Response refreshToken(String refreshToken) {
+		if(refreshToken == null || refreshToken.trim().isEmpty()){
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse("refresh token null or empty");
+		}
 		try {
 			return Response.ok(userBusinessService.refreshToken(refreshToken)).build();
 		} catch(Exception e) {
