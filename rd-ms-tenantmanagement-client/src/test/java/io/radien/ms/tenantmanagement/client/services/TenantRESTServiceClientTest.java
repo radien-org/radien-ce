@@ -592,7 +592,7 @@ public class TenantRESTServiceClientTest {
     @Test
     public void testIsTenantExistentReturnFalseResponse() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
-        when(tenantResourceClient.exists(any())).thenReturn(Response.ok().entity(Boolean.FALSE).build());
+        when(tenantResourceClient.exists(any())).thenReturn(Response.status(404).build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         dummyTenant.setName("name-update");
 
