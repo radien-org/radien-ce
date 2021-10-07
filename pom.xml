@@ -87,7 +87,7 @@
 		<version.slf4j-api>1.7.32</version.slf4j-api>
 		<version.jcl-over-slf4j>1.7.30</version.jcl-over-slf4j>
 		<version.logback-classic>1.2.3</version.logback-classic>
-		<version.logback-core>1.2.3</version.logback-core>
+		<version.logback-core>1.2.6</version.logback-core>
 
 		<!-- Commons -->
 		<version.commons-lang3>3.12.0</version.commons-lang3>
