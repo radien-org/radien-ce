@@ -30,6 +30,7 @@ import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -647,7 +649,7 @@ public class RoleRESTServiceClientTest {
      * @throws SystemException in case of any communication issue
      */
     @Test
-    public void testUpdateByReAttempt() throws Exception {
+    public void testUpdateByReAttempt() throws MalformedURLException, SystemException {
         Role role = new Role(); role.setId(111L);
         RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
 
@@ -660,6 +662,6 @@ public class RoleRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.update(role);
+        assertDoesNotThrow(()-> target.update(role));
     }
 }

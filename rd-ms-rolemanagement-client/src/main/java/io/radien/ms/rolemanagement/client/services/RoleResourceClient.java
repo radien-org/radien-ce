@@ -17,7 +17,6 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.Role;
-import javax.ws.rs.HEAD;
 import javax.ws.rs.PUT;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
