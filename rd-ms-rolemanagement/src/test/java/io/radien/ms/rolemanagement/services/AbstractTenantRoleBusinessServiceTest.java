@@ -93,7 +93,7 @@ public abstract class AbstractTenantRoleBusinessServiceTest {
         if (sr == null) {
             sr = new RoleEntity();
             sr.setName(name);
-            roleServiceAccess.save(sr);
+            roleServiceAccess.create(sr);
         }
         return sr;
     }
