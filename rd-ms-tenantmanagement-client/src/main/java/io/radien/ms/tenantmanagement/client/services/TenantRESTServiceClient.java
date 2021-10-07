@@ -21,7 +21,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -443,15 +442,9 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
         try {
             Response response = client.exists(tenantId);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return true;
+                return response.readEntity(Boolean.class);
             }
-        }
-        catch (NotFoundException nfe) {
-            if (log.isDebugEnabled()) {
-                log.debug("Tenant not found for id {}", tenantId);
-            }
-        }
-        catch(ProcessingException e) {
+        } catch(ProcessingException e) {
             throw new SystemException(e.getMessage());
         }
         return false;

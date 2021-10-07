@@ -29,7 +29,6 @@ import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -246,17 +245,18 @@ public class TenantResourceTest {
      */
     @Test
     public void testExists() {
-        doReturn(Boolean.TRUE).when(tenantServiceAccess).exists(anyLong());
-        Response response = tenantResource.exists(100L);
-        assertEquals(204,response.getStatus());
+        Response response = tenantResource.exists(1L);
+        assertEquals(200,response.getStatus());
     }
 
     /**
      * Test the exists request which will return a error message code 500.
      */
     @Test
-    public void testNonExistentTenant() {
-        Response response = tenantResource.exists(1L);
+    public void testExistsException() {
+        when(tenantResource.exists(any()))
+                .thenThrow(new NotFoundException());
+        Response response = tenantResource.exists(100L);
         assertEquals(404,response.getStatus());
     }
 }

@@ -172,12 +172,14 @@ public class TenantResource implements TenantResourceClient {
 	/**
 	 * Validates if specific requested Tenant exists
 	 * @param id to be searched
-	 * @return response 204 if tenant exists. 404 if do not exist
+	 * @return response true if it exists
 	 */
 	@Override
 	public Response exists(Long id) {
-		Response.ResponseBuilder builder = tenantService.exists(id) ?
-				Response.noContent() : Response.status(Response.Status.NOT_FOUND);
-		return builder.build();
+		try {
+			return Response.ok(tenantService.exists(id)).build();
+		}catch (NotFoundException e){
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+		}
 	}
 }

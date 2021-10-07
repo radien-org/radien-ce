@@ -23,7 +23,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -129,8 +128,8 @@ public interface TenantResourceClient {
      * @param id to be searched
      * @return response true if it exists
      */
-    @HEAD
-    @Path("/{id}")
+    @GET
+    @Path("/exists/{id}")
     public Response exists(@NotNull @PathParam("id") Long id);
 
 }
