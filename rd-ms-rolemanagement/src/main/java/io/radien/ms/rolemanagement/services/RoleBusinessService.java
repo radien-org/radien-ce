@@ -84,30 +84,18 @@ public class RoleBusinessService implements Serializable {
     }
 
     /**
-     * Inserts the given role information, wither creates a new record or updated one already existent one, depending
-     * if the given role has an id or not.
-     *
-     * @param role information to be update or created.
+     * Inserts the given role information.
+     * @param role information to be created.
      */
-    public void save(Role role) throws RoleNotFoundException, UniquenessConstraintException {
-        roleServiceAccess.save(role);
+    public void create(Role role) throws UniquenessConstraintException {
+        roleServiceAccess.create(role);
     }
 
     /**
-     * Validates if specific requested role exists by id or name
-     * @param id to be searched
-     * @param name to be searched
-     * @return true in case role does exist, false if not
+     * Update the given role information.
+     * @param role information to be updated.
      */
-    public boolean exists(Long id, String name) {
-        return roleServiceAccess.checkIfRolesExist(id, name);
-    }
-
-    /**
-     * Will count how many roles are existent in the db
-     * @return a count of all the roles
-     */
-    public long getTotalRecordsCount() {
-        return roleServiceAccess.getTotalRecordsCount();
+    public void update(Role role) throws RoleNotFoundException, UniquenessConstraintException {
+        roleServiceAccess.update(role);
     }
 }

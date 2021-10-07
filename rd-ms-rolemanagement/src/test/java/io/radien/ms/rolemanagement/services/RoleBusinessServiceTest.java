@@ -84,7 +84,7 @@ public class RoleBusinessServiceTest {
         u.setId(2L);
         boolean success = false;
         try{
-            roleBusinessService.save(u);
+            roleBusinessService.create(u);
 
             roleBusinessService.delete(2L);
             success = true;
@@ -94,12 +94,15 @@ public class RoleBusinessServiceTest {
         assertTrue(success);
     }
 
+    /**
+     * Test for method {@link RoleBusinessService#create(Role)}
+     */
     @Test
-    public void testSave() {
+    public void testCreate() {
         Role u = RoleFactory.create("name", "description", 4L);
-        boolean success = false;
+        boolean success;
         try{
-            roleBusinessService.save(u);
+            roleBusinessService.create(u);
             success = true;
         } catch (Exception e){
             success = false;
@@ -107,33 +110,20 @@ public class RoleBusinessServiceTest {
         assertTrue(success);
     }
 
+    /**
+     * Test for method {@link RoleBusinessService#update(Role)}
+     */
     @Test
-    public void testExists() {
+    public void testUpdate() {
         Role u = RoleFactory.create("name", "description", 4L);
-
-        boolean success = false;
+        u.setId(111L);
+        boolean success;
         try{
-            roleBusinessService.save(u);
-
-            roleBusinessService.exists(u.getId(), u.getName());
+            roleBusinessService.update(u);
             success = true;
         } catch (Exception e){
             success = false;
         }
         assertTrue(success);
-    }
-
-    @Test
-    public void testGetTotalRecordsCount() {
-        boolean success = false;
-        Long l = 30L;
-        try{
-            l = roleBusinessService.getTotalRecordsCount();
-            success = true;
-        } catch (Exception e){
-            success = false;
-        }
-        assertTrue(success);
-        assertEquals(l, (Long) 0L);
     }
 }

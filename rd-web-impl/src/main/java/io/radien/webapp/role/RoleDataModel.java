@@ -23,7 +23,6 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
-import io.radien.webapp.resource.LazyResourcesDataModel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -44,6 +43,8 @@ import java.io.Serializable;
 @Model
 @SessionScoped
 public class RoleDataModel extends AbstractManager implements Serializable {
+
+    private static final long serialVersionUID = 2904302597399343262L;
 
     @Inject
     private RoleRESTServiceAccess service;
@@ -90,7 +91,11 @@ public class RoleDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     public String save(SystemRole systemRoleToSave) {
         try {
-            this.service.create(systemRoleToSave);
+            if (systemRoleToSave.getId() == null) {
+                this.service.create(systemRoleToSave);
+            } else {
+                this.service.update(systemRoleToSave);
+            }
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.ROLE_MESSAGE.getValue()));
             role = new Role();
