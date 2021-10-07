@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,7 +112,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
 	 */
 	@Override
-	public Response getUsers(String sub, String email, String logon, List<Long> ids, boolean isExact, boolean isLogicalConjunction) {
+	public Response getUsers(String sub, String email, String logon, Collection<Long> ids, boolean isExact, boolean isLogicalConjunction) {
 		try {
 			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,ids,isExact,isLogicalConjunction);
 			return Response.ok(userBusinessService.getUsers(filter)).build();
