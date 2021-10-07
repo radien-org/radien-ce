@@ -525,7 +525,7 @@
 				<artifactId>plantuml-maven-plugin</artifactId>
 				<version>7940</version>
 				<configuration>
-					<outputDirectory>${basedir}/src/site/resources/images</outputDirectory>
+					<outputDirectory>${basedir}/plantuml/resources/images</outputDirectory>
 					<sourceFiles>
 						<directory>${basedir}</directory>
 						<includes>
