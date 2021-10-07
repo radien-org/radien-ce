@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -79,7 +80,7 @@ public interface UserResourceClient {
     public Response getUsers(@QueryParam("sub") String sub,
                              @QueryParam("userEmail") String email,
                              @QueryParam("logon") String logon,
-                             @QueryParam("ids") List<Long> ids,
+                             @QueryParam("ids") Collection<Long> ids,
                              @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                              @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 

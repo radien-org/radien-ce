@@ -285,6 +285,9 @@ public abstract class AuthorizationChecker implements Serializable {
         return getCurrentUserIdBySub(user.getSub());
     }
 
+    protected boolean isLoggedIn(){
+        return getInvokerUser()!=null;
+    }
     /**
      * Retrieves the reference for current logged user
      * @return the reference for current logged user

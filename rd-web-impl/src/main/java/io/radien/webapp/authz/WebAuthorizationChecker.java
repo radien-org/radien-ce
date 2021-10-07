@@ -148,6 +148,10 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
      */
     public boolean hasPermissionAccess(String resource, String action, Long tenant) {
         try {
+            if(!isLoggedIn()){
+                log.error("Checking if has permission without being logged in");
+                return false;
+            }
             Optional<Long> optional = permissionRESTServiceAccess.
                     getIdByResourceAndAction(resource, action);
             if (optional.isPresent()) {

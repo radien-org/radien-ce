@@ -18,6 +18,7 @@ package io.radien.ms.usermanagement.client.services;
 import io.radien.exception.GenericErrorCodeMessage;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,7 +125,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case of token expiration or any issue on the application
      */
     @Override
-    public List<? extends SystemUser> getUsersByIds(List<Long> ids) throws SystemException {
+    public List<? extends SystemUser> getUsersByIds(Collection<Long> ids) throws SystemException {
         try {
             return getSystemUsers(ids);
         } catch (TokenExpiredException tokenExpiredException) {
@@ -183,7 +184,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case of any communication issue
      * @throws TokenExpiredException in case of JWT token expiration
      */
-    private List<? extends SystemUser> getSystemUsers(List<Long> ids) throws SystemException, TokenExpiredException {
+    private List<? extends SystemUser> getSystemUsers(Collection<Long> ids) throws SystemException, TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             Response response = client.getUsers(null, null, null, ids, true, true);

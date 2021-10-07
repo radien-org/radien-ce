@@ -669,7 +669,7 @@ public class ActiveTenantRESTServiceClientTest {
         Response response = Response.ok(is).build();
         ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.get(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean())).thenReturn(response);
+        when(resourceClient.getActiveTenant(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(response);
         List<? extends SystemActiveTenant> list = new ArrayList<>();
 
         assertEquals(list,target.getActiveTenantByFilter(100L, 100L, "test", false));
@@ -685,7 +685,7 @@ public class ActiveTenantRESTServiceClientTest {
         ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
 
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.get(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(resourceClient.getActiveTenant(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
