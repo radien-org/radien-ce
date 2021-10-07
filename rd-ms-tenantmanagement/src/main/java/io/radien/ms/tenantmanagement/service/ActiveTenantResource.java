@@ -15,6 +15,15 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import java.util.List;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.radien.api.model.ModelValueId;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
@@ -27,13 +36,6 @@ import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantResourceClient;
 import io.radien.ms.tenantmanagement.entities.ActiveTenantEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Active Tenant rest requests only regarding the associations between the tenants and the users in his tables
@@ -78,15 +80,14 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	 * @return 200 response code in case of success or 500 in case of any issue
 	 */
 	@Override
-	public Response get(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isLogicalConjunction) {
-		try {
-			SystemActiveTenantSearchFilter filter = new ActiveTenantSearchFilter(userId, tenantId, tenantName, isTenantActive, isLogicalConjunction);
-			List<? extends SystemActiveTenant> list= activeTenantServiceAccess.get(filter);
-			return Response.ok(list).build();
-		}catch (Exception e){
-			return GenericErrorMessagesToResponseMapper.getGenericError(e);
-		}
-	}
+	public Response getActiveTenant(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isExact, boolean isLogicalConjunction) {
+        try {
+        	SystemActiveTenantSearchFilter filter = new ActiveTenantSearchFilter(userId, tenantId, tenantName, isTenantActive, isExact, isLogicalConjunction);
+            return Response.ok(activeTenantServiceAccess.get(filter)).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
 
 	/**
 	 * Gets active tenant based on the given id

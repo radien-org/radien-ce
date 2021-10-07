@@ -29,7 +29,7 @@ public class ActiveTenantSearchFilterTest extends TestCase {
     private final ActiveTenantSearchFilter searchFilter;
 
     public ActiveTenantSearchFilterTest() {
-        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, "test", false, true);
+        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, "test", false, true, true);
     }
 
     /**
