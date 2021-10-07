@@ -499,7 +499,6 @@ public class AuthorizationCheckerTest {
 
         SystemException se = assertThrows(SystemException.class, () ->
                 authChecker.getCurrentUserIdBySub(principal.getSub()));
-        assertTrue(se.getMessage().contains(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString()));
         assertTrue(se.getMessage().contains(msgError));
     }
 
