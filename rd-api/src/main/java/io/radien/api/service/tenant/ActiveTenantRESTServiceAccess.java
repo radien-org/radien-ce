@@ -55,7 +55,7 @@ public interface ActiveTenantRESTServiceAccess {
      * @return a list of all the possible active tenants
      * @throws SystemException in case of token expiration or any issue on the application
      */
-    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId, String tenantName, boolean isTenantActive) throws SystemException;
+    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId) throws SystemException;
 
     /**
      * Fetches all the existent active tenants

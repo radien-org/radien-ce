@@ -78,9 +78,9 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	 * @return 200 response code in case of success or 500 in case of any issue
 	 */
 	@Override
-	public Response get(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isLogicalConjunction) {
+	public Response get(Long userId, Long tenantId, boolean isLogicalConjunction) {
 		try {
-			SystemActiveTenantSearchFilter filter = new ActiveTenantSearchFilter(userId, tenantId, tenantName, isTenantActive, isLogicalConjunction);
+			SystemActiveTenantSearchFilter filter = new ActiveTenantSearchFilter(userId, tenantId, isLogicalConjunction);
 			List<? extends SystemActiveTenant> list= activeTenantServiceAccess.get(filter);
 			return Response.ok(list).build();
 		}catch (Exception e){

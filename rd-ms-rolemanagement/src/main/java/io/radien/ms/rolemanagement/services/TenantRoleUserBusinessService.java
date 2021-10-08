@@ -82,12 +82,11 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
         }
 
         this.tenantRoleUserServiceAccess.create(tru);
-        if(!activeTenantRESTServiceAccess.isActiveTenantExistent(tru.getUserId(), tenantRole.getTenantId())) {
-            SystemTenant retrievedTenant = retrieveTenant(tenantRole.getTenantId());
-            ActiveTenant activeTenant = ActiveTenantFactory.create(tru.getUserId(),
-                    retrievedTenant.getId(), retrievedTenant.getName(), false);
-            activeTenantRESTServiceAccess.create(activeTenant);
-        }
+//        if(!activeTenantRESTServiceAccess.isActiveTenantExistent(tru.getUserId(), tenantRole.getTenantId())) {
+//            SystemTenant retrievedTenant = retrieveTenant(tenantRole.getTenantId());
+//            ActiveTenant activeTenant = ActiveTenantFactory.create(tru.getUserId(), retrievedTenant.getId());
+//            activeTenantRESTServiceAccess.create(activeTenant);
+//        }
     }
 
 

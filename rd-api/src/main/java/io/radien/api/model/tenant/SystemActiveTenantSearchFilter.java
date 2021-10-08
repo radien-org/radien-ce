@@ -45,28 +45,4 @@ public interface SystemActiveTenantSearchFilter {
      * @param tenantId to be set
      */
     public void setTenantId(Long tenantId);
-
-    /**
-     * System active tenant search filter tenant name getter
-     * @return the system active tenant search filter tenant name
-     */
-    public String getTenantName();
-
-    /**
-     * System active tenant search filter tenant name setter
-     * @param tenantName to be set
-     */
-    public void setTenantName(String tenantName);
-
-    /**
-     * System active tenant is tenant active
-     * @return system active tenant is tenant active
-     */
-    public boolean getIsTenantActive();
-
-    /**
-     * System active tenant is tenant active setter
-     * @param isTenantActive to be set
-     */
-    public void setIsTenantActive(boolean isTenantActive);
 }

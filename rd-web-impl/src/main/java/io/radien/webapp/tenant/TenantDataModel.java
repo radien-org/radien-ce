@@ -155,12 +155,10 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     private void retrieveParentTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
-            List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
-                            userSession.getUserId(), null, null, true);
+            List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUserId(), null);
+            
             for(SystemActiveTenant aCt : activeTenants) {
-                if(aCt.getIsTenantActive()) {
-                    systemTenantToSave.setParentId(aCt.getTenantId());
-                }
+                systemTenantToSave.setParentId(aCt.getTenantId());
             }
         } catch (SystemException e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()),
@@ -176,12 +174,10 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     private void retrieveClientTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
-            List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(
-                    userSession.getUserId(), null, null, true);
+            List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUserId(), null);
+            
             for(SystemActiveTenant aCt : activeTenants) {
-                if(aCt.getIsTenantActive()) {
-                    requestUpperTenant(systemTenantToSave, aCt.getTenantId());
-                }
+                requestUpperTenant(systemTenantToSave, aCt.getTenantId());
             }
         } catch (SystemException e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()),

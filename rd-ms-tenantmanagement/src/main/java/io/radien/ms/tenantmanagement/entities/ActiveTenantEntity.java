@@ -78,24 +78,4 @@ public class ActiveTenantEntity extends io.radien.ms.tenantmanagement.client.ent
 	public Long getTenantId() {
 		return super.getTenantId();
 	}
-
-	/**
-	 * Active Tenant tenant name table field getter
-	 * @return active tenant tenant name
-	 */
-	@Column
-	@Override
-	public String getTenantName() {
-		return super.getTenantName();
-	}
-
-	/**
-	 * Active Tenant is tenant active table field getter
-	 * @return active tenant is tenant active
-	 */
-	@Column
-	@Override
-	public boolean getIsTenantActive() {
-		return super.getIsTenantActive();
-	}
 }

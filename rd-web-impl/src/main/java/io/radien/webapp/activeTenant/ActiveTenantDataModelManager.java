@@ -15,14 +15,12 @@
  */
 package io.radien.webapp.activeTenant;
 
-import com.ocpsoft.pretty.PrettyContext;
-import io.radien.api.model.tenant.SystemActiveTenant;
-import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
-import io.radien.exception.SystemException;
-import io.radien.webapp.AbstractManager;
-import io.radien.webapp.DataModelEnum;
-import io.radien.webapp.JSFUtil;
-import io.radien.webapp.security.UserSession;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -30,10 +28,29 @@ import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+
+import com.ocpsoft.pretty.PrettyContext;
+
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
+import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.tenant.TenantServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+import io.radien.exception.SystemException;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
+import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
+import io.radien.webapp.AbstractManager;
+import io.radien.webapp.DataModelEnum;
+import io.radien.webapp.JSFUtil;
+import io.radien.webapp.security.UserSession;
 
 /**
  * Active Tenant Model Manager controller and web page controller
@@ -42,17 +59,26 @@ import java.util.List;
 @Model
 @RequestScoped
 public class ActiveTenantDataModelManager extends AbstractManager implements Serializable {
+    private static final long serialVersionUID = -7725350210007205007L;
 
     @Inject
     private UserSession userSession;
 
     @Inject
     private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
-
-    private List<? extends SystemActiveTenant> userActiveTenants;
+    
+    @Inject
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+    
+    @Inject
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
+    
+    private List<? extends SystemTenant> userAvailableTenants;
 
     private SystemActiveTenant activeTenant;
+    
     private String activeTenantValue;
+    private String activeTenantName;
 
     /**
      * Constructor and validator method to see which tenants are activated for the current active user
@@ -62,22 +88,15 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     public void init() throws SystemException {
         try {
             //get all the active tenants
-            userActiveTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUser().getId(), null, null, false);
-
+            List<? extends SystemActiveTenant> userActiveTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUser().getId(), null);
+            
             //choose the already selected active tenant
             if(!userActiveTenants.isEmpty()){
                 for (SystemActiveTenant actTenant : userActiveTenants) {
-                    if(activeTenantValue == null) {
-                        if (!actTenant.getIsTenantActive()) {
-                            actTenant.setIsTenantActive(true);
-                            activeTenantRESTServiceAccess.update(actTenant);
-                        }
-                        activeTenant = actTenant;
-                        activeTenantValue = actTenant.getTenantName();
-                    } else if (actTenant.getIsTenantActive()) {
-                        activeTenant = actTenant;
-                        activeTenantValue = actTenant.getTenantName();
-                    }
+                    activeTenantRESTServiceAccess.update(actTenant);
+                    activeTenant = actTenant;
+                    activeTenantValue = actTenant.getTenantId().toString();
+                    activeTenantName = tenantRESTServiceAccess.getTenantById(actTenant.getTenantId()).get().getName();
                 }
             }
         } catch (Exception e) {
@@ -88,17 +107,14 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     /**
      * Method to convert the objects and show only the tenant names to the user
      * @return a list of active tenant names that are able to be chosen by the user
+     * @throws SystemException 
      */
-    public List<String> getUserTenants() {
-        List<String> actTenantNames = new ArrayList<>();
-        if (userActiveTenants != null) {
-            for (SystemActiveTenant actTenant : userActiveTenants) {
-                actTenantNames.add(actTenant.getTenantName());
-            }
-
-            actTenantNames.sort(Comparator.comparing(String::toString));
-        }
-        return actTenantNames;
+    public List<? extends SystemTenant> getUserTenants() throws SystemException {
+        SystemUser user = userSession.getUser();
+        Long userId = user.getId();
+        List<? extends SystemTenant> tenantRoles = tenantRoleRESTServiceAccess.getTenants(userId, null);
+        userAvailableTenants = tenantRoles;
+        return tenantRoles;
     }
 
     /**
@@ -116,6 +132,9 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      */
     public void tenantChangedValidationMethod(String valueChange) {
         try {
+            if(activeTenant != null && Long.parseLong(valueChange) == activeTenant.getTenantId()) {
+                return;
+            }
             if(valueChange.equals(JSFUtil.getMessage(DataModelEnum.NO_ACTIVE_TENANT_MESSAGE.getValue()))) {
                 if(activeTenant != null) {
                     //if he had another then set the value to deactivate before changing
@@ -123,7 +142,8 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                     redirectToHomePage();
                 }
                 activeTenant = null;
-                activeTenantValue=null;
+                activeTenantValue = null;
+                activeTenantName = null;
             } else {
                 //if there was null
                 if(activeTenant != null) {
@@ -138,7 +158,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                 } else {
                     redirectToHomePage();
                 }
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantValue);
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantName);
             }
         } catch (Exception exception) {
             handleError(exception, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()));
@@ -164,18 +184,15 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * @throws SystemException in case of token expiration or any other exception
      */
     private void validateCorrectTenantAndActivateItToUser(String valueChange) throws SystemException {
-        List<? extends SystemActiveTenant> newActiveTenantForUser =
-                activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUser().getId(), null, valueChange, false);
-
-        if (!newActiveTenantForUser.isEmpty()) {
-            for (SystemActiveTenant systemActiveTenant : newActiveTenantForUser) {
-                if (systemActiveTenant.getTenantName().equals(valueChange)) {
+        if(userAvailableTenants != null) {
+            for(SystemTenant st : userAvailableTenants) {
+                if(st.getId().toString().equals(valueChange)) {
                     //activate the tenant
-                    SystemActiveTenant selectedActiveTenant = activateTenant(systemActiveTenant);
-
-                    //add it to the user
+                    SystemActiveTenant selectedActiveTenant = activateTenant(st);
                     activeTenant = selectedActiveTenant;
-                    activeTenantValue = selectedActiveTenant.getTenantName();
+                    activeTenantValue = st.getId().toString();
+                    activeTenantName = st.getName();
+                    break;
                 }
             }
         }
@@ -187,8 +204,10 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * @throws SystemException in case of token expiration or any other exception
      */
     private void deactivateTenant(SystemActiveTenant tenantToDeactivate) throws SystemException {
-        tenantToDeactivate.setIsTenantActive(false);
-        activeTenantRESTServiceAccess.update(tenantToDeactivate);
+        activeTenantRESTServiceAccess.delete(tenantToDeactivate.getId());
+        activeTenant = null;
+        activeTenantValue = null;
+        activeTenantName = null;
     }
 
     /**
@@ -197,11 +216,12 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * @return the active tenant for further purposes
      * @throws SystemException in case of token expiration or any other exception
      */
-    private SystemActiveTenant activateTenant(SystemActiveTenant tenantToActivate) throws SystemException {
-        tenantToActivate.setIsTenantActive(true);
-        activeTenantRESTServiceAccess.update(tenantToActivate);
-
-        return tenantToActivate;
+    private SystemActiveTenant activateTenant(SystemTenant tenantToActivate) throws SystemException {
+        SystemActiveTenant newActiveTenant = new ActiveTenant();
+        newActiveTenant.setTenantId(tenantToActivate.getId());
+        newActiveTenant.setUserId(userSession.getUserId());
+        activeTenantRESTServiceAccess.create(newActiveTenant);
+        return newActiveTenant;
     }
 
     /**
@@ -280,15 +300,15 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * Active Tenant list for the user getter
      * @return a list of all the possible active tenants for the user
      */
-    public List<? extends SystemActiveTenant> getUserActiveTenants() {
-        return userActiveTenants;
+    public List<? extends SystemTenant> getUserActiveTenants() {
+        return userAvailableTenants;
     }
 
     /**
      * Active Tenant list for the user setter
      * @param userActiveTenants to be set
      */
-    public void setUserActiveTenants(List<? extends SystemActiveTenant> userActiveTenants) {
-        this.userActiveTenants = userActiveTenants;
+    public void setUserActiveTenants(List<? extends SystemTenant> userActiveTenants) {
+        this.userAvailableTenants = userActiveTenants;
     }
 }

@@ -15,19 +15,17 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
-import io.radien.api.entity.Page;
-import io.radien.api.model.tenant.SystemActiveTenant;
-import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
-import io.radien.api.service.tenant.ActiveTenantServiceAccess;
-import io.radien.exception.ActiveTenantException;
-import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
-import io.radien.ms.tenantmanagement.entities.ActiveTenantEntity;
+import static io.radien.api.SystemVariables.ID;
+import static io.radien.api.SystemVariables.TENANT_ID;
+import static io.radien.api.SystemVariables.TENANT_NAME;
+import static io.radien.api.SystemVariables.USER_ID;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -39,10 +37,14 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import static io.radien.api.SystemVariables.ID;
-import static io.radien.api.SystemVariables.TENANT_ID;
-import static io.radien.api.SystemVariables.TENANT_NAME;
-import static io.radien.api.SystemVariables.USER_ID;
+import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
+import io.radien.api.service.tenant.ActiveTenantServiceAccess;
+import io.radien.exception.ActiveTenantException;
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter;
+import io.radien.ms.tenantmanagement.entities.ActiveTenantEntity;
 
 /**
  * Active Tenant requests to be performed into the DB and actions to take place

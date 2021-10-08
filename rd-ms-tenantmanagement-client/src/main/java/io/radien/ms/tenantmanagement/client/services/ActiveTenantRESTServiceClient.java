@@ -19,6 +19,8 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
@@ -122,20 +124,17 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * Gets the requester to get the active tenant in the DB searching for the user
      * @param userId to be looked after
      * @param tenantId to be looked after
-     * @param tenantName to be looked after
-     * @param isTenantActive to be looked after
      * @return list of active tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId,
-                                                                      String tenantName, boolean isTenantActive) throws SystemException {
+    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId) throws SystemException {
         try {
-            return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+            return getActiveTenantByFilterRequester(userId, tenantId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+                return getActiveTenantByFilterRequester(userId, tenantId);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -146,17 +145,14 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * Gets the active tenant in the DB searching for the user
      * @param userId to be looked after
      * @param tenantId to be looked after
-     * @param tenantName to be looked after
-     * @param isTenantActive to be looked after
      * @return list of active tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private List<? extends ActiveTenant> getActiveTenantByFilterRequester(Long userId, Long tenantId,
-                                                                          String tenantName, boolean isTenantActive) throws SystemException {
+    private List<? extends ActiveTenant> getActiveTenantByFilterRequester(Long userId, Long tenantId) throws SystemException {
         try {
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(
                     oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.get(userId, tenantId, tenantName, isTenantActive, true);
+            Response response = client.get(userId, tenantId, true);
             return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
@@ -239,11 +235,11 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     @Override
     public boolean create(SystemActiveTenant activeTenant) throws SystemException {
         try {
-            return createActiveTenant((ActiveTenant) activeTenant);
+            return createActiveTenant((ActiveTenant)activeTenant);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return createActiveTenant((ActiveTenant) activeTenant);
+                return createActiveTenant((ActiveTenant)activeTenant);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }

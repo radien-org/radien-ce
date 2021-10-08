@@ -72,9 +72,8 @@ public interface ActiveTenantResourceClient {
      */
     @GET
     @Path("/get")
-    public Response get(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId,
-                        @QueryParam("tenantName") String tenantName,
-                        @DefaultValue("false") @QueryParam("isTenantActive") boolean isTenantActive,
+    public Response get(@QueryParam("userId") Long userId,
+                        @QueryParam("tenantId") Long tenantId,
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     /**
