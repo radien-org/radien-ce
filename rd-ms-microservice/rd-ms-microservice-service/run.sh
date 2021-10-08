@@ -1,0 +1,1 @@
+java -jar target/rd-ms-microservice-service-exec.jar
