@@ -74,7 +74,7 @@
 		<version.eclipselink>2.7.7</version.eclipselink>
 
 		<!-- DB -->
-		<version.hsqldb>2.5.1</version.hsqldb>
+		<version.hsqldb>2.6.0</version.hsqldb>
 
 		<!-- Microprofile -->
 		<version.microprofile>3.3</version.microprofile>
