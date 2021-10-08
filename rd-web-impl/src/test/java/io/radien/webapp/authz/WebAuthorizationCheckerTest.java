@@ -51,6 +51,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -389,6 +390,32 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
         when(userSession.isActive()).thenReturn(true);
         assertTrue(webAuthorizationChecker.redirectOnMissingPermission("Employee","Read",null,"Dest"));
     }
+
+    @Test
+    public void redirectOnMissingPermissionTestActiveAndWithPermission() throws SystemException {
+        when(userSession.isActive()).thenReturn(true);
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(permissionRESTServiceAccess.
+                getIdByResourceAndAction(any(),any())).thenReturn(Optional.of(1l));
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        Response expectedResponse = Response.ok().entity(true).build();
+        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(any(), any(), any());
+
+        assertFalse(webAuthorizationChecker.redirectOnMissingPermission("Employee","Read",null,"Dest"));
+    }
+
+
 
 
 }
