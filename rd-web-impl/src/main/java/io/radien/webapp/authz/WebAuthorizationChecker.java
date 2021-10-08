@@ -188,6 +188,14 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
                 THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName(), tenant);
     }
 
+    /**
+     * Redirects the user if its not logged or if the user doesn't have permission
+     * @param resource for check of the permission
+     * @param action for check of the permission
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @param prettyDestination destination of redirection
+     * @return true if redirection occurs, otherwise false
+     */
     public boolean redirectOnMissingPermission(String resource,String action,Long tenant,String prettyDestination){
 
         if(!userSession.isActive()) {
