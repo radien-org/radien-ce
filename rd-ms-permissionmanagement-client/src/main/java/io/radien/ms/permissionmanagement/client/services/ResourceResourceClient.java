@@ -16,6 +16,7 @@
 package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.ms.permissionmanagement.client.entities.GlobalHeaders;
+import javax.ws.rs.PUT;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
@@ -95,13 +96,26 @@ public interface ResourceResourceClient {
     public Response delete(@NotNull @PathParam("id") long id);
 
     /**
-     * Saves an resource (Creation or Update).
-     * @param resource resource to be created or update
-     * @return Http status 200 in case of successful operation.<br>
-     * Bad request (404) in case of trying to create an resource with repeated description.<br>
+     * Creates a resource
+     * @param resource resource to be created
+     * @return Http status 200 in case of successful operation.
+     * Bad request (400) in case of trying to create a resource with repeated description.
      * Internal Server Error (500) in case of operational error
      */
     @POST
     public Response save(io.radien.ms.permissionmanagement.client.entities.Resource resource);
+
+    /**
+     * Updates a resource
+     * @param id resource identifier
+     * @param resource resource to be updated
+     * @return Http status 200 in case of successful operation.
+     * Bad request (400) in case of trying to update a resource with repeated description.
+     * Not found (404) in case of trying to update a resource that does not exist for a given id.
+     * Internal Server Error (500) in case of operational error
+     */
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") long id, io.radien.ms.permissionmanagement.client.entities.Resource resource);
 
 }

@@ -17,12 +17,15 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
+import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
+import io.radien.ms.permissionmanagement.model.ActionEntity;
 import io.radien.ms.permissionmanagement.model.ResourceEntity;
 
 import javax.ejb.Stateless;
@@ -153,21 +156,43 @@ public class ResourceService implements ResourceServiceAccess {
     }
 
     /**
-     * Saves or updates the requested and given Resource information into the DB.
-     * @param resource to be added/inserted or updated
-     * @throws UniquenessConstraintException in case of duplicated name
+     * Create a resource
+     * @param resource to be created
+     * @throws UniquenessConstraintException in case of duplicated information
      */
     @Override
-    public void save(SystemResource resource) throws UniquenessConstraintException {
+    public void create(SystemResource resource) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
+        checkUniqueness(resource, em);
+        em.persist(resource);
+    }
+
+    /**
+     * Update a resource
+     * @param resource to be updated
+     * @throws ResourceNotFoundException in case of not existent resource
+     * @throws UniquenessConstraintException in case of duplicated information
+     */
+    @Override
+    public void update(SystemResource resource) throws ResourceNotFoundException, UniquenessConstraintException {
+        EntityManager em = getEntityManager();
+        if(em.find(ResourceEntity.class, resource.getId()) == null) {
+            throw new ResourceNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+        }
+        checkUniqueness(resource, em);
+        em.merge(resource);
+    }
+
+    /**
+     * Seek for eventual duplicated information
+     * @param resource base entity bean to seek for repeated information
+     * @param em entity manager
+     * @throws UniquenessConstraintException thrown in case of repeated information
+     */
+    private void checkUniqueness(SystemResource resource, EntityManager em) throws UniquenessConstraintException {
         List<ResourceEntity> alreadyExistentRecords = searchDuplicatedName(resource, em);
         if (!alreadyExistentRecords.isEmpty()) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
-        }
-        if(resource.getId() == null) {
-            em.persist(resource);
-        } else {
-            em.merge(resource);
         }
     }
 

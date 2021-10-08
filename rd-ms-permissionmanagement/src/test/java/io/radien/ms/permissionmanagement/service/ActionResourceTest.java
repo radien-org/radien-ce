@@ -144,7 +144,7 @@ public class ActionResourceTest {
      */
     @Test
     public void testSave() {
-        Response response = actionResource.save(new io.radien.ms.permissionmanagement.client.entities.Action());
+        Response response = actionResource.create(new io.radien.ms.permissionmanagement.client.entities.Action());
         assertEquals(200,response.getStatus());
     }
 
@@ -155,8 +155,8 @@ public class ActionResourceTest {
      */
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException {
-        doThrow(new UniquenessConstraintException()).when(actionServiceAccess).save(any());
-        Response response = actionResource.save(new io.radien.ms.permissionmanagement.client.entities.Action());
+        doThrow(new UniquenessConstraintException()).when(actionServiceAccess).create(any());
+        Response response = actionResource.create(new io.radien.ms.permissionmanagement.client.entities.Action());
         assertEquals(400,response.getStatus());
     }
 
@@ -167,8 +167,8 @@ public class ActionResourceTest {
      */
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException {
-        doThrow(new RuntimeException()).when(actionServiceAccess).save(any());
-        Response response = actionResource.save(new io.radien.ms.permissionmanagement.client.entities.Action());
+        doThrow(new RuntimeException()).when(actionServiceAccess).create(any());
+        Response response = actionResource.create(new io.radien.ms.permissionmanagement.client.entities.Action());
         assertEquals(500,response.getStatus());
     }
 }

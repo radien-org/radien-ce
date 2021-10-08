@@ -21,7 +21,9 @@ import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.permission.ActionServiceAccess;
 
+import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.model.ActionEntity;
@@ -155,21 +157,42 @@ public class ActionService implements ActionServiceAccess {
     }
 
     /**
-     * Saves or updates the requested and given Action information into the DB.
-     * @param action to be added/inserted or updated
+     * Saves the requested and given Action information into the DB.
+     * @param action to be added/inserted
      * @throws UniquenessConstraintException in case of duplicated name
      */
     @Override
-    public void save(SystemAction action) throws UniquenessConstraintException {
+    public void create(SystemAction action) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
+        checkUniqueness(action, em);
+        em.persist(action);
+    }
+
+    /**
+     * Updates the requested and given Action information into the DB.
+     * @param action to be updated
+     * @throws UniquenessConstraintException in case of duplicated name
+     */
+    @Override
+    public void update(SystemAction action) throws ActionNotFoundException, UniquenessConstraintException {
+        EntityManager em = getEntityManager();
+        if(em.find(ActionEntity.class, action.getId()) == null) {
+            throw new ActionNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+        }
+        checkUniqueness(action, em);
+        em.merge(action);
+    }
+
+    /**
+     * Seek for eventual duplicated information
+     * @param action base entity bean to seek for repeated information
+     * @param em entity manager
+     * @throws UniquenessConstraintException thrown in case of repeated information
+     */
+    private void checkUniqueness(SystemAction action, EntityManager em) throws UniquenessConstraintException {
         List<ActionEntity> alreadyExistentRecords = searchDuplicatedName(action, em);
         if (!alreadyExistentRecords.isEmpty()) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
-        }
-        if(action.getId() == null) {
-            em.persist(action);
-        } else {
-            em.merge(action);
         }
     }
 

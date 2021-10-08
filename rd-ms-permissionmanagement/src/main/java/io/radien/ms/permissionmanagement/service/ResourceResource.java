@@ -18,6 +18,7 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ResourceResourceClient;
@@ -121,18 +122,41 @@ public class ResourceResource implements ResourceResourceClient {
 	}
 
 	/**
-	 * Saves an resource (Creation or Update).
-	 * @param resource resource to be created or update
-	 * @return Http status 200 in case of successful operation.<br>
-	 * Bad request (404) in case of trying to create an resource with repeated description.<br>
+	 * Creates a resource
+	 * @param resource resource to be created
+	 * @return Http status 200 in case of successful operation.
+	 * Bad request (400) in case of trying to create a resource with repeated description.
 	 * Internal Server Error (500) in case of operational error
 	 */
 	public Response save(io.radien.ms.permissionmanagement.client.entities.Resource resource) {
 		try {
-			resourceServiceAccess.save(new ResourceEntity(resource));
+			resourceServiceAccess.create(new ResourceEntity(resource));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+		} catch (Exception e) {
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
+	/**
+	 * Updates a resource
+	 * @param id resource identifier
+	 * @param resource resource to be updated
+	 * @return Http status 200 in case of successful operation.
+	 * Bad request (400) in case of trying to update a resource with repeated description.
+	 * Not found (404) in case of trying to update a resource that does not exist for a given id.
+	 * Internal Server Error (500) in case of operational error
+	 */
+	public Response update(long id, io.radien.ms.permissionmanagement.client.entities.Resource resource) {
+		try {
+			resource.setId(id);
+			resourceServiceAccess.update(new ResourceEntity(resource));
+			return Response.ok().build();
+		} catch (UniquenessConstraintException e) {
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+		} catch (ResourceNotFoundException e) {
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		} catch (Exception e) {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}

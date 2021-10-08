@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -58,11 +59,19 @@ public interface ResourceServiceAccess extends ServiceAccess {
                               List<String> sortBy, boolean isAscending);
 
     /**
-     * Save an resource (Create or Update)
-     * @param resource to be stored/saved
+     * Create a resource
+     * @param resource to be created
      * @throws UniquenessConstraintException in case the requested record already exists or has duplicated information
      */
-    public void save(SystemResource resource) throws UniquenessConstraintException;
+    public void create(SystemResource resource) throws UniquenessConstraintException;
+
+    /**
+     * Update a resource
+     * @param resource to be updated
+     * @throws ResourceNotFoundException in case of not existent resource
+     * @throws UniquenessConstraintException in case of duplicated information
+     */
+    public void update(SystemResource resource) throws ResourceNotFoundException, UniquenessConstraintException;
 
     /**
      * Delete a resource

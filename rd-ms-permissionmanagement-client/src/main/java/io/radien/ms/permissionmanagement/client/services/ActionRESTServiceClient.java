@@ -221,7 +221,51 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
             client = clientServiceUtil.getActionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
-            Response response = client.save((Action)action);
+            Response response = client.create((Action)action);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                String entity = response.readEntity(String.class);
+                log.error(entity);
+                return false;
+            }
+        } catch (ProcessingException | MalformedURLException e) {
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Requests to create a given action
+     * @param action to be created
+     * @return true if action has been created with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean update(SystemAction action) throws SystemException {
+        try {
+            return updateRequest(action);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return updateRequest(action);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Creates given action
+     * @param action to be created
+     * @return true if action has been created with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private boolean updateRequest(SystemAction action) throws SystemException{
+        ActionResourceClient client;
+        try {
+            client = clientServiceUtil.getActionResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+
+            Response response = client.update(action.getId(), (Action)action);
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {

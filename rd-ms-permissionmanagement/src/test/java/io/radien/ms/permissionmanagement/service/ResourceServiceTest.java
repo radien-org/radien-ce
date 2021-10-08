@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.model.ResourceEntity;
@@ -76,7 +77,7 @@ public class ResourceServiceTest {
             resourceTest = resourcePage.getResults().get(0);
         } else {
             resourceTest = createResource("resourceName", 2L);
-            resourceServiceAccess.save(resourceTest);
+            resourceServiceAccess.create(resourceTest);
         }
     }
 
@@ -129,10 +130,10 @@ public class ResourceServiceTest {
     @Test
     public void testAddDuplicatedName() throws UniquenessConstraintException {
         ResourceEntity r1 = createResource("resourceNameXXX", 2L);
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         ResourceEntity r2 = createResource("resourceNameXXX", 2L);
-        Exception exception = assertThrows(UniquenessConstraintException.class, () -> resourceServiceAccess.save(r2));
+        Exception exception = assertThrows(UniquenessConstraintException.class, () -> resourceServiceAccess.create(r2));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         String actualMessage = exception.getMessage();
 
@@ -150,7 +151,7 @@ public class ResourceServiceTest {
     @Test
     public void testGetById() throws UniquenessConstraintException {
         ResourceEntity u = createResource("testGetIdFirstName", 2L);
-        resourceServiceAccess.save(u);
+        resourceServiceAccess.create(u);
         SystemResource result = resourceServiceAccess.get(u.getId());
         assertNotNull(result);
         assertEquals(u.getName(), result.getName());
@@ -167,10 +168,10 @@ public class ResourceServiceTest {
     @Test
     public void testGetByListOfIds() throws UniquenessConstraintException {
         ResourceEntity r1 = createResource("testGetByListOfIdsFirstName1", 2L);
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         ResourceEntity r2 = createResource("testGetByListOfIdsFirstName2", 2L);
-        resourceServiceAccess.save(r2);
+        resourceServiceAccess.create(r2);
 
         List<Long> ResourceIds = Arrays.asList(r1.getId(), r2.getId());
         List<SystemResource> result = resourceServiceAccess.get(ResourceIds);
@@ -217,13 +218,13 @@ public class ResourceServiceTest {
     @Test
     public void testDeleteByListOfIds() throws UniquenessConstraintException {
         SystemResource r1 = createResource("testDeleteByListOfIdsFirstName1", 2L);
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         SystemResource r2 = createResource("testDeleteByListOfIdsFirstName2",2L);
-        resourceServiceAccess.save(r2);
+        resourceServiceAccess.create(r2);
 
         SystemResource r3 = createResource("testDeleteByListOfIdsFirstName3",2L);
-        resourceServiceAccess.save(r3);
+        resourceServiceAccess.create(r3);
 
         List<Long> resourceIds = Arrays.asList(r1.getId(), r2.getId());
         resourceServiceAccess.delete(resourceIds);
@@ -241,9 +242,9 @@ public class ResourceServiceTest {
     public void testDeleteByEmptyListOfIds() {
         Collection<Long> resourceIds = null;
         try {
-            this.resourceServiceAccess.delete(resourceIds);
+            resourceServiceAccess.delete(resourceIds);
             resourceIds = new ArrayList<>();
-            this.resourceServiceAccess.delete(resourceIds);
+            resourceServiceAccess.delete(resourceIds);
         } catch (Exception e) {
             fail("should not throw an exception");
         }
@@ -253,20 +254,22 @@ public class ResourceServiceTest {
      * Test updates the Resource information. 
      * Should be a success in this test case, if the name attribute from the Resource one, 
      * should have been updated to the Resource three information.
+     * @throws ResourceNotFoundException in case of non existent resource for a given id
+     * @throws UniquenessConstraintException in case of request containing repeated information
      */
     @Test
-    public void testUpdateSuccess() throws UniquenessConstraintException {
+    public void testUpdateSuccess() throws UniquenessConstraintException, ResourceNotFoundException {
         SystemResource r1 = createResource("testUpdateResourceName1",2L);
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         SystemResource r2 = createResource("testUpdateResourceName2",2L);
-        resourceServiceAccess.save(r2);
+        resourceServiceAccess.create(r2);
 
         SystemResource r3 = createResource("testUpdateResourceName1",2L);
 
         r3.setId(r1.getId());
 
-        resourceServiceAccess.save(r3);
+        resourceServiceAccess.update(r3);
 
         r1 = resourceServiceAccess.get(r1.getId());
 
@@ -275,7 +278,7 @@ public class ResourceServiceTest {
 
         r4.setId(r1.getId());
 
-        resourceServiceAccess.save(r4);
+        resourceServiceAccess.update(r4);
 
         r1 = resourceServiceAccess.get(r1.getId());
 
@@ -285,22 +288,22 @@ public class ResourceServiceTest {
 
     /**
      * Method to test updating with failure multiple resources
-     * @throws Exception to be trow
+     * @throws UniquenessConstraintException in case of request containing repeated information
      */
     @Test
-    public void testUpdateFailureMultipleRecords() throws Exception {
+    public void testUpdateFailureMultipleRecords() throws UniquenessConstraintException {
         ResourceEntity r1 = createResource("resourceName1", 2L);
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         ResourceEntity r2 = createResource("resourceName2", 2L);
-        resourceServiceAccess.save(r2);
+        resourceServiceAccess.create(r2);
 
         ResourceEntity r3 = createResource("resourceName3", 2L);
-        resourceServiceAccess.save(r3);
+        resourceServiceAccess.create(r3);
 
         ResourceEntity r4 = createResource("resourceName1", 2L);
 
-        Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> resourceServiceAccess.save(r4));
+        Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> resourceServiceAccess.create(r4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
@@ -310,29 +313,42 @@ public class ResourceServiceTest {
     /**
      * Test updates the Resource information. Should be a failure in this test case and no information should be updated,
      * since that we are updating Resource one with the information from Resource three, but using a duplicated email address.
-     * @throws UniquenessConstraintException in case of Resource to be updated not found
+     * @throws UniquenessConstraintException in case of request containing repeated information
      */
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
         String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
         ResourceEntity r1 = createResource("resourceNamePerm1", 2L);
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         ResourceEntity r2 = createResource("resourceNamePerm2", 2L);
-        resourceServiceAccess.save(r2);
+        resourceServiceAccess.create(r2);
 
         ResourceEntity r3 = createResource("resourceNamePerm1", 2L);
-
-        Exception exceptionForFieldName = assertThrows(Exception.class, () -> resourceServiceAccess.save(r3));
+        UniquenessConstraintException exceptionForFieldName = assertThrows(UniquenessConstraintException.class, () -> resourceServiceAccess.create(r3));
         String actualMessage = exceptionForFieldName.getMessage();
         assertTrue(actualMessage.contains(expectedMessageName));
 
         ResourceEntity r4 = createResource("resourceNamePerm2", 2L);
-
-        Exception exceptionName2 = assertThrows(Exception.class, () -> resourceServiceAccess.save(r4));
+        r4.setId(r1.getId());
+        UniquenessConstraintException exceptionName2 = assertThrows(UniquenessConstraintException.class, () -> resourceServiceAccess.update(r4));
         String messageFromException = exceptionName2.getMessage();
         assertTrue(messageFromException.contains(expectedMessageName));
+    }
+
+    /**
+     * Trying to update a resource that does not exist.
+     * Expected behaviour: Raise ResourceNotFound exception
+     */
+    @Test
+    public void testUpdateFailureResourceNotFound() {
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
+        ResourceEntity r = createResource("unknown", 2L);
+        r.setId(100000L);
+        ResourceNotFoundException rnf = assertThrows(ResourceNotFoundException.class, () -> resourceServiceAccess.update(r));
+        String messageFromException = rnf.getMessage();
+        assertTrue(messageFromException.contains(expectedMessage));
     }
 
     /**
@@ -342,11 +358,11 @@ public class ResourceServiceTest {
     @Test
     public void testGetAllSort() throws UniquenessConstraintException {
         SystemResource r1 = createResource("a", 2L);
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
         SystemResource r2 = createResource("zzz", 2L);
-        resourceServiceAccess.save(r2);
+        resourceServiceAccess.create(r2);
         SystemResource r3 = createResource("d", 2L);
-        resourceServiceAccess.save(r3);
+        resourceServiceAccess.create(r3);
 
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
@@ -382,13 +398,13 @@ public class ResourceServiceTest {
         SystemResource sr6 = createResource("ddd", 1L);
         SystemResource sr7 = createResource("xxx", 1L);
 
-        resourceServiceAccess.save(sr1);
-        resourceServiceAccess.save(sr2);
-        resourceServiceAccess.save(sr3);
-        resourceServiceAccess.save(sr4);
-        resourceServiceAccess.save(sr5);
-        resourceServiceAccess.save(sr6);
-        resourceServiceAccess.save(sr7);
+        resourceServiceAccess.create(sr1);
+        resourceServiceAccess.create(sr2);
+        resourceServiceAccess.create(sr3);
+        resourceServiceAccess.create(sr4);
+        resourceServiceAccess.create(sr5);
+        resourceServiceAccess.create(sr6);
+        resourceServiceAccess.create(sr7);
 
         List<? extends SystemResource> resourcesAnd = resourceServiceAccess.getResources(
                 new ResourceSearchFilter("zz",null,true,true));
@@ -450,10 +466,10 @@ public class ResourceServiceTest {
         SystemResource testById3 = createResource("resource-dummy-3", 1L);
         SystemResource testById4 = createResource("resource-dummy-4", 1L);
 
-        resourceServiceAccess.save(testById1);
-        resourceServiceAccess.save(testById2);
-        resourceServiceAccess.save(testById3);
-        resourceServiceAccess.save(testById4);
+        resourceServiceAccess.create(testById1);
+        resourceServiceAccess.create(testById2);
+        resourceServiceAccess.create(testById3);
+        resourceServiceAccess.create(testById4);
 
         List<Long> ids = Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId(), testById4.getId());
 
