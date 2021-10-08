@@ -74,7 +74,7 @@
 		<version.eclipselink>2.7.7</version.eclipselink>
 
 		<!-- DB -->
-		<version.hsqldb>2.5.1</version.hsqldb>
+		<version.hsqldb>2.6.0</version.hsqldb>
 
 		<!-- Microprofile -->
 		<version.microprofile>3.3</version.microprofile>
@@ -100,7 +100,7 @@
 		<version.rmiio>2.1.2</version.rmiio>
 
 		<!-- Security -->
-		<version.jwks-rsa>0.15.0</version.jwks-rsa>
+		<version.jwks-rsa>0.19.0</version.jwks-rsa>
 
 		<!-- Templating -->
 		<version.antlr.st4>4.3.1</version.antlr.st4>
