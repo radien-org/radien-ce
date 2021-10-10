@@ -1,0 +1,41 @@
+@startuml
+
+title __SYSTEM's Class Diagram__\n
+
+  namespace io.radien.persistence.entities.system {
+    class io.radien.persistence.entities.system.Appframe {
+        - createDate : Date
+        - createUser : Long
+        - id : Long
+        - lastUpdate : Date
+        - lastUpdateUser : Long
+        - log : String
+        {static} - serialVersionUID : long
+        - version : String
+        + Appframe()
+        + Appframe()
+        + getCreateDate()
+        + getCreateUser()
+        + getId()
+        + getLastUpdate()
+        + getLastUpdateUser()
+        + getLog()
+        + getVersion()
+        + setCreateDate()
+        + setCreateUser()
+        + setId()
+        + setLastUpdate()
+        + setLastUpdateUser()
+        + setLog()
+        + setVersion()
+    }
+  }
+  
+
+  io.radien.persistence.entities.system.Appframe .up.|> io.radien.api.IAppframe
+  io.radien.persistence.entities.system.Appframe -up-|> io.radien.api.model.AbstractModel
+
+
+ 
+
+@enduml

@@ -1,0 +1,78 @@
+@startuml
+
+title __UTIL's Class Diagram__\n
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ActiveTenantModelMapper {
+            {static} # log : Logger
+            {static} + map()
+            {static} + map()
+            {static} + mapList()
+            {static} + mapToPage()
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ClientServiceUtil {
+            + getActiveTenantResourceClient()
+            + getContractResourceClient()
+            + getTenantResourceClient()
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ContractModelMapper {
+            {static} # log : Logger
+            {static} + map()
+            {static} + map()
+            {static} + map()
+            {static} + mapToPage()
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ListContractModelMapper {
+            {static} + map()
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.TenantModelMapper {
+            {static} # log : Logger
+            {static} + map()
+            {static} + map()
+            {static} + mapList()
+            {static} + mapToPage()
+        }
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

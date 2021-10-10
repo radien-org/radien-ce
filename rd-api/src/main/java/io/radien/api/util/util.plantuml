@@ -1,0 +1,71 @@
+@startuml
+
+title __UTIL's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.CheckMandatoryParametersServiceUtil {
+          {static} - serialVersionUID : long
+          + checkIfMandatoryParametersTenantRoleUser()
+          - isInstanceOfCollection()
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.FactoryUtilService {
+          {static} - DATE_FORMAT : String
+          {static} - serialVersionUID : long
+          {static} + addValue()
+          {static} + addValue()
+          {static} + addValueArray()
+          {static} + addValueBoolean()
+          {static} + addValueDouble()
+          {static} + addValueInt()
+          {static} + addValueLong()
+          {static} + getArrayFromJson()
+          {static} + getBooleanFromJson()
+          {static} + getDoubleFromJson()
+          {static} + getIntFromJson()
+          {static} + getLocalDateTimeFromJson()
+          {static} + getLongFromJson()
+          {static} + getStringFromJson()
+          {static} - isValueNotNull()
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.ModelServiceUtil {
+          {static} - serialVersionUID : long
+          {static} + getCountFromModelService()
+          {static} + getFieldPredicateFromModelService()
+          {static} + getFilteredPredicateFromModelService()
+          {static} + getListOrderSortBy()
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace util {
+      class io.radien.api.util.PageFactory {
+          {static} + convertToPageObject()
+          - PageFactory()
+      }
+    }
+  }
+  
+
+  io.radien.api.util.CheckMandatoryParametersServiceUtil .up.|> java.io.Serializable
+  io.radien.api.util.FactoryUtilService .up.|> java.io.Serializable
+  io.radien.api.util.ModelServiceUtil .up.|> java.io.Serializable
+
+
+ 
+
+@enduml

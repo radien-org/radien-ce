@@ -1,0 +1,122 @@
+@startuml
+
+title __TENANT's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ActiveTenantRESTServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + deleteByTenantAndUser()
+            {abstract} + getActiveTenantByFilter()
+            {abstract} + getActiveTenantById()
+            {abstract} + getActiveTenantByUserAndTenant()
+            {abstract} + getAll()
+            {abstract} + isActiveTenantExistent()
+            {abstract} + update()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ActiveTenantServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + delete()
+            {abstract} + delete()
+            {abstract} + exists()
+            {abstract} + get()
+            {abstract} + get()
+            {abstract} + getAll()
+            {abstract} + getByUserAndTenant()
+            {abstract} + update()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ContractRESTServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + getAll()
+            {abstract} + getContractByName()
+            {abstract} + getTotalRecordsCount()
+            {abstract} + isContractExistent()
+            {abstract} + update()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.ContractServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + delete()
+            {abstract} + exists()
+            {abstract} + get()
+            {abstract} + get()
+            {abstract} + getAll()
+            {abstract} + getTotalRecordsCount()
+            {abstract} + update()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.TenantRESTServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + deleteTenantHierarchy()
+            {abstract} + getAll()
+            {abstract} + getTenantById()
+            {abstract} + getTenantByName()
+            {abstract} + getTenantsByIds()
+            {abstract} + isTenantExistent()
+            {abstract} + update()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace tenant {
+        interface io.radien.api.service.tenant.TenantServiceAccess {
+            {abstract} + create()
+            {abstract} + delete()
+            {abstract} + delete()
+            {abstract} + deleteTenantHierarchy()
+            {abstract} + exists()
+            {abstract} + get()
+            {abstract} + get()
+            {abstract} + getAll()
+            {abstract} + update()
+        }
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

@@ -1,0 +1,65 @@
+@startuml
+
+title __SEARCH's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace search {
+      class io.radien.api.search.SearchFilterCriteria {
+          - isExact : boolean
+          - isLogicConjunction : boolean
+          + SearchFilterCriteria()
+          + SearchFilterCriteria()
+          + SearchFilterCriteria()
+          + isExact()
+          + isLogicConjunction()
+          + setExact()
+          + setLogicConjunction()
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace search {
+      class io.radien.api.search.SearchableByIds {
+          - ids : Collection<Long>
+          + SearchableByIds()
+          + SearchableByIds()
+          + SearchableByIds()
+          + getIds()
+          + setIds()
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace search {
+      interface io.radien.api.search.SystemSearchFilterCriteria {
+          {abstract} + isExact()
+          {abstract} + isLogicConjunction()
+          {abstract} + setExact()
+          {abstract} + setLogicConjunction()
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace search {
+      interface io.radien.api.search.SystemSearchableByIds {
+          {abstract} + getIds()
+          {abstract} + setIds()
+      }
+    }
+  }
+  
+
+  io.radien.api.search.SearchFilterCriteria .up.|> io.radien.api.search.SystemSearchFilterCriteria
+  io.radien.api.search.SearchableByIds .up.|> io.radien.api.search.SystemSearchableByIds
+  io.radien.api.search.SearchableByIds -up-|> io.radien.api.search.SearchFilterCriteria
+
+
+ 
+
+@enduml

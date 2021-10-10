@@ -1,0 +1,67 @@
+@startuml
+
+title __CONTRACT's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace contract {
+      class io.radien.webapp.contract.ContractDataModel {
+          - lazyModel : LazyDataModel<? extends SystemContract>
+          {static} - serialVersionUID : long
+          + getLazyModel()
+          + getSelectedContract()
+          + getService()
+          + init()
+          + onRowSelect()
+          + onload()
+          + setLazyModel()
+          + setSelectedContract()
+          + setService()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace contract {
+      class io.radien.webapp.contract.ContractManager {
+          # contractEndDate : Date
+          # contractStartDate : Date
+          + edit()
+          + getContract()
+          + getContractEndDate()
+          + getContractStartDate()
+          + save()
+          + setContract()
+          + setContractEndDate()
+          + setContractStartDate()
+          # checkAndConvertDates()
+          # obtainDates()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace contract {
+      class io.radien.webapp.contract.LazyContractDataModel {
+          {static} - serialVersionUID : long
+          + LazyContractDataModel()
+          + getData()
+      }
+    }
+  }
+  
+
+  io.radien.webapp.contract.ContractDataModel .up.|> java.io.Serializable
+  io.radien.webapp.contract.ContractDataModel o-- io.radien.api.model.tenant.SystemContract : selectedContract
+  io.radien.webapp.contract.ContractDataModel o-- io.radien.api.service.tenant.ContractRESTServiceAccess : service
+  io.radien.webapp.contract.ContractManager -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.contract.ContractManager o-- io.radien.api.model.tenant.SystemContract : contract
+  io.radien.webapp.contract.ContractManager o-- io.radien.api.service.tenant.ContractRESTServiceAccess : contractRESTServiceAccess
+  io.radien.webapp.contract.LazyContractDataModel -up-|> io.radien.webapp.LazyAbstractDataModel
+  io.radien.webapp.contract.LazyContractDataModel o-- io.radien.api.service.tenant.ContractRESTServiceAccess : service
+
+
+ 
+
+@enduml

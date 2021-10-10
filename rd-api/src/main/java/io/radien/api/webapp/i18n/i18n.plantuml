@@ -1,0 +1,23 @@
+@startuml
+
+title __I18N's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace webapp.i18n {
+      interface io.radien.api.webapp.i18n.LocaleManagerAccess {
+          {abstract} + getActiveLanguage()
+          {abstract} + getActiveLocale()
+          {abstract} + getClientTzOffset()
+          {abstract} + getSupportedLanguages()
+          {abstract} + getUserLanguage()
+          {abstract} + setActiveLanguage()
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml
