@@ -1,0 +1,22 @@
+@startuml
+
+title __LEGACY's Class Diagram__\n
+
+  namespace io.radien.ms.usermanagement {
+    namespace legacy {
+      class io.radien.ms.usermanagement.legacy.UserFactory {
+          {static} - serialVersionUID : long
+          {static} + convert()
+          {static} + convertToJsonObject()
+          {static} + create()
+      }
+    }
+  }
+  
+
+  io.radien.ms.usermanagement.legacy.UserFactory -up-|> io.radien.ms.usermanagement.client.util.UserFactoryUtil
+
+
+ 
+
+@enduml

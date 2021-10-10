@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class ActiveTenantSearchFilterTest extends TestCase {
     private final ActiveTenantSearchFilter searchFilter;
 
     public ActiveTenantSearchFilterTest() {
-        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, "test", false, true);
+        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, "test", false, true, true);
     }
 
     /**

@@ -1,0 +1,30 @@
+@startuml
+
+title __UTIL's Class Diagram__\n
+
+  namespace io.radien.ms.ecm.client.util {
+    class io.radien.ms.ecm.client.util.I18NPropertyMapper {
+        {static} + map()
+        {static} + map()
+        {static} + map()
+        {static} - addValue()
+        {static} - getStringFromJson()
+    }
+  }
+  
+
+  namespace io.radien.ms.ecm.client.util {
+    class io.radien.ms.ecm.client.util.TranslationMapper {
+        {static} + getJsonArrayFromTranslations()
+        {static} + getTranslationFromJson()
+        {static} - addValue()
+        {static} - getStringFromJson()
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

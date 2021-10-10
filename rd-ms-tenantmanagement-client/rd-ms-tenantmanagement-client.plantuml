@@ -1,0 +1,341 @@
+@startuml
+
+title __RD-MS-TENANTMANAGEMENT-CLIENT's Class Diagram__\n
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      class io.radien.ms.tenantmanagement.client.TenantResponseExceptionMapper {
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace entities {
+        class io.radien.ms.tenantmanagement.client.entities.ActiveTenant {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace entities {
+        class io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace entities {
+        class io.radien.ms.tenantmanagement.client.entities.Contract {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace entities {
+        class io.radien.ms.tenantmanagement.client.entities.GlobalHeaders {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace entities {
+        class io.radien.ms.tenantmanagement.client.entities.Tenant {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace entities {
+        class io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace entities {
+        enum TenantType {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace exceptions {
+        class io.radien.ms.tenantmanagement.client.exceptions.BadRequestException {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace exceptions {
+        class io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace providers {
+        class io.radien.ms.tenantmanagement.client.providers.ActiveTenantMessageBodyReader {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace providers {
+        class io.radien.ms.tenantmanagement.client.providers.ActiveTenantMessageBodyWriter {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace providers {
+        class io.radien.ms.tenantmanagement.client.providers.ContractMessageBodyReader {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace providers {
+        class io.radien.ms.tenantmanagement.client.providers.ContractMessageBodyWriter {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace providers {
+        class io.radien.ms.tenantmanagement.client.providers.TenantMessageBodyReader {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace providers {
+        class io.radien.ms.tenantmanagement.client.providers.TenantMessageBodyWriter {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        class io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        class io.radien.ms.tenantmanagement.client.services.ActiveTenantRESTServiceClient {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        interface io.radien.ms.tenantmanagement.client.services.ActiveTenantResourceClient {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        class io.radien.ms.tenantmanagement.client.services.ContractFactory {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        class io.radien.ms.tenantmanagement.client.services.ContractRESTServiceClient {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        interface io.radien.ms.tenantmanagement.client.services.ContractResourceClient {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        class io.radien.ms.tenantmanagement.client.services.TenantFactory {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        class io.radien.ms.tenantmanagement.client.services.TenantRESTServiceClient {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace services {
+        interface io.radien.ms.tenantmanagement.client.services.TenantResourceClient {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ActiveTenantModelMapper {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ClientServiceUtil {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ContractModelMapper {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.ListContractModelMapper {
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace util {
+        class io.radien.ms.tenantmanagement.client.util.TenantModelMapper {
+        }
+      }
+    }
+  }
+  
+
+  io.radien.ms.tenantmanagement.client.TenantResponseExceptionMapper -up-|> io.radien.exception.ModelResponseExceptionMapper
+  io.radien.ms.tenantmanagement.client.entities.ActiveTenant .up.|> io.radien.api.model.tenant.SystemActiveTenant
+  io.radien.ms.tenantmanagement.client.entities.ActiveTenant -up-|> io.radien.api.model.AbstractModel
+  io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter .up.|> io.radien.api.model.tenant.SystemActiveTenantSearchFilter
+  io.radien.ms.tenantmanagement.client.entities.ActiveTenantSearchFilter -up-|> io.radien.api.search.SearchFilterCriteria
+  io.radien.ms.tenantmanagement.client.entities.Contract .up.|> io.radien.api.model.tenant.SystemContract
+  io.radien.ms.tenantmanagement.client.entities.Contract -up-|> io.radien.api.model.AbstractModel
+  io.radien.ms.tenantmanagement.client.entities.GlobalHeaders .up.|> org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory
+  io.radien.ms.tenantmanagement.client.entities.GlobalHeaders o-- io.radien.api.security.TokensPlaceHolder : tokensPlaceHolder
+  io.radien.ms.tenantmanagement.client.entities.Tenant .up.|> io.radien.api.model.tenant.SystemTenant
+  io.radien.ms.tenantmanagement.client.entities.Tenant -up-|> io.radien.api.model.AbstractModel
+  io.radien.ms.tenantmanagement.client.entities.Tenant o-- io.radien.ms.tenantmanagement.client.entities.TenantType : tenantType
+  io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter .up.|> io.radien.api.model.tenant.SystemTenantSearchFilter
+  io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter -up-|> io.radien.api.search.SearchFilterCriteria
+  io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter o-- io.radien.api.model.tenant.SystemTenantType : tenantType
+  io.radien.ms.tenantmanagement.client.entities.TenantType .up.|> io.radien.api.model.tenant.SystemTenantType
+  io.radien.ms.tenantmanagement.client.providers.ActiveTenantMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.tenantmanagement.client.providers.ActiveTenantMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.tenantmanagement.client.providers.ContractMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.tenantmanagement.client.providers.ContractMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.tenantmanagement.client.providers.TenantMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.tenantmanagement.client.providers.TenantMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.tenantmanagement.client.services.ActiveTenantRESTServiceClient .up.|> io.radien.api.service.tenant.ActiveTenantRESTServiceAccess
+  io.radien.ms.tenantmanagement.client.services.ActiveTenantRESTServiceClient -up-|> io.radien.ms.authz.security.AuthorizationChecker
+  io.radien.ms.tenantmanagement.client.services.ActiveTenantRESTServiceClient o-- io.radien.ms.tenantmanagement.client.util.ClientServiceUtil : clientServiceUtil
+  io.radien.ms.tenantmanagement.client.services.ActiveTenantRESTServiceClient o-- io.radien.api.OAFAccess : oafAccess
+  io.radien.ms.tenantmanagement.client.services.ContractRESTServiceClient .up.|> io.radien.api.service.tenant.ContractRESTServiceAccess
+  io.radien.ms.tenantmanagement.client.services.ContractRESTServiceClient -up-|> io.radien.ms.authz.security.AuthorizationChecker
+  io.radien.ms.tenantmanagement.client.services.ContractRESTServiceClient o-- io.radien.ms.tenantmanagement.client.util.ClientServiceUtil : clientServiceUtil
+  io.radien.ms.tenantmanagement.client.services.ContractRESTServiceClient o-- io.radien.api.OAFAccess : oafAccess
+  io.radien.ms.tenantmanagement.client.services.TenantRESTServiceClient .up.|> io.radien.api.service.tenant.TenantRESTServiceAccess
+  io.radien.ms.tenantmanagement.client.services.TenantRESTServiceClient -up-|> io.radien.ms.authz.security.AuthorizationChecker
+  io.radien.ms.tenantmanagement.client.services.TenantRESTServiceClient o-- io.radien.ms.tenantmanagement.client.util.ClientServiceUtil : clientServiceUtil
+  io.radien.ms.tenantmanagement.client.services.TenantRESTServiceClient o-- io.radien.api.OAFAccess : oafAccess
+
+
+ 
+
+@enduml

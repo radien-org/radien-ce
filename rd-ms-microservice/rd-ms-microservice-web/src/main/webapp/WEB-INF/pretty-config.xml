@@ -1,0 +1,30 @@
+<pretty-config
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://ocpsoft.org/schema/rewrite-config-prettyfaces"
+		xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces
+                      http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
+
+	<url-mapping id="home">
+		<pattern value="/public/home" />
+		<view-id value="/public/home.oaf" />
+	</url-mapping>
+
+	<url-mapping id="about">
+		<pattern value="/public/about" />
+		<view-id value="/public/about.oaf" />
+	</url-mapping>
+
+	<!-- EntityManagement -->
+	<url-mapping id="entities">
+		<pattern value="/module/entities" />
+		<view-id value="/module/entities/entities.oaf" />
+	</url-mapping>
+	<url-mapping id="createEntity">
+		<pattern value="/module/entities/createEntity" />
+		<view-id value="/module/entities/entityCreate.oaf" />
+	</url-mapping>
+	<url-mapping id="editEntity">
+		<pattern value="/module/entities/editEntity" />
+		<view-id value="/module/entities/entityEdit.oaf" />
+	</url-mapping>
+</pretty-config>

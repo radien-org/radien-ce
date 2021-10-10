@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present radien.io & its legal owners. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package io.radien.api.service.user;
 
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +62,7 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return a list containing system users
      * @throws SystemException in case of token expiration or any issue on the application
      */
-    public List<? extends SystemUser> getUsersByIds(List<Long> ids) throws SystemException;
+    public List<? extends SystemUser> getUsersByIds(Collection<Long> ids) throws SystemException;
 
     /**
      * Creates given user

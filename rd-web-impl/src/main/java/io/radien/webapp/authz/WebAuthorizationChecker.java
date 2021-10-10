@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.service.PrincipalFactory;
 import java.util.Optional;
+
+import io.radien.webapp.JSFUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,6 +150,10 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
      */
     public boolean hasPermissionAccess(String resource, String action, Long tenant) {
         try {
+            if(!isLoggedIn()){
+                log.error("Checking if has permission without being logged in");
+                return false;
+            }
             Optional<Long> optional = permissionRESTServiceAccess.
                     getIdByResourceAndAction(resource, action);
             if (optional.isPresent()) {
@@ -180,6 +186,29 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     public boolean hasPermissionToUpdateUserEmail(Long tenant) {
         return hasPermissionAccess(THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName(),
                 THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName(), tenant);
+    }
+
+    /**
+     * Redirects the user if its not logged or if the user doesn't have permission
+     * @param resource for check of the permission
+     * @param action for check of the permission
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @param prettyDestination destination of redirection
+     * @return true if redirection occurs, otherwise false
+     */
+    public boolean redirectOnMissingPermission(String resource,String action,Long tenant,String prettyDestination){
+
+        if(!userSession.isActive()) {
+            log.error("Going to redirect Not Active");
+            JSFUtil.redirect(prettyDestination);
+            return true;
+        }
+        if(!hasPermissionAccess(resource, action, tenant)){
+            log.error("Missing Permission Resource:{} Action:{} Tenant:{}",resource,action,tenant);
+            JSFUtil.redirect(prettyDestination);
+            return true;
+        }
+        return false;
     }
 
 }

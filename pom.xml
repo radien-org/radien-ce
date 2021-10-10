@@ -49,8 +49,9 @@
 		<version.maven-eclipse-plugin>2.10</version.maven-eclipse-plugin>
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
-		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
-		<version.maven-surefire-plugin>2.22.0</version.maven-surefire-plugin>
+		<version.maven-war-plugin>3.3.2</version.maven-war-plugin>
+		<version.maven-surefire-plugin>2.22.2</version.maven-surefire-plugin>
+
 		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
 
 		<!-- Jakarta EE -->
@@ -60,20 +61,20 @@
 		<version.javaee-api>8.0-5</version.javaee-api>
 
 		<!-- JSF -->
-		<version.jakarta.faces-api>2.3.2</version.jakarta.faces-api>
+		<version.jakarta.faces-api>3.0.0</version.jakarta.faces-api>
 		<version.tomee-mojarra>8.0.5</version.tomee-mojarra>
 		<version.bootsfaces>1.5.0</version.bootsfaces>
 		<version.omnifaces>3.8.1</version.omnifaces>
 
 		<!-- prettyfaces -->
 		<version.rewrite-config-prettyfaces>3.4.4.Final</version.rewrite-config-prettyfaces>
-		<version.rewrite-servlet>3.4.4.Final</version.rewrite-servlet>
+		<version.rewrite-servlet>3.5.1.Final</version.rewrite-servlet>
 
 		<!-- Eclipselink -->
 		<version.eclipselink>2.7.7</version.eclipselink>
 
 		<!-- DB -->
-		<version.hsqldb>2.5.1</version.hsqldb>
+		<version.hsqldb>2.6.0</version.hsqldb>
 
 		<!-- Microprofile -->
 		<version.microprofile>3.3</version.microprofile>
@@ -83,13 +84,13 @@
 
 
 		<!-- Logging -->
-		<version.slf4j-api>1.7.30</version.slf4j-api>
+		<version.slf4j-api>1.7.32</version.slf4j-api>
 		<version.jcl-over-slf4j>1.7.30</version.jcl-over-slf4j>
 		<version.logback-classic>1.2.3</version.logback-classic>
-		<version.logback-core>1.2.3</version.logback-core>
+		<version.logback-core>1.2.6</version.logback-core>
 
 		<!-- Commons -->
-		<version.commons-lang3>3.11</version.commons-lang3>
+		<version.commons-lang3>3.12.0</version.commons-lang3>
 		<version.httpclient>4.5.13</version.httpclient>
 
 		<!-- Jackson xml -->
@@ -99,7 +100,7 @@
 		<version.rmiio>2.1.2</version.rmiio>
 
 		<!-- Security -->
-		<version.jwks-rsa>0.15.0</version.jwks-rsa>
+		<version.jwks-rsa>0.19.0</version.jwks-rsa>
 
 		<!-- Templating -->
 		<version.antlr.st4>4.3.1</version.antlr.st4>
@@ -107,7 +108,7 @@
 		<!-- test -->
 		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
 		<version.junit>4.13.1</version.junit>
-		<version.junit.jupiter>5.7.1</version.junit.jupiter>
+		<version.junit.jupiter>5.8.1</version.junit.jupiter>
 		<version.mock.jupiter>5.7.1</version.mock.jupiter>
 		<version.mockito.core>2.23.0</version.mockito.core>
 		<version.powermock.core>2.0.9</version.powermock.core>
@@ -489,7 +490,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.6</version>
+				<version>0.8.7</version>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>

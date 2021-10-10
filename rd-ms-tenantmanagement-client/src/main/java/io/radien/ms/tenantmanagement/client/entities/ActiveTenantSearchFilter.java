@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ public class ActiveTenantSearchFilter extends SearchFilterCriteria implements Sy
      * @param isTenantActive true if the user has the following tenant has active
      * @param isLogicalConjunction true in case search option is and conjunction
      */
-    public ActiveTenantSearchFilter(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isLogicalConjunction) {
-        super(isLogicalConjunction);
+    public ActiveTenantSearchFilter(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isExact, boolean isLogicalConjunction) {
+        super(isExact, isLogicalConjunction);
         this.userId = userId;
         this.tenantId = tenantId;
         this.tenantName = tenantName;

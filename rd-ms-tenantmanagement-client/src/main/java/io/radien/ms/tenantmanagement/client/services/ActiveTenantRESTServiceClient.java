@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,21 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+
+import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
@@ -27,18 +42,6 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.util.ActiveTenantModelMapper;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.util.List;
-import java.util.Optional;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
-import org.apache.cxf.bus.extension.ExtensionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Active Tenant REST service requests to the client
@@ -156,7 +159,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
         try {
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(
                     oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.get(userId, tenantId, tenantName, isTenantActive, true);
+            Response response = client.getActiveTenant(userId, tenantId, tenantName, isTenantActive, true, false);
             return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){

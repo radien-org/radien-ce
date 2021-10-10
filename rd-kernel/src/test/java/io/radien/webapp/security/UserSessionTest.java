@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package io.radien.webapp.security;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
+import io.radien.ms.usermanagement.client.entities.User;
+
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
@@ -52,6 +54,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -300,6 +303,17 @@ public class UserSessionTest {
     public void testGetterSetterRefreshToken(){
         userSession.setRefreshToken("refresh-token");
         assertEquals("refresh-token", userSession.getRefreshToken());
+    }
+
+    /**
+     * Test method for
+     * {@link UserSession#getUser()}
+     * {@link UserSession#setUser(SystemUser)}
+     */
+    @Test
+    public void testGetterSetterUser(){
+        userSession.setUser(new User());
+        assertNotNull(userSession.getUser());
     }
 
     /**

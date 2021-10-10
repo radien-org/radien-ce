@@ -1,0 +1,50 @@
+@startuml
+
+title __MODEL's Class Diagram__\n
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace model {
+      class io.radien.ms.permissionmanagement.model.ActionEntity {
+          + ActionEntity()
+          + ActionEntity()
+          + getId()
+          + getName()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace model {
+      class io.radien.ms.permissionmanagement.model.PermissionEntity {
+          + PermissionEntity()
+          + PermissionEntity()
+          + getActionId()
+          + getId()
+          + getName()
+          + getResourceId()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement {
+    namespace model {
+      class io.radien.ms.permissionmanagement.model.ResourceEntity {
+          + ResourceEntity()
+          + ResourceEntity()
+          + getId()
+          + getName()
+      }
+    }
+  }
+  
+
+  io.radien.ms.permissionmanagement.model.ActionEntity -up-|> io.radien.ms.permissionmanagement.client.entities.Action
+  io.radien.ms.permissionmanagement.model.PermissionEntity -up-|> io.radien.ms.permissionmanagement.client.entities.Permission
+  io.radien.ms.permissionmanagement.model.ResourceEntity -up-|> io.radien.ms.permissionmanagement.client.entities.Resource
+
+
+ 
+
+@enduml

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:b="http://bootsfaces.net/ui"
+	  xmlns:f="http://xmlns.jcp.org/jsf/core"
+	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	  lang="#{localeManager.activeLocale}">
+<f:view locale="#{localeManager.userLanguage}" contentType="text/html"
+		encoding="UTF-8">
+	<h:head>
+		<title>#{msg.rd_html_title}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="shortcut icon" type="image/x-icon" href="#{resource['gfx/favicon.ico']}"/>
+
+		<link type="text/css" rel="stylesheet" href="#{resource['css:default.css']}" />
+
+	</h:head>
+	<h:body id="app-root">
+		<b:container>
+			<h:form>
+				<b:navBar brand-img="#{resource['gfx:logos/trademark.svg']}" brandHref="#" position="top" sticky="true">
+					<b:navbarLinks>
+						<b:navCommandLink value="#{msg.rd_home_page}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+							<f:param name="navigationNode" value="home" />
+							<f:attribute name="navigationNode" value="home" />
+						</b:navCommandLink>
+
+						<b:navCommandLink value="#{msg.rd_service_generator_table}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+							<f:param name="navigationNode" value="entities" />
+							<f:attribute name="navigationNode" value="entities" />
+						</b:navCommandLink>
+
+						<b:navCommandLink value="#{msg.rd_about_page}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+							<f:param name="navigationNode" value="about" />
+							<f:attribute name="navigationNode" value="about" />
+						</b:navCommandLink>
+
+					</b:navbarLinks>
+				</b:navBar>
+			</h:form>
+		</b:container>
+		<b:container fluid="true" style="margin-top: 1em;">
+			<hr />
+			<b:messages />
+			<ui:insert name="content" />
+		</b:container>
+		<footer class="footer" style="position:fixed;height:100px;border:1px;boder-color:#000000; width:100%;bottom:0;">
+			<h:outputText value="#{msg.version}: #{webApp.version}"/>
+		</footer>
+	</h:body>
+</f:view>
+</html>
