@@ -31,8 +31,8 @@
 		<module>rd-ms-rolemanagement-client</module>
 		<module>rd-ms-config-lib</module>
 
-	  <module>rd-ms-demo</module>
-  </modules>
+		<module>rd-ms-demo</module>
+	</modules>
 	<properties>
 
 		<!-- SonarQube Properties -->
@@ -127,6 +127,10 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.language>java</sonar.language>
 		<sonar.java.binaries>${project.basedir}/target/classes</sonar.java.binaries>
+
+		<!-- PlantUML -->
+		<version.com.github.jeluard>7940</version.com.github.jeluard>
+		<version.net.sourceforge.plantuml>7976</version.net.sourceforge.plantuml>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -238,6 +242,7 @@
 
 
 			<!-- JSF -->
+
 			<!-- https://mvnrepository.com/artifact/jakarta.faces/jakarta.faces-api -->
 			<dependency>
 				<groupId>jakarta.faces</groupId>
@@ -245,20 +250,20 @@
 				<version>${version.jakarta.faces-api}</version>
 				<scope>provided</scope>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/net.bootsfaces/bootsfaces -->
 			<dependency>
 				<groupId>net.bootsfaces</groupId>
 				<artifactId>bootsfaces</artifactId>
 				<version>${version.bootsfaces}</version>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/org.omnifaces/omnifaces -->
 			<dependency>
 				<groupId>org.omnifaces</groupId>
 				<artifactId>omnifaces</artifactId>
 				<version>${version.omnifaces}</version>
 			</dependency>
-
-
 
 			<!-- https://mvnrepository.com/artifact/org.apache.tomee/tomee-mojarra -->
 			<dependency>
@@ -407,6 +412,14 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- https://mvnrepository.com/artifact/com.github.jeluard/maven-plantuml-plugin -->
+			<dependency>
+				<groupId>com.github.jeluard</groupId>
+				<artifactId>maven-plantuml-plugin</artifactId>
+				<version>${version.version.com.github.jeluard}</version>
+			</dependency>
+
+
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
@@ -507,6 +520,28 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.jeluard</groupId>
+				<artifactId>plantuml-maven-plugin</artifactId>
+				<version>7940</version>
+				<configuration>
+					<outputDirectory>${basedir}/plantuml/resources/images</outputDirectory>
+					<sourceFiles>
+						<directory>${basedir}</directory>
+						<includes>
+							<include>src/main/plantuml/**/*.puml</include>
+						</includes>
+					</sourceFiles>
+				</configuration>
+				<!-- https://mvnrepository.com/artifact/net.sourceforge.plantuml/plantuml -->
+				<dependencies>
+					<dependency>
+						<groupId>net.sourceforge.plantuml</groupId>
+						<artifactId>plantuml</artifactId>
+						<version>${version.net.sourceforge.plantuml}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
