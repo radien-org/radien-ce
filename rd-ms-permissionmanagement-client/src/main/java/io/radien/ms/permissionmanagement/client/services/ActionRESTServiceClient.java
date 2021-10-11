@@ -20,7 +20,10 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionRESTServiceAccess;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -60,6 +63,20 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    /**
+     * Programmatically (via RestClientBuilder) creates an instance of a Action Rest Client
+     * @return Instance of {@link ActionResourceClient} (Rest client)
+     * @throws SystemException in case of any issue regarding url
+     */
+    private ActionResourceClient getActionResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getActionResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+        } catch (MalformedURLException m) {
+            throw new SystemException(m);
+        }
+    }
 
     /**
      * Requests all Actions if not able then will try to refresh access token and retry
@@ -213,15 +230,11 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * Creates given action
      * @param action to be created
      * @return true if action has been created with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * @throws SystemException  in case of any communication or processing issue regarding action rest api
      */
     private boolean createRequest(SystemAction action) throws SystemException{
-        ActionResourceClient client;
-        try {
-            client = clientServiceUtil.getActionResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.create((Action)action);
+        ActionResourceClient client = getActionResourceClient();
+        try (Response response = client.create((Action)action)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -229,16 +242,16 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
                 log.error(entity);
                 return false;
             }
-        } catch (ProcessingException | MalformedURLException e) {
+        } catch (ProcessingException | BadRequestException | InternalServerErrorException e) {
             throw new SystemException(e.getMessage());
         }
     }
 
     /**
-     * Requests to create a given action
-     * @param action to be created
-     * @return true if action has been created with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * Requests to update a given action
+     * @param action to be updated
+     * @return true if action has been updated with success or false if not
+     * @throws SystemException in case of any communication or processing issue regarding action rest api
      */
     public boolean update(SystemAction action) throws SystemException {
         try {
@@ -254,18 +267,14 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
     }
 
     /**
-     * Creates given action
-     * @param action to be created
-     * @return true if action has been created with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * Updates a given action
+     * @param action to be updated
+     * @return true if action has been updated with success or false if not
+     * @throws SystemException in case of any communication or processing issue regarding action rest api
      */
     private boolean updateRequest(SystemAction action) throws SystemException{
-        ActionResourceClient client;
-        try {
-            client = clientServiceUtil.getActionResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.update(action.getId(), (Action)action);
+        ActionResourceClient client = getActionResourceClient();
+        try (Response response = client.update(action.getId(), (Action)action)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -273,7 +282,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
                 log.error(entity);
                 return false;
             }
-        } catch (ProcessingException | MalformedURLException e) {
+        } catch (ProcessingException | NotFoundException | BadRequestException | InternalServerErrorException e) {
             throw new SystemException(e.getMessage());
         }
     }

@@ -30,7 +30,6 @@ import java.net.MalformedURLException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -145,7 +144,7 @@ public class ResourceResourceTest {
      */
     @Test
     public void testSave() {
-        Response response = resourceResource.save(new io.radien.ms.permissionmanagement.client.entities.Resource());
+        Response response = resourceResource.create(new io.radien.ms.permissionmanagement.client.entities.Resource());
         assertEquals(200,response.getStatus());
     }
 
@@ -157,7 +156,7 @@ public class ResourceResourceTest {
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException {
         doThrow(new UniquenessConstraintException()).when(resourceServiceAccess).create(any());
-        Response response = resourceResource.save(new io.radien.ms.permissionmanagement.client.entities.Resource());
+        Response response = resourceResource.create(new io.radien.ms.permissionmanagement.client.entities.Resource());
         assertEquals(400,response.getStatus());
     }
 
@@ -169,7 +168,7 @@ public class ResourceResourceTest {
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException {
         doThrow(new RuntimeException()).when(resourceServiceAccess).create(any());
-        Response response = resourceResource.save(new io.radien.ms.permissionmanagement.client.entities.Resource());
+        Response response = resourceResource.create(new io.radien.ms.permissionmanagement.client.entities.Resource());
         assertEquals(500,response.getStatus());
     }
 

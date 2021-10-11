@@ -128,7 +128,7 @@ public class ResourceResource implements ResourceResourceClient {
 	 * Bad request (400) in case of trying to create a resource with repeated description.
 	 * Internal Server Error (500) in case of operational error
 	 */
-	public Response save(io.radien.ms.permissionmanagement.client.entities.Resource resource) {
+	public Response create(io.radien.ms.permissionmanagement.client.entities.Resource resource) {
 		try {
 			resourceServiceAccess.create(new ResourceEntity(resource));
 			return Response.ok().build();

@@ -20,7 +20,10 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceRESTServiceAccess;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -58,6 +61,20 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    /**
+     * Programmatically (via RestClientBuilder) creates an instance of a Resource Rest Client
+     * @return Instance of {@link ResourceResourceClient} (Rest client)
+     * @throws SystemException in case of any issue regarding url
+     */
+    private ResourceResourceClient getResourceResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getResourceResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+        } catch (MalformedURLException m) {
+            throw new SystemException(m);
+        }
+    }
 
     /**
      * Calls the requester to fetch all resources if not possible will reload the access token and retry
@@ -253,11 +270,8 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     private boolean createRequester(SystemResource action) throws SystemException {
-        ResourceResourceClient client;
-        try {
-            client = clientServiceUtil.getResourceResourceClient(getOAF().
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-            Response response = client.save((Resource)action);
+        ResourceResourceClient client = getResourceResourceClient();
+        try (Response response = client.create((Resource)action)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -265,7 +279,47 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
                 log.error(entity);
                 return false;
             }
-        } catch (ProcessingException | MalformedURLException e) {
+        } catch (ProcessingException | BadRequestException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Calls the requester to update a given resource if not possible will reload the access token and retry again
+     * @param resource to be updated
+     * @return true if resource has been updated with success or false if not
+     * @throws SystemException in case it founds multiple resources or if URL is malformed
+     */
+    public boolean update(SystemResource resource) throws SystemException {
+        try {
+            return updateRequester(resource);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return updateRequester(resource);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Updates a given resource
+     * @param resource to be updated
+     * @return true if resource has been updated with success or false if not
+     * @throws SystemException in case it founds multiple resources or if URL is malformed
+     */
+    private boolean updateRequester(SystemResource resource) throws SystemException {
+        ResourceResourceClient client = getResourceResourceClient();
+        try (Response response = client.update(resource.getId(), (Resource)resource)) {
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                String entity = response.readEntity(String.class);
+                log.error(entity);
+                return false;
+            }
+        } catch (ProcessingException | NotFoundException | BadRequestException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
     }

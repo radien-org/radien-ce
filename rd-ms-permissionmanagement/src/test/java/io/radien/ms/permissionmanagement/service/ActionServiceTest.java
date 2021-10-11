@@ -18,11 +18,14 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
+import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -297,7 +300,7 @@ public class ActionServiceTest {
     /**
      * Test updates the Action information. Should be a failure in this test case and no information should be updated,
      * since that we are updating Action one with the information from Action three, but using a duplicated email address.
-     * @throws UniquenessConstraintException in case of Action to be updated not found
+     * @throws UniquenessConstraintException in case of repeated information
      */
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
@@ -320,6 +323,21 @@ public class ActionServiceTest {
         Exception exceptionName2 = assertThrows(Exception.class, () -> actionServiceAccess.create(u4));
         String messageFromException = exceptionName2.getMessage();
         assertTrue(messageFromException.contains(expectedMessageName));
+    }
+
+    /**
+     * Test updates the Action information. Should be a failure in this test case and no information should be updated,
+     * since that we are updating Action one with the information from Action three, but using a duplicated email address.
+     * @throws UniquenessConstraintException in case of repeated information
+     */
+    @Test
+    public void testUpdateFailureActionNotFound() throws UniquenessConstraintException {
+        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
+        ActionEntity r = new ActionEntity();
+        r.setId(100000L);
+        ActionNotFoundException anf = assertThrows(ActionNotFoundException.class, () -> actionServiceAccess.update(r));
+        String messageFromException = anf.getMessage();
+        assertTrue(messageFromException.contains(expectedMessage));
     }
 
     /**
