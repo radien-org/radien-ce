@@ -17,7 +17,6 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
-import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
 import io.radien.api.service.permission.ResourceServiceAccess;
@@ -25,7 +24,6 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
-import io.radien.ms.permissionmanagement.model.ActionEntity;
 import io.radien.ms.permissionmanagement.model.ResourceEntity;
 
 import javax.ejb.Stateless;
