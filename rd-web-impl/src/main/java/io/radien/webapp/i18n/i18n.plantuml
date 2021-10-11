@@ -1,0 +1,25 @@
+@startuml
+
+title __I18N's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace i18n {
+      class io.radien.webapp.i18n.LocaleManager {
+          {static} - serialVersionUID : long
+          + getOAF()
+          + getUserLanguage()
+          + languageChanged()
+          + timezoneChangedListener()
+      }
+    }
+  }
+  
+
+  io.radien.webapp.i18n.LocaleManager .up.|> io.radien.api.webapp.i18n.LocaleManagerAccess
+  io.radien.webapp.i18n.LocaleManager -up-|> io.radien.webapp.AbstractLocaleManager
+  io.radien.webapp.i18n.LocaleManager o-- io.radien.api.OAFAccess : oaf
+
+
+ 
+
+@enduml

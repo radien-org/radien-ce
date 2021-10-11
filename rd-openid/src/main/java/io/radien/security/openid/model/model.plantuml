@@ -1,0 +1,40 @@
+@startuml
+
+title __MODEL's Class Diagram__\n
+
+  namespace io.radien.security.openid.model {
+    class io.radien.security.openid.model.OpenIdConnectUserDetails {
+        - familyname : String
+        - fullName : String
+        - givenname : String
+        {static} - serialVersionUID : long
+        - sub : String
+        - userEmail : String
+        - username : String
+        + OpenIdConnectUserDetails()
+        + getAuthorities()
+        + getFamilyname()
+        + getFullName()
+        + getGivenname()
+        + getPassword()
+        + getSub()
+        + getUserEmail()
+        + getUsername()
+        + isAccountNonExpired()
+        + isAccountNonLocked()
+        + isCredentialsNonExpired()
+        + isEnabled()
+        + setFamilyname()
+        + setFullName()
+        + setGivenname()
+        + setSub()
+    }
+  }
+  
+
+  io.radien.security.openid.model.OpenIdConnectUserDetails .up.|> org.springframework.security.core.userdetails.UserDetails
+
+
+ 
+
+@enduml

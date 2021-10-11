@@ -1,0 +1,25 @@
+@startuml
+
+title __FILTER's Class Diagram__\n
+
+  namespace io.radien.security.openid.filter {
+    class io.radien.security.openid.filter.OpenIdConnectFilter {
+        - clientId : String
+        - issuer : String
+        - jwkUrl : String
+        - restTemplate : OAuth2RestTemplate
+        + OpenIdConnectFilter()
+        + attemptAuthentication()
+        + setRestTemplate()
+        - verifier()
+        - verifyClaims()
+    }
+  }
+  
+
+  io.radien.security.openid.filter.OpenIdConnectFilter -up-|> org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
+
+
+ 
+
+@enduml

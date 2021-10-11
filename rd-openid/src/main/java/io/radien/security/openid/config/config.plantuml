@@ -1,0 +1,80 @@
+@startuml
+
+title __CONFIG's Class Diagram__\n
+
+  namespace io.radien.security.openid.config {
+    class io.radien.security.openid.config.AjaxAwareAuthenticationEntryPoint {
+        + AjaxAwareAuthenticationEntryPoint()
+        + commence()
+    }
+  }
+  
+
+  namespace io.radien.security.openid.config {
+    class io.radien.security.openid.config.AppInitializer {
+        # getRootConfigClasses()
+        # getServletConfigClasses()
+        # getServletMappings()
+    }
+  }
+  
+
+  namespace io.radien.security.openid.config {
+    class io.radien.security.openid.config.AuthenticationManagerSwitchOff {
+        + authenticate()
+    }
+  }
+  
+
+  namespace io.radien.security.openid.config {
+    class io.radien.security.openid.config.SecurityConfig {
+        {static} - LOGIN_PAGE : String
+        - accessTokenUri : String
+        - apiPrefix : String
+        - clientId : String
+        - clientSecret : String
+        - csrfEnabled : boolean
+        {static} - log : Logger
+        - logoutRedirectUri : String
+        - redirectUri : String
+        - restTemplate : OAuth2RestTemplate
+        - userAuthorizationUri : String
+        + authenticationEntryPoint()
+        + configure()
+        + openId()
+        + openIdConnectFilter()
+        + openIdTemplate()
+        # configure()
+    }
+  }
+  
+
+  namespace io.radien.security.openid.config {
+    class io.radien.security.openid.config.SecurityInitializer {
+    }
+  }
+  
+
+  namespace io.radien.security.openid.config {
+    class io.radien.security.openid.config.SpringConfig {
+    }
+  }
+  
+
+  namespace io.radien.security.openid.config {
+    class io.radien.security.openid.config.WebConfig {
+    }
+  }
+  
+
+  io.radien.security.openid.config.AjaxAwareAuthenticationEntryPoint -up-|> org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
+  io.radien.security.openid.config.AppInitializer -up-|> org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer
+  io.radien.security.openid.config.AuthenticationManagerSwitchOff .up.|> org.springframework.security.authentication.AuthenticationManager
+  io.radien.security.openid.config.SecurityConfig -up-|> org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+  io.radien.security.openid.config.SecurityInitializer -up-|> org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer
+  io.radien.security.openid.config.WebConfig .up.|> org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+
+
+ 
+
+@enduml

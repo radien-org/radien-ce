@@ -1,0 +1,37 @@
+@startuml
+
+title __UTIL's Class Diagram__\n
+
+  namespace io.radien.ms.authz.util {
+    interface io.radien.ms.authz.util.BiFunction {
+        {abstract} + apply()
+    }
+  }
+  
+
+  namespace io.radien.ms.authz.util {
+    interface io.radien.ms.authz.util.Consumer {
+        {abstract} + accept()
+    }
+  }
+  
+
+  namespace io.radien.ms.authz.util {
+    interface io.radien.ms.authz.util.Function {
+        {abstract} + apply()
+    }
+  }
+  
+
+  namespace io.radien.ms.authz.util {
+    interface io.radien.ms.authz.util.FunctionReturn {
+        {abstract} + apply()
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

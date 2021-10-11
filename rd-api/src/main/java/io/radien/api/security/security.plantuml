@@ -1,0 +1,37 @@
+@startuml
+
+title __SECURITY's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace security {
+      interface io.radien.api.security.TokensPlaceHolder {
+          {abstract} + getAccessToken()
+          {abstract} + getRefreshToken()
+          {abstract} + setAccessToken()
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace security {
+      interface io.radien.api.security.UserSessionEnabled {
+          {abstract} + getEmail()
+          {abstract} + getPreferredUserName()
+          {abstract} + getUser()
+          {abstract} + getUserFirstName()
+          {abstract} + getUserId()
+          {abstract} + getUserIdSubject()
+          {abstract} + getUserLastName()
+          {abstract} + isActive()
+          {abstract} + login()
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

@@ -1,0 +1,48 @@
+@startuml
+
+title __FACTORY's Class Diagram__\n
+
+  namespace io.radien.ms.ecm {
+    namespace factory {
+      class io.radien.ms.ecm.factory.ContentFactory {
+          {static} - log : Logger
+          {static} - serialVersionUID : long
+          + convertJCRNode()
+          + convertJSONObject()
+          + create()
+          + decorateNewContent()
+          + getFile()
+          + isOafNode()
+          + syncNode()
+          - getNode()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.ecm {
+    namespace factory {
+      class io.radien.ms.ecm.factory.I18NPropertyEntityFactory {
+          {static} + create()
+          {static} + create()
+          {static} + createWithDefaults()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.ecm {
+    namespace factory {
+      class io.radien.ms.ecm.factory.TranslationEntityFactory {
+          {static} + create()
+      }
+    }
+  }
+  
+
+  io.radien.ms.ecm.factory.ContentFactory .up.|> java.io.Serializable
+
+
+ 
+
+@enduml

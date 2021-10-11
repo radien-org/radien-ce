@@ -32,3 +32,6 @@ oaf_cms/
 .mvn/
 .envrc
 mvnvm.properties
+
+# PlantUML Artifacts
+plantuml/
