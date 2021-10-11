@@ -1,0 +1,45 @@
+@startuml
+
+title __UTIL's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace util {
+      class io.radien.webapp.util.DateValidator {
+          + validate()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace util {
+      class io.radien.webapp.util.EntityFilterUtil {
+          + filterPermissionsByName()
+          + filterRolesByName()
+          + filterTenantsByName()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace util {
+      class io.radien.webapp.util.TenantRoleUtil {
+          + getTenantRoleId()
+      }
+    }
+  }
+  
+
+  io.radien.webapp.util.DateValidator .up.|> javax.faces.validator.Validator
+  io.radien.webapp.util.EntityFilterUtil -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.util.EntityFilterUtil o-- io.radien.api.service.permission.PermissionRESTServiceAccess : permissionRESTServiceAccess
+  io.radien.webapp.util.EntityFilterUtil o-- io.radien.api.service.role.RoleRESTServiceAccess : roleRESTServiceAccess
+  io.radien.webapp.util.EntityFilterUtil o-- io.radien.api.service.tenant.TenantRESTServiceAccess : tenantRESTServiceAccess
+  io.radien.webapp.util.TenantRoleUtil -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.util.TenantRoleUtil o-- io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess : tenantRoleRESTServiceAccess
+
+
+ 
+
+@enduml

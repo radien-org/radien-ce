@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
+import io.radien.ms.authz.client.PermissionClient;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.entities.User;
@@ -71,6 +73,9 @@ public class UserResourceTest {
 
     @Mock
     TokensPlaceHolder tokensPlaceHolder;
+
+    @Mock
+    PermissionClient permissionClient;
 
     /**
      * Method before test preparation
@@ -322,14 +327,12 @@ public class UserResourceTest {
         when(session.getAttribute("USER")).thenReturn(principal);
         doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
 
-        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        List<String> roleList = new ArrayList<>();
-        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
-        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
-                1001L, roleList, null);
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
 
         Response response = userResource.save(new User());
         assertEquals(200,response.getStatus());
@@ -352,14 +355,10 @@ public class UserResourceTest {
         when(session.getAttribute("USER")).thenReturn(loggedUser);
         when(this.userBusinessService.getUserId(loggedUser.getSub())).thenReturn(1001L);
 
-        Response notAuthorizedResponse = Response.ok().entity(Boolean.FALSE).build();
+        Response notFoundResponse = Response.status(Response.Status.NOT_FOUND).entity(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        List<String> roleList = new ArrayList<>();
-        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
-        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 
-        doReturn(notAuthorizedResponse).when(tenantRoleClient).checkPermissions(
-                1001L, roleList, null);
+        doReturn(notFoundResponse).when(permissionClient).getIdByResourceAndAction(any(),any());
 
         Response response = userResource.save(new User());
         assertEquals(403,response.getStatus());
@@ -435,13 +434,9 @@ public class UserResourceTest {
         when(session.getAttribute("USER")).thenReturn(principal);
         when(this.userBusinessService.getUserId(principal.getSub())).thenReturn(1001L);
 
-        Response notAuthorizedResponse = Response.ok().entity(Boolean.TRUE).build();
-        List<String> roleList = new ArrayList<>();
-        roleList.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
-        roleList.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
-
-        doReturn(notAuthorizedResponse).when(tenantRoleClient).checkPermissions(
-                1001L, roleList, null);
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
 
         doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
         Response response = userResource.save(new User());

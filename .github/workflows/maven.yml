@@ -24,7 +24,6 @@ jobs:
     - name: Build with Maven
       run: mvn clean test --file pom.xml
       -DKEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}
-      -DKEYCLOAK_PASSWORD=$ {{ secrets.KEYCLOAK_PASSWORD }}
       -DKEYCLOAK_CLIENT_ID = ${{ secrets.KEYCLOAK_CLIENT_ID }}
       -DKEYCLOAK_IDP_URL = ${{ secrets.KEYCLOAK_IDP_URL }}
       -DKEYCLOAK_TOKEN_PATH = ${{ secrets.KEYCLOAK_TOKEN_PATH }}

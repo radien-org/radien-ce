@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
+import io.radien.ms.authz.client.PermissionClient;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
@@ -30,6 +31,8 @@ import io.radien.ms.authz.util.Consumer;
 import io.radien.ms.authz.util.Function;
 import io.radien.ms.authz.util.FunctionReturn;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +44,7 @@ import javax.ws.rs.core.Response;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This abstract class maybe extended by any component that needs to
@@ -49,6 +53,8 @@ import java.util.List;
  * @author Newton Carvalho
  */
 public abstract class AuthorizationChecker implements Serializable {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthorizationChecker.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -63,6 +69,8 @@ public abstract class AuthorizationChecker implements Serializable {
 
     private RestClientBuilder restClientBuilder;
 
+    private PermissionClient permissionClient;
+
     public AuthorizationChecker(){
 
     }
@@ -73,6 +81,7 @@ public abstract class AuthorizationChecker implements Serializable {
      * @throws SystemException in case of any issue while getting the current user or getting the token information
      */
     public boolean refreshToken() throws SystemException {
+        log.info("Trying to refresh token");
         try {
             getUserClient();
             getTokensPlaceHolder();
@@ -116,6 +125,38 @@ public abstract class AuthorizationChecker implements Serializable {
 
         } catch (SystemException e) {
             throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+        }
+    }
+
+    /**
+     * Check if the current logged user has (permission to) some action on resource (under a specific tenant - optionally)
+     * @param tenantId Tenant identifier (Optional parameter)
+     * @param actionName this parameter corresponds to the role name
+     * @param resourceName this parameter corresponds to the role name
+     * @return true if user has the correct access
+     * @throws SystemException in case of any issue while getting the current user or getting correct access
+     * information
+     */
+    public boolean hasPermission(Long tenantId, String actionName,String resourceName) throws SystemException{
+        try {
+            this.preProcess();
+            Optional<Long> permissionId = get(this::getPermissionIdCore,actionName,resourceName);
+            if(!permissionId.isPresent()) {
+                return false;
+            }
+            return hasGrant(permissionId.get(),tenantId);
+        } catch (SystemException e) {
+            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+        }
+    }
+
+    private Optional<Long> getPermissionIdCore( String actionName,String resourceName) throws SystemException{
+        Response response = getPermissionClient().getIdByResourceAndAction(resourceName,actionName);
+        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            return Optional.ofNullable(response.readEntity(Long.class));
+        } else {
+            log.error("Permission Not Found resource:{} action:{}",resourceName,actionName);
+            return Optional.empty();
         }
     }
 
@@ -225,7 +266,8 @@ public abstract class AuthorizationChecker implements Serializable {
             throw new NotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString(), e);
         }
         catch(SystemException e) {
-            throw new SystemException(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(),e);
+            throw e;
         }
     }
 
@@ -243,6 +285,9 @@ public abstract class AuthorizationChecker implements Serializable {
         return getCurrentUserIdBySub(user.getSub());
     }
 
+    protected boolean isLoggedIn(){
+        return getInvokerUser()!=null;
+    }
     /**
      * Retrieves the reference for current logged user
      * @return the reference for current logged user
@@ -292,7 +337,9 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public UserClient getUserClient() throws SystemException {
         if (userClient == null) {
-            userClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT),
+            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT);
+            log.info("UserManagement path:{}",url);
+            userClient = buildClient(url,
                     UserClient.class);
         }
         return userClient;
@@ -306,10 +353,28 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public TenantRoleClient getTenantRoleClient() throws SystemException{
         if (tenantRoleClient == null) {
-            tenantRoleClient = buildClient(getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT),
+            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT);
+            log.info("RoleManagement path:{}",url);
+            tenantRoleClient = buildClient(url,
                     TenantRoleClient.class);
         }
         return tenantRoleClient;
+    }
+
+    /**
+     * Gets permission management client instance
+     * @return permission client for permission management instance
+     * @throws SystemException in case of any issue while retrieving the communication tenant
+     * role client instance
+     */
+    public PermissionClient getPermissionClient() throws SystemException{
+        if (permissionClient == null) {
+            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT);
+            log.info("PermissionManagement path:{}",url);
+            permissionClient = buildClient(url,
+                    PermissionClient.class);
+        }
+        return permissionClient;
     }
 
     /**

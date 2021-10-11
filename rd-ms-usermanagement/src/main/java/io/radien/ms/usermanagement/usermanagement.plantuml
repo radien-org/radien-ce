@@ -1,0 +1,16 @@
+@startuml
+
+title __USERMANAGEMENT's Class Diagram__\n
+
+  namespace io.radien.ms.usermanagement {
+    class io.radien.ms.usermanagement.UserManagementApplication {
+    }
+  }
+  
+
+  io.radien.ms.usermanagement.UserManagementApplication -up-|> javax.ws.rs.core.Application
+
+
+ 
+
+@enduml

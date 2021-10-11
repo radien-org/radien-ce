@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,7 @@ public class KeycloakClientTest {
 
         keycloakClient = new KeycloakClient()
                 .clientId("adminClientId")
-                .username("username")
-                .password("password")
+                .clientSecret("secret")
                 .idpUrl("url")
                 .tokenPath("tokenPath")
                 .radienClientId("clientId")

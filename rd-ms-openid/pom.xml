@@ -77,13 +77,13 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>9.6</version>
+			<version>9.15.2</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>jwks-rsa</artifactId>
-			<version>0.15.0</version>
+			<version>0.19.0</version>
 		</dependency>
 
 		<!-- logging -->

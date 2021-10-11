@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,7 +112,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
 	 */
 	@Override
-	public Response getUsers(String sub, String email, String logon, List<Long> ids, boolean isExact, boolean isLogicalConjunction) {
+	public Response getUsers(String sub, String email, String logon, Collection<Long> ids, boolean isExact, boolean isLogicalConjunction) {
 		try {
 			SystemUserSearchFilter filter = new UserSearchFilter(sub,email,logon,ids,isExact,isLogicalConjunction);
 			return Response.ok(userBusinessService.getUsers(filter)).build();
@@ -162,7 +163,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			if (!isSelfOnboard(user) && !checkUserRoles()) {
+			if (!isSelfOnboard(user) && !checkUserPermission(user.getId()==null)) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 			userBusinessService.save(new UserEntity(user),user.isDelegatedCreation());
@@ -210,6 +211,16 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
 		roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 		return hasGrantMultipleRoles(roleNames);
+	}
+
+	public boolean checkUserPermission(boolean create) throws SystemException{
+		String action;
+		if(create){
+			action="Create";
+		} else {
+			action="Update";
+		}
+		return hasPermission(null, action, "User");
 	}
 
 	/**
@@ -299,6 +310,9 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	@Override
 	public Response refreshToken(String refreshToken) {
+		if(refreshToken == null || refreshToken.trim().isEmpty()){
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse("refresh token null or empty");
+		}
 		try {
 			return Response.ok(userBusinessService.refreshToken(refreshToken)).build();
 		} catch(Exception e) {

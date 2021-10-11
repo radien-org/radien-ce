@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,15 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
+
 /**
  * User service requests between the rest services and the db
  *
@@ -38,7 +42,7 @@ import java.util.List;
 public class UserBusinessService implements Serializable {
 
 	private static final long serialVersionUID = 9136599710056928804L;
-
+	private static final Logger log = LoggerFactory.getLogger(UserBusinessService.class);
 	@Inject
 	private UserServiceAccess userServiceAccess;
 	@Inject
@@ -129,12 +133,24 @@ public class UserBusinessService implements Serializable {
 		if(user.getLastname()!=null && user.getLastname().isEmpty()){
 			throw new RemoteResourceException("lastname cannot be empty");
 		}
-
 		boolean creation = user.getId() == null;
+		Optional<String> sub;
+		try {
+			sub = keycloakService.getSubFromEmail(user.getUserEmail());
+		} catch (RemoteResourceException e) {
+			log.error(e.getMessage(),e);
+			sub = Optional.empty();
+		}
+		if(sub.isPresent()){
+			user.setSub(sub.get());
+			creation = false;
+		}
 		userServiceAccess.save(user);
+
 		if(creation && !skipKeycloak){
 			try {
 				user.setSub(keycloakService.createUser(user));
+				userServiceAccess.save(user);
 			} catch (RemoteResourceException e) {
 				userServiceAccess.delete(user.getId());
 				throw e;
@@ -191,7 +207,7 @@ public class UserBusinessService implements Serializable {
 	 * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
 	 */
 	public String refreshToken(String refreshToken) throws RemoteResourceException {
-		return keycloakService.refeshToken(refreshToken);
+		return keycloakService.refreshToken(refreshToken);
 	}
 
 }

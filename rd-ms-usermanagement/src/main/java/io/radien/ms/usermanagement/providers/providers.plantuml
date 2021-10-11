@@ -1,0 +1,44 @@
+@startuml
+
+title __PROVIDERS's Class Diagram__\n
+
+  namespace io.radien.ms.usermanagement {
+    namespace providers {
+      class io.radien.ms.usermanagement.providers.SystemUserMessageBodyReader {
+          + isReadable()
+          + readFrom()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.usermanagement {
+    namespace providers {
+      class io.radien.ms.usermanagement.providers.UserModelListMessageBodyWriter {
+          + getSize()
+          + isWriteable()
+          + writeTo()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.usermanagement {
+    namespace providers {
+      class io.radien.ms.usermanagement.providers.UserModelMessageBodyWriter {
+          + getSize()
+          + isWriteable()
+          + writeTo()
+      }
+    }
+  }
+  
+
+  io.radien.ms.usermanagement.providers.SystemUserMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.usermanagement.providers.UserModelListMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.usermanagement.providers.UserModelMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+
+
+ 
+
+@enduml

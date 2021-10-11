@@ -1,0 +1,16 @@
+@startuml
+
+title __TENANTMANAGEMENT's Class Diagram__\n
+
+  namespace io.radien.ms.tenantmanagement {
+    class io.radien.ms.tenantmanagement.TenantManagementApplication {
+    }
+  }
+  
+
+  io.radien.ms.tenantmanagement.TenantManagementApplication -up-|> javax.ws.rs.core.Application
+
+
+ 
+
+@enduml

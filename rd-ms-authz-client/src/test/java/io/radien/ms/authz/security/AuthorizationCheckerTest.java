@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -499,7 +499,6 @@ public class AuthorizationCheckerTest {
 
         SystemException se = assertThrows(SystemException.class, () ->
                 authChecker.getCurrentUserIdBySub(principal.getSub()));
-        assertTrue(se.getMessage().contains(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString()));
         assertTrue(se.getMessage().contains(msgError));
     }
 

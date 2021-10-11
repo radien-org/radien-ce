@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public interface ActiveTenantResourceClient {
      * @return 200 response code in case of success or 500 in case of any issue
      */
     @GET
-    @Path("/get")
+    @Path("/find")
     public Response get(@QueryParam("userId") Long userId,
                         @QueryParam("tenantId") Long tenantId,
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);

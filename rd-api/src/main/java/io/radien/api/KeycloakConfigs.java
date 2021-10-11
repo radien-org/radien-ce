@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ public enum KeycloakConfigs implements SystemProperties {
     ADMIN_URL("keycloak.admin.url"),
     ADMIN_REALM("keycloak.admin.realm"),
     ADMIN_CLIENT_ID("KEYCLOAK_CLIENT_ID"),
-    ADMIN_USER("KEYCLOAK_ADMIN"),
-    ADMIN_PASSWORD("KEYCLOAK_PASSWORD"),
+    ADMIN_CLIENT_SECRET("KEYCLOAK_SECRET"),
     APP_REALM("SCRIPT_CLIENT_ID_VALUE"),
     IDP_URL("KEYCLOAK_IDP_URL"),
     TOKEN_PATH("KEYCLOAK_TOKEN_PATH"),

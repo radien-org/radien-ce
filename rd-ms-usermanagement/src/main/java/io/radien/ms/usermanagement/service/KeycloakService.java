@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
+import java.util.Optional;
 
 /**
  * Keycloak request services and actions
@@ -46,11 +47,11 @@ public class KeycloakService {
         String idpUrl =getProperty(KeycloakConfigs.IDP_URL);
         String tokenPath= getProperty(KeycloakConfigs.TOKEN_PATH);
         String userPath = getProperty(KeycloakConfigs.USER_PATH);
-        log.info("Idp url:{} tokenPath:{} userPath:{}",idpUrl,tokenPath,userPath);
+        String clientId = getProperty(KeycloakConfigs.ADMIN_CLIENT_ID);
+        log.info("Idp url:{} tokenPath:{} userPath:{} clientId:{}",idpUrl,tokenPath,userPath,clientId);
         KeycloakClient client = new KeycloakClient()
-                .clientId(getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
-                .username(getProperty(KeycloakConfigs.ADMIN_USER))
-                .password(getProperty(KeycloakConfigs.ADMIN_PASSWORD))
+                .clientId(clientId)
+                .clientSecret(getProperty(KeycloakConfigs.ADMIN_CLIENT_SECRET))
                 //TODO : ADD missing configurations
                 .idpUrl(idpUrl)
                 .tokenPath(tokenPath)
@@ -71,9 +72,9 @@ public class KeycloakService {
     public String createUser(SystemUser user) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(user);
         KeycloakClient client = getKeycloakClient();
+        userRepresentation.setEmailVerified(false);
         String sub= client.createUser(userRepresentation);
         try {
-            client.refreshToken();
             client.sendUpdatePasswordEmail(sub);
         } catch (RemoteResourceException e){
             deleteUser(sub);
@@ -134,9 +135,19 @@ public class KeycloakService {
      * @return the new access token
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public String refeshToken(String refreshToken) throws RemoteResourceException {
+    public String refreshToken(String refreshToken) throws RemoteResourceException {
         KeycloakClient client = getKeycloakClient();
         return client.refreshToken(refreshToken);
+    }
+
+    /**
+     * Method to request keycloak to the subjectId from the user with the specified email
+     * @param email of the user to fetch the subjectId
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public Optional<String> getSubFromEmail(String email) throws RemoteResourceException {
+        KeycloakClient client = getKeycloakClient();
+        return client.getSubFromEmail(email);
     }
 
     /**

@@ -1,0 +1,49 @@
+@startuml
+
+title __EXCEPTIONS's Class Diagram__\n
+
+  namespace io.radien.ms.usermanagement.client {
+    namespace exceptions {
+      class io.radien.ms.usermanagement.client.exceptions.BadRequestException {
+          + BadRequestException()
+          + BadRequestException()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.usermanagement.client {
+    namespace exceptions {
+      class io.radien.ms.usermanagement.client.exceptions.ForbiddenException {
+          + ForbiddenException()
+          + ForbiddenException()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.usermanagement.client {
+    namespace exceptions {
+      class io.radien.ms.usermanagement.client.exceptions.InternalServerErrorException {
+          + InternalServerErrorException()
+          + InternalServerErrorException()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.usermanagement.client {
+    namespace exceptions {
+      class io.radien.ms.usermanagement.client.exceptions.RemoteResourceException {
+          + RemoteResourceException()
+          + RemoteResourceException()
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,8 @@ public class KeycloakConfigsTest {
         Assert.assertEquals(KeycloakConfigs.ADMIN_CLIENT_ID,
                 Enum.valueOf(KeycloakConfigs.class, KeycloakConfigs.ADMIN_CLIENT_ID.name()));
 
-        Assert.assertEquals(KeycloakConfigs.ADMIN_USER,
-                Enum.valueOf(KeycloakConfigs.class, KeycloakConfigs.ADMIN_USER.name()));
-
-        Assert.assertEquals(KeycloakConfigs.ADMIN_PASSWORD,
-                Enum.valueOf(KeycloakConfigs.class, KeycloakConfigs.ADMIN_PASSWORD.name()));
+        Assert.assertEquals(KeycloakConfigs.ADMIN_CLIENT_SECRET,
+                Enum.valueOf(KeycloakConfigs.class, KeycloakConfigs.ADMIN_CLIENT_SECRET.name()));
 
         Assert.assertEquals(KeycloakConfigs.APP_REALM,
                 Enum.valueOf(KeycloakConfigs.class, KeycloakConfigs.APP_REALM.name()));

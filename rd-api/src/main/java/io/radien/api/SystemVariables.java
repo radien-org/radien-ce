@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ public enum SystemVariables {
     PAGE_RESULTS("results", "Results"),
     TENANT_ID("tenantId", "Tenant ID"),
     TENANT_NAME("tenantName", "Tenant Name"),
+    IS_TENANT_ACTIVE("isTenantActive", "Is Tenant Active"),
     ROLE_ID("roleId", "Role ID"),
     ROLE_NAME("roleName", "Role Name"),
     USER_ID("userId", "User ID"),
