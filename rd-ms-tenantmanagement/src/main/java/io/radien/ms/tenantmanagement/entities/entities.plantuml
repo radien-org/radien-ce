@@ -1,0 +1,79 @@
+@startuml
+
+title __ENTITIES's Class Diagram__\n
+
+  namespace io.radien.ms.tenantmanagement {
+    namespace entities {
+      class io.radien.ms.tenantmanagement.entities.ActiveTenantEntity {
+          {static} - serialVersionUID : long
+          + ActiveTenantEntity()
+          + ActiveTenantEntity()
+          + getId()
+          + getIsTenantActive()
+          + getTenantId()
+          + getTenantName()
+          + getUserId()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.tenantmanagement {
+    namespace entities {
+      class io.radien.ms.tenantmanagement.entities.ContractEntity {
+          {static} - serialVersionUID : long
+          + ContractEntity()
+          + ContractEntity()
+          + getEnd()
+          + getId()
+          + getName()
+          + getStart()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.tenantmanagement {
+    namespace entities {
+      class io.radien.ms.tenantmanagement.entities.TenantEntity {
+          {static} - serialVersionUID : long
+          + TenantEntity()
+          + TenantEntity()
+          + getClientAddress()
+          + getClientCity()
+          + getClientCountry()
+          + getClientEmail()
+          + getClientId()
+          + getClientPhoneNumber()
+          + getClientZipCode()
+          + getId()
+          + getName()
+          + getParentId()
+          + getTenantEnd()
+          + getTenantKey()
+          + getTenantStart()
+          + getTenantType()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.tenantmanagement {
+    namespace entities {
+      class io.radien.ms.tenantmanagement.entities.TenantTypeConverter {
+          + convertToDatabaseColumn()
+          + convertToEntityAttribute()
+      }
+    }
+  }
+  
+
+  io.radien.ms.tenantmanagement.entities.ActiveTenantEntity -up-|> io.radien.ms.tenantmanagement.client.entities.ActiveTenant
+  io.radien.ms.tenantmanagement.entities.ContractEntity -up-|> io.radien.ms.tenantmanagement.client.entities.Contract
+  io.radien.ms.tenantmanagement.entities.TenantEntity -up-|> io.radien.ms.tenantmanagement.client.entities.Tenant
+  io.radien.ms.tenantmanagement.entities.TenantTypeConverter .up.|> javax.persistence.AttributeConverter
+
+
+ 
+
+@enduml

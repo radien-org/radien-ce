@@ -1,0 +1,23 @@
+@startuml
+
+title __RD-AWS-UTILS's Class Diagram__\n
+
+  namespace io.radien.aws.utils.s3 {
+    class io.radien.aws.utils.s3.S3FileUtil {
+    }
+  }
+  
+
+  namespace io.radien.aws.utils.s3 {
+    namespace exceptions {
+      class io.radien.aws.utils.s3.exceptions.RemoteResourceNotAvailableException {
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

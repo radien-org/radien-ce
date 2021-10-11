@@ -25,15 +25,23 @@ import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.openid.entities.Principal;
 import java.util.Optional;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
+
+import io.radien.webapp.JSFUtil;
+import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_ALL;
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE;
@@ -43,13 +51,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Newton Carvalho
  */
-public class WebAuthorizationCheckerTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
     private WebAuthorizationChecker webAuthorizationChecker;
@@ -75,6 +86,7 @@ public class WebAuthorizationCheckerTest {
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+        handleJSFUtilAndFaceContextMessages();
     }
 
     /**
@@ -368,6 +380,42 @@ public class WebAuthorizationCheckerTest {
 
        return webAuthorizationChecker.hasPermissionToUpdateUserEmail(tenantId);
     }
+    @Test
+    public void redirectOnMissingPermissionTest(){
+        assertTrue(webAuthorizationChecker.redirectOnMissingPermission("Employee","Read",null,"Dest"));
+    }
+
+    @Test
+    public void redirectOnMissingPermissionTestActive(){
+        when(userSession.isActive()).thenReturn(true);
+        assertTrue(webAuthorizationChecker.redirectOnMissingPermission("Employee","Read",null,"Dest"));
+    }
+
+    @Test
+    public void redirectOnMissingPermissionTestActiveAndWithPermission() throws SystemException {
+        when(userSession.isActive()).thenReturn(true);
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(permissionRESTServiceAccess.
+                getIdByResourceAndAction(any(),any())).thenReturn(Optional.of(1l));
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        Response expectedResponse = Response.ok().entity(true).build();
+        doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(any(), any(), any());
+
+        assertFalse(webAuthorizationChecker.redirectOnMissingPermission("Employee","Read",null,"Dest"));
+    }
+
+
 
 
 }

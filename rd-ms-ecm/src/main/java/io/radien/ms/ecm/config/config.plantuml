@@ -1,0 +1,31 @@
+@startuml
+
+title __CONFIG's Class Diagram__\n
+
+  namespace io.radien.ms.ecm {
+    namespace config {
+      class io.radien.ms.ecm.config.ConfigController {
+          - config : Config
+          - log : Logger
+          - supportedLocales : Map<String, Locale>
+          + ConfigController()
+          + findLocale()
+          + fireEvent()
+          + getDefaultLocale()
+          + getProperty()
+          + getResourceBundle()
+          + getSupportedLocales()
+          + getSystemAdminUserId()
+          + getVersion()
+          - loadSupportedLocales()
+      }
+    }
+  }
+  
+
+  io.radien.ms.ecm.config.ConfigController .up.|> io.radien.api.OAFAccess
+
+
+ 
+
+@enduml

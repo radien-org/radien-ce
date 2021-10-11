@@ -1,0 +1,23 @@
+@startuml
+
+title __FACTORY's Class Diagram__\n
+
+  namespace io.radien.ms.rolemanagement {
+    namespace factory {
+      class io.radien.ms.rolemanagement.factory.RoleFactory {
+          {static} - log : Logger
+          {static} - serialVersionUID : long
+          {static} + convert()
+          {static} + convertToJsonObject()
+          {static} + create()
+      }
+    }
+  }
+  
+
+  io.radien.ms.rolemanagement.factory.RoleFactory .up.|> java.io.Serializable
+
+
+ 
+
+@enduml

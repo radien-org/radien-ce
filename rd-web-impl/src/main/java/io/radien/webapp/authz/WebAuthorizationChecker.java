@@ -24,6 +24,8 @@ import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.service.PrincipalFactory;
 import java.util.Optional;
+
+import io.radien.webapp.JSFUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,6 +186,29 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     public boolean hasPermissionToUpdateUserEmail(Long tenant) {
         return hasPermissionAccess(THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName(),
                 THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName(), tenant);
+    }
+
+    /**
+     * Redirects the user if its not logged or if the user doesn't have permission
+     * @param resource for check of the permission
+     * @param action for check of the permission
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @param prettyDestination destination of redirection
+     * @return true if redirection occurs, otherwise false
+     */
+    public boolean redirectOnMissingPermission(String resource,String action,Long tenant,String prettyDestination){
+
+        if(!userSession.isActive()) {
+            log.error("Going to redirect Not Active");
+            JSFUtil.redirect(prettyDestination);
+            return true;
+        }
+        if(!hasPermissionAccess(resource, action, tenant)){
+            log.error("Missing Permission Resource:{} Action:{} Tenant:{}",resource,action,tenant);
+            JSFUtil.redirect(prettyDestination);
+            return true;
+        }
+        return false;
     }
 
 }

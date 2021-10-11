@@ -1,0 +1,27 @@
+@startuml
+
+title __HANDLER's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace util {
+      namespace jsf.handler {
+        class io.radien.webapp.util.jsf.handler.UnmappedResourceHandler {
+            {static} # log : Logger
+            - wrapped : ResourceHandler
+            + UnmappedResourceHandler()
+            + createResource()
+            + getWrapped()
+            + handleResourceRequest()
+            + isResourceRequest()
+        }
+      }
+    }
+  }
+  
+
+  io.radien.webapp.util.jsf.handler.UnmappedResourceHandler -up-|> javax.faces.application.ResourceHandlerWrapper
+
+
+ 
+
+@enduml

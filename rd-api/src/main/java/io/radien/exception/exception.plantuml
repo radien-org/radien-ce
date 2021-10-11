@@ -1,0 +1,318 @@
+@startuml
+
+title __EXCEPTION's Class Diagram__\n
+
+  namespace io.radien.exception {
+    class io.radien.exception.AccountExpiredException {
+        {static} - serialVersionUID : long
+        + AccountExpiredException()
+        + AccountExpiredException()
+        + AccountExpiredException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.AccountNotValidException {
+        {static} - serialVersionUID : long
+        + AccountNotValidException()
+        + AccountNotValidException()
+        + AccountNotValidException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ActionNotFoundException {
+        {static} - serialVersionUID : long
+        + ActionNotFoundException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ActiveTenantException {
+        + ActiveTenantException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.AuthenticationFailedException {
+        {static} - serialVersionUID : long
+        + AuthenticationFailedException()
+        + AuthenticationFailedException()
+        + AuthenticationFailedException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.BadRequestException {
+        {static} - serialVersionUID : long
+        + BadRequestException()
+        + BadRequestException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    enum GenericErrorCodeMessage {
+      ACTIVE_TENANT_DELETE_WITHOUT_TENANT_AND_USER
+      ACTIVE_TENANT_ERROR_VALIDATING
+      AUTHORIZATION_ERROR
+      DUPLICATED_FIELD
+      ENTITY_ID_NULL
+      ERROR_DELETING_ENTITY
+      ERROR_IN_CONFIGURE
+      ERROR_METHOD_INTERCEPTION
+      ERROR_ROLE_NOT_FOUND
+      ERROR_SAVING_ENTITY
+      EXPIRED_ACCESS_TOKEN
+      GENERIC_ERROR
+      HAVE_NULL_PARAMS_TENANT_USER_ROLES
+      HTTP_SESSION_INITIATED
+      INFO_CORS_FILTER
+      INFO_COVERT_JSON_OBJECT_TO_LINKED_AUTHORIZATION
+      INFO_CREATE_NEW_LINKED_AUTHORIZATION
+      INFO_ENTITY_DELETED
+      INFO_ENTITY_SAVED
+      INFO_SYSTEM_END
+      INFO_SYSTEM_START
+      INFO_TENANT_AND_USER_ID
+      INFO_TENANT_USER
+      INFO_TENANT_USER_ROLES
+      INIT_CONNECTION_TIME_REBOOT
+      LIST_ENTITY_SAVED
+      NOT_INFORMED_PARAMETERS_FOR_DISSOCIATION
+      NO_CURRENT_USER_AVAILABLE
+      PERMISSION_PARAMETERS_NOT_INFORMED
+      RESOURCE_NOT_FOUND
+      RESOURCE_URL_PATH
+      TENANT_CLIENT_NOT_FOUND
+      TENANT_CLIENT_NOT_INFORMED
+      TENANT_END_DATE_IS_IS_INVALID
+      TENANT_FIELD_NOT_INFORMED
+      TENANT_PARENT_NOT_FOUND
+      TENANT_PARENT_NOT_INFORMED
+      TENANT_PARENT_TYPE_IS_INVALID
+      TENANT_ROLE_ASSOCIATION_EXISTS
+      TENANT_ROLE_ASSOCIATION_TENANT_ROLE
+      TENANT_ROLE_FIELD_MANDATORY
+      TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION
+      TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS
+      TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_USER
+      TENANT_ROLE_NO_PERMISSION_FOUND
+      TENANT_ROLE_NO_ROLE_FOUND
+      TENANT_ROLE_NO_TENANT_FOUND
+      TENANT_ROLE_NO_TENANT_ROLE_FOUND
+      TENANT_ROLE_NO_TENANT_ROLE_PERMISSION_FOUND
+      TENANT_ROLE_NO_TENANT_ROLE_USER_FOUND
+      TENANT_ROLE_PERMISSIONS_ASSOCIATED_WITH_TENANT_ROLE
+      TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE
+      TENANT_ROLE_USERS_ASSOCIATED_WITH_TENANT_ROLE
+      TENANT_ROLE_USER_ASSOCIATION_EXISTS
+      TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED
+      TENANT_ROOT_ALREADY_INSERTED
+      TENANT_ROOT_WITH_CLIENT
+      TENANT_ROOT_WITH_PARENT
+      TENANT_TYPE_NOT_FOUND
+      USER_FIELD_MANDATORY
+      code
+      fallBackMessage
+      key
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.GenericErrorMessagesToResponseMapper {
+        {static} - log : Logger
+        {static} + getForbiddenResponse()
+        {static} + getGenericError()
+        {static} + getInvalidRequestResponse()
+        {static} + getNotInformedParametersResponse()
+        {static} + getResourceNotFoundException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.InternalServerErrorException {
+        {static} - serialVersionUID : long
+        + InternalServerErrorException()
+        + InternalServerErrorException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.LinkedAuthorizationException {
+        {static} - serialVersionUID : long
+        + LinkedAuthorizationException()
+        + LinkedAuthorizationException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ModelResponseExceptionMapper {
+        + handles()
+        + toThrowable()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.NotFoundException {
+        + NotFoundException()
+        + NotFoundException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.PermissionIllegalArgumentException {
+        + PermissionIllegalArgumentException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.PermissionNotFoundException {
+        {static} - serialVersionUID : long
+        + PermissionNotFoundException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ProcessingException {
+        + ProcessingException()
+        + ProcessingException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.ResourceNotFoundException {
+        {static} - serialVersionUID : long
+        + ResourceNotFoundException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.RoleNotFoundException {
+        {static} - serialVersionUID : long
+        + RoleNotFoundException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.SessionNotValidException {
+        {static} - serialVersionUID : long
+        + SessionNotValidException()
+        + SessionNotValidException()
+        + SessionNotValidException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.SystemException {
+        - messages : Set<String>
+        {static} - serialVersionUID : long
+        + SystemException()
+        + SystemException()
+        + SystemException()
+        + SystemException()
+        + addMessage()
+        + getMessage()
+        + getMessages()
+        - getMessage()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantException {
+        + TenantException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleException {
+        + TenantRoleException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleIllegalArgumentException {
+        + TenantRoleIllegalArgumentException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleNotFoundException {
+        + TenantRoleNotFoundException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleUserDuplicationException {
+        + TenantRoleUserDuplicationException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TenantRoleUserException {
+        + TenantRoleUserException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.TokenExpiredException {
+        + TokenExpiredException()
+        + TokenExpiredException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.UniquenessConstraintException {
+        {static} - serialVersionUID : long
+        + UniquenessConstraintException()
+        + UniquenessConstraintException()
+    }
+  }
+  
+
+  namespace io.radien.exception {
+    class io.radien.exception.UserNotFoundException {
+        {static} - serialVersionUID : long
+        + UserNotFoundException()
+    }
+  }
+  
+
+  io.radien.exception.AccountExpiredException -up-|> io.radien.exception.SystemException
+  io.radien.exception.AccountNotValidException -up-|> io.radien.exception.SystemException
+  io.radien.exception.AuthenticationFailedException -up-|> io.radien.exception.SystemException
+  io.radien.exception.ModelResponseExceptionMapper .up.|> org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper
+  io.radien.exception.SessionNotValidException -up-|> io.radien.exception.SystemException
+  io.radien.exception.TenantRoleIllegalArgumentException -up-|> io.radien.exception.TenantRoleException
+  io.radien.exception.TenantRoleNotFoundException -up-|> io.radien.exception.TenantRoleException
+  io.radien.exception.TenantRoleUserDuplicationException -up-|> io.radien.exception.TenantRoleException
+
+
+ 
+
+@enduml

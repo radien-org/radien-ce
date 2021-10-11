@@ -1,0 +1,102 @@
+@startuml
+
+title __USER's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace user {
+      class io.radien.webapp.user.UserDataModel {
+          - allowedToResetPassword : boolean
+          - hasTenantAdministratorRoleAccess : boolean
+          - hasUserAdministratorRoleAccess : boolean
+          - lazyUserDataModel : LazyDataModel<? extends SystemUser>
+          {static} - serialVersionUID : long
+          + createRecord()
+          + deleteRecord()
+          + deleteUser()
+          + editRecord()
+          + getHasUserAdministratorRoleAccess()
+          + getLazyUserDataModel()
+          + getResetPasswordMessage()
+          + getSelectedUser()
+          + getService()
+          + getUser()
+          + getUserForTenantAssociation()
+          + init()
+          + isAllowedToResetPassword()
+          + isHasTenantAdministratorRoleAccess()
+          + isTenantAssociationProcessAllowed()
+          + onRowSelect()
+          + onload()
+          + prepareTenantAssociation()
+          + returnToDataTableRecords()
+          + sendUpdatePasswordEmail()
+          + setAllowedToResetPassword()
+          + setHasTenantAdministratorRoleAccess()
+          + setHasUserAdministratorRoleAccess()
+          + setLazyUserDataModel()
+          + setSelectedUser()
+          + setService()
+          + setUser()
+          + setUserForTenantAssociation()
+          + updateUser()
+          + userProfile()
+          + userRoles()
+          + userUnAssign()
+          # findUserToAssociate()
+          # getCurrentActiveTenantId()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace user {
+      class io.radien.webapp.user.UserProfileManager {
+          - assignedTenants : List<SystemTenant>
+          {static} - serialVersionUID : long
+          - tabIndex : Long
+          + dissociateUserTenant()
+          + getAssignedTenants()
+          + getClonedLogInUser()
+          + getHomeGui()
+          + getLoggerUserGui()
+          + getSelectedTenantToUnAssign()
+          + getTabIndex()
+          + init()
+          + onTenantSelect()
+          + setAssignedTenants()
+          + setClonedLogInUser()
+          + setSelectedTenantToUnAssign()
+          + setTabIndex()
+          + updateProfile()
+          # retrieveAssignedTenants()
+      }
+    }
+  }
+  
+
+  io.radien.webapp.user.UserDataModel .up.|> java.io.Serializable
+  io.radien.webapp.user.UserDataModel -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.service.permission.ActionRESTServiceAccess : actionRESTServiceAccess
+  io.radien.webapp.user.UserDataModel o-- io.radien.webapp.activeTenant.ActiveTenantDataModelManager : activeTenantDataModelManager
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.service.permission.PermissionRESTServiceAccess : permissionRESTServiceAccess
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.service.permission.ResourceRESTServiceAccess : resourceRESTServiceAccess
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.model.user.SystemUser : selectedUser
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.service.user.UserRESTServiceAccess : service
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess : tenantRoleUserRESTServiceAccess
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.model.user.SystemUser : user
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.model.user.SystemUser : userForTenantAssociation
+  io.radien.webapp.user.UserDataModel o-- io.radien.api.security.UserSessionEnabled : userSessionEnabled
+  io.radien.webapp.user.UserDataModel o-- io.radien.webapp.authz.WebAuthorizationChecker : webAuthorizationChecker
+  io.radien.webapp.user.UserProfileManager -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.user.UserProfileManager o-- io.radien.api.model.user.SystemUser : clonedLogInUser
+  io.radien.webapp.user.UserProfileManager o-- io.radien.api.model.tenant.SystemTenant : selectedTenantToUnAssign
+  io.radien.webapp.user.UserProfileManager o-- io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess : tenantRoleRESTServiceAccess
+  io.radien.webapp.user.UserProfileManager o-- io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess : tenantRoleUserRESTServiceAccess
+  io.radien.webapp.user.UserProfileManager o-- io.radien.api.service.user.UserRESTServiceAccess : userService
+  io.radien.webapp.user.UserProfileManager o-- io.radien.webapp.security.UserSession : userSession
+
+
+ 
+
+@enduml
