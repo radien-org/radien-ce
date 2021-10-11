@@ -339,11 +339,53 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
             client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
                     (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
-            Response response = client.save((Permission) permission);
+            Response response = client.create((Permission) permission);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch (MalformedURLException | ProcessingException | WebApplicationException e) {
+        } catch (MalformedURLException | ProcessingException | BadRequestException | NotFoundException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+        return false;
+    }
+
+    /**
+     * Calls the requester for a permission updating if not possible will refresh the access token and retry
+     * @param permission information to be updated
+     * @return true in case of success
+     * @throws SystemException in case it founds multiple permissions or if URL is malformed
+     */
+    @Override
+    public boolean update(SystemPermission permission) throws SystemException {
+        try {
+            return updateRequester(permission);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return updateRequester(permission);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Requests a permission updating
+     * @param permission information to be updated
+     * @return true in case of success
+     * @throws SystemException in case it founds multiple permissions or if URL is malformed
+     */
+    private boolean updateRequester(SystemPermission permission) throws SystemException {
+        PermissionResourceClient client;
+        try {
+            client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+
+            Response response = client.update(permission.getId(), (Permission) permission);
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            }
+        } catch (MalformedURLException | ProcessingException | BadRequestException | NotFoundException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
         return false;
@@ -383,47 +425,10 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
                     (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
 
             Response response = client.exists(permissionId, permissionName);
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return true;
-            }
-        } catch (MalformedURLException | ProcessingException | WebApplicationException e) {
-            throw new SystemException(e);
-        }
-        return false;
-    }
-
-    /**
-     * Calls the requester to calculate how many records are existent in the db if not possible will refresh
-     * the access token and retry
-     * @return the count of existent permissions.
-     * @throws SystemException in case it founds multiple permissions or if URL is malformed
-     */
-    public Long getTotalRecordsCount() throws SystemException {
-        try {
-            return getTotalRecordsCountRequester();
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getTotalRecordsCountRequester();
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent permissions.
-     * @throws SystemException in case it founds multiple permissions or if URL is malformed
-     */
-    private Long getTotalRecordsCountRequester() throws SystemException {
-        try {
-            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
-                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-            Response response = client.getTotalRecordsCount();
-            return Long.parseLong(response.readEntity(String.class));
-
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        } catch (NotFoundException nfe) {
+            return false;
+        } catch (MalformedURLException | ProcessingException | BadRequestException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
     }

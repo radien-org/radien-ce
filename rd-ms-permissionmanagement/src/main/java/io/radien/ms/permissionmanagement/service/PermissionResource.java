@@ -20,9 +20,9 @@ import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.PermissionIllegalArgumentException;
+import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
-import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
 import io.radien.ms.permissionmanagement.model.PermissionEntity;
 
@@ -43,9 +43,6 @@ public class PermissionResource implements PermissionResourceClient {
 
 	@Inject
 	private PermissionServiceAccess permissionServiceAccess;
-
-	@Inject
-	private PermissionBusinessService businessService;
 
 	/**
 	 * Retrieves a page object containing permissions that matches search parameter.
@@ -154,15 +151,15 @@ public class PermissionResource implements PermissionResourceClient {
 	}
 
 	/**
-	 * Saves an permission (Creation or Update).
-	 * @param permission permission to be created or update
-	 * @return Http status 200 in case of successful operation.<br>
-	 * Bad request (404) in case of trying to create an permission with repeated description.<br>
+	 * Creates a permission
+	 * @param permission permission to be created
+	 * @return Http status 200 in case of successful operation.
+	 * Bad request (400) in case of trying to create an permission with repeated description.
 	 * Internal Server Error (500) in case of operational error
 	 */
-	public Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission) {
+	public Response create(io.radien.ms.permissionmanagement.client.entities.Permission permission) {
 		try {
-			permissionServiceAccess.save(new PermissionEntity(permission));
+			permissionServiceAccess.create(new PermissionEntity(permission));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
@@ -172,45 +169,22 @@ public class PermissionResource implements PermissionResourceClient {
 	}
 
 	/**
-	 * Rest endpoint operation to assign an action to a permission
-	 * @param permissionId permission identifier
-	 * @param actionId action identifier
-	 * @param resourceId resource identifier
-	 * @return OK (200): in case of successful operation.<br>
-	 * Bad Request (404) and issue description: If the association could not be perform for not attending
-	 * some business rules.
-	 * Internal server error (500): In case of some error during processing
+	 * Updates a permission
+	 * @param permission permission to be updated
+	 * @return Http status 200 in case of successful operation.
+	 * Bad request (400) in case of trying to create an permission with repeated description.
+	 * Not found (404) in case of not existent Permission for the given id.
+	 * Internal Server Error (500) in case of operational error
 	 */
-	public Response associate(long permissionId,
-							  long actionId,
-							  long resourceId) {
+	public Response update(long id, io.radien.ms.permissionmanagement.client.entities.Permission permission) {
 		try {
-			AssociationStatus associationStatus = businessService.associate(permissionId, actionId, resourceId);
-			if (associationStatus.isOK()) {
-				return Response.ok().build();
-			}
-			return Response.status(Response.Status.BAD_REQUEST).
-					entity(associationStatus.getMessage()).build();
-		} catch (Exception e) {
-			return GenericErrorMessagesToResponseMapper.getGenericError(e);
-		}
-	}
-
-	/**
-	 * Rest endpoint operation to (un)assign an action to a permission
-	 * @param permissionId permission identifier
-	 * @return OK (200): in case of successful operation.<br>
-	 * Bad Request (404) and issue description: If the association could not be perform for not attending
-	 * some business rules.
-	 * Internal server error (500): In case of some error during processing
-	 */
-	public Response dissociate(long permissionId) {
-		try {
-			AssociationStatus associationStatus = businessService.dissociation(permissionId);
-			if (associationStatus.isOK()) {
-				return Response.ok().build();
-			}
-			return Response.status(Response.Status.BAD_REQUEST).entity(associationStatus.getMessage()).build();
+			permission.setId(id);
+			permissionServiceAccess.update(new PermissionEntity(permission));
+			return Response.ok().build();
+		} catch (UniquenessConstraintException e) {
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+		} catch (PermissionNotFoundException e) {
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		} catch (Exception e) {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
@@ -234,42 +208,8 @@ public class PermissionResource implements PermissionResourceClient {
 
 		// Check if exists by Id (or alternatively by Name)
 		if (permissionServiceAccess.exists(id, name))
-			return Response.ok().build();
+			return Response.noContent().build();
 
 		return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
-	}
-
-	/**
-	 * Validates if an user has a specific Permission (Combination of action name + resource name)
-	 * @param action Action name
-	 * @param resource Resource name
-	 * @return system permission
-	 */
-	@Override
-	public Response hasPermission(String action, String resource) {
-		try {
-			SystemPermission systemPermission = permissionServiceAccess.getPermissionByActionAndResourceNames(action, resource);
-
-			if (systemPermission != null) {
-				return Response.ok(systemPermission).build();
-			}
-			return Response.status(Response.Status.NOT_FOUND).build();
-		}
-		catch(Exception e) {
-			return GenericErrorMessagesToResponseMapper.getGenericError(e);
-		}
-	}
-
-	/**
-	 * Will calculate how many records are existent in the db
-	 * @return the count of existent permissions.
-	 */
-	@Override
-	public Response getTotalRecordsCount() {
-		try {
-			return Response.ok(permissionServiceAccess.getTotalRecordsCount()).build();
-		} catch(Exception e) {
-			return GenericErrorMessagesToResponseMapper.getGenericError(e);
-		}
 	}
 }
