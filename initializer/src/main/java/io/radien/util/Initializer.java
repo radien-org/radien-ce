@@ -69,6 +69,7 @@ public class Initializer {
     public static final String INITIALIZER_CONFIG_DIR_PROPERTY = "initializer.configuration.location";
     private static Map<Object,Object> tenants;
     private static Map<Object, Object> roles;
+    private static Map<Long, Map<Long,Object>> tenantRoles;
 
     /**
      * Method that retrieves a config property
@@ -148,6 +149,7 @@ public class Initializer {
         Optional<List<String>> initializingMicroServices = getConfigProperties("initializer.modules");
         List<String> tokens = getTokens();
         String accessToken = tokens.get(0);
+
         if(initializingMicroServices.isPresent()){
             List<String> modules = initializingMicroServices.get();
             if(modules.contains("configInfo")){
@@ -163,8 +165,10 @@ public class Initializer {
             }
             if(modules.contains("role")){
                 roleCreation(accessToken);
-                initializeTenantRoleMaps(accessToken);
+                initializeTenantAndRoleMaps(accessToken);
+
                 tenantRoleCreation(accessToken);
+
             }
         } else {
             tenantCreation(accessToken);
@@ -174,6 +178,8 @@ public class Initializer {
             permissionCreation(accessToken);
 
             roleCreation(accessToken);
+            initializeTenantAndRoleMaps(accessToken);
+            initializeTenantRoleMap(accessToken);
             tenantRoleCreation(accessToken);
         }
     }
@@ -218,18 +224,28 @@ public class Initializer {
         String location = getConfigProperty("initializer.tenantRole.directory.location");
         loadEntitiesFromDirectory(location, accessToken, tenantRoleUrl, "tenantRole",Initializer::tenantRoleTranslator);
 
+        initializeTenantRoleMap(accessToken);
+
         System.out.println("Starting tenant role permission...");
         String tenantRolePermissionUrl = getRoleManagementBaseURL() + "/tenantrolepermission";
         location = getConfigProperty("initializer.tenantRolePermission.directory.location");
-        loadEntitiesFromDirectory(location, accessToken, tenantRolePermissionUrl, "tenantRolePermission",null);
+        loadEntitiesFromDirectory(location, accessToken, tenantRolePermissionUrl, "tenantRolePermission",Initializer::tenantRolePermissionTranslator);
 
         loadTenantRoleUsers(accessToken);
     }
 
-    private static void initializeTenantRoleMaps(String accessToken) {
+    private static void initializeTenantRoleMap(String accessToken) {
+        if(tenantRoles == null) {
+            String tenantUrl = getRoleManagementBaseURL() + "/tenantrole/all";
+            tenantRoles = getDoubleMapFromPage(tenantUrl, "tenantId","roleId", "tenantRoleFinder", accessToken);
+        }
+
+    }
+
+    private static void initializeTenantAndRoleMaps(String accessToken) {
         if(tenants == null) {
             String tenantUrl = getTenantManagementBaseURL() + "/tenant";
-            tenants = getMapFromList(tenantUrl, "name", "tentantFinder", accessToken);
+            tenants = getMapFromList(tenantUrl, "name", "tenantFinder", accessToken);
         }
         if(roles == null) {
             String roleUrl = getRoleManagementBaseURL() + "/role";
@@ -261,6 +277,53 @@ public class Initializer {
                 tenantRole.put("tenantId",((Double)tenant.get("id")).longValue());
                 tenantRole.put("roleId",((Double)role.get("id")).longValue());
                 results.add(tenantRole.toJSONString());
+
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+                System.exit(-5);
+            }
+        }
+        return results;
+    }
+
+    public static List<String> tenantRolePermissionTranslator(List<String> list){
+        List<String> results= new ArrayList<>();
+        JSONParser parser = new JSONParser();
+        for(String tenantRoleStr:list){
+            try {
+                JSONObject object = (JSONObject) parser.parse(tenantRoleStr);
+
+
+                JSONObject tenantRolePermission = new JSONObject();
+                String tenantName = (String)object.get("tenantName");
+                Map tenant =(Map)tenants.get(tenantName);
+                if(tenant == null){
+                    System.out.println("Tenant not found "+ tenantName);
+                    System.exit(-9);
+                }
+
+                String roleName = (String)object.get("roleName");
+                Map role =(Map)roles.get(roleName);
+                if(role == null){
+                    System.out.println("Role not found "+ roleName);
+                    System.exit(-10);
+                }
+
+                Map tenantRole1 = tenantRoles.get(((Double)tenant.get("id")).longValue());
+                if(tenantRole1 == null){
+                    System.out.println("TenantRole not found with Tenant with name "+ tenantName);
+                    System.exit(-11);
+                }
+                Map tenantRole2 = (Map) tenantRole1.get(((Double)role.get("id")).longValue());
+                if(tenantRole2 == null){
+                    System.out.println("TenantRole not found with Role with name"+ roleName);
+                    System.exit(-12);
+                }
+
+                tenantRolePermission.put("tenantRoleId",((Double)tenantRole2.get("id")).longValue());
+                tenantRolePermission.put("permissionId",object.get("permissionId"));
+                results.add(tenantRolePermission.toJSONString());
 
 
             } catch (ParseException e) {
@@ -591,6 +654,64 @@ public class Initializer {
 
         List<Map> list = (List<Map>) response.getBody().get("results");
         return list.stream().collect(Collectors.toMap(k->((Map)k).get(fieldForKey),v->v));
+    }
+
+    public static Map<Long,Map<Long,Object>> getDoubleMapFromPage(String url, String fieldForKey1,String fieldForKey2,String identifier, String accessToken){
+        System.out.println(url);
+        HttpResponse<Map> response = Unirest.get(url)
+                .header("Authorization", "Bearer "+accessToken)
+                .header("Content-Type","application/json")
+                .asObject(Map.class);
+
+        System.out.println(identifier + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        checkResponse(response,identifier);
+        String urlTemp= url+"?pageSize=" + ((Double)response.getBody().get("totalResults")).intValue();
+        System.out.println(urlTemp);
+        response = Unirest.get(urlTemp)
+                .header("Authorization", "Bearer "+accessToken)
+                .header("Content-Type","application/json")
+                .asObject(Map.class);
+        System.out.println(identifier+2 + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        checkResponse(response,identifier);
+
+        List<Map> list = (List<Map>) response.getBody().get("results");
+        Map<Long,Map<Long,Object>> result = new HashMap<>();
+        for(Map map:list){
+            Long valueForKey1 = ((Double) map.get(fieldForKey1)).longValue();
+            Map<Long,Object> lvl1 = result.get(valueForKey1);
+            if(lvl1 == null){
+                lvl1 = new HashMap<>();
+            }
+            lvl1.put(((Double)map.get(fieldForKey2)).longValue(),map);
+            result.put(valueForKey1,lvl1);
+        }
+
+        return result;
+    }
+
+    public static Map<Long,Map<Long,Object>> getDoubleMapFromList(String url, String fieldForKey1,String fieldForKey2,String identifier, String accessToken){
+        System.out.println(url);
+        HttpResponse<ArrayList> response = Unirest.get(url)
+                .header("Authorization", "Bearer "+accessToken)
+                .header("Content-Type","application/json")
+                .asObject(ArrayList.class);
+
+        System.out.println(identifier + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        checkResponse(response,identifier);
+
+        List<Map> list = (List<Map>) response.getBody();
+        Map<Long,Map<Long,Object>> result = new HashMap<>();
+        for(Map map:list){
+            Long valueForKey1 = (Long) map.get(fieldForKey1);
+            Map<Long,Object> lvl1 = result.get(valueForKey1);
+            if(lvl1 == null){
+                lvl1 = new HashMap<>();
+            }
+            lvl1.put((Long)map.get(fieldForKey2),map);
+            result.put(valueForKey1,lvl1);
+        }
+
+        return result;
     }
 
     /**

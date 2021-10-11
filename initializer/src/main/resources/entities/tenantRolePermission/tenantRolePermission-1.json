@@ -1,12 +1,12 @@
 [
-{"tenantRoleId":1, "permissionId":1},
-{"tenantRoleId":1, "permissionId":2},
-{"tenantRoleId":1, "permissionId":3},
-{"tenantRoleId":1, "permissionId":4},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":1},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":2},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":3},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":4},
 
-{"tenantRoleId":2, "permissionId":4},
-{"tenantRoleId":3, "permissionId":4},
+{"tenantName": "Client Tenant", "roleName":"System Administrator", "permissionId":4},
+{"tenantName": "Sub Tenant", "roleName":"System Administrator", "permissionId":4},
 
-{"tenantRoleId":2, "permissionId":1},
-{"tenantRoleId":3, "permissionId":1}
+{"tenantName": "Client Tenant", "roleName":"System Administrator", "permissionId":1},
+{"tenantName": "Sub Tenant", "roleName":"System Administrator", "permissionId":1}
 ]
