@@ -69,6 +69,8 @@ public class Initializer {
     public static final String INITIALIZER_CONFIG_DIR_PROPERTY = "initializer.configuration.location";
     private static Map<Object,Object> tenants;
     private static Map<Object, Object> roles;
+    private static Map<Object,Object> actions;
+    private static Map<Object, Object> resources;
     private static Map<Long, Map<Long,Object>> tenantRoles;
 
     /**
@@ -161,6 +163,7 @@ public class Initializer {
             if(modules.contains("permission")){
                 actionCreation(accessToken);
                 resourceCreation(accessToken);
+                initializeActionAndResourceMaps(accessToken);
                 permissionCreation(accessToken);
             }
             if(modules.contains("role")){
@@ -175,6 +178,7 @@ public class Initializer {
 
             actionCreation(accessToken);
             resourceCreation(accessToken);
+            initializeActionAndResourceMaps(accessToken);
             permissionCreation(accessToken);
 
             roleCreation(accessToken);
@@ -253,6 +257,17 @@ public class Initializer {
         }
     }
 
+    private static void initializeActionAndResourceMaps(String accessToken) {
+        if(actions == null) {
+            String actionUrl= getPermissionManagementBaseURL() + "/action";
+            actions = getMapFromPage(actionUrl, "name", "actionFinder", accessToken);
+        }
+        if(resources == null) {
+            String resourceUrl= getPermissionManagementBaseURL() + "/resource";
+            resources = getMapFromPage(resourceUrl, "name", "ResourceFinder", accessToken);
+        }
+    }
+
     public static List<String> tenantRoleTranslator(List<String> list){
         List<String> results= new ArrayList<>();
         JSONParser parser = new JSONParser();
@@ -282,6 +297,41 @@ public class Initializer {
             } catch (ParseException e) {
                 e.printStackTrace();
                 System.exit(-5);
+            }
+        }
+        return results;
+    }
+
+    public static List<String> permissionTranslator(List<String> list){
+        List<String> results= new ArrayList<>();
+        JSONParser parser = new JSONParser();
+        for(String permissionStr:list){
+            try {
+                JSONObject object = (JSONObject) parser.parse(permissionStr);
+
+
+                JSONObject permission = new JSONObject();
+                String actionName = (String)object.get("actionName");
+                Map action =(Map)actions.get(actionName);
+                if(action == null){
+                    System.out.println("Action not found "+ actionName);
+                    System.exit(-12);
+                }
+                String resourceName = (String)object.get("resourceName");
+                Map resource =(Map)resources.get(resourceName);
+                if(resource == null){
+                    System.out.println("Resource not found "+ resourceName);
+                    System.exit(-13);
+                }
+                permission.put("actionId",((Double)action.get("id")).longValue());
+                permission.put("resourceId",((Double)resource.get("id")).longValue());
+                permission.put("name",object.get("name"));
+                results.add(permission.toJSONString());
+
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+                System.exit(-14);
             }
         }
         return results;
@@ -430,7 +480,7 @@ public class Initializer {
         String permissionUrl = getPermissionManagementBaseURL() + "/permission";
 
         String location = getConfigProperty("initializer.permission.directory.location");
-        loadEntitiesFromDirectory(location, accessToken, permissionUrl, "permission",null);
+        loadEntitiesFromDirectory(location, accessToken, permissionUrl, "permission",Initializer::permissionTranslator);
     }
 
     /**

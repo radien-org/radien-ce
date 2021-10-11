@@ -83,6 +83,10 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
                 userSession.getUserLastName(), userSession.getPreferredUserName(),
                 userSession.getUserIdSubject(), userSession.getEmail(), null);
     }
+    @Override
+    protected boolean isLoggedIn(){
+        return userSession.isActive();
+    }
 
     /**
      * Validates if current active user for a given tenant has a specific given role
