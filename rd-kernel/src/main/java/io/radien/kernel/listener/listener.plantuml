@@ -1,0 +1,77 @@
+@startuml
+
+title __LISTENER's Class Diagram__\n
+
+  namespace io.radien.kernel {
+    namespace listener {
+      abstract class io.radien.kernel.listener.AbstractOAFInitListener {
+          {static} # log : Logger
+          + contextDestroyed()
+          + contextInitialized()
+          {abstract} # getAppframe()
+          {abstract} # getBeanManager()
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.FacesApplicationInitialisationListener {
+          {static} - log : Logger
+          + isListenerForSource()
+          + processEvent()
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.OAFInitListener {
+          + contextDestroyed()
+          + contextInitialized()
+          # getAppframe()
+          # getBeanManager()
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.SessionTimeoutListener {
+          {static} # SESSION_ATTRIBUTE_USER : String
+          {static} - logger : Log
+          + prepareLogoutInfoAndLogoutActiveUser()
+          + sessionCreated()
+          + sessionDestroyed()
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace listener {
+      class io.radien.kernel.listener.UACompatibleHeaderPhaseListener {
+          {static} - X_UA_COMPATIBLE_HEADER : String
+          {static} - log : Logger
+          {static} - serialVersionUID : long
+          + afterPhase()
+          + beforePhase()
+          + getPhaseId()
+      }
+    }
+  }
+  
+
+  io.radien.kernel.listener.AbstractOAFInitListener .up.|> javax.servlet.ServletContextListener
+  io.radien.kernel.listener.FacesApplicationInitialisationListener .up.|> javax.faces.event.SystemEventListener
+  io.radien.kernel.listener.OAFInitListener -up-|> io.radien.kernel.listener.AbstractOAFInitListener
+  io.radien.kernel.listener.SessionTimeoutListener .up.|> javax.servlet.http.HttpSessionListener
+  io.radien.kernel.listener.UACompatibleHeaderPhaseListener .up.|> javax.faces.event.PhaseListener
+
+
+ 
+
+@enduml

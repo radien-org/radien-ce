@@ -1,0 +1,145 @@
+@startuml
+
+title __ENTITIES's Class Diagram__\n
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.Action {
+          - id : Long
+          - name : String
+          + Action()
+          + Action()
+          + getId()
+          + getName()
+          + setId()
+          + setName()
+          + toString()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter {
+          - name : String
+          + ActionSearchFilter()
+          + ActionSearchFilter()
+          + getName()
+          + setName()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.AssociationStatus {
+          - message : String
+          - successful : boolean
+          + AssociationStatus()
+          + AssociationStatus()
+          + getMessage()
+          + isOK()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.GlobalHeaders {
+          + update()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.Permission {
+          - actionId : Long
+          - id : Long
+          - name : String
+          - resourceId : Long
+          {static} - serialVersionUID : long
+          + Permission()
+          + Permission()
+          + getActionId()
+          + getId()
+          + getName()
+          + getResourceId()
+          + setActionId()
+          + setId()
+          + setName()
+          + setResourceId()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter {
+          - actionId : Long
+          - name : String
+          - resourceId : Long
+          + PermissionSearchFilter()
+          + PermissionSearchFilter()
+          + getActionId()
+          + getName()
+          + getResourceId()
+          + setActionId()
+          + setName()
+          + setResourceId()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.Resource {
+          - id : Long
+          - name : String
+          + Resource()
+          + Resource()
+          + getId()
+          + getName()
+          + setId()
+          + setName()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace entities {
+      class io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter {
+          - name : String
+          + ResourceSearchFilter()
+          + ResourceSearchFilter()
+          + getName()
+          + setName()
+      }
+    }
+  }
+  
+
+  io.radien.ms.permissionmanagement.client.entities.Action -up-|> io.radien.api.model.permission.AbstractActionModel
+  io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter .up.|> io.radien.api.model.permission.SystemActionSearchFilter
+  io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter -up-|> io.radien.api.search.SearchableByIds
+  io.radien.ms.permissionmanagement.client.entities.GlobalHeaders .up.|> org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory
+  io.radien.ms.permissionmanagement.client.entities.GlobalHeaders o-- io.radien.api.security.TokensPlaceHolder : tokensPlaceHolder
+  io.radien.ms.permissionmanagement.client.entities.Permission .up.|> io.radien.api.model.permission.SystemPermission
+  io.radien.ms.permissionmanagement.client.entities.Permission -up-|> io.radien.api.model.permission.AbstractPermissionModel
+  io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter .up.|> io.radien.api.model.permission.SystemPermissionSearchFilter
+  io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter -up-|> io.radien.api.search.SearchableByIds
+  io.radien.ms.permissionmanagement.client.entities.Resource -up-|> io.radien.api.model.permission.AbstractResourceModel
+  io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter .up.|> io.radien.api.model.permission.SystemResourceSearchFilter
+  io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter -up-|> io.radien.api.search.SearchableByIds
+
+
+ 
+
+@enduml

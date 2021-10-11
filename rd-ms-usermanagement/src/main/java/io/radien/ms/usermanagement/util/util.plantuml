@@ -1,0 +1,21 @@
+@startuml
+
+title __UTIL's Class Diagram__\n
+
+  namespace io.radien.ms.usermanagement {
+    namespace util {
+      class io.radien.ms.usermanagement.util.UserModelMapper {
+          {static} + map()
+          {static} + map()
+          {static} + map()
+          - UserModelMapper()
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

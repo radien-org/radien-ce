@@ -1,0 +1,67 @@
+@startuml
+
+title __MESSAGES's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace kernel.messages {
+      enum SystemMessageTypes {
+        BUSINESS
+        SECURITY
+        TECHNICAL
+        resourceBundleLocation
+        resourceBundles
+        typeKey
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace kernel.messages {
+      enum SystemMessages {
+        KERNEL_COMMAND_ERROR
+        KERNEL_ENVIRONMENT_ERROR
+        KERNEL_IO_ERROR
+        KERNEL_LOCALE_ERROR
+        KERNEL_MANIFEST_ERROR
+        KERNEL_PROPERTIES_ERROR
+        KERNEL_PROPERTY_UNAVAILABLE
+        KERNEL_SESSION_NOT_VALID
+        KERNEL_UNKNOWN
+        KERNEL_UNKNOWN_TEST
+        PLUGIN_MANIFEST_ERROR
+        PROC_ACCOUNT_ALREADY_ASSOCIATED
+        PROC_ACCOUNT_EXPIRED
+        PROC_ACCOUNT_NOT_EXISTING
+        PROC_ACCOUNT_TARGET_CONTEXT_INVALID
+        SEC_AUTHENTICATION_FAILED
+        SEC_AUTHENTICATION_RESOURCE_EXPIRED
+        SEC_AUTHENTICATION_RESPONSE_FAILED
+        SEC_PASSWORD_POLICY_VIOLATION
+        catKey
+        errorCode
+        errorType
+        msgKey
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace kernel.messages {
+      class io.radien.api.kernel.messages.SystemMessages.Constants {
+          {static} ~ SYS_CAT_PROC : String
+          {static} ~ SYS_CAT_SEC : String
+          {static} ~ SYS_CAT_SYS : String
+      }
+    }
+  }
+  
+
+  io.radien.api.kernel.messages.SystemMessages o-- io.radien.api.kernel.messages.SystemMessageTypes : errorType
+  io.radien.api.kernel.messages.SystemMessages +-down- io.radien.api.kernel.messages.SystemMessages.Constants
+
+
+ 
+
+@enduml

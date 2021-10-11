@@ -1,0 +1,78 @@
+@startuml
+
+title __PROVIDERS's Class Diagram__\n
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyReader {
+          + isReadable()
+          + readFrom()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyWriter {
+          + getSize()
+          + isWriteable()
+          + writeTo()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyReader {
+          + isReadable()
+          + readFrom()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyWriter {
+          + getSize()
+          + isWriteable()
+          + writeTo()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyReader {
+          + isReadable()
+          + readFrom()
+      }
+    }
+  }
+  
+
+  namespace io.radien.ms.permissionmanagement.client {
+    namespace providers {
+      class io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyWriter {
+          + getSize()
+          + isWriteable()
+          + writeTo()
+      }
+    }
+  }
+  
+
+  io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.permissionmanagement.client.providers.ActionMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.permissionmanagement.client.providers.PermissionMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+  io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyReader .up.|> javax.ws.rs.ext.MessageBodyReader
+  io.radien.ms.permissionmanagement.client.providers.ResourceMessageBodyWriter .up.|> javax.ws.rs.ext.MessageBodyWriter
+
+
+ 
+
+@enduml

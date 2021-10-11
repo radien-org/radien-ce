@@ -1,0 +1,115 @@
+@startuml
+
+title __SECURITY's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace security {
+      abstract class io.radien.webapp.security.AbstractAuthorizationFilter {
+          {static} - log : Logger
+          {static} - serialVersionUID : long
+          # process()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      abstract class io.radien.webapp.security.AbstractWebFilter {
+          {static} # log : Logger
+          - filterConfig : FilterConfig
+          {static} - serialVersionUID : long
+          + destroy()
+          + doFilter()
+          + getFilterConfig()
+          + init()
+          + setFilterConfig()
+          # getContextPage()
+          # getExtension()
+          # getFullLandingPageName()
+          # getFullLoginPageName()
+          # getLandingPage()
+          # getLoginPage()
+          # getRedirect()
+          # getTermPage()
+          # isAjax()
+          {abstract} # process()
+          # xmlPartialRedirectToPage()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      class io.radien.webapp.security.AuthorizationFilter {
+          {static} - serialVersionUID : long
+          + getOAF()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      class io.radien.webapp.security.OIDCAuthorizationFilter {
+          {static} - log : Logger
+          {static} - serialVersionUID : long
+          # getRedirect()
+          # process()
+      }
+    }
+  }
+  
+
+  namespace io.radien.webapp {
+    namespace security {
+      class io.radien.webapp.security.UserSession {
+          - accessToken : String
+          {static} - log : Logger
+          - refreshToken : String
+          {static} - serialVersionUID : long
+          + getAccessToken()
+          + getEmail()
+          + getOAF()
+          + getPreferredUserName()
+          + getRefreshToken()
+          + getUser()
+          + getUserFirstName()
+          + getUserFullName()
+          + getUserId()
+          + getUserIdSubject()
+          + getUserLastName()
+          + isActive()
+          + login()
+          + logout()
+          + setAccessToken()
+          + setRefreshToken()
+          + setUser()
+          # getApplicationURL()
+          # getLogoutURL()
+          # logout()
+          - init()
+      }
+    }
+  }
+  
+
+  io.radien.webapp.security.AbstractAuthorizationFilter -up-|> io.radien.webapp.security.AbstractWebFilter
+  io.radien.webapp.security.AbstractAuthorizationFilter o-- io.radien.api.security.UserSessionEnabled : session
+  io.radien.webapp.security.AbstractAuthorizationFilter o-- io.radien.webapp.RedirectUtil : webapp
+  io.radien.webapp.security.AbstractWebFilter .up.|> io.radien.api.Appframeable
+  io.radien.webapp.security.AbstractWebFilter .up.|> javax.servlet.Filter
+  io.radien.webapp.security.AuthorizationFilter -up-|> io.radien.webapp.security.AbstractAuthorizationFilter
+  io.radien.webapp.security.AuthorizationFilter o-- io.radien.api.OAFAccess : baseApp
+  io.radien.webapp.security.OIDCAuthorizationFilter -up-|> io.radien.webapp.security.AuthorizationFilter
+  io.radien.webapp.security.UserSession .up.|> io.radien.api.security.TokensPlaceHolder
+  io.radien.webapp.security.UserSession .up.|> io.radien.api.security.UserSessionEnabled
+  io.radien.webapp.security.UserSession o-- io.radien.api.OAFAccess : oaf
+  io.radien.webapp.security.UserSession o-- io.radien.api.model.user.SystemUser : user
+  io.radien.webapp.security.UserSession o-- io.radien.api.service.user.UserRESTServiceAccess : userClientService
+
+
+ 
+
+@enduml

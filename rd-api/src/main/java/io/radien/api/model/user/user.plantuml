@@ -1,0 +1,64 @@
+@startuml
+
+title __USER's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace model {
+      namespace user {
+        abstract class io.radien.api.model.user.AbstractUserModel {
+            {static} - serialVersionUID : long
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace user {
+        interface io.radien.api.model.user.SystemUser {
+            {abstract} + getFirstname()
+            {abstract} + getLastname()
+            {abstract} + getLogon()
+            {abstract} + getSub()
+            {abstract} + getTerminationDate()
+            {abstract} + getUserEmail()
+            {abstract} + isDelegatedCreation()
+            {abstract} + isEnabled()
+            {abstract} + setDelegatedCreation()
+            {abstract} + setEnabled()
+            {abstract} + setFirstname()
+            {abstract} + setLastname()
+            {abstract} + setLogon()
+            {abstract} + setSub()
+            {abstract} + setTerminationDate()
+            {abstract} + setUserEmail()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace user {
+        interface io.radien.api.model.user.SystemUserSearchFilter {
+            {abstract} + getEmail()
+            {abstract} + getLogon()
+            {abstract} + getSub()
+            {abstract} + setEmail()
+            {abstract} + setLogon()
+            {abstract} + setSub()
+        }
+      }
+    }
+  }
+  
+
+  io.radien.api.model.user.AbstractUserModel .up.|> io.radien.api.model.user.SystemUser
+  io.radien.api.model.user.AbstractUserModel -up-|> io.radien.api.model.AbstractModel
+
+
+ 
+
+@enduml

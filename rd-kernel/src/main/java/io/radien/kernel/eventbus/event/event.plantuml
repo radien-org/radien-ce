@@ -1,0 +1,35 @@
+@startuml
+
+title __EVENT's Class Diagram__\n
+
+  namespace io.radien.kernel {
+    namespace eventbus {
+      namespace event {
+        abstract class io.radien.kernel.eventbus.event.AbstractSystemEvent {
+            {static} - serialVersionUID : long
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.kernel {
+    namespace eventbus {
+      namespace event {
+        class io.radien.kernel.eventbus.event.InitApplicationEvent {
+            {static} - serialVersionUID : long
+            + InitApplicationEvent()
+        }
+      }
+    }
+  }
+  
+
+  io.radien.kernel.eventbus.event.AbstractSystemEvent .up.|> io.radien.api.Event
+  io.radien.kernel.eventbus.event.InitApplicationEvent .up.|> io.radien.api.Event
+  io.radien.kernel.eventbus.event.InitApplicationEvent -up-|> io.radien.kernel.eventbus.event.AbstractSystemEvent
+
+
+ 
+
+@enduml
