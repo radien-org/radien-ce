@@ -94,11 +94,10 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      */
     private Page<?extends SystemPermission> getAllRequester(String search, int pageNo, int pageSize,
                                                            List<String> sortBy, boolean isAscending) throws SystemException {
-        try {
-            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending)) {
             return PermissionModelMapper.mapToPage((InputStream) response.getEntity());
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+        } catch (ExtensionException | ProcessingException e){
             throw new SystemException(e);
         }
     }
@@ -130,13 +129,10 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      */
     private List<? extends SystemPermission> getPermissionRequester(String search, int pageNo, int pageSize,
                                                                    List<String> sortBy, boolean isAscending) throws SystemException {
-        try {
-            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(
-                    oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending)) {
             return PermissionModelMapper.mapToPage((InputStream) response.getEntity()).getResults();
-        } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
+        } catch (ExtensionException | ProcessingException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -168,15 +164,12 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     private Optional<SystemPermission> getPermissionByIdRequester(Long id) throws SystemException {
-        try {
-            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.getById(id);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.getById(id)){
             SystemPermission permission = PermissionModelMapper.map((InputStream) response.getEntity());
             return Optional.ofNullable(permission);
 
-        } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
+        } catch (ExtensionException | ProcessingException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -211,13 +204,11 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     private List<? extends SystemPermission> getPermissionByActionAndResourceRequester(Long actionId, Long resourceId) throws SystemException {
-        try {
-            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-            Response response = client.getPermissions(null, actionId, resourceId, null,true, true);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.getPermissions(null, actionId, resourceId, null,true, true)){
             return ListPermissionModelMapper.map((InputStream) response.getEntity());
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
+        catch (ExtensionException | ProcessingException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -249,18 +240,15 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
     private Optional<SystemPermission> getPermissionByNameRequester(String name) throws SystemException {
-        try {
-            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.getPermissions(name,null,null,null,true,true);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.getPermissions(name,null,null,null,true,true)) {
             List<? extends SystemPermission> list = ListPermissionModelMapper.map((InputStream) response.getEntity());
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
             } else {
                 return Optional.empty();
             }
-        } catch (ExtensionException | ProcessingException | MalformedURLException | WebApplicationException e){
+        } catch (ExtensionException | ProcessingException | WebApplicationException e){
             throw new SystemException(e);
         }
     }
@@ -292,16 +280,12 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
     private boolean deleteRequester(long permissionId) throws SystemException{
-        PermissionResourceClient client;
-        try {
-            client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
-                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.delete(permissionId);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.delete(permissionId)) {
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch (ProcessingException | MalformedURLException | WebApplicationException e) {
+        } catch (ProcessingException | WebApplicationException e) {
             throw new SystemException(e);
         }
         return false;
@@ -334,16 +318,12 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
     private boolean createRequester(SystemPermission permission) throws SystemException {
-        PermissionResourceClient client;
-        try {
-            client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
-                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.create((Permission) permission);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.create((Permission) permission)) {
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch (MalformedURLException | ProcessingException | BadRequestException | NotFoundException | InternalServerErrorException e) {
+        } catch (ProcessingException | BadRequestException | NotFoundException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
         return false;
@@ -376,16 +356,12 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case it founds multiple permissions or if URL is malformed
      */
     private boolean updateRequester(SystemPermission permission) throws SystemException {
-        PermissionResourceClient client;
-        try {
-            client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
-                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.update(permission.getId(), (Permission) permission);
+        PermissionResourceClient client = getPermissionResourceClient();
+        try (Response response = client.update(permission.getId(), (Permission) permission)){
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             }
-        } catch (MalformedURLException | ProcessingException | BadRequestException | NotFoundException | InternalServerErrorException e) {
+        } catch (ProcessingException | BadRequestException | NotFoundException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
         return false;
@@ -510,6 +486,20 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
         }
         catch (BadRequestException | InternalServerErrorException | ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Programmatically (via RestClientBuilder) creates an instance of a Permission Rest Client
+     * @return Instance of {@link PermissionResourceClient} (Rest client)
+     * @throws SystemException in case of any issue regarding url
+     */
+    private PermissionResourceClient getPermissionResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getPermissionResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+        } catch (MalformedURLException m) {
+            throw new SystemException(m);
         }
     }
 

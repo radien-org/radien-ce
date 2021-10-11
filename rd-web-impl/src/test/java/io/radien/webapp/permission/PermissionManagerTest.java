@@ -51,6 +51,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Class that aggregates UnitTest cases for PermissionManager
  *
@@ -106,17 +109,58 @@ public class PermissionManagerTest extends JSFUtilAndFaceContextMessagesTest {
 
     }
 
+    /**
+     * Test for permission creation
+     * @throws SystemException thrown by permission rest client in case of any
+     * communication issue with the endpoint
+     */
     @Test
-    public void testSave() throws SystemException {
-        doReturn(true).when(permissionRESTServiceAccess).create(permission);
-        String expected = permissionManager.save(permission);
+    public void testSaveCreate() throws SystemException {
+        SystemPermission p = mock(Permission.class);
+        when(p.getId()).thenReturn(null);
+        doReturn(true).when(permissionRESTServiceAccess).create(p);
+        String expected = permissionManager.save(p);
         assertEquals(expected, DataModelEnum.PERMISSION_DETAIL_PAGE.getValue());
     }
 
+    /**
+     * Test for permission updating
+     * @throws SystemException thrown by permission rest client in case of any
+     * communication issue with the endpoint
+     */
+    @Test
+    public void testSaveUpdate() throws SystemException {
+        SystemPermission p = mock(Permission.class);
+        when(p.getId()).thenReturn(1L);
+        doReturn(true).when(permissionRESTServiceAccess).update(p);
+        String expected = permissionManager.save(p);
+        assertEquals(expected, DataModelEnum.PERMISSION_DETAIL_PAGE.getValue());
+    }
+
+    /**
+     * Test for situation in which exception occurs during the creation of a permission
+     * @throws SystemException thrown by permission rest client in case of any
+     * communication issue with the endpoint
+     */
     @Test(expected = Exception.class)
-    public void testSaveException() throws SystemException {
-        doThrow(SystemException.class).when(permissionRESTServiceAccess).create(permission);
-        permissionManager.save(permission);
+    public void testSaveCreateException() throws SystemException {
+        SystemPermission p = mock(Permission.class);
+        when(p.getId()).thenReturn(null);
+        doThrow(SystemException.class).when(permissionRESTServiceAccess).create(p);
+        permissionManager.save(p);
+    }
+
+    /**
+     * Test for situation in which exception occurs during the updating of a permission
+     * @throws SystemException thrown by permission rest client in case of any
+     * communication issue with the endpoint
+     */
+    @Test(expected = Exception.class)
+    public void testSaveUpdateException() throws SystemException {
+        SystemPermission p = mock(Permission.class);
+        when(p.getId()).thenReturn(1L);
+        doThrow(SystemException.class).when(permissionRESTServiceAccess).update(p);
+        permissionManager.save(p);
     }
 
     @Test
