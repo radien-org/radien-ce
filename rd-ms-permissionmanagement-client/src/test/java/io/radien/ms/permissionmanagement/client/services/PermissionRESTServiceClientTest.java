@@ -1075,7 +1075,7 @@ public class PermissionRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity(testValue).build());
 
         SystemPermission systemPermission = new PermissionFactory().create("name", 2L, 2L, 2L);
-        assertTrue(target.create(systemPermission));
+        target.create(systemPermission);
     }
 
     /**
@@ -1096,7 +1096,7 @@ public class PermissionRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity(testValue).build());
 
         SystemPermission systemPermission = new PermissionFactory().create("name", 2L, 2L, 2L);
-        target.create(systemPermission);
+        assertTrue(target.create(systemPermission));
     }
 
     /**
