@@ -356,8 +356,9 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
         Long tenantId = 10L;
         Long userId = 1111L;
         when(this.userSession.getUserId()).thenReturn(userId);
+        when(this.userSession.isActive()).thenReturn(Boolean.TRUE);
         when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
-                thenReturn(Optional.of(permissionId));
+                then(i -> Optional.of(permissionId));
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
         Response expectedResponse = Response.ok().entity(response).build();
         doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
@@ -371,8 +372,9 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
         Long tenantId = 10L;
         Long userId = 1111L;
         when(this.userSession.getUserId()).thenReturn(userId);
+        when(this.userSession.isActive()).thenReturn(Boolean.TRUE);
         when(permissionRESTServiceAccess.getIdByResourceAndAction(resourceName, actionName)).
-                thenReturn(Optional.of(permissionId));
+                then(i -> Optional.of(permissionId));
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
         Response expectedResponse = Response.ok().entity(response).build();
         doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
