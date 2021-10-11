@@ -229,7 +229,6 @@ public class Initializer {
                 if (!namesForFilesAlreadyLoaded.contains(path.getFileName().toString())) {
                     System.out.println(location + " - " + getMd5(location));
                     List<String> postBodies = getPostBodies(location);
-                    createActiveTenants(accessToken, postBodies);
                     executePostForBodies(accessToken, postBodies, tenantRoleUserUrl, identifier);
                 }
             }
@@ -267,9 +266,7 @@ public class Initializer {
             String tenantName = map.get("name").toString();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("tenantId", tenantId);
-            jsonObject.put("tenantName", tenantName);
             jsonObject.put("userId", userId);
-            jsonObject.put("isTenantActive", "false");
 
             String activeTenantUrl = getTenantManagementBaseURL() + "/activeTenant";
             makePostRequest(activeTenantUrl, "activeTenant", accessToken, jsonObject.toJSONString());
