@@ -278,8 +278,7 @@ public class ActiveTenantRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        SystemActiveTenant systemActiveTenant = new ActiveTenant();
-        target.create(systemActiveTenant);
+        target.create(new ActiveTenant());
     }
 
     /**
@@ -509,7 +508,7 @@ public class ActiveTenantRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        SystemActiveTenant systemActiveTenant = new ActiveTenant(2L, 2L, 2L, "teste", true);
+        SystemActiveTenant systemActiveTenant = new ActiveTenant(2L, 2L, 2L);
         target.update(systemActiveTenant);
     }
 
@@ -669,10 +668,10 @@ public class ActiveTenantRESTServiceClientTest {
         Response response = Response.ok(is).build();
         ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.get(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean())).thenReturn(response);
+        when(resourceClient.get(anyLong(), anyLong(), anyBoolean())).thenReturn(response);
         List<? extends SystemActiveTenant> list = new ArrayList<>();
 
-        assertEquals(list,target.getActiveTenantByFilter(100L, 100L, "test", false));
+        assertEquals(list,target.getActiveTenantByFilter(100L, 100L));
     }
 
     /**
@@ -685,13 +684,13 @@ public class ActiveTenantRESTServiceClientTest {
         ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
 
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.get(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(resourceClient.get(anyLong(), anyLong(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getActiveTenantByFilter(2L, 2L, "test", false);
+        target.getActiveTenantByFilter(2L, 2L);
     }
 
     /**
@@ -702,6 +701,6 @@ public class ActiveTenantRESTServiceClientTest {
     @Test(expected = Exception.class)
     public void testGetActiveTenantByFilterException() throws Exception {
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(new ProcessingException("test"));
-        target.getActiveTenantByFilter(2L, 2L, "test", false);
+        target.getActiveTenantByFilter(2L, 2L);
     }
 }

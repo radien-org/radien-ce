@@ -61,7 +61,7 @@ public class ActiveTenantModelMapperTest {
      */
     @Test
     public void testMapJsonObject() {
-        ActiveTenant activeTenant = ActiveTenantFactory.create(2L, 2L, null, false);
+        ActiveTenant activeTenant = ActiveTenantFactory.create(2L, 2L);
         JsonObject jsonObject = ActiveTenantModelMapper.map(activeTenant);
 
         assertEquals(activeTenant.getUserId().toString(),jsonObject.get("userId").toString());

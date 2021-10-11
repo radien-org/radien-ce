@@ -54,7 +54,7 @@ public class ActiveTenantFactoryTest extends TestCase {
     @Test
     public void testCreate() {
         ActiveTenantFactory activeTenantFactory = new ActiveTenantFactory();
-        ActiveTenant newActiveTenantConstructed = activeTenantFactory.create(2L, 2L, null, false);
+        ActiveTenant newActiveTenantConstructed = activeTenantFactory.create(2L, 2L);
 
         assertEquals(activeTenant.getUserId(), newActiveTenantConstructed.getUserId());
         assertEquals(activeTenant.getTenantId(), newActiveTenantConstructed.getTenantId());
@@ -70,8 +70,6 @@ public class ActiveTenantFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("userId", 2L);
         builder.add("tenantId", 2L);
-        builder.add("tenantName", "test");
-        builder.add("isTenantActive", true);
 
         json = builder.build();
         ActiveTenant newJsonActiveTenant = ActiveTenantFactory.convert(json);
@@ -108,7 +106,7 @@ public class ActiveTenantFactoryTest extends TestCase {
      */
     @Test
     public void testConvertList() throws ParseException {
-        ActiveTenant activeTenant = ActiveTenantFactory.create(2L,2L, null, false);
+        ActiveTenant activeTenant = ActiveTenantFactory.create(2L,2L);
 
         JsonArrayBuilder builder = Json.createArrayBuilder();
         builder.add(ActiveTenantFactory.convertToJsonObject(activeTenant));
@@ -132,8 +130,6 @@ public class ActiveTenantFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("userId", 2L);
         builder.add("tenantId", 2L);
-        builder.addNull("tenantName");
-        builder.add("isTenantActive", false);
 
         json = builder.build();
 

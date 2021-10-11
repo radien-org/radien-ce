@@ -90,7 +90,6 @@ public class UserTenantGlobalRolesManagerTest extends JSFUtilAndFaceContextMessa
 
         systemActiveTenant = new ActiveTenant();
         systemActiveTenant.setId(1L);
-        systemActiveTenant.setTenantName("Root Tenant");
 
         SystemTenantType systemTenantType = TenantType.ROOT;
         SystemTenant systemTenant = new Tenant();
