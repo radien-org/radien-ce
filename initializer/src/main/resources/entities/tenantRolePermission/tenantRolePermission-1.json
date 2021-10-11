@@ -1,12 +1,13 @@
 [
-{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":1},
-{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":2},
-{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":3},
-{"tenantName": "Root Tenant", "roleName":"System Administrator", "permissionId":4},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Create"},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Read"},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Update"},
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Delete"},
 
-{"tenantName": "Client Tenant", "roleName":"System Administrator", "permissionId":4},
-{"tenantName": "Sub Tenant", "roleName":"System Administrator", "permissionId":4},
+{"tenantName": "Client Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Delete"},
+{"tenantName": "Sub Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Delete"},
 
-{"tenantName": "Client Tenant", "roleName":"System Administrator", "permissionId":1},
-{"tenantName": "Sub Tenant", "roleName":"System Administrator", "permissionId":1}
+{"tenantName": "Client Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Create"},
+{"tenantName": "Sub Tenant", "roleName":"System Administrator", "resourceName": "User", "actionName": "Create"}
+
 ]
