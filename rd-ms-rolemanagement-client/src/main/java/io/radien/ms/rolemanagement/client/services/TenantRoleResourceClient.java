@@ -54,7 +54,6 @@ public interface TenantRoleResourceClient {
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @GET
-    @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize);
