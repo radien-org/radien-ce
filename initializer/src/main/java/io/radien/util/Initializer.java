@@ -377,7 +377,7 @@ public class Initializer {
                 }
                 Map tenantRole2 = (Map) tenantRole1.get(((Double)role.get("id")).longValue());
                 if(tenantRole2 == null){
-                    System.out.println("TenantRole not found with Role with name"+ roleName);
+                    System.out.println("TenantRole not found with Role with name "+ roleName);
                     System.exit(-12);
                 }
 
