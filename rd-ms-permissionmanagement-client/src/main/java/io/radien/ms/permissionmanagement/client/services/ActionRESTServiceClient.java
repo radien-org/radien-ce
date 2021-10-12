@@ -214,16 +214,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public boolean create(SystemAction action) throws SystemException {
-        try {
-            return createRequest(action);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return createRequest(action);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::createRequest, action);
     }
 
     /**
@@ -254,16 +245,7 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * @throws SystemException in case of any communication or processing issue regarding action rest api
      */
     public boolean update(SystemAction action) throws SystemException {
-        try {
-            return updateRequest(action);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return updateRequest(action);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::updateRequest,action);
     }
 
     /**

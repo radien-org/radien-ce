@@ -245,33 +245,24 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
     }
 
     /**
-     * Calls the requester to create a given action if not possible will reload the access token and retry again
-     * @param action to be created
-     * @return true if action has been created with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * Calls the requester to create a given resource if not possible will reload the access token and retry again
+     * @param resource to be created
+     * @return true if resource has been created with success or false if not
+     * @throws SystemException in case it founds multiple resources or if URL is malformed
      */
-    public boolean create(SystemResource action) throws SystemException {
-        try {
-            return createRequester(action);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return createRequester(action);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+    public boolean create(SystemResource resource) throws SystemException {
+        return get(this::createRequester, resource);
     }
 
     /**
-     * Creates given action
-     * @param action to be created
-     * @return true if action has been created with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * Creates given resource
+     * @param resource to be created
+     * @return true if resource has been created with success or false if not
+     * @throws SystemException in case it founds multiple resources or if URL is malformed
      */
-    private boolean createRequester(SystemResource action) throws SystemException {
+    private boolean createRequester(SystemResource resource) throws SystemException {
         ResourceResourceClient client = getResourceResourceClient();
-        try (Response response = client.create((Resource)action)) {
+        try (Response response = client.create((Resource)resource)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -291,16 +282,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * @throws SystemException in case it founds multiple resources or if URL is malformed
      */
     public boolean update(SystemResource resource) throws SystemException {
-        try {
-            return updateRequester(resource);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return updateRequester(resource);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::updateRequester, resource);
     }
 
     /**
@@ -328,7 +310,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * Calls the requester to delete a given resource if not possible will reload the access token and retry again
      * @param resourceId to be deleted
      * @return true if resource has been created with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * @throws SystemException in case it founds multiple resources or if URL is malformed
      */
     public boolean delete(long resourceId) throws SystemException {
         try {
@@ -347,7 +329,7 @@ public class ResourceRESTServiceClient extends AuthorizationChecker implements R
      * Deletes given resource
      * @param resourceId to be deleted
      * @return true if resource has been deleted with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * @throws SystemException in case it founds multiple resources or if URL is malformed
      */
     private boolean deleteRequester(long resourceId) throws SystemException {
         ResourceResourceClient client;
