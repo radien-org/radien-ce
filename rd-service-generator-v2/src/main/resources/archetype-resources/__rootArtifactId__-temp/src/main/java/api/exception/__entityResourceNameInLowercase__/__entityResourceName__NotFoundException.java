@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.exception;
+package io.radien.exception.${entityResourceName.toLowerCase()};
 
 /**
- * @author Newton Carvalho
- * To be describe situations whereas an expected Resource could not be found
+ * To be describe situations whereas an expected ${entityResourceName} could not be found
+ *
+ * @author Bruno Gama
  */
-public class ResourceNotFoundException extends Exception {
-	private static final long serialVersionUID = 6812608123262000007L;
+public class ${entityResourceName}NotFoundException extends Exception {
 
-	public ResourceNotFoundException(String message) {
+	/**
+	 * ${entityResourceName} Not Found exception constructor by a given message
+	 * @param message to create the role not found exception with
+	 */
+	public ${entityResourceName}NotFoundException(String message) {
 		super(message);
 	}
 }

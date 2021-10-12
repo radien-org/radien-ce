@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.api;
+package ${package}.ms.service;
 
-import java.io.Serializable;
-
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 /**
- * Interface for Openappframe EventBus events
- * @author Rajesh Gavvala
- * @author Marco Weiland
+ * @author mawe
+ *
  */
-public interface Event extends Serializable {
+@ApplicationPath("v1")
+public class ${entityResourceName}ManagementApplication extends Application {
 
 }
