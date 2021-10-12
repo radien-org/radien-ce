@@ -82,7 +82,6 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
             //choose the already selected active tenant
             if(!userActiveTenants.isEmpty()){
                 for (SystemActiveTenant actTenant : userActiveTenants) {
-                    activeTenantRESTServiceAccess.update(actTenant);
                     activeTenant = actTenant;
                     activeTenantValue = actTenant.getTenantId().toString();
                     Optional<SystemTenant> nameValue = tenantRESTServiceAccess.getTenantById(actTenant.getTenantId());
