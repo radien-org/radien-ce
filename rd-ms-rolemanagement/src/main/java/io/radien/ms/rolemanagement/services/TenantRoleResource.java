@@ -183,24 +183,6 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     }
 
     /**
-     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return Response OK with List containing permissions. Response 500 in case of any other error.
-     */
-    @Override
-    public Response getPermissions(Long tenantId, Long roleId, Long userId) {
-        log.info("Retrieving permissions for tenant {} role {} and user {}", tenantId, roleId, userId);
-        try {
-            return Response.ok().entity(tenantRoleBusinessService.
-                    getPermissions(tenantId, roleId, userId)).build();
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
-
-    /**
      * Retrieves the existent Tenants for a User (Optionally for a specific role)
      * @param userId User identifier
      * @param roleId Role identifier (Optional)

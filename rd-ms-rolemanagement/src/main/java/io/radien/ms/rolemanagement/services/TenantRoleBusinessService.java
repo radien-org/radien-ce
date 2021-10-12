@@ -16,7 +16,6 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
@@ -129,23 +128,6 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
     public boolean existsAssociation(Long tenantId, Long roleId) {
         checkIfMandatoryParametersWereInformed(tenantId, roleId);
         return this.getTenantRoleServiceAccess().isAssociationAlreadyExistent(roleId, tenantId);
-    }
-
-    /**
-     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return List containing permissions
-     */
-    public List<SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException {
-        checkIfMandatoryParametersWereInformed(tenantId, roleId);
-        List<SystemPermission> list = new ArrayList<>();
-        List<Long> ids = this.getTenantRoleServiceAccess().getPermissions(tenantId, roleId, userId);
-        if (!ids.isEmpty()) {
-            list.addAll(this.getPermissionRESTServiceAccess().getPermissionsByIds(ids));
-        }
-        return list;
     }
 
     /**

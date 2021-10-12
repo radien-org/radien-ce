@@ -296,50 +296,6 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
     }
 
     /**
-     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * It Invokes the core method counterpart and handles TokenExpiration error
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return List containing permissions.
-     * @throws SystemException in case of any error
-     */
-    @Override
-    public List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException {
-        try {
-            return getPermissionsCore(tenantId, roleId, userId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getPermissionsCore(tenantId, roleId, userId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    /**
-     * Core method that retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return List containing permissions.
-     * @throws TokenExpiredException if JWT token expires
-     * @throws SystemException in case of any error
-     */
-    private List<? extends SystemPermission> getPermissionsCore(Long tenantId, Long roleId, Long userId) throws SystemException {
-        try {
-            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getPermissions(tenantId, roleId, userId);
-            return ListPermissionModelMapper.map((InputStream) response.getEntity());
-        }
-        catch (ExtensionException | ProcessingException | MalformedURLException e) {
-            throw new SystemException(e);
-        }
-    }
-
-    /**
      * Retrieves the existent Tenants for a User (Optionally for a specific role)
      * For this, it Invokes the core method counterpart and handles TokenExpiration error
      * @param userId User identifier

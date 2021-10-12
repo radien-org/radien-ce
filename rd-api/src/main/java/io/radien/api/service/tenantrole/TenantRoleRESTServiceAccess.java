@@ -76,16 +76,6 @@ public interface TenantRoleRESTServiceAccess {
     Boolean exists(Long tenantId, Long roleId) throws SystemException;
 
     /**
-     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return List containing permissions.
-     * @throws SystemException in case of any error
-     */
-    List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException;
-
-    /**
      * Retrieves the existent Tenants for a User (Optionally for a specific role)
      * @param userId User identifier
      * @param roleId Role identifier (Optional)
