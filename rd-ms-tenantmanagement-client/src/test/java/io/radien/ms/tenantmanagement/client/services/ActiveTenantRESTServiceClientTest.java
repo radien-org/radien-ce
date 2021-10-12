@@ -511,6 +511,25 @@ public class ActiveTenantRESTServiceClientTest {
         SystemActiveTenant systemActiveTenant = new ActiveTenant(2L, 2L, 2L);
         target.update(systemActiveTenant);
     }
+    
+    /**
+    * Test to update the active tenant after token exception being throw (ReTry)
+    * @throws Exception in case o token exception
+    */
+    @Test
+    public void testUpdateActiveTenantsAfterTokenExpiration() throws Exception {
+        ActiveTenantResourceClient client = Mockito.mock(ActiveTenantResourceClient.class);
+        
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(client);
+        when(client.update(anyLong(), any())).thenThrow(new TokenExpiredException("test")).thenReturn(Response.ok().build());
+        
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+        
+        SystemActiveTenant systemActiveTenant = new ActiveTenant(2L, 2L, 2L);
+        assertTrue(target.update(systemActiveTenant));
+    }
 
     /**
      * Tests the access into the db and validates if a specific active tenant is existent

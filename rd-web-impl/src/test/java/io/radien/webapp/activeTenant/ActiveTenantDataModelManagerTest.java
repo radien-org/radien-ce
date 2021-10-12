@@ -23,9 +23,13 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
+import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
+import io.radien.ms.tenantmanagement.client.services.TenantFactory;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
@@ -61,7 +65,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doThrow;
 
 /**
@@ -85,6 +88,9 @@ public class ActiveTenantDataModelManagerTest {
     
     @Mock
     private TenantRESTServiceAccess tenantRESTServiceAccess;
+    
+    @Mock
+    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     private FacesContext facesContext;
 
@@ -143,14 +149,12 @@ public class ActiveTenantDataModelManagerTest {
 
     @Test
     public void testGetUserTenants() throws SystemException {
-        List<SystemActiveTenant> userActiveTenantsTest = new ArrayList<>();
-        SystemActiveTenant activeTenant = new ActiveTenant(3L, 3L, 3L);
-        userActiveTenantsTest.add(activeTenant);
+        SystemUser user = new User();
+        when(userSession.getUser()).thenReturn(user);
 
-        activeTenantDataModelManager.setActiveTenant(activeTenant);
-        SystemActiveTenant activeTenantNames = activeTenantDataModelManager.getActiveTenant();
+        List<? extends SystemTenant> userTenantNames = activeTenantDataModelManager.getUserTenants();
 
-        assertNotNull(activeTenantNames);
+        assertNotNull(userTenantNames);
     }
 
     /**
@@ -245,26 +249,93 @@ public class ActiveTenantDataModelManagerTest {
 
     @Test
     public void testTenantChangedValidationMethodToNull() {
-        assertNotNull(activeTenantDataModelManager.getActiveTenant());
         activeTenantDataModelManager.tenantChangedValidationMethod("0");
+        assertNull(activeTenantDataModelManager.getActiveTenant());
+    }
+    
+    @Test
+    public void testDeactivateTenant() {
+        SystemUser user = new User();
+        when(userSession.getUser()).thenReturn(user);
+        
+        List<SystemTenant> listOfAvailableTenants = new ArrayList<SystemTenant>();
+        
+        Tenant t = TenantFactory.create("name","tenantKey", TenantType.ROOT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(1L);
+        listOfAvailableTenants.add(t);
+        t = TenantFactory.create("name","tenantKey2", TenantType.CLIENT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(2L);
+        listOfAvailableTenants.add(t);
+        
+        activeTenantDataModelManager.setUserActiveTenants(listOfAvailableTenants);
+        
+        activeTenantDataModelManager.tenantChangedValidationMethod(JSFUtil.getMessage(DataModelEnum.NO_ACTIVE_TENANT_MESSAGE.getValue()));
+        
         assertNull(activeTenantDataModelManager.getActiveTenant());
     }
 
     @Test
     public void testTenantChangedValidationMethodToOther() throws SystemException {
-        assertNotNull(activeTenantDataModelManager.getActiveTenant());
-
         SystemUser user = new User();
         when(userSession.getUser()).thenReturn(user);
-
-        List<SystemActiveTenant> listOfSystemActiveTenants = new ArrayList();
-        listOfSystemActiveTenants.add(ActiveTenantFactory.create(10L, 10L));
-        listOfSystemActiveTenants.add(ActiveTenantFactory.create(11L, 11L));
-        listOfSystemActiveTenants.add(ActiveTenantFactory.create(12L, 12L));
         
-        doReturn(listOfSystemActiveTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(any(), any());
-
+        List<SystemTenant> listOfAvailableTenants = new ArrayList<SystemTenant>();
+        
+        Tenant t = TenantFactory.create("name","tenantKey", TenantType.ROOT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(1L);
+        listOfAvailableTenants.add(t);
+        t = TenantFactory.create("name","tenantKey2", TenantType.CLIENT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(2L);
+        listOfAvailableTenants.add(t);
+        
+        activeTenantDataModelManager.setUserActiveTenants(listOfAvailableTenants);
+        
         activeTenantDataModelManager.tenantChangedValidationMethod("1");
+        
+        assertNotNull(activeTenantDataModelManager.getActiveTenant());
+    }
+    
+    @Test
+    public void testTenantChangedToSameValue() throws SystemException {
+        SystemUser user = new User();
+        when(userSession.getUser()).thenReturn(user);
+        
+        List<SystemTenant> listOfAvailableTenants = new ArrayList<SystemTenant>();
+        
+        Tenant t = TenantFactory.create("name","tenantKey", TenantType.ROOT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(1L);
+        listOfAvailableTenants.add(t);
+        t = TenantFactory.create("name","tenantKey2", TenantType.CLIENT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(2L);
+        listOfAvailableTenants.add(t);
+        
+        activeTenantDataModelManager.setUserActiveTenants(listOfAvailableTenants);
+        
+        activeTenantDataModelManager.tenantChangedValidationMethod("2");
+        
+        assertNotNull(activeTenantDataModelManager.getActiveTenant());
+    }
+    
+    @Test
+    public void testTenantChangedTwice() throws SystemException {
+        SystemUser user = new User();
+        when(userSession.getUser()).thenReturn(user);
+        
+        List<SystemTenant> listOfAvailableTenants = new ArrayList<SystemTenant>();
+        
+        Tenant t = TenantFactory.create("name","tenantKey", TenantType.ROOT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(1L);
+        listOfAvailableTenants.add(t);
+        t = TenantFactory.create("name","tenantKey2", TenantType.CLIENT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(2L);
+        listOfAvailableTenants.add(t);
+        
+        activeTenantDataModelManager.setUserActiveTenants(listOfAvailableTenants);
+        
+        activeTenantDataModelManager.tenantChangedValidationMethod("2");
+        activeTenantDataModelManager.tenantChangedValidationMethod("1");
+        
+        assertNotNull(activeTenantDataModelManager.getActiveTenant());
     }
 
     @Test(expected = Exception.class)
@@ -316,7 +387,7 @@ public class ActiveTenantDataModelManagerTest {
 
     @Test
     public void testSetActiveTenantValue() {
-activeTenantDataModelManager.setActiveTenantValue("test2");
+        activeTenantDataModelManager.setActiveTenantValue("test2");
         String value = activeTenantDataModelManager.getActiveTenantValue();
         assertEquals("test2", value);
     }
@@ -342,6 +413,23 @@ activeTenantDataModelManager.setActiveTenantValue("test2");
 
         activeTenantDataModelManager.setActiveTenant(activeTenant);
         SystemActiveTenant activeTenants = activeTenantDataModelManager.getActiveTenant();
+        assertNotNull(activeTenants);
+    }
+    
+    @Test
+    public void testGetUserAvailableTenants() {
+        SystemUser user = new User();
+        when(userSession.getUser()).thenReturn(user);
+        
+        List<SystemTenant> listOfAvailableTenants = new ArrayList<SystemTenant>();
+        
+        Tenant t = TenantFactory.create("name","tenantKey", TenantType.ROOT, null, null, null, null, null, null, null, null, null, null, null);
+        t.setId(1L);
+        listOfAvailableTenants.add(t);
+        
+        activeTenantDataModelManager.setUserActiveTenants(listOfAvailableTenants);
+        
+        List<? extends SystemTenant> activeTenants = activeTenantDataModelManager.getUserActiveTenants();
         assertNotNull(activeTenants);
     }
 
