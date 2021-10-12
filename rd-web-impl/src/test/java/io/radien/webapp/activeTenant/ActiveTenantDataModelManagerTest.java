@@ -429,7 +429,7 @@ public class ActiveTenantDataModelManagerTest {
         
         activeTenantDataModelManager.setUserActiveTenants(listOfAvailableTenants);
         
-        List<? extends SystemTenant> activeTenants = activeTenantDataModelManager.getUserActiveTenants();
+        List<? extends SystemTenant> activeTenants = activeTenantDataModelManager.getUserAvailableTenants();
         assertNotNull(activeTenants);
     }
 

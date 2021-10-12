@@ -292,7 +292,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * Active Tenant list for the user getter
      * @return a list of all the possible active tenants for the user
      */
-    public List<? extends SystemTenant> getUserActiveTenants() {
+    public List<? extends SystemTenant> getUserAvailableTenants() {
         return userAvailableTenants;
     }
 
