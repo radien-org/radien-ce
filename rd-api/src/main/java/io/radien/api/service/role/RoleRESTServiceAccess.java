@@ -84,17 +84,6 @@ public interface RoleRESTServiceAccess extends Appframeable{
     public boolean create(SystemRole role) throws SystemException;
 
     /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent roles.
-     */
-    /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent roles.
-     * @throws SystemException in case of token expiration or any issue on the application
-     */
-    public Long getTotalRecordsCount() throws SystemException;
-
-    /**
      * Deletes given role
      * @param roleId to be deleted
      * @return true if role has been deleted with success or false if not

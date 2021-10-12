@@ -397,20 +397,6 @@ public class RoleRESTServiceClientTest {
         target.create(role);
     }
 
-    @Test(expected = SystemException.class)
-    public void testGetTotalRecordsCountTokenExpiration() throws Exception {
-        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
-
-        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
-        when(roleResourceClient.getTotalRecordsCount()).thenThrow(new TokenExpiredException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.getTotalRecordsCount();
-    }
-
     @Test
     public void testGetTenantById() throws MalformedURLException, SystemException {
         Role dummyRole = new Role();
@@ -440,30 +426,6 @@ public class RoleRESTServiceClientTest {
             success = true;
         }
         assertTrue(success);
-    }
-
-    @Test
-    public void testGetTotalRecordsCountException() throws MalformedURLException, SystemException {
-        Role role = RoleFactory.create("test", null,2L);
-
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        builder.add(RoleFactory.convertToJsonObject(role));
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeArray(builder.build());
-        jsonWriter.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
-        Response response = Response.ok(is).entity(1L).build();
-
-        RoleResourceClient resourceClient = Mockito.mock(RoleResourceClient.class);
-
-        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
-        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
-
-        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
     }
 
     /**
