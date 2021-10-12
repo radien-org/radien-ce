@@ -74,7 +74,7 @@
         <version.rmiio>2.1.2</version.rmiio>
 
         <!-- Security -->
-        <version.jwks-rsa>0.15.0</version.jwks-rsa>
+        <version.jwks-rsa>0.19.0</version.jwks-rsa>
 
         <!-- test -->
         <version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
