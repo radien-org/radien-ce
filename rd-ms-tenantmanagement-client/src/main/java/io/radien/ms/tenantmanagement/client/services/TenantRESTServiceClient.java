@@ -413,16 +413,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      */
     @Override
     public boolean isTenantExistent(Long tenantId) throws SystemException {
-        try {
-            return isTenantExistentRequester(tenantId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return isTenantExistentRequester(tenantId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::isTenantExistentRequester, tenantId);
     }
 
     /**
