@@ -16,11 +16,8 @@
 package io.radien.webapp.activeTenant;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -33,19 +30,11 @@ import com.ocpsoft.pretty.PrettyContext;
 
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemTenant;
-import io.radien.api.model.tenantrole.SystemTenantRole;
-import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
-import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
-import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
-import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
-import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
@@ -96,7 +85,10 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                     activeTenantRESTServiceAccess.update(actTenant);
                     activeTenant = actTenant;
                     activeTenantValue = actTenant.getTenantId().toString();
-                    activeTenantName = tenantRESTServiceAccess.getTenantById(actTenant.getTenantId()).get().getName();
+                    Optional<SystemTenant> nameValue = tenantRESTServiceAccess.getTenantById(actTenant.getTenantId());
+                    if(nameValue.isPresent()) {
+                        activeTenantName = nameValue.get().getName();
+                    }
                 }
             }
         } catch (Exception e) {
