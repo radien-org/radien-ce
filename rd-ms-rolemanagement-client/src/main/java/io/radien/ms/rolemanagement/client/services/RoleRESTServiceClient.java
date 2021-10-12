@@ -279,16 +279,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public boolean create(SystemRole role) throws SystemException {
-        try {
-            return createRequester(role);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return createRequester(role);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::createRequester, role);
     }
 
     /**
@@ -324,16 +315,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public boolean update(SystemRole role) throws SystemException {
-        try {
-            return updateRequester(role);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return updateRequester(role);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::updateRequester, role);
     }
 
     /**
