@@ -260,16 +260,7 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      */
     @Override
     public Boolean exists(Long tenantId, Long roleId) throws SystemException {
-        try {
-            return existsCore(tenantId, roleId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return existsCore(tenantId, roleId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::existsCore, tenantId, roleId);
     }
 
     /**
