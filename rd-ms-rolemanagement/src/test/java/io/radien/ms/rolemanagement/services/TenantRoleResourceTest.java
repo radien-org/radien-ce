@@ -210,8 +210,16 @@ public class TenantRoleResourceTest {
     @Test
     @Order(11)
     public void testExists() {
-        Response response = tenantRoleResource.exists(1L, 2L);
-        assertEquals(200, response.getStatus());
+        when(tenantRoleBusinessService.existsAssociation(1L, 2L)).
+                thenReturn(Boolean.TRUE);
+        when(tenantRoleBusinessService.existsAssociation(1L, 3L)).
+                thenReturn(Boolean.FALSE);
+
+        Response responseOK = tenantRoleResource.exists(1L, 2L);
+        assertEquals(204, responseOK.getStatus());
+
+        Response responseNOK = tenantRoleResource.exists(1L, 3L);
+        assertEquals(404, responseNOK.getStatus());
     }
 
     /**

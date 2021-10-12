@@ -24,6 +24,7 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
@@ -280,17 +281,14 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any other error.
      */
     private Boolean existsCore(Long tenantId, Long roleId) throws SystemException {
-        try {
-            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-
-            Response response = client.exists(tenantId, roleId);
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return response.readEntity(Boolean.class);
-            }
+        TenantRoleResourceClient client = getTenantRoleResourceClient();
+        try (Response response = client.exists(tenantId, roleId)) {
+            return response.getStatusInfo().getStatusCode() == Response.Status.NO_CONTENT.getStatusCode();
+        }
+        catch (NotFoundException nfe) {
             return false;
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+        catch (ExtensionException | ProcessingException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
     }
@@ -465,6 +463,21 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
             return TenantRoleModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Assemblies a {@link TenantRoleResourceClient} instance via Rest Client Builder,
+     * using as parameter the URL referred by {@link OAFProperties#SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT}
+     * @return Rest Client instance for TenantRole endpoint
+     * @throws SystemException thrown in case of invalid URL
+     */
+    private TenantRoleResourceClient getTenantRoleResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getTenantResourceClient(oaf.getProperty(OAFProperties.
+                    SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
             throw new SystemException(e);
         }
     }

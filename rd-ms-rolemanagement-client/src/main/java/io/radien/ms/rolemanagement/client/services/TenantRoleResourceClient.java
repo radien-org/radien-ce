@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import javax.ws.rs.HEAD;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.ws.rs.Path;
@@ -124,11 +125,11 @@ public interface TenantRoleResourceClient {
      * Check if a Tenant role association exists
      * @param tenantId Tenant Identifier
      * @param roleId Role identifier
-     * @return Response OK containing true (if association exists), false otherwise.
+     * @return Responds with 204 http status if association exists, 404 (NOT FOUND) otherwise.
      * Response 500 in case of any other error.
      */
-    @GET
-    @Path("/exists/tenant/{tenantId}/role/{roleId}")
+    @HEAD
+    @Path("/{tenantId}/{roleId}")
     Response exists(@PathParam("tenantId") Long tenantId,
                     @PathParam("roleId") Long roleId);
 

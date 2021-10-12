@@ -398,7 +398,7 @@ public class TenantRoleRESTServiceClientTest {
     @Test
     public void testExists() throws MalformedURLException, SystemException {
 
-        Response response = Response.ok(Boolean.TRUE).build();
+        Response response = Response.noContent().build();
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(client.exists(1L, 2L)).thenReturn(response);
@@ -412,6 +412,7 @@ public class TenantRoleRESTServiceClientTest {
 
     /**
      * Test to validate if specific required association exists but with status not ok
+     * (Http Status code different from 204)
      * @throws MalformedURLException for url informed incorrectly
      * @throws SystemException in case of any communication issue       
      */
@@ -427,6 +428,23 @@ public class TenantRoleRESTServiceClientTest {
 
         Boolean result = target.exists(1L, 2L);
 
+        assertNotNull(result);
+        assertFalse(result);
+    }
+
+    /**
+     * Test to validate if specific required association exists but with status not ok
+     * (Due association not found)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testExistsWhenTenantRoleAssociationNotFound() throws MalformedURLException, SystemException {
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+        when(client.exists(any(), any())).thenThrow(new NotFoundException());
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+        Boolean result = target.exists(1L, 2L);
         assertNotNull(result);
         assertFalse(result);
     }
@@ -448,6 +466,27 @@ public class TenantRoleRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.exists(1L, 2L);
+    }
+
+    /**
+     * Test to validate if specific required association exists after token expired (ReTry)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testExistsAfterTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.exists(any(), any())).
+                thenThrow(new TokenExpiredException("test")).
+                thenReturn(Response.noContent().build());
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        assertTrue(target.exists(1L, 2L));
     }
 
     /**

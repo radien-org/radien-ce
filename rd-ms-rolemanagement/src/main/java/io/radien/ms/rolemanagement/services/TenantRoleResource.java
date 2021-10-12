@@ -169,14 +169,17 @@ public class TenantRoleResource implements TenantRoleResourceClient {
      * Check if a Tenant role association exists
      * @param tenantId Tenant Identifier
      * @param roleId Role identifier
-     * @return Response OK containing true (if association exists), false otherwise.
+     * @return Responds with 204 http status if association exists, 404 (NOT FOUND) otherwise.
      * Response 500 in case of any other error.
      */
     @Override
     public Response exists(Long tenantId, Long roleId) {
         log.info("Checking if Tenant Role association exists for tenant {} and role {}", tenantId, roleId);
         try {
-            return Response.ok().entity(tenantRoleBusinessService.existsAssociation(tenantId, roleId)).build();
+            if (tenantRoleBusinessService.existsAssociation(tenantId, roleId)) {
+                return Response.noContent().build();
+            }
+            return Response.status(Response.Status.NOT_FOUND).build();
         } catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
