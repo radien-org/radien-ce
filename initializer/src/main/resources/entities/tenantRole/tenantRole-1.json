@@ -1,5 +1,4 @@
 [
-{"tenantName": "Root Tenant", "roleName":"System Administrator"},
 {"tenantName": "Client Tenant", "roleName":"System Administrator"},
 {"tenantName": "Sub Tenant", "roleName":"System Administrator"}
 ]

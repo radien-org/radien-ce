@@ -17,6 +17,8 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
@@ -303,14 +305,38 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     }
 
     /**
-     * Test for method {@link UserDataModel#getHasUserAdministratorRoleAccess()}
+     * Test for method {@link UserDataModel#isAllowedCreateUser()}
      */
     @Test
-    public void testGetHasUserAdministratorRoleAccess() {
-        userDataModel.setHasUserAdministratorRoleAccess(true);
-        assertTrue(userDataModel.getHasUserAdministratorRoleAccess());
+    public void testAllowedCreate() {
+        userDataModel.setAllowedCreateUser(true);
+        assertTrue(userDataModel.isAllowedCreateUser());
     }
 
+    /**
+     * Test for method {@link UserDataModel#isAllowedReadUser()}
+     */
+    @Test
+    public void testAllowedRead() {
+        userDataModel.setAllowedReadUser(true);
+        assertTrue(userDataModel.isAllowedReadUser());
+    }
+    /**
+     * Test for method {@link UserDataModel#isAllowedUpdateUser()}
+     */
+    @Test
+    public void testAllowedUpdate() {
+        userDataModel.setAllowedUpdateUser(true);
+        assertTrue(userDataModel.isAllowedUpdateUser());
+    }
+    /**
+     * Test for method {@link UserDataModel#isAllowedDeleteUser()}
+     */
+    @Test
+    public void testAllowedDelete() {
+        userDataModel.setAllowedDeleteUser(true);
+        assertTrue(userDataModel.isAllowedDeleteUser());
+    }
     /**
      * Test for method {@link UserDataModel#getLazyUserDataModel()} ()}
      */
@@ -330,7 +356,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     @Test
     public void testInit() {
         userDataModel.setHasTenantAdministratorRoleAccess(true);
-        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenReturn(Boolean.TRUE);
+        when(webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_READ.getActionName(), null)).thenReturn(Boolean.TRUE);
         when(webAuthorizationChecker.hasTenantAdministratorRoleAccess()).thenReturn(Boolean.TRUE);
 
         ActiveTenant activeTenant = new ActiveTenant(); activeTenant.setTenantId(1L);
@@ -349,9 +375,12 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testInitWhenNullTenantId() {
-        userDataModel.setHasUserAdministratorRoleAccess(false);
+
         when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenReturn(Boolean.FALSE);
-        userDataModel.setHasUserAdministratorRoleAccess(true);
+        userDataModel.setAllowedDeleteUser(true);
+        userDataModel.setAllowedReadUser(true);
+        userDataModel.setAllowedUpdateUser(true);
+        userDataModel.setAllowedCreateUser(true);
         when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
         when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenThrow(new RuntimeException("error"));
         userDataModel.init();
@@ -364,7 +393,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     @Test
     public void testInitExceptionOccurs() {
         when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
-        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenThrow(new RuntimeException("error"));
+        when(webAuthorizationChecker.hasPermissionAccess(any(),any(),any())).thenThrow(new RuntimeException("error"));
         userDataModel.init();
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);

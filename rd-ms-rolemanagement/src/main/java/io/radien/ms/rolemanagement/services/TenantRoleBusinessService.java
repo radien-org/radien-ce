@@ -210,4 +210,8 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
     public void setTenantRoleUserServiceAccess(TenantRoleUserServiceAccess tenantRoleUserServiceAccess) {
         this.tenantRoleUserServiceAccess = tenantRoleUserServiceAccess;
     }
+
+    public long count(){
+        return getTenantRoleServiceAccess().count();
+    }
 }

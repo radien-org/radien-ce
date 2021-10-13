@@ -15,9 +15,15 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.authz.security.AuthorizationChecker;
+import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.client.services.TenantRolePermissionResourceClient;
 import javax.ejb.EJBException;
@@ -33,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRolePermissionResource implements TenantRolePermissionResourceClient {
+public class TenantRolePermissionResource extends AuthorizationChecker implements TenantRolePermissionResourceClient {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRolePermissionResource.class);
 
@@ -97,6 +103,9 @@ public class TenantRolePermissionResource implements TenantRolePermissionResourc
         try {
             log.info("Associating/adding permission {} to tenant-role {}", tenantRolePermission.getTenantRoleId(),
                     tenantRolePermission.getPermissionId());
+            if (!isSaveAllowed(tenantRolePermission)) {
+                return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+            }
             tenantRolePermissionBusinessService.assignPermission(new io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity(tenantRolePermission));
             return Response.ok().build();
         } catch (TenantRoleException | UniquenessConstraintException e) {
@@ -104,6 +113,12 @@ public class TenantRolePermissionResource implements TenantRolePermissionResourc
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
+    }
+
+    private boolean isSaveAllowed(TenantRolePermission tenantRolePermission) throws SystemException {
+        return  hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) || hasPermission(null,
+                tenantRolePermission.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
+                SystemResourcesEnum.TENANT_ROLE_PERMISSION.getResourceName()) ;
     }
 
     /**

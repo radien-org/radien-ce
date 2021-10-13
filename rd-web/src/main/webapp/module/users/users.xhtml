@@ -67,20 +67,20 @@
 						<b:commandButton value="#{msg.create}"
 										  tooltip="#{msg.rd_create_new_user}"
 										  iconAwesome="fa-cube"
-										  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+										  rendered="#{userDataModel.allowedCreateUser}"
 										  action="#{userDataModel.createRecord}"/>
 
 						<b:dropButton value="#{msg.rd_user_actions}" drop="down">
 							<b:navCommandLink value="#{msg.delete}"
 											  tooltip="#{msg.rd_delete_existent_user_info}"
 											  iconAwesome="fa-trash"
-											  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+											  rendered="#{userDataModel.allowedDeleteUser}"
 											  action="#{userDataModel.deleteRecord}"/>
 
 							<b:navCommandLink value="#{msg.edit}"
 											 tooltip="#{msg.rd_edit_existent_user_info}"
 											 iconAwesome="fa-edit"
-											 rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+											 rendered="#{userDataModel.allowedUpdateUser}"
 											 action="#{userDataModel.editRecord}"/>
 
 							<b:navCommandLink value="#{msg.profile}"
