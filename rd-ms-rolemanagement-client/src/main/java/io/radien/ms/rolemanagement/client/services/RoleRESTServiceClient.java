@@ -317,6 +317,42 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
     }
 
     /**
+     * Calls the requester to calculate how many records are existent in the db if not possible will reload
+     * the access token and retry
+     * @return the count of existent roles.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        try {
+            return getTotalRecordsCountRequester();
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getTotalRecordsCountRequester();
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent roles.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private Long getTotalRecordsCountRequester() throws SystemException {
+        try {
+            RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Calls the requester to delete a given role if not possible will reload the access token and retry
      * @param roleId to be deleted
      * @return true if role has been deleted with success or false if not
