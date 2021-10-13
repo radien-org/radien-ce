@@ -180,4 +180,17 @@ public class RoleResource implements RoleResourceClient {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent roles.
+     */
+    @Override
+    public Response getTotalRecordsCount() {
+        try {
+            return Response.ok(roleBusinessService.getTotalRecordsCount()).build();
+        } catch(Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
 }

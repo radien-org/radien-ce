@@ -126,4 +126,18 @@ public class RoleBusinessServiceTest {
         }
         assertTrue(success);
     }
+
+    @Test
+    public void testGetTotalRecordsCount() {
+        boolean success = false;
+        Long l = 30L;
+        try{
+            l = roleBusinessService.getTotalRecordsCount();
+            success = true;
+        } catch (Exception e){
+            success = false;
+        }
+        assertTrue(success);
+        assertEquals(l, (Long) 0L);
+    }
 }

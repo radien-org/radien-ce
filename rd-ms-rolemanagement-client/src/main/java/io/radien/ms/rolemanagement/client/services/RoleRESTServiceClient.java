@@ -84,16 +84,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
     @Override
     public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize,
                                              List<String> sortBy, boolean isAscending) throws SystemException {
-        try {
-            return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(() -> getAllRequester(search, pageNo, pageSize, sortBy, isAscending));
     }
 
     /**
@@ -309,6 +300,33 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
     }
 
     /**
+     * Calls the requester to calculate how many records are existent in the db if not possible will reload
+     * the access token and retry
+     * @return the count of existent roles.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        return get(this::getTotalRecordsCountRequester);
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent roles.
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private Long getTotalRecordsCountRequester() throws SystemException {
+        try {
+            RoleResourceClient client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Calls the requester to update given role if not possible will reload the access token and retry
      * @param role to be updated
      * @return true if user has been updated with success or false if not
@@ -343,6 +361,8 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             throw new SystemException(e);
         }
     }
+
+
 
     /**
      * Calls the requester to delete a given role if not possible will reload the access token and retry

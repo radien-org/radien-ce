@@ -122,4 +122,12 @@ public interface RoleResourceClient {
     @PUT
     @Path("/{id}")
     public Response update(@NotNull @PathParam("id") long id, Role role);
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent roles.
+     */
+    @GET
+    @Path("/countRecords")
+    public Response getTotalRecordsCount();
 }

@@ -98,4 +98,12 @@ public class RoleBusinessService implements Serializable {
     public void update(Role role) throws RoleNotFoundException, UniquenessConstraintException {
         roleServiceAccess.update(role);
     }
+
+    /**
+     * Will count how many roles are existent in the db
+     * @return a count of all the roles
+     */
+    public long getTotalRecordsCount() {
+        return roleServiceAccess.getTotalRecordsCount();
+    }
 }
