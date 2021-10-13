@@ -338,16 +338,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      */
     @Override
     public List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
-        try {
-            return getTenantsCore(userId, roleId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getTenantsCore(userId, roleId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::getTenantsCore, userId, roleId);
     }
 
     /**
