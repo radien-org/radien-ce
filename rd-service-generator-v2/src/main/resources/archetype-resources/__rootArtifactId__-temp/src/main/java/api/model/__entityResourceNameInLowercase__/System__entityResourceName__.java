@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.api;
+package io.radien.api.model.${entityResourceName.toLowerCase()};
 
-import java.io.Serializable;
-
+import io.radien.api.Model;
 /**
+ * Class that represents an application
+ * ${entityResourceName.toLowerCase()}
+ *
  * @author Rajesh Gavvala
- * @author Marco Weiland
  */
-public interface Appframeable extends Serializable {
-
-	OAFAccess getOAF();
-
+public interface System${entityResourceName} extends Model {
+    public String getName();
+    public void setName(String name);
 }

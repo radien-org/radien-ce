@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{${entityResourceName.toLowerCase()}DataModel.onload}"/>
+	</f:metadata>
+
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="${entityResourceName.toLowerCase()}ManagementTableDiv" styleClass="tableContainer">
+			<b:row>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_${entityResourceName.toLowerCase()}s} "/></h1>
+					<hr />
+				</h:panelGroup>
+			</b:row>
+
+			<p:dataTable id="dataTable" value="#{${entityResourceName.toLowerCase()}DataModel.lazy${entityResourceName}DataModel}"
+						 var="${entityResourceName.toLowerCase()}"
+						 widgetVar="${entityResourceName.toLowerCase()}DataTable"
+						 rowKey="#{${entityResourceName.toLowerCase()}.id}"
+						 lazy="true"
+						 emptyMessage="#{msg.rd_not_exists_records_${entityResourceName.toLowerCase()}s}"
+						 paginator="true" rows="10"
+						 paginatorPosition="bottom"
+						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+						 rowsPerPageTemplate="5,10,20,50"
+						 styleClass = "tableDesign"
+						 selectionMode="single"
+						 selection="#{${entityResourceName.toLowerCase()}DataModel.selected${entityResourceName}}">
+
+				<p:ajax event="rowSelect"
+						listener="#{${entityResourceName.toLowerCase()}DataModel.onRowSelect}"
+						update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"
+						oncomplete="$('.formValidationModalClass').modal('show')"/>
+
+				<f:facet name="header">
+					<div class="text-right">
+						<b:commandButton value="#{msg.rd_add_${entityResourceName.toLowerCase()}}"
+										 action="#{${entityResourceName.toLowerCase()}DataModel.create${entityResourceName}RedirectURL}"
+										 iconAwesome="fa-cube"
+										 tooltip="#{msg.rd_add_${entityResourceName.toLowerCase()}_info}"
+										 iconAlign="center"/>
+
+						<b:dropButton value="#{msg.rd_${entityResourceName.toLowerCase()}s_actions}"
+									  drop="down">
+							<b:navCommandLink value="#{msg.rd_edit_${entityResourceName.toLowerCase()}}"
+											 tooltip="#{msg.rd_select_${entityResourceName.toLowerCase()}_record_info}"
+											 iconAwesome="fa-edit"
+											 action="#{${entityResourceName.toLowerCase()}DataModel.edit${entityResourceName}RedirectURL}"/>
+
+							<b:navCommandLink value="#{msg.rd_delete_${entityResourceName.toLowerCase()}}"
+											  iconAwesome="fa-trash"
+											  action="#{${entityResourceName.toLowerCase()}DataModel.delete${entityResourceName}RedirectURL}"/>
+						</b:dropButton>
+
+						<b:commandButton id="refresh" value="#{msg.rd_refresh_${entityResourceName.toLowerCase()}s}"
+										 tooltip="#{msg.rd_refresh_${entityResourceName.toLowerCase()}s_info}"
+										 ajax="false"
+										 iconAwesome="fa-refresh"
+										 icon-spin="true"
+										 actionListener="#{${entityResourceName.toLowerCase()}DataModel.onload}"
+										 immediate="true" update="@form:${entityResourceName.toLowerCase()}ManagementTableDiv"
+										 auto-update="true"/>
+					</div>
+				</f:facet>
+
+				<p:column headerText="#{msg.id}" sortBy="#{${entityResourceName.toLowerCase()}.id}">
+					<h:outputText value="#{${entityResourceName.toLowerCase()}.id}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.name}" sortBy="#{${entityResourceName.toLowerCase()}.name}">
+					<h:outputText value="#{${entityResourceName.toLowerCase()}.name}"/>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

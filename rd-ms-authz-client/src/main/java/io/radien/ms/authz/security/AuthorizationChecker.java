@@ -293,7 +293,11 @@ public abstract class AuthorizationChecker implements Serializable {
      * @return the reference for current logged user
      */
     protected SystemUser getInvokerUser() {
-        return (SystemUser) getServletRequest().getSession().getAttribute("USER");
+        HttpSession session = getServletRequest().getSession(false);
+        if(session == null){
+            return null;
+        }
+        return (SystemUser) session.getAttribute("USER");
     }
 
     /**

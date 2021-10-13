@@ -1,6 +1,6 @@
 [
-  { "name": "Third Party Password Management - Create", "actionId": 1, "resourceId": 10 },
-  { "name": "Third Party Password Management - Read", "actionId": 2, "resourceId": 10 },
-  { "name": "Third Party Password Management - Update", "actionId": 3, "resourceId": 10 },
-  { "name": "Third Party Password Management - Delete", "actionId": 4, "resourceId": 10 }
+  { "name": "Third Party Password Management - Create", "resourceName": "Third Party Password", "actionName": "Create" },
+  { "name": "Third Party Password Management - Read", "resourceName": "Third Party Password", "actionName": "Read" },
+  { "name": "Third Party Password - Update", "resourceName": "Third Party Password", "actionName": "Update" },
+  { "name": "Third Party Password - Delete", "resourceName": "Third Party Password", "actionName": "Delete" }
 ]
