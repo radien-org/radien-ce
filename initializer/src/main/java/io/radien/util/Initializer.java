@@ -158,6 +158,9 @@ public class Initializer {
             if(modules.contains("configInfo")){
                 getConfigInfo();
             }
+            if(modules.contains("bootStart")){
+                bootStart(accessToken);
+            }
             if(modules.contains("tenant")){
                 tenantCreation(accessToken);
             }
@@ -173,9 +176,9 @@ public class Initializer {
                 initializeTenantAndRoleMaps(accessToken);
 
                 tenantRoleCreation(accessToken);
-
             }
         } else {
+            bootStart(accessToken);
             tenantCreation(accessToken);
 
             actionCreation(accessToken);
@@ -185,11 +188,32 @@ public class Initializer {
 
             roleCreation(accessToken);
             initializeTenantAndRoleMaps(accessToken);
-            initializeTenantRoleMap(accessToken);
+
             tenantRoleCreation(accessToken);
         }
     }
 
+    private static void bootStart(String accessToken) {
+        String bootStartLocation = getConfigProperty("initializer.bootStart.directory.location");
+
+        System.out.println("Creating base tenant...");
+        String tenantUrl= getTenantManagementBaseURL() + "/tenant";
+        loadEntitiesFromDirectory(bootStartLocation+"/tenant", accessToken, tenantUrl, "bootStart_tenant",null);
+
+        System.out.println("Creating base Role...");
+        String roleUrl= getRoleManagementBaseURL() + "/role";
+        loadEntitiesFromDirectory(bootStartLocation+"/role", accessToken, roleUrl, "bootStart_role",null);
+
+        initializeTenantAndRoleMaps(accessToken);
+
+        System.out.println("Creating base tenant role...");
+        String tenantRoleUrl = getRoleManagementBaseURL() + "/tenantrole";
+        loadEntitiesFromDirectory(bootStartLocation+"/tenantRole", accessToken, tenantRoleUrl, "bootStart_tenantRole",Initializer::tenantRoleTranslator);
+
+        loadTenantRoleUsers(accessToken,bootStartLocation+"/tenantRoleUser","bootStart_tenantRoleUser");
+        tenants = null;
+        roles = null;
+    }
 
 
     private static void getConfigInfo() {
@@ -237,7 +261,7 @@ public class Initializer {
         location = getConfigProperty("initializer.tenantRolePermission.directory.location");
         loadEntitiesFromDirectory(location, accessToken, tenantRolePermissionUrl, "tenantRolePermission",Initializer::tenantRolePermissionTranslator);
 
-        loadTenantRoleUsers(accessToken);
+        loadTenantRoleUsers(accessToken,getConfigProperty("initializer.tenantRoleUser.directory.location"),"tenantRoleUser");
     }
 
     private static void initializeTenantRoleMap(String accessToken) {
@@ -354,7 +378,6 @@ public class Initializer {
             try {
                 JSONObject object = (JSONObject) parser.parse(tenantRoleStr);
 
-
                 JSONObject tenantRolePermission = new JSONObject();
                 String tenantName = (String)object.get("tenantName");
                 Map tenant =(Map)tenants.get(tenantName);
@@ -377,7 +400,7 @@ public class Initializer {
                 }
                 Map tenantRole2 = (Map) tenantRole1.get(((Double)role.get("id")).longValue());
                 if(tenantRole2 == null){
-                    System.out.println("TenantRole not found with Role with name"+ roleName);
+                    System.out.println("TenantRole not found with Role with name "+ roleName);
                     System.exit(-12);
                 }
 
@@ -419,11 +442,9 @@ public class Initializer {
         return results;
     }
 
-    private static void loadTenantRoleUsers(String accessToken) {
+    private static void loadTenantRoleUsers(String accessToken,String directory,String identifier) {
         System.out.println("Starting tenant role user...");
         String tenantRoleUserUrl = getRoleManagementBaseURL() + "/tenantroleuser";
-        String directory = getConfigProperty("initializer.tenantRoleUser.directory.location");
-        String identifier = "tenantRoleUser";
         try {
             List<Path> paths = getFilesPaths(directory, identifier);
             Set<String> namesForFilesAlreadyLoaded = getFilesAlreadyLoaded(getConfigProperty(INITIALIZER_CONFIG_DIR_PROPERTY),
