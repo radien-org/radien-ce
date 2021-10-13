@@ -17,6 +17,7 @@
 
 package io.radien.ms.ecm.controller;
 
+import io.radien.api.entity.Page;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
@@ -28,11 +29,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("cms")
 @Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +61,27 @@ public class ContentController {
             log.error("JCR not available", e);
         }
         return null;//Afterwards replace for proper message
+    }
+
+    @POST
+    @Path("/content")
+    public void saveContent(EnterpriseContent content) {
+        try {
+            contentServiceAccess.save(content);
+        } catch (ContentRepositoryNotAvailableException e) {
+            log.error("JCR not available", e);
+        }
+    }
+
+    @DELETE
+    @Path("/content")
+    public void deleteContent(@QueryParam("viewId") String viewId, @QueryParam("language") String language) {
+        try {
+            EnterpriseContent byViewIdLanguage = contentServiceAccess.getByViewId(viewId, false);
+            contentServiceAccess.delete(byViewIdLanguage);
+        } catch (ContentRepositoryNotAvailableException e) {
+            log.error("JCR not available", e);
+        }
     }
 
 
