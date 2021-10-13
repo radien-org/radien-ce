@@ -106,8 +106,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     public List<? extends SystemTenant> getUserTenants() throws SystemException {
         SystemUser user = userSession.getUser();
         Long userId = user.getId();
-        List<? extends SystemTenant> tenantRoles = tenantRoleRESTServiceAccess.getTenants(userId, null);
-        return tenantRoles;
+        return tenantRoleRESTServiceAccess.getTenants(userId, null);
     }
 
     /**
