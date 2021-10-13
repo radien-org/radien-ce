@@ -11,5 +11,25 @@
     "tags": [
       "Radien"
     ]
+  },
+
+  {
+    "viewId": "testDoc",
+    "contentType": "document",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "Test Document for Terms and Conditions",
+    "image": "logo.png",
+    "parentPath": "/radien/rd_documents/legal_documents",
+    "file": "legal_documents/dpp-en.html",
+    "versionable": "true",
+    "updateOnLaunch": "false",
+    "versionComment": "Initial EN Version",
+    "validDate": "2020-07-28",
+    "externalPublic": "true",
+    "tags": [
+      "Cloud radien"
+    ]
   }
 ]

@@ -80,14 +80,14 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 *
 	 * @param obj the {@link EnterpriseContent} to be persisted
 	 */
-	void save(EnterpriseContent obj);
+	void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException;
 
 	/**
 	 * Deletes the target enterprise content
 	 *
 	 * @param obj the {@link EnterpriseContent} to be deleted
 	 */
-	void delete(EnterpriseContent obj);
+	void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException;
 
 	/**
 	 * Retrieves a list of enterprise contents search by his content typ

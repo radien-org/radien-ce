@@ -23,10 +23,12 @@ import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.constants.CmsConstants;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +41,16 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -57,8 +64,7 @@ public @RequestScoped class ContentFactory implements Serializable {
 	private static final Logger log = LoggerFactory.getLogger(ContentFactory.class);
 	private static final long serialVersionUID = -5005556415803181075L;
 
-	public EnterpriseContent convertJSONObject(Object o) throws IOException {
-		JSONObject json = (JSONObject) o;
+	public EnterpriseContent convertJSONObject(JSONObject json) throws IOException, ParseException {
 		String viewId = (String) json.get("viewId");
 		String htmlContent = (String) json.get("htmlContent");
 		String name = (String) json.get("name");
@@ -66,14 +72,49 @@ public @RequestScoped class ContentFactory implements Serializable {
 		String language = (String) json.get("language");
 		String active = (String) json.get("active");
 		String system = (String) json.get("system");
-
+		String parentPath = (String) json.get("parentPath");
+		String versionable = null;
+		String versionComment = null;
+		String validDate = null;
+		String updateOnLaunch = null;
+		if(json.containsKey("versionable")) {
+			versionable = (String) json.get("versionable");
+			versionComment = (String) json.get("versionComment");
+			validDate = (String) json.get("validDate");
+			updateOnLaunch = (String) json.get("updateOnLaunch");
+		}
+		String externalPublic = (String) json.get("externalPublic");
+		String permissions = (String) json.get("permissions");
+		if(permissions == null) {
+			permissions = "NONE";
+		}
+		JSONArray jsonArray = (JSONArray) json.get("tags");
+		List<String> tags = new ArrayList<>();
+		if (jsonArray != null) {
+			for (Object obj : jsonArray) {
+				tags.add((String) obj);
+			}
+		}
 		EnterpriseContent content = new Content(Text.escapeIllegalJcrChars(name), htmlContent);
 		content.setViewId(viewId);
 		content.setContentType(ContentType.getByKey(contentType));
-		content.setActive(Boolean.valueOf(active));
-		content.setSystem(Boolean.valueOf(system));
+		content.setActive(Boolean.parseBoolean(active));
+		content.setSystem(Boolean.parseBoolean(system));
 		content.setLanguage(language);
+		content.setTags(tags);
+		content.setParentPath(parentPath);
+		content.setExternalPublic(Boolean.parseBoolean(externalPublic));
+		content.setPermissions(permissions);
 
+		getImageResource(json, content);
+
+		if (contentType.equalsIgnoreCase(ContentType.DOCUMENT.key())) {
+			getFileResource(json, content);
+		}
+		return content;
+	}
+
+	private void getImageResource(JSONObject json, EnterpriseContent content) throws IOException {
 		InputStream stream = null;
 		try {
 			String image = (String) json.get("image");
@@ -81,17 +122,15 @@ public @RequestScoped class ContentFactory implements Serializable {
 				stream = getClass().getClassLoader().getResourceAsStream(image);
 
 				if (stream != null) {
-					byte[] imageArray = ByteStreams.toByteArray(stream);
+					byte[] imageArray = IOUtils.toByteArray(stream);
 
-					log.info("Read {} bytes from content image", imageArray.length);
+					log.debug("Read {} bytes from content image", imageArray.length);
 
 					content.setImage(imageArray);
 					content.setImageMimeType("image/png");
 					content.setImageName(image);
 				}
-
 			}
-
 		} catch (Exception e) {
 			log.warn("Error converting json object", e);
 		} finally {
@@ -99,8 +138,35 @@ public @RequestScoped class ContentFactory implements Serializable {
 				stream.close();
 			}
 		}
+	}
 
-		return content;
+	private void getFileResource(JSONObject json, EnterpriseContent content) throws IOException {
+		InputStream stream = null;
+		try {
+			String file = (String) json.get("file");
+			if (StringUtils.isNotBlank(file)) {
+				stream = getClass().getClassLoader().getResourceAsStream(file);
+
+				if (stream != null) {
+					byte[] fileArray = IOUtils.toByteArray(stream);
+					log.trace("Read {} bytes from content file with path: {}", fileArray.length, file);
+					log.trace("Content Read from file {}", fileArray);
+					content.setFile(fileArray);
+
+					String filePath = getClass().getClassLoader().getResource(file).getPath();
+					String mimeType = Files.probeContentType(new File(filePath).toPath());
+					content.setMimeType(mimeType);
+
+					content.setFileSize(fileArray.length);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Error converting json object", e);
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
 	}
 
 	public boolean isOafNode(Node node) {

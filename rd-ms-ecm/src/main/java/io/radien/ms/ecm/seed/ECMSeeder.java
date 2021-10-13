@@ -105,7 +105,6 @@ public @ApplicationScoped class ECMSeeder {
             rootNode = initRootNode();
             initHTMLContentNode(rootNode, oafHTMLContent);
 /*
-
             initAppInfoNode(rootNode, oafAppInfoContent);
 
             initStaticContentNode(rootNode, oafStaticContentContent);
@@ -117,9 +116,9 @@ public @ApplicationScoped class ECMSeeder {
             initIFrameContentNode(rootNode, oafIFrameContent);
 
             initTagsNode(rootNode);
-
-            initDocumentsNode(rootNode);
  */
+            initDocumentsNode(rootNode);
+
         } catch (Exception e) {
             log.error("Error processing new content", e);
         }
@@ -152,6 +151,43 @@ public @ApplicationScoped class ECMSeeder {
 
         }
         return rootNode;
+    }
+
+    private void initDocumentsNode(EnterpriseContent rootNode)throws RepositoryException, ContentRepositoryNotAvailableException  {
+        EnterpriseContent documentsNode = contentService
+                .getFirstByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class), false, null);
+        EnterpriseContent oafDocumentsContent = null;
+        if (documentsNode == null || documentsNode.getContentType().equals(ContentType.ERROR)) {
+            log.info("[CMS] : ENABLED : Content Repository Documents Node initialization");
+
+            oafDocumentsContent = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class));
+            oafDocumentsContent.setParentPath(rootNode.getJcrPath());
+            oafDocumentsContent.setViewId(oafDocumentsContent.getName());
+
+            documentsNode = oafDocumentsContent;
+            contentService.save(oafDocumentsContent);
+
+            log.info("[CMS] : DOCUMENTS NODE : INITIALIZED {}", oafDocumentsContent);
+        } else {
+            log.info("[CMS] : ENABLED : Content Repository Documents Node already initialized; Checking for updated locales.");
+            repository.updateFolderSupportedLanguages(documentsNode.getParentPath(), config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class));
+            oafDocumentsContent = documentsNode;
+        }
+        if(documentsNode != null) {
+            String[] folderNames = config.getValue(CmsConstants.PropertyKeys.SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS, String.class)
+                    .split(",");
+            List<String> children = contentService.getChildrenFiles(documentsNode.getViewId())
+                    .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER).map(EnterpriseContent::getName).collect(Collectors.toList());
+            for (String folderName : folderNames) {
+                if (!children.contains(folderName)) {
+                    EnterpriseContent folder = new Folder(folderName);
+                    folder.setParentPath(oafDocumentsContent.getJcrPath());
+                    folder.setViewId(folderName);
+                    contentService.save(folder);
+                    log.info("[CMS] folder created: {}", folder);
+                }
+            }
+        }
     }
 
     private void initHTMLContentNode(EnterpriseContent rootNode, EnterpriseContent oafHTMLContent)throws RepositoryException, ContentRepositoryNotAvailableException  {

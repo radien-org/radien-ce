@@ -87,7 +87,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	@PostConstruct
 	private void init() {
-
 	}
 
 	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
@@ -195,14 +194,15 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	}
 
-	public EnterpriseContent loadFile(EnterpriseContent content)
-			throws ElementNotFoundException, ContentRepositoryNotAvailableException {
+	public EnterpriseContent loadFile(String jcrPath)
+			throws ContentRepositoryNotAvailableException {
+		EnterpriseContent content = null;
 			Session session = createSession();
 		try {
-			content.setFile(contentFactory.getFile(session, content.getJcrPath()));
+			content = getContentByPath(jcrPath, session);
+			content.setFile(contentFactory.getFile(session, jcrPath));
 		} catch (PathNotFoundException e) {
-			log.error("Error lading EnterPriseOCntent File", e);
-			throw new ElementNotFoundException(e.getMessage());
+			log.error("Error loading EnterpriseContent File", e);
 		} catch (RepositoryException | IOException e) {
 			log.error("Error loading file", e);
 			throw new ContentRepositoryNotAvailableException();
@@ -210,6 +210,11 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			session.logout();
 		}
 		return content;
+	}
+
+	private EnterpriseContent getContentByPath(String jcrPath, Session session) throws RepositoryException {
+		Node result = JcrUtils.getNodeIfExists(jcrPath, session);
+		return contentFactory.convertJCRNode(result);
 	}
 
 	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
@@ -374,8 +379,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	private Node addSupportedLocalesFolder(Node content, Node parent, String nameEscaped) throws RepositoryException {
 		if (nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class)) ||
 				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, String.class)) ||
-				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_APP_INFO, String.class)) ||
-				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_STATIC_CONTENT, String.class)) ||
 				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_IFRAME, String.class))) {
 
 			for (String lang : dataProvider.getSupportedLanguages()) {

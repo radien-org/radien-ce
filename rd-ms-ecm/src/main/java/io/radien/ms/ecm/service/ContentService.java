@@ -33,7 +33,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.Date;
 
 /**
  * Default implementation of the ContentService using JackRabbit
@@ -89,7 +94,7 @@ class ContentService implements ContentServiceAccess {
 
     @Override
     public EnterpriseContent loadFile(String jcrPath) throws ElementNotFoundException, ContentRepositoryNotAvailableException {
-        return null;
+        return contentRepository.loadFile(jcrPath);
     }
 
     @Override
@@ -123,7 +128,7 @@ class ContentService implements ContentServiceAccess {
         return content;
     }
 
-    public void save(EnterpriseContent obj) {
+    public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
         try {
             contentRepository.save(obj);
         } catch (Exception e) {
@@ -131,12 +136,7 @@ class ContentService implements ContentServiceAccess {
         }
     }
 
-    public EnterpriseContent loadFile(EnterpriseContent content)
-            throws ElementNotFoundException, ContentRepositoryNotAvailableException {
-        return contentRepository.loadFile(content);
-    }
-
-    public void delete(EnterpriseContent obj) {
+    public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
         try {
             contentRepository.delete(obj);
         } catch (Exception e) {

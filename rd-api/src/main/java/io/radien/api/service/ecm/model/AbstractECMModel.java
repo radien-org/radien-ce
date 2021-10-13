@@ -37,6 +37,7 @@ public abstract class AbstractECMModel extends AbstractModel {
 	protected String author;
 	private Date lastEditDate;
 	protected boolean active = true;
+	protected boolean externalPublic = true;
 	private String permissions = "";
 
 	private String app;
@@ -482,4 +483,13 @@ public abstract class AbstractECMModel extends AbstractModel {
 	public void setUpdateOnLaunch(boolean updateOnLaunch) {
 		this.updateOnLaunch = updateOnLaunch;
 	}
+
+	public boolean getExternalPublic() {
+		return externalPublic;
+	}
+
+	public void setExternalPublic(boolean externalPublic) {
+		this.externalPublic = externalPublic;
+	}
+
 }

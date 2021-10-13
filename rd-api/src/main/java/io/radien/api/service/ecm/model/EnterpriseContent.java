@@ -347,4 +347,8 @@ public interface EnterpriseContent extends Model, Comparable<EnterpriseContent> 
      * @param updateOnLaunch to be set
      */
     void setUpdateOnLaunch(boolean updateOnLaunch);
+
+    boolean getExternalPublic();
+
+    void setExternalPublic(boolean externalPublic);
 }
