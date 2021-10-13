@@ -64,6 +64,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	private static final Logger log = LoggerFactory.getLogger(ContentRepository.class);
 	private static final long serialVersionUID = 3705349362214763287L;
 
+	private long initCount = 0;
+
 	private static final String FILE_SEPARATOR = "/";
 
 	private static final String JCR_OR = " or [";
@@ -81,14 +83,15 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	@Inject
 	private ContentDataProvider dataProvider;
 	@Inject
-	private Session session;
+	private Repository repository;
 
 	@PostConstruct
 	private void init() {
 
 	}
 
-	public void save(EnterpriseContent obj) {
+	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 		String viewId = obj.getViewId();
 		Node content = null;
 		Node parent = null;
@@ -186,12 +189,15 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			session.save();
 		} catch (ContentRepositoryNotAvailableException | RepositoryException e) {
 			log.error("Error saving content", e);
+		} finally {
+			session.logout();
 		}
 
 	}
 
 	public EnterpriseContent loadFile(EnterpriseContent content)
 			throws ElementNotFoundException, ContentRepositoryNotAvailableException {
+			Session session = createSession();
 		try {
 			content.setFile(contentFactory.getFile(session, content.getJcrPath()));
 		} catch (PathNotFoundException e) {
@@ -200,11 +206,14 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		} catch (RepositoryException | IOException e) {
 			log.error("Error loading file", e);
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 		return content;
 	}
 
-	public void delete(EnterpriseContent obj) {
+	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 		try {
 
 			session.removeItem(obj.getJcrPath());
@@ -213,12 +222,14 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			log.error("Error deleting EnterpriseContent file", e);
+		} finally {
+			session.logout();
 		}
 	}
 
 	private Node getNodeByViewId(String viewId, boolean activeOnly)
 			throws ContentRepositoryNotAvailableException, ElementNotFoundException {
-
+		Session session = createSession();
 		List<Node> results = new ArrayList<>();
 
 		// Obtain the query manager for the session via the workspace ...
@@ -247,6 +258,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 		if (!results.isEmpty()) {
 			return results.get(0);
@@ -270,6 +283,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	public Optional<List<EnterpriseContent>> getByViewIdLanguage(String viewId, boolean activeOnly, String language)
 			throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 		List<Node> nodeList = getNodeByViewIdLanguage(session, viewId, activeOnly, language);
 		if (nodeList.isEmpty()) {
 			return Optional.empty();
@@ -283,6 +297,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			return Optional.ofNullable(ecList);
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 	}
 
@@ -323,7 +339,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		return results;
 	}
 
-	public void registerCNDNodeTypes(String cndFileName) {
+	public void registerCNDNodeTypes(String cndFileName) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 		NodeType[] nodeTypes;
 		try {
 			nodeTypes = CndImporter.registerNodeTypes(
@@ -333,10 +350,14 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			}
 		} catch (Exception e) {
 			log.error("Error registering node type", e);
+		} finally {
+			session.logout();
 		}
 	}
 
 	public void updateFolderSupportedLanguages(String contentPath, String nameEscaped) throws RepositoryException, ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
 		try {
 			Node contentNode = session.getNode(contentPath);
 			Node rootNode = session.getRootNode().getNode("radien");
@@ -345,6 +366,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		} catch (RepositoryException e) {
 			log.error("Repository exception. Not possible to update {}", nameEscaped, e);
 			throw e;
+		} finally {
+			session.logout();
 		}
 	}
 
@@ -370,6 +393,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	public List<EnterpriseContent> getByContentType(ContentType contentType, boolean activeOnly,
 													boolean includeSystemContent) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 
 		List<EnterpriseContent> fooList = new ArrayList<>();
 
@@ -408,6 +432,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 
 		return fooList;
@@ -416,6 +442,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	public List<EnterpriseContent> searchContent(int pageSize, int pageNumber, String searchTerm,
 												 boolean enableSystemContent) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
 		if (pageNumber == 0) {
 			pageNumber = 1;
 		}
@@ -458,24 +486,34 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 
 		return fooList;
 	}
 
 	public String getRootNodePath() throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
 		try {
 			return session.getRootNode().getPath();
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 	}
 
 	protected Node getRootNode() throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
 		try {
 			return session.getRootNode();
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 	}
 
@@ -605,6 +643,28 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		while (nodes.hasNext()) {
 			loopNodes(results, nodes.nextNode());
 		}
+	}
+
+	private Session createSession() throws ContentRepositoryNotAvailableException {
+		boolean error = false;
+		try {
+			return repository.login(getAdminCredentials());
+		} catch (Exception e) {
+			log.error("Error creating new JCR session", e);
+			error = true;
+			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			if (!error) {
+				initCount++;
+				log.info("{} |ACTION: -createJCRSession | INIT COUNT: {}", this, initCount);
+			} else {
+				log.error("{} | ACTION: -createJCRSession FAILED!", this.getClass());
+			}
+		}
+	}
+
+	private static SimpleCredentials getAdminCredentials() {
+		return new SimpleCredentials(CmsConstants.USER_ADMIN, "admin".toCharArray());
 	}
 
 	@Override
