@@ -1,5 +1,4 @@
 [
-  {"tenantKey": "EVCorp", "name": "Root Tenant", "tenantType": "Root", "tenantStart": "2030-01-22", "tenantEnd": "2040-01-22"},
   {"tenantKey": "EVCorp", "name": "Client Tenant", "tenantType": "Client", "tenantStart": "2030-01-22", "tenantEnd": "2040-01-22", "clientAddress": "Sophiestrasse 33", "clientZipCode": "38118", "clientCity":"Braunschweig", "clientCountry":"Germany", "clientPhoneNumber":933876547, "clientEmail":"email@email.com", "parentId":1, "clientId":1},
   {"tenantKey": "EVCorp", "name": "Sub Tenant", "tenantType": "Sub", "tenantStart": "2030-01-22", "tenantEnd": "2040-01-22", "parentId":2, "clientId":2}
 ]

@@ -3,6 +3,5 @@
   { "name": "Third Party Email Management - Read", "resourceName": "Third Party Email", "actionName": "Read" },
   { "name": "Third Party Email - Update", "resourceName": "Third Party Email", "actionName": "Update" },
   { "name": "Third Party Email - Delete", "resourceName": "Third Party Email", "actionName": "Delete" },
-  { "name": "System Menu - Read", "resourceName": "System Menu", "actionName": "Read" }
 ]
 
