@@ -164,16 +164,7 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
      */
     @Override
     public Page<? extends SystemTenantRolePermission> getTenantRolePermissions(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
-        try {
-            return getTenantRolePermissionsCore(tenantId, roleId, pageNo, pageSize);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getTenantRolePermissionsCore(tenantId, roleId, pageNo, pageSize);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(() -> getTenantRolePermissionsCore(tenantId, roleId, pageNo, pageSize));
     }
 
     /**
@@ -255,16 +246,7 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
      */
     @Override
     public List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException {
-        try {
-            return getPermissionsCore(tenantId, roleId, userId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getPermissionsCore(tenantId, roleId, userId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(() -> getPermissionsCore(tenantId, roleId, userId));
     }
 
     /**
