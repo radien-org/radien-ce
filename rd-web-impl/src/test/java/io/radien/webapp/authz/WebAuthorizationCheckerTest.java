@@ -364,6 +364,8 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
         doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
                 userId, permissionId, tenantId);
 
+        when(userSession.isActive()).thenReturn(true);
+
         return webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
     }
 
@@ -379,6 +381,7 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
         Response expectedResponse = Response.ok().entity(response).build();
         doReturn(expectedResponse).when(tenantRoleClient).isPermissionExistentForUser(
                 userId, permissionId, tenantId);
+        when(userSession.isActive()).thenReturn(true);
 
        return webAuthorizationChecker.hasPermissionToUpdateUserEmail(tenantId);
     }

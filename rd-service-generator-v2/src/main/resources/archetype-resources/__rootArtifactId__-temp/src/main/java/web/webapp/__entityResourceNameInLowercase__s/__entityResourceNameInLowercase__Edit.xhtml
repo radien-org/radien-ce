@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="${entityResourceName.toLowerCase()}ManagementTableDiv" styleClass="tableContainer">
+			<b:container>
+				<b:row>
+					<h:panelGroup layout="block" styleClass="headerInformation">
+						<h1><h:outputText value="#{msg.rd_update_${entityResourceName.toLowerCase()}_entity} "/></h1>
+						<hr />
+					</h:panelGroup>
+				</b:row>
+
+				<b:panelGrid colSpans="2,10">
+					<h:outputLabel value="#{msg.id}"/>
+					<b:inputText id="${entityResourceName.toLowerCase()}Id" span="6"
+								 value="#{${entityResourceName.toLowerCase()}DataModel.selected${entityResourceName}.id}"
+								 disabled="true"/>
+
+					<h:outputLabel value="#{msg.name}"/>
+					<b:inputText id="${entityResourceName.toLowerCase()}Name" span="6"
+								 value="#{${entityResourceName.toLowerCase()}DataModel.selected${entityResourceName}.name}"
+								 required="true"
+								 requiredMessage="#{msg.rd_entity_name_is_mandatory}"/>
+
+				</b:panelGrid>
+
+				<b:commandButton value="#{msg.save}"
+								 tooltip="#{msg.rd_save_${entityResourceName.toLowerCase()}}"
+								 iconAwesome="fa-save"
+								 action="#{${entityResourceName.toLowerCase()}DataModel.update${entityResourceName}(${entityResourceName.toLowerCase()}DataModel.selected${entityResourceName})}"/>
+
+				<b:commandButton value="#{msg.rd_${entityResourceName.toLowerCase()}s}"
+								 tooltip="#{msg.rd_return_${entityResourceName.toLowerCase()}s}"
+								 iconAwesome="fa-home"
+								 action="#{${entityResourceName.toLowerCase()}DataModel.returnTo${entityResourceName}sRedirectURL}"/>
+			</b:container>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -12,12 +12,11 @@
     </appender>
 
 
-    <logger name="io.radien" level="error" additivity="false">
-
+    <logger name="io.radien" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="error">
+    <root level="info">
 
         <appender-ref ref="STDOUT"/>
     </root>

@@ -1,0 +1,4 @@
+[
+{"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "System Menu", "actionName": "Read"},
+{"tenantName": "Root Tenant", "roleName":"User Administrator", "resourceName": "System Menu", "actionName": "Read"}
+]

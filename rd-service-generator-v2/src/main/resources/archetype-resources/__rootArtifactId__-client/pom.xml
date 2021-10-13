@@ -4,17 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.radien</groupId>
-        <artifactId>rd-ms-microservice</artifactId>
-        <version>rd-0.0.2-SNAPSHOT</version>
+        <groupId>${groupId}</groupId>
+        <artifactId>${rootArtifactId}</artifactId>
+        <version>${version}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.radien</groupId>
-    <artifactId>rd-ms-microservice-kernel</artifactId>
-    <version>rd-0.0.2-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>Module- Kernel - ${project.version}</name>
+    <artifactId>${rootArtifactId}-client</artifactId>
+    <name>Module-${rootArtifactId}-client - ${project.version}</name>
     <url>http://www.radien.io</url>
 
     <build>
@@ -49,7 +46,6 @@
                             <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                         </manifestEntries>
                     </archive>
-
                 </configuration>
             </plugin>
         </plugins>
@@ -58,11 +54,14 @@
         <!-- radien modules -->
         <dependency>
             <groupId>io.radien</groupId>
-            <artifactId>rd-ms-microservice-api</artifactId>
+            <artifactId>rd-api</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.radien</groupId>
-            <artifactId>rd-ms-microservice-client</artifactId>
+            <artifactId>rd-ms-authz-client</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
@@ -70,20 +69,12 @@
             <artifactId>jakarta.jakartaee-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.apache.openejb</groupId>
+            <artifactId>mbean-annotation-api</artifactId>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
@@ -93,6 +84,25 @@
             <version>${version.microprofile}</version>
             <type>pom</type>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-mp-client</artifactId>
+            <version>${version.cxf-rt-rs-mp-client}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- test -->
+        <dependency>
+            <groupId>org.apache.tomee</groupId>
+            <artifactId>arquillian-openejb-embedded</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

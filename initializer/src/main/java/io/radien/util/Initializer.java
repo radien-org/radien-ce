@@ -72,6 +72,7 @@ public class Initializer {
     private static Map<Object,Object> actions;
     private static Map<Object, Object> resources;
     private static Map<Long, Map<Long,Object>> tenantRoles;
+    private static Map<Long, Map<Long,Object>> permissions;
 
     /**
      * Method that retrieves a config property
@@ -165,6 +166,7 @@ public class Initializer {
                 resourceCreation(accessToken);
                 initializeActionAndResourceMaps(accessToken);
                 permissionCreation(accessToken);
+                initializePermissionMap(accessToken);
             }
             if(modules.contains("role")){
                 roleCreation(accessToken);
@@ -242,6 +244,14 @@ public class Initializer {
         if(tenantRoles == null) {
             String tenantUrl = getRoleManagementBaseURL() + "/tenantrole/all";
             tenantRoles = getDoubleMapFromPage(tenantUrl, "tenantId","roleId", "tenantRoleFinder", accessToken);
+        }
+
+    }
+
+    private static void initializePermissionMap(String accessToken) {
+        if(permissions == null) {
+            String permissionUrl = getPermissionManagementBaseURL() + "/permission";
+            permissions = getDoubleMapFromPage(permissionUrl, "resourceId","actionId", "permissionFinder", accessToken);
         }
 
     }
@@ -371,8 +381,33 @@ public class Initializer {
                     System.exit(-12);
                 }
 
+                String actionName = (String)object.get("actionName");
+                Map action =(Map)actions.get(actionName);
+                if(action == null){
+                    System.out.println("Action not found "+ actionName);
+                    System.exit(-13);
+                }
+
+                String resourceName = (String)object.get("resourceName");
+                Map resource =(Map)resources.get(resourceName);
+                if(resource == null){
+                    System.out.println("Resource not found "+ resourceName);
+                    System.exit(-14);
+                }
+
+                Map permission1 = permissions.get(((Double)resource.get("id")).longValue());
+                if(permission1 == null){
+                    System.out.println("Permission not found with Tenant with name "+ tenantName);
+                    System.exit(-15);
+                }
+                Map permission2 = (Map) permission1.get(((Double)action.get("id")).longValue());
+                if(permission2 == null){
+                    System.out.println("Permission not found with action with name"+ actionName);
+                    System.exit(-16);
+                }
+
                 tenantRolePermission.put("tenantRoleId",((Double)tenantRole2.get("id")).longValue());
-                tenantRolePermission.put("permissionId",object.get("permissionId"));
+                tenantRolePermission.put("permissionId", ((Double)permission2.get("id")).longValue());
                 results.add(tenantRolePermission.toJSONString());
 
 
