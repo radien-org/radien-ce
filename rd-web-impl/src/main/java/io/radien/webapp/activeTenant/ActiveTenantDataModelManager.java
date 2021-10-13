@@ -66,8 +66,8 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
 
     private SystemActiveTenant activeTenant;
     
-    private String activeTenantValue;
-    private String activeTenantName;
+    private String activeTenantTenantId;
+    private String activeTenantTenantName;
 
     /**
      * Constructor and validator method to see which tenants are activated for the current active user
@@ -81,15 +81,18 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
             
             //choose the already selected active tenant
             if(!userActiveTenants.isEmpty()){
-                for (SystemActiveTenant actTenant : userActiveTenants) {
-                    activeTenant = actTenant;
-                    activeTenantValue = actTenant.getTenantId().toString();
-                    Optional<SystemTenant> nameValue = tenantRESTServiceAccess.getTenantById(actTenant.getTenantId());
-                    if(nameValue.isPresent()) {
-                        activeTenantName = nameValue.get().getName();
-                    }
+                SystemActiveTenant actTenant = userActiveTenants.get(0);
+                activeTenant = actTenant;
+                activeTenantTenantId = actTenant.getTenantId().toString();
+                Optional<SystemTenant> nameValue = tenantRESTServiceAccess.getTenantById(actTenant.getTenantId());
+                if(nameValue.isPresent()) {
+                    activeTenantTenantName = nameValue.get().getName();
+                }
+                if(userActiveTenants.size() > 1) {
+                    log.error("User has more than 1 active tenant!");
                 }
             }
+            userAvailableTenants = getUserTenants();
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()));
         }
@@ -104,7 +107,6 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
         SystemUser user = userSession.getUser();
         Long userId = user.getId();
         List<? extends SystemTenant> tenantRoles = tenantRoleRESTServiceAccess.getTenants(userId, null);
-        userAvailableTenants = tenantRoles;
         return tenantRoles;
     }
 
@@ -130,8 +132,8 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                     redirectToHomePage();
                 }
                 activeTenant = null;
-                activeTenantValue = null;
-                activeTenantName = null;
+                activeTenantTenantId = null;
+                activeTenantTenantName = null;
             } else {
                 if(activeTenant != null && Long.parseLong(valueChange) == activeTenant.getTenantId()) {
                     return;
@@ -149,7 +151,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                 } else {
                     redirectToHomePage();
                 }
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantName);
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.ACTIVE_TENANT_CHANGED_VALUE.getValue()), activeTenantTenantName);
             }
         } catch (Exception exception) {
             handleError(exception, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()));
@@ -181,8 +183,8 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
                     //activate the tenant
                     SystemActiveTenant selectedActiveTenant = activateTenant(st);
                     activeTenant = selectedActiveTenant;
-                    activeTenantValue = st.getId().toString();
-                    activeTenantName = st.getName();
+                    activeTenantTenantId = st.getId().toString();
+                    activeTenantTenantName = st.getName();
                     break;
                 }
             }
@@ -197,8 +199,8 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     private void deactivateTenant(SystemActiveTenant tenantToDeactivate) throws SystemException {
         activeTenantRESTServiceAccess.delete(tenantToDeactivate.getId());
         activeTenant = null;
-        activeTenantValue = null;
-        activeTenantName = null;
+        activeTenantTenantId = null;
+        activeTenantTenantName = null;
     }
 
     /**
@@ -260,7 +262,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * @return the active tenant name
      */
     public String getActiveTenantValue() {
-        return activeTenantValue;
+        return activeTenantTenantId;
     }
 
     /**
@@ -268,7 +270,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * @param activeTenantValue to be set
      */
     public void setActiveTenantValue(String activeTenantValue) {
-        this.activeTenantValue = activeTenantValue;
+        this.activeTenantTenantId = activeTenantValue;
     }
 
     /**

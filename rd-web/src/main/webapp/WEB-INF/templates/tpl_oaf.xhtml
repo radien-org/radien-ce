@@ -76,7 +76,7 @@
 											 requiredMessage="#{msg.rd_active_tenant_must_be_choose}" rendered="#{userSession.active}"
 											 update="@all">
 								<f:selectItem itemLabel="#{msg.choose_active_tenant}" itemValue="#{msg.rd_no_active_tenant}" />
-								<f:selectItems value="#{activeTenantDataModelManager.getUserTenants()}" var="t" itemValue="#{t.id}" itemLabel="#{t.name}" />
+								<f:selectItems value="#{activeTenantDataModelManager.getUserAvailableTenants()}" var="t" itemValue="#{t.id}" itemLabel="#{t.name}" />
 							</b:selectOneMenu>
 						</b:navbarLinks>
 
