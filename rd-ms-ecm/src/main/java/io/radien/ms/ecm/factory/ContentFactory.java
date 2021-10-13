@@ -40,6 +40,8 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -114,6 +116,80 @@ public @RequestScoped class ContentFactory implements Serializable {
 		return content;
 	}
 
+	public static EnterpriseContent convertJsonObject(JsonObject json) throws IOException, ParseException {
+		String viewId = json.getString("viewId");
+		String htmlContent = json.getString("htmlContent");
+		String name = json.getString("name");
+		String contentType = json.getString("contentType");
+		String language = json.getString("language");
+		String active = json.getString("active");
+		String system = json.getString("system");
+		String parentPath = json.containsKey("parentPath") ? json.getString("parentPath") : null;
+		String versionable = null;
+		String versionComment = null;
+		String validDate = null;
+		String updateOnLaunch = null;
+		if(json.containsKey("versionable")) {
+			versionable = (String) json.getString("versionable");
+			versionComment = (String) json.getString("versionComment");
+			validDate = (String) json.getString("validDate");
+			updateOnLaunch = (String) json.getString("updateOnLaunch");
+		}
+		String externalPublic = json.containsKey("externalPublic") ? json.getString("externalPublic") : "true";
+		String permissions = json.containsKey("permissions") ? json.getString("permissions") : null;
+		if(permissions == null) {
+			permissions = "NONE";
+		}
+		JsonArray jsonArray = json.getJsonArray("tags");
+		List<String> tags = new ArrayList<>();
+		if (jsonArray != null) {
+			jsonArray.forEach(obj -> tags.add(obj.toString()));
+		}
+		EnterpriseContent content = new Content(Text.escapeIllegalJcrChars(name), htmlContent);
+		content.setViewId(viewId);
+		content.setContentType(ContentType.getByKey(contentType));
+		content.setActive(Boolean.parseBoolean(active));
+		content.setSystem(Boolean.parseBoolean(system));
+		content.setLanguage(language);
+		content.setTags(tags);
+		content.setParentPath(parentPath);
+		content.setExternalPublic(Boolean.parseBoolean(externalPublic));
+		content.setPermissions(permissions);
+
+		getImageResourceJson(json, content);
+
+		if (contentType.equalsIgnoreCase(ContentType.DOCUMENT.key())) {
+			getFileResourceJson(json, content);
+		}
+		return content;
+	}
+
+	private static void getImageResourceJson(JsonObject json, EnterpriseContent content) throws IOException {
+		InputStream stream = null;
+		try {
+			String image = json.getString("image");
+			if (StringUtils.isNotBlank(image)) {
+				stream = ContentFactory.class.getClassLoader().getResourceAsStream(image);
+
+				if (stream != null) {
+					byte[] imageArray = IOUtils.toByteArray(stream);
+
+					log.debug("Read {} bytes from content image", imageArray.length);
+
+					content.setImage(imageArray);
+					content.setImageMimeType("image/png");
+					content.setImageName(image);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Error converting json object", e);
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
+	}
+
 	private void getImageResource(JSONObject json, EnterpriseContent content) throws IOException {
 		InputStream stream = null;
 		try {
@@ -129,6 +205,35 @@ public @RequestScoped class ContentFactory implements Serializable {
 					content.setImage(imageArray);
 					content.setImageMimeType("image/png");
 					content.setImageName(image);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Error converting json object", e);
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
+	}
+
+	private static void getFileResourceJson(JsonObject json, EnterpriseContent content) throws IOException {
+		InputStream stream = null;
+		try {
+			String file = json.getString("file");
+			if (StringUtils.isNotBlank(file)) {
+				stream = ContentFactory.class.getClassLoader().getResourceAsStream(file);
+
+				if (stream != null) {
+					byte[] fileArray = IOUtils.toByteArray(stream);
+					log.trace("Read {} bytes from content file with path: {}", fileArray.length, file);
+					log.trace("Content Read from file {}", fileArray);
+					content.setFile(fileArray);
+
+					String filePath = ContentFactory.class.getClassLoader().getResource(file).getPath();
+					String mimeType = Files.probeContentType(new File(filePath).toPath());
+					content.setMimeType(mimeType);
+
+					content.setFileSize(fileArray.length);
 				}
 			}
 		} catch (Exception e) {

@@ -23,20 +23,14 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.client.entities.GlobalHeaders;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("cms")
@@ -63,9 +57,16 @@ public class ContentController {
         return null;//Afterwards replace for proper message
     }
 
+    @GET
+    @Path(value = "/content/{id}/{lang}")
+    public List<EnterpriseContent> getContentByIdLanguage(@PathParam("id") String id,
+                                                          @PathParam(value = "lang") String lang) {
+        return contentServiceAccess.getByViewIdLanguage(id,true,lang);
+    }
+
     @POST
     @Path("/content")
-    public void saveContent(EnterpriseContent content) {
+    public void saveContent(@RequestBody EnterpriseContent content) {
         try {
             contentServiceAccess.save(content);
         } catch (ContentRepositoryNotAvailableException e) {
@@ -77,8 +78,10 @@ public class ContentController {
     @Path("/content")
     public void deleteContent(@QueryParam("viewId") String viewId, @QueryParam("language") String language) {
         try {
-            EnterpriseContent byViewIdLanguage = contentServiceAccess.getByViewId(viewId, false);
-            contentServiceAccess.delete(byViewIdLanguage);
+            List<EnterpriseContent> byViewIdLanguage = contentServiceAccess.getByViewIdLanguage(viewId,true,language);
+            for (EnterpriseContent obj : byViewIdLanguage) {
+                contentServiceAccess.delete(obj);
+            }
         } catch (ContentRepositoryNotAvailableException e) {
             log.error("JCR not available", e);
         }

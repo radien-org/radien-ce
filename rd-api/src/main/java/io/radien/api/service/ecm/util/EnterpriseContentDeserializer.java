@@ -23,11 +23,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.radien.api.service.ecm.model.ContentType;
-import io.radien.api.service.ecm.model.Document;
-import io.radien.api.service.ecm.model.EnterpriseContent;
-import io.radien.api.service.ecm.model.Folder;
-import io.radien.api.service.ecm.model.GenericEnterpriseContent;
+import io.radien.api.service.ecm.model.*;
 
 /**
  * Deserializer or parser from json parser into Enterprise Content object
@@ -52,20 +48,20 @@ public class EnterpriseContentDeserializer extends JsonDeserializer<EnterpriseCo
 			ContentType contentType = ContentType.getByKey(root.get("contentType").asText());
 
 			switch (contentType) {
-			case IMAGE:
-			case DOCUMENT:
-				return mapper.readValue(root.toString(), Document.class);
-			case FOLDER:
-				return mapper.readValue(root.toString(), Folder.class);
-			case HTML:
-			case ERROR:
-			case NEWS_FEED:
-			case NOTIFICATION:
-			case TAG:
-			default:
-				return mapper.readValue(root.toString(), GenericEnterpriseContent.class);
+				case IMAGE:
+				case DOCUMENT:
+					return mapper.readValue(root.toString(), Document.class);
+				case FOLDER:
+					return mapper.readValue(root.toString(), Folder.class);
+				case HTML:
+				case ERROR:
+				case NEWS_FEED:
+				case NOTIFICATION:
+				case TAG:
+				default:
+					return mapper.readValue(root.toString(), GenericEnterpriseContent.class);
 
-			}
+				}
 
 		}
 		return null;

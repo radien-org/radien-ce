@@ -163,4 +163,13 @@ public enum OAFProperties implements SystemProperties{
     public String propKey() {
         return propKey;
     }
+
+    public static OAFProperties valueOfKey(String key) {
+        for (OAFProperties oafProperty : OAFProperties.values()) {
+            if(oafProperty.propKey().equals(key)){
+                return oafProperty;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant with value " + key);
+    }
 }
