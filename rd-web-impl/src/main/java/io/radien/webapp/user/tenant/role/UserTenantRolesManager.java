@@ -87,7 +87,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     @PostConstruct
     public void init() {
         try{
-            userTenants = Collections.unmodifiableList(tenantRoleRESTServiceAccess.getTenants(userDataModel.getSelectedUser().getId(),null));
+            userTenants = Collections.unmodifiableList(tenantRoleUserRESTServiceAccess.getTenants(userDataModel.getSelectedUser().getId(),null));
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }

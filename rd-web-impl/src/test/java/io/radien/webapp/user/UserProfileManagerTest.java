@@ -143,7 +143,7 @@ public class UserProfileManagerTest {
         when(userSession.getUserId()).then(i -> userId);
 
         // Expected tenants
-        when(tenantRoleRESTServiceAccess.getTenants(userId, null)).then(i -> getMockedTenants(Arrays.asList(1L, 2L, 3L)));
+        when(tenantRoleUserRESTServiceAccess.getTenants(userId, null)).then(i -> getMockedTenants(Arrays.asList(1L, 2L, 3L)));
 
         List<? extends SystemTenant> retrieved = this.userProfileManager.retrieveAssignedTenants();
         assertNotNull(retrieved);
@@ -162,7 +162,7 @@ public class UserProfileManagerTest {
         Long userId = 111L;
         when(userSession.getUserId()).then(i -> userId);
 
-        when(tenantRoleRESTServiceAccess.getTenants(userId, null)).thenThrow(new SystemException(error));
+        when(tenantRoleUserRESTServiceAccess.getTenants(userId, null)).thenThrow(new SystemException(error));
 
         List<? extends SystemTenant> retrieved = this.userProfileManager.retrieveAssignedTenants();
         assertNotNull(retrieved);
@@ -235,7 +235,7 @@ public class UserProfileManagerTest {
 
         // Expected tenants
         try {
-            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
+            when(tenantRoleUserRESTServiceAccess.getTenants(userId, null)).
                     then(i -> getMockedTenants(Collections.singletonList(3L)));
         } catch (SystemException s) {
             fail("not expected");
@@ -260,7 +260,7 @@ public class UserProfileManagerTest {
         Long userId = 99L;
         when(userSession.getUserId()).then(i -> userId);
         try {
-            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
+            when(tenantRoleUserRESTServiceAccess.getTenants(userId, null)).
                     then(i -> new ArrayList<>());
         } catch (SystemException s) {
             fail("not expected");
@@ -281,7 +281,7 @@ public class UserProfileManagerTest {
         String errorMsg = "error retrieving linked authorizations";
         when(userSession.getUserId()).then(i -> userId);
         try {
-            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
+            when(tenantRoleUserRESTServiceAccess.getTenants(userId, null)).
                     thenThrow(new SystemException(errorMsg));
         } catch (SystemException s) {
             fail("not expected");
@@ -312,7 +312,7 @@ public class UserProfileManagerTest {
 
         // Expected LinkedAuthorization beans
         try {
-            when(tenantRoleRESTServiceAccess.getTenants(userId, null)).
+            when(tenantRoleUserRESTServiceAccess.getTenants(userId, null)).
                     thenThrow(new SystemException(errorMsg));
         } catch (SystemException s) {
             fail("unexpected");

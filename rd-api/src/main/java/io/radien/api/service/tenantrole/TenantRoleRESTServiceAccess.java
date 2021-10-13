@@ -86,15 +86,6 @@ public interface TenantRoleRESTServiceAccess {
     List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException;
 
     /**
-     * Retrieves the existent Tenants for a User (Optionally for a specific role)
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return List containing tenants
-     * @throws SystemException in case of any error
-     */
-    List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException;
-
-    /**
      * Retrieves the existent Roles for a User that associated Tenant
      * @param userId User identifier
      * @param tenantId Tenant identifier

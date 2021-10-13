@@ -32,7 +32,9 @@ import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -142,6 +144,24 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
         tenantRoleUserServiceAccess.delete(ids);
         deleteActiveTenant(user, tenant);
     }
+
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return List containing tenants
+     */
+    public List<SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
+        checkIfMandatoryParametersWereInformed(userId);
+        List<SystemTenant> list = new ArrayList<>();
+        List<Long> ids = this.getTenantRoleServiceAccess().getTenants(userId, roleId);
+        if (!ids.isEmpty()) {
+            list.addAll(getTenantRESTServiceAccess().getTenantsByIds(ids));
+        }
+        return list;
+    }
+
 
     /**
      * After remove/delete/dissociate a user (TenantRoleUser) is necessary to handle

@@ -156,7 +156,7 @@ public class UserProfileManager extends AbstractManager {
     protected List<SystemTenant> retrieveAssignedTenants() {
         List<SystemTenant> assignedOnes = new ArrayList<>();
         try {
-            assignedOnes.addAll(tenantRoleRESTServiceAccess.getTenants(userSession.getUserId(), null));
+            assignedOnes.addAll(tenantRoleUserRESTServiceAccess.getTenants(userSession.getUserId(), null));
             this.tabIndex = 1L;
         }
         catch (Exception e) {

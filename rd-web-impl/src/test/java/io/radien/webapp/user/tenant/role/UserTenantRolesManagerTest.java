@@ -134,7 +134,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
      */
     @Test
     public void testInit() throws SystemException {
-        doReturn(Collections.unmodifiableList(systemTenants)).when(tenantRoleRESTServiceAccess).getTenants(anyLong(), anyLong());
+        doReturn(Collections.unmodifiableList(systemTenants)).when(tenantRoleUserRESTServiceAccess).getTenants(anyLong(), anyLong());
 
         userTenantRolesManager.init();
         userTenantRolesManager.setUserTenants(systemTenants);

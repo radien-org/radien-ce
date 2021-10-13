@@ -15,7 +15,9 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
@@ -150,6 +152,26 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
             return Response.ok().build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return Response OK with List containing tenants. Response 500 in case of any other error.
+     */
+    @Override
+    public Response getTenants(Long userId, Long roleId) {
+        if (userId == null) {
+            String msg = GenericErrorCodeMessage.TENANT_ROLE_PERMISSION_MISSING_PARAMETER.toString(SystemVariables.USER_ID.getFieldName());
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(msg);
+        }
+        log.info("Retrieving tenants for user {} and role {}", userId, roleId);
+        try {
+            return Response.ok().entity(tenantRoleUserBusinessService.getTenants(userId, roleId)).build();
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }

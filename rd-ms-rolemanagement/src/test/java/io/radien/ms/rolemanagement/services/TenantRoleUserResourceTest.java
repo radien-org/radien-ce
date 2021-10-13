@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -171,6 +172,34 @@ public class TenantRoleUserResourceTest {
 
         response = tenantRoleUserResource.assignUser(tenantRoleUser);
         assertEquals(500, response.getStatus());
+    }
+
+
+    /**
+     * Tests response from getTenants method
+     */
+    @Test
+    public void testGetTenants() {
+        Response response = tenantRoleUserResource.getTenants(1L, 2L);
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Tests response from getTenants method when exceptions occur during the processing
+     */
+    @Test
+    public void testGetTenantsWithException() {
+        try {
+            doThrow(new RuntimeException("error")).
+                    when(tenantRoleUserBusinessService).getTenants(1L, 2L);
+        }
+        catch (Exception e) {
+            fail("unexpected");
+        }
+        Response response = tenantRoleUserResource.getTenants(1L, 2L);
+        assertEquals(500, response.getStatus());
+        response = tenantRoleUserResource.getTenants(null, 2L);
+        assertEquals(400, response.getStatus());
     }
 
     /**

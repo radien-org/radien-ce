@@ -149,22 +149,6 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
     }
 
     /**
-     * Retrieves the existent Tenants for a User (Optionally for a specific role)
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return List containing tenants
-     */
-    public List<SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
-        checkIfMandatoryParametersWereInformed(userId);
-        List<SystemTenant> list = new ArrayList<>();
-        List<Long> ids = this.getTenantRoleServiceAccess().getTenants(userId, roleId);
-        if (!ids.isEmpty()) {
-            list.addAll(getTenantRESTServiceAccess().getTenantsByIds(ids));
-        }
-        return list;
-    }
-
-    /**
      * Retrieves the existent Roles for a User of a specific Tenant
      * @param userId User identifier
      * @param tenantId Tenant identifier

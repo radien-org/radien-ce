@@ -402,7 +402,7 @@ public class TenantRoleAssociationManagerTest {
         expectedTenants.add(tenant);
 
         doReturn(currentUserId).when(this.webAuthorizationChecker).getCurrentUserId();
-        doReturn(expectedTenants).when(this.tenantRoleRESTServiceAccess).getTenants(currentUserId, null);
+        doReturn(expectedTenants).when(this.tenantRoleUserRESTServiceAccess).getTenants(currentUserId, null);
 
         List<? extends SystemTenant> outcome = this.tenantRoleAssociationManager.getTenantsFromCurrentUser();
         assertEquals(expectedTenants, outcome);
@@ -420,7 +420,7 @@ public class TenantRoleAssociationManagerTest {
                 doReturn(currentUserId).when(this.webAuthorizationChecker).getCurrentUserId();
 
         doThrow(new SystemException("error retrieving tenant")).
-                when(this.tenantRoleRESTServiceAccess).getTenants(currentUserId, null);
+                when(this.tenantRoleUserRESTServiceAccess).getTenants(currentUserId, null);
 
         List<? extends SystemTenant> outcome = this.tenantRoleAssociationManager.getTenantsFromCurrentUser();
         assertNotNull(outcome);

@@ -117,4 +117,16 @@ public interface TenantRoleUserResourceClient {
                           @QueryParam("roleIds") Collection<Long> roleIds,
                           @QueryParam("userId") Long userId);
 
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier (Mandatory)
+     * @param roleId Role identifier (Optional)
+     * @return Response OK with List containing tenants. Response 400 in case of invalid request
+     * (lack of user information). Response 500 in case of any other error.
+     */
+    @GET
+    @Path("/tenants")
+    Response getTenants(@QueryParam("userId") Long userId, @QueryParam("roleId") Long roleId);
+
+
 }
