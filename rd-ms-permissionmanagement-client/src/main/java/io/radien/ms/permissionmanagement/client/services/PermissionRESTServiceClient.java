@@ -410,6 +410,33 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
     }
 
     /**
+     * Calls the requester to calculate how many records are existent in the db if not possible will refresh
+     * the access token and retry
+     * @return the count of existent permissions.
+     * @throws SystemException in case it founds multiple permissions or if URL is malformed
+     */
+    public Long getTotalRecordsCount() throws SystemException {
+        return get(this::getTotalRecordsCountRequester);
+    }
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent permissions.
+     * @throws SystemException in case it founds multiple permissions or if URL is malformed
+     */
+    private Long getTotalRecordsCountRequester() throws SystemException {
+        try {
+            PermissionResourceClient client = clientServiceUtil.getPermissionResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+            Response response = client.getTotalRecordsCount();
+            return Long.parseLong(response.readEntity(String.class));
+
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Calls the requester to retrieve from DB a collection containing permissions. The retrieval process will be
      * based on a list containing permission identifiers. In case of JWT expiration, the process will be attempt once more
      * @param ids list of permission identifiers

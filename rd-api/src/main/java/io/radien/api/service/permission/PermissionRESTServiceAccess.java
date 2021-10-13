@@ -133,4 +133,10 @@ public interface PermissionRESTServiceAccess extends Appframeable {
      */
     public boolean isPermissionExistent(Long permissionId , String permissionName) throws SystemException;
 
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent permissions.
+     * @throws SystemException in case of any communication error
+     */
+    public Long getTotalRecordsCount() throws SystemException;
 }

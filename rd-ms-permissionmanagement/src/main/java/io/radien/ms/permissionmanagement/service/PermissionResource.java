@@ -212,4 +212,17 @@ public class PermissionResource implements PermissionResourceClient {
 
 		return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 	}
+
+	/**
+	 * Will calculate how many records are existent in the db
+	 * @return the count of existent permissions.
+	 */
+	@Override
+	public Response getTotalRecordsCount() {
+		try {
+			return Response.ok(permissionServiceAccess.getTotalRecordsCount()).build();
+		} catch(Exception e) {
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
 }

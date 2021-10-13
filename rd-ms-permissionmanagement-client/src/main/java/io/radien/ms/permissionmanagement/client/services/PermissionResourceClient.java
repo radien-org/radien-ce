@@ -149,4 +149,12 @@ public interface PermissionResourceClient {
      */
     @HEAD
     public Response exists(@QueryParam("id") Long id, @QueryParam("name") String name);
+
+    /**
+     * Will calculate how many records are existent in the db
+     * @return the count of existent permissions.
+     */
+    @GET
+    @Path("/countRecords")
+    public Response getTotalRecordsCount();
 }

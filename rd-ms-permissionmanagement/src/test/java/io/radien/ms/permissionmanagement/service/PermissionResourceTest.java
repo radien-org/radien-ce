@@ -82,6 +82,26 @@ public class PermissionResourceTest {
     }
 
     /**
+     * Test the Get total records count request which will return a success message code 200.
+     */
+    @Test
+    public void testGetTotalRecordsCount() {
+        Response response = permissionResource.getTotalRecordsCount();
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Test the Get total records count request Exception which will return a generic error message code 500.
+     */
+    @Test
+    public void testGetTotalRecordsCountGenericException() {
+        when(permissionResource.getTotalRecordsCount())
+                .thenThrow(new RuntimeException());
+        Response response = permissionResource.getTotalRecordsCount();
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
      * Test that will test the error message 404 permission Not Found
      */
     @Test
