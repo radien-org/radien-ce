@@ -1,0 +1,52 @@
+@startuml
+
+title __ROLE's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace model {
+      namespace role {
+        abstract class io.radien.api.model.role.AbstractRoleModel {
+            {static} - serialVersionUID : long
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace role {
+        interface io.radien.api.model.role.SystemRole {
+            {abstract} + getDescription()
+            {abstract} + getName()
+            {abstract} + getTerminationDate()
+            {abstract} + setDescription()
+            {abstract} + setName()
+            {abstract} + setTerminationDate()
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace model {
+      namespace role {
+        interface io.radien.api.model.role.SystemRoleSearchFilter {
+            {abstract} + getDescription()
+            {abstract} + getName()
+            {abstract} + setDescription()
+            {abstract} + setName()
+        }
+      }
+    }
+  }
+  
+
+  io.radien.api.model.role.AbstractRoleModel .up.|> io.radien.api.model.role.SystemRole
+  io.radien.api.model.role.AbstractRoleModel -up-|> io.radien.api.model.AbstractModel
+
+
+ 
+
+@enduml

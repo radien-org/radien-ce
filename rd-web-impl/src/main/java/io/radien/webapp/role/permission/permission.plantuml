@@ -1,0 +1,58 @@
+@startuml
+
+title __PERMISSION's Class Diagram__\n
+
+  namespace io.radien.webapp {
+    namespace role {
+      namespace permission {
+        class io.radien.webapp.role.permission.RolePermissionManager {
+            - assignableRolePermissions : Set<Long>
+            - isPermissionAssigned : boolean
+            - isPermissionUnassigned : boolean
+            - isPermissionsAssigned : Map<Long, Boolean>
+            {static} - serialVersionUID : long
+            - systemPermissionsIdsList : List<Long>
+            - unassignedRolePermissions : Set<Long>
+            + assignOrUnassignedPermissionsToActiveUserTenant()
+            + getAssignableRolePermissions()
+            + getIsPermissionsAssigned()
+            + getSystemActiveTenant()
+            + getSystemPermissionsIdsList()
+            + getSystemRole()
+            + getUnassignedRolePermissions()
+            + isAssignableOrUnassignedPermission()
+            + isAssignableOrUnassignedRolePermission()
+            + isPermissionAssigned()
+            + isPermissionUnassigned()
+            + loadRolePermissions()
+            + onRowExpand()
+            + refresh()
+            + setAssignableRolePermissions()
+            + setIsPermissionsAssigned()
+            + setPermissionAssigned()
+            + setPermissionUnassigned()
+            + setSystemActiveTenant()
+            + setSystemPermissionsIdsList()
+            + setSystemRole()
+            + setUnassignedRolePermissions()
+            # doAssignedPermissionsForRole()
+            # doUnassignedPermissionsForRole()
+        }
+      }
+    }
+  }
+  
+
+  io.radien.webapp.role.permission.RolePermissionManager .up.|> java.io.Serializable
+  io.radien.webapp.role.permission.RolePermissionManager -up-|> io.radien.webapp.AbstractManager
+  io.radien.webapp.role.permission.RolePermissionManager o-- io.radien.webapp.activeTenant.ActiveTenantDataModelManager : activeTenantDataModelManager
+  io.radien.webapp.role.permission.RolePermissionManager o-- io.radien.api.model.tenant.SystemActiveTenant : systemActiveTenant
+  io.radien.webapp.role.permission.RolePermissionManager o-- io.radien.api.model.role.SystemRole : systemRole
+  io.radien.webapp.role.permission.RolePermissionManager o-- io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess : tenantRolePermissionRESTServiceAccess
+  io.radien.webapp.role.permission.RolePermissionManager o-- io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess : tenantRoleRESTServiceAccess
+  io.radien.webapp.role.permission.RolePermissionManager o-- io.radien.webapp.util.TenantRoleUtil : tenantRoleUtil
+
+
+ 
+
+@enduml

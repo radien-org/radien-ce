@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package io.radien.webapp.user;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
@@ -76,7 +79,11 @@ public class UserDataModel extends AbstractManager implements Serializable {
     private SystemUser userForTenantAssociation;
     private SystemUser user = new User();
 
-    private boolean hasUserAdministratorRoleAccess = false;
+    private boolean allowedReadUser = false;
+    private boolean allowedUpdateUser = false;
+    private boolean allowedDeleteUser = false;
+    private boolean allowedCreateUser = false;
+
     private boolean hasTenantAdministratorRoleAccess = false;
     private boolean allowedToResetPassword = false;
     private boolean allowedToUpdateUserEmail = false;
@@ -90,8 +97,17 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public void init() {
         try {
             if(activeTenantDataModelManager.isTenantActive()) {
-                if (!hasUserAdministratorRoleAccess) {
-                    hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
+                if (!allowedReadUser) {
+                    allowedReadUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_READ.getActionName(), null);
+                }
+                if (!allowedUpdateUser) {
+                    allowedUpdateUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_UPDATE.getActionName(), null);
+                }
+                if (!allowedDeleteUser) {
+                    allowedDeleteUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_DELETE.getActionName(), null);
+                }
+                if (!allowedCreateUser) {
+                    allowedCreateUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_CREATE.getActionName(), null);
                 }
                 if (!hasTenantAdministratorRoleAccess) {
                     hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
@@ -102,7 +118,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
                 allowedToUpdateUserEmail = webAuthorizationChecker.hasPermissionToUpdateUserEmail(tenantId);
 
-                if (hasUserAdministratorRoleAccess) {
+                if (allowedReadUser) {
                     // Must retrieve user compatible with the Active Tenant
                     lazyUserDataModel = new LazyTenantingUserDataModel(tenantRoleUserRESTServiceAccess,
                             service);
@@ -425,19 +441,36 @@ public class UserDataModel extends AbstractManager implements Serializable {
         return DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
     }
 
-    /**
-     * Validates if current user has System Administrator or User Administrator roles
-     * @return true in case of so
-     */
-    public boolean getHasUserAdministratorRoleAccess() {
-        return hasUserAdministratorRoleAccess;
+    public boolean isAllowedReadUser() {
+        return allowedReadUser;
     }
 
-    /**
-     * Sets if current user has System Administrator or User Administrator roles
-     */
-    public void setHasUserAdministratorRoleAccess(boolean hasUserAdministratorRoleAccess) {
-        this.hasUserAdministratorRoleAccess = hasUserAdministratorRoleAccess;
+    public void setAllowedReadUser(boolean allowedReadUser) {
+        this.allowedReadUser = allowedReadUser;
+    }
+
+    public boolean isAllowedUpdateUser() {
+        return allowedUpdateUser;
+    }
+
+    public void setAllowedUpdateUser(boolean allowedUpdateUser) {
+        this.allowedUpdateUser = allowedUpdateUser;
+    }
+
+    public boolean isAllowedDeleteUser() {
+        return allowedDeleteUser;
+    }
+
+    public void setAllowedDeleteUser(boolean allowedDeleteUser) {
+        this.allowedDeleteUser = allowedDeleteUser;
+    }
+
+    public boolean isAllowedCreateUser() {
+        return allowedCreateUser;
+    }
+
+    public void setAllowedCreateUser(boolean allowedCreateUser) {
+        this.allowedCreateUser = allowedCreateUser;
     }
 
     /**

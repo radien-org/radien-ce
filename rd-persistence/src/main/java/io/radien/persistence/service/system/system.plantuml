@@ -1,0 +1,19 @@
+@startuml
+
+title __SYSTEM's Class Diagram__\n
+
+  namespace io.radien.persistence.service.system {
+    class io.radien.persistence.service.system.AppframeService {
+        - entityManager : EntityManager
+        + addAppframe()
+        + deleteAppframe()
+        + getAppframes()
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

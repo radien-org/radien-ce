@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -293,7 +293,11 @@ public abstract class AuthorizationChecker implements Serializable {
      * @return the reference for current logged user
      */
     protected SystemUser getInvokerUser() {
-        return (SystemUser) getServletRequest().getSession().getAttribute("USER");
+        HttpSession session = getServletRequest().getSession(false);
+        if(session == null){
+            return null;
+        }
+        return (SystemUser) session.getAttribute("USER");
     }
 
     /**

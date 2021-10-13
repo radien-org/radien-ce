@@ -1,0 +1,23 @@
+[Unit]
+Description=TomEE 8 servlet container
+After=network.target
+
+[Service]
+Type=forking
+
+User=tomcat
+Group=tomcat
+
+Environment="JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64"
+Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
+
+Environment="CATALINA_BASE=/opt/tomee/apache-tomee-plus-8.0.6"
+Environment="CATALINA_HOME=/opt/tomee/apache-tomee-plus-8.0.6"
+Environment="CATALINA_PID=/opt/tomee/apache-tomee-plus-8.0.6/temp/tomee.pid"
+Environment="CATALINA_OPTS=-Xms1024M -Xmx2048M -server -XX:+UseParallelGC -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dbus.xml.vm.maxsize=2048"
+
+ExecStart=/opt/tomee/apache-tomee-plus-8.0.6/bin/startup.sh
+ExecStop=/opt/tomee/apache-tomee-plus-8.0.6/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target

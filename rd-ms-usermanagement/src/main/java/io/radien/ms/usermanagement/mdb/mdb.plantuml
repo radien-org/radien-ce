@@ -1,0 +1,21 @@
+@startuml
+
+title __MDB's Class Diagram__\n
+
+  namespace io.radien.ms.usermanagement {
+    namespace mdb {
+      class io.radien.ms.usermanagement.mdb.SpiderMDB {
+          {static} - log : Logger
+          + onMessage()
+          - forwardList()
+      }
+    }
+  }
+  
+
+  io.radien.ms.usermanagement.mdb.SpiderMDB .up.|> javax.jms.MessageListener
+
+
+ 
+
+@enduml

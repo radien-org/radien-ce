@@ -1,0 +1,21 @@
+@startuml
+
+title __SERVICE's Class Diagram__\n
+
+  namespace io.radien.kernel {
+    namespace service {
+      class io.radien.kernel.service.ConfigService {
+          {static} - serialVersionUID : long
+          + getProperty()
+      }
+    }
+  }
+  
+
+  io.radien.kernel.service.ConfigService .up.|> io.radien.api.Configurable
+  io.radien.kernel.service.ConfigService .up.|> java.io.Serializable
+
+
+ 
+
+@enduml

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+
 
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -242,13 +243,18 @@ public class KeycloakClient {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public void deleteUser(String sub) throws RemoteResourceException {
-        HttpResponse<String> response = Unirest.delete(idpUrl + userPath + "/" + sub)
+        HttpResponse<HashMap> response = Unirest.delete(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .asObject(String.class);
+                .asObject(HashMap.class);
         if (!response.isSuccess()) {
-            log.error(response.getBody());
-            throw new RemoteResourceException("Unable to delete User");
+
+            if(response.getStatus()==404 && "User not found".equalsIgnoreCase((String)response.getBody().get("error")) ){
+                log.error("User not found on keycloak with subject id. Delete continues");
+            }else {
+                log.error(response.getBody().toString());
+                throw new RemoteResourceException("Unable to delete User");
+            }
         }
     }
 

@@ -1,0 +1,94 @@
+@startuml
+
+title __MODEL's Class Diagram__\n
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          interface io.radien.api.service.mail.model.Mail {
+              {abstract} + addBCCAdresse()
+              {abstract} + addCCAdresse()
+              {abstract} + addTOAdresse()
+              {abstract} + getAttachments()
+              {abstract} + getBCC()
+              {abstract} + getBody()
+              {abstract} + getCC()
+              {abstract} + getContentType()
+              {abstract} + getFrom()
+              {abstract} + getSubject()
+              {abstract} + getTO()
+              {abstract} + setAttachments()
+              {abstract} + setBCC()
+              {abstract} + setBody()
+              {abstract} + setCC()
+              {abstract} + setContentType()
+              {abstract} + setFrom()
+              {abstract} + setSubject()
+              {abstract} + setTO()
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          enum MailContentType {
+            HTML
+            TEXT
+            type
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          enum MailType {
+            CHANGE_EMAIL
+            CONFIRMATION
+            CONTRACT_ASSIGN_ADMIN
+            CONTRACT_ASSIGN_USER
+            CONTRACT_REQUEST
+            CONTRACT_REQUEST_ACCEPT
+            CONTRACT_REQUEST_DENIED
+            REQUEST_CONTEXT
+            REQUEST_CONTEXT_ACCEPT
+            REQUEST_CONTEXT_DENIED
+            RESET_PASSWORD
+          }
+        }
+      }
+    }
+  }
+  
+
+  namespace io.radien.api {
+    namespace service {
+      namespace mail {
+        namespace model {
+          interface io.radien.api.service.mail.model.SystemMailTemplate {
+              {abstract} + getArgs()
+              {abstract} + getContent()
+              {abstract} + setArgs()
+              {abstract} + setContent()
+          }
+        }
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

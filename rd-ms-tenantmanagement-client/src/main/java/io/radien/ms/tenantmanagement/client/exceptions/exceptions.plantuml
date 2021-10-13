@@ -1,0 +1,34 @@
+@startuml
+
+title __EXCEPTIONS's Class Diagram__\n
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace exceptions {
+        class io.radien.ms.tenantmanagement.client.exceptions.BadRequestException {
+            + BadRequestException()
+            + BadRequestException()
+        }
+      }
+    }
+  }
+  
+
+  namespace  {
+    namespace o.radien.ms.tenantmanagement.client {
+      namespace exceptions {
+        class io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException {
+            {static} - serialVersionUID : long
+            + InternalServerErrorException()
+            + InternalServerErrorException()
+        }
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

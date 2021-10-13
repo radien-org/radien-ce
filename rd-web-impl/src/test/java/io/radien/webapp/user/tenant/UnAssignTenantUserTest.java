@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,18 +97,6 @@ public class UnAssignTenantUserTest extends JSFUtilAndFaceContextMessagesTest {
         doReturn(systemActiveTenant).when(activeTenantDataModelManager).getActiveTenant();
     }
 
-    /**
-     * Test method unAssignSelectedTenantUser()
-     *
-     * @throws SystemException if any error
-     */
-    @Test
-    public void testUnAssignSelectedTenantUser() throws SystemException {
-        doReturn(true).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), any(), anyLong());
-
-        assertEquals( DataModelEnum.USERS_PATH.getValue(), unAssignTenantUser.unAssignSelectedTenantUser());
-        assertFalse(unAssignTenantUser.isUserSelectedAndHasUserAdminRoleAccess());
-    }
 
     /**
      * Test method unAssignSelectedTenantUser()
@@ -121,16 +109,4 @@ public class UnAssignTenantUserTest extends JSFUtilAndFaceContextMessagesTest {
         unAssignTenantUser.unAssignSelectedTenantUser();
     }
 
-    /**
-     * Test method isUserSelectedAndHasUserAdminRoleAccess()
-     * Asserts userSelectedAndHasUserAdminRoleAccess
-     */
-    @Test
-    public void testIsUserSelectedAndHasUserAdminRoleAccess(){
-        unAssignTenantUser.setUserSelectedAndHasUserAdminRoleAccess(true);
-        assertTrue(unAssignTenantUser.isUserSelectedAndHasUserAdminRoleAccess());
-
-        doReturn(true).when(userDataModel).getHasUserAdministratorRoleAccess();
-        assertTrue(unAssignTenantUser.isUserSelectedAndHasUserAdminRoleAccess());
-    }
 }

@@ -1,0 +1,20 @@
+@startuml
+
+title __UTIL's Class Diagram__\n
+
+  namespace io.radien.ms.tenantmanagement {
+    namespace util {
+      class io.radien.ms.tenantmanagement.util.ContractModelMapper {
+          {static} + map()
+          {static} + map()
+          {static} + map()
+      }
+    }
+  }
+  
+
+
+
+ 
+
+@enduml

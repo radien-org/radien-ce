@@ -1,7 +1,8 @@
 [
-  { "name": "Third Party Email Management - Create", "actionId": 1, "resourceId": 11 },
-  { "name": "Third Party Email Management - Read", "actionId": 2, "resourceId": 11 },
-  { "name": "Third Party Email Management - Update", "actionId": 3, "resourceId": 11 },
-  { "name": "Third Party Email Management - Delete", "actionId": 4, "resourceId": 11 }
+  { "name": "Third Party Email Management - Create", "resourceName": "Third Party Email", "actionName": "Create" },
+  { "name": "Third Party Email Management - Read", "resourceName": "Third Party Email", "actionName": "Read" },
+  { "name": "Third Party Email - Update", "resourceName": "Third Party Email", "actionName": "Update" },
+  { "name": "Third Party Email - Delete", "resourceName": "Third Party Email", "actionName": "Delete" },
+  { "name": "System Menu - Read", "resourceName": "System Menu", "actionName": "Read" }
 ]
 

@@ -1,0 +1,27 @@
+@startuml
+
+title __RESOURCE's Class Diagram__\n
+
+  namespace io.radien.ms.ecm {
+    namespace resource {
+      class io.radien.ms.ecm.resource.I18NPropertyResource {
+          + add()
+          + addAll()
+          + getKeys()
+          + getMessage()
+          + getProperties()
+          + getProperty()
+          + initializeProperties()
+      }
+    }
+  }
+  
+
+  io.radien.ms.ecm.resource.I18NPropertyResource .up.|> io.radien.ms.ecm.client.services.I18NPropertyResourceClient
+  io.radien.ms.ecm.resource.I18NPropertyResource o-- io.radien.api.OAFAccess : oafAccess
+  io.radien.ms.ecm.resource.I18NPropertyResource o-- io.radien.ms.ecm.client.services.SystemI18NPropertyService : propertyManager
+
+
+ 
+
+@enduml
