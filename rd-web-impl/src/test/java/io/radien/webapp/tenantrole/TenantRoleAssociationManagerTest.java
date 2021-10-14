@@ -992,7 +992,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testUnAssignUser() throws SystemException {
-        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L, "test", true));
+        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L));
         SystemRole role = new Role(); role.setId(2L);
         SystemTenant tenant = new Tenant(); tenant.setId(1L);
         SystemUser userToBeDissociated = new User(); userToBeDissociated.setId(3L);
@@ -1062,7 +1062,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testUnAssignUserWithException() throws SystemException {
-        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L, "test", true));
+        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L));
         SystemRole role = new Role(); role.setId(2L);
         SystemTenant tenant = new Tenant(); tenant.setId(1L);
         SystemUser user = new User(); user.setId(3L);

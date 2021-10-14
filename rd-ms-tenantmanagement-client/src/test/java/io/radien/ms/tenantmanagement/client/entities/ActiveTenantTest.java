@@ -35,7 +35,7 @@ public class ActiveTenantTest {
      * Active tenant entity constructor test
      */
     public ActiveTenantTest(){
-        activeTenant = new ActiveTenant(2L, 2L, 2L, "test", true);
+        activeTenant = new ActiveTenant(2L, 2L, 2L);
     }
 
     /**
@@ -43,27 +43,22 @@ public class ActiveTenantTest {
      */
     @Test
     public void testActiveTenantConstructor(){
-        ActiveTenant activeTenant2 = new ActiveTenant(2L, 2L, 2L, "test", true);
+        ActiveTenant activeTenant2 = new ActiveTenant(2L, 2L, 2L);
 
         assertEquals((Long) 2L, activeTenant2.getId());
         assertEquals((Long) 2L, activeTenant2.getUserId());
         assertEquals((Long) 2L, activeTenant2.getTenantId());
-        assertEquals("test", activeTenant2.getTenantName());
-        assertTrue(activeTenant2.getIsTenantActive());
 
         ActiveTenant activeTenant3 = new ActiveTenant(activeTenant);
 
         assertEquals((Long) 2L, activeTenant3.getId());
         assertEquals((Long) 2L, activeTenant3.getUserId());
         assertEquals((Long) 2L, activeTenant3.getTenantId());
-        assertEquals("test", activeTenant3.getTenantName());
-        assertTrue(activeTenant3.getIsTenantActive());
 
         ActiveTenant activeTenant4 = new ActiveTenant();
 
         assertNull(activeTenant4.getId());
         assertNull(activeTenant4.getUserId());
         assertNull(activeTenant4.getTenantId());
-        assertNull(activeTenant4.getTenantName());
     }
 }

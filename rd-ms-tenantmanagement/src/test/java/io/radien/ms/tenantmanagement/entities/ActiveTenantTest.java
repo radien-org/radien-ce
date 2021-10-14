@@ -77,7 +77,7 @@ public class ActiveTenantTest {
     @Test
     public void testTenantTest() {
         io.radien.ms.tenantmanagement.client.entities.ActiveTenant t =
-                new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(2L, 2L, 2L, null, false);
+                new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(2L, 2L, 2L);
 
         assertNotNull(t.getId());
         assertNotNull(t.getUserId());

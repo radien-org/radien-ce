@@ -17,7 +17,6 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
@@ -76,9 +75,6 @@ public class UserProfileManagerTest {
 
     @Mock
     private UserRESTServiceAccess userRESTServiceAccess;
-
-    @Mock
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     @Mock
     private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;

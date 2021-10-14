@@ -16,11 +16,16 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
+import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import java.util.Collection;
@@ -36,9 +41,10 @@ import org.slf4j.LoggerFactory;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRoleUserResource implements TenantRoleUserResourceClient {
+public class TenantRoleUserResource extends AuthorizationChecker implements TenantRoleUserResourceClient {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleUserResource.class);
+    private static final long serialVersionUID = -107402438846356377L;
 
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
@@ -126,6 +132,9 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
         try {
             log.info("Associating/adding user {} to tenant-role {}", tenantRoleUser.getTenantRoleId(),
                     tenantRoleUser.getUserId());
+            if (!isSaveAllowed(tenantRoleUser)) {
+                return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+            }
             tenantRoleUserBusinessService.assignUser(new io.radien.ms.rolemanagement.entities.TenantRoleUserEntity(tenantRoleUser));
             return Response.ok().build();
         } catch (TenantRoleException | UniquenessConstraintException e) {
@@ -133,6 +142,14 @@ public class TenantRoleUserResource implements TenantRoleUserResourceClient {
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
+    }
+
+    private boolean isSaveAllowed(TenantRoleUser tenantRoleUser) throws SystemException {
+
+
+        return  tenantRoleUserServiceAccess.count()==0L || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) || hasPermission(null,
+                tenantRoleUser.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
+                SystemResourcesEnum.TENANT_ROLE_USER.getResourceName()) ;
     }
 
     /**

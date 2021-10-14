@@ -138,4 +138,6 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @throws TenantRoleException in case of any inconsistency found
      */
     List<Long> getTenantRoleIds(Long tenantId, Collection<Long> roleIds) throws TenantRoleException;
+
+    long count();
 }
