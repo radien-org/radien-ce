@@ -15,10 +15,21 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
+import io.radien.api.security.TokensPlaceHolder;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.authz.client.PermissionClient;
+import io.radien.ms.authz.client.TenantRoleClient;
+import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -27,11 +38,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -50,6 +63,24 @@ public class TenantRolePermissionResourceTest {
     @Mock
     TenantRolePermissionBusinessService tenantRolePermissionBusinessService;
 
+    @Mock
+    HttpServletRequest servletRequest;
+
+    @Mock
+    PermissionClient permissionClient;
+
+    @Mock
+    TenantRoleClient tenantRoleClient;
+
+    @Mock
+    TokensPlaceHolder tokensPlaceHolder;
+
+    @Mock
+    OAFAccess oafAccess;
+
+    @Mock
+    UserClient userClient;
+
     @BeforeEach
     public void before(){
         MockitoAnnotations.initMocks(this);
@@ -61,6 +92,24 @@ public class TenantRolePermissionResourceTest {
     @Test
     @Order(1)
     public void testAssignPermission() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+
         Response response = tenantRolePermissionResource.assignPermission(new TenantRolePermission());
         assertEquals(200, response.getStatus());
     }
@@ -72,6 +121,23 @@ public class TenantRolePermissionResourceTest {
     @Test
     @Order(2)
     public void testAssignPermissionWithException() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
         TenantRolePermission tenantRolePermission = new TenantRolePermission();
         try {
             doThrow(new UniquenessConstraintException("error")).

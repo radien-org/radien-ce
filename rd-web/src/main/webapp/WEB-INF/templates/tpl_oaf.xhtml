@@ -43,28 +43,31 @@
 						<b:dropMenu value="#{msg.rd_system_menu}" rendered="#{userSession.active and activeTenantDataModelManager.isTenantActive()}">
 							<b:navCommandLink value="#{msg.rd_users_menu}" action="#{navigation.navigate}"
 											  actionListener="#{navigation.navigationAction}"
-											  rendered="#{authzChecker.hasUserAdministratorRoleAccess()}">
+											  rendered="#{authzChecker.hasPermissionAccess('System Menu','Read',null)}">
 								<f:param name="navigationNode" value="users" />
 								<f:attribute name="navigationNode" value="users" />
 							</b:navCommandLink>
-							<b:dropMenu value="#{msg.rd_roles_menu}" rendered="#{userSession.active}">
-								<b:navCommandLink value="#{msg.rd_roles}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+							<b:dropMenu value="#{msg.rd_roles_menu}" rendered="#{userSession.active and (authzChecker.hasPermissionAccess('Roles','Update',null) or authzChecker.hasPermissionAccess('Tenant Role','Update',null))}">
+								<b:navCommandLink value="#{msg.rd_roles}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}" rendered="#{authzChecker.hasPermissionAccess('Roles','Update',null)}">
 									<f:param name="navigationNode" value="roles" />
 									<f:attribute name="navigationNode" value="roles" />
 								</b:navCommandLink>
 								<b:navCommandLink value="#{msg.tenant_role_associations}"
 												  action="#{navigation.navigate}"
-												  actionListener="#{navigation.navigationAction}">
+												  actionListener="#{navigation.navigationAction}"
+												  rendered="#{authzChecker.hasPermissionAccess('Tenant Role','Update',null)}">
 									<f:param name="navigationNode" value="tenantroles" />
 									<f:attribute name="navigationNode" value="tenantroles" />
 								</b:navCommandLink>
 							</b:dropMenu>
-							<b:navCommandLink value="#{msg.rd_permissions_menu}" rendered="#{userSession.active}"
-								action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+							<b:navCommandLink value="#{msg.rd_permissions_menu}"
+											  action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}"
+											  rendered="#{authzChecker.hasPermissionAccess('Permission','Update',null)}">
 								<f:param name="navigationNode" value="permissions" />
 								<f:attribute name="navigationNode" value="permissions" />
 							</b:navCommandLink>
-							<b:navCommandLink value="#{msg.rd_tenants_menu}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">
+							<b:navCommandLink value="#{msg.rd_tenants_menu}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}"
+											  rendered="#{authzChecker.hasPermissionAccess('Tenant','Update',null)}">
 								<f:param name="navigationNode" value="tenants" />
 								<f:attribute name="navigationNode" value="tenants" />
 							</b:navCommandLink>
@@ -76,7 +79,7 @@
 											 requiredMessage="#{msg.rd_active_tenant_must_be_choose}" rendered="#{userSession.active}"
 											 update="@all">
 								<f:selectItem itemLabel="#{msg.choose_active_tenant}" itemValue="#{msg.rd_no_active_tenant}" />
-								<f:selectItems value="#{activeTenantDataModelManager.getUserTenants()}" var="t" itemValue="#{t}" itemLabel="#{t}" />
+								<f:selectItems value="#{activeTenantDataModelManager.getUserAvailableTenants()}" var="t" itemValue="#{t.id}" itemLabel="#{t.name}" />
 							</b:selectOneMenu>
 						</b:navbarLinks>
 

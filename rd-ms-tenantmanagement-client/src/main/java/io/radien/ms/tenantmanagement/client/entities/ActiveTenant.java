@@ -25,12 +25,9 @@ import io.radien.api.model.tenant.SystemActiveTenant;
  */
 public class ActiveTenant extends AbstractModel implements SystemActiveTenant {
 
-    private Long id;
-
+	private Long id;
     private Long userId;
     private Long tenantId;
-    private String tenantName;
-    private boolean isTenantActive;
 
     public ActiveTenant(){
     }
@@ -43,12 +40,10 @@ public class ActiveTenant extends AbstractModel implements SystemActiveTenant {
      * @param tenantName tenant name which the user has activated
      * @param isTenantActive in case the following user has the record tenant active this value should be return true
      */
-    public ActiveTenant(Long id, Long userId, Long tenantId, String tenantName, boolean isTenantActive) {
+    public ActiveTenant(Long id, Long userId, Long tenantId) {
         this.id = id;
         this.userId = userId;
         this.tenantId = tenantId;
-        this.tenantName = tenantName;
-        this.isTenantActive=isTenantActive;
     }
 
     /**
@@ -59,8 +54,6 @@ public class ActiveTenant extends AbstractModel implements SystemActiveTenant {
         this.id = activeTenant.getId();
         this.userId = activeTenant.getUserId();
         this.tenantId = activeTenant.getTenantId();
-        this.tenantName = activeTenant.getTenantName();
-        this.isTenantActive = activeTenant.getIsTenantActive();
     }
 
     /**
@@ -115,40 +108,5 @@ public class ActiveTenant extends AbstractModel implements SystemActiveTenant {
     @Override
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
-    }
-
-    /**
-     * Getter for the tenant name
-     * @return the tenant name in the active tenant information
-     */
-    @Override
-    public String getTenantName() {
-        return tenantName;
-    }
-
-    /**
-     * Setter for the tenant name
-     * @param tenantName to be set
-     */
-    @Override
-    public void setTenantName(String tenantName) {
-        this.tenantName = tenantName;
-    }
-
-    /**
-     * System active tenant is tenant active
-     * @return system active tenant is tenant active
-     */
-    @Override
-    public boolean getIsTenantActive() {
-        return isTenantActive;
-    }
-
-    /**
-     * System active tenant is tenant active setter
-     * @param isTenantActive to be set
-     */
-    public void setIsTenantActive(boolean isTenantActive) {
-        this.isTenantActive = isTenantActive;
     }
 }

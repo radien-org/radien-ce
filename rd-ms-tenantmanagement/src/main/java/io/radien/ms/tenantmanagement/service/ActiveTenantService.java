@@ -16,7 +16,6 @@
 package io.radien.ms.tenantmanagement.service;
 
 import static io.radien.api.SystemVariables.ID;
-import static io.radien.api.SystemVariables.IS_TENANT_ACTIVE;
 import static io.radien.api.SystemVariables.TENANT_ID;
 import static io.radien.api.SystemVariables.TENANT_NAME;
 import static io.radien.api.SystemVariables.USER_ID;
@@ -49,7 +48,6 @@ import io.radien.ms.tenantmanagement.entities.ActiveTenantEntity;
 
 /**
  * Active Tenant requests to be performed into the DB and actions to take place
- * 
  * @author Bruno Gama
  */
 @Stateful
@@ -96,7 +94,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 	/**
 	 * Gets all the active tenants into a pagination mode.
-	 * 
+	 *
 	 * @param search      name description for some active tenants
 	 * @param pageNo      of the requested information. Where the active tenant is.
 	 * @param pageSize    total number of pages returned in the request.
@@ -141,7 +139,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 	/**
 	 * Gets all the active tenants matching the given filter information
-	 * 
+	 *
 	 * @param filter information to search
 	 * @return a list o found system active tenants
 	 */
@@ -176,7 +174,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * predicates operator is "and" or "or" depending on the operator the start may
 	 * need to be true or false true and predicate1 and predicate2 false or
 	 * predicate1 or predicate2
-	 * 
+	 *
 	 * @param filter           information to be search
 	 * @param criteriaBuilder  to be used
 	 * @param activeTenantRoot table to be search
@@ -187,15 +185,13 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 		getFieldPredicate(USER_ID.getFieldName(), filter.getUserId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
 		getFieldPredicate(TENANT_ID.getFieldName(), filter.getTenantId(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
-		getFieldPredicate(IS_TENANT_ACTIVE.getFieldName(), filter.getIsTenantActive(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
-		getFieldPredicate(TENANT_NAME.getFieldName(), filter.getTenantName(), filter, criteriaBuilder, activeTenantRoot).ifPresent(list::add);
 
 		return list;
 	}
 
 	/**
 	 * Puts the requested fields into a predicate line
-	 * 
+	 *
 	 * @param name             of the field
 	 * @param value            of the field
 	 * @param filter           complete filter
@@ -247,7 +243,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 	/**
 	 * Delete ActiveTenants that exist for following parameters
-	 * 
+	 *
 	 * @param tenantId tenant identifier
 	 * @param userId   user identifier
 	 * @return true in case of success (records founds and removed), otherwise false
@@ -291,7 +287,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 	/**
 	 * Validates if specific requested Active Tenant exists
-	 * 
+	 *
 	 * @param userId   to be searched
 	 * @param tenantId to be search
 	 * @return response true if it exists
@@ -315,7 +311,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 	/**
 	 * Count the number of active tenants existent in the DB.
-	 * 
+	 *
 	 * @return the count of active tenants
 	 */
 	private long getCount(Predicate global, Root<ActiveTenantEntity> userRoot) {
@@ -334,7 +330,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 	/**
 	 * Method to delete from the db a specific active tenant
-	 * 
+	 *
 	 * @param activeTenant  to be deleted
 	 * @param entityManager already created entity manager
 	 * @return true if deletion has been a success or false if there was an issue

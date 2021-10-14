@@ -84,17 +84,6 @@ public class UnAssignTenantUser extends AbstractManager {
         return DataModelEnum.USERS_PATH.getValue();
     }
 
-    /**
-     * Validates User selection and admin role access privileges of a User Tenant
-     * @return boolean value true if a User selected to unAssign and
-     * also the ActiveTenant User has admin Role access privileges
-     */
-    public boolean isUserSelectedAndHasUserAdminRoleAccess() {
-        if(userDataModel.getSelectedUser() != null && userDataModel.getHasUserAdministratorRoleAccess()){
-            userSelectedAndHasUserAdminRoleAccess = true;
-        }
-        return userSelectedAndHasUserAdminRoleAccess;
-    }
 
     /**
      * Sets the boolean flag for a Tenant User selection and validates User

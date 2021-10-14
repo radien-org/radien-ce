@@ -99,16 +99,27 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         return new Page<SystemTenantRole>(systemTenantRoles, pageNo, totalRecords, totalPages);
     }
 
+    @Override
+    public long count(){
+        EntityManager em = getEntityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<TenantRoleEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRoleEntity.class);
+        Root<TenantRoleEntity> tenantRoleRoot = criteriaQuery.from(TenantRoleEntity.class);
+        return getCount(null,tenantRoleRoot,em);
+    }
+
     /**
      * Count the number of existent associations (Tenant role) in the DB.
      * @return the count of tenant role associations
      */
-    private long getCount(Predicate global, Root<TenantRoleEntity> userRoot, EntityManager em) {
+    private long getCount(Predicate global, Root<TenantRoleEntity> tenantRoleRoot, EntityManager em) {
         log.info("Gathering/counting the associations");
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        criteriaQuery.where(global);
-        criteriaQuery.select(criteriaBuilder.count(userRoot));
+        if(global != null) {
+            criteriaQuery.where(global);
+        }
+        criteriaQuery.select(criteriaBuilder.count(tenantRoleRoot));
 
         TypedQuery<Long> q= em.createQuery(criteriaQuery);
 

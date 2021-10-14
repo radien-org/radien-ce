@@ -42,12 +42,10 @@ public class ActiveTenantFactory {
      * @param tenantName tenant name to whom the active tenant belongs
      * @param isTenantActive if the selected record is active for the selected user
      */
-    public static ActiveTenant create(Long userId, Long tenantId, String tenantName, boolean isTenantActive){
+    public static ActiveTenant create(Long userId, Long tenantId){
         ActiveTenant activeTenant = new ActiveTenant();
         activeTenant.setUserId(userId);
         activeTenant.setTenantId(tenantId);
-        activeTenant.setTenantName(tenantName);
-        activeTenant.setIsTenantActive(isTenantActive);
 
         return activeTenant;
     }
@@ -63,10 +61,8 @@ public class ActiveTenantFactory {
         Long id = FactoryUtilService.getLongFromJson("id", jsonTenant);
         Long userId = FactoryUtilService.getLongFromJson("userId", jsonTenant);
         Long tenantId = FactoryUtilService.getLongFromJson("tenantId", jsonTenant);
-        String tenantName = FactoryUtilService.getStringFromJson("tenantName", jsonTenant);
-        boolean isTenantActive = FactoryUtilService.getBooleanFromJson("isTenantActive", jsonTenant);
 
-        ActiveTenant activeTenant = create(userId, tenantId, tenantName, isTenantActive);
+        ActiveTenant activeTenant = create(userId, tenantId);
         activeTenant.setId(id);
 
         return activeTenant;
@@ -84,8 +80,6 @@ public class ActiveTenantFactory {
         FactoryUtilService.addValueLong(builder, "id", activeTenant.getId());
         FactoryUtilService.addValueLong(builder, "userId", activeTenant.getUserId());
         FactoryUtilService.addValueLong(builder, "tenantId", activeTenant.getTenantId());
-        FactoryUtilService.addValue(builder, "tenantName", activeTenant.getTenantName());
-        FactoryUtilService.addValueBoolean(builder, "isTenantActive", activeTenant.getIsTenantActive());
 
         return  builder.build();
     }

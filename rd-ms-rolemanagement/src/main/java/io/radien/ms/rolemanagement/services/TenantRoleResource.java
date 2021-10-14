@@ -16,12 +16,17 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.RoleNotFoundException;
+import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
@@ -38,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Newton Carvalho
  */
 @RequestScoped
-public class TenantRoleResource implements TenantRoleResourceClient {
+public class TenantRoleResource extends AuthorizationChecker implements TenantRoleResourceClient {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleResource.class);
 
@@ -156,6 +161,10 @@ public class TenantRoleResource implements TenantRoleResourceClient {
     public Response save(TenantRole tenantRole) {
         try {
             log.info("Creating association for Tenant {} and Role {}", tenantRole.getTenantId(), tenantRole.getRoleId());
+
+            if (!isSaveAllowed(tenantRole)) {
+                return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+            }
             tenantRoleBusinessService.save(new TenantRoleEntity(tenantRole));
             return Response.ok().build();
         } catch (UniquenessConstraintException | TenantRoleException e) {
@@ -163,6 +172,12 @@ public class TenantRoleResource implements TenantRoleResourceClient {
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
+    }
+
+    private boolean isSaveAllowed(TenantRole tenantRole) throws SystemException {
+        return tenantRoleBusinessService.count()==0L || hasPermission(null,
+                tenantRole.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
+                SystemResourcesEnum.TENANT_ROLE.getResourceName()) || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
     }
 
     /**

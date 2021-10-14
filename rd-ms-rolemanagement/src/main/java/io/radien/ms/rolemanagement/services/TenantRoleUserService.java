@@ -164,8 +164,9 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
-        criteriaQuery.where(global);
-
+        if(global!=null) {
+            criteriaQuery.where(global);
+        }
         criteriaQuery.select(criteriaBuilder.count(tenantRoleUserRoot));
 
         TypedQuery<Long> q= em.createQuery(criteriaQuery);
@@ -488,6 +489,14 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
         TypedQuery<Long> typedQuery = em.createQuery(criteriaQuery);
         return typedQuery.getResultList();
+    }
+
+    public long count(){
+        EntityManager em = getEntityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<TenantRoleUserEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRoleUserEntity.class);
+        Root<TenantRoleUserEntity> tenantRoleUserRoot = criteriaQuery.from(TenantRoleUserEntity.class);
+        return getCount(null,tenantRoleUserRoot,em);
     }
 
     /**
