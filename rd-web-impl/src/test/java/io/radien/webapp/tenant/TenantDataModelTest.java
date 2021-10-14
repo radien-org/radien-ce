@@ -194,12 +194,11 @@ public class TenantDataModelTest {
         clientTenant.setClientZipCode("zipCode1");
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(3L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any());
 
         tenantDataModel.save(clientTenant);
 
@@ -243,12 +242,11 @@ public class TenantDataModelTest {
 
     private void validateClientTenantCreation(Tenant clientTenant) throws SystemException {
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(3L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any());
 
         assertEquals(DataModelEnum.TENANT_CREATION_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
@@ -321,12 +319,11 @@ public class TenantDataModelTest {
         clientTenant.setTenantType(TenantType.SUB);
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(2L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), anyLong());
 
         assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
@@ -339,11 +336,10 @@ public class TenantDataModelTest {
         clientTenant.setTenantType(TenantType.SUB);
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(2L);
 
         doThrow(new SystemException()).when(activeTenantRESTServiceAccess).
-                getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+                getActiveTenantByFilter(anyLong(), any());
 
         assertEquals(DataModelEnum.TENANT_CREATION_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
@@ -356,12 +352,11 @@ public class TenantDataModelTest {
         clientTenant.setTenantType(TenantType.SUB);
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(2L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), anyLong());
 
         assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }

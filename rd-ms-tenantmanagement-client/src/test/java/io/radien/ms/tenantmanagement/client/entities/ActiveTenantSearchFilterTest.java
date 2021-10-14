@@ -29,7 +29,7 @@ public class ActiveTenantSearchFilterTest extends TestCase {
     private final ActiveTenantSearchFilter searchFilter;
 
     public ActiveTenantSearchFilterTest() {
-        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, "test", false, true, true);
+        this.searchFilter = new ActiveTenantSearchFilter(2L, 2L, true);
     }
 
     /**
@@ -68,42 +68,6 @@ public class ActiveTenantSearchFilterTest extends TestCase {
         searchFilter.setTenantId(3L);
         assertNotNull(searchFilter.getTenantId());
         assertEquals((Long) 3L, searchFilter.getTenantId());
-    }
-
-    /**
-     * Test the search filter tenant name getter
-     */
-    @Test
-    public void testGetTenantName() {
-        assertNotNull(searchFilter.getTenantName());
-        assertEquals("test", searchFilter.getTenantName());
-    }
-
-    /**
-     * Test the search filter tenant name setter
-     */
-    @Test
-    public void testSetTenantName() {
-        searchFilter.setTenantName("test2");
-        assertNotNull(searchFilter.getTenantName());
-        assertEquals("test2", searchFilter.getTenantName());
-    }
-
-    /**
-     * Test the search filter is tenant active getter
-     */
-    @Test
-    public void testGetIsTenantActive() {
-        assertFalse(searchFilter.getIsTenantActive());
-    }
-
-    /**
-     * Test the search filter is tenant active setter
-     */
-    @Test
-    public void testSetIsTenantActive() {
-        searchFilter.setIsTenantActive(true);
-        assertTrue(searchFilter.getIsTenantActive());
     }
 
     /**
