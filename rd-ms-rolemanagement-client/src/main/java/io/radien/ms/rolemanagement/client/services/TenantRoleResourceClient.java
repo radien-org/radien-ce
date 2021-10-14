@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import javax.management.Query;
 import javax.ws.rs.HEAD;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
@@ -46,8 +47,12 @@ public interface TenantRoleResourceClient {
 
     /**
      * Retrieves TenantRole association using pagination approach
+     * @param tenantId tenant identifier (Optional)
+     * @param roleId role identifier (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
      * and a Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size).<br>
@@ -55,8 +60,12 @@ public interface TenantRoleResourceClient {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-                           @DefaultValue("10") @QueryParam("pageSize") int pageSize);
+    public Response getAll(@QueryParam("tenantId") Long tenantId,
+                           @QueryParam("roleId") Long roleId,
+                           @DefaultValue("1")@QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize,
+                           @QueryParam("sortBy") List<String> sortBy,
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     /**
      * Retrieves TenantRole associations that met the following parameter

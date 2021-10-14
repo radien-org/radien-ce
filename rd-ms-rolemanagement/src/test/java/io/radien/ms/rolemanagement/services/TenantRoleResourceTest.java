@@ -96,7 +96,7 @@ public class TenantRoleResourceTest {
     @Test
     @Order(1)
     public void getAll() {
-        Response response = tenantRoleResource.getAll(1,10);
+        Response response = tenantRoleResource.getAll(null, null, 1,10, null, true);
         assertEquals(200,response.getStatus());
     }
 
@@ -106,9 +106,9 @@ public class TenantRoleResourceTest {
     @Test
     @Order(2)
     public void getAllWithException() {
-        when(tenantRoleResource.getAll(1,10))
+        when(tenantRoleBusinessService.getAll(null, null, 1,10, null, true))
                 .thenThrow(new RuntimeException());
-        Response response = tenantRoleResource.getAll(1,10);
+        Response response = tenantRoleResource.getAll(null, null, 1,10, null, true);
         assertEquals(500,response.getStatus());
     }
 

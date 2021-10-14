@@ -75,46 +75,44 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
     /**
      * Retrieves TenantRole associations using pagination approach
      * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantId tenant identifier (Optional)
+     * @param roleId role identifier (Optional)
      * @param pageNo page number
      * @param pageSize page size
-     * @return Page containing TenantRole user associations (Chunk/Portion compatible
+     * @param sortBy any specific column
+     * @param isAscending true in case records should be filter in ascending order
+     * @return Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size)
      * @throws SystemException in case of any error
      */
     @Override
-    public Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException {
-        try {
-            return getAllCore(pageNo, pageSize);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getAllCore(pageNo, pageSize);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+    public Page<? extends SystemTenantRole> getAll(Long tenantId, Long roleId, int pageNo, int pageSize,
+                                            List<String> sortBy, boolean isAscending) throws SystemException {
+        return get(() -> getAllCore(tenantId, roleId, pageNo, pageSize, sortBy, isAscending));
     }
 
     /**
      * Core method that Retrieves TenantRole associations using pagination approach
+     * @param tenantId tenant identifier (Optional)
+     * @param roleId role identifier (Optional)
      * @param pageNo page number
      * @param pageSize page size
-     * @return Page containing TenantRole user associations (Chunk/Portion compatible
+     * @param sortBy any specific column
+     * @param isAscending true in case records should be filter in ascending order
+     * @return Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size)
      * @throws SystemException in case of any error
      */
-    protected Page<? extends SystemTenantRole> getAllCore(int pageNo, int pageSize) throws SystemException {
+    protected Page<? extends SystemTenantRole> getAllCore(Long tenantId, Long roleId, int pageNo, int pageSize,
+                                                          List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getAll(pageNo, pageSize);
+            Response response = client.getAll(tenantId, roleId, pageNo, pageSize, sortBy, isAscending);
             return TenantRoleModelMapper.mapToPage((InputStream) response.getEntity());
         }
-        catch (TokenExpiredException t) {
-            throw t;
-        }
-        catch (Exception e) {
-            throw new SystemException("Error trying to retrieve Tenant Role User associations", e);
+        catch (MalformedURLException | ProcessingException | ExtensionException | InternalServerErrorException e) {
+            throw new SystemException(e);
         }
     }
 

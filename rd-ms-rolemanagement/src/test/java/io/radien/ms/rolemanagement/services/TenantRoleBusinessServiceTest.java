@@ -46,6 +46,7 @@ import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -874,7 +875,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
     @Order(25)
     public void getAll() {
         Page<SystemTenantRole> page = assertDoesNotThrow(() ->
-                tenantRoleBusinessService.getAll(1, 10));
+                tenantRoleBusinessService.getAll(1L, 2L, 1, 10, new ArrayList<>(), false));
         assertNotNull(page);
         assertNotNull(page.getResults());
         assertFalse(page.getResults().isEmpty());

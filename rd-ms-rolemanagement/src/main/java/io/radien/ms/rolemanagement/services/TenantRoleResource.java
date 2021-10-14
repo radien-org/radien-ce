@@ -33,6 +33,11 @@ import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,19 +79,24 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
 
     /**
      * Retrieves TenantRole association using pagination approach
+     * @param tenantId tenant identifier (Optional)
+     * @param roleId role identifier (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
      * and a Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size).<br>
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
-    @Override
-    public Response getAll(int pageNo, int pageSize) {
+    public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize,
+                           List<String> sortBy, boolean isAscending) {
         log.info("Retrieving TenantRole associations using pagination. Page number {}. Page Size {}.",
                 pageNo, pageSize);
         try {
-            return Response.ok().entity(this.tenantRoleBusinessService.getAll(pageNo, pageSize)).build();
+            return Response.ok().entity(this.tenantRoleBusinessService.getAll(tenantId, roleId, pageNo,
+                    pageSize, sortBy, isAscending)).build();
         }
         catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);

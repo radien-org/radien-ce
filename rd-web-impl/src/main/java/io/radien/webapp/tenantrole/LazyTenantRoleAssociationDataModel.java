@@ -98,7 +98,7 @@ public class LazyTenantRoleAssociationDataModel extends LazyAbstractDataModel<Sy
      */
     @Override
     public Page<? extends SystemTenantRole> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
-        Page<? extends SystemTenantRole> page = service.getAll((offset/pageSize)+1, pageSize);
+        Page<? extends SystemTenantRole> page = service.getAll(null,null,(offset/pageSize)+1, pageSize, null, false);
         // Get the role ids
         List<Long> roleIds = page.getResults().stream().map(SystemTenantRole::getRoleId).
                 distinct().collect(Collectors.toList());

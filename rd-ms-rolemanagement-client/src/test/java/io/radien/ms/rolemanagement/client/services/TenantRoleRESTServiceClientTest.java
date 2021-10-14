@@ -31,7 +31,7 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
+import io.radien.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -627,12 +627,12 @@ public class TenantRoleRESTServiceClientTest {
         Response response = Response.ok(is).build();
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
-        when(client.getAll(1, 3)).thenReturn(response);
+        when(client.getAll(1L, 1L, 1, 3, null, false)).thenReturn(response);
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
                 thenReturn(client);
 
         Page<? extends SystemTenantRole> result = 
-                target.getAll(1, 3);
+                target.getAll(1L, 1L, 1, 3, null, false);
         assertNotNull(result);
         assertEquals(1,result.getTotalPages());
         assertEquals(3,result.getResults().size());
@@ -649,13 +649,13 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getAll(1, 2)).thenThrow(new TokenExpiredException("test"));
+        when(client.getAll(1L, 1L, 1, 2, null, false)).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getAll(1, 2);
+        target.getAll(1L, 1L, 1, 2, null, false);
     }
 
     /**
@@ -670,9 +670,10 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getAll(1, 2)).thenThrow(new InternalServerErrorException("test"));
+        when(client.getAll(1L, 1L, 1, 2, null, false)).
+                thenThrow(new InternalServerErrorException("test"));
 
-        target.getAll(1, 2);
+        target.getAll(1L, 1L, 1, 2, null, false);
     }
 
     /**

@@ -20,6 +20,7 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
+import io.radien.api.model.user.SystemUser;
 import io.radien.exception.SystemException;
 import java.util.List;
 import java.util.Optional;
@@ -35,11 +36,14 @@ public interface TenantRoleRESTServiceAccess {
      * Retrieves TenantRole association using pagination approach
      * @param pageNo page number
      * @param pageSize page size
-     * @return Page containing TenantRole User associations (Chunk/Portion compatible
+     * @param sortBy any specific column
+     * @param isAscending true in case records should be filter in ascending order
+     * @return Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size).
      * @throws SystemException in case of any error
      */
-    Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException;
+    Page<? extends SystemTenantRole> getAll(Long tenantId, Long roleId, int pageNo, int pageSize,
+                                            List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Obtains the TenantRole Id (for given Tenant and role identifiers)
