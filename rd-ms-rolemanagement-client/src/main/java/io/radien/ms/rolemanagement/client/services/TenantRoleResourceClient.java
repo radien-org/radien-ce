@@ -18,7 +18,6 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import javax.management.Query;
 import javax.ws.rs.HEAD;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 

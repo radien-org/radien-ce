@@ -20,7 +20,6 @@ import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
-import io.radien.api.model.user.SystemUser;
 import io.radien.exception.SystemException;
 import java.util.List;
 import java.util.Optional;
