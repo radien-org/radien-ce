@@ -17,11 +17,14 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.RoleEntity;
@@ -202,22 +205,44 @@ public class TenantRoleService implements TenantRoleServiceAccess {
     }
 
     /**
-     * Save or update a Tenant Role association
+     * Creates a Tenant Role association
      * @param tenantRole role association information to be created
-     * @throws UniquenessConstraintException to be throw in case of duplication of fields or records
+     * @throws UniquenessConstraintException in case of duplicated combination of tenant and role
      */
     @Override
-    public void save(SystemTenantRole tenantRole) throws UniquenessConstraintException {
+    public void create(SystemTenantRole tenantRole) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
+        checkUniqueness(tenantRole, em);
+        em.persist(tenantRole);
+    }
+
+    /**
+     * Updates a Tenant Role association
+     * @param tenantRole role association information to be updated
+     * @throws UniquenessConstraintException in case of duplicated combination of tenant and role
+     * @throws TenantRoleNotFoundException in case of not existent tenantRole for the give id
+     */
+    @Override
+    public void update(SystemTenantRole tenantRole) throws UniquenessConstraintException, TenantRoleNotFoundException {
+        EntityManager em = getEntityManager();
+        if(em.find(TenantRoleEntity.class, tenantRole.getId()) == null) {
+            throw new TenantRoleNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+        }
+        checkUniqueness(tenantRole, em);
+        em.merge(tenantRole);
+    }
+
+    /**
+     * Seek for eventual duplicated information
+     * @param tenantRole base entity bean to seek for repeated information
+     * @param em entity manager
+     * @throws UniquenessConstraintException thrown in case of repeated information
+     */
+    private void checkUniqueness(SystemTenantRole tenantRole, EntityManager em) throws UniquenessConstraintException{
         boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRole.getRoleId(),
                 tenantRole.getTenantId(), tenantRole.getId(), em);
         if (alreadyExistentRecords) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("roleId and TenantId"));
-        }
-        if (tenantRole.getId() == null) {
-            em.persist(tenantRole);
-        } else {
-            em.merge(tenantRole);
         }
     }
 

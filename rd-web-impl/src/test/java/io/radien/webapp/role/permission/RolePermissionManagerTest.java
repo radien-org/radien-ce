@@ -311,7 +311,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
         assertEquals(systemActiveTenant, rolePermissionManager.getSystemActiveTenant());
 
         doReturn(retrievedSystemPermissionList).when(tenantRoleRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
-        doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(true).when(tenantRoleRESTServiceAccess).create(any());
         doReturn(true).when(tenantRolePermissionRESTServiceAccess).unAssignPermission(anyLong(), anyLong(), anyLong());
 
         String roles_url = rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant();
@@ -352,7 +352,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
         rolePermissionManager.setAssignableRolePermissions(new HashSet<>(Arrays.asList(1L, 10000L, 10001L)));
         when(tenantRoleRESTServiceAccess.exists(systemActiveTenant.getTenantId(), systemRole.getId())).
                 then(i -> Boolean.FALSE).then(i -> Boolean.TRUE);
-        when(tenantRoleRESTServiceAccess.save(any())).thenReturn(Boolean.TRUE);
+        when(tenantRoleRESTServiceAccess.create(any())).thenReturn(Boolean.TRUE);
         when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).then(i -> Boolean.TRUE);
 
         SystemTenantRole tenantRole = new TenantRole();

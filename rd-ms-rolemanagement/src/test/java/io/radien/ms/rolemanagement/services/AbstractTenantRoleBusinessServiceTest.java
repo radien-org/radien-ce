@@ -127,7 +127,7 @@ public abstract class AbstractTenantRoleBusinessServiceTest {
             when(tenantRoleBusinessService.getTenantRESTServiceAccess().isTenantExistent(tenantId)).
                     thenReturn(Boolean.TRUE);
 
-            tenantRoleBusinessService.save(tenantRole);
+            tenantRoleBusinessService.create(tenantRole);
         }
 
         return tenantRole;

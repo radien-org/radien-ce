@@ -188,7 +188,7 @@ public class RolePermissionManager extends AbstractManager implements Serializab
                     if (!tenantRoleRESTServiceAccess.exists(getSystemActiveTenant().getTenantId(), systemRole.getId())) {
                         SystemTenantRole str = TenantRoleFactory.create(getSystemActiveTenant().getTenantId(),
                                 systemRole.getId(), getSystemActiveTenant().getUserId());
-                        tenantRoleRESTServiceAccess.save(str);
+                        tenantRoleRESTServiceAccess.create(str);
                     }
                     TenantRolePermission tenantRolePermission = new TenantRolePermission();
                     tenantRolePermission.setTenantRoleId(tenantRoleUtil.getTenantRoleId(getSystemActiveTenant().getTenantId(),

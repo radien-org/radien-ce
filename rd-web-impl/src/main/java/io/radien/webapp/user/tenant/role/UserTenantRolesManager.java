@@ -192,7 +192,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
                     SystemTenantRole tenantRole = new TenantRole();
                     tenantRole.setTenantId(tenant.getId());
                     tenantRole.setRoleId(systemRoleId);
-                    isTenantRoleSaved = tenantRoleRESTServiceAccess.save(tenantRole);
+                    isTenantRoleSaved = tenantRoleRESTServiceAccess.create(tenantRole);
                 }
 
                 if(isTenantRoleAssociationExists || isTenantRoleSaved){

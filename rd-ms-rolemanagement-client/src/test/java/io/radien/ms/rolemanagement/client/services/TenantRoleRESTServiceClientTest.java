@@ -322,11 +322,11 @@ public class TenantRoleRESTServiceClientTest {
         Response response = Response.ok().build();
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
-        when(client.save(str)).thenReturn(response);
+        when(client.create(str)).thenReturn(response);
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
                 thenReturn(client);
 
-        Boolean result = target.save(str);
+        Boolean result = target.create(str);
         assertNotNull(result);
         assertTrue(result);
     }
@@ -342,11 +342,11 @@ public class TenantRoleRESTServiceClientTest {
         Response response = Response.status(300).build();
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
-        when(client.save(any())).thenReturn(response);
+        when(client.create(any())).thenReturn(response);
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
                 thenReturn(client);
 
-        Boolean result = target.save(new TenantRole());
+        Boolean result = target.create(new TenantRole());
 
         assertNotNull(result);
         assertFalse(result);
@@ -362,13 +362,13 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.save(any())).thenThrow(new TokenExpiredException("test"));
+        when(client.create(any())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.save(new TenantRole());
+        target.create(new TenantRole());
     }
 
     /**
@@ -381,13 +381,13 @@ public class TenantRoleRESTServiceClientTest {
         TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
 
         when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.save(any())).thenThrow(new ProcessingException("test"));
+        when(client.create(any())).thenThrow(new ProcessingException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.save(new TenantRole());
+        target.create(new TenantRole());
     }
 
     /**
@@ -777,4 +777,68 @@ public class TenantRoleRESTServiceClientTest {
         target.getRolesForUserTenant(1L, 1L);
     }
 
+    /**
+     * Method to test update the association tenant role
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testUpdate() throws MalformedURLException, SystemException {
+
+        TenantRole str = new TenantRole();
+        str.setId(1L); str.setTenantId(2L); str.setRoleId(3L);
+
+        Response response = Response.ok().build();
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(client.update(str.getId(), str)).thenReturn(response);
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Boolean result = target.update(str);
+        assertNotNull(result);
+        assertTrue(result);
+    }
+
+    /**
+     * Method to test updating the association tenant role but with status not ok
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testUpdateWithStatusNeqOK() throws MalformedURLException, SystemException {
+        TenantRole tenantRole = new TenantRole(); tenantRole.setId(1L);
+        Response response = Response.status(300).build();
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(client.update(tenantRole.getId(), tenantRole)).thenReturn(response);
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Boolean result = target.update(tenantRole);
+
+        assertNotNull(result);
+        assertFalse(result);
+    }
+
+
+    /**
+     * Method to test updating the association tenant role but with token expired
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRole tenantRole = new TenantRole(); tenantRole.setId(1L);
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.update(tenantRole.getId(), tenantRole)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(tenantRole);
+    }
 }

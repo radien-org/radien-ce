@@ -20,12 +20,15 @@ import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityManager;
 
 /**
  * Describes a contract for a Repository responsible to perform operations over Tenant and Role association
@@ -57,11 +60,19 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
     List<? extends SystemTenantRole> get(SystemTenantRoleSearchFilter filter);
 
     /**
-     * Saves (Creates/Update) a system tenant role association based on the given information
+     * Creates a Tenant Role association
      * @param tenantRole role association information to be created
-     * @throws UniquenessConstraintException in case of duplicates
+     * @throws UniquenessConstraintException in case of duplicated combination of tenant and role
      */
-    void save(SystemTenantRole tenantRole) throws UniquenessConstraintException;
+    void create(SystemTenantRole tenantRole) throws UniquenessConstraintException;
+
+    /**
+     * Updates a Tenant Role association
+     * @param tenantRole role association information to be updated
+     * @throws UniquenessConstraintException in case of duplicated combination of tenant and role
+     * @throws TenantRoleNotFoundException in case of not existent tenantRole for the give id
+     */
+    void update(SystemTenantRole tenantRole) throws UniquenessConstraintException, TenantRoleNotFoundException;
 
     /**
      * Check if a role is already assigned/associated with a tenant

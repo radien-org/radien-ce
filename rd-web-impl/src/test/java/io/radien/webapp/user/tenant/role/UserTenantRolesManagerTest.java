@@ -263,7 +263,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         systemTenantRole.setTenantId(1L);
         systemTenantRole.setRoleId(1L);
 
-        doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(true).when(tenantRoleRESTServiceAccess).create(any());
         doReturn(true).when(tenantRoleUserRESTServiceAccess).assignUser(any());
         doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), anyCollection(), anyLong());
 
@@ -287,7 +287,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         systemTenantRole.setTenantId(1L);
         systemTenantRole.setRoleId(1L);
 
-        doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(true).when(tenantRoleRESTServiceAccess).create(any());
         doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).assignUser(any());
         doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), anyCollection(), anyLong());
 

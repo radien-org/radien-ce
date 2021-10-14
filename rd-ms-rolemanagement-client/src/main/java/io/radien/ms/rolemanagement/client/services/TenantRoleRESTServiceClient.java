@@ -23,7 +23,9 @@ import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
@@ -217,17 +219,8 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any error
      */
     @Override
-    public Boolean save(SystemTenantRole tenantRole) throws SystemException {
-        try {
-            return saveCore(tenantRole);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return saveCore(tenantRole);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+    public Boolean create(SystemTenantRole tenantRole) throws SystemException {
+        return get(this::createCore, tenantRole);
     }
 
     /**
@@ -237,14 +230,48 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws TokenExpiredException if the JWT token expires
      * @throws SystemException in case of any error
      */
-    private Boolean saveCore(SystemTenantRole tenantRole) throws SystemException {
+    private Boolean createCore(SystemTenantRole tenantRole) throws SystemException {
         try {
             TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.save((TenantRole) tenantRole);
+            Response response = client.create((TenantRole) tenantRole);
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException e) {
+        catch (ExtensionException | ProcessingException | MalformedURLException |
+                BadRequestException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+
+    /**
+     * Update a TenantRole association (Invokes the core method counterpart and
+     * handles TokenExpiration error)
+     * @param tenantRole bean that corresponds to TenantRole association to be updated
+     * @return Boolean indicating if the operation was concluded with success.
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Boolean update(SystemTenantRole tenantRole) throws SystemException {
+        return get(this::updateCore, tenantRole);
+    }
+
+    /**
+     * Main method invoked to Update a TenantRole association
+     * @param tenantRole bean that corresponds to TenantRole association to be updated
+     * @return Boolean indicating if the operation was concluded with success.
+     * @throws TokenExpiredException if the JWT token expires
+     * @throws SystemException in case of any error
+     */
+    private Boolean updateCore(SystemTenantRole tenantRole) throws SystemException {
+        try {
+            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.update(tenantRole.getId(), (TenantRole) tenantRole);
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }
+        catch (ExtensionException | ProcessingException | MalformedURLException | NotFoundException
+                | BadRequestException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
     }

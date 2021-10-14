@@ -158,14 +158,14 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
      * 500 code message if there is any error.
      */
     @Override
-    public Response save(TenantRole tenantRole) {
+    public Response create(TenantRole tenantRole) {
         try {
             log.info("Creating association for Tenant {} and Role {}", tenantRole.getTenantId(), tenantRole.getRoleId());
 
-            if (!isSaveAllowed(tenantRole)) {
+            if (!isCreateAllowed()) {
                 return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
             }
-            tenantRoleBusinessService.save(new TenantRoleEntity(tenantRole));
+            tenantRoleBusinessService.create(new TenantRoleEntity(tenantRole));
             return Response.ok().build();
         } catch (UniquenessConstraintException | TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
@@ -174,10 +174,45 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
         }
     }
 
-    private boolean isSaveAllowed(TenantRole tenantRole) throws SystemException {
-        return tenantRoleBusinessService.count()==0L || hasPermission(null,
-                tenantRole.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
-                SystemResourcesEnum.TENANT_ROLE.getResourceName()) || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+    /**
+     * Update a TenantRole association
+     * @param id id related to the TenantRole that is going to be updated
+     * @param tenantRole bean that corresponds to TenantRole association to be created
+     * @return 200 code message if success, 400 in case of duplication (association already
+     * existing with the same parameter) or absence of information (tenant or role not existing),
+     * 404 if the there is not TenantRole for the informed Id,
+     * 500 code message if there is any error.
+     */
+    public Response update(Long id, TenantRole tenantRole) {
+        try {
+            log.info("Updating association for Tenant {} and Role {}", tenantRole.getTenantId(), tenantRole.getRoleId());
+            if (!isUpdateAllowed()) {
+                return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+            }
+            tenantRole.setId(id);
+            tenantRoleBusinessService.update(new TenantRoleEntity(tenantRole));
+            return Response.ok().build();
+        }
+        catch (TenantRoleNotFoundException e) {
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        }
+        catch (UniquenessConstraintException | TenantRoleException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    private boolean isCreateAllowed() throws SystemException {
+        return tenantRoleBusinessService.count()==0L ||
+                hasPermission(null, SystemActionsEnum.ACTION_CREATE.getActionName(), SystemResourcesEnum.TENANT_ROLE.getResourceName())
+                || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+    }
+
+
+    private boolean isUpdateAllowed() throws SystemException {
+        return hasPermission(null, SystemActionsEnum.ACTION_UPDATE.getActionName(), SystemResourcesEnum.TENANT_ROLE.getResourceName())
+                || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
     }
 
     /**
