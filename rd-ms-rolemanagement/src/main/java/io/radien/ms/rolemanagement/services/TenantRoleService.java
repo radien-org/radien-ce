@@ -17,12 +17,10 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
-import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;

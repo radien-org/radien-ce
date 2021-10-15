@@ -20,7 +20,6 @@ import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
 
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -28,7 +27,6 @@ import io.radien.exception.UniquenessConstraintException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.EntityManager;
 
 /**
  * Describes a contract for a Repository responsible to perform operations over Tenant and Role association
