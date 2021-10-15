@@ -264,14 +264,26 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any error
      */
     private Boolean updateCore(SystemTenantRole tenantRole) throws SystemException {
-        try {
-            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.update(tenantRole.getId(), (TenantRole) tenantRole);
+        TenantRoleResourceClient client = getTenantRoleResourceClient();
+        try (Response response = client.update(tenantRole.getId(), (TenantRole) tenantRole)) {
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException | NotFoundException
+        catch (ExtensionException | ProcessingException | NotFoundException
                 | BadRequestException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Assemblies a Rest client for TenantRole endpoint
+     * @return instance of {@link TenantRoleResourceClient}
+     * @throws SystemException in case of malformed url
+     */
+    private TenantRoleResourceClient getTenantRoleResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getTenantResourceClient(oaf.getProperty(OAFProperties.
+                    SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
             throw new SystemException(e);
         }
     }

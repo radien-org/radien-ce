@@ -841,4 +841,38 @@ public class TenantRoleRESTServiceClientTest {
 
         target.update(tenantRole);
     }
+
+    /**
+     * Method to test update the association tenant role but with exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateException() throws MalformedURLException, SystemException {
+        TenantRole tenantRole = new TenantRole(); tenantRole.setId(1L);
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.update(tenantRole.getId(), tenantRole)).thenThrow(new ProcessingException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(tenantRole);
+    }
+
+    /**
+     * Method to test update the association tenant role but with exception being throw
+     * due malformed url
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateMalformedURLException() throws MalformedURLException, SystemException {
+        TenantRole tenantRole = new TenantRole(); tenantRole.setId(1L);
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenThrow(new MalformedURLException());
+        target.update(tenantRole);
+    }
 }
