@@ -15,9 +15,11 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
@@ -25,11 +27,16 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
+import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.client.services.TenantRolePermissionResourceClient;
 import java.util.List;
 import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +54,8 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
     @Inject
     private TenantRolePermissionBusinessService tenantRolePermissionBusinessService;
 
-    @Inject TenantRolePermissionService tenantRolePermissionService;
+    @Inject
+    private TenantRolePermissionServiceAccess tenantRolePermissionServiceAccess;
 
     /**
      * Retrieves TenantRolePermission association using pagination approach
@@ -69,10 +77,31 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
         log.info("Retrieving TenantRole Permission associations using pagination. Page number {}. Page Size {}.",
                 pageNo, pageSize);
         try {
-            return Response.ok().entity(this.tenantRolePermissionService.
+            return Response.ok().entity(this.tenantRolePermissionServiceAccess.
                     getAll(tenantRoleId, permissionId, pageNo, pageSize, sortBy, isAscending)).build();
         }
         catch(Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Retrieves TenantRole Permission associations that met the following parameter
+     * @param tenantRoleId TenantRole identifier
+     * @param permissionId Permission identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns OK (http status 200)
+     * and a Collection containing TenantRole associations.<br>
+     * Otherwise, in case of operational error, returns Internal Server Error (500)
+     */
+    public Response getSpecific(Long tenantRoleId, Long permissionId,boolean isLogicalConjunction) {
+        log.info("Retrieving TenantRole Permission associations for tenantRole {} permission {} using logical function {}",
+                tenantRoleId, permissionId, isLogicalConjunction);
+        try {
+            SystemTenantRolePermissionSearchFilter filter = new TenantRolePermissionSearchFilter(tenantRoleId,
+                    permissionId, true, isLogicalConjunction);
+            return Response.ok(tenantRolePermissionServiceAccess.get(filter)).build();
+        } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }

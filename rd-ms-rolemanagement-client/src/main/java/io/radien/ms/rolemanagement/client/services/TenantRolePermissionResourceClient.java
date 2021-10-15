@@ -64,6 +64,21 @@ public interface TenantRolePermissionResourceClient {
                     @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     /**
+     * Retrieves TenantRole Permission associations that met the following parameter
+     * @param tenantRoleId TenantRole identifier
+     * @param permissionId Permission identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns OK (http status 200)
+     * and a Collection containing TenantRole associations.<br>
+     * Otherwise, in case of operational error, returns Internal Server Error (500)
+     */
+    @GET
+    @Path("/find")
+    Response getSpecific(@QueryParam("tenantRoleId") Long tenantRoleId,
+                         @QueryParam("permissionId") Long permissionId,
+                         @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
+
+    /**
      * Deletes a Tenant Role Permission association using the id as search parameter.
      * @param id Tenant Role id association to guide the search process
      * @return 200 code message in case of success (Tenant Role association found)

@@ -43,6 +43,17 @@ public interface TenantRolePermissionRESTServiceAccess {
                                                       List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
+     * Retrieves TenantRolePermission associations that met the following parameter
+     * @param tenantRoleId TenantRole identifier
+     * @param permissionId Permission identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns a Collection containing TenantRole associations.
+     * @throws SystemException in case of Any error
+     */
+    List<? extends SystemTenantRolePermission> getTenantRolePermissions(Long tenantRoleId, Long permissionId,
+                                                                        boolean isLogicalConjunction) throws SystemException;
+
+    /**
      * Assign/associate/add permission to a TenantRole domain
      * The association will always be under a specific role
      * @param tenantRolePermission association between Tenant, Role and Permission

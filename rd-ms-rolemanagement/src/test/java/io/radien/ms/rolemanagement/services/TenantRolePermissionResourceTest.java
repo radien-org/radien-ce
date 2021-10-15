@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.TenantRoleException;
@@ -252,6 +253,31 @@ public class TenantRolePermissionResourceTest {
                 2, 3, null, false);
         Response response = tenantRolePermissionResource.getAll(1L,1L,
                 2, 3, null, false);
+        assertEquals(500, response.getStatus());
+    }
+
+
+    /**
+     * Tests response from getAll method
+     */
+    @Test
+    @Order(9)
+    public void testGetTenantRolePermissions() {
+        Response response = tenantRolePermissionResource.getSpecific(1L,1L,
+                false);
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Tests response from getAll method when exceptions occur
+     * during the processing
+     */
+    @Test
+    @Order(10)
+    public void testGetTenantRolePermissionsWithException() {
+        doThrow(new RuntimeException("error")).when(tenantRolePermissionService).
+                get(any(SystemTenantRolePermissionSearchFilter.class));
+        Response response = tenantRolePermissionResource.getSpecific(1L,1L, false);
         assertEquals(500, response.getStatus());
     }
 }

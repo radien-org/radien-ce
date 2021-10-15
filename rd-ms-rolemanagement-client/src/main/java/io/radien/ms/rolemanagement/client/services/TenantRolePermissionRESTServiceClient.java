@@ -195,6 +195,41 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
     }
 
     /**
+     * Retrieves TenantRolePermission associations that met the following parameter
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantRoleId TenantRole identifier
+     * @param permissionId Permission identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns a Collection containing TenantRolePermission associations.
+     * @throws SystemException in case of Any error
+     */
+    @Override
+    public List<? extends SystemTenantRolePermission> getTenantRolePermissions(Long tenantRoleId, Long permissionId,
+                                                                               boolean isLogicalConjunction) throws SystemException {
+        return get(() -> getTenantRolePermissionsCore(tenantRoleId, permissionId, isLogicalConjunction));
+    }
+
+    /**
+     * Retrieves TenantRolePermission associations that met the following parameter
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantRoleId Tenant identifier
+     * @param permissionId Role identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns a Collection containing TenantRolePermission associations.
+     * @throws SystemException in case of Any error
+     */
+    private List<? extends SystemTenantRolePermission> getTenantRolePermissionsCore(Long tenantRoleId, Long permissionId,
+                                                                                    boolean isLogicalConjunction) throws SystemException {
+        TenantRolePermissionResourceClient client = getClient();
+        try (Response response = client.getSpecific(tenantRoleId, permissionId, isLogicalConjunction)) {
+            return TenantRolePermissionModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch(ProcessingException | ExtensionException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * (Un)Assign/Dissociate/remove permission from a TenantRole domain
      * Simply deletes a TenantRolePermission that eventually exists.
      * To perform the action above, It will invoke the equivalent core method counterpart, and
@@ -234,6 +269,20 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Assemblies a {@link TenantRoleResourceClient} instance using RestClientBuilder Microprofile API
+     * @return instance of {@link TenantRoleResourceClient}
+     * @throws SystemException in case of Malformed URL
+     */
+    private TenantRolePermissionResourceClient getClient() throws SystemException {
+        try {
+            return clientServiceUtil.getTenantRolePermissionResourceClient(oaf.getProperty(
+                    OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
             throw new SystemException(e);
         }
     }
