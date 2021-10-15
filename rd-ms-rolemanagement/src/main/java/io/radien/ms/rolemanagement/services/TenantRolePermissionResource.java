@@ -26,6 +26,7 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.client.services.TenantRolePermissionResourceClient;
+import java.util.List;
 import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -46,25 +47,30 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
     @Inject
     private TenantRolePermissionBusinessService tenantRolePermissionBusinessService;
 
+    @Inject TenantRolePermissionService tenantRolePermissionService;
+
     /**
      * Retrieves TenantRolePermission association using pagination approach
      * (in other words, retrieves the Permissions associations that exist for a TenantRole)
-     * @param tenantId tenant identifier for a TenantRole
-     * @param roleId role identifier for a TenantRole
+     * @param tenantRoleId identifier for a TenantRole (Optional)
+     * @param permissionId identifier for a permission (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
      * and a Page containing TenantRolePermission associations (Chunk/Portion compatible
      * with parameter Page number and Page size).
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @Override
-    public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize) {
+    public Response getAll(Long tenantRoleId, Long permissionId, int pageNo, int pageSize,
+                           List<String> sortBy,  boolean isAscending) {
         log.info("Retrieving TenantRole Permission associations using pagination. Page number {}. Page Size {}.",
                 pageNo, pageSize);
         try {
-            return Response.ok().entity(this.tenantRolePermissionBusinessService.
-                    getAll(tenantId, roleId, pageNo, pageSize)).build();
+            return Response.ok().entity(this.tenantRolePermissionService.
+                    getAll(tenantRoleId, permissionId, pageNo, pageSize, sortBy, isAscending)).build();
         }
         catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);

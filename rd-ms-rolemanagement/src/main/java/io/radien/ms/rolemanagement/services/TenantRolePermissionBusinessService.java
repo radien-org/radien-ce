@@ -28,6 +28,7 @@ import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
 import java.io.Serializable;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -72,18 +73,6 @@ public class TenantRolePermissionBusinessService extends AbstractTenantRoleDomai
                     toString(String.valueOf(tenantRole.getTenantId()), String.valueOf(tenantRole.getRoleId())));
         }
         this.tenantRolePermissionService.create(tenantRolePermission);
-    }
-
-    /**
-     * Gets all the tenant role permission associations into a pagination mode.
-     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
-     * @param role search param that corresponds to the TenantRole.roleId (Optional)
-     * @param pageNumber of the requested information. Where the tenant is.
-     * @param pageSize total number of pages returned in the request.
-     * @return a page containing system tenant role permission associations.
-     */
-    public Page<SystemTenantRolePermission> getAll(Long tenant, Long role, int pageNumber, int pageSize) {
-        return this.getTenantRolePermissionService().getAll(tenant, role, pageNumber, pageSize);
     }
 
     /**

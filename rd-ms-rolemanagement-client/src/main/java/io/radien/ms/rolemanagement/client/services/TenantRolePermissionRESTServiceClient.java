@@ -30,6 +30,7 @@ import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRolePermissionModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
@@ -148,49 +149,44 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
 
 
     /**
-     * Under a pagination approach, retrieves the Permissions associations that exist
-     * for a TenantRole
+     * Under a pagination approach, retrieves the Tenant Role Permissions associations that currently exist
      * (Invokes the core method counterpart and handles TokenExpiration error)
-     * @param tenantId tenant identifier for a TenanSoon soon soon as soontRole (Acting as filter)
-     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * @param tenantRoleId tenant role identifier(Acting as filter)
+     * @param permissionId permission identifier (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return Page containing TenantRolePermission instances
      * @throws SystemException in case of any error
      */
     @Override
-    public Page<? extends SystemTenantRolePermission> getPermissions(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
-        try {
-            return getPermissionsCore(tenantId, roleId, pageNo, pageSize);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getPermissionsCore(tenantId, roleId, pageNo, pageSize);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+    public Page<? extends SystemTenantRolePermission> getAll(Long tenantRoleId, Long permissionId,
+                                                             int pageNo, int pageSize,
+                                                             List<String> sortBy, boolean isAscending) throws SystemException {
+        return get(() -> getAllCore(tenantRoleId, permissionId, pageNo, pageSize, sortBy, isAscending));
     }
 
     /**
      * Core method that Retrieves TenantRolePermission associations using pagination approach
-     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
-     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * @param tenantRoleId tenant role identifier(Acting as filter)
+     * @param permissionId permission identifier (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return Page containing TenantRole permission associations (Chunk/Portion compatible
      * with parameter Page number and Page size)
      * @throws SystemException in case of any error
      */
-    protected Page<? extends SystemTenantRolePermission> getPermissionsCore(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
+    protected Page<? extends SystemTenantRolePermission> getAllCore(Long tenantRoleId, Long permissionId,
+                                                                    int pageNo, int pageSize,
+                                                                    List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             TenantRolePermissionResourceClient client = clientServiceUtil.getTenantRolePermissionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getAll(tenantId, roleId, pageNo, pageSize);
+            Response response = client.getAll(tenantRoleId, permissionId, pageNo, pageSize, sortBy, isAscending);
             return TenantRolePermissionModelMapper.mapToPage((InputStream) response.getEntity());
-        }
-        catch (TokenExpiredException t) {
-            throw t;
         }
         catch (ExtensionException | ProcessingException | MalformedURLException |
                 InternalServerErrorException e){

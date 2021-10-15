@@ -64,6 +64,9 @@ public class TenantRolePermissionResourceTest {
     TenantRolePermissionBusinessService tenantRolePermissionBusinessService;
 
     @Mock
+    TenantRolePermissionService tenantRolePermissionService;
+
+    @Mock
     HttpServletRequest servletRequest;
 
     @Mock
@@ -231,9 +234,9 @@ public class TenantRolePermissionResourceTest {
      */
     @Test
     @Order(7)
-    public void testGetUsers() {
+    public void testGetAll() {
         Response response = tenantRolePermissionResource.getAll(1L,1L,
-                2, 3);
+                2, 3, null, false);
         assertEquals(200, response.getStatus());
     }
 
@@ -245,10 +248,10 @@ public class TenantRolePermissionResourceTest {
     @Order(8)
     public void testGetAllWithException() {
         doThrow(new RuntimeException("error")).
-                when(tenantRolePermissionBusinessService).getAll(1L,1L,
-                2, 3);
+                when(tenantRolePermissionService).getAll(1L,1L,
+                2, 3, null, false);
         Response response = tenantRolePermissionResource.getAll(1L,1L,
-                2, 3);
+                2, 3, null, false);
         assertEquals(500, response.getStatus());
     }
 }
