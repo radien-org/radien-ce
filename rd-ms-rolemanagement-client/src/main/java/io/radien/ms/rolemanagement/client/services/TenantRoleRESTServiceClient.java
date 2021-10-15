@@ -231,18 +231,14 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
      * @throws SystemException in case of any error
      */
     private Boolean createCore(SystemTenantRole tenantRole) throws SystemException {
-        try {
-            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.create((TenantRole) tenantRole);
+        TenantRoleResourceClient client = getTenantRoleResourceClient();
+        try (Response response = client.create((TenantRole) tenantRole)){
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException |
-                BadRequestException | InternalServerErrorException e) {
+        catch (ExtensionException | ProcessingException | BadRequestException | InternalServerErrorException e) {
             throw new SystemException(e);
         }
     }
-
 
     /**
      * Update a TenantRole association (Invokes the core method counterpart and

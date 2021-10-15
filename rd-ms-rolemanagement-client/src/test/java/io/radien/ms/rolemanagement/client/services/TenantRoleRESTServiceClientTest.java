@@ -391,6 +391,20 @@ public class TenantRoleRESTServiceClientTest {
     }
 
     /**
+     * Method to test create the association tenant role but with exception being throw
+     * due malformed url
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testCreateMalformedURLException() throws MalformedURLException, SystemException {
+        TenantRole tenantRole = new TenantRole(); tenantRole.setId(1L);
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).
+                thenThrow(new MalformedURLException());
+        target.create(tenantRole);
+    }
+
+    /**
      * Test to validate if specific required association exists
      * @throws MalformedURLException for url informed incorrectly
      * @throws SystemException in case of any communication issue       
