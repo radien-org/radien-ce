@@ -85,6 +85,7 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
      * with parameter Page number and Page size).<br>
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
+    @Override
     public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize,
                            List<String> sortBy, boolean isAscending) {
         log.info("Retrieving TenantRole associations using pagination. Page number {}. Page Size {}.",
