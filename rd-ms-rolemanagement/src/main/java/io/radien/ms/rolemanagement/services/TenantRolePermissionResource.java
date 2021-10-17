@@ -33,9 +33,6 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +134,7 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
         try {
             log.info("Associating/adding permission {} to tenant-role {}", tenantRolePermission.getTenantRoleId(),
                     tenantRolePermission.getPermissionId());
-            if (!isCreateAllowed(tenantRolePermission)) {
+            if (!isCreateAllowed()) {
                 return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
             }
             tenantRolePermissionBusinessService.assignPermission(new io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity(tenantRolePermission));
@@ -163,7 +160,7 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
         try {
             log.info("Updating TenantRolePermission id {} tenantRoleId {} permissionId {}", id,
                     tenantRolePermission.getTenantRoleId(), tenantRolePermission.getPermissionId());
-            if (!isUpdateAllowed(tenantRolePermission)) {
+            if (!isUpdateAllowed()) {
                 return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
             }
             tenantRolePermission.setId(id);
@@ -178,12 +175,12 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
         }
     }
 
-    private boolean isCreateAllowed(TenantRolePermission tenantRolePermission) throws SystemException {
+    private boolean isCreateAllowed() throws SystemException {
         return  hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) || hasPermission(null,
                 SystemActionsEnum.ACTION_CREATE.getActionName(), SystemResourcesEnum.TENANT_ROLE_PERMISSION.getResourceName()) ;
     }
 
-    private boolean isUpdateAllowed(TenantRolePermission tenantRolePermission) throws SystemException {
+    private boolean isUpdateAllowed() throws SystemException {
         return  hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) || hasPermission(null,
                 SystemActionsEnum.ACTION_UPDATE.getActionName(), SystemResourcesEnum.TENANT_ROLE_PERMISSION.getResourceName()) ;
     }
