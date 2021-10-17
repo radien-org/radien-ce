@@ -26,7 +26,7 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
-import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
+import io.radien.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -457,5 +457,75 @@ public class TenantRolePermissionRESTServiceClientTest {
         when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
                 thenThrow(new MalformedURLException("invalid url"));
         target.getTenantRolePermissions(33L, 44L, false);
+    }
+
+    /**
+     * Test the updating of a TenantRolePermission but with token expiration
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTenantRolePermissionTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        long id = 1L;
+        TenantRolePermission tenantRolePermission = mock(TenantRolePermission.class);
+        when(tenantRolePermission.getId()).thenReturn(id);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.update(id, tenantRolePermission)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(tenantRolePermission);
+    }
+
+    /**
+     * Test the updating of a TenantRolePermission but with exception to be throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTenantRolePermissionWithException() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        TenantRolePermission tenantRolePermission = mock(TenantRolePermission.class);
+        when(tenantRolePermission.getId()).thenReturn(1L);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.update(tenantRolePermission.getId(), tenantRolePermission)).thenThrow(new ProcessingException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(tenantRolePermission);
+    }
+
+    /**
+     * Test the updating for a previously created TenantRolePermission
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testUpdateTenantRolePermission() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+        TenantRolePermission tenantRolePermission = mock(TenantRolePermission.class);
+        long id = 1L;
+        when(tenantRolePermission.getId()).thenReturn(id);
+        when(client.update(id, tenantRolePermission)).
+                thenReturn(Response.ok().build()).
+                thenReturn(Response.status(300).build());
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Boolean result = target.update(tenantRolePermission);
+        assertNotNull(result);
+        assertTrue(result);
+
+        result = target.update(tenantRolePermission);
+        assertNotNull(result);
+        assertFalse(result);
     }
 }

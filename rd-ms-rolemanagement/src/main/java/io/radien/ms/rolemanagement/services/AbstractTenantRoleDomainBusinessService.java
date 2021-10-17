@@ -121,9 +121,13 @@ public abstract class AbstractTenantRoleDomainBusinessService {
                     TENANT_ROLE_NO_TENANT_FOUND.toString(String.valueOf(tenantId)));
         }
         if (permissionId != null) {
+            boolean found;
             try {
-                permissionRESTServiceAccess.isPermissionExistent(permissionId, null);
+                found = permissionRESTServiceAccess.isPermissionExistent(permissionId, null);
             } catch (NotFoundException nfe) {
+                found = false;
+            }
+            if (!found) {
                 throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                         TENANT_ROLE_NO_PERMISSION_FOUND.toString(String.valueOf(permissionId)));
             }

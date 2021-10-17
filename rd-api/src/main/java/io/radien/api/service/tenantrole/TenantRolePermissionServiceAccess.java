@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.TenantRolePermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.List;
@@ -67,6 +68,15 @@ public interface TenantRolePermissionServiceAccess extends ServiceAccess {
     void create(SystemTenantRolePermission tenantRolePermission) throws UniquenessConstraintException;
 
     /**
+     * UPDATE a Tenant Role Permission association
+     * @param tenantRolePermission role association information to be updated
+     * @throws UniquenessConstraintException in case of duplicated fields or records
+     * @throws TenantRolePermissionNotFoundException in case of not existing a TenantRolePermission for an id
+     */
+    void update(SystemTenantRolePermission tenantRolePermission)
+            throws UniquenessConstraintException, TenantRolePermissionNotFoundException;
+
+    /**
      * Deletes a requested tenant role permission association
      * @param tenantRolePermissionId tenant role permission to be deleted
      * @return true in case of success false in case of any error
@@ -80,6 +90,15 @@ public interface TenantRolePermissionServiceAccess extends ServiceAccess {
      * @return true if already exists, otherwise returns false
      */
     boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId);
+
+    /**
+     * Check if a permission is already assigned/associated with a tenant role
+     * @param permissionId Permission identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @param id TenantRolePermission identifier
+     * @return true if already exists, otherwise returns false
+     */
+    boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId, Long id);
 
     /**
      * Retrieves strictly the TenantRolePermission id basing on tenantRole and user

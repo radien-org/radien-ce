@@ -23,6 +23,7 @@ import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRolePermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
@@ -32,6 +33,9 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +137,7 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
         try {
             log.info("Associating/adding permission {} to tenant-role {}", tenantRolePermission.getTenantRoleId(),
                     tenantRolePermission.getPermissionId());
-            if (!isSaveAllowed(tenantRolePermission)) {
+            if (!isCreateAllowed(tenantRolePermission)) {
                 return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
             }
             tenantRolePermissionBusinessService.assignPermission(new io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity(tenantRolePermission));
@@ -145,10 +149,43 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
         }
     }
 
-    private boolean isSaveAllowed(TenantRolePermission tenantRolePermission) throws SystemException {
+    /**
+     * Assign/associate/add permission to a TenantRole domain
+     * The association will always be under a specific role
+     * @param id corresponds to the identifier of the TenantRolePermission to be updated
+     * @param tenantRolePermission instance containing the information to be updated
+     * @return Response OK if operation concludes with success.
+     * Response status 400 in case of association already existing or
+     * other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    public Response update(long id, TenantRolePermission tenantRolePermission) {
+        try {
+            log.info("Updating TenantRolePermission id {} tenantRoleId {} permissionId {}", id,
+                    tenantRolePermission.getTenantRoleId(), tenantRolePermission.getPermissionId());
+            if (!isUpdateAllowed(tenantRolePermission)) {
+                return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+            }
+            tenantRolePermission.setId(id);
+            tenantRolePermissionBusinessService.update(new io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity(tenantRolePermission));
+            return Response.ok().build();
+        } catch (TenantRolePermissionNotFoundException e) {
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        } catch (TenantRoleException | UniquenessConstraintException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    private boolean isCreateAllowed(TenantRolePermission tenantRolePermission) throws SystemException {
         return  hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) || hasPermission(null,
-                tenantRolePermission.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
-                SystemResourcesEnum.TENANT_ROLE_PERMISSION.getResourceName()) ;
+                SystemActionsEnum.ACTION_CREATE.getActionName(), SystemResourcesEnum.TENANT_ROLE_PERMISSION.getResourceName()) ;
+    }
+
+    private boolean isUpdateAllowed(TenantRolePermission tenantRolePermission) throws SystemException {
+        return  hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) || hasPermission(null,
+                SystemActionsEnum.ACTION_UPDATE.getActionName(), SystemResourcesEnum.TENANT_ROLE_PERMISSION.getResourceName()) ;
     }
 
     /**

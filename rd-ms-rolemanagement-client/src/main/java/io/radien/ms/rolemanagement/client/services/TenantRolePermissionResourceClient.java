@@ -23,6 +23,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -101,6 +102,20 @@ public interface TenantRolePermissionResourceClient {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     Response assignPermission(TenantRolePermission tenantRolePermission);
+
+    /**
+     * Updates a TenantRolePermission
+     * @param id corresponds to the identifier of the TenantRolePermission to be updated
+     * @param tenantRolePermission instance containing the information to be updated
+     * @return Response OK if operation concludes with success.
+     * Response status 404 in case of not existing a TenantRolePermission for the informed id,
+     * Response status 400 in case of association already existing or
+     * other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @PUT
+    @Path("/{id}")
+    Response update(@PathParam("id") long id, TenantRolePermission tenantRolePermission);
 
     /**
      * (Un)Assign/Dissociate/remove permission from a TenantRole domain

@@ -21,6 +21,7 @@ import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.TenantRolePermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
@@ -233,13 +234,40 @@ public class TenantRolePermissionService extends AbstractTenantRoleDomainService
     @Override
     public void create(SystemTenantRolePermission tenantRolePermission) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
-        boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRolePermission.getPermissionId(),
-                tenantRolePermission.getTenantRoleId(), em);
-        if (alreadyExistentRecords) {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.
-                    DUPLICATED_FIELD.toString("permissionId and roleTenantId"));
-        }
+        checkUniqueness(tenantRolePermission, em);
         em.persist(tenantRolePermission);
+    }
+
+    /**
+     * UPDATE a Tenant Role Permission association
+     * @param tenantRolePermission role association information to be updated
+     * @throws UniquenessConstraintException in case of duplicated fields or records
+     * @throws TenantRolePermissionNotFoundException in case of not existing a TenantRolePermission for an id
+     */
+    @Override
+    public void update(SystemTenantRolePermission tenantRolePermission)
+            throws UniquenessConstraintException, TenantRolePermissionNotFoundException {
+        EntityManager em = getEntityManager();
+        if(em.find(TenantRolePermissionEntity.class, tenantRolePermission.getId()) == null) {
+            throw new TenantRolePermissionNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+        }
+        checkUniqueness(tenantRolePermission, em);
+        em.merge(tenantRolePermission);
+    }
+
+    /**
+     * Seek for eventual duplicated information
+     * @param tenantRolePermission base entity bean to seek for repeated information
+     * @param em entity manager
+     * @throws UniquenessConstraintException thrown in case of repeated information
+     */
+    private void checkUniqueness(SystemTenantRolePermission tenantRolePermission, EntityManager em) throws UniquenessConstraintException{
+        boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRolePermission.getPermissionId(),
+                tenantRolePermission.getTenantRoleId(), tenantRolePermission.getId(), em);
+        if (alreadyExistentRecords) {
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.
+                    toString("permissionId and tenantRoleId"));
+        }
     }
 
     /**
@@ -250,17 +278,30 @@ public class TenantRolePermissionService extends AbstractTenantRoleDomainService
      */
     @Override
     public boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId) {
-        return isAssociationAlreadyExistent(permissionId, tenantRoleId, getEntityManager());
+        return isAssociationAlreadyExistent(permissionId, tenantRoleId, null, getEntityManager());
     }
 
     /**
      * Check if a permission is already assigned/associated with a tenant role
-     * @param permissionId Role identifier
-     * @param tenantRoleId Tenant Identifier
+     * @param permissionId Permission identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @param id Tenant
+     * @return true if already exists, otherwise returns false
+     */
+    @Override
+    public boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId, Long id) {
+        return isAssociationAlreadyExistent(permissionId, tenantRoleId, id, getEntityManager());
+    }
+
+    /**
+     * Check if a permission is already assigned/associated with a tenant role
+     * @param permissionId Permission identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @param id tenantRolePermission identifier
      * @param em already created entity manager (reuse)
      * @return true in case the association exists in the db
      */
-    protected boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId, EntityManager em) {
+    protected boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId, Long id, EntityManager em) {
         if (permissionId == null) {
             throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel()));
         }
@@ -271,11 +312,21 @@ public class TenantRolePermissionService extends AbstractTenantRoleDomainService
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
         Root<TenantRolePermissionEntity> root = sc.from(TenantRolePermissionEntity.class);
 
-        sc.select(cb.count(root)).
-                where(
-                        cb.equal(root.get(SystemVariables.PERMISSION_ID.getFieldName()),permissionId),
-                        cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),tenantRoleId)
-                );
+        if (id != null) {
+            sc.select(cb.count(root)).
+                    where(
+                            cb.equal(root.get(SystemVariables.PERMISSION_ID.getFieldName()), permissionId),
+                            cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRoleId),
+                            cb.notEqual(root.get(SystemVariables.ID.getFieldName()), id)
+                    );
+        }
+        else {
+            sc.select(cb.count(root)).
+                    where(
+                            cb.equal(root.get(SystemVariables.PERMISSION_ID.getFieldName()), permissionId),
+                            cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRoleId)
+                    );
+        }
         List<Long> count = em.createQuery(sc).getResultList();
         return !count.isEmpty() && count.get(0) > 0;
     }

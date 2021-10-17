@@ -55,12 +55,21 @@ public interface TenantRolePermissionRESTServiceAccess {
 
     /**
      * Assign/associate/add permission to a TenantRole domain
+     * (In a practical way: this functionality is designated to CRATE a TenantRolePermission)
      * The association will always be under a specific role
      * @param tenantRolePermission association between Tenant, Role and Permission
      * @return Boolean indicating if operation was concluded successfully
      * @throws SystemException in case of any error
      */
     Boolean assignPermission(SystemTenantRolePermission tenantRolePermission) throws SystemException;
+
+    /**
+     * Updates a TenantRolePermission previously crated (When a permission was assigned into a TenantRole)
+     * @param tenantRolePermission association between Tenant, Role and Permission
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    Boolean update(SystemTenantRolePermission tenantRolePermission) throws SystemException;
 
     /**
      * (Un)Assign/Dissociate/remove permission from a TenantRole domain
