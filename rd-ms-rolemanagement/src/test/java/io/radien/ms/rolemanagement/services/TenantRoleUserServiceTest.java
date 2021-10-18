@@ -23,6 +23,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.TenantRoleUserException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
@@ -47,6 +48,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -163,7 +165,7 @@ public class TenantRoleUserServiceTest {
         SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
         systemTenantRoleUser.setTenantRoleId(1L);
         systemTenantRoleUser.setUserId(1L);
-        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(systemTenantRoleUser));
+        assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(systemTenantRoleUser));
 
         SystemTenantRoleUser retrieved = tenantRoleUserServiceAccess.get(systemTenantRoleUser.getId());
         Assertions.assertNotNull(retrieved);
@@ -213,7 +215,7 @@ public class TenantRoleUserServiceTest {
         EJBException ejbException = Assertions.assertThrows(EJBException.class,
                 ()->tenantRoleUserServiceAccess.isAssociationAlreadyExistent(baseUserId, null));
         Assertions.assertTrue(ejbException.getCausedByException() instanceof IllegalArgumentException);
-        Assertions.assertEquals(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("id"), ejbException.getCausedByException().getMessage());
+        Assertions.assertEquals(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString("ID"), ejbException.getCausedByException().getMessage());
     }
 
     /**
@@ -241,12 +243,12 @@ public class TenantRoleUserServiceTest {
         SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setUserId(69L);
         tenantRoleUser.setTenantRoleId(70L);
-        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
+        assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
 
         Long id = tenantRoleUser.getId();
 
         // Try to delete
-        Assertions.assertDoesNotThrow(() -> Assertions.assertTrue(tenantRoleUserServiceAccess.delete(id)));
+        assertDoesNotThrow(() -> Assertions.assertTrue(tenantRoleUserServiceAccess.delete(id)));
 
         // Try to retrieve to confirm
         SystemTenantRoleUser str = tenantRoleUserServiceAccess.get(id);
@@ -291,12 +293,12 @@ public class TenantRoleUserServiceTest {
         SystemTenantRoleUser tenantRoleUser = new TenantRoleUserEntity();
         tenantRoleUser.setUserId(404L);
         tenantRoleUser.setTenantRoleId(405L);
-        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
+        assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser));
 
         SystemTenantRoleUser tenantRoleUser2 = new TenantRoleUserEntity();
         tenantRoleUser2.setUserId(406L);
         tenantRoleUser2.setTenantRoleId(407L);
-        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser2));
+        assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(tenantRoleUser2));
 
         // Using OR
         SystemTenantRoleUserSearchFilter filter = new TenantRoleUserSearchFilter(405L, 406L,
@@ -400,7 +402,7 @@ public class TenantRoleUserServiceTest {
         SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(101010L);
         sru.setUserId(101L);
-        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
+        assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
 
         Long expectedId = sru.getId();
         Assertions.assertNotNull(expectedId);
@@ -428,7 +430,7 @@ public class TenantRoleUserServiceTest {
         SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(301010L);
         sru.setUserId(601L);
-        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
+        assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
 
         Long expectedId = sru.getId();
         Assertions.assertNotNull(expectedId);
@@ -531,7 +533,7 @@ public class TenantRoleUserServiceTest {
         SystemTenantRoleUser sru = new TenantRoleUserEntity();
         sru.setTenantRoleId(117L);
         sru.setUserId(118L);
-        Assertions.assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
+        assertDoesNotThrow(() -> tenantRoleUserServiceAccess.create(sru));
 
         Long expectedId = sru.getId();
         Assertions.assertNotNull(expectedId);
@@ -581,5 +583,48 @@ public class TenantRoleUserServiceTest {
                 toString("user id");
         assertNotNull(e.getCause());
         assertEquals(expectedErrorMsg, e.getCause().getMessage());
+    }
+
+    /**
+     * Test for method {@link io.radien.api.service.tenantrole.TenantRoleUserServiceAccess#update(SystemTenantRoleUser)}
+     * @throws UniquenessConstraintException to be thrown in cases of repeated values
+     * @throws TenantRoleUserNotFoundException to be thrown in case of not found a tenant role user
+     */
+    @Test
+    public void testUpdate() throws UniquenessConstraintException, TenantRoleUserNotFoundException {
+        Long tenantRoleId = 1111111111L;
+        Long userId = 1111111111L;
+        Long id = 1111111111L;
+
+        SystemTenantRoleUser trp1 = new TenantRoleUserEntity();
+        trp1.setTenantRoleId(tenantRoleId);
+        trp1.setUserId(userId);
+        tenantRoleUserServiceAccess.create(trp1);
+
+        Long userId2 = 111111111112L;
+        SystemTenantRoleUser trp2 = new TenantRoleUserEntity();
+        trp2 = new TenantRoleUserEntity();
+        trp2.setTenantRoleId(tenantRoleId);
+        trp2.setUserId(userId2);
+        tenantRoleUserServiceAccess.create(trp2);
+
+        SystemTenantRoleUser trp3 = new TenantRoleUserEntity();
+        trp3.setId(trp2.getId());
+        trp3.setTenantRoleId(tenantRoleId);
+        trp3.setUserId(userId);
+        assertThrows(UniquenessConstraintException.class, ()->
+                tenantRoleUserServiceAccess.update(trp3));
+
+        trp3.setUserId(122378900L);
+        assertDoesNotThrow(()->tenantRoleUserServiceAccess.update(trp3));
+
+        SystemTenantRoleUser trp4 = new TenantRoleUserEntity();
+        trp4.setId(1111111111L);
+        trp4.setTenantRoleId(tenantRoleId);
+        trp4.setUserId(userId);
+        assertThrows(TenantRoleUserNotFoundException.class, ()->
+                tenantRoleUserServiceAccess.update(trp4));
+
+
     }
 }

@@ -23,6 +23,7 @@ import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleNotFoundException;
+import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.authz.client.PermissionClient;
 import io.radien.ms.authz.client.TenantRoleClient;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -306,4 +308,77 @@ public class TenantRoleUserResourceTest {
     }
 
 
+    /**
+     * Tests response from update method
+     */
+    @Test
+    public void testUpdateTenantRoleUser() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedUserId = Response.ok().entity(1L).build();
+        doReturn(expectedUserId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+
+        Response response = tenantRoleUserResource.update(1L, new TenantRoleUser());
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Tests response from update() method when exceptions occur
+     * during the processing
+     */
+    @Test
+    public void testUpdateTenantRoleUserWithException() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedUserId = Response.ok().entity(1L).build();
+        doReturn(expectedUserId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+        TenantRoleUser tenantRoleUser = new TenantRoleUser();
+        try {
+            doThrow(new UniquenessConstraintException("error")).
+                    doThrow(new TenantRoleException("error")).
+                    doThrow(new TenantRoleUserNotFoundException("error")).
+                    doThrow(new RuntimeException("error")).
+                    when(tenantRoleUserBusinessService).update(any());
+        }
+        catch (Exception e) {
+            fail("unexpected");
+        }
+        Response response = tenantRoleUserResource.update(1L, tenantRoleUser);
+        assertEquals(400, response.getStatus());
+
+        response = tenantRoleUserResource.update(1L, tenantRoleUser);
+        assertEquals(400, response.getStatus());
+
+        response = tenantRoleUserResource.update(1L, tenantRoleUser);
+        assertEquals(404, response.getStatus());
+
+        response = tenantRoleUserResource.update(1L, tenantRoleUser);
+        assertEquals(500, response.getStatus());
+    }
 }

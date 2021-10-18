@@ -78,4 +78,12 @@ public interface TenantRoleUserRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean delete(Long tenantRoleUserId) throws SystemException;
+
+    /**
+     * Updates a TenantRoleUser previously crated (When a user was assigned into a TenantRole)
+     * @param tenantRoleUser association between Tenant, Role and User
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    Boolean update(SystemTenantRoleUser tenantRoleUser) throws SystemException;
 }

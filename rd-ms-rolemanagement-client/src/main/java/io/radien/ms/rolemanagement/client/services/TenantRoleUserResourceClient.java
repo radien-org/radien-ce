@@ -23,6 +23,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -117,4 +118,43 @@ public interface TenantRoleUserResourceClient {
                           @QueryParam("roleIds") Collection<Long> roleIds,
                           @QueryParam("userId") Long userId);
 
+    /**
+     * Retrieves TenantRole User associations that met the following parameter
+     * @param tenantRoleId TenantRole identifier
+     * @param userId User identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns OK (http status 200)
+     * and a Collection containing TenantRole associations.<br>
+     * Otherwise, in case of operational error, returns Internal Server Error (500)
+     */
+    @GET
+    @Path("/find")
+    Response getSpecific(@QueryParam("tenantRoleId") Long tenantRoleId,
+                         @QueryParam("userId") Long userId,
+                         @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
+
+    /**
+     * Retrieves a Tenant Role User using the id as search parameter.
+     * @param id Tenant Role User id to guide the search process
+     * @return 200 code message in case of success (Tenant Role association found)
+     * 404 if association could not be found, 500 code message if there is any error.
+     */
+    @GET
+    @Path("/{id}")
+    Response getById(@PathParam("id") Long id);
+
+
+    /**
+     * Updates a TenantRoleUser
+     * @param id corresponds to the identifier of the TenantRoleUser to be updated
+     * @param tenantRoleUser instance containing the information to be updated
+     * @return Response OK if operation concludes with success.
+     * Response status 404 in case of not existing a TenantRoleUser for the informed id,
+     * Response status 400 in case of association already existing or
+     * other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @PUT
+    @Path("/{id}")
+    Response update(@PathParam("id") long id, TenantRoleUser tenantRoleUser);
 }

@@ -21,7 +21,9 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -323,4 +325,46 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
         }
     }
 
+    /**
+     * Updates a TenantRoleUser previously crated (When a user was assigned into a TenantRole)
+     * To perform the action above, It will invoke the equivalent core method counterpart, and
+     * will handle Token Expiration error as well.
+     * @param tenantRoleUser association between Tenant, Role and User
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    public Boolean update(SystemTenantRoleUser tenantRoleUser) throws SystemException {
+        return this.get(this::updateCore, tenantRoleUser);
+    }
+
+    /**
+     * Core method that updates the TenantRoleUser
+     * @param tenantRoleUser association between Tenant, Role and User
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    private Boolean updateCore(SystemTenantRoleUser tenantRoleUser) throws SystemException{
+        TenantRoleUserResourceClient client = getClient();
+        try (Response response = client.update(tenantRoleUser.getId(), (TenantRoleUser)tenantRoleUser)) {
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }
+        catch (ProcessingException | ExtensionException | BadRequestException |
+                NotFoundException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Assemblies a {@link TenantRoleUserResourceClient} instance using RestClientBuilder Microprofile API
+     * @return instance of {@link TenantRoleResourceClient}
+     * @throws SystemException in case of Malformed URL
+     */
+    private TenantRoleUserResourceClient getClient() throws SystemException {
+        try {
+            return clientServiceUtil.getTenantRoleUserResourceClient(oaf.getProperty(
+                    OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
 }

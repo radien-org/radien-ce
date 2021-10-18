@@ -21,6 +21,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
 
 import io.radien.exception.TenantRoleUserException;
+import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -76,6 +77,15 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
     void create(SystemTenantRoleUser tenantRolePermission) throws UniquenessConstraintException;
 
     /**
+     * UPDATE a Tenant Role User association
+     * @param tenantRoleUser role association information to be updated
+     * @throws UniquenessConstraintException in case of duplicated fields or records
+     * @throws TenantRoleUserNotFoundException in case of not existing a TenantRoleUser for an id
+     */
+    void update(SystemTenantRoleUser tenantRoleUser)
+            throws UniquenessConstraintException, TenantRoleUserNotFoundException;
+
+    /**
      * Deletes a requested tenant role user association
      * @param tenantRoleUserId tenant role user to be deleted
      * @return true in case of success false in case of any error
@@ -105,6 +115,15 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @return true if already exists, otherwise returns false
      */
     boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId);
+
+    /**
+     * Check if a user is already assigned/associated with a tenant role
+     * @param userId User identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @param id Tenant
+     * @return true if already exists, otherwise returns false
+     */
+    boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, Long id);
 
     /**
      * Retrieves strictly the TenantRoleUser id basing on tenantRole and user
