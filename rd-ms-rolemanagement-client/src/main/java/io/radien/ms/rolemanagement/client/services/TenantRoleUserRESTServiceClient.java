@@ -72,7 +72,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
     @Inject
     private ClientServiceUtil clientServiceUtil;
 
-    private final Logger log = LoggerFactory.getLogger(TenantRoleUserRESTServiceClient.class);
+    private static final Logger log = LoggerFactory.getLogger(TenantRoleUserRESTServiceClient.class);
 
     /**
      * Under a pagination approach, retrieves the Tenant Role Users associations that currently exist
