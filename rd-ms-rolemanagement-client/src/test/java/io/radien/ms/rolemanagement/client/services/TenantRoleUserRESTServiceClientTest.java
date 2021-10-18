@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
@@ -497,7 +498,6 @@ public class TenantRoleUserRESTServiceClientTest {
      */
     @Test(expected = SystemException.class)
     public void testUpdateTenantRoleUserMalformedURL() throws MalformedURLException, SystemException {
-        TenantRoleUserResourceClient client = mock(TenantRoleUserResourceClient.class);
         when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
                 thenThrow(new MalformedURLException("url issue"));
         target.update(new TenantRoleUser());
@@ -528,5 +528,89 @@ public class TenantRoleUserRESTServiceClientTest {
         result = target.update(tenantRoleUser);
         assertNotNull(result);
         assertFalse(result);
+    }
+
+    /**
+     * Test for method that retrieves TenantRoleUser associations
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetTenantRoleUsers() throws MalformedURLException, SystemException{
+        String results = "[{\"id\": 1, \"tenantRoleId\": 2, \"userId\":3}, " +
+                "{\"id\": 1, \"tenantRoleId\": 2, \"userId\": 4}, " +
+                "{\"id\": 1, \"tenantRoleId\": 2, \"userId\": 10}]";
+
+        InputStream is = new ByteArrayInputStream(results.getBytes());
+        Response response = Response.ok(is).build();
+        TenantRoleUserResourceClient client = mock(TenantRoleUserResourceClient.class);
+
+        when(client.getSpecific(2L, 3L, false)).thenReturn(response);
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        List<? extends SystemTenantRoleUser> result = target.getTenantRoleUsers(
+                2L, 3L, false);
+        assertNotNull(result);
+        assertEquals(3, result.size());
+    }
+
+    /**
+     * Test for method that retrieves TenantRoleUser associations,
+     * but taking in consideration a scenario where JasonWeb token expires
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRoleUsersTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRoleUserResourceClient client = mock(TenantRoleUserResourceClient.class);
+
+        // Simulates JWT expire even on the reattempt
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getSpecific(33L, 44L, false)).
+                thenThrow(new TokenExpiredException("test")).
+                thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantRoleUsers(33L, 44L, false);
+    }
+
+    /**
+     * Test for method that retrieves TenantRoleUser associations,
+     * but taking in consideration a scenario where error occurs in the middle of processing
+     * (Backend error)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRoleUsersException() throws MalformedURLException, SystemException {
+        TenantRoleUserResourceClient client = mock(TenantRoleUserResourceClient.class);
+
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getSpecific(33L, 44L, false)).
+                thenThrow(new InternalServerErrorException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantRoleUsers(33L, 44L, false);
+    }
+
+    /**
+     * Test for method that retrieves TenantRoleUser associations,
+     * but taking in consideration a scenario where error occurs in the middle of processing
+     * (Backend error)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRoleUsersMalformedURLException() throws MalformedURLException, SystemException {
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
+                thenThrow(new MalformedURLException("invalid url"));
+        target.getTenantRoleUsers(33L, 44L, false);
     }
 }

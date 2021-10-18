@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.role.SystemRolesEnum;
@@ -26,6 +27,7 @@ import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import java.util.Collection;
 import javax.enterprise.context.RequestScoped;
@@ -187,7 +189,15 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
      */
     @Override
     public Response getSpecific(Long tenantRoleId, Long userId, boolean isLogicalConjunction) {
-        return null;
+        log.info("Retrieving TenantRole User associations for tenantRole {} user {} using logical function {}",
+                tenantRoleId, userId, isLogicalConjunction);
+        try {
+            SystemTenantRoleUserSearchFilter filter = new TenantRoleUserSearchFilter(tenantRoleId,
+                    userId, true, isLogicalConjunction);
+            return Response.ok(tenantRoleUserServiceAccess.get(filter)).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
     }
 
     /**

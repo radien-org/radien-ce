@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.exception.SystemException;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Rest service client responsible to Deal with TenantRoleUser endpoint
@@ -51,6 +52,16 @@ public interface TenantRoleUserRESTServiceAccess {
      */
     Page<Long> getUsersIds(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
 
+    /**
+     * Retrieves TenantRoleUser associations that met the following parameter
+     * @param tenantRoleId TenantRole identifier
+     * @param userId User identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns a Collection containing TenantRole associations.
+     * @throws SystemException in case of Any error
+     */
+    List<? extends SystemTenantRoleUser> getTenantRoleUsers(Long tenantRoleId, Long userId,
+                                                            boolean isLogicalConjunction) throws SystemException;
 
     /**
      * Assign/associate/add user to a TenantRole domain

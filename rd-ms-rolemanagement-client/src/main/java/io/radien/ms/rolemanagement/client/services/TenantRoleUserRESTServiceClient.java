@@ -355,6 +355,41 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
     }
 
     /**
+     * Retrieves TenantRoleUser associations that met the following parameter
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantRoleId TenantRole identifier
+     * @param userId User identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns a Collection containing TenantRoleUser associations.
+     * @throws SystemException in case of Any error
+     */
+    @Override
+    public List<? extends SystemTenantRoleUser> getTenantRoleUsers(Long tenantRoleId, Long userId,
+                                                                   boolean isLogicalConjunction) throws SystemException {
+        return get(() -> getTenantRoleUsersCore(tenantRoleId, userId, isLogicalConjunction));
+    }
+
+    /**
+     * Retrieves TenantRoleUser associations that met the following parameter
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param tenantRoleId Tenant identifier
+     * @param userId Role identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns a Collection containing TenantRoleUser associations.
+     * @throws SystemException in case of Any error
+     */
+    private List<? extends SystemTenantRoleUser> getTenantRoleUsersCore(Long tenantRoleId, Long userId,
+                                                                        boolean isLogicalConjunction) throws SystemException {
+        TenantRoleUserResourceClient client = getClient();
+        try (Response response = client.getSpecific(tenantRoleId, userId, isLogicalConjunction)) {
+            return TenantRoleUserModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch(ProcessingException | ExtensionException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
      * Assemblies a {@link TenantRoleUserResourceClient} instance using RestClientBuilder Microprofile API
      * @return instance of {@link TenantRoleResourceClient}
      * @throws SystemException in case of Malformed URL

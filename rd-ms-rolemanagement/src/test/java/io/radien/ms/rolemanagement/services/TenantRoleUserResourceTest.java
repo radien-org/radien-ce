@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
@@ -37,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -379,6 +379,28 @@ public class TenantRoleUserResourceTest {
         assertEquals(404, response.getStatus());
 
         response = tenantRoleUserResource.update(1L, tenantRoleUser);
+        assertEquals(500, response.getStatus());
+    }
+
+    /**
+     * Tests response from getSpecfic method
+     */
+    @Test
+    public void testGetTenantRoleUsers() {
+        Response response = tenantRoleUserResource.getSpecific(1L,1L,
+                false);
+        assertEquals(200, response.getStatus());
+    }
+
+    /**
+     * Tests response from getSpecific method when exceptions occur
+     * during the processing
+     */
+    @Test
+    public void testGetTenantRoleUsersWithException() {
+        doThrow(new RuntimeException("error")).when(tenantRoleUserServiceAccess).
+                get(any(SystemTenantRoleUserSearchFilter.class));
+        Response response = tenantRoleUserResource.getSpecific(1L,1L, false);
         assertEquals(500, response.getStatus());
     }
 }
