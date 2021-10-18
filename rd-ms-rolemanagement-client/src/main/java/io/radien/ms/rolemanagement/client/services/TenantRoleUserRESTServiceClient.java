@@ -22,7 +22,6 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.BadRequestException;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
@@ -188,16 +187,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      */
     @Override
     public Boolean assignUser(SystemTenantRoleUser tenantRoleUser) throws SystemException {
-        try {
-            return assignUserCore(tenantRoleUser);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return assignUserCore(tenantRoleUser);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::assignUserCore, tenantRoleUser);
     }
 
     /**
@@ -232,16 +222,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      */
     @Override
     public Boolean unAssignUser(Long tenantId, Collection<Long> roleIds, Long userId) throws SystemException {
-        try {
-            return unAssignUserCore(tenantId, roleIds, userId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return unAssignUserCore(tenantId, roleIds, userId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(()-> unAssignUserCore(tenantId, roleIds, userId));
     }
 
     /**
@@ -281,16 +262,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      */
     @Override
     public Boolean delete(Long tenantRoleUserId) throws SystemException {
-        try {
-            return deleteCore(tenantRoleUserId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return deleteCore(tenantRoleUserId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::deleteCore, tenantRoleUserId);
     }
 
     /**
