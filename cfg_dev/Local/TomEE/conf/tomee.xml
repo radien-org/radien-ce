@@ -34,7 +34,7 @@
 	<Resource id="MyJmsResourceAdapter" type="ActiveMQResourceAdapter">
 		# Do not start the embedded ActiveMQ broker
 		BrokerXmlConfig  =
-		ServerUrl = tcp://localhost:61616
+		ServerUrl = ${TOMEE_SERVER_URL}
 	</Resource>
 
 	<Resource id="MyJmsConnectionFactory" type="javax.jms.ConnectionFactory">
