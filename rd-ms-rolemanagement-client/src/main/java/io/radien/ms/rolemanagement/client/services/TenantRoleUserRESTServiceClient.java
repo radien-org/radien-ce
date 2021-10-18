@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -45,6 +46,8 @@ import javax.json.JsonReader;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
 
@@ -70,6 +73,8 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    private Logger log = LoggerFactory.getLogger(TenantRoleUserRESTServiceClient.class);
 
     /**
      * Under a pagination approach, retrieves the Users associations that exist
@@ -388,6 +393,46 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
             throw new SystemException(e);
         }
     }
+
+    /**
+     * Retrieve a Tenant Role User using the id as search parameter.
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param id Tenant Role User id association to guide the search process
+     * @return Optional containing Tenant Role User found.
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Optional<SystemTenantRoleUser> getTenantRoleUserById(Long id) throws SystemException{
+        return get(this::getTenantRoleUserByIdCore, id);
+    }
+
+    /**
+     * Core method that retrieves a Tenant Role User using the id as search parameter.
+     * @param id Tenant Role User id to guide the search process
+     * @return Optional containing Tenant Role User found.
+     * @throws TokenExpiredException in case of JWT token expiration
+     * @throws SystemException in case of any error
+     */
+    private Optional<SystemTenantRoleUser> getTenantRoleUserByIdCore(Long id) throws SystemException {
+        TenantRoleUserResourceClient client = getClient();
+        try (Response response = client.getById(id)){
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return Optional.of(TenantRoleUserModelMapper.map((InputStream) response.getEntity()));
+            }
+            log.info("Error retrieving TenantRoleUser for id {}. Obtained status= {}",
+                    id, response.getStatusInfo().getStatusCode());
+        }
+        catch (NotFoundException e) {
+            if (log.isDebugEnabled()) {
+                log.info("TenantRoleUser not found for {}",id);
+            }
+        }
+        catch (ExtensionException | ProcessingException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+        return Optional.empty();
+    }
+
 
     /**
      * Assemblies a {@link TenantRoleUserResourceClient} instance using RestClientBuilder Microprofile API

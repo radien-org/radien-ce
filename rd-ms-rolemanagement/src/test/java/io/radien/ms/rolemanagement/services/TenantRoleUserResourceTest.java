@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
@@ -41,7 +42,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,6 +51,7 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -178,7 +179,7 @@ public class TenantRoleUserResourceTest {
 
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -206,7 +207,7 @@ public class TenantRoleUserResourceTest {
     public void testAssignUserWithException() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -315,7 +316,7 @@ public class TenantRoleUserResourceTest {
     public void testUpdateTenantRoleUser() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -343,7 +344,7 @@ public class TenantRoleUserResourceTest {
     public void testUpdateTenantRoleUserWithException() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -402,5 +403,38 @@ public class TenantRoleUserResourceTest {
                 get(any(SystemTenantRoleUserSearchFilter.class));
         Response response = tenantRoleUserResource.getSpecific(1L,1L, false);
         assertEquals(500, response.getStatus());
+    }
+
+    /**
+     * Tests response from getById method
+     */
+    @Test
+    public void testGetById() {
+        long id = 1L;
+        SystemTenantRoleUser m = mock(SystemTenantRoleUser.class);
+        doReturn(m).when(tenantRoleUserServiceAccess).get(id);
+        Response response = tenantRoleUserResource.getById(1L);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests response from getById when exceptions occur during the processing
+     */
+    @Test
+    public void testGetByIdWithExceptions() {
+        // TenantRoleUser Not Found
+        long id1 = 1L;
+        doReturn(null).when(tenantRoleUserServiceAccess).get(id1);
+
+        Response response = tenantRoleUserResource.getById(id1);
+        assertEquals(404,response.getStatus());
+
+        // Simulating some other issue
+        long id2 = 2L;
+        doThrow(new RuntimeException("db issue")).when(tenantRoleUserServiceAccess).get(id2);
+
+        // Generic Error
+        response = tenantRoleUserResource.getById(id2);
+        assertEquals(500,response.getStatus());
     }
 }

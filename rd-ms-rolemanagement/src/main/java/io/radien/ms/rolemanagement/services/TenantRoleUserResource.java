@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
@@ -208,7 +209,16 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
      */
     @Override
     public Response getById(Long id) {
-        return null;
+        try {
+            log.info("Retrieving TenantRoleUser for id {}", id);
+            SystemTenantRoleUser trp = tenantRoleUserServiceAccess.get(id);
+            if (trp == null) {
+                return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+            }
+            return Response.ok().entity(trp).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
     }
 
     /**

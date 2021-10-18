@@ -143,7 +143,6 @@ public interface TenantRoleUserResourceClient {
     @Path("/{id}")
     Response getById(@PathParam("id") Long id);
 
-
     /**
      * Updates a TenantRoleUser
      * @param id corresponds to the identifier of the TenantRoleUser to be updated
