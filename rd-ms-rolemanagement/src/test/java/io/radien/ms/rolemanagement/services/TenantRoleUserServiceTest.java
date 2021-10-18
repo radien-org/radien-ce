@@ -30,12 +30,12 @@ import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
@@ -335,7 +335,8 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(14)
     public void testPagination() {
-        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(null,null,1, 100);
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(null,null,1,
+                100, null, false);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
         Assertions.assertEquals(1, p.getTotalPages());
@@ -351,8 +352,8 @@ public class TenantRoleUserServiceTest {
     @Test
     @Order(15)
     public void testPaginationWithTenantRoleSpecified() {
-        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(baseTenantId, baseRoleId,
-                1, 100);
+        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(baseTenantRoleId, baseUserId,
+                1, 100, Arrays.asList("tenantRoleId", "userId"), true);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
         Assertions.assertEquals(1, p.getTotalPages());
@@ -362,10 +363,6 @@ public class TenantRoleUserServiceTest {
         Page<Long> p2 = tenantRoleUserServiceAccess.getAllUserIds(baseTenantId, baseRoleId,
                 1, 100);
         Assertions.assertTrue(p2.getTotalResults() > 0);
-
-        List<Long> mappedIds = p.getResults().stream().map(SystemTenantRoleUser::getUserId).
-                distinct().collect(Collectors.toList());
-        Assertions.assertEquals(mappedIds, p2.getResults());
     }
 
     /**
@@ -377,7 +374,7 @@ public class TenantRoleUserServiceTest {
     @Order(16)
     public void testPaginationForNotExistentTenantRole() {
         Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(10000L,10001L,
-                1, 100);
+                1, 100, Arrays.asList("tenantRoleId", "userId"), false);
         Assertions.assertNotNull(p);
         Assertions.assertEquals(0,p.getTotalResults());
         Assertions.assertEquals(0,p.getTotalPages());
@@ -588,13 +585,11 @@ public class TenantRoleUserServiceTest {
     /**
      * Test for method {@link io.radien.api.service.tenantrole.TenantRoleUserServiceAccess#update(SystemTenantRoleUser)}
      * @throws UniquenessConstraintException to be thrown in cases of repeated values
-     * @throws TenantRoleUserNotFoundException to be thrown in case of not found a tenant role user
      */
     @Test
-    public void testUpdate() throws UniquenessConstraintException, TenantRoleUserNotFoundException {
+    public void testUpdate() throws UniquenessConstraintException {
         Long tenantRoleId = 1111111111L;
         Long userId = 1111111111L;
-        Long id = 1111111111L;
 
         SystemTenantRoleUser trp1 = new TenantRoleUserEntity();
         trp1.setTenantRoleId(tenantRoleId);

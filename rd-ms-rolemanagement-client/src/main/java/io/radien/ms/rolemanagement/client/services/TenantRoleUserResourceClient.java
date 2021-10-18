@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import java.util.Collection;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -45,22 +46,24 @@ public interface TenantRoleUserResourceClient {
     /**
      * Retrieves TenantRoleUser association using pagination approach
      * (in other words, retrieves the Users associations that exist for a TenantRole)
-     * @param tenantId tenant identifier for a TenantRole
-     * @param roleId role identifier for a TenantRole
+     * @param tenantRoleId identifier for a TenantRole (Optional)
+     * @param userId identifier for a user (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
-     * and a Page containing TenantRole associations (Chunk/Portion compatible
-     * with parameter Page number and Page size).<br>
+     * and a Page containing TenantRoleUser associations (Chunk/Portion compatible
+     * with parameter Page number and Page size).
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @GET
-    Response getAll(@QueryParam("tenantId") Long tenantId,
-                    @QueryParam("roleId") Long roleId,
+    Response getAll(@QueryParam("tenantRoleId") Long tenantRoleId,
+                    @QueryParam("userId") Long userId,
                     @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-                    @DefaultValue("10") @QueryParam("pageSize") int pageSize);
-
-
+                    @DefaultValue("10") @QueryParam("pageSize") int pageSize,
+                    @QueryParam("sortBy") List<String> sortBy,
+                    @DefaultValue("true") @QueryParam("asc") boolean isAscending);
     /**
      * Retrieves TenantRoleUser association (Ids) using pagination approach
      * (in other words, retrieves the Users associations that exist for a TenantRole)

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,6 +38,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
@@ -66,22 +68,21 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
     /**
      * Gets all the tenant role user associations into a pagination mode.
-     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
-     * @param role search param that corresponds to the TenantRole.roleId (Optional)
+     * @param tenantRoleId search param that corresponds to the TenantRole id (Optional)
+     * @param userId search param that corresponds to the user id (Optional)
      * @param pageNo of the requested information. Where the tenant is.
-     * @param pageSize total number of pages returned in the request.
+     * @param pageSize total number of pages returned in the request
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return a page containing system tenant role user associations.
      */
     @Override
-    public Page<SystemTenantRoleUser> getAll(Long tenant, Long role, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role user associations using pagination mode, tenant {} role{}, page {}, size{}",
-                tenant, role, pageNo, pageSize);
+    public Page<SystemTenantRoleUser> getAll(Long tenantRoleId, Long userId, int pageNo, int pageSize,
+                                             List<String> sortBy, boolean isAscending) {
+        log.info("Retrieving tenant role user associations using pagination mode, tenantRole  {} user{}, page {}, size{}",
+                tenantRoleId, userId, pageNo, pageSize);
 
         EntityManager em = getEntityManager();
-        List<Long> tenantRoleIds = (tenant != null || role != null) ? getTenantRoleIds(em, tenant, role) : null;
-        if (tenantRoleIds != null && tenantRoleIds.isEmpty()) {
-            return new Page<>(new ArrayList<>(), pageNo, 0, 0);
-        }
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<TenantRoleUserEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRoleUserEntity.class);
@@ -89,9 +90,25 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
         criteriaQuery.select(tenantRoleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        if (tenantRoleIds != null) {
-            global = criteriaBuilder.and(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()).in(tenantRoleIds));
+
+        if (tenantRoleId != null) {
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),
+                    tenantRoleId));
+        }
+
+        if (userId != null) {
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.USER_ID.getFieldName()),
+                    userId));
+        }
+
+        if (tenantRoleId != null || userId != null) {
             criteriaQuery.where(global);
+        }
+
+        if(sortBy != null && !sortBy.isEmpty()){
+            List<Order> orders = sortBy.stream().map(i-> isAscending ? criteriaBuilder.asc(tenantRoleRoot.get(i)) :
+                    criteriaBuilder.desc(tenantRoleRoot.get(i))).collect(Collectors.toList());
+            criteriaQuery.orderBy(orders);
         }
 
         TypedQuery<TenantRoleUserEntity> q= em.createQuery(criteriaQuery);

@@ -49,8 +49,6 @@ import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.radien.exception.GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN;
-
 /**
  * Tenant Role REST Service Client
  *
@@ -74,52 +72,47 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
     @Inject
     private ClientServiceUtil clientServiceUtil;
 
-    private Logger log = LoggerFactory.getLogger(TenantRoleUserRESTServiceClient.class);
+    private final Logger log = LoggerFactory.getLogger(TenantRoleUserRESTServiceClient.class);
 
     /**
-     * Under a pagination approach, retrieves the Users associations that exist
-     * for a TenantRole
+     * Under a pagination approach, retrieves the Tenant Role Users associations that currently exist
      * (Invokes the core method counterpart and handles TokenExpiration error)
-     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
-     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * @param tenantRoleId tenant role identifier(Acting as filter)
+     * @param userId user identifier (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return Page containing TenantRoleUser instances
      * @throws SystemException in case of any error
      */
     @Override
-    public Page<? extends SystemTenantRoleUser> getUsers(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
-        try {
-            return getUsersCore(tenantId, roleId, pageNo, pageSize);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getUsersCore(tenantId, roleId, pageNo, pageSize);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+    public Page<? extends SystemTenantRoleUser> getAll(Long tenantRoleId, Long userId,
+                                                       int pageNo, int pageSize,
+                                                       List<String> sortBy, boolean isAscending) throws SystemException {
+        return get(() -> getAllCore(tenantRoleId, userId, pageNo, pageSize, sortBy, isAscending));
     }
 
     /**
      * Core method that Retrieves TenantRoleUser associations using pagination approach
-     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
-     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * @param tenantRoleId tenant role identifier(Acting as filter)
+     * @param userId user identifier (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return Page containing TenantRole user associations (Chunk/Portion compatible
      * with parameter Page number and Page size)
      * @throws SystemException in case of any error
      */
-    protected Page<? extends SystemTenantRoleUser> getUsersCore(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
-        try {
-            TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getAll(tenantId, roleId, pageNo, pageSize);
+    protected Page<? extends SystemTenantRoleUser> getAllCore(Long tenantRoleId, Long userId,
+                                                              int pageNo, int pageSize,
+                                                              List<String> sortBy, boolean isAscending) throws SystemException {
+        TenantRoleUserResourceClient client = getClient();
+        try (Response response = client.getAll(tenantRoleId, userId, pageNo, pageSize, sortBy, isAscending)){
             return TenantRoleUserModelMapper.mapToPage((InputStream) response.getEntity());
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException |
-                InternalServerErrorException e){
+        catch (ExtensionException | ProcessingException | InternalServerErrorException e){
             throw new SystemException(e);
         }
     }
@@ -137,16 +130,7 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      */
     @Override
     public Page<Long> getUsersIds(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
-        try {
-            return getUsersIdsCore(tenantId, roleId, pageNo, pageSize);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getUsersIdsCore(tenantId, roleId, pageNo, pageSize);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(() -> getUsersIdsCore(tenantId, roleId, pageNo, pageSize));
     }
 
     /**
@@ -160,14 +144,11 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
      * @throws SystemException in case of any error
      */
     protected Page<Long> getUsersIdsCore(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
-        try {
-            TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getAllUserIds(tenantId, roleId, pageNo, pageSize);
+        TenantRoleUserResourceClient client = getClient();
+        try (Response response = client.getAllUserIds(tenantId, roleId, pageNo, pageSize)) {
             return getPageIds((InputStream) response.getEntity());
         }
-        catch (ExtensionException | ProcessingException | MalformedURLException |
-                InternalServerErrorException e){
+        catch (ExtensionException | ProcessingException | InternalServerErrorException e){
             throw new SystemException(e);
         }
     }

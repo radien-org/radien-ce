@@ -255,8 +255,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             this.lazyModel = new LazyTenantRoleUserDataModel(tenantRoleUserRESTServiceAccess,
                     userRESTServiceAccess);
         }
-        this.lazyModel.setTenantId(tenant != null ? tenant.getId() : null);
-        this.lazyModel.setRoleId(role != null ? role.getId() : null);
+        this.lazyModel.setTenantRoleId(tenantRole.getId());
     }
 
     /**

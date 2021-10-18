@@ -31,6 +31,7 @@ import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import java.util.Collection;
+import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -56,23 +57,27 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
     /**
      * Retrieves TenantRoleUser association using pagination approach
      * (in other words, retrieves the Users associations that exist for a TenantRole)
-     * @param tenantId tenant identifier for a TenantRole
-     * @param roleId role identifier for a TenantRole
+     * @param tenantRoleId identifier for a TenantRole (Optional)
+     * @param userId identifier for a user (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
-     * and a Page containing TenantRole associations (Chunk/Portion compatible
-     * with parameter Page number and Page size).<br>
+     * and a Page containing TenantRoleUser associations (Chunk/Portion compatible
+     * with parameter Page number and Page size).
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @Override
-    public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role users. tenant id {} role id {}, pageNumber {} and pageSize {}",
-                tenantId, roleId, pageNo, pageSize);
+    public Response getAll(Long tenantRoleId, Long userId, int pageNo, int pageSize,
+                           List<String> sortBy, boolean isAscending) {
+        log.info("Retrieving TenantRole User associations using pagination. Page number {}. Page Size {}.",
+                pageNo, pageSize);
         try {
-            return Response.ok().entity(tenantRoleUserServiceAccess.
-                    getAll(tenantId, roleId, pageNo, pageSize)).build();
-        } catch (Exception e) {
+            return Response.ok().entity(this.tenantRoleUserServiceAccess.
+                    getAll(tenantRoleId, userId, pageNo, pageSize, sortBy, isAscending)).build();
+        }
+        catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }

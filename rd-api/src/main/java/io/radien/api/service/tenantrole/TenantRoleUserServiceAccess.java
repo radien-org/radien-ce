@@ -37,13 +37,16 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
 
     /**
      * Gets all the tenant role user associations into a pagination mode.
-     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
-     * @param role search param that corresponds to the TenantRole.roleId (Optional)
+     * @param tenantRoleId search param that corresponds to the TenantRole id (Optional)
+     * @param userId search param that corresponds to the user id (Optional)
      * @param pageNo of the requested information. Where the tenant is.
-     * @param pageSize total number of pages returned in the request.
+     * @param pageSize total number of pages returned in the request
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return a page containing system tenant role user associations.
      */
-    Page<SystemTenantRoleUser> getAll(Long tenant, Long role, int pageNo, int pageSize);
+    Page<SystemTenantRoleUser> getAll(Long tenantRoleId, Long userId, int pageNo, int pageSize,
+                                             List<String> sortBy, boolean isAscending);
 
     /**
      * Gets all the tenant role user associations into a pagination mode.

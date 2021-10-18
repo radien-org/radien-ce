@@ -51,8 +51,7 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
     private final transient UserRESTServiceAccess userService;
     private final Map<Long, SystemUser> userMapRef;
 
-    private Long tenantId = null;
-    private Long roleId = null;
+    private Long tenantRoleId = null;
 
     private static Logger log = LoggerFactory.getLogger(LazyTenantRoleUserDataModel.class);
 
@@ -91,9 +90,9 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
     public Page<? extends SystemTenantRoleUser> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
         Page<? extends SystemTenantRoleUser> page = new Page<>();
         // Just retrieve if we have tenant or role information
-        if (tenantId != null || roleId != null) {
-            page = service.getUsers(tenantId, roleId,
-                    (offset/pageSize)+1, pageSize);
+        if (tenantRoleId != null) {
+            page = service.getAll(tenantRoleId, null,
+                    (offset/pageSize)+1, pageSize, null, true);
             // Get the user ids
             List<Long> userIds = page.getResults().stream().map(SystemTenantRoleUser::getUserId).
                     distinct().collect(Collectors.toList());
@@ -139,30 +138,18 @@ public class LazyTenantRoleUserDataModel extends LazyAbstractDataModel<SystemTen
     }
 
     /**
-     * Getter for tenantId property
+     * Getter for tenantRoleId property
      * @return long value that corresponds to the tenantRoleId property
      */
-    public Long getTenantId() {
-        return tenantId;
+    public Long getTenantRoleId() {
+        return tenantRoleId;
     }
 
     /**
-     * Setter for tenantId property
-     * @param tenantId  long value that corresponds to the tenantId property
+     * Setter for tenantRoleId property
+     * @param tenantRoleId  long value that corresponds to the tenantId property
      */
-    public void setTenantId(Long tenantId) {
-        this.tenantId = tenantId;
+    public void setTenantRoleId(Long tenantRoleId) {
+        this.tenantRoleId = tenantRoleId;
     }
-
-    /**
-     * Getter for roleId property
-     * @return long value that corresponds to the roleId property
-     */
-    public Long getRoleId() { return roleId; }
-
-    /**
-     * Setter for roleId property
-     * @param roleId long value that corresponds to the roleId property
-     */
-    public void setRoleId(Long roleId) { this.roleId = roleId; }
 }

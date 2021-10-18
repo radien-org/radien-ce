@@ -123,16 +123,14 @@ public class LazyTenantRoleUserDataModelTest {
     public void testGetData() throws SystemException, Exception {
         int pageNo = 0;
         int pageSize = 10;
-        Long tenantId = 111L;
-        Long roleId = 112L;
+        Long tenantRoleId = 111L;
         List<Long> ids = LongStream.rangeClosed(1, pageSize).boxed().collect(Collectors.toList());
 
-        when(service.getUsers(tenantId, roleId, pageNo+1, pageSize)).then(i -> setupMockedPage(pageSize));
+        when(service.getAll(tenantRoleId, null,pageNo+1, pageSize, null, true)).then(i -> setupMockedPage(pageSize));
         when(userService.getUsersByIds(ids)).then(i -> setupMockedUsers(ids));
 
         LazyTenantRoleUserDataModel lazyModel = new LazyTenantRoleUserDataModel(service, userService);
-        lazyModel.setTenantId(tenantId);
-        lazyModel.setRoleId(roleId);
+        lazyModel.setTenantRoleId(tenantRoleId);
         List<SystemTenantRoleUser> toBeShown = lazyModel.load(pageNo, pageSize,
                 sortMetaMap, filterMetaMap);
 
@@ -156,25 +154,14 @@ public class LazyTenantRoleUserDataModelTest {
     }
 
     /**
-     * Test for setter method {@link LazyTenantRoleUserDataModel#setTenantId(Long)}
+     * Test for setter method {@link LazyTenantRoleUserDataModel#setTenantRoleId(Long)}
      */
     @Test
     public void testGetterSetterForTenantId() {
         Long tenantId = 1000L;
         LazyTenantRoleUserDataModel lazyModel = new LazyTenantRoleUserDataModel(null, null);
-        lazyModel.setTenantId(tenantId);
-        assertEquals(tenantId, lazyModel.getTenantId());
-    }
-
-    /**
-     * Test for setter method {@link LazyTenantRoleUserDataModel#setRoleId(Long)}
-     */
-    @Test
-    public void testGetterSetterForRoleId() {
-        Long roleId = 1000L;
-        LazyTenantRoleUserDataModel lazyModel = new LazyTenantRoleUserDataModel(null, null);
-        lazyModel.setRoleId(roleId);
-        assertEquals(roleId, lazyModel.getRoleId());
+        lazyModel.setTenantRoleId(tenantId);
+        assertEquals(tenantId, lazyModel.getTenantRoleId());
     }
 
     /**
