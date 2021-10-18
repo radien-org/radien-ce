@@ -15,6 +15,7 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
@@ -97,6 +98,26 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
             SystemTenantRolePermissionSearchFilter filter = new TenantRolePermissionSearchFilter(tenantRoleId,
                     permissionId, true, isLogicalConjunction);
             return Response.ok(tenantRolePermissionServiceAccess.get(filter)).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Retrieves a Tenant Role Permission using the id as search parameter.
+     * @param id Tenant Role id association to guide the search process
+     * @return 200 code message in case of success (Tenant Role association found)
+     * 404 if association could not be found, 500 code message if there is any error.
+     */
+    @Override
+    public Response getById(Long id) {
+        try {
+            log.info("Retrieving TenantRolePermission for id {}", id);
+            SystemTenantRolePermission trp = tenantRolePermissionServiceAccess.get(id);
+            if (trp == null) {
+                return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+            }
+            return Response.ok().entity(trp).build();
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }

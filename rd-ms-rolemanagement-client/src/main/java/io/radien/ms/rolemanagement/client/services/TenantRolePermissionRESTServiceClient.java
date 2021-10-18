@@ -21,7 +21,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess;
 import io.radien.exception.BadRequestException;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.InternalServerErrorException;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
@@ -33,11 +32,14 @@ import io.radien.ms.rolemanagement.client.util.TenantRolePermissionModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import org.apache.cxf.bus.extension.ExtensionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tenant Role Permission REST Service Client
@@ -59,6 +61,8 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    private static final Logger log = LoggerFactory.getLogger(TenantRolePermissionRESTServiceClient.class);
 
     /**
      * Assign/associate/add permission to a Tenant (TenantRole domain)
@@ -267,6 +271,46 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
             throw new SystemException(e);
         }
     }
+
+    /**
+     * Retrieve a Tenant Role Permission using the id as search parameter.
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param id Tenant Role Permission id association to guide the search process
+     * @return Optional containing Tenant Role Permission found.
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public Optional<SystemTenantRolePermission> getTenantRolePermissionById(Long id) throws SystemException{
+        return get(this::getTenantRolePermissionByIdCore, id);
+    }
+
+    /**
+     * Core method that retrieves a Tenant Role Permission using the id as search parameter.
+     * @param id Tenant Role Permission id to guide the search process
+     * @return Optional containing Tenant Role Permission found.
+     * @throws TokenExpiredException in case of JWT token expiration
+     * @throws SystemException in case of any error
+     */
+    private Optional<SystemTenantRolePermission> getTenantRolePermissionByIdCore(Long id) throws SystemException {
+        TenantRolePermissionResourceClient client = getClient();
+        try (Response response = client.getById(id)){
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return Optional.of(TenantRolePermissionModelMapper.map((InputStream) response.getEntity()));
+            }
+            log.info("Error retrieving TenantRolePermission for id {}. Obtained status= {}",
+                    id, response.getStatusInfo().getStatusCode());
+        }
+        catch (NotFoundException e) {
+            if (log.isDebugEnabled()) {
+                log.info("TenantRolePermission not found for {}",id);
+            }
+        }
+        catch (ExtensionException | ProcessingException | InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+        return Optional.empty();
+    }
+
 
     /**
      * Assemblies a {@link TenantRoleResourceClient} instance using RestClientBuilder Microprofile API

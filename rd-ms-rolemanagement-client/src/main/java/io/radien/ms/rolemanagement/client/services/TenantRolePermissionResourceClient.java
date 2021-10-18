@@ -80,6 +80,16 @@ public interface TenantRolePermissionResourceClient {
                          @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     /**
+     * Retrieves a Tenant Role Permission using the id as search parameter.
+     * @param id Tenant Role Permission id to guide the search process
+     * @return 200 code message in case of success (Tenant Role association found)
+     * 404 if association could not be found, 500 code message if there is any error.
+     */
+    @GET
+    @Path("/{id}")
+    Response getById(@PathParam("id") Long id);
+
+    /**
      * Deletes a Tenant Role Permission association using the id as search parameter.
      * @param id Tenant Role id association to guide the search process
      * @return 200 code message in case of success (Tenant Role association found)

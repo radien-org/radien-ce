@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.exception.SystemException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Rest service client responsible to Deal with TenantRole Permission endpoint
@@ -88,4 +89,13 @@ public interface TenantRolePermissionRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean unAssignPermission(Long tenantRolePermissionId) throws SystemException;
+
+    /**
+     * Retrieve a Tenant Role Permission using the id as search parameter.
+     * (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param id Tenant Role Permission id association to guide the search process
+     * @return Optional containing Tenant Role Permission found.
+     * @throws SystemException in case of any error
+     */
+    Optional<SystemTenantRolePermission> getTenantRolePermissionById(Long id) throws SystemException;
 }

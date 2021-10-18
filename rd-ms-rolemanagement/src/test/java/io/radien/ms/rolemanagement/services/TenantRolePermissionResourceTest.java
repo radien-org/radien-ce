@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
@@ -29,7 +30,6 @@ import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
@@ -48,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -315,7 +316,7 @@ public class TenantRolePermissionResourceTest {
      * during the processing
      */
     @Test
-    @Order(2)
+    @Order(12)
     public void testUpdatePermissionWithException() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
@@ -356,5 +357,40 @@ public class TenantRolePermissionResourceTest {
 
         response = tenantRolePermissionResource.update(1L, tenantRolePermission);
         assertEquals(500, response.getStatus());
+    }
+
+    /**
+     * Tests response from getById method
+     */
+    @Test
+    @Order(13)
+    public void testGetById() {
+        long id = 1L;
+        SystemTenantRolePermission m = mock(SystemTenantRolePermission.class);
+        doReturn(m).when(tenantRolePermissionService).get(id);
+        Response response = tenantRolePermissionResource.getById(1L);
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests response from getById when exceptions occur during the processing
+     */
+    @Test
+    @Order(14)
+    public void testGetByIdWithExceptions() throws TenantRoleNotFoundException {
+       // TenantRolePermission Not Found
+        long id1 = 1L;
+        doReturn(null).when(tenantRolePermissionService).get(id1);
+
+        Response response = tenantRolePermissionResource.getById(id1);
+        assertEquals(404,response.getStatus());
+
+        // Simulating some other issue
+        long id2 = 2L;
+        doThrow(new RuntimeException("db issue")).when(tenantRolePermissionService).get(id2);
+
+        // Generic Error
+        response = tenantRolePermissionResource.getById(id2);
+        assertEquals(500,response.getStatus());
     }
 }
