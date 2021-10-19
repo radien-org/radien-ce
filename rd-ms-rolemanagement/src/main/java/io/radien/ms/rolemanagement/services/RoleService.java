@@ -246,28 +246,39 @@ public class RoleService implements RoleServiceAccess {
      * cannot be duplicated
      */
     @Override
-    public void save(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException {
+    public void create(SystemRole role) throws UniquenessConstraintException {
 
-        log.info("New record information to be used!");
+        log.info("New record information to be created!");
 
         List<RoleEntity> alreadyExistentRecords = searchDuplicatedName(role);
 
-        if(role.getId() == null) {
-            if(alreadyExistentRecords.isEmpty()) {
-                log.info("It's a creation!");
-                entityManager.persist(role);
-            } else {
-                log.info("No id has been given, but there is already another record with some of the given information");
-                validateUniquenessRecords(alreadyExistentRecords, role);
-            }
+        if(alreadyExistentRecords.isEmpty()) {
+            log.info("It's a creation!");
+            entityManager.persist(role);
         } else {
-            log.info("We are going to update");
-            //Validate if record exists
-            get(role.getId());
+            log.info("No id has been given, but there is already another record with some of the given information");
             validateUniquenessRecords(alreadyExistentRecords, role);
-
-            entityManager.merge(role);
         }
+    }
+
+    /**
+     * Updates the requested given role into the db
+     * @param role to be update
+     * @throws RoleNotFoundException in case of update and the requested role does not exist
+     * @throws UniquenessConstraintException in case of information duplicated (already existent in other records)
+     */
+    @Override
+    public void update (SystemRole role) throws RoleNotFoundException, UniquenessConstraintException {
+
+        log.info("Record information to be updated!");
+
+        List<RoleEntity> alreadyExistentRecords = searchDuplicatedName(role);
+
+        //Validate if record exists
+        get(role.getId());
+        validateUniquenessRecords(alreadyExistentRecords, role);
+
+        entityManager.merge(role);
     }
 
     /**

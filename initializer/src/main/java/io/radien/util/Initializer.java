@@ -266,7 +266,7 @@ public class Initializer {
 
     private static void initializeTenantRoleMap(String accessToken) {
         if(tenantRoles == null) {
-            String tenantUrl = getRoleManagementBaseURL() + "/tenantrole/all";
+            String tenantUrl = getRoleManagementBaseURL() + "/tenantrole";
             tenantRoles = getDoubleMapFromPage(tenantUrl, "tenantId","roleId", "tenantRoleFinder", accessToken);
         }
 

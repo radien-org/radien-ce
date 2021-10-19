@@ -381,12 +381,41 @@ public class TenantRoleServiceTest {
     @Test
     @Order(15)
     public void testPagination() {
-        Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(1, 100);
+        List<String> sortBy = Arrays.asList("tenantId", "roleId");
+        Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, sortBy, false);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
         assertEquals(1, p.getTotalPages());
-        Assertions.assertNotNull(p.getResults());
-        Assertions.assertFalse(p.getResults().isEmpty());
+
+        p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        Assertions.assertTrue(p.getTotalResults() > 0);
+        assertEquals(1, p.getTotalPages());
+
+        p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, null, true);
+        Assertions.assertNotNull(p);
+        assertEquals(1, p.getTotalPages());
+
+        sortBy = new ArrayList<>();
+        p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        assertEquals(1, p.getTotalPages());
+
+        sortBy = new ArrayList<>();
+        p = tenantRoleServiceAccess.getAll(124L, null,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        assertEquals(0, p.getTotalPages());
+
+        sortBy = new ArrayList<>();
+        p = tenantRoleServiceAccess.getAll(null, 123L,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        assertEquals(0, p.getTotalPages());
     }
 
     /**
@@ -480,15 +509,15 @@ public class TenantRoleServiceTest {
     public void testHasAnyRole() {
         SystemRole roleA = new RoleEntity();
         roleA.setName("role-a");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleA));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleA));
 
         SystemRole roleB = new RoleEntity();
         roleB.setName("role-b");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleB));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleB));
 
         SystemRole roleC = new RoleEntity();
         roleC.setName("role-c");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleC));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleC));
 
         Long tenant1 = 444L;
         Long tenant2 = 445L;
@@ -560,11 +589,11 @@ public class TenantRoleServiceTest {
         // Roles
         SystemRole roleC = new RoleEntity();
         roleC.setName("role-c1");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleC));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleC));
 
         SystemRole roleD = new RoleEntity();
         roleD.setName("role-d1");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleD));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleD));
 
         Long tenant1 = 888L;
         Long tenant2 = 889L;
@@ -633,15 +662,15 @@ public class TenantRoleServiceTest {
     public void testGetTenants() {
         SystemRole roleD = new RoleEntity();
         roleD.setName("role-d");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleD));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleD));
 
         SystemRole roleE = new RoleEntity();
         roleE.setName("role-e");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleE));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleE));
 
         SystemRole roleF = new RoleEntity();
         roleF.setName("role-f");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleF));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleF));
 
         Long tenant1 = 444L;
         Long tenant2 = 445L;
@@ -724,11 +753,11 @@ public class TenantRoleServiceTest {
         /* Roles */
         SystemRole roleC = new RoleEntity();
         roleC.setName("role-cc1");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleC));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleC));
 
         SystemRole roleD = new RoleEntity();
         roleD.setName("role-dd1");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleD));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleD));
 
         Long tenant1 = 888L;
         Long tenant2 = 889L;
@@ -857,7 +886,7 @@ public class TenantRoleServiceTest {
     public void testHasAnyRoleNullArrayList() {
         SystemRole roleA = new RoleEntity();
         roleA.setName("role-xx");
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(roleA));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(roleA));
 
         Long tenant1 = 544L;
 
@@ -983,7 +1012,7 @@ public class TenantRoleServiceTest {
      * @throws TenantRoleException in case of any inconsistency found
      */
     @Test
-    public void testUpdateNotFoundScenario() throws TenantRoleException {
+    public void testUpdateNotFoundScenario() {
         SystemTenantRole str = new TenantRoleEntity();
         str.setTenantId(10000L);
         str.setRoleId(10000L);
@@ -998,7 +1027,7 @@ public class TenantRoleServiceTest {
      */
     private void roleObject(SystemRole role, String roleName){
         role.setName(roleName);
-        Assertions.assertDoesNotThrow(() -> roleServiceAccess.save(role));
+        Assertions.assertDoesNotThrow(() -> roleServiceAccess.create(role));
     }
 
     /**

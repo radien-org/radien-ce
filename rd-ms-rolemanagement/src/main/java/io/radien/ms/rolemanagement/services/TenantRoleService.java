@@ -30,6 +30,8 @@ import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import javax.persistence.criteria.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +74,14 @@ public class TenantRoleService implements TenantRoleServiceAccess {
      * Gets all the tenant role associations into a pagination mode.
      * @param pageNo of the requested information. Where the tenant is.
      * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria.
+     * @param isAscending ascending filter criteria.
      * @return a page containing system tenant role associations.
      */
     @Override
-    public Page<SystemTenantRole> getAll(int pageNo, int pageSize) {
+    public Page<SystemTenantRole> getAll(Long tenantId, Long roleId,
+                                         int pageNo, int pageSize, List<String> sortBy,
+                                         boolean isAscending) {
         log.info("Retrieving tenant role associations using pagination mode");
         EntityManager em = getEntityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -84,6 +90,25 @@ public class TenantRoleService implements TenantRoleServiceAccess {
 
         criteriaQuery.select(tenantRoleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+
+        if (tenantId != null) {
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()),
+                    tenantId));
+        }
+        if (roleId != null) {
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()),
+                    roleId));
+        }
+
+        if (tenantId != null || roleId != null) {
+            criteriaQuery.where(global);
+        }
+
+        if(sortBy != null && !sortBy.isEmpty()){
+            List<Order> orders = sortBy.stream().map(i-> isAscending ? criteriaBuilder.asc(tenantRoleRoot.get(i)) :
+                            criteriaBuilder.desc(tenantRoleRoot.get(i))).collect(Collectors.toList());
+            criteriaQuery.orderBy(orders);
+        }
 
         TypedQuery<TenantRoleEntity> q= em.createQuery(criteriaQuery);
 

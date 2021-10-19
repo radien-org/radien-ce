@@ -18,18 +18,22 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.service.tenantrole.TenantRolePermissionRESTServiceAccess;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
+import io.radien.ms.permissionmanagement.client.util.ListPermissionModelMapper;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRolePermissionModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
@@ -148,7 +152,7 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
 
 
     /**
-     * Under a pagination approach, retrieves the Permissions associations that exist
+     * Under a pagination approach, retrieves the Tenant Role Permissions associations that exist
      * for a TenantRole
      * (Invokes the core method counterpart and handles TokenExpiration error)
      * @param tenantId tenant identifier for a TenanSoon soon soon as soontRole (Acting as filter)
@@ -159,17 +163,8 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
      * @throws SystemException in case of any error
      */
     @Override
-    public Page<? extends SystemTenantRolePermission> getPermissions(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
-        try {
-            return getPermissionsCore(tenantId, roleId, pageNo, pageSize);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getPermissionsCore(tenantId, roleId, pageNo, pageSize);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+    public Page<? extends SystemTenantRolePermission> getTenantRolePermissions(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
+        return get(() -> getTenantRolePermissionsCore(tenantId, roleId, pageNo, pageSize));
     }
 
     /**
@@ -182,15 +177,12 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
      * with parameter Page number and Page size)
      * @throws SystemException in case of any error
      */
-    protected Page<? extends SystemTenantRolePermission> getPermissionsCore(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
+    protected Page<? extends SystemTenantRolePermission> getTenantRolePermissionsCore(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException {
         try {
             TenantRolePermissionResourceClient client = clientServiceUtil.getTenantRolePermissionResourceClient(oaf.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
             Response response = client.getAll(tenantId, roleId, pageNo, pageSize);
             return TenantRolePermissionModelMapper.mapToPage((InputStream) response.getEntity());
-        }
-        catch (TokenExpiredException t) {
-            throw t;
         }
         catch (ExtensionException | ProcessingException | MalformedURLException |
                 InternalServerErrorException e){
@@ -241,4 +233,57 @@ public class TenantRolePermissionRESTServiceClient extends AuthorizationChecker 
             throw new SystemException(e);
         }
     }
+
+
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * It Invokes the core method counterpart and handles TokenExpiration error
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return List containing permissions.
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException {
+        return get(() -> getPermissionsCore(tenantId, roleId, userId));
+    }
+
+    /**
+     * Core method that retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return List containing permissions.
+     * @throws TokenExpiredException if JWT token expires
+     * @throws SystemException in case of any error
+     */
+    private List<? extends SystemPermission> getPermissionsCore(Long tenantId, Long roleId, Long userId) throws SystemException {
+        TenantRolePermissionResourceClient client = getTenantRolePermissionResourceClient();
+        try (Response response = client.getPermissions(tenantId, roleId, userId)) {
+            return ListPermissionModelMapper.map((InputStream) response.getEntity());
+        }
+        catch (ExtensionException | ProcessingException | BadRequestException |
+                io.radien.exception.InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Assemblies a TenantRolePermission REST Client using Rest client builder API,
+     * using as parameter the URL informed via {@link OAFProperties#SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT}
+     * @return instance of {@link TenantRoleResourceClient} REST Client
+     * @throws SystemException in case of malformed url
+     */
+    private TenantRolePermissionResourceClient getTenantRolePermissionResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getTenantRolePermissionResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        }
+        catch (MalformedURLException m) {
+            throw new SystemException(m);
+        }
+    }
+
+
 }

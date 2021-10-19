@@ -16,8 +16,10 @@
 package io.radien.api.service.tenantrole;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.exception.SystemException;
+import java.util.List;
 
 /**
  * Rest service client responsible to Deal with TenantRole Permission endpoint
@@ -27,7 +29,7 @@ import io.radien.exception.SystemException;
 public interface TenantRolePermissionRESTServiceAccess {
 
     /**
-     * Under a pagination approach, retrieves the Permissions associations that currently exist
+     * Under a pagination approach, retrieves the Tenant Role Permissions associations that currently exist
      * @param tenantId tenant identifier for a TenantRole (Acting as filter)
      * @param roleId role identifier for a TenantRole (Acting as filter)
      * @param pageNo page number
@@ -35,7 +37,7 @@ public interface TenantRolePermissionRESTServiceAccess {
      * @return Page containing TenantRoleUser instances
      * @throws SystemException in case of any error
      */
-    Page<? extends SystemTenantRolePermission> getPermissions(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
+    Page<? extends SystemTenantRolePermission> getTenantRolePermissions(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
 
     /**
      * Assign/associate/add permission to a TenantRole domain
@@ -63,4 +65,15 @@ public interface TenantRolePermissionRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean unAssignPermission(Long tenantRolePermissionId) throws SystemException;
+
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return List containing permissions.
+     * @throws SystemException in case of any error
+     */
+    List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException;
+
 }

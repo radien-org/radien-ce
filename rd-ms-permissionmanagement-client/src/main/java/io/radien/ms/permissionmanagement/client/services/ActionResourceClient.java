@@ -16,6 +16,8 @@
 package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.ms.permissionmanagement.client.entities.GlobalHeaders;
+import java.util.Collection;
+import javax.ws.rs.PUT;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
@@ -75,7 +77,7 @@ public interface ActionResourceClient {
     @GET
     @Path("find")
     public Response getActions(@QueryParam("name") String name,
-                               @QueryParam("ids") List<Long> ids,
+                               @QueryParam("ids") Collection<Long> ids,
                         @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
@@ -100,13 +102,25 @@ public interface ActionResourceClient {
     public Response delete(@NotNull @PathParam("id") long id);
 
     /**
-     * Saves an action (Creation or Update).
+     * Create an action
      * @param action action to be created or update
      * @return Http status 200 in case of successful operation.
-     * Bad request (404) in case of trying to create an action with repeated description.
+     * Bad request (400) in case of trying to create an action with repeated description.
      * Internal Server Error (500) in case of operational error
      */
     @POST
-    public Response save(io.radien.ms.permissionmanagement.client.entities.Action action);
+    public Response create(io.radien.ms.permissionmanagement.client.entities.Action action);
+
+    /**
+     * Update an action
+     * @param action action to be update
+     * @return Http status 200 in case of successful operation.
+     * Bad request (400) in case of trying to create an action with repeated description,
+     * Not found (404) in case of not existing Action for the informed id.
+     * Internal Server Error (500) in case of operational error
+     */
+    @PUT
+    @Path("/{id}")
+    public Response update(@NotNull @PathParam("id") long id, io.radien.ms.permissionmanagement.client.entities.Action action);
 
 }

@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -582,7 +583,7 @@ public class TenantRESTServiceClientTest {
     @Test
     public void testIsTenantExistent() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
-        when(tenantResourceClient.exists(any())).thenReturn(Response.ok(Boolean.TRUE).build());
+        when(tenantResourceClient.exists(any())).thenReturn(Response.noContent().build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         dummyTenant.setName("name-update");
 
@@ -590,9 +591,19 @@ public class TenantRESTServiceClientTest {
     }
 
     @Test
-    public void testIsTenantExistentReturnFalseResponse() throws MalformedURLException, SystemException {
+    public void testNotExistTenantDueNotFoundStatus() throws MalformedURLException, SystemException {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
-        when(tenantResourceClient.exists(any())).thenReturn(Response.ok().entity(Boolean.FALSE).build());
+        when(tenantResourceClient.exists(any())).thenThrow(new NotFoundException());
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
+        dummyTenant.setName("name-update");
+
+        assertFalse(target.isTenantExistent(dummyTenant.getId()));
+    }
+
+    @Test
+    public void testNotExistDueUnSuccessResponseStatus() throws MalformedURLException, SystemException {
+        TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantResourceClient.exists(any())).thenReturn(Response.status(300).build());
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
         dummyTenant.setName("name-update");
 
@@ -626,7 +637,7 @@ public class TenantRESTServiceClientTest {
     }
 
     /**
-     * Test for method update(tenant)
+     * Test for method isTenantExistent
      * It corresponds to the unsuccessful situation where JWT expiration occurs and
      * is not possible to recover from that
      * Expected result (FAIL): SystemException thrown
@@ -646,6 +657,30 @@ public class TenantRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.isTenantExistent(1L);
+    }
+
+    /**
+     * Test for method isTenantExistent
+     * It corresponds to the situation where JWT expiration occurs, a refresh (token) operation is made
+     * and then reattempt takes place.
+     * Expected result (SUCCESS)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testIsTenantExistentAfterTokenException() throws MalformedURLException, SystemException {
+        Tenant toBeUpdated = mock(Tenant.class);
+        toBeUpdated.setId(1L);
+        TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
+        when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.exists(1L)).thenThrow(new TokenExpiredException("test")).
+                thenReturn(Response.noContent().build());
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        assertTrue(target.isTenantExistent(1L));
     }
 
     @Test(expected = SystemException.class)

@@ -144,7 +144,7 @@ public class ResourceResourceTest {
      */
     @Test
     public void testSave() {
-        Response response = resourceResource.save(new io.radien.ms.permissionmanagement.client.entities.Resource());
+        Response response = resourceResource.create(new io.radien.ms.permissionmanagement.client.entities.Resource());
         assertEquals(200,response.getStatus());
     }
 
@@ -155,8 +155,8 @@ public class ResourceResourceTest {
      */
     @Test
     public void testCreateInvalid() throws UniquenessConstraintException {
-        doThrow(new UniquenessConstraintException()).when(resourceServiceAccess).save(any());
-        Response response = resourceResource.save(new io.radien.ms.permissionmanagement.client.entities.Resource());
+        doThrow(new UniquenessConstraintException()).when(resourceServiceAccess).create(any());
+        Response response = resourceResource.create(new io.radien.ms.permissionmanagement.client.entities.Resource());
         assertEquals(400,response.getStatus());
     }
 
@@ -167,10 +167,54 @@ public class ResourceResourceTest {
      */
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException {
-        doThrow(new RuntimeException()).when(resourceServiceAccess).save(any());
-        Response response = resourceResource.save(new io.radien.ms.permissionmanagement.client.entities.Resource());
+        doThrow(new RuntimeException()).when(resourceServiceAccess).create(any());
+        Response response = resourceResource.create(new io.radien.ms.permissionmanagement.client.entities.Resource());
         assertEquals(500,response.getStatus());
     }
 
+    /**
+     * Update with successful status. Returning 200 code message
+     */
+    @Test
+    public void testUpdate() {
+        Response response = resourceResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Resource());
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tries to update Resource with repeated information. Returns a 400 code message (Invalid Requested Exception)
+     * @throws ResourceNotFoundException in case of non existent resource for a given parameterized id
+     * @throws UniquenessConstraintException in case of request containing repeated information
+     */
+    @Test
+    public void testUpdateInvalid() throws UniquenessConstraintException, ResourceNotFoundException {
+        doThrow(new UniquenessConstraintException()).when(resourceServiceAccess).update(any());
+        Response response = resourceResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Resource());
+        assertEquals(400,response.getStatus());
+    }
+
+    /**
+     * Tries to update Resource for a given invalid Id. Returns a 404 code message (Not Found Exception)
+     * @throws ResourceNotFoundException in case of non existent resource for a given parameterized id
+     * @throws UniquenessConstraintException in case of request containing repeated information
+     */
+    @Test
+    public void testUpdateNotFound() throws UniquenessConstraintException, ResourceNotFoundException {
+        doThrow(new ResourceNotFoundException("resource not found")).when(resourceServiceAccess).update(any());
+        Response response = resourceResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Resource());
+        assertEquals(404,response.getStatus());
+    }
+
+    /**
+     * Tries to update a Resource, but a error occurs in the middle of the process. Should return a generic error message 500
+     * @throws ResourceNotFoundException in case of non existent resource for a given parameterized id
+     * @throws UniquenessConstraintException in case of request containing repeated information
+     */
+    @Test
+    public void testUpdateGenericError() throws UniquenessConstraintException, ResourceNotFoundException {
+        doThrow(new RuntimeException()).when(resourceServiceAccess).update(any());
+        Response response = resourceResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Resource());
+        assertEquals(500,response.getStatus());
+    }
 
 }

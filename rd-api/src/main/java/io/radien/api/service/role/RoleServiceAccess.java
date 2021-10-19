@@ -57,13 +57,20 @@ public interface RoleServiceAccess extends ServiceAccess {
     public List<? extends SystemRole> getSpecificRoles(SystemRoleSearchFilter filter);
 
     /**
-     * Saves or stores the requested given role into the db
-     * @param role to be save/stored
-     * @throws RoleNotFoundException in case of update and the requested role does not exist
+     * Creates the requested given role into the db
+     * @param role to be created
      * @throws UniquenessConstraintException in case of saving and the record already exists or has duplicated
      * information
      */
-    public void save(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException;
+    public void create(SystemRole role) throws UniquenessConstraintException;
+
+    /**
+     * Updates the requested given role into the db
+     * @param role to be update
+     * @throws RoleNotFoundException in case of update and the requested role does not exist
+     * @throws UniquenessConstraintException in case of information duplicated (already existent in other records)
+     */
+    public void update(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException;
 
     /**
      * Deletes from the db the requested role

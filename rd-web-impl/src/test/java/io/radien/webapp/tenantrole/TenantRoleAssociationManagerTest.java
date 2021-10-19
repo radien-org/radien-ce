@@ -523,7 +523,7 @@ public class TenantRoleAssociationManagerTest {
                 thenReturn(Optional.of(expectedRole));
         when(tenantRESTServiceAccess.getTenantById(tenantRoleToBeEdited.getTenantId())).
                 thenReturn(Optional.of(expectedTenant));
-        when(tenantRoleRESTServiceAccess.getPermissions(expectedTenant.getId(),
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(expectedTenant.getId(),
                 expectedRole.getId(), null)).then(i -> expectedAssociatedPermissions);
 
         String returnUriMappingId = this.tenantRoleAssociationManager.
@@ -637,7 +637,7 @@ public class TenantRoleAssociationManagerTest {
                 thenReturn(Optional.of(expectedTenant));
 
         Exception e = new RuntimeException("Error retrieving assigned Permissions");
-        when(tenantRoleRESTServiceAccess.getPermissions(expectedTenant.getId(),
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(expectedTenant.getId(),
                 expectedRole.getId(), null)).
                 thenThrow(e);
 
@@ -677,7 +677,7 @@ public class TenantRoleAssociationManagerTest {
         expectedAssociatedPermissions.add(permission);
         when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).
                 then(i -> Boolean.TRUE);
-        when(tenantRoleRESTServiceAccess.getPermissions(tenant.getId(),
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(tenant.getId(),
                 role.getId(), null)).then(i -> expectedAssociatedPermissions);
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();

@@ -17,6 +17,7 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.ms.tenantmanagement.client.entities.GlobalHeaders;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import javax.ws.rs.HEAD;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
@@ -56,7 +57,6 @@ public interface TenantResourceClient {
      * error.
      */
     @GET
-    @Path("/getAll")
     public Response getAll(@QueryParam("search") String search,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
@@ -73,6 +73,7 @@ public interface TenantResourceClient {
      * @return 200 response code in case of success or 500 in case of any issue
      */
     @GET
+    @Path("/find")
     public Response get(@QueryParam("name") String name, @QueryParam("tenantType") String type,
                         @QueryParam("ids") List<Long> ids,
                         @DefaultValue("false") @QueryParam("isExact") boolean isExact,
@@ -102,7 +103,7 @@ public interface TenantResourceClient {
      * @return a response with true or false based on the success or failure of the deletion
      */
     @DELETE
-    @Path("/deleteTenantHierarchy/{id}")
+    @Path("/hierarchy/{id}")
     public Response deleteTenantHierarchy(@NotNull @PathParam("id") long id);
 
     /**
@@ -126,10 +127,11 @@ public interface TenantResourceClient {
     /**
      * Validates if specific requested Tenant exists
      * @param id to be searched
-     * @return response true if it exists
+     * @return response 204 if tenant exists. 404 if do not exist.
+     * 500 in case of any other processing error.
      */
-    @GET
-    @Path("/exists/{id}")
+    @HEAD
+    @Path("/{id}")
     public Response exists(@NotNull @PathParam("id") Long id);
 
 }

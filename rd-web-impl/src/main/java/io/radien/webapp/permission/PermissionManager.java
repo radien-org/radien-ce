@@ -65,8 +65,11 @@ public class PermissionManager extends AbstractManager {
             }
             p.setResourceId(this.selectedResource.getId());
             p.setActionId(this.selectedAction.getId());
-            this.permissionRESTServiceAccess.create(p);
-
+            if (p.getId() == null) {
+                this.permissionRESTServiceAccess.create(p);
+            } else {
+                this.permissionRESTServiceAccess.update(p);
+            }
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.PERMISSION_MESSAGE.getValue()));
         } catch (Exception e) {

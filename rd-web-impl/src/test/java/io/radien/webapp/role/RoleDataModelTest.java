@@ -116,7 +116,33 @@ public class RoleDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testSaveException() throws SystemException {
-        doThrow(NullPointerException.class).when(service).create(systemRole);
+        SystemRole roleToBeCreated = new Role();
+        doThrow(NullPointerException.class).when(service).create(roleToBeCreated);
+        String expected = roleDataModel.save(roleToBeCreated);
+        assertEquals(expected, DataModelEnum.ROLE_CREATION_PAGE.getValue());
+    }
+
+    /**
+     * Test method update()
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testUpdate() throws SystemException {
+        systemRole.setId(1L);
+        doReturn(true).when(service).update(systemRole);
+        String expected = roleDataModel.save(systemRole);
+        assertEquals(expected, DataModelEnum.ROLE_MAIN_PAGE.getValue());
+    }
+
+    /**
+     * Test method update()
+     * Asserts exception
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testUpdateException() throws SystemException {
+        systemRole.setId(1L);
+        doThrow(NullPointerException.class).when(service).update(systemRole);
         String expected = roleDataModel.save(systemRole);
         assertEquals(expected, DataModelEnum.ROLE_CREATION_PAGE.getValue());
     }

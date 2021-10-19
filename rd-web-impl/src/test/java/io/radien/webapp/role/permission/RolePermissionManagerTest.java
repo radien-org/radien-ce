@@ -151,7 +151,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     public void testOnLoadRolePermissions() throws SystemException {
         SystemRole systemRole = new Role();
         systemRole.setId(1L);
-        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
                 then(i -> retrievedSystemPermissionList);
         rolePermissionManager.loadRolePermissions(systemRole);
         assertNotEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
@@ -166,7 +166,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     public void testOnLoadRolePermissionsWithException() throws SystemException {
         SystemRole systemRole = new Role();
         systemRole.setId(1L);
-        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
                 thenThrow(new SystemException("error while retrieving permissions"));
         rolePermissionManager.loadRolePermissions(systemRole);
         assertEquals(0, rolePermissionManager.getIsPermissionsAssigned().size());
@@ -180,7 +180,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
     public void testOnLoadRolePermissionsWithNoSelectedActiveTenant() throws SystemException {
         rolePermissionManager.setSystemActiveTenant(null);
         when(rolePermissionManager.getSystemActiveTenant()).then(i -> null);
-        when(tenantRoleRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(anyLong(), anyLong(), nullable(Long.class))).
                 then(i -> retrievedSystemPermissionList);
         SystemRole role = new Role();
         role.setId(1L);
@@ -207,7 +207,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
      */
     @Test
     public void testLoadRolePermissions() throws SystemException {
-        doReturn(retrievedSystemPermissionList).when(tenantRoleRESTServiceAccess).
+        doReturn(retrievedSystemPermissionList).when(tenantRolePermissionRESTServiceAccess).
                 getPermissions(anyLong(), anyLong(), anyLong());
 
         rolePermissionManager.setIsPermissionsAssigned(isPermissionsAssigned);
@@ -223,7 +223,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
      */
     @Test(expected = NullPointerException.class)
     public void testLoadRolePermissionsException() throws SystemException {
-        doThrow(SystemException.class).when(tenantRoleRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
+        doThrow(SystemException.class).when(tenantRolePermissionRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
         rolePermissionManager.loadRolePermissions(systemRole);
     }
 
@@ -310,7 +310,7 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
         doReturn(systemActiveTenant).when(activeTenantDataModelManager).getActiveTenant();
         assertEquals(systemActiveTenant, rolePermissionManager.getSystemActiveTenant());
 
-        doReturn(retrievedSystemPermissionList).when(tenantRoleRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
+        doReturn(retrievedSystemPermissionList).when(tenantRolePermissionRESTServiceAccess).getPermissions(anyLong(), anyLong(), nullable(Long.class));
         doReturn(true).when(tenantRoleRESTServiceAccess).create(any());
         doReturn(true).when(tenantRolePermissionRESTServiceAccess).unAssignPermission(anyLong(), anyLong(), anyLong());
 

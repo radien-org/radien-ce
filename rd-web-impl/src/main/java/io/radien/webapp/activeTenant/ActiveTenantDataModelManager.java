@@ -124,7 +124,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      */
     public void tenantChangedValidationMethod(String valueChange) {
         try {
-            if(valueChange.equals(JSFUtil.getMessage(DataModelEnum.NO_ACTIVE_TENANT_MESSAGE.getValue()))) {
+            if(valueChange.equals(JSFUtil.getMessage(DataModelEnum.NO_ACTIVE_TENANT_MESSAGE.getValue())) || valueChange.equals("???"+JSFUtil.getMessage(DataModelEnum.NO_ACTIVE_TENANT_MESSAGE.getValue())+"???")) {
                 if(activeTenant != null) {
                     //if he had another then set the value to deactivate before changing
                     deactivateTenant(activeTenant);
