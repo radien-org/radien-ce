@@ -726,14 +726,14 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
             PermissionRESTServiceAccess permissionRESTServiceAccess = mock(PermissionRESTServiceAccess.class);
             when(permissionRESTServiceAccess.getPermissionsByIds(argThat(t -> t.containsAll(ids)))).
                     then(i -> Arrays.asList(readDocument, publishDocument, deleteDocument));
-            tenantRoleBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
+            tenantRolePermissionBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         }
         catch (SystemException se) {
             fail("unexpected");
         }
 
         // Permissions were assigned to tenant id = 3 and role "publisher"
-        List<SystemPermission> permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
+        List<SystemPermission> permissions = assertDoesNotThrow(() -> tenantRolePermissionBusinessService.getPermissions(
                 tenantId3, publisher.getId(), null));
 
         assertNotNull(permissions);
@@ -741,14 +741,14 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
 
         // Permissions were not assigned to the following user
         Long nonRegisteredUser = 22222L;
-        permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
+        permissions = assertDoesNotThrow(() -> tenantRolePermissionBusinessService.getPermissions(
                 tenantId3, publisher.getId(), nonRegisteredUser));
         assertNotNull(permissions);
         assertEquals(0, permissions.size());
 
         // But were automatically assigned to user user1Id, since he is assigned to
         // correspondent role
-        permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
+        permissions = assertDoesNotThrow(() -> tenantRolePermissionBusinessService.getPermissions(
                 tenantId3, publisher.getId(), user1Id));
         assertNotNull(permissions);
         assertEquals(3, permissions.size());

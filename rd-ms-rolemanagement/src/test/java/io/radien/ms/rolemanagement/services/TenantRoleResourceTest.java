@@ -296,33 +296,6 @@ public class TenantRoleResourceTest {
     }
 
     /**
-     * Tests response from getPermissions method
-     */
-    @Test
-    @Order(13)
-    public void testGetPermissions() {
-        Response response = tenantRoleResource.getPermissions(1L, 2L, 3L);
-        assertEquals(200, response.getStatus());
-    }
-
-    /**
-     * Tests response from getPermissions method when exceptions occur during the processing
-     */
-    @Test
-    @Order(14)
-    public void testGetPermissionsWithException() {
-        try {
-            doThrow(new RuntimeException("error")).
-                    when(tenantRoleBusinessService).getPermissions(1L, 2L, 3L);
-        }
-        catch (Exception e) {
-            fail("unexpected");
-        }
-        Response response = tenantRoleResource.getPermissions(1L, 2L, 3L);
-        assertEquals(500, response.getStatus());
-    }
-
-    /**
      * Tests response from getTenants method
      */
     @Test
