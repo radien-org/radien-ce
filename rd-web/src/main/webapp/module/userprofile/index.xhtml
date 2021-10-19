@@ -79,7 +79,7 @@
 												 value="#{userProfileManager.assignedTenants}">
 										<b:dataTableColumn value="#{tenantRef.id}" label="#{msg.id}"/>
 										<b:dataTableColumn value="#{tenantRef.name}" label="#{msg.name}"/>
-										<b:dataTableColumn value="#{tenantRef.tenantType}" label="#{msg.type}"/>
+										<b:dataTableColumn value="#{tenantRef.tenantType.description}" label="#{msg.type}"/>
 									</b:dataTable>
 								</b:row>
 								<b:row><h1/></b:row>
