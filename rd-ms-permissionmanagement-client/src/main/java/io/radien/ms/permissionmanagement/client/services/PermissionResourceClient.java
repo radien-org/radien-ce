@@ -16,6 +16,8 @@
 package io.radien.ms.permissionmanagement.client.services;
 
 import io.radien.ms.permissionmanagement.client.entities.GlobalHeaders;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.PUT;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
@@ -115,66 +117,39 @@ public interface PermissionResourceClient {
     public Response delete(@NotNull @PathParam("id") long id);
 
     /**
-     * Saves an permission (Creation or Update).
-     * @param permission permission to be created or update
+     * Creates a permission
+     * @param permission permission to be created
      * @return Http status 200 in case of successful operation.
-     * Bad request (404) in case of trying to create an permission with repeated description.
+     * Bad request (400) in case of trying to create an permission with repeated description.
      * Internal Server Error (500) in case of operational error
      */
 	@POST
-	public Response save(io.radien.ms.permissionmanagement.client.entities.Permission permission);
+	public Response create(io.radien.ms.permissionmanagement.client.entities.Permission permission);
 
     /**
-     * Rest endpoint operation to assign an action to a permission
-     * @param permissionId permission identifier
-     * @param actionId action identifier
-     * @param resourceId resource identifier
-     * @return OK (200): in case of successful operation.
-     * Bad Request (404) and issue description: If the association could not be perform for not attending
-     * some business rules.
-     * Internal server error (500): In case of some error during processing
+     * Updates a permission
+     * @param permission permission to be updated
+     * @return Http status 200 in case of successful operation.
+     * Bad request (400) in case of trying to create an permission with repeated description.
+     * Not found (404) in case of not existent Permission for the given id.
+     * Internal Server Error (500) in case of operational error
      */
-	@POST
-	@Path("/{permissionId}/action/{actionId}/resource/{resourceId}")
-	public Response associate(@NotNull @PathParam("permissionId") long permissionId,
-					   @NotNull @PathParam("actionId") long actionId,
-                       @NotNull @PathParam("resourceId") long resourceId);
-
-    /**
-     * Rest endpoint operation to (un)assign an action to a permission
-     * @param permissionId permission identifier
-     * @return OK (200): in case of successful operation.
-     * Bad Request (404) and issue description: If the association could not be perform for not attending
-     * some business rules.
-     * Internal server error (500): In case of some error during processing
-     */
-	@POST
-	@Path("/{permissionId}/dissociation")
-	public Response dissociate(@NotNull @PathParam("permissionId") long permissionId);
+	@PUT
+    @Path("/{id}")
+	public Response update(@PathParam("id") long id, io.radien.ms.permissionmanagement.client.entities.Permission permission);
 
     /**
      * Validates if Permission exists for a referred Id (or alternatively taking in account name)
      * @param id Identifier to guide the search be searched (Primary parameter)
      * @param name Permission name, an alternative parameter to be used (only if Id is omitted)
-     * @return 200: If Permission exists
+     * @return 204: If Permission exists
      *     	   404: If Permission does not exist
      *         400: (Bad Request): None expected parameter informed
      *         500: In case of any other issue
      */
-    @GET
-    @Path("/exists")
+    @HEAD
     public Response exists(@QueryParam("id") Long id, @QueryParam("name") String name);
 
-    /**
-     * Validates if an user has a specific Permission (Combination of action name + resource name)
-     * @param action Action name
-     * @param resource Resource name
-     * @return system permission
-     */
-    @GET
-    @Path("/{action}/{resource}")
-    public Response hasPermission(@NotNull @PathParam("action") String action,
-                                  @NotNull @PathParam("resource") String resource);
     /**
      * Will calculate how many records are existent in the db
      * @return the count of existent permissions.

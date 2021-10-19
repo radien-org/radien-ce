@@ -22,6 +22,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
+import io.radien.ms.permissionmanagement.model.PermissionEntity;
 import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import org.junit.AfterClass;
 import org.junit.Before;

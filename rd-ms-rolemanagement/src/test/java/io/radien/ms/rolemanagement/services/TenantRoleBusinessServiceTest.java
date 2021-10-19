@@ -77,6 +77,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -958,7 +959,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         // Setting mocked REST Client for positive test cases
         tenantRolePermissionBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         try {
-            doThrow(new NotFoundException("HTTP 404 Not Found")).
+            doReturn(false).
                     when(permissionRESTServiceAccess).
                     isPermissionExistent(permissionTestCase1, null);
             doThrow(new SystemException("Communication breakdown")).

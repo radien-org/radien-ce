@@ -17,6 +17,7 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.SystemVariables;
 import io.radien.exception.PermissionIllegalArgumentException;
+import io.radien.exception.PermissionNotFoundException;
 import io.radien.ms.permissionmanagement.model.ActionEntity;
 import io.radien.ms.permissionmanagement.model.ResourceEntity;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import io.radien.ms.permissionmanagement.model.PermissionEntity;
 @Stateless
 public class PermissionService implements PermissionServiceAccess {
 
+    private static final long serialVersionUID = -5681037691916176572L;
     @Inject
     private EntityManagerHolder holder;
 
@@ -162,17 +164,44 @@ public class PermissionService implements PermissionServiceAccess {
         int totalRecords = Math.toIntExact(getCount(global, permissionRoot, em));
         int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
-        return new Page<SystemPermission>(systemPermissions, pageNo, totalRecords, totalPages);
+        return new Page<>(systemPermissions, pageNo, totalRecords, totalPages);
     }
 
     /**
-     * Saves or updates the requested and given Permission information into the DB.
-     * @param permission to be added/inserted or updated
-     * @throws UniquenessConstraintException in case of duplicated name
+     * Creates the requested Permission information into the DB.
+     * @param permission to be added/inserted
+     * @throws UniquenessConstraintException in case of duplicated name (or combination of action and resource)
      */
     @Override
-    public void save(SystemPermission permission) throws UniquenessConstraintException {
+    public void create(SystemPermission permission) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
+        checkUniqueness(permission, em);
+        em.persist(permission);
+    }
+
+    /**
+     * Updates the requested Permission information into the DB.
+     * @param permission to be updated
+     * @throws UniquenessConstraintException in case of duplicated name (or combination of action and resource)
+     * @throws PermissionNotFoundException in case of not existent permission for the give id
+     */
+    @Override
+    public void update(SystemPermission permission) throws UniquenessConstraintException, PermissionNotFoundException {
+        EntityManager em = getEntityManager();
+        if(em.find(PermissionEntity.class, permission.getId()) == null) {
+            throw new PermissionNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+        }
+        checkUniqueness(permission, em);
+        em.merge(permission);
+    }
+
+    /**
+     * Seek for eventual duplicated information
+     * @param permission base entity bean to seek for repeated information
+     * @param em entity manager
+     * @throws UniquenessConstraintException thrown in case of repeated information
+     */
+    private void checkUniqueness(SystemPermission permission, EntityManager em) throws UniquenessConstraintException{
         List<PermissionEntity> alreadyExistentRecords = searchDuplicatedName(permission, em);
         if (!alreadyExistentRecords.isEmpty()) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
@@ -180,11 +209,6 @@ public class PermissionService implements PermissionServiceAccess {
         boolean existsForActionAndResource = existsForResourceAndAction(permission, em);
         if (existsForActionAndResource) {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Action and Resource"));
-        }
-        if (permission.getId() == null) {
-            em.persist(permission);
-        } else {
-            em.merge(permission);
         }
     }
 
