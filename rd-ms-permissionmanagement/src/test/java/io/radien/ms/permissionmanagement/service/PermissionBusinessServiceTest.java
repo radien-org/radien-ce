@@ -60,7 +60,7 @@ public class PermissionBusinessServiceTest {
     static EJBContainer container;
 
     @BeforeClass
-    public static void PermissionBusinessServiceTest() throws NamingException {
+    public static void permissionBusinessServiceTest() throws NamingException {
         Properties p = new Properties();
         p.put("openejb.deployments.classpath.include",".*permission.*");
         p.put("openejb.deployments.classpath.exclude",".*client.*");
@@ -95,19 +95,19 @@ public class PermissionBusinessServiceTest {
         Page<SystemPermission> pagePermissions = permissionServiceAccess.getAll(null, 1, 1000, null, true);
 
         if (pagePermissions.getResults().size() > 0) {
-            permissionServiceAccess.delete(pagePermissions.getResults().stream().map(p -> p.getId()).collect(Collectors.toList()));
+            permissionServiceAccess.delete(pagePermissions.getResults().stream().map(SystemPermission::getId).collect(Collectors.toList()));
         }
 
         Page<SystemAction> pageActions = actionServiceAccess.getAll(null, 1, 1000, null, true);
 
         if (pageActions.getResults().size() > 0) {
-            actionServiceAccess.delete(pageActions.getResults().stream().map(a -> a.getId()).collect(Collectors.toList()));
+            actionServiceAccess.delete(pageActions.getResults().stream().map(SystemAction::getId).collect(Collectors.toList()));
         }
 
         Page<SystemResource> pageResources = resourceServiceAccess.getAll(null, 1, 1000, null, true);
 
         if (pageResources.getResults().size() > 0) {
-            resourceServiceAccess.delete(pageResources.getResults().stream().map(r -> r.getId()).collect(Collectors.toList()));
+            resourceServiceAccess.delete(pageResources.getResults().stream().map(SystemResource::getId).collect(Collectors.toList()));
         }
     }
 
@@ -115,11 +115,11 @@ public class PermissionBusinessServiceTest {
     public void testAssociation() throws UniquenessConstraintException, PermissionNotFoundException {
         resource = new ResourceEntity();
         resource.setName("userTestAssociation");
-        resourceServiceAccess.save(resource);
+        resourceServiceAccess.create(resource);
 
         action = new ActionEntity();
         action.setName("remove-userTestAssociation");
-        actionServiceAccess.save(action);
+        actionServiceAccess.create(action);
 
         permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociation");
@@ -128,7 +128,7 @@ public class PermissionBusinessServiceTest {
         SystemPermission sp = permissionServiceAccess.get(permission.getId());
         Assert.assertNull(sp.getActionId());
 
-        AssociationStatus associationStatus = this.permissionBusinessService.associate(sp.getId(), action.getId(), resource.getId());
+        AssociationStatus associationStatus = permissionBusinessService.associate(sp.getId(), action.getId(), resource.getId());
         Assert.assertTrue(associationStatus.isOK());
 
         SystemPermission sp2 = permissionServiceAccess.get(permission.getId());
@@ -140,11 +140,11 @@ public class PermissionBusinessServiceTest {
     public void testDissociation() throws UniquenessConstraintException {
         resource = new ResourceEntity();
         resource.setName("userTestDissociation");
-        resourceServiceAccess.save(resource);
+        resourceServiceAccess.create(resource);
 
         action = new ActionEntity();
         action.setName("remove-userTestDissociation");
-        actionServiceAccess.save(action);
+        actionServiceAccess.create(action);
 
         permission = new PermissionEntity();
         permission.setName("removing-assetTestDissociation");
@@ -162,7 +162,7 @@ public class PermissionBusinessServiceTest {
         SystemPermission sp = list.get(0);
         Assert.assertNotNull(sp.getActionId());
 
-        AssociationStatus associationStatus = this.permissionBusinessService.dissociation(perm.getId());
+        AssociationStatus associationStatus = permissionBusinessService.dissociation(perm.getId());
         Assert.assertTrue(associationStatus.isOK());
 
         list = permissionServiceAccess.getPermissions(
@@ -177,18 +177,18 @@ public class PermissionBusinessServiceTest {
     public void testAssociatingNotExistentPermission() throws UniquenessConstraintException {
         resource = new ResourceEntity();
         resource.setName("userTestAssociatingNotExistentPermission");
-        resourceServiceAccess.save(resource);
+        resourceServiceAccess.create(resource);
 
         action = new ActionEntity();
         action.setName("remove-userTestAssociatingNotExistentPermission");
-        actionServiceAccess.save(action);
+        actionServiceAccess.create(action);
 
         permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociatingNotExistentPermission");
         permissionServiceAccess.save(permission);
 
         AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(100000L, action.getId(), resource.getId());
+                permissionBusinessService.associate(100000L, action.getId(), resource.getId());
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Permission not found"));
     }
@@ -197,18 +197,18 @@ public class PermissionBusinessServiceTest {
     public void testAssociatingNotExistentAction() throws UniquenessConstraintException {
         resource = new ResourceEntity();
         resource.setName("userTestAssociatingNotExistentAction");
-        resourceServiceAccess.save(resource);
+        resourceServiceAccess.create(resource);
 
         action = new ActionEntity();
         action.setName("remove-userTestAssociatingNotExistentAction");
-        actionServiceAccess.save(action);
+        actionServiceAccess.create(action);
 
         permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociatingNotExistentAction");
         permissionServiceAccess.save(permission);
 
         AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(permission.getId(), 111111L, resource.getId());
+                permissionBusinessService.associate(permission.getId(), 111111L, resource.getId());
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Action not found"));
     }
@@ -217,18 +217,18 @@ public class PermissionBusinessServiceTest {
     public void testAssociatingNotExistentResource() throws UniquenessConstraintException {
         resource = new ResourceEntity();
         resource.setName("userTestAssociatingNotExistentResource");
-        resourceServiceAccess.save(resource);
+        resourceServiceAccess.create(resource);
 
         action = new ActionEntity();
         action.setName("remove-userTestAssociatingNotExistentResource");
-        actionServiceAccess.save(action);
+        actionServiceAccess.create(action);
 
         permission = new PermissionEntity();
         permission.setName("removing-assetTestAssociatingNotExistentResource");
         permissionServiceAccess.save(permission);
 
         AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(permission.getId(), action.getId(), 11111L);
+                permissionBusinessService.associate(permission.getId(), action.getId(), 11111L);
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Resource not found"));
     }
@@ -236,7 +236,7 @@ public class PermissionBusinessServiceTest {
     @Test
     public void testAssociatingWithNullAsPermissionId() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(null, null, null);
+                permissionBusinessService.associate(null, null, null);
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Permission Id not informed"));
     }
@@ -244,7 +244,7 @@ public class PermissionBusinessServiceTest {
     @Test
     public void testAssociatingWithNullAsActionId() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(1L, null, null);
+                permissionBusinessService.associate(1L, null, null);
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Action Id not informed"));
     }
@@ -253,18 +253,18 @@ public class PermissionBusinessServiceTest {
     public void testAssociatingWithNullAsResourceId() throws UniquenessConstraintException {
         resource = new ResourceEntity();
         resource.setName("user");
-        resourceServiceAccess.save(resource);
+        resourceServiceAccess.create(resource);
 
         action = new ActionEntity();
         action.setName("remove-user");
-        actionServiceAccess.save(action);
+        actionServiceAccess.create(action);
 
         permission = new PermissionEntity();
         permission.setName("removing-asset");
         permissionServiceAccess.save(permission);
 
         AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(1L, 2L, null);
+                permissionBusinessService.associate(1L, 2L, null);
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Resource Id not informed"));
     }
@@ -272,7 +272,7 @@ public class PermissionBusinessServiceTest {
     @Test
     public void testDissociatingNotExistentPermission() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
-                this.permissionBusinessService.dissociation(100000L);
+                permissionBusinessService.dissociation(100000L);
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Permission not found"));
     }
@@ -280,7 +280,7 @@ public class PermissionBusinessServiceTest {
     @Test
     public void testDissociatingWithNullAsPermissionId() throws UniquenessConstraintException {
         AssociationStatus associationStatus =
-                this.permissionBusinessService.dissociation(null);
+                permissionBusinessService.dissociation(null);
         Assert.assertFalse(associationStatus.isOK());
         Assert.assertTrue(associationStatus.getMessage().contains("Permission Id not informed"));
     }
