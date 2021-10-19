@@ -48,7 +48,7 @@
                         <f:selectItems value="#{userTenantRolesManager.userTenants}"
                                        var="tenant"
                                        itemValue="#{tenant}"
-                                       itemLabel="#{tenant.tenantType}"/>
+                                       itemLabel="#{tenant.tenantType.description}"/>
                      </b:selectOneMenu>
                   </b:column>
                </b:row>
