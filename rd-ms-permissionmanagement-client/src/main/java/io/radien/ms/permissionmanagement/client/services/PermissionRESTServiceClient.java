@@ -376,16 +376,7 @@ public class PermissionRESTServiceClient extends AuthorizationChecker implements
      */
     @Override
     public boolean isPermissionExistent(Long permissionId, String permissionName) throws SystemException {
-        try {
-            return isPermissionExistentRequester(permissionId, permissionName);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return isPermissionExistentRequester(permissionId, permissionName);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::isPermissionExistentRequester, permissionId, permissionName);
     }
 
     /**
