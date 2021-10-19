@@ -142,4 +142,24 @@ public class TenantRolePermissionResource extends AuthorizationChecker implement
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
+
+
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return Response OK with List containing permissions. Response 500 in case of any other error.
+     */
+    @Override
+    public Response getPermissions(Long tenantId, Long roleId, Long userId) {
+        log.info("Retrieving permissions for tenant {} role {} and user {}", tenantId, roleId, userId);
+        try {
+            return Response.ok().entity(tenantRolePermissionBusinessService.
+                    getPermissions(tenantId, roleId, userId)).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
 }

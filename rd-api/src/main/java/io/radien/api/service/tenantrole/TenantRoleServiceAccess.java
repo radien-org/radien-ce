@@ -36,11 +36,17 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
 
     /**
      * Gets all the tenant role associations into a pagination mode.
+     * @param tenantId tenant identifier (Optional)
+     * @param roleId role identifier (Optional)
      * @param pageNo of the requested information. Where the tenant role association is.
      * @param pageSize total number of pages returned in the request.
+     * @param sortBy sort filter criteria (Optional).
+     * @param isAscending ascending filter criteria.
      * @return a page of system tenant role associations.
      */
-    Page<SystemTenantRole> getAll(int pageNo, int pageSize);
+    public Page<SystemTenantRole> getAll(Long tenantId, Long roleId,
+                                  int pageNo, int pageSize, List<String> sortBy,
+                                  boolean isAscending);
 
     /**
      * Gets specific tenant role association by the id

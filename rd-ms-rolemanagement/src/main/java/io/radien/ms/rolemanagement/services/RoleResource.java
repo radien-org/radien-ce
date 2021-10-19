@@ -145,13 +145,11 @@ public class RoleResource implements RoleResourceClient {
      * 404 if role is not found, 500 code message if there is any error.
      */
     @Override
-    public Response save(Role role) {
+    public Response create(Role role) {
         try {
-            log.info("New information to be created/updated it's on it's way!");
-            roleBusinessService.save(new RoleEntity(role));
+            log.info("New information to be created it's on it's way!");
+            roleBusinessService.create(new RoleEntity(role));
             return Response.ok().build();
-        } catch (RoleNotFoundException e) {
-            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (UniquenessConstraintException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
@@ -160,20 +158,24 @@ public class RoleResource implements RoleResourceClient {
     }
 
     /**
-     * Validates if specific requested role exists
-     * @param id to be searched
-     * @param name to be searched
-     * @return 200 status code message if it exists or 500 in case of any issue
+     * Inserts the given role information, wither creates a new record or updated one already existent one, depending
+     * if the given role has an id or not.
+     *
+     * @param role information to be update or created.
+     * @return 200 code message if success, 400 code message if there are duplicated fields that can not be,
+     * 404 if role is not found, 500 code message if there is any error.
      */
     @Override
-    public Response exists(Long id, String name) {
+    public Response update(long id, Role role) {
         try {
-            log.info("There is a validation to be done! I'm going to validate if the role id {}, or role name {} exists"
-                    , id, name);
-            if(roleBusinessService.exists(id, name)) {
-                return Response.ok().build();
-            }
+            log.info("New information to be updated it's on it's way!");
+            role.setId(id);
+            roleBusinessService.update(new RoleEntity(role));
+            return Response.ok().build();
+        } catch (RoleNotFoundException e) {
             return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        } catch (UniquenessConstraintException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }

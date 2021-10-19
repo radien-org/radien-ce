@@ -236,7 +236,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     @ActiveTenantMandatory
     public List<? extends SystemPermission> calculatePermissions() {
         try {
-            this.assignedPermissions = tenantRoleRESTServiceAccess.
+            this.assignedPermissions = tenantRolePermissionRESTServiceAccess.
                     getPermissions(tenant.getId(), role.getId(), null);
             return assignedPermissions;
         } catch (Exception e) {
