@@ -21,6 +21,7 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,6 +38,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
@@ -65,22 +68,21 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
     /**
      * Gets all the tenant role user associations into a pagination mode.
-     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
-     * @param role search param that corresponds to the TenantRole.roleId (Optional)
+     * @param tenantRoleId search param that corresponds to the TenantRole id (Optional)
+     * @param userId search param that corresponds to the user id (Optional)
      * @param pageNo of the requested information. Where the tenant is.
-     * @param pageSize total number of pages returned in the request.
+     * @param pageSize total number of pages returned in the request
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return a page containing system tenant role user associations.
      */
     @Override
-    public Page<SystemTenantRoleUser> getAll(Long tenant, Long role, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role user associations using pagination mode, tenant {} role{}, page {}, size{}",
-                tenant, role, pageNo, pageSize);
+    public Page<SystemTenantRoleUser> getAll(Long tenantRoleId, Long userId, int pageNo, int pageSize,
+                                             List<String> sortBy, boolean isAscending) {
+        log.info("Retrieving tenant role user associations using pagination mode, tenantRole  {} user{}, page {}, size{}",
+                tenantRoleId, userId, pageNo, pageSize);
 
         EntityManager em = getEntityManager();
-        List<Long> tenantRoleIds = (tenant != null || role != null) ? getTenantRoleIds(em, tenant, role) : null;
-        if (tenantRoleIds != null && tenantRoleIds.isEmpty()) {
-            return new Page<>(new ArrayList<>(), pageNo, 0, 0);
-        }
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<TenantRoleUserEntity> criteriaQuery = criteriaBuilder.createQuery(TenantRoleUserEntity.class);
@@ -88,9 +90,25 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
 
         criteriaQuery.select(tenantRoleRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        if (tenantRoleIds != null) {
-            global = criteriaBuilder.and(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()).in(tenantRoleIds));
+
+        if (tenantRoleId != null) {
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),
+                    tenantRoleId));
+        }
+
+        if (userId != null) {
+            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.USER_ID.getFieldName()),
+                    userId));
+        }
+
+        if (tenantRoleId != null || userId != null) {
             criteriaQuery.where(global);
+        }
+
+        if(sortBy != null && !sortBy.isEmpty()){
+            List<Order> orders = sortBy.stream().map(i-> isAscending ? criteriaBuilder.asc(tenantRoleRoot.get(i)) :
+                    criteriaBuilder.desc(tenantRoleRoot.get(i))).collect(Collectors.toList());
+            criteriaQuery.orderBy(orders);
         }
 
         TypedQuery<TenantRoleUserEntity> q= em.createQuery(criteriaQuery);
@@ -285,13 +303,25 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
     @Override
     public void create(SystemTenantRoleUser tenantRoleUser) throws UniquenessConstraintException {
         EntityManager em = getEntityManager();
-        boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRoleUser.getUserId(),
-                tenantRoleUser.getTenantRoleId(), em);
-        if (alreadyExistentRecords) {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.
-                    DUPLICATED_FIELD.toString("userId and roleTenantId"));
-        }
+        checkUniqueness(tenantRoleUser, em);
         em.persist(tenantRoleUser);
+    }
+
+    /**
+     * UPDATE a Tenant Role User association
+     * @param tenantRoleUser role association information to be updated
+     * @throws UniquenessConstraintException in case of duplicated fields or records
+     * @throws TenantRoleUserNotFoundException in case of not existing a TenantRoleUser for an id
+     */
+    @Override
+    public void update(SystemTenantRoleUser tenantRoleUser)
+            throws UniquenessConstraintException, TenantRoleUserNotFoundException {
+        EntityManager em = getEntityManager();
+        if(em.find(TenantRoleUserEntity.class, tenantRoleUser.getId()) == null) {
+            throw new TenantRoleUserNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+        }
+        checkUniqueness(tenantRoleUser, em);
+        em.merge(tenantRoleUser);
     }
 
     /**
@@ -326,6 +356,21 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
     }
 
     /**
+     * Seek for eventual duplicated information
+     * @param tenantRoleUser base entity bean to seek for repeated information
+     * @param em entity manager
+     * @throws UniquenessConstraintException thrown in case of repeated information
+     */
+    private void checkUniqueness(SystemTenantRoleUser tenantRoleUser, EntityManager em) throws UniquenessConstraintException{
+        boolean alreadyExistentRecords = isAssociationAlreadyExistent(tenantRoleUser.getUserId(),
+                tenantRoleUser.getTenantRoleId(), tenantRoleUser.getId(), em);
+        if (alreadyExistentRecords) {
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.
+                    toString("userId and tenantRoleId"));
+        }
+    }
+
+    /**
      * Check if a user is already assigned/associated with a tenant role
      * @param userId User identifier
      * @param tenantRoleId TenantRole Identifier
@@ -333,36 +378,57 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
      */
     @Override
     public boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId) {
-        return isAssociationAlreadyExistent(userId, tenantRoleId, getEntityManager());
+        return isAssociationAlreadyExistent(userId, tenantRoleId, null, getEntityManager());
     }
 
     /**
      * Check if a user is already assigned/associated with a tenant role
-     * @param userId Role identifier
-     * @param tenantRoleId Tenant Identifier
+     * @param userId User identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @param id Tenant
+     * @return true if already exists, otherwise returns false
+     */
+    @Override
+    public boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, Long id) {
+        return isAssociationAlreadyExistent(userId, tenantRoleId, id, getEntityManager());
+    }
+
+    /**
+     * Check if a user is already assigned/associated with a tenant role
+     * @param userId User identifier
+     * @param tenantRoleId TenantRole Identifier
+     * @param id tenantRoleUser identifier
      * @param em already created entity manager (reuse)
      * @return true in case the association exists in the db
      */
-    protected boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, EntityManager em) {
+    protected boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, Long id, EntityManager em) {
         if (userId == null) {
             throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel()));
         }
         if (tenantRoleId == null) {
-            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ID.getFieldName()));
+            throw new IllegalArgumentException(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.ID.getLabel()));
         }
-
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> sc = cb.createQuery(Long.class);
         Root<TenantRoleUserEntity> root = sc.from(TenantRoleUserEntity.class);
 
-        sc.select(cb.count(root)).
-                where(
-                        cb.equal(root.get(SystemVariables.USER_ID.getFieldName()),userId),
-                        cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),tenantRoleId)
-                );
-
+        if (id != null) {
+            sc.select(cb.count(root)).
+                    where(
+                            cb.equal(root.get(SystemVariables.USER_ID.getFieldName()), userId),
+                            cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRoleId),
+                            cb.notEqual(root.get(SystemVariables.ID.getFieldName()), id)
+                    );
+        }
+        else {
+            sc.select(cb.count(root)).
+                    where(
+                            cb.equal(root.get(SystemVariables.USER_ID.getFieldName()), userId),
+                            cb.equal(root.get(SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRoleId)
+                    );
+        }
         List<Long> count = em.createQuery(sc).getResultList();
-        return !count.isEmpty() && count.get(0) > 0;
+        return count.get(0) > 0;
     }
 
     /**

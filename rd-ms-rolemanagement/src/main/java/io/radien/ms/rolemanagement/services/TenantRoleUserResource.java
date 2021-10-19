@@ -15,6 +15,8 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.role.SystemRolesEnum;
@@ -22,12 +24,14 @@ import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
+import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.authz.security.AuthorizationChecker;
-import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.client.services.TenantRoleUserResourceClient;
 import java.util.Collection;
+import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -53,23 +57,27 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
     /**
      * Retrieves TenantRoleUser association using pagination approach
      * (in other words, retrieves the Users associations that exist for a TenantRole)
-     * @param tenantId tenant identifier for a TenantRole
-     * @param roleId role identifier for a TenantRole
+     * @param tenantRoleId identifier for a TenantRole (Optional)
+     * @param userId identifier for a user (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
-     * and a Page containing TenantRole associations (Chunk/Portion compatible
-     * with parameter Page number and Page size).<br>
+     * and a Page containing TenantRoleUser associations (Chunk/Portion compatible
+     * with parameter Page number and Page size).
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @Override
-    public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize) {
-        log.info("Retrieving tenant role users. tenant id {} role id {}, pageNumber {} and pageSize {}",
-                tenantId, roleId, pageNo, pageSize);
+    public Response getAll(Long tenantRoleId, Long userId, int pageNo, int pageSize,
+                           List<String> sortBy, boolean isAscending) {
+        log.info("Retrieving TenantRole User associations using pagination. Page number {}. Page Size {}.",
+                pageNo, pageSize);
         try {
-            return Response.ok().entity(tenantRoleUserServiceAccess.
-                    getAll(tenantId, roleId, pageNo, pageSize)).build();
-        } catch (Exception e) {
+            return Response.ok().entity(this.tenantRoleUserServiceAccess.
+                    getAll(tenantRoleId, userId, pageNo, pageSize, sortBy, isAscending)).build();
+        }
+        catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }
     }
@@ -130,7 +138,7 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
         try {
             log.info("Associating/adding user {} to tenant-role {}", tenantRoleUser.getTenantRoleId(),
                     tenantRoleUser.getUserId());
-            if (!isSaveAllowed(tenantRoleUser)) {
+            if (!isCreateAllowed()) {
                 return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
             }
             tenantRoleUserBusinessService.assignUser(new io.radien.ms.rolemanagement.entities.TenantRoleUserEntity(tenantRoleUser));
@@ -142,12 +150,16 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
         }
     }
 
-    private boolean isSaveAllowed(TenantRoleUser tenantRoleUser) throws SystemException {
+    protected boolean isCreateAllowed() throws SystemException {
+        return  tenantRoleUserServiceAccess.count()==0L || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) ||
+                hasPermission(null, SystemActionsEnum.ACTION_CREATE.getActionName(), SystemResourcesEnum.
+                        TENANT_ROLE_USER.getResourceName()) ;
+    }
 
-
-        return  tenantRoleUserServiceAccess.count()==0L || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) || hasPermission(null,
-                tenantRoleUser.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
-                SystemResourcesEnum.TENANT_ROLE_USER.getResourceName()) ;
+    protected boolean isUpdateAllowed() throws SystemException {
+        return  hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName()) ||
+                hasPermission(null, SystemActionsEnum.ACTION_UPDATE.getActionName(), SystemResourcesEnum.
+                        TENANT_ROLE_USER.getResourceName()) ;
     }
 
     /**
@@ -166,6 +178,78 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
             tenantRoleUserBusinessService.unAssignUser(tenantId, roleIds, userId);
             return Response.ok().build();
         } catch (TenantRoleException e) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Retrieves TenantRole User associations that met the following parameter
+     * @param tenantRoleId TenantRole identifier
+     * @param userId User identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns OK (http status 200)
+     * and a Collection containing TenantRole associations.<br>
+     * Otherwise, in case of operational error, returns Internal Server Error (500)
+     */
+    @Override
+    public Response getSpecific(Long tenantRoleId, Long userId, boolean isLogicalConjunction) {
+        log.info("Retrieving TenantRole User associations for tenantRole {} user {} using logical function {}",
+                tenantRoleId, userId, isLogicalConjunction);
+        try {
+            SystemTenantRoleUserSearchFilter filter = new TenantRoleUserSearchFilter(tenantRoleId,
+                    userId, true, isLogicalConjunction);
+            return Response.ok(tenantRoleUserServiceAccess.get(filter)).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Retrieves a Tenant Role User using the id as search parameter.
+     * @param id Tenant Role User id to guide the search process
+     * @return 200 code message in case of success (Tenant Role association found)
+     * 404 if association could not be found, 500 code message if there is any error.
+     */
+    @Override
+    public Response getById(Long id) {
+        try {
+            log.info("Retrieving TenantRoleUser for id {}", id);
+            SystemTenantRoleUser trp = tenantRoleUserServiceAccess.get(id);
+            if (trp == null) {
+                return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+            }
+            return Response.ok().entity(trp).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Updates a TenantRoleUser
+     * @param id corresponds to the identifier of the TenantRoleUser to be updated
+     * @param tenantRoleUser instance containing the information to be updated
+     * @return Response OK if operation concludes with success.
+     * Response status 404 in case of not existing a TenantRoleUser for the informed id,
+     * Response status 400 in case of association already existing or
+     * other consistency issues found.
+     * Response 500 in case of any other error (i.e communication issue with REST client services)
+     */
+    @Override
+    public Response update(long id, TenantRoleUser tenantRoleUser) {
+        try {
+            log.info("Updating TenantRoleUser id {} tenantRoleId {} userId {}", id,
+                    tenantRoleUser.getTenantRoleId(), tenantRoleUser.getUserId());
+            if (!isUpdateAllowed()) {
+                return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+            }
+            tenantRoleUser.setId(id);
+            tenantRoleUserBusinessService.update(new io.radien.ms.rolemanagement.entities.TenantRoleUserEntity(tenantRoleUser));
+            return Response.ok().build();
+        } catch (TenantRoleUserNotFoundException e) {
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        } catch (TenantRoleException | UniquenessConstraintException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
