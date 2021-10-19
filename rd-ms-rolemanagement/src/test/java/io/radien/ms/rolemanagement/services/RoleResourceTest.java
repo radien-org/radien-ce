@@ -158,88 +158,64 @@ public class RoleResourceTest {
      */
     @Test
     public void testSave() {
-        Response response = roleResource.save(new Role());
+        Response response = roleResource.create(new Role());
         assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Tests if record exists, tests if record does not exist and tests if record exists will return role not found exception
-     */
-    @Test
-    public void testExists() {
-        when(roleBusinessService.exists(any(), any())).thenReturn(true);
-        Response response = roleResource.exists(1L, null);
-        assertEquals(200,response.getStatus());
-
-        when(roleBusinessService.exists(any(), any())).thenReturn(false);
-        Response response2 = roleResource.exists(1L, null);
-        assertEquals(404,response2.getStatus());
-
-        when(roleBusinessService.exists(any(), any())).thenReturn(false);
-        Response response3 = roleResource.exists(1L, null);
-        assertEquals(404,response3.getStatus());
-    }
-
-    /**
-     * Tests if record exists will return generic exception
-     */
-    @Test
-    public void testExistsGenericException() {
-        doThrow(new RuntimeException()).when(roleBusinessService).exists(any(), any());
-        Response response = roleResource.exists(1L, null);
-        assertEquals(500,response.getStatus());
     }
 
     /**
      * Tests Runtime exception from the save method
-     * @throws RoleNotFoundException in case object was not found
+     * @throws UniquenessConstraintException in case of repeated information
      */
     @Test
-    public void testSaveGenericError() throws RoleNotFoundException, UniquenessConstraintException {
-        doThrow(new RuntimeException()).when(roleBusinessService).save(any());
-        Response response = roleResource.save(new Role());
+    public void testSaveGenericError() throws UniquenessConstraintException {
+        doThrow(new RuntimeException()).when(roleBusinessService).create(any());
+        Response response = roleResource.create(new Role());
         assertEquals(500,response.getStatus());
     }
 
     /**
      * Tests the save not found exception record
      * @throws RoleNotFoundException in case record not found
+     * @throws UniquenessConstraintException in case of repeated information
      */
     @Test
-    public void testSaveNotFoundError() throws RoleNotFoundException, UniquenessConstraintException {
-        doThrow(new RoleNotFoundException("Not found")).when(roleBusinessService).save(any());
-        Response response = roleResource.save(new Role());
+    public void testUpdateNotFoundError() throws RoleNotFoundException, UniquenessConstraintException {
+        doThrow(new RoleNotFoundException("Not found")).when(roleBusinessService).update(any());
+        Response response = roleResource.update(1L, new Role());
         assertEquals(404,response.getStatus());
     }
 
     /**
-     * Tests the save not found exception record
-     * @throws RoleNotFoundException in case record not found
+     * Tests the save Uniqueness Record exception record
+     * @throws UniquenessConstraintException in case of repeated information
      */
     @Test
-    public void testSaveUniquenessException() throws RoleNotFoundException, UniquenessConstraintException {
-        doThrow(new UniquenessConstraintException()).when(roleBusinessService).save(any());
-        Response response = roleResource.save(new Role());
+    public void testSaveUniquenessException() throws UniquenessConstraintException {
+        doThrow(new UniquenessConstraintException()).when(roleBusinessService).create(any());
+        Response response = roleResource.create(new Role());
         assertEquals(400,response.getStatus());
     }
 
     /**
-     * Test the Get total records count request which will return a success message code 200.
+     * Tests the update for a scenario where Uniqueness Record exception occurs
+     * @throws UniquenessConstraintException in case of repeated information
      */
     @Test
-    public void testGetTotalRecordsCount() {
-        Response response = roleResource.getTotalRecordsCount();
-        assertEquals(200,response.getStatus());
+    public void testUpdateUniquenessException() throws RoleNotFoundException, UniquenessConstraintException {
+        doThrow(new UniquenessConstraintException()).when(roleBusinessService).update(any());
+        Response response = roleResource.update(1L, new Role());
+        assertEquals(400,response.getStatus());
     }
 
     /**
-     * Test the Get total records count request which will return a error message code 500.
+     * Tests the update for a scenario where generic exception occurs
+     * @throws UniquenessConstraintException in case of repeated information
      */
     @Test
-    public void testGetTotalRecordsCountException() {
-        when(roleResource.getTotalRecordsCount())
-                .thenThrow(new RuntimeException());
-        Response response = roleResource.getTotalRecordsCount();
+    public void testUpdateGenericException() throws RoleNotFoundException, UniquenessConstraintException {
+        doThrow(new RuntimeException("Toplink error")).when(roleBusinessService).update(any());
+        Response response = roleResource.update(1L, new Role());
         assertEquals(500,response.getStatus());
     }
+
 }

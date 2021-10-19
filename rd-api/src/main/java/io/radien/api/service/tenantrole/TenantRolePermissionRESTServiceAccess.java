@@ -16,6 +16,7 @@
 package io.radien.api.service.tenantrole;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.exception.SystemException;
 import java.util.List;
@@ -98,4 +99,14 @@ public interface TenantRolePermissionRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Optional<SystemTenantRolePermission> getTenantRolePermissionById(Long id) throws SystemException;
+
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return List containing permissions.
+     * @throws SystemException in case of any error
+     */
+    List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException;
 }

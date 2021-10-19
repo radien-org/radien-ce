@@ -74,7 +74,7 @@ public class RoleServiceTest {
             systemRole = rolePage.getResults().get(0);
         } else {
             systemRole = RoleFactory.create("name", "description", 2L);
-            roleServiceAccess.save(systemRole);
+            roleServiceAccess.create(systemRole);
         }
     }
 
@@ -98,8 +98,8 @@ public class RoleServiceTest {
 
         boolean success = false;
         try{
-            roleServiceAccess.save(role);
-            roleServiceAccess.save(roleDuplicated);
+            roleServiceAccess.create(role);
+            roleServiceAccess.create(roleDuplicated);
             success = false;
             roleServiceAccess.delete(role.getId());
             roleServiceAccess.delete(roleDuplicated.getId());
@@ -114,7 +114,7 @@ public class RoleServiceTest {
     @Test
     public void testGetById() throws RoleNotFoundException, UniquenessConstraintException {
         RoleEntity role = RoleFactory.create("nameGetByID", "descriptionGetByID", 2L);
-        roleServiceAccess.save(role);
+        roleServiceAccess.create(role);
         SystemRole result = roleServiceAccess.get(role.getId());
         assertNotNull(result);
         assertEquals(role.getName(), result.getName());
@@ -153,9 +153,9 @@ public class RoleServiceTest {
         SystemRole testById2 = RoleFactory.create("name2Find", "description2Find", 2L);
         SystemRole testById3 = RoleFactory.create("name3Find", "description3Find", 2L);
 
-        roleServiceAccess.save(testById1);
-        roleServiceAccess.save(testById2);
-        roleServiceAccess.save(testById3);
+        roleServiceAccess.create(testById1);
+        roleServiceAccess.create(testById2);
+        roleServiceAccess.create(testById3);
 
         List<? extends SystemRole> roleAnd = roleServiceAccess.getSpecificRoles(
                 new RoleSearchFilter("name1","description1",null,true,true));
@@ -189,16 +189,21 @@ public class RoleServiceTest {
         roleServiceAccess.delete(testById3.getId());
     }
 
+    /**
+     * Test for method {@link RoleService#update(SystemRole)}
+     * @throws RoleNotFoundException in case of update and the requested role does not exist
+     * @throws UniquenessConstraintException in case of information duplicated (already existent in other records)
+     */
     @Test
     public void testUpdate() throws RoleNotFoundException, UniquenessConstraintException {
         SystemRole testUpdate1 = RoleFactory.create("nameUpdate1", "descriptionUpdate1", 2L);
         SystemRole testUpdate2 = RoleFactory.create("nameUpdate2", "descriptionUpdate2", 2L);
 
-        roleServiceAccess.save(testUpdate1);
+        roleServiceAccess.create(testUpdate1);
         long id = testUpdate1.getId();
 
         testUpdate2.setId(id);
-        roleServiceAccess.save(testUpdate2);
+        roleServiceAccess.update(testUpdate2);
 
         roleServiceAccess.delete(testUpdate1.getId());
         roleServiceAccess.delete(testUpdate2.getId());
@@ -217,7 +222,7 @@ public class RoleServiceTest {
     @Test
     public void testGetAllSearchNotNullSort() throws UniquenessConstraintException, RoleNotFoundException {
         SystemRole testById1 = RoleFactory.create("name12", "description12", 2L);
-        roleServiceAccess.save(testById1);
+        roleServiceAccess.create(testById1);
 
         List<String> sortBy = new ArrayList<>();
         sortBy.add("name");

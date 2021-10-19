@@ -120,17 +120,9 @@ public abstract class AbstractTenantRoleDomainBusinessService {
             throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_NO_TENANT_FOUND.toString(String.valueOf(tenantId)));
         }
-        if (permissionId != null) {
-            boolean found;
-            try {
-                found = permissionRESTServiceAccess.isPermissionExistent(permissionId, null);
-            } catch (NotFoundException nfe) {
-                found = false;
-            }
-            if (!found) {
-                throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
+        if (permissionId != null && !permissionRESTServiceAccess.isPermissionExistent(permissionId, null)) {
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                         TENANT_ROLE_NO_PERMISSION_FOUND.toString(String.valueOf(permissionId)));
-            }
         }
         if (roleId != null && !this.roleServiceAccess.checkIfRolesExist(roleId, null) ) {
             throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.

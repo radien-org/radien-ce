@@ -46,6 +46,7 @@ import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,6 +78,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -724,14 +726,14 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
             PermissionRESTServiceAccess permissionRESTServiceAccess = mock(PermissionRESTServiceAccess.class);
             when(permissionRESTServiceAccess.getPermissionsByIds(argThat(t -> t.containsAll(ids)))).
                     then(i -> Arrays.asList(readDocument, publishDocument, deleteDocument));
-            tenantRoleBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
+            tenantRolePermissionBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         }
         catch (SystemException se) {
             fail("unexpected");
         }
 
         // Permissions were assigned to tenant id = 3 and role "publisher"
-        List<SystemPermission> permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
+        List<SystemPermission> permissions = assertDoesNotThrow(() -> tenantRolePermissionBusinessService.getPermissions(
                 tenantId3, publisher.getId(), null));
 
         assertNotNull(permissions);
@@ -739,14 +741,14 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
 
         // Permissions were not assigned to the following user
         Long nonRegisteredUser = 22222L;
-        permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
+        permissions = assertDoesNotThrow(() -> tenantRolePermissionBusinessService.getPermissions(
                 tenantId3, publisher.getId(), nonRegisteredUser));
         assertNotNull(permissions);
         assertEquals(0, permissions.size());
 
         // But were automatically assigned to user user1Id, since he is assigned to
         // correspondent role
-        permissions = assertDoesNotThrow(() -> tenantRoleBusinessService.getPermissions(
+        permissions = assertDoesNotThrow(() -> tenantRolePermissionBusinessService.getPermissions(
                 tenantId3, publisher.getId(), user1Id));
         assertNotNull(permissions);
         assertEquals(3, permissions.size());
@@ -874,7 +876,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
     @Order(25)
     public void getAll() {
         Page<SystemTenantRole> page = assertDoesNotThrow(() ->
-                tenantRoleBusinessService.getAll(1, 10));
+                tenantRoleBusinessService.getAll(1L, 2L, 1, 10, new ArrayList<>(), false));
         assertNotNull(page);
         assertNotNull(page.getResults());
         assertFalse(page.getResults().isEmpty());
@@ -958,7 +960,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         // Setting mocked REST Client for positive test cases
         tenantRolePermissionBusinessService.setPermissionRESTServiceAccess(permissionRESTServiceAccess);
         try {
-            doThrow(new NotFoundException("HTTP 404 Not Found")).
+            doReturn(false).
                     when(permissionRESTServiceAccess).
                     isPermissionExistent(permissionTestCase1, null);
             doThrow(new SystemException("Communication breakdown")).

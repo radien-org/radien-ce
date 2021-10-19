@@ -260,6 +260,7 @@ public class TenantRolePermissionResourceTest {
 
 
     /**
+<<<<<<< HEAD
      * Tests response from getAll method
      */
     @Test
@@ -301,8 +302,8 @@ public class TenantRolePermissionResourceTest {
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
         when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
         Response expectedPermissionId = Response.ok().entity(1L).build();
-        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
-        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(), any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L, 1L, null);
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
@@ -346,6 +347,7 @@ public class TenantRolePermissionResourceTest {
         catch (Exception e) {
             fail("unexpected");
         }
+
         Response response = tenantRolePermissionResource.update(1L, tenantRolePermission);
         assertEquals(400, response.getStatus());
 
@@ -360,10 +362,26 @@ public class TenantRolePermissionResourceTest {
     }
 
     /**
+     * Tests response from getPermissions method when exceptions occur during the processing
+     */
+    @Test
+    @Order(14)
+    public void testGetPermissionsWithException() {
+        try {
+            doThrow(new RuntimeException("error")).
+                    when(tenantRolePermissionBusinessService).getPermissions(1L, 2L, 3L);
+        } catch (Exception e) {
+            fail("unexpected");
+        }
+        Response response = tenantRolePermissionResource.getPermissions(1L, 2L, 3L);
+        assertEquals(500, response.getStatus());
+    }
+
+    /**
      * Tests response from getById method
      */
     @Test
-    @Order(13)
+    @Order(15)
     public void testGetById() {
         long id = 1L;
         SystemTenantRolePermission m = mock(SystemTenantRolePermission.class);
@@ -376,8 +394,8 @@ public class TenantRolePermissionResourceTest {
      * Tests response from getById when exceptions occur during the processing
      */
     @Test
-    @Order(14)
-    public void testGetByIdWithExceptions() throws TenantRoleNotFoundException {
+    @Order(16)
+    public void testGetByIdWithExceptions() {
        // TenantRolePermission Not Found
         long id1 = 1L;
         doReturn(null).when(tenantRolePermissionService).get(id1);

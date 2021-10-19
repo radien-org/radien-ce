@@ -117,6 +117,14 @@ public interface PermissionRESTServiceAccess extends Appframeable {
     public boolean create(SystemPermission permission) throws SystemException;
 
     /**
+     * Update a given permission
+     * @param permission to be updated
+     * @return true in case of success
+     * @throws SystemException in case of any communication error
+     */
+    public boolean update(SystemPermission permission) throws SystemException;
+
+    /**
      * Checks if permission is existent in the db
      * @param permissionId to be found
      * @param permissionName to be found

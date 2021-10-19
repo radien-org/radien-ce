@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -218,13 +219,29 @@ public class ResourceRESTServiceClientTest {
     @Test
     public void testCreate() throws MalformedURLException {
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
-        when(resourceClient.save(any())).thenReturn(Response.ok().build());
+        when(resourceClient.create(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
         try {
             assertTrue(target.create(new Resource()));
         } catch (SystemException se) {
             fail("unexpected");
         }
+    }
+
+
+    /**
+     * Method to test the creation of resources
+     * @throws MalformedURLException when the endpoint url is incorrect
+     * @throws SystemException in case of any communication/processing issue regarding resource rest api
+     */
+    @Test
+    public void testUpdate() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.update(anyLong(), any())).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        Resource resource = new Resource();
+        resource.setId(1L);
+        assertTrue(target.update(resource));
     }
 
     /**
@@ -234,13 +251,42 @@ public class ResourceRESTServiceClientTest {
     @Test
     public void testCreateFail() throws MalformedURLException {
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
-        when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(resourceClient.create(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
         try {
             assertFalse(target.create(new Resource()));
         } catch (SystemException se) {
             fail("unexpected");
         }
+    }
+
+
+    /**
+     * Method to test the updating of resources but without success
+     * @throws MalformedURLException when the endpoint url is incorrect
+     * @throws SystemException in case of any communication/processing issue regarding resource rest api
+     */
+    @Test
+    public void testUpdateFail() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.update(anyLong(), any())).thenReturn(Response.status(300).entity("test").build());
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        Resource resource = new Resource(); resource.setId(1L);
+        assertFalse(target.update(resource));
+    }
+
+    /**
+     * Method to test the updating of resources but without success (Resource entity not found)
+     * @throws MalformedURLException when the endpoint url is incorrect
+     * @throws SystemException in case of any communication/processing issue regarding resource rest api
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateFailResourceNotFound() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+        when(resourceClient.update(anyLong(), any())).thenThrow(new NotFoundException());
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        Resource resource = new Resource(); resource.setId(1L);
+        target.update(resource);
     }
 
     /**
@@ -250,7 +296,7 @@ public class ResourceRESTServiceClientTest {
     @Test
     public void testCreateProcessingException() throws MalformedURLException {
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
-        when(resourceClient.save(any())).thenThrow(new ProcessingException(""));
+        when(resourceClient.create(any())).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
         Exception e = assertThrows(SystemException.class, ()->target.create(new Resource()));
         assertTrue(e.getMessage().contains(ProcessingException.class.getSimpleName()));
@@ -436,7 +482,7 @@ public class ResourceRESTServiceClientTest {
         ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
 
         when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException(testValue));
+        when(resourceClient.create(any())).thenThrow(new TokenExpiredException(testValue));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn(testValue);
@@ -444,6 +490,70 @@ public class ResourceRESTServiceClientTest {
 
         SystemResource systemResource = ResourceFactory.create("name", 2L);
         target.create(systemResource);
+    }
+
+    /**
+     * Test the create method after token expired
+     * @throws MalformedURLException when the endpoint url is incorrect
+     * @throws SystemException when token has expired
+     */
+    @Test
+    public void testCreateAfterTokenExpiration() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.create(any())).thenThrow(new TokenExpiredException(testValue)).
+                thenReturn(Response.ok().build());
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn(testValue);
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity(testValue).build());
+
+        SystemResource systemResource = ResourceFactory.create("name", 2L);
+        assertTrue(target.create(systemResource));
+    }
+
+    /**
+     * Test the update method with token expired
+     * @throws MalformedURLException when the endpoint url is incorrect
+     * @throws SystemException when token has expired
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTokenExpiration() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.update(anyLong(), any())).thenThrow(new TokenExpiredException(testValue));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn(testValue);
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity(testValue).build());
+
+        SystemResource systemResource = ResourceFactory.create("name", 2L);
+        systemResource.setId(1L);
+        target.update(systemResource);
+    }
+
+    /**
+     * Test the update method after token expired
+     * @throws MalformedURLException when the endpoint url is incorrect
+     * @throws SystemException when token has expired
+     */
+    @Test
+    public void testUpdateAfterTokenExpiration() throws MalformedURLException, SystemException {
+        ResourceResourceClient resourceClient = Mockito.mock(ResourceResourceClient.class);
+
+        when(clientServiceUtil.getResourceResourceClient(getResourceManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.update(anyLong(), any())).thenThrow(new TokenExpiredException(testValue)).
+                thenReturn(Response.ok().build());
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn(testValue);
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity(testValue).build());
+
+        SystemResource systemResource = ResourceFactory.create("name", 2L);
+        systemResource.setId(1L);
+        assertTrue(target.update(systemResource));
     }
 
     @Test

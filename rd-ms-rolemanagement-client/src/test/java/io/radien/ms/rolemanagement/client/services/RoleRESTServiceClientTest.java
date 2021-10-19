@@ -30,6 +30,7 @@ import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -288,7 +290,7 @@ public class RoleRESTServiceClientTest {
     @Test
     public void testCreate() throws MalformedURLException {
         RoleResourceClient resourceClient = Mockito.mock(RoleResourceClient.class);
-        when(resourceClient.save(any())).thenReturn(Response.ok().build());
+        when(resourceClient.create(any())).thenReturn(Response.ok().build());
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
         boolean success = false;
         try {
@@ -314,7 +316,7 @@ public class RoleRESTServiceClientTest {
     @Test
     public void testCreateFail() throws MalformedURLException {
         RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
-        when(roleResourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(roleResourceClient.create(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
         boolean success = false;
         try {
@@ -328,7 +330,7 @@ public class RoleRESTServiceClientTest {
     @Test
     public void testCreateProcessingException() throws MalformedURLException {
         RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
-        when(roleResourceClient.save(any())).thenThrow(new ProcessingException(""));
+        when(roleResourceClient.create(any())).thenThrow(new ProcessingException(""));
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
         boolean success = false;
         try {
@@ -387,7 +389,7 @@ public class RoleRESTServiceClientTest {
         RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
 
         when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
-        when(roleResourceClient.save(any())).thenThrow(new TokenExpiredException("test"));
+        when(roleResourceClient.create(any())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -395,20 +397,6 @@ public class RoleRESTServiceClientTest {
 
         SystemRole role = RoleFactory.create("name", "description", 2L);
         target.create(role);
-    }
-
-    @Test(expected = SystemException.class)
-    public void testGetTotalRecordsCountTokenExpiration() throws Exception {
-        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
-
-        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
-        when(roleResourceClient.getTotalRecordsCount()).thenThrow(new TokenExpiredException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.getTotalRecordsCount();
     }
 
     @Test
@@ -440,30 +428,6 @@ public class RoleRESTServiceClientTest {
             success = true;
         }
         assertTrue(success);
-    }
-
-    @Test
-    public void testGetTotalRecordsCountException() throws MalformedURLException, SystemException {
-        Role role = RoleFactory.create("test", null,2L);
-
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        builder.add(RoleFactory.convertToJsonObject(role));
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeArray(builder.build());
-        jsonWriter.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
-        Response response = Response.ok(is).entity(1L).build();
-
-        RoleResourceClient resourceClient = Mockito.mock(RoleResourceClient.class);
-
-        when(resourceClient.getTotalRecordsCount()).thenReturn(response);
-        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
-
-        assertThrows(SystemException.class, () -> target.getTotalRecordsCount());
     }
 
     /**
@@ -602,5 +566,102 @@ public class RoleRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.delete(2L);
+    }
+
+    /**
+     * Method to test the updating of a Role object
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testUpdate() throws MalformedURLException, SystemException {
+        Role role = new Role(); role.setId(111L);
+        RoleResourceClient resourceClient = Mockito.mock(RoleResourceClient.class);
+        when(resourceClient.update(role.getId(), role)).thenReturn(Response.ok().build());
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(resourceClient);
+        assertTrue(target.update(role));
+    }
+
+    /**
+     * Method to test the updating of a Role object, but reflecting scenario where url is informed incorrectly
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateMalformedException() throws MalformedURLException, SystemException {
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
+        target.update(new Role());
+    }
+
+    /**
+     * Method to test the updating of a Role object, but reflecting a failure scenario (Not receiving status 200)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testUpdateFail() throws MalformedURLException, SystemException {
+        Role role = new Role(); role.setId(111L);
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+        when(roleResourceClient.update(role.getId(), role)).
+                thenReturn(Response.serverError().entity("test error msg").build());
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        assertFalse(target.update(role));
+    }
+
+    /**
+     * Method to test the updating of a Role object, but reflecting a failure scenario caused by ProcessingException
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateProcessingException() throws MalformedURLException, SystemException {
+        Role role = new Role(); role.setId(111L);
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+        when(roleResourceClient.update(role.getId(), role)).thenThrow(new ProcessingException(""));
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        target.update(role);
+    }
+
+    /**
+     * Method to test the updating of a Role object, but reflecting a failure scenario caused by JWT token expiration
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTokenExpiration() throws Exception {
+        Role role = new Role(); role.setId(111L);
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.update(role.getId(), role)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(role);
+    }
+
+    /**
+     * Method to test the updating of a Role object, but reflecting a failure scenario caused by
+     * JWT token expiration during the retry process
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testUpdateByReAttempt() throws MalformedURLException, SystemException {
+        Role role = new Role(); role.setId(111L);
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+        when(roleResourceClient.update(role.getId(), role)).
+                thenThrow(new TokenExpiredException("test")).
+                thenReturn(Response.ok().build());
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        assertDoesNotThrow(()-> target.update(role));
     }
 }

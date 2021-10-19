@@ -62,11 +62,19 @@ public interface PermissionServiceAccess extends ServiceAccess {
     public Page<SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
-     * Saves or updates the requested and given Permission information into the DB.
-     * @param permission to be added/inserted or updated
-     * @throws UniquenessConstraintException in case of duplicated name
+     * Creates the requested Permission information into the DB.
+     * @param permission to be added/inserted
+     * @throws UniquenessConstraintException in case of duplicated name (or combination of action and resource)
      */
-    public void save(SystemPermission permission) throws UniquenessConstraintException;
+    public void create(SystemPermission permission) throws UniquenessConstraintException;
+
+    /**
+     * Updates the requested Permission information into the DB.
+     * @param permission to be updated
+     * @throws UniquenessConstraintException in case of duplicated name (or combination of action and resource)
+     * @throws PermissionNotFoundException in case of not existent permission for the give id
+     */
+    public void update(SystemPermission permission) throws UniquenessConstraintException, PermissionNotFoundException;
 
     /**
      * Deletes a unique Permission selected by his id.

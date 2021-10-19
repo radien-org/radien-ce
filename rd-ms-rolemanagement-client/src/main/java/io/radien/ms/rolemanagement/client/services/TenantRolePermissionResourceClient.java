@@ -141,4 +141,16 @@ public interface TenantRolePermissionResourceClient {
                                 @QueryParam("roleId") Long roleId,
                                 @QueryParam("permissionId") Long permissionId);
 
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return Response OK with List containing permissions. Response 500 in case of any other error.
+     */
+    @GET
+    @Path("/permissions")
+    Response getPermissions(@QueryParam("tenantId") Long tenantId,
+                            @QueryParam("roleId") Long roleId,
+                            @QueryParam("userId") Long userId);
 }

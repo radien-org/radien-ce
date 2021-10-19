@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
@@ -27,6 +28,8 @@ import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -151,6 +154,23 @@ public class TenantRolePermissionBusinessService extends AbstractTenantRoleDomai
                 getTenantRolePermissionId(tenantRoleId, permission).orElseThrow(() -> new TenantRoleException(
                         TENANT_ROLE_NO_ASSOCIATION_FOR_PERMISSION.toString(permission.toString())));
         this.tenantRolePermissionService.delete(tenantRolePermissionId);
+    }
+
+    /**
+     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
+     * @param tenantId Tenant identifier (Mandatory)
+     * @param roleId Role identifier (Mandatory)
+     * @param userId User identifier (Optional)
+     * @return List containing permissions
+     */
+    public List<SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException {
+        checkIfMandatoryParametersWereInformed(tenantId, roleId);
+        List<SystemPermission> list = new ArrayList<>();
+        List<Long> ids = this.getTenantRoleServiceAccess().getPermissions(tenantId, roleId, userId);
+        if (!ids.isEmpty()) {
+            list.addAll(this.getPermissionRESTServiceAccess().getPermissionsByIds(ids));
+        }
+        return list;
     }
 
     /**

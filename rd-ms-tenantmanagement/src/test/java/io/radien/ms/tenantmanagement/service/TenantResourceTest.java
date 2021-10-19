@@ -245,8 +245,19 @@ public class TenantResourceTest {
      */
     @Test
     public void testExists() {
+        when(tenantServiceAccess.exists(1L)).thenReturn(Boolean.TRUE);
         Response response = tenantResource.exists(1L);
-        assertEquals(200,response.getStatus());
+        assertEquals(204,response.getStatus());
+    }
+
+    /**
+     * Test the exists request which will return a error message code 404.
+     */
+    @Test
+    public void testExistsFalse() {
+        when(tenantServiceAccess.exists(anyLong())).thenReturn(Boolean.FALSE);
+        Response response = tenantResource.exists(100L);
+        assertEquals(404,response.getStatus());
     }
 
     /**
@@ -254,9 +265,9 @@ public class TenantResourceTest {
      */
     @Test
     public void testExistsException() {
-        when(tenantResource.exists(any()))
-                .thenThrow(new NotFoundException());
+        when(tenantServiceAccess.exists(anyLong())).
+                thenThrow(new RuntimeException("error doing processing in the db"));
         Response response = tenantResource.exists(100L);
-        assertEquals(404,response.getStatus());
+        assertEquals(500,response.getStatus());
     }
 }

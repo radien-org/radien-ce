@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -62,7 +63,14 @@ public interface ActionServiceAccess extends ServiceAccess {
      * @param action to be stored/saved
      * @throws UniquenessConstraintException in case the required action already exists or has duplicated information
      */
-    public void save(SystemAction action) throws UniquenessConstraintException;
+    public void create(SystemAction action) throws UniquenessConstraintException;
+
+    /**
+     * Update an action (Create or Update)
+     * @param action to be stored/saved
+     * @throws UniquenessConstraintException in case the required action already exists or has duplicated information
+     */
+    public void update(SystemAction action) throws ActionNotFoundException, UniquenessConstraintException;
 
     /**
      * Delete an action

@@ -17,11 +17,13 @@ package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
+import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
 import io.radien.ms.permissionmanagement.model.ActionEntity;
+import java.util.Collection;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -75,7 +77,7 @@ public class ActionResource implements ActionResourceClient {
 	 * and the collection (filled or not).<br>
 	 * Otherwise, in case of operational error, returns 500
 	 */
-	public Response getActions(String name, List<Long> ids, boolean isExact,
+	public Response getActions(String name, Collection<Long> ids, boolean isExact,
 							   boolean isLogicalConjunction) {
 
 		try {
@@ -120,18 +122,40 @@ public class ActionResource implements ActionResourceClient {
 	}
 
 	/**
-	 * Saves an action (Creation or Update).
+	 * Create an action
 	 * @param action action to be created or update
-	 * @return Http status 200 in case of successful operation.<br>
-	 * Bad request (404) in case of trying to create an action with repeated description.<br>
+	 * @return Http status 200 in case of successful operation.
+	 * Bad request (400) in case of trying to create an action with repeated description.
 	 * Internal Server Error (500) in case of operational error
 	 */
-	public Response save(io.radien.ms.permissionmanagement.client.entities.Action action) {
+	public Response create(io.radien.ms.permissionmanagement.client.entities.Action action) {
 		try {
-			actionServiceAccess.save(new ActionEntity(action));
+			actionServiceAccess.create(new ActionEntity(action));
 			return Response.ok().build();
 		} catch (UniquenessConstraintException e) {
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+		} catch (Exception e) {
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
+	/**
+	 * Update an action
+	 * @param action action to be update
+	 * @return Http status 200 in case of successful operation.
+	 * Bad request (400) in case of trying to create an action with repeated description,
+	 * Not found (404) in case of not existing Action for the informed id.
+	 * Internal Server Error (500) in case of operational error
+	 */
+	public Response update(long id, io.radien.ms.permissionmanagement.client.entities.Action action) {
+		try {
+			action.setId(id);
+			actionServiceAccess.update(new ActionEntity(action));
+			return Response.ok().build();
+		} catch (UniquenessConstraintException e) {
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+		} catch (ActionNotFoundException e) {
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
 		} catch (Exception e) {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}

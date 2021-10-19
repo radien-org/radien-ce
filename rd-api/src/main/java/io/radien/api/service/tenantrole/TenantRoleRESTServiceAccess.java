@@ -35,11 +35,14 @@ public interface TenantRoleRESTServiceAccess {
      * Retrieves TenantRole association using pagination approach
      * @param pageNo page number
      * @param pageSize page size
-     * @return Page containing TenantRole User associations (Chunk/Portion compatible
+     * @param sortBy any specific column
+     * @param isAscending true in case records should be filter in ascending order
+     * @return Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size).
      * @throws SystemException in case of any error
      */
-    Page<? extends SystemTenantRole> getAll(int pageNo, int pageSize) throws SystemException;
+    Page<? extends SystemTenantRole> getAll(Long tenantId, Long roleId, int pageNo, int pageSize,
+                                            List<String> sortBy, boolean isAscending) throws SystemException;
 
     /**
      * Obtains the TenantRole Id (for given Tenant and role identifiers)
@@ -74,16 +77,6 @@ public interface TenantRoleRESTServiceAccess {
      * @throws SystemException in case of any other error.
      */
     Boolean exists(Long tenantId, Long roleId) throws SystemException;
-
-    /**
-     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return List containing permissions.
-     * @throws SystemException in case of any error
-     */
-    List<? extends SystemPermission> getPermissions(Long tenantId, Long roleId, Long userId) throws SystemException;
 
     /**
      * Retrieves the existent Tenants for a User (Optionally for a specific role)
