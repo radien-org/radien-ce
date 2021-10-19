@@ -59,8 +59,10 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
      * @return Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size)
      */
-    public Page<SystemTenantRole> getAll(int pageNumber, int pageSize) {
-        return this.getTenantRoleServiceAccess().getAll(pageNumber, pageSize);
+    public Page<SystemTenantRole> getAll(Long tenantId, Long roleId, int pageNumber, int pageSize,
+                                         List<String> sortBy,
+                                         boolean isAscending) {
+        return this.getTenantRoleServiceAccess().getAll(tenantId, roleId, pageNumber, pageSize, sortBy, isAscending);
     }
 
     /**

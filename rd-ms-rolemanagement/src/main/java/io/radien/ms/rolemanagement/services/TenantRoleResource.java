@@ -74,19 +74,25 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
 
     /**
      * Retrieves TenantRole association using pagination approach
+     * @param tenantId tenant identifier (Optional)
+     * @param roleId role identifier (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
      * and a Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size).<br>
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @Override
-    public Response getAll(int pageNo, int pageSize) {
+    public Response getAll(Long tenantId, Long roleId, int pageNo, int pageSize,
+                           List<String> sortBy, boolean isAscending) {
         log.info("Retrieving TenantRole associations using pagination. Page number {}. Page Size {}.",
                 pageNo, pageSize);
         try {
-            return Response.ok().entity(this.tenantRoleBusinessService.getAll(pageNo, pageSize)).build();
+            return Response.ok().entity(this.tenantRoleBusinessService.getAll(tenantId, roleId, pageNo,
+                    pageSize, sortBy, isAscending)).build();
         }
         catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
@@ -184,14 +190,17 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
      * Check if a Tenant role association exists
      * @param tenantId Tenant Identifier
      * @param roleId Role identifier
-     * @return Response OK containing true (if association exists), false otherwise.
+     * @return Responds with 204 http status if association exists, 404 (NOT FOUND) otherwise.
      * Response 500 in case of any other error.
      */
     @Override
     public Response exists(Long tenantId, Long roleId) {
         log.info("Checking if Tenant Role association exists for tenant {} and role {}", tenantId, roleId);
         try {
-            return Response.ok().entity(tenantRoleBusinessService.existsAssociation(tenantId, roleId)).build();
+            if (tenantRoleBusinessService.existsAssociation(tenantId, roleId)) {
+                return Response.noContent().build();
+            }
+            return Response.status(Response.Status.NOT_FOUND).build();
         } catch(Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }

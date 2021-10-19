@@ -96,7 +96,7 @@ public class TenantRoleResourceTest {
     @Test
     @Order(1)
     public void getAll() {
-        Response response = tenantRoleResource.getAll(1,10);
+        Response response = tenantRoleResource.getAll(null, null, 1,10, null, true);
         assertEquals(200,response.getStatus());
     }
 
@@ -106,9 +106,9 @@ public class TenantRoleResourceTest {
     @Test
     @Order(2)
     public void getAllWithException() {
-        when(tenantRoleResource.getAll(1,10))
+        when(tenantRoleBusinessService.getAll(null, null, 1,10, null, true))
                 .thenThrow(new RuntimeException());
-        Response response = tenantRoleResource.getAll(1,10);
+        Response response = tenantRoleResource.getAll(null, null, 1,10, null, true);
         assertEquals(500,response.getStatus());
     }
 
@@ -271,8 +271,16 @@ public class TenantRoleResourceTest {
     @Test
     @Order(11)
     public void testExists() {
-        Response response = tenantRoleResource.exists(1L, 2L);
-        assertEquals(200, response.getStatus());
+        when(tenantRoleBusinessService.existsAssociation(1L, 2L)).
+                thenReturn(Boolean.TRUE);
+        when(tenantRoleBusinessService.existsAssociation(1L, 3L)).
+                thenReturn(Boolean.FALSE);
+
+        Response responseOK = tenantRoleResource.exists(1L, 2L);
+        assertEquals(204, responseOK.getStatus());
+
+        Response responseNOK = tenantRoleResource.exists(1L, 3L);
+        assertEquals(404, responseNOK.getStatus());
     }
 
     /**

@@ -375,12 +375,41 @@ public class TenantRoleServiceTest {
     @Test
     @Order(15)
     public void testPagination() {
-        Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(1, 100);
+        List<String> sortBy = Arrays.asList("tenantId", "roleId");
+        Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, sortBy, false);
         Assertions.assertNotNull(p);
         Assertions.assertTrue(p.getTotalResults() > 0);
         assertEquals(1, p.getTotalPages());
-        Assertions.assertNotNull(p.getResults());
-        Assertions.assertFalse(p.getResults().isEmpty());
+
+        p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        Assertions.assertTrue(p.getTotalResults() > 0);
+        assertEquals(1, p.getTotalPages());
+
+        p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, null, true);
+        Assertions.assertNotNull(p);
+        assertEquals(1, p.getTotalPages());
+
+        sortBy = new ArrayList<>();
+        p = tenantRoleServiceAccess.getAll(120L, 122L,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        assertEquals(1, p.getTotalPages());
+
+        sortBy = new ArrayList<>();
+        p = tenantRoleServiceAccess.getAll(124L, null,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        assertEquals(0, p.getTotalPages());
+
+        sortBy = new ArrayList<>();
+        p = tenantRoleServiceAccess.getAll(null, 123L,
+                1, 100, sortBy, true);
+        Assertions.assertNotNull(p);
+        assertEquals(0, p.getTotalPages());
     }
 
     /**
