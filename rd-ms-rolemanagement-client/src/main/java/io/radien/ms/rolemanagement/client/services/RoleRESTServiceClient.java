@@ -21,6 +21,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -83,16 +84,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
     @Override
     public Page<? extends SystemRole> getAll(String search, int pageNo, int pageSize,
                                              List<String> sortBy, boolean isAscending) throws SystemException {
-        try {
-            return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(() -> getAllRequester(search, pageNo, pageSize, sortBy, isAscending));
     }
 
     /**
@@ -278,16 +270,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public boolean create(SystemRole role) throws SystemException {
-        try {
-            return createRequester(role);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return createRequester(role);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::createRequester, role);
     }
 
     /**
@@ -303,7 +286,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
         } catch (MalformedURLException e) {
             throw new SystemException(e);
         }
-        try (Response response = client.save((Role)role)) {
+        try (Response response = client.create((Role)role)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -323,16 +306,7 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public Long getTotalRecordsCount() throws SystemException {
-        try {
-            return getTotalRecordsCountRequester();
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getTotalRecordsCountRequester();
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::getTotalRecordsCountRequester);
     }
 
     /**
@@ -351,6 +325,44 @@ public class RoleRESTServiceClient extends AuthorizationChecker implements RoleR
             throw new SystemException(e);
         }
     }
+
+    /**
+     * Calls the requester to update given role if not possible will reload the access token and retry
+     * @param role to be updated
+     * @return true if user has been updated with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    public boolean update(SystemRole role) throws SystemException {
+        return get(this::updateRequester, role);
+    }
+
+    /**
+     * Updates given role
+     * @param role to be updated
+     * @return true if user has been updated with success or false if not
+     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     */
+    private boolean updateRequester(SystemRole role) throws SystemException {
+        RoleResourceClient client;
+        try {
+            client = clientServiceUtil.getRoleResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+        } catch (MalformedURLException e) {
+            throw new SystemException(e);
+        }
+        try (Response response = client.update(role.getId(), (Role) role)) {
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                String entity = response.readEntity(String.class);
+                log.error(entity);
+                return false;
+            }
+        } catch (ProcessingException | NotFoundException e) {
+            throw new SystemException(e);
+        }
+    }
+
+
 
     /**
      * Calls the requester to delete a given role if not possible will reload the access token and retry

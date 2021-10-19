@@ -15,6 +15,8 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import javax.enterprise.context.RequestScoped;
@@ -163,7 +165,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			if (!isSelfOnboard(user) && !checkUserPermission(user.getId()==null)) {
+			if (!isSelfOnboard(user) && !hasPermission(null,
+							user.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
+							SystemResourcesEnum.USER.getResourceName())
+			) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 			userBusinessService.save(new UserEntity(user),user.isDelegatedCreation());

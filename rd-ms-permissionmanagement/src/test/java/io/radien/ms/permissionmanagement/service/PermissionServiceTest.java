@@ -472,7 +472,7 @@ public class PermissionServiceTest {
         permissionServiceAccess.create(sp);
 
         SystemAction sa = ActionFactory.create("read-contract", null);
-        actionServiceAccess.save(sa);
+        actionServiceAccess.create(sa);
 
         // Retrieve the permission
         PermissionSearchFilter permissionFilter = new PermissionSearchFilter();
@@ -698,19 +698,19 @@ public class PermissionServiceTest {
     public void testPermissionRetrievalByActionAndResourceNames() throws UniquenessConstraintException {
         SystemAction a1 = new ActionEntity();
         a1.setName("delete");
-        actionServiceAccess.save(a1);
+        actionServiceAccess.create(a1);
 
         SystemAction a2 = new ActionEntity();
         a2.setName("create");
-        actionServiceAccess.save(a2);
+        actionServiceAccess.create(a2);
 
         SystemAction a3 = new ActionEntity();
         a3.setName("update");
-        actionServiceAccess.save(a3);
+        actionServiceAccess.create(a3);
 
         SystemResource r1 = new ResourceEntity();
         r1.setName("dealer");
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         SystemPermission p1 = new PermissionEntity();
         p1.setName(a1.getName() + "-" + r1.getName());
@@ -760,11 +760,11 @@ public class PermissionServiceTest {
     public void testGetIdByActionAndResource() throws PermissionIllegalArgumentException, UniquenessConstraintException {
         SystemAction a1 = new ActionEntity();
         a1.setName("reset");
-        actionServiceAccess.save(a1);
+        actionServiceAccess.create(a1);
 
         SystemResource r1 = new ResourceEntity();
         r1.setName("password");
-        resourceServiceAccess.save(r1);
+        resourceServiceAccess.create(r1);
 
         SystemPermission p1 = new PermissionEntity();
         p1.setName("reset password");

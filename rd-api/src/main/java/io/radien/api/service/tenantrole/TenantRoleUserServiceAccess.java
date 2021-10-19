@@ -130,4 +130,6 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @throws TenantRoleUserException if any exception
      */
     Collection<Long> getTenantRoleUserIds(List<Long> tenantRoleIds, Long userId) throws TenantRoleUserException;
+
+    long count();
 }

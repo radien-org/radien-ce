@@ -1,5 +1,4 @@
 [
-{ "name": "System Administrator", "description": "The BOSS!", "terminationDate": "2030-12-12T00:00:00" },
 { "name": "Permission Administrator", "description": "The Role for Permission Management Testing purposes!", "terminationDate": "2030-12-12T00:00:00" },
 { "name": "Role Administrator", "description": "The Role for Role Management Testing purposes!", "terminationDate": "2030-12-12T00:00:00" },
 { "name": "User Administrator", "description": "The Role for User Management Testing purposes!", "terminationDate": "2030-12-12T00:00:00" },
