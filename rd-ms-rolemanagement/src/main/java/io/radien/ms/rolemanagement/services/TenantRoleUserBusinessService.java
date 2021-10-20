@@ -27,6 +27,7 @@ import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.TenantRoleUserDuplicationException;
+import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
@@ -65,12 +66,46 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
      * @throws UniquenessConstraintException in case of error during the insertion
      * @throws SystemException in case of any communication issue with the endpoint
      */
-    public void assignUser(TenantRoleUserEntity tru) throws TenantRoleException,
-            UniquenessConstraintException, SystemException {
+    public void assignUser(TenantRoleUserEntity tru) throws TenantRoleException, UniquenessConstraintException {
+        persistTenantRoleUser(tru);
+    }
+
+    /**
+     * Assign/associate/add user to a Tenant (TenantRole domain)
+     * The association will always be under a specific role
+     * @param tru TenantRoleUser bean that contains information regarding user and Tenant role association
+     * @throws TenantRoleException for the case of any inconsistency found
+     * @throws UniquenessConstraintException in case of error during the insertion
+     * @throws SystemException in case of any communication issue with the endpoint
+     */
+    public void update(TenantRoleUserEntity tru) throws TenantRoleException, UniquenessConstraintException {
+        persistTenantRoleUser(tru);
+    }
+
+    /**
+     * Do all necessary validation and then call the particular data service do insert or update
+     * the TenantRoleUser pojo bean
+     * @param tru TenantRoleUser to be inserted or updated
+     * @throws TenantRoleIllegalArgumentException if userId or tenantRoleId were not informed
+     * @throws TenantRoleNotFoundException thrown if the informed tenantRole id does not exist
+     * @throws TenantRoleUserDuplicationException thrown if business checking detects duplication of information
+     * before the insertion/update
+     * @throws UniquenessConstraintException thrown by the data service in case of attempt to insert/updated
+     * repeated information (combination of tenantRoleId + userId)
+     * @throws TenantRoleUserNotFoundException in case of tenantRoleId not reflecting an existent row in the database
+     */
+    protected void persistTenantRoleUser(TenantRoleUserEntity tru) throws TenantRoleIllegalArgumentException,
+            TenantRoleNotFoundException, TenantRoleUserDuplicationException, UniquenessConstraintException,
+            TenantRoleUserNotFoundException {
 
         if (tru.getUserId() == null) {
             throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
                     TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel()));
+        }
+
+        if (tru.getTenantRoleId() == null) {
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ROLE_ID.getLabel()));
         }
 
         SystemTenantRole tenantRole = getTenantRoleServiceAccess().get(tru.getTenantRoleId());
@@ -78,14 +113,17 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
             throw new TenantRoleNotFoundException(TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(String.valueOf(
                     tru.getTenantRoleId())));
         }
-        if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(tru.getUserId(), tru.getTenantRoleId())) {
+        if (this.tenantRoleUserServiceAccess.isAssociationAlreadyExistent(tru.getUserId(), tru.getTenantRoleId(), tru.getId())) {
             throw new TenantRoleUserDuplicationException(GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
                     toString(String.valueOf(tenantRole.getTenantId()), String.valueOf(tenantRole.getRoleId())));
         }
 
-        this.tenantRoleUserServiceAccess.create(tru);
+        if (tru.getId() == null) {
+            this.tenantRoleUserServiceAccess.create(tru);
+        } else {
+            this.tenantRoleUserServiceAccess.update(tru);
+        }
     }
-
 
     /**
      * Deletes a Tenant Role Permission association
