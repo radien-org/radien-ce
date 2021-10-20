@@ -127,7 +127,7 @@ public class TenantRoleUserServiceTest {
         SystemTenantRole systemTenantRole = new TenantRoleEntity();
         systemTenantRole.setRoleId(baseRoleId);
         systemTenantRole.setTenantId(baseTenantId);
-        tenantRoleServiceAccess.save(systemTenantRole);
+        tenantRoleServiceAccess.create(systemTenantRole);
         baseTenantRoleId = systemTenantRole.getId();
 
         SystemTenantRoleUser systemTenantRoleUser = new TenantRoleUserEntity();
@@ -457,7 +457,7 @@ public class TenantRoleUserServiceTest {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setTenantId(tenant);
         tenantRole.setRoleId(role);
-        tenantRoleServiceAccess.save(tenantRole);
+        tenantRoleServiceAccess.create(tenantRole);
         return tenantRole;
     }
 

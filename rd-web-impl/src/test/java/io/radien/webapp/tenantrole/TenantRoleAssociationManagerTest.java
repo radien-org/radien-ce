@@ -156,7 +156,7 @@ public class TenantRoleAssociationManagerTest {
 
         doReturn(Boolean.FALSE).when(tenantRoleRESTServiceAccess).
                 exists(tenant.getId(), role.getId());
-        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).create(any());
 
         when(tenantRoleRESTServiceAccess.getIdByTenantRole(
                 tenantRoleAssociationManager.getTenant().getId(),
@@ -206,6 +206,42 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
     }
 
+
+    /**
+     * Test for method associateTenantRole
+     * This method crates the first association predicted in the graph (The association
+     * between a Tenant and a Role). If the process finishes successfully
+     * is expected a rd_save_success FacesMessage.
+     */
+    @Test
+    public void testAssociateTenantRoleUpdateCase() throws Exception {
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenantRole tenantRole = new TenantRole();
+        tenantRole.setId(11111L);
+
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+        tenantRoleAssociationManager.setTenantRole(tenantRole);
+
+        when(tenantRoleRESTServiceAccess.getIdByTenantRole(
+                tenantRoleAssociationManager.getTenant().getId(),
+                tenantRoleAssociationManager.getRole().getId())).
+                thenReturn(Optional.of(1L));
+        tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
+        tenantRoleAssociationManager.associateTenantRole();
+
+        assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
+        assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
+    }
+
     /**
      * Test for method associateTenantRole, but for this case
      * an exception occurs during the saving process of
@@ -216,7 +252,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setRole(new Role());
         tenantRoleAssociationManager.setTenant(new Tenant());
         tenantRoleAssociationManager.setTenantRole(new TenantRole());
-        when(tenantRoleRESTServiceAccess.save(any(TenantRole.class))).
+        when(tenantRoleRESTServiceAccess.create(any(TenantRole.class))).
                     thenThrow(new RuntimeException("Error during save process"));
         tenantRoleAssociationManager.associateTenantRole();
 
@@ -246,7 +282,7 @@ public class TenantRoleAssociationManagerTest {
         doThrow(new RuntimeException("Error checking exists")).when(tenantRoleRESTServiceAccess).
                 exists(tenant.getId(), role.getId());
 
-        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).create(any());
         doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).assignUser(any());
 
         String urlMapping = tenantRoleAssociationManager.associateUser(userId);

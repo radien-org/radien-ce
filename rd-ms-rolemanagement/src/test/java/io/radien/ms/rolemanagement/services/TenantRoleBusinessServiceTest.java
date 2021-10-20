@@ -188,7 +188,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         repeated.setRoleId(roleAdmin.getId());
 
         assertThrows(UniquenessConstraintException.class,
-                () -> tenantRoleBusinessService.save(repeated));
+                () -> tenantRoleBusinessService.create(repeated));
 
         // Try to insert with invalid Tenant
         Long mockedInvalidTenant = 9999L;
@@ -206,14 +206,14 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
             fail("unexpected");
         }
         assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
-                save(tenantRoleWithInvalidTenant));
+                create(tenantRoleWithInvalidTenant));
 
         // Try to insert with invalid Role
         SystemTenantRole tenantRoleWithInvalidRole = new TenantRoleEntity();
         tenantRoleWithInvalidRole.setTenantId(mockedValidTenant);
         tenantRoleWithInvalidRole.setRoleId(1111111L);
         assertThrows(TenantRoleException.class, () -> tenantRoleBusinessService.
-                save(tenantRoleWithInvalidRole));
+                create(tenantRoleWithInvalidRole));
     }
 
     /**
@@ -999,7 +999,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         systemTenantRole.setRoleId(role.getId());
 
         assertThrows(TenantRoleException.class, ()-> tenantRoleBusinessService.
-                save(systemTenantRole));
+                create(systemTenantRole));
     }
 
     /**

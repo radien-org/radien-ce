@@ -18,7 +18,9 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
+import javax.ws.rs.PUT;
 import javax.ws.rs.HEAD;
+
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.ws.rs.Path;
@@ -126,7 +128,21 @@ public interface TenantRoleResourceClient {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response save(TenantRole tenantRole);
+    public Response create(TenantRole tenantRole);
+
+    /**
+     * Update a TenantRole association
+     * @param id id related to the TenantRole that is going to be updated
+     * @param tenantRole bean that corresponds to TenantRole association to be created
+     * @return 200 code message if success, 400 in case of duplication (association already
+     * existing with the same parameter) or absence of information (tenant or role not existing),
+     * 404 if the there is not TenantRole for the informed Id,
+     * 500 code message if there is any error.
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, TenantRole tenantRole);
 
     /**
      * Check if a Tenant role association exists

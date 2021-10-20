@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
@@ -221,7 +222,7 @@ public class TenantRoleResourceTest {
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
 
 
-        Response response = tenantRoleResource.save(new TenantRole());
+        Response response = tenantRoleResource.create(new TenantRole());
         assertEquals(200,response.getStatus());
     }
 
@@ -250,18 +251,18 @@ public class TenantRoleResourceTest {
         tenantRole.setRoleId(1L); tenantRole.setTenantId(2L);
         try {
             doThrow(new UniquenessConstraintException()).doThrow(new TenantRoleException("Found similar tenant role")).
-                    doThrow(new SystemException("Communication breakdown")).when(tenantRoleBusinessService).save(any());
+                    doThrow(new SystemException("Communication breakdown")).when(tenantRoleBusinessService).create(any());
         }
         catch (Exception e) {
             fail("unexpected");
         }
-        Response response = tenantRoleResource.save(tenantRole);
+        Response response = tenantRoleResource.create(tenantRole);
         assertEquals(400,response.getStatus());
 
-        response = tenantRoleResource.save(tenantRole);
+        response = tenantRoleResource.create(tenantRole);
         assertEquals(400,response.getStatus());
 
-        response = tenantRoleResource.save(tenantRole);
+        response = tenantRoleResource.create(tenantRole);
         assertEquals(500,response.getStatus());
     }
 
@@ -447,4 +448,149 @@ public class TenantRoleResourceTest {
         assertEquals(400,response.getStatus());
     }
 
+    /**
+     * Tests response from save method when exceptions occur during the processing
+     */
+    @Test
+    public void testSaveNotAllowed() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(10L).when(tenantRoleBusinessService).count();
+        doReturn(Response.ok(Boolean.FALSE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        doReturn(Response.ok(Boolean.FALSE).build()).when(tenantRoleClient).
+                isRoleExistentForUser(1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+        TenantRole tenantRole = new TenantRole();
+        tenantRole.setRoleId(1L); tenantRole.setTenantId(2L);
+        Response response = tenantRoleResource.create(tenantRole);
+        assertEquals(403,response.getStatus());
+    }
+
+    /**
+     * Tests response from update method
+     */
+    @Test
+    public void testUpdate() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+
+        Response response = tenantRoleResource.update(1L, new TenantRole());
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests response from update method when exceptions occur during the processing
+     */
+    @Test
+    public void testUpdateWithException() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+
+        TenantRole tenantRole = new TenantRole();
+        tenantRole.setRoleId(1L); tenantRole.setTenantId(2L);
+        try {
+            doThrow(new UniquenessConstraintException()).
+                    doThrow(new TenantRoleException("Found similar tenant role")).
+                    doThrow(new SystemException("Communication breakdown")).when(tenantRoleBusinessService).
+                    update(any());
+        }
+        catch (Exception e) {
+            fail("unexpected");
+        }
+        Response response = tenantRoleResource.update(1L, tenantRole);
+        assertEquals(400,response.getStatus());
+
+        response = tenantRoleResource.update(1L, tenantRole);
+        assertEquals(400,response.getStatus());
+
+        response = tenantRoleResource.update(1L, tenantRole);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Tests response from update method when exceptions occur during the processing
+     */
+    @Test
+    public void testUpdateNotAllowed() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(10L).when(tenantRoleBusinessService).count();
+        doReturn(Response.ok(Boolean.FALSE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        doReturn(Response.ok(Boolean.FALSE).build()).when(tenantRoleClient).
+                isRoleExistentForUser(1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+        TenantRole tenantRole = new TenantRole();
+        tenantRole.setRoleId(1L); tenantRole.setTenantId(2L);
+        Response response = tenantRoleResource.update(1L, tenantRole);
+        assertEquals(403,response.getStatus());
+    }
+
+    /**
+     * Tests response from update method when the TenantRole does not exist
+     */
+    @Test
+    public void testUpdateNotFound() throws SystemException, UniquenessConstraintException, TenantRoleException {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(Response.ok().entity(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        when(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT)).thenReturn("http://url.pt");
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        doThrow(new TenantRoleNotFoundException("not found")).when(tenantRoleBusinessService).update(any());
+        Response response = tenantRoleResource.update(1L, new TenantRole());
+        assertEquals(404,response.getStatus());
+    }
 }

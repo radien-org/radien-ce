@@ -65,7 +65,15 @@ public interface TenantRoleRESTServiceAccess {
      * @return Boolean indicating if the operation was concluded with success.
      * @throws SystemException in case of any error
      */
-    Boolean save(SystemTenantRole tenantRole) throws SystemException;
+    Boolean create(SystemTenantRole tenantRole) throws SystemException;
+
+    /**
+     * Update a TenantRole association
+     * @param tenantRole bean that corresponds to TenantRole association to be updated
+     * @return Boolean indicating if the operation was concluded with success.
+     * @throws SystemException in case of any error
+     */
+    Boolean update(SystemTenantRole tenantRole) throws SystemException;
 
     /**
      * Check if a Tenant role association exists

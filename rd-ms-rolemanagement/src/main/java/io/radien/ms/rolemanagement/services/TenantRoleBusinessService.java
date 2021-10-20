@@ -113,10 +113,23 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
      * @throws TenantRoleException for the case of inconsistencies found
      * @throws SystemException for the case of issues regarding REST Client communication
      */
-    public void save(SystemTenantRole systemTenantRole) throws UniquenessConstraintException, TenantRoleException, SystemException {
+    public void create(SystemTenantRole systemTenantRole) throws UniquenessConstraintException, TenantRoleException, SystemException {
         checkIfMandatoryParametersWereInformed(systemTenantRole);
         checkIfParamsExists(systemTenantRole.getTenantId(), systemTenantRole.getRoleId(), null);
-        this.getTenantRoleServiceAccess().save(systemTenantRole);
+        this.getTenantRoleServiceAccess().create(systemTenantRole);
+    }
+
+    /**
+     * Create a TenantRole association
+     * @param systemTenantRole bean that corresponds to TenantRole association
+     * @throws UniquenessConstraintException In case of repeated information regarding tenant and role
+     * @throws TenantRoleException for the case of inconsistencies found
+     * @throws SystemException for the case of issues regarding REST Client communication
+     */
+    public void update(SystemTenantRole systemTenantRole) throws UniquenessConstraintException, TenantRoleException, SystemException {
+        checkIfMandatoryParametersWereInformed(systemTenantRole);
+        checkIfParamsExists(systemTenantRole.getTenantId(), systemTenantRole.getRoleId(), null);
+        this.getTenantRoleServiceAccess().update(systemTenantRole);
     }
 
     /**
