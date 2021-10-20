@@ -17,7 +17,6 @@ package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
@@ -29,14 +28,13 @@ import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Component that orchestrates the using of diverse Service Access components
@@ -130,22 +128,6 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
     public boolean existsAssociation(Long tenantId, Long roleId) {
         checkIfMandatoryParametersWereInformed(tenantId, roleId);
         return this.getTenantRoleServiceAccess().isAssociationAlreadyExistent(roleId, tenantId);
-    }
-
-    /**
-     * Retrieves the existent Tenants for a User (Optionally for a specific role)
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return List containing tenants
-     */
-    public List<SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
-        checkIfMandatoryParametersWereInformed(userId);
-        List<SystemTenant> list = new ArrayList<>();
-        List<Long> ids = this.getTenantRoleServiceAccess().getTenants(userId, roleId);
-        if (!ids.isEmpty()) {
-            list.addAll(getTenantRESTServiceAccess().getTenantsByIds(ids));
-        }
-        return list;
     }
 
     /**

@@ -17,7 +17,6 @@ package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.ProcessingException;
@@ -52,9 +51,6 @@ public class UserProfileManager extends AbstractManager {
 
     @Inject
     private UserSession userSession;
-
-    @Inject
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
 
     @Inject
     private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
@@ -156,7 +152,7 @@ public class UserProfileManager extends AbstractManager {
     protected List<SystemTenant> retrieveAssignedTenants() {
         List<SystemTenant> assignedOnes = new ArrayList<>();
         try {
-            assignedOnes.addAll(tenantRoleRESTServiceAccess.getTenants(userSession.getUserId(), null));
+            assignedOnes.addAll(tenantRoleUserRESTServiceAccess.getTenants(userSession.getUserId(), null));
             this.tabIndex = 1L;
         }
         catch (Exception e) {

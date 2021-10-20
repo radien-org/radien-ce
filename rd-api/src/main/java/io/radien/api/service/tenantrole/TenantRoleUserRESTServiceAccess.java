@@ -16,6 +16,7 @@
 package io.radien.api.service.tenantrole;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.exception.SystemException;
 import java.util.Collection;
@@ -101,6 +102,15 @@ public interface TenantRoleUserRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean delete(Long tenantRoleUserId) throws SystemException;
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return List containing tenants
+     * @throws SystemException in case of any error
+     */
+    List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException;
 
     /**
      * Updates a TenantRoleUser previously crated (When a user was assigned into a TenantRole)

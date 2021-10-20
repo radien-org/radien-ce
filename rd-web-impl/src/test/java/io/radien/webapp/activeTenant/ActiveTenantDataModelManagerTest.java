@@ -23,7 +23,7 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
@@ -90,7 +90,7 @@ public class ActiveTenantDataModelManagerTest {
     private TenantRESTServiceAccess tenantRESTServiceAccess;
     
     @Mock
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     private FacesContext facesContext;
 

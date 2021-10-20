@@ -660,7 +660,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     @ActiveTenantMandatory
     public List<? extends SystemTenant> getTenantsFromCurrentUser() {
         try {
-            return this.tenantRoleRESTServiceAccess.getTenants(this.webAuthorizationChecker.
+            return this.tenantRoleUserRESTServiceAccess.getTenants(this.webAuthorizationChecker.
                     getCurrentUserId(), null);
         }
         catch(Exception e) {

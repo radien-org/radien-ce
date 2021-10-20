@@ -98,6 +98,11 @@ public enum GenericErrorCodeMessage {
     HAVE_NULL_PARAMS_TENANT_USER_ROLES("TUR2","have.null.params.tenant.user.roles","Tenant User Role(s) have null parameters: %s"),
 
     /**
+     * Tenant Role Permission
+     */
+    TENANT_ROLE_PERMISSION_MISSING_PARAMETER("TRP1", "error.tenant.role.permission.missing.parameter", "Missing mandatory parameter %s"),
+
+    /**
      * Tenant User Error Code Messages
      */
     INFO_TENANT_AND_USER_ID("TU1", "info.tenant.user", "User and Tenant id's are mandatory"),

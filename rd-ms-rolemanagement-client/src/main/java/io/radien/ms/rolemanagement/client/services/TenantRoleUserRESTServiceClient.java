@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.util.FactoryUtilService;
@@ -30,8 +31,10 @@ import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
+import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -279,6 +282,41 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
             return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
+            throw new SystemException(e);
+        }
+    }
+
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * For this, it Invokes the core method counterpart and handles TokenExpiration error
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return List containing tenants
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
+        return get(this::getTenantsCore, userId, roleId);
+    }
+
+    /**
+     * Core method that retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return List containing tenants
+     * @throws TokenExpiredException if JWT token expires
+     * @throws SystemException in case of any error
+     */
+    private List<? extends SystemTenant> getTenantsCore(Long userId, Long roleId) throws SystemException {
+        try {
+            TenantRoleUserResourceClient client = clientServiceUtil.getTenantRoleUserResourceClient(oaf.
+                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
+            Response response = client.getTenants(userId, roleId);
+            return TenantModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch (ParseException | ExtensionException | ProcessingException | MalformedURLException |
+                io.radien.exception.InternalServerErrorException | BadRequestException e) {
             throw new SystemException(e);
         }
     }

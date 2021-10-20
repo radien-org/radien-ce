@@ -15,12 +15,14 @@
  */
 package io.radien.ms.rolemanagement.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
 public class TenantRoleUserResource extends AuthorizationChecker implements TenantRoleUserResourceClient {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleUserResource.class);
+    private static final long serialVersionUID = -107402438846356377L;
 
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
@@ -179,6 +182,26 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
             return Response.ok().build();
         } catch (TenantRoleException e) {
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(e.getMessage());
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }
+    }
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return Response OK with List containing tenants. Response 500 in case of any other error.
+     */
+    @Override
+    public Response getTenants(Long userId, Long roleId) {
+        if (userId == null) {
+            String msg = GenericErrorCodeMessage.TENANT_ROLE_PERMISSION_MISSING_PARAMETER.toString(SystemVariables.USER_ID.getFieldName());
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(msg);
+        }
+        log.info("Retrieving tenants for user {} and role {}", userId, roleId);
+        try {
+            return Response.ok().entity(tenantRoleUserBusinessService.getTenants(userId, roleId)).build();
         } catch (Exception e) {
             return GenericErrorMessagesToResponseMapper.getGenericError(e);
         }

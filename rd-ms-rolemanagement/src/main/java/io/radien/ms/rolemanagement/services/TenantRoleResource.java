@@ -206,22 +206,6 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
         }
     }
 
-    /**
-     * Retrieves the existent Tenants for a User (Optionally for a specific role)
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return Response OK with List containing tenants. Response 500 in case of any other error.
-     */
-    @Override
-    public Response getTenants(Long userId, Long roleId) {
-        log.info("Retrieving tenants for user {} and role {}", userId, roleId);
-        try {
-            return Response.ok().entity(tenantRoleBusinessService.
-                    getTenants(userId, roleId)).build();
-        } catch (Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
-        }
-    }
 
     /**
      * Retrieves the Roles for which a User is associated under a Tenant

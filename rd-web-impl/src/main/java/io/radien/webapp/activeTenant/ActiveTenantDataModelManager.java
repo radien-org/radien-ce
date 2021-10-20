@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.activeTenant;
 
+import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,6 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
-import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.webapp.AbstractManager;
@@ -57,7 +57,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
     
     @Inject
-    private TenantRoleRESTServiceAccess tenantRoleRESTServiceAccess;
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
     
     @Inject
     private TenantRESTServiceAccess tenantRESTServiceAccess;
@@ -106,7 +106,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
     public List<? extends SystemTenant> getUserTenants() throws SystemException {
         SystemUser user = userSession.getUser();
         Long userId = user.getId();
-        return tenantRoleRESTServiceAccess.getTenants(userId, null);
+        return tenantRoleUserRESTServiceAccess.getTenants(userId, null);
     }
 
     /**

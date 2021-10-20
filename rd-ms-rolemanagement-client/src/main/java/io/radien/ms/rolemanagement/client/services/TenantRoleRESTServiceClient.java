@@ -283,48 +283,6 @@ public class TenantRoleRESTServiceClient extends AuthorizationChecker implements
     }
 
     /**
-     * Retrieves the existent Tenants for a User (Optionally for a specific role)
-     * For this, it Invokes the core method counterpart and handles TokenExpiration error
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return List containing tenants
-     * @throws SystemException in case of any error
-     */
-    @Override
-    public List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException {
-        try {
-            return getTenantsCore(userId, roleId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getTenantsCore(userId, roleId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    /**
-     * Core method that retrieves the existent Tenants for a User (Optionally for a specific role)
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return List containing tenants
-     * @throws TokenExpiredException if JWT token expires
-     * @throws SystemException in case of any error
-     */
-    private List<? extends SystemTenant> getTenantsCore(Long userId, Long roleId) throws SystemException {
-        try {
-            TenantRoleResourceClient client = clientServiceUtil.getTenantResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT));
-            Response response = client.getTenants(userId, roleId);
-            return TenantModelMapper.mapList((InputStream) response.getEntity());
-        }
-        catch (ParseException | ExtensionException | ProcessingException | MalformedURLException e) {
-            throw new SystemException(e);
-        }
-    }
-
-    /**
      * Retrieves the existent Roles for a User of specific associated Tenant
      * For this, it Invokes the core method counterpart and handles TokenExpiration error
      * @param userId User identifier

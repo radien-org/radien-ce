@@ -282,7 +282,7 @@ public class Initializer {
 
     private static void initializeTenantAndRoleMaps(String accessToken) {
         if(tenants == null) {
-            String tenantUrl = getTenantManagementBaseURL() + "/tenant";
+            String tenantUrl = getTenantManagementBaseURL() + "/tenant/find";
             tenants = getMapFromList(tenantUrl, "name", "tenantFinder", accessToken);
         }
         if(roles == null) {

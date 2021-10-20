@@ -444,7 +444,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
     }
 
     /**
-     * Test for {@link TenantRoleBusinessService#getTenants(Long, Long)}
+     * Test for {@link TenantRoleUserBusinessService#getTenants(Long, Long)}
      * @throws SystemException in case of any communication issue regarding Tenant Rest Client
      * @throws UniquenessConstraintException in case of duplicated values during insertion
      * @throws TenantRoleException if user assigment already exists
@@ -492,15 +492,15 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
 
         // User is associated with All 3 Tenants
         List<SystemTenant> tenants = assertDoesNotThrow(() ->
-                tenantRoleBusinessService.getTenants(user1Id, null));
+                tenantRoleUserBusinessService.getTenants(user1Id, null));
         assertNotNull(tenants);
         assertEquals(3, tenants.size());
 
         // User is associated in one single tenant For the role guest
         List<Long> ids2 = Arrays.asList(tenantId, tenantId2);
-        when(tenantRoleBusinessService.getTenantRESTServiceAccess().
+        when(tenantRoleUserBusinessService.getTenantRESTServiceAccess().
                 getTenantsByIds(ids2)).then(i -> Arrays.asList(tenantForId1, tenantForId2));
-        tenants = assertDoesNotThrow(() -> tenantRoleBusinessService.getTenants(user1Id, guest.getId()));
+        tenants = assertDoesNotThrow(() -> tenantRoleUserBusinessService.getTenants(user1Id, guest.getId()));
         assertNotNull(tenants);
         assertEquals(2, tenants.size());
     }
@@ -514,7 +514,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
         // Try to retrieve tenants taking in account a Role for which the user is not associated
         Long notAssociateRoleId = 8888L;
         List<SystemTenant> tenants = assertDoesNotThrow(() ->
-                tenantRoleBusinessService.getTenants(user1Id, notAssociateRoleId));
+                tenantRoleUserBusinessService.getTenants(user1Id, notAssociateRoleId));
         assertNotNull(tenants);
         assertTrue(tenants.isEmpty());
     }
