@@ -16,21 +16,36 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
+import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.TenantRolePermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermissionSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRolePermissionEntity;
-import org.junit.jupiter.api.*;
-
-import javax.ejb.EJBException;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import javax.ejb.EJBException;
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.Context;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tenant Role Permission Service tester
@@ -97,7 +112,7 @@ public class TenantRolePermissionServiceTest {
         systemTenantRolePermission.setPermissionId(basePermissionId);
         systemTenantRolePermission.setTenantRoleId(baseTenantRoleId);
 
-        this.tenantRolePermissionServiceAccess.create(systemTenantRolePermission);
+        tenantRolePermissionServiceAccess.create(systemTenantRolePermission);
         Assertions.assertNotNull(systemTenantRolePermission.getId());
     }
 
@@ -114,7 +129,7 @@ public class TenantRolePermissionServiceTest {
         systemTenantRolePermission.setPermissionId(basePermissionId);
         systemTenantRolePermission.setTenantRoleId(baseTenantRoleId);
         Assertions.assertThrows(UniquenessConstraintException.class, () ->
-                this.tenantRolePermissionServiceAccess.create(systemTenantRolePermission));
+                tenantRolePermissionServiceAccess.create(systemTenantRolePermission));
     }
 
     /**
@@ -153,7 +168,7 @@ public class TenantRolePermissionServiceTest {
     @Test
     @Order(5)
     public void testAssociationExists() {
-        Assertions.assertTrue(this.tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(basePermissionId, baseTenantRoleId));
+        Assertions.assertTrue(tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(basePermissionId, baseTenantRoleId));
     }
 
     /**
@@ -163,8 +178,8 @@ public class TenantRolePermissionServiceTest {
     @Test
     @Order(6)
     public void testAssociationNotExists() {
-        Assertions.assertFalse(this.tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(basePermissionId, 88L));
-        Assertions.assertFalse(this.tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(9L, 88L));
+        Assertions.assertFalse(tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(basePermissionId, 88L));
+        Assertions.assertFalse(tenantRolePermissionServiceAccess.isAssociationAlreadyExistent(9L, 88L));
     }
 
     /**
@@ -299,20 +314,20 @@ public class TenantRolePermissionServiceTest {
         SystemTenantRolePermission sru = new TenantRolePermissionEntity();
         sru.setTenantRoleId(101010L);
         sru.setPermissionId(101L);
-        Assertions.assertDoesNotThrow(() -> this.tenantRolePermissionServiceAccess.create(sru));
+        Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(sru));
 
         Long expectedId = sru.getId();
         Assertions.assertNotNull(expectedId);
 
-        Optional<Long> id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 101L);
+        Optional<Long> id = tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 101L);
         Assertions.assertTrue(id.isPresent());
         Assertions.assertEquals(expectedId, id.get());
 
-        id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 202L);
+        id = tenantRolePermissionServiceAccess.getTenantRolePermissionId(101010L, 202L);
         Assertions.assertFalse(id.isPresent());
 
         try{
-            this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(null, 202L);
+            tenantRolePermissionServiceAccess.getTenantRolePermissionId(null, 202L);
         } catch (Exception e) {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ROLE_ID.getLabel())));
         }
@@ -327,24 +342,114 @@ public class TenantRolePermissionServiceTest {
         SystemTenantRolePermission sru = new TenantRolePermissionEntity();
         sru.setTenantRoleId(201010L);
         sru.setPermissionId(101L);
-        Assertions.assertDoesNotThrow(() -> this.tenantRolePermissionServiceAccess.create(sru));
+        Assertions.assertDoesNotThrow(() -> tenantRolePermissionServiceAccess.create(sru));
 
         Long expectedId = sru.getId();
         Assertions.assertNotNull(expectedId);
 
-        Optional<Long> id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, 101L);
+        Optional<Long> id = tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, 101L);
         Assertions.assertTrue(id.isPresent());
         Assertions.assertEquals(expectedId, id.get());
 
-        id = this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, 202L);
+        id = tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, 202L);
         Assertions.assertFalse(id.isPresent());
 
         try{
-            this.tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, null);
+            tenantRolePermissionServiceAccess.getTenantRolePermissionId(201010L, null);
         } catch (Exception e) {
             Assertions.assertTrue(e.getMessage().contains(GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel())));
         }
     }
 
 
+    /**
+     * Test method for {@link TenantRolePermissionService#getAll(Long, Long, int, int, List, boolean)}
+     * @throws UniquenessConstraintException to be thrown in cases of repeated values
+     */
+    @Test
+    @Order(17)
+    void testTenantRolePermissionPagination() throws UniquenessConstraintException {
+        Long tenantRoleId = 9000000L;
+        Long permissionId = 9000001L;
+
+        SystemTenantRolePermission trp = new TenantRolePermissionEntity();
+        trp.setTenantRoleId(tenantRoleId);
+        trp.setPermissionId(permissionId);
+        tenantRolePermissionServiceAccess.create(trp);
+
+        List<String> sortBy = new ArrayList<>();
+        sortBy.add("tenantRoleId");
+        sortBy.add("permissionId");
+
+        Page<SystemTenantRolePermission> page = tenantRolePermissionServiceAccess.getAll(tenantRoleId, permissionId, 1, 10,
+                sortBy, true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRolePermissionServiceAccess.getAll(tenantRoleId, permissionId, 1, 10,
+                null, true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRolePermissionServiceAccess.getAll(tenantRoleId, permissionId, 1, 10,
+                new ArrayList<>(), true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRolePermissionServiceAccess.getAll(tenantRoleId, null, 1, 10,
+                new ArrayList<>(), true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRolePermissionServiceAccess.getAll(null, permissionId, 1, 10,
+                new ArrayList<>(), true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRolePermissionServiceAccess.getAll(null, null, 1, 10,
+                Collections.singletonList(SystemVariables.TENANT_ROLE_ID.getFieldName()), true);
+        assertTrue(page.getTotalResults() > 0);
+
+        page = tenantRolePermissionServiceAccess.getAll(999999999L, 99999L, 1, 10,
+                Collections.singletonList(SystemVariables.TENANT_ROLE_ID.getFieldName()), false);
+        assertEquals(0,page.getTotalResults());
+    }
+
+    /**
+     * Test for method {@link io.radien.api.service.tenantrole.TenantRolePermissionServiceAccess#update(SystemTenantRolePermission)}
+     * @throws UniquenessConstraintException to be thrown in cases of repeated values
+     * @throws TenantRolePermissionNotFoundException to be thrown in case of not found a tenant role permission
+     */
+    @Test
+    public void testUpdate() throws UniquenessConstraintException, TenantRolePermissionNotFoundException {
+        Long tenantRoleId = 1111111111L;
+        Long permissionId = 1111111111L;
+        Long id = 1111111111L;
+
+        SystemTenantRolePermission trp1 = new TenantRolePermissionEntity();
+        trp1.setTenantRoleId(tenantRoleId);
+        trp1.setPermissionId(permissionId);
+        tenantRolePermissionServiceAccess.create(trp1);
+
+        Long permissionId2 = 111111111112L;
+        SystemTenantRolePermission trp2 = new TenantRolePermissionEntity();
+        trp2 = new TenantRolePermissionEntity();
+        trp2.setTenantRoleId(tenantRoleId);
+        trp2.setPermissionId(permissionId2);
+        tenantRolePermissionServiceAccess.create(trp2);
+
+        SystemTenantRolePermission trp3 = new TenantRolePermissionEntity();
+        trp3.setId(trp2.getId());
+        trp3.setTenantRoleId(tenantRoleId);
+        trp3.setPermissionId(permissionId);
+        assertThrows(UniquenessConstraintException.class, ()->
+                tenantRolePermissionServiceAccess.update(trp3));
+
+        trp3.setPermissionId(122378900L);
+        assertDoesNotThrow(()->tenantRolePermissionServiceAccess.update(trp3));
+
+        SystemTenantRolePermission trp4 = new TenantRolePermissionEntity();
+        trp4.setId(1111111111L);
+        trp4.setTenantRoleId(tenantRoleId);
+        trp4.setPermissionId(permissionId);
+        assertThrows(TenantRolePermissionNotFoundException.class, ()->
+                tenantRolePermissionServiceAccess.update(trp4));
+
+
+    }
 }

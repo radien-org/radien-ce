@@ -1167,41 +1167,6 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
     }
 
     /**
-     * Test method for {@link TenantRolePermissionBusinessService#getAll(Long, Long, int, int)}
-     * @throws TenantRoleException to be thrown in case of invalid conditions regarding Tenant Role domains Business Rules
-     * @throws UniquenessConstraintException to be thrown in cases of repeated values
-     * @throws SystemException to be thrown for some rest client in any case of communication issue
-     * @throws RoleNotFoundException to be thrown in case of role not found
-     */
-    @Test
-    @Order(40)
-    void testPermissionPagination() throws TenantRoleException, UniquenessConstraintException, SystemException, RoleNotFoundException {
-        tenantRoleBusinessService.setRoleServiceAccess(roleServiceAccess);
-        tenantRoleBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
-        tenantRolePermissionBusinessService.setTenantRolePermissionService(tenantRolePermissionServiceAccess);
-        Long tenant = 1000000L;
-        SystemRole role = createRole("a test role");
-
-        SystemTenantRole tr = createTenantRole(role.getId(), tenant);
-        PermissionRESTServiceAccess restServiceAccess = mock(PermissionRESTServiceAccess.class);
-        when(restServiceAccess.isPermissionExistent(anyLong(), any())).thenReturn(Boolean.TRUE);
-        tenantRolePermissionBusinessService.setPermissionRESTServiceAccess(restServiceAccess);
-        for (long i=1000000L; i<1000008L; i++){
-            TenantRolePermissionEntity trp = new TenantRolePermissionEntity();
-            trp.setTenantRoleId(tr.getId());
-            trp.setPermissionId(i);
-            tenantRolePermissionBusinessService.assignPermission(trp);
-        }
-
-        Page<SystemTenantRolePermission> page = tenantRolePermissionBusinessService.
-                getAll(tenant, role.getId(), 1, 4);
-        assertEquals(1, page.getCurrentPage());
-        assertEquals(4, page.getResults().size());
-        assertEquals(2, page.getTotalPages());
-        assertEquals(8, page.getTotalResults());
-    }
-
-    /**
      * Test method for {@link TenantRolePermissionBusinessService#delete(Long)}
      * @throws TenantRoleException to be thrown in case of invalid conditions regarding Tenant Role domains Business Rules
      * @throws UniquenessConstraintException to be thrown in cases of repeated values
@@ -1211,12 +1176,17 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
     @Test
     @Order(41)
     void testDeletePermissionById() throws RoleNotFoundException, UniquenessConstraintException, TenantRoleException, SystemException {
+        tenantRoleBusinessService.setRoleServiceAccess(roleServiceAccess);
+        tenantRoleBusinessService.setTenantRoleServiceAccess(tenantRoleServiceAccess);
+        tenantRolePermissionBusinessService.setTenantRolePermissionService(tenantRolePermissionServiceAccess);
+
         Long tenant = 1000000L;
         SystemRole role = createRole("a deletable test role");
         SystemTenantRole tr = createTenantRole(role.getId(), tenant);
         PermissionRESTServiceAccess restServiceAccess = mock(PermissionRESTServiceAccess.class);
         when(restServiceAccess.isPermissionExistent(anyLong(), any())).thenReturn(Boolean.TRUE);
         tenantRolePermissionBusinessService.setPermissionRESTServiceAccess(restServiceAccess);
+
         TenantRolePermissionEntity trp = new TenantRolePermissionEntity();
         trp.setTenantRoleId(tr.getId());
         trp.setPermissionId(1111111L);

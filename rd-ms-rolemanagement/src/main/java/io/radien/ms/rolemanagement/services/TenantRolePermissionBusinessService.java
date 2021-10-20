@@ -16,7 +16,6 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
-import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
@@ -78,15 +77,41 @@ public class TenantRolePermissionBusinessService extends AbstractTenantRoleDomai
     }
 
     /**
-     * Gets all the tenant role permission associations into a pagination mode.
-     * @param tenant search param that corresponds to the TenantRole.tenantId (Optional)
-     * @param role search param that corresponds to the TenantRole.roleId (Optional)
-     * @param pageNumber of the requested information. Where the tenant is.
-     * @param pageSize total number of pages returned in the request.
-     * @return a page containing system tenant role permission associations.
+     * Update a TenantRolePermission (In other words, updates a permission
+     * assignment done previously)
+     * @param tenantRolePermission Association among Tenant, Role and Permission (Mandatory)
+     * @throws TenantRoleException for the case of any inconsistency found
+     * @throws UniquenessConstraintException in case of error during the insertion
+     * @throws SystemException in case of communication issues with REST client
      */
-    public Page<SystemTenantRolePermission> getAll(Long tenant, Long role, int pageNumber, int pageSize) {
-        return this.getTenantRolePermissionService().getAll(tenant, role, pageNumber, pageSize);
+    public void update(TenantRolePermissionEntity tenantRolePermission) throws TenantRoleException,
+            UniquenessConstraintException, SystemException {
+
+        checkPermissionId(tenantRolePermission);
+        checkIfParamsExists(null, null, tenantRolePermission.getPermissionId());
+        SystemTenantRole tenantRole = getTenantRoleServiceAccess().get(tenantRolePermission.getTenantRoleId());
+        if (tenantRole == null) {
+            throw new TenantRoleNotFoundException(TENANT_ROLE_NO_TENANT_ROLE_FOUND.toString(String.valueOf(
+                    tenantRolePermission.getTenantRoleId())));
+        }
+        if (this.tenantRolePermissionService.isAssociationAlreadyExistent(tenantRolePermission.getPermissionId(),
+                tenantRolePermission.getTenantRoleId(), tenantRolePermission.getId())) {
+            throw new TenantRoleException(TENANT_ROLE_PERMISSION_EXISTENT_FOR_TENANT_ROLE.
+                    toString(String.valueOf(tenantRole.getTenantId()), String.valueOf(tenantRole.getRoleId())));
+        }
+        this.tenantRolePermissionService.update(tenantRolePermission);
+    }
+
+    /**
+     * Check if TenantRolePermission pojo contains permission id (Avoid code duplication)
+     * @param tenantRolePermission {@link TenantRolePermissionEntity} instance to be checked
+     * @throws TenantRoleIllegalArgumentException in case of not informed permission id
+     */
+    private void checkPermissionId(TenantRolePermissionEntity tenantRolePermission) throws TenantRoleIllegalArgumentException {
+        if (tenantRolePermission.getPermissionId() == null) {
+            throw new TenantRoleIllegalArgumentException(GenericErrorCodeMessage.
+                    TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.PERMISSION_ID.getLabel()));
+        }
     }
 
     /**
