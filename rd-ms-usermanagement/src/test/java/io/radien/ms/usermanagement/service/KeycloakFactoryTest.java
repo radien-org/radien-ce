@@ -69,12 +69,27 @@ public class KeycloakFactoryTest {
      */
     @Test
     public void convertUpdateEmailToUserRepresentation() {
+        mockUserRepresentationEmailVerify(false);
+    }
+
+    /**
+     * Test method for {@link KeycloakFactory#convertUpdateEmailToUserRepresentation(String, boolean)}
+     */
+    @Test
+    public void convertUpdateEmailToUserRepresentationEmailVerifyTrue() {
+        mockUserRepresentationEmailVerify(true);
+    }
+
+    /**
+     * Method that prepares test set up for an invoke method
+     * @param emailVerify to be set boolean flag
+     */
+    private void mockUserRepresentationEmailVerify(boolean emailVerify){
         SystemUser user = UserFactory.create("firstName", "lastName",
                 "logon", "sub", "email@email.com", 2L);
 
-        UserRepresentation representations = KeycloakFactory.convertUpdateEmailToUserRepresentation(user.getUserEmail(), true);
-        representations.setEmailVerified(false);
+        UserRepresentation representations = KeycloakFactory.convertUpdateEmailToUserRepresentation(user.getUserEmail(), emailVerify);
+        representations.setEmailVerified(emailVerify);
         assertEquals(user.getUserEmail(), representations.getEmail());
-        assertFalse(representations.isEmailVerified());
     }
 }
