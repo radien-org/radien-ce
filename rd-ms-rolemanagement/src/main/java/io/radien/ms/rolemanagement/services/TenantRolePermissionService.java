@@ -79,13 +79,13 @@ public class TenantRolePermissionService extends AbstractTenantRoleDomainService
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
         if (tenantRoleId != null) {
-            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),
-                    tenantRoleId));
+            global = criteriaBuilder.and(global, criteriaBuilder.equal(
+                    tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRoleId));
         }
 
         if (permissionId != null) {
-            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.PERMISSION_ID.getFieldName()),
-                    permissionId));
+            global = criteriaBuilder.and(global, criteriaBuilder.equal(
+                    tenantRoleRoot.get(SystemVariables.PERMISSION_ID.getFieldName()), permissionId));
         }
 
         if (tenantRoleId != null || permissionId != null) {

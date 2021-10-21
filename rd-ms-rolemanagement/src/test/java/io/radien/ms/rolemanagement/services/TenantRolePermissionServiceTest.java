@@ -371,11 +371,17 @@ public class TenantRolePermissionServiceTest {
     void testTenantRolePermissionPagination() throws UniquenessConstraintException {
         Long tenantRoleId = 9000000L;
         Long permissionId = 9000001L;
+        Long permissionId2 = 9000002L;
 
         SystemTenantRolePermission trp = new TenantRolePermissionEntity();
         trp.setTenantRoleId(tenantRoleId);
         trp.setPermissionId(permissionId);
         tenantRolePermissionServiceAccess.create(trp);
+
+        SystemTenantRolePermission trp2 = new TenantRolePermissionEntity();
+        trp2.setTenantRoleId(tenantRoleId);
+        trp2.setPermissionId(permissionId2);
+        tenantRolePermissionServiceAccess.create(trp2);
 
         List<String> sortBy = new ArrayList<>();
         sortBy.add("tenantRoleId");
@@ -395,7 +401,7 @@ public class TenantRolePermissionServiceTest {
 
         page = tenantRolePermissionServiceAccess.getAll(tenantRoleId, null, 1, 10,
                 new ArrayList<>(), true);
-        assertEquals(1, page.getTotalResults());
+        assertEquals(2, page.getTotalResults());
 
         page = tenantRolePermissionServiceAccess.getAll(null, permissionId, 1, 10,
                 new ArrayList<>(), true);
@@ -403,7 +409,7 @@ public class TenantRolePermissionServiceTest {
 
         page = tenantRolePermissionServiceAccess.getAll(null, null, 1, 10,
                 Collections.singletonList(SystemVariables.TENANT_ROLE_ID.getFieldName()), true);
-        assertTrue(page.getTotalResults() > 0);
+        assertTrue(page.getTotalResults() >= 2);
 
         page = tenantRolePermissionServiceAccess.getAll(999999999L, 99999L, 1, 10,
                 Collections.singletonList(SystemVariables.TENANT_ROLE_ID.getFieldName()), false);

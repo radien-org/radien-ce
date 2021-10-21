@@ -92,13 +92,13 @@ public class TenantRoleUserService extends AbstractTenantRoleDomainService imple
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
         if (tenantRoleId != null) {
-            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ROLE_ID.getFieldName()),
-                    tenantRoleId));
+            global = criteriaBuilder.and(global, criteriaBuilder.equal(tenantRoleRoot.get(
+                    SystemVariables.TENANT_ROLE_ID.getFieldName()), tenantRoleId));
         }
 
         if (userId != null) {
-            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.USER_ID.getFieldName()),
-                    userId));
+            global = criteriaBuilder.and(global, criteriaBuilder.equal(tenantRoleRoot.get(
+                    SystemVariables.USER_ID.getFieldName()), userId));
         }
 
         if (tenantRoleId != null || userId != null) {

@@ -55,6 +55,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tenant Role Service test
@@ -381,41 +382,47 @@ public class TenantRoleServiceTest {
     @Test
     @Order(15)
     public void testPagination() {
+        SystemTenantRole tenantRole = new TenantRoleEntity();
+        tenantRole.setTenantId(123L);
+        tenantRole.setRoleId(124L);
+        Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.create(tenantRole));
+
+        SystemTenantRole tenantRole2 = new TenantRoleEntity();
+        tenantRole2.setTenantId(123L);
+        tenantRole2.setRoleId(125L);
+        Assertions.assertDoesNotThrow(() -> tenantRoleServiceAccess.create(tenantRole2));
+
         List<String> sortBy = Arrays.asList("tenantId", "roleId");
-        Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(120L, 122L,
+        Page<SystemTenantRole> p = tenantRoleServiceAccess.getAll(123L, 124L,
                 1, 100, sortBy, false);
-        Assertions.assertNotNull(p);
-        Assertions.assertTrue(p.getTotalResults() > 0);
-        assertEquals(1, p.getTotalPages());
+        assertEquals(1, p.getTotalResults());
 
-        p = tenantRoleServiceAccess.getAll(120L, 122L,
+        p = tenantRoleServiceAccess.getAll(null, 125L,
                 1, 100, sortBy, true);
-        Assertions.assertNotNull(p);
-        Assertions.assertTrue(p.getTotalResults() > 0);
-        assertEquals(1, p.getTotalPages());
+        assertEquals(1, p.getTotalResults());
 
-        p = tenantRoleServiceAccess.getAll(120L, 122L,
+        p = tenantRoleServiceAccess.getAll(123L, null,
                 1, 100, null, true);
-        Assertions.assertNotNull(p);
-        assertEquals(1, p.getTotalPages());
+        assertEquals(2, p.getTotalResults());
 
         sortBy = new ArrayList<>();
-        p = tenantRoleServiceAccess.getAll(120L, 122L,
+        p = tenantRoleServiceAccess.getAll(123L, 125L,
                 1, 100, sortBy, true);
-        Assertions.assertNotNull(p);
-        assertEquals(1, p.getTotalPages());
+        assertEquals(1, p.getTotalResults());
 
         sortBy = new ArrayList<>();
         p = tenantRoleServiceAccess.getAll(124L, null,
                 1, 100, sortBy, true);
-        Assertions.assertNotNull(p);
-        assertEquals(0, p.getTotalPages());
+        assertEquals(0, p.getTotalResults());
 
         sortBy = new ArrayList<>();
-        p = tenantRoleServiceAccess.getAll(null, 123L,
+        p = tenantRoleServiceAccess.getAll(null, 125L,
                 1, 100, sortBy, true);
-        Assertions.assertNotNull(p);
-        assertEquals(0, p.getTotalPages());
+        assertEquals(1, p.getTotalResults());
+
+        p = tenantRoleServiceAccess.getAll(null, null,
+                1, 100, sortBy, true);
+        assertTrue(p.getTotalResults() >= 2);
     }
 
     /**

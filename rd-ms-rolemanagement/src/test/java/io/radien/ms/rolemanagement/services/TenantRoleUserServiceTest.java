@@ -329,19 +329,57 @@ public class TenantRoleUserServiceTest {
     }
 
     /**
-     * Retrieves all TenantRoleUsers (inserted during this test) under a pagination approach
-     * Expected: SUCCESS (A page not empty)
+     * Test(s) for method {@link TenantRoleUserService#getAll(Long, Long, int, int, List, boolean)}
+     * @throws UniquenessConstraintException to be thrown in cases of repeated values
      */
     @Test
     @Order(14)
-    public void testPagination() {
-        Page<SystemTenantRoleUser> p = tenantRoleUserServiceAccess.getAll(null,null,1,
-                100, null, false);
-        Assertions.assertNotNull(p);
-        Assertions.assertTrue(p.getTotalResults() > 0);
-        Assertions.assertEquals(1, p.getTotalPages());
-        Assertions.assertNotNull(p.getResults());
-        Assertions.assertFalse(p.getResults().isEmpty());
+    public void testPagination() throws UniquenessConstraintException{
+        Long tenantRoleId = 9000000L;
+        Long userId = 9000001L;
+        Long userId2 = 9000002L;
+
+        SystemTenantRoleUser trp = new TenantRoleUserEntity();
+        trp.setTenantRoleId(tenantRoleId);
+        trp.setUserId(userId);
+        tenantRoleUserServiceAccess.create(trp);
+
+        SystemTenantRoleUser trp2 = new TenantRoleUserEntity();
+        trp2.setTenantRoleId(tenantRoleId);
+        trp2.setUserId(userId2);
+        tenantRoleUserServiceAccess.create(trp2);
+
+        List<String> sortBy = new ArrayList<>();
+        sortBy.add("tenantRoleId");
+        sortBy.add("userId");
+
+        Page<SystemTenantRoleUser> page = tenantRoleUserServiceAccess.getAll(tenantRoleId, userId, 1, 10,
+                sortBy, true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRoleUserServiceAccess.getAll(tenantRoleId, userId, 1, 10,
+                null, true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRoleUserServiceAccess.getAll(tenantRoleId, userId, 1, 10,
+                new ArrayList<>(), true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRoleUserServiceAccess.getAll(tenantRoleId, null, 1, 10,
+                new ArrayList<>(), true);
+        assertEquals(2, page.getTotalResults());
+
+        page = tenantRoleUserServiceAccess.getAll(null, userId, 1, 10,
+                new ArrayList<>(), true);
+        assertEquals(1, page.getTotalResults());
+
+        page = tenantRoleUserServiceAccess.getAll(null, null, 1, 10,
+                Collections.singletonList(SystemVariables.TENANT_ROLE_ID.getFieldName()), true);
+        assertTrue(page.getTotalResults() >= 2);
+
+        page = tenantRoleUserServiceAccess.getAll(999999999L, 99999L, 1, 10,
+                Collections.singletonList(SystemVariables.TENANT_ROLE_ID.getFieldName()), false);
+        assertEquals(0,page.getTotalResults());
     }
 
     /**
