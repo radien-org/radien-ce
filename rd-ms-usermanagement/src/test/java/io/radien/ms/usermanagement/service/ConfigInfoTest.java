@@ -13,31 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.ms.service.config;
+package io.radien.ms.usermanagement.service;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-
-import static org.junit.Assert.assertEquals;
-
-public class ConfigControllerTest {
+/**
+ * Class that aggregates UnitTest cases for ConfigInfo
+ *
+ * @author Rajesh Gavvala
+ */
+public class ConfigInfoTest {
     @InjectMocks
-    ConfigController configController;
+    private ConfigInfo configInfo;
 
+    /**
+     * Prepares require objects when requires to invoke
+     */
     @Before
-    public void before(){
+    public void before() {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void testGetInjectedConfigValue() {
-        assertEquals("Config value as Injected by CDI ", configController.getInjectedConfigValue());
-    }
-
-    @Test
-    public void testGetLookupConfigValue() {
-        assertEquals("Config value from ConfigProvider lookup value", configController.getLookupConfigValue());
+    /**
+     * Tests init method and no exception
+     * is thrown
+     */
+    @Test(expected = Test.None.class)
+    public void initTest(){
+        configInfo.init();
     }
 }
