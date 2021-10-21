@@ -438,9 +438,9 @@ public class UserBusinessServiceTest {
         Assert.assertNotNull(batchSummary);
         Assert.assertEquals(batchSummary.getTotalProcessed(), numberOfElementsToInsert);
         Assert.assertEquals(batchSummary.getTotal(), batchSummary.getTotalProcessed());
-        Assert.assertEquals(batchSummary.getTotalNonProcessed(), 0);
+        Assert.assertEquals(0, batchSummary.getTotalNonProcessed());
         Assert.assertNotNull(batchSummary.getNonProcessedItems());
-        Assert.assertEquals(batchSummary.getNonProcessedItems().size(), 0);
+        Assert.assertEquals(0, batchSummary.getNonProcessedItems().size());
     }
 
     /**
