@@ -876,7 +876,7 @@ public class TenantRoleBusinessServiceTest extends AbstractTenantRoleBusinessSer
     @Order(25)
     public void getAll() {
         Page<SystemTenantRole> page = assertDoesNotThrow(() ->
-                tenantRoleBusinessService.getAll(1L, 2L, 1, 10, new ArrayList<>(), false));
+                tenantRoleBusinessService.getAll(tenantId, null, 1, 10, new ArrayList<>(), false));
         assertNotNull(page);
         assertNotNull(page.getResults());
         assertFalse(page.getResults().isEmpty());

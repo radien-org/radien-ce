@@ -92,12 +92,12 @@ public class TenantRoleService implements TenantRoleServiceAccess {
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
         if (tenantId != null) {
-            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.TENANT_ID.getFieldName()),
-                    tenantId));
+            global = criteriaBuilder.and(global, criteriaBuilder.equal(tenantRoleRoot.get(
+                    SystemVariables.TENANT_ID.getFieldName()), tenantId));
         }
         if (roleId != null) {
-            global = criteriaBuilder.and(criteriaBuilder.equal(tenantRoleRoot.get(SystemVariables.ROLE_ID.getFieldName()),
-                    roleId));
+            global = criteriaBuilder.and(global, criteriaBuilder.equal(tenantRoleRoot.get(
+                    SystemVariables.ROLE_ID.getFieldName()), roleId));
         }
 
         if (tenantId != null || roleId != null) {
