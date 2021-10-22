@@ -15,13 +15,11 @@
  */
 package io.radien.ms.usermanagement.service;
 
-import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.authz.client.PermissionClient;
@@ -317,7 +315,7 @@ public class UserResourceTest {
      * Creation with success of a record. Should return a 200 code message
      */
     @Test
-    public void testSave() {
+    public void testCreate() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -334,15 +332,15 @@ public class UserResourceTest {
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
 
-        Response response = userResource.save(new User());
+        Response response = userResource.create(new User());
         assertEquals(200,response.getStatus());
     }
 
     /**
-     * Tests the save method by a requester that does not have the correct role or authorization
+     * Tests the create method by a requester that does not have the correct role or authorization
      */
     @Test
-    public void testSaveWithAuthorizationDenied() {
+    public void testCreateWithAuthorizationDenied() {
         Principal loggedUser = new Principal();
         loggedUser.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -360,7 +358,7 @@ public class UserResourceTest {
 
         doReturn(notFoundResponse).when(permissionClient).getIdByResourceAndAction(any(),any());
 
-        Response response = userResource.save(new User());
+        Response response = userResource.create(new User());
         assertEquals(403,response.getStatus());
     }
 
@@ -370,7 +368,7 @@ public class UserResourceTest {
      * register himself on the radien database
      */
     @Test
-    public void testSaveSelfRegisterScenario() {
+    public void testCreateSelfRegisterScenario() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -382,18 +380,18 @@ public class UserResourceTest {
         when(servletRequest.getSession(false)).thenReturn(session);
         when(session.getAttribute("USER")).thenReturn(principal);
 
-        Response response = userResource.save(userToBeRegistered);
+        Response response = userResource.create(userToBeRegistered);
         assertEquals(200,response.getStatus());
     }
 
     /**
-     * Tests Save method to return Remote Resource Exception
+     * Tests Create method to return Remote Resource Exception
      * @throws UserNotFoundException in case of 404 error message
      * @throws RemoteResourceException in case of 500 error message
      * @throws UniquenessConstraintException in case of multiple existent users
      */
     @Test
-    public void testGetResponseFromException() throws UserNotFoundException, RemoteResourceException, UniquenessConstraintException {
+    public void testGetResponseFromExceptionWhenCreating() throws UserNotFoundException, RemoteResourceException, UniquenessConstraintException {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -410,10 +408,10 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
 
-        doThrow(new RemoteResourceException()).when(userBusinessService).save(any(), anyBoolean());
+        doThrow(new RemoteResourceException()).when(userBusinessService).create(any(), anyBoolean());
 
         User user = new User();
-        Response response = userResource.save(user);
+        Response response = userResource.create(user);
         assertEquals(500, response.getStatus());
     }
 
@@ -438,8 +436,8 @@ public class UserResourceTest {
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
 
-        doThrow(new UniquenessConstraintException()).when(userBusinessService).save(any(), anyBoolean());
-        Response response = userResource.save(new User());
+        doThrow(new UniquenessConstraintException()).when(userBusinessService).create(any(), anyBoolean());
+        Response response = userResource.create(new User());
         assertEquals(400,response.getStatus());
     }
 
@@ -452,8 +450,8 @@ public class UserResourceTest {
     @Test
     public void testCreateRemoteResourceError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = new User();
-        doThrow(new RemoteResourceException()).when(userBusinessService).save(any(),anyBoolean());
-        Response response = userResource.save(u);
+        doThrow(new RemoteResourceException()).when(userBusinessService).create(any(),anyBoolean());
+        Response response = userResource.create(u);
         assertEquals(500,response.getStatus());
     }
 
@@ -466,8 +464,144 @@ public class UserResourceTest {
     @Test
     public void testCreateGenericError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = new User();
-        doThrow(new RuntimeException()).when(userBusinessService).save(any(),anyBoolean());
-        Response response = userResource.save(u);
+        doThrow(new RuntimeException()).when(userBusinessService).create(any(),anyBoolean());
+        Response response = userResource.create(u);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Updating with success of a record. Should return a 200 code message
+     */
+    @Test
+    public void testUpdate() {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(1001L).when(this.userBusinessService).getUserId(principal.getSub());
+
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+
+        Response response = userResource.update(1L, new User());
+        assertEquals(200,response.getStatus());
+    }
+
+    /**
+     * Tests the update method by a requester that does not have the correct role or authorization
+     */
+    @Test
+    public void testUpdateWithAuthorizationDenied() {
+        Principal loggedUser = new Principal();
+        loggedUser.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        User userToBeUpdated = new User();
+        userToBeUpdated.setSub("xxx-yyy-zzz-www");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(loggedUser);
+        when(this.userBusinessService.getUserId(loggedUser.getSub())).thenReturn(1001L);
+
+        Response notFoundResponse = Response.status(Response.Status.NOT_FOUND).entity(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+
+        doReturn(notFoundResponse).when(permissionClient).getIdByResourceAndAction(any(),any());
+
+        Response response = userResource.update(1L, new User());
+        assertEquals(403,response.getStatus());
+    }
+
+    /**
+     * Tests Update method to return Remote Resource Exception
+     * @throws UserNotFoundException in case of 404 error message
+     * @throws RemoteResourceException in case of 500 error message
+     * @throws UniquenessConstraintException in case of multiple existent users
+     */
+    @Test
+    public void testGetResponseFromExceptionWhenUpdating() throws UserNotFoundException, RemoteResourceException, UniquenessConstraintException {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        doReturn(1001L).when(this.userBusinessService). getUserId(principal.getSub());
+
+        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
+                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+
+        doThrow(new RemoteResourceException()).when(userBusinessService).update(any(), anyBoolean());
+
+        User user = new User(); user.setId(1L);
+        Response response = userResource.update(user.getId(), user);
+        assertEquals(500, response.getStatus());
+    }
+
+    /**
+     * Updating with error of a record. Should return a 400 code message Invalid Requested Exception
+     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
+     * message reason
+     * @throws UserNotFoundException in case of user not found
+     */
+    @Test
+    public void testUpdateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+        when(this.userBusinessService.getUserId(principal.getSub())).thenReturn(1001L);
+
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+
+        doThrow(new UniquenessConstraintException()).when(userBusinessService).update(any(), anyBoolean());
+        Response response = userResource.update(1L, new User());
+        assertEquals(400,response.getStatus());
+    }
+
+    /**
+     * Updating of a record with error. Should return a generic error message 500
+     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
+     * message reason
+     * @throws UserNotFoundException in case of user not found
+     */
+    @Test
+    public void testUpdateRemoteResourceError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User u = new User();
+        doThrow(new RemoteResourceException()).when(userBusinessService).update(any(),anyBoolean());
+        Response response = userResource.update(1L, u);
+        assertEquals(500,response.getStatus());
+    }
+
+    /**
+     * Updating of a record with error. Should return a generic error message 500
+     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
+     * message reason
+     * @throws UserNotFoundException in case of user not found
+     */
+    @Test
+    public void testUpdateGenericError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+        User u = new User();
+        doThrow(new RuntimeException()).when(userBusinessService).update(any(),anyBoolean());
+        Response response = userResource.update(1L, u);
         assertEquals(500,response.getStatus());
     }
 
@@ -610,11 +744,11 @@ public class UserResourceTest {
      */
     @Test
     public void testUpdateEmailAndExecuteActionEmailVerify() throws UserNotFoundException {
-        SystemUser systemUser = new User();
+        User systemUser = new User();
         systemUser.setId(1L);
         systemUser.setUserEmail("email@email.com");
         when(userBusinessService.get(1L)).thenReturn(systemUser);
-        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, (User) systemUser, true);
+        Response response = userResource.updateEmailAndExecuteActionEmailVerify(1L, systemUser, true);
         assertEquals(200,response.getStatus());
     }
 

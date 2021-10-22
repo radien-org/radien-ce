@@ -25,6 +25,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -112,13 +113,25 @@ public interface UserResourceClient {
     public Response delete(@NotNull @PathParam("id") long id);
 
     /**
-     * Save user to the DB.
+     * Creates user into the DB.
      *
      * @param user to be added
      * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
      */
     @POST
-    public Response save(User user);
+    Response create(io.radien.ms.usermanagement.client.entities.User user);
+
+    /**
+     * Updates user into the DB.
+     *
+     * @param user to be added
+     * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
+     * Return error 404 Code to the user in case of invalid id (No User found to update)
+     */
+    @PUT
+    @Path("/{id}")
+    Response update(@PathParam("id") long id, io.radien.ms.usermanagement.client.entities.User user);
+
 
     /**
      * Adds multiple users into the DB.

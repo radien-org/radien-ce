@@ -66,13 +66,28 @@ public interface UserServiceAccess extends ServiceAccess {
      */
     public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
+//    /**
+//     * Saves/Updates the requested information into the db
+//     * @param user information to be stored
+//     * @throws UserNotFoundException in case of update and the user is not found
+//     * @throws UniquenessConstraintException in case of save and the record already exists or has duplicated fields
+//     */
+//    public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException;
+
     /**
-     * Saves/Updates the requested information into the db
-     * @param user information to be stored
-     * @throws UserNotFoundException in case of update and the user is not found
-     * @throws UniquenessConstraintException in case of save and the record already exists or has duplicated fields
+     * CREATE a User association
+     * @param user information to be created
+     * @throws UniquenessConstraintException in case of duplicated fields or records
      */
-    public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException;
+    void create(SystemUser user) throws UniquenessConstraintException;
+
+    /**
+     * UPDATE a User association
+     * @param user to be updated
+     * @throws UniquenessConstraintException in case of duplicated fields or records
+     * @throws UserNotFoundException in case of not existing a User for an id
+     */
+    void update(SystemUser user) throws UniquenessConstraintException, UserNotFoundException;
 
     /**
      * Deletes a requested user based on the received id

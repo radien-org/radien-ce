@@ -17,6 +17,7 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import javax.enterprise.context.RequestScoped;
@@ -158,21 +159,45 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	}
 
 	/**
-	 * Save user to the DB.
+	 * Creates user into the DB.
 	 *
 	 * @param user to be added
 	 * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
 	 */
-	public Response save(io.radien.ms.usermanagement.client.entities.User user) {
+	public Response create(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
 			if (!isSelfOnboard(user) && !hasPermission(null,
-							user.getId()==null? SystemActionsEnum.ACTION_CREATE.getActionName():SystemActionsEnum.ACTION_UPDATE.getActionName(),
-							SystemResourcesEnum.USER.getResourceName())
+					SystemActionsEnum.ACTION_CREATE.getActionName(),
+					SystemResourcesEnum.USER.getResourceName())
 			) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
-			userBusinessService.save(new UserEntity(user),user.isDelegatedCreation());
+			userBusinessService.create(new UserEntity(user),user.isDelegatedCreation());
 		} catch (Exception e) {
+			return getResponseFromException(e);
+		}
+		return Response.ok().build();
+	}
+
+	/**
+	 * Updates user to the DB.
+	 *
+	 * @param user to be added
+	 * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
+	 */
+	public Response update(long id, io.radien.ms.usermanagement.client.entities.User user) {
+		try {
+			if (!isSelfOnboard(user) && !hasPermission(null,
+					SystemActionsEnum.ACTION_UPDATE.getActionName(),
+					SystemResourcesEnum.USER.getResourceName())
+			) {
+				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+			}
+			UserEntity userEntity = new UserEntity(user);
+			userEntity.setId(id);
+			userBusinessService.update(userEntity,userEntity.isDelegatedCreation());
+		}
+		catch (Exception e) {
 			return getResponseFromException(e);
 		}
 		return Response.ok().build();

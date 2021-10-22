@@ -188,27 +188,33 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 	}
 
 	/**
-	 * Saves or updates the requested and given user information into the DB.
-	 * @param user to be added/inserted or updated
-	 * @throws UserNotFoundException in case the user does not exist in the DB, or cannot be found.
-	 * @throws UniquenessConstraintException in case of duplicated email/duplicated logon
+	 * CREATE a User association
+	 * @param user information to be created
+	 * @throws UniquenessConstraintException in case of duplicated fields or records
 	 */
 	@Override
-	public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException {
+	public void create(SystemUser user) throws UniquenessConstraintException {
 		List<UserEntity> alreadyExistentRecords = searchDuplicatedEmailOrLogon(user);
-
-		if(user.getId() == null) {
-			if(alreadyExistentRecords.isEmpty()) {
-				em.persist(user);
-			} else {
-				validateUniquenessRecords(alreadyExistentRecords, user);
-			}
-		} else {
-			validateUniquenessRecords(alreadyExistentRecords, user);
-
-			em.merge(user);
-		}
+		validateUniquenessRecords(alreadyExistentRecords, user);
+		em.persist(user);
 	}
+
+	/**
+	 * UPDATE a User association
+	 * @param user to be updated
+	 * @throws UniquenessConstraintException in case of duplicated fields or records
+	 * @throws UserNotFoundException in case of not existing a User for an id
+	 */
+	@Override
+	public void update(SystemUser user) throws UniquenessConstraintException, UserNotFoundException {
+		if(em.find(UserEntity.class, user.getId()) == null) {
+			throw new UserNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+		}
+		List<UserEntity> alreadyExistentRecords = searchDuplicatedEmailOrLogon(user);
+		validateUniquenessRecords(alreadyExistentRecords, user);
+		em.merge(user);
+	}
+
 
 	/**
 	 * Query to validate if an existent email address or logon already exists in the database or not.

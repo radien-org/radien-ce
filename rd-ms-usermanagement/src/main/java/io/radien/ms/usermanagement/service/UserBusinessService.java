@@ -31,7 +31,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * User service requests between the rest services and the db
@@ -111,12 +110,45 @@ public class UserBusinessService implements Serializable {
 	}
 
 	/**
-	 * Saves an User (Creation or Update).
-	 * @param user resource to be created or update
+	 * Creates an User
+	 * @param user resource to be created
 	 * @param skipKeycloak boolean to skip creation on keycloak
 	 * @throws RemoteResourceException on empty logon, email, first and last name
 	 */
-	public void save(User user,boolean skipKeycloak) throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+	public void create(User user,boolean skipKeycloak) throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+		basicValidation(user);
+		userServiceAccess.create(user);
+		if(!skipKeycloak){
+			try {
+				user.setSub(keycloakService.createUser(user));
+				userServiceAccess.update(user);
+			} catch (RemoteResourceException e) {
+				userServiceAccess.delete(user.getId());
+				throw e;
+			}
+		}
+	}
+
+	/**
+	 * Updates an User
+	 * @param user resource to be updated
+	 * @param skipKeycloak boolean to skip updating on keycloak
+	 * @throws RemoteResourceException on empty logon, email, first and last name
+	 */
+	public void update(User user,boolean skipKeycloak) throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+		basicValidation(user);
+		userServiceAccess.update(user);
+		if(!skipKeycloak){
+			try{
+				keycloakService.updateUser(user);
+			}catch (RemoteResourceException e){
+				delete(user.getId());
+				throw e;
+			}
+		}
+	}
+
+	protected void basicValidation(SystemUser user) throws RemoteResourceException {
 		if(user.getLogon().isEmpty()){
 			//according to current keycloak config
 			throw new RemoteResourceException("logon cannot be empty");
@@ -132,36 +164,6 @@ public class UserBusinessService implements Serializable {
 
 		if(user.getLastname()!=null && user.getLastname().isEmpty()){
 			throw new RemoteResourceException("lastname cannot be empty");
-		}
-		boolean creation = user.getId() == null;
-		Optional<String> sub;
-		try {
-			sub = keycloakService.getSubFromEmail(user.getUserEmail());
-		} catch (RemoteResourceException e) {
-			log.error(e.getMessage(),e);
-			sub = Optional.empty();
-		}
-		if(sub.isPresent()){
-			user.setSub(sub.get());
-			creation = false;
-		}
-		userServiceAccess.save(user);
-
-		if(creation && !skipKeycloak){
-			try {
-				user.setSub(keycloakService.createUser(user));
-				userServiceAccess.save(user);
-			} catch (RemoteResourceException e) {
-				userServiceAccess.delete(user.getId());
-				throw e;
-			}
-		} else if(!skipKeycloak){
-			try{
-				keycloakService.updateUser(user);
-			}catch (RemoteResourceException e){
-				delete(user.getId());
-				throw e;
-			}
 		}
 	}
 

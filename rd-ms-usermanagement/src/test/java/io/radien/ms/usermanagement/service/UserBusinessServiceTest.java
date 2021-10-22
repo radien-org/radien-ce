@@ -30,6 +30,7 @@ import io.radien.ms.usermanagement.entities.UserEntity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,7 +136,7 @@ public class UserBusinessServiceTest {
 
         boolean success = false;
         try{
-            userBusinessService.delete(1l);
+            userBusinessService.delete(1L);
         } catch (Exception e){
             success = true;
         }
@@ -143,32 +144,31 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      * @throws RemoteResourceException if any empty values of logon, email, first and last name
      */
     @Test
-    public void testSaveException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testCreateException() throws UniquenessConstraintException, RemoteResourceException, UserNotFoundException {
         User u = UserFactory.create("a","b","l","s","e",1L);
-        doThrow(new UserNotFoundException("")).when(userServiceAccess).save(u);
+        doThrow(new UniquenessConstraintException("")).when(userServiceAccess).create(u);
         boolean success = false;
         try{
-            userBusinessService.save(u,true);
-        } catch (UserNotFoundException e){
+            userBusinessService.create(u,true);
+        } catch (UniquenessConstraintException e){
             success = true;
         }
         Assert.assertTrue( success );
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
-     * @throws RemoteResourceException if any empty values of logon, email, first and last name
      */
     @Test
-    public void testSaveSkipKeycloak() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testCreateSkipKeycloak() throws UniquenessConstraintException, UserNotFoundException {
         User user = UserFactory.create("a","b","l",null,"e",1L);
         user.setId(2L);
         User user2 = UserFactory.create("a","b","l",null,"e",1L);
@@ -176,7 +176,7 @@ public class UserBusinessServiceTest {
 
         boolean success = true;
         try{
-            userBusinessService.save(user2, false);
+            userBusinessService.create(user2, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -184,19 +184,19 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      * @throws RemoteResourceException if any empty values of logon, email, first and last name
      */
     @Test
-    public void testSaveSkipKeycloakWithCreationRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testCreateSkipKeycloakWithCreationRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User user2 = UserFactory.create("a","b","l",null,"e",1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
         doThrow(new RemoteResourceException()).when(keycloakService).createUser(any());
         boolean success = true;
         try{
-            userBusinessService.save(user2, false);
+            userBusinessService.create(user2, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -204,19 +204,19 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      * @throws RemoteResourceException if any empty values of logon, email, first and last name
      */
     @Test
-    public void testSaveSkipKeycloakWithCreationRemoteExceptionSub() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testCreateSkipKeycloakWithCreationRemoteExceptionSub() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User user2 = UserFactory.create("a","b","l","sub","e",1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
         doThrow(new RemoteResourceException()).when(keycloakService).getSubFromEmail(anyString());
         boolean success = true;
         try{
-            userBusinessService.save(user2, false);
+            userBusinessService.create(user2, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -224,52 +224,31 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
-     * @throws UniquenessConstraintException if unique user founds
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UserNotFoundException if user not found
      * @throws RemoteResourceException if any empty values of logon, email, first and last name
      */
     @Test
-    public void testSaveSkipKeycloakWithCreationSub() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        User user2 = UserFactory.create("a","b","l","sub1234ABCD","e",1L);
-        when(userServiceAccess.get((Long) any())).thenReturn(user2);
-        when(keycloakService.getSubFromEmail(anyString())).thenReturn( java.util.Optional.of( "sub1234ABCD" ) );
-        boolean success = true;
-        try{
-            userBusinessService.save(user2, false);
-        } catch (RemoteResourceException e){
-            success = false;
-        }
-        Assert.assertTrue(success);
+    public void testCreateUserFirstNameIsNull() throws UserNotFoundException, RemoteResourceException {
+        prepareTestForCreateUserFirstNameLastNameIsNull(null, "last");
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
-     * @throws UniquenessConstraintException if unique user founds
-     * @throws UserNotFoundException if user not found
-     * @throws RemoteResourceException if any empty values of logon, email, first and last name
-     */
-    @Test
-    public void testSaveUserFirstNameIsNull() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        prepareTestForSaveUserFirstNameLastNameIsNull(null, "last");
-    }
-
-    /**
-     * Test for method {@link UserBusinessService#save(User, boolean)}
+     * Test for method {@link UserBusinessService#create(User, boolean)}
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveUserLastNameIsNull() throws UserNotFoundException, RemoteResourceException {
-        prepareTestForSaveUserFirstNameLastNameIsNull("first", null);
+    public void testCreateUserLastNameIsNull() throws UserNotFoundException, RemoteResourceException {
+        prepareTestForCreateUserFirstNameLastNameIsNull("first", null);
     }
 
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveUserCreationIsTrue() throws UserNotFoundException {
+    public void testCreateUserCreationIsTrue() throws UserNotFoundException {
         User user4 = new User();
         user4.setLogon("logon");
         user4.setUserEmail("email@email.com");
@@ -278,7 +257,7 @@ public class UserBusinessServiceTest {
         when(userServiceAccess.get((Long) any())).thenReturn(user4);
         boolean success4 = true;
         try{
-            userBusinessService.save(user4, true);
+            userBusinessService.create(user4, true);
         } catch (RemoteResourceException | UniquenessConstraintException e){
             success4 = false;
         }
@@ -286,19 +265,92 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * skipping keycloak
+     * @throws UserNotFoundException if user not found
+     */
+    @Test
+    public void testUpdateUserSkippingKeycloakSuccess() throws UserNotFoundException {
+        User user4 = new User();
+        user4.setLogon("logon");
+        user4.setUserEmail("email@email.com");
+        user4.setFirstname("first");
+        user4.setLastname("last");
+        boolean success4 = true;
+        try{
+            userBusinessService.update(user4, true);
+        } catch (RemoteResourceException | UniquenessConstraintException e){
+            success4 = false;
+        }
+        Assert.assertTrue(success4);
+    }
+
+    /**
+     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * but NOT skipping keycloak. Expected outcome: SUCCESS.
+     * @throws UserNotFoundException if user not found
+     * @throws RemoteResourceException thrown in case of communication error with Keycloak service
+     * @throws UniquenessConstraintException thrown in case of conflict regarding repeated values
+     * during update operation
+     */
+    @Test
+    public void testUpdateUserNotSkippingKeycloak() throws UserNotFoundException,
+            RemoteResourceException, UniquenessConstraintException {
+        User user4 = new User();
+        user4.setId(111111L);
+        user4.setLogon("logon");
+        user4.setUserEmail("email@email.com");
+        user4.setFirstname("first");
+        user4.setLastname("last");
+        boolean success4 = true;
+        try{
+            userBusinessService.update(user4, false);
+        } catch (RemoteResourceException e){
+            success4 = false;
+        }
+        Assert.assertTrue(success4);
+    }
+
+    /**
+     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * but expecting an error being thrown by Keycloak. Expected outcome: FAILURE.
+     * @throws UserNotFoundException if user not found
+     * @throws RemoteResourceException thrown in case of communication error with Keycloak service
+     * @throws UniquenessConstraintException thrown in case of conflict regarding repeated values
+     * during update operation
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testUpdateUserKeycloakError() throws UserNotFoundException,
+            RemoteResourceException, UniquenessConstraintException {
+        User user4 = new User();
+        user4.setId(111111L);
+        user4.setLogon("logon");
+        user4.setUserEmail("email@email.com");
+        user4.setFirstname("first");
+        user4.setLastname("last");
+        boolean success4 = true;
+        when(userServiceAccess.get(user4.getId())).thenReturn(user4);
+        doThrow(new RemoteResourceException("remote error")).
+                when(keycloakService).updateUser(user4);
+        userBusinessService.update(user4, false);
+    }
+
+
+
+    /**
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveEmptyLogon() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateEmptyLogon() throws UniquenessConstraintException, UserNotFoundException {
         User user = UserFactory.create("a","b","",null,"e",1L);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
         boolean success = true;
         try{
-            userBusinessService.save(user, false);
+            userBusinessService.create(user, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -306,19 +358,19 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveEmptyFirstName() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateEmptyFirstName() throws UniquenessConstraintException, UserNotFoundException {
         User user = UserFactory.create("","b","logon",null,"c",1L);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
         boolean success = true;
         try{
-            userBusinessService.save(user, false);
+            userBusinessService.create(user, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -326,19 +378,19 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveEmptyLastName() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateEmptyLastName() throws UniquenessConstraintException, UserNotFoundException {
         User user = UserFactory.create("a","","logon",null,"c",1L);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
         boolean success = true;
         try{
-            userBusinessService.save(user, false);
+            userBusinessService.create(user, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -346,19 +398,19 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveEmptyEmail() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateEmptyEmail() throws UniquenessConstraintException, UserNotFoundException {
         User user = UserFactory.create("a","b","logon",null,"",1L);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
         boolean success = true;
         try{
-            userBusinessService.save(user, false);
+            userBusinessService.create(user, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -366,22 +418,23 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)} not skipping Keycloak
+     * and throwing RemoteException
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      * @throws RemoteResourceException if any empty values of logon, email, first and last name
      */
     @Test
-    public void testSaveSkipKeycloakRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
+    public void testCreateNoSkippingKeycloakWithRemoteException() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User user = UserFactory.create("a","b","l",null,"e",1L);
         user.setId(2L);
         User user2 = UserFactory.create("a","b","l",null,"e",1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
-        doThrow(new RemoteResourceException()).when(keycloakService).updateUser(any());
+        doThrow(new RemoteResourceException()).when(keycloakService).createUser(any());
 
         boolean success = true;
         try{
-            userBusinessService.save(user, false);
+            userBusinessService.create(user, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -389,16 +442,16 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveEmptyUsername() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateEmptyUsername() throws UniquenessConstraintException, UserNotFoundException {
         User u = UserFactory.create("a","b","","s","e",1L);
         boolean success = false;
         try{
-            userBusinessService.save(u,false);
+            userBusinessService.create(u,false);
         } catch (RemoteResourceException e){
             success = true;
         }
@@ -406,12 +459,12 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#save(User, boolean)}
+     * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      * @throws UserNotFoundException if user not found
      */
     @Test
-    public void testSaveCreationFalse() throws UniquenessConstraintException, UserNotFoundException {
+    public void testCreateCreationFalse() throws UniquenessConstraintException, UserNotFoundException {
         User user = UserFactory.create("a","b","l",null,"e",1L);
         user.setId(2L);
         User user2 = UserFactory.create("a","b","l",null,"e",1L);
@@ -419,7 +472,7 @@ public class UserBusinessServiceTest {
 
         boolean success = true;
         try{
-            userBusinessService.save(user, false);
+            userBusinessService.create(user, false);
         } catch (RemoteResourceException e){
             success = false;
         }
@@ -430,7 +483,7 @@ public class UserBusinessServiceTest {
      * Test method for {@link UserBusinessService#create(List)}
      */
     @Test
-    public void testSaveBatch() {
+    public void testCreateBatch() {
         List<io.radien.ms.usermanagement.entities.UserEntity> users = new ArrayList<>();
         int numberOfElementsToInsert = 100;
         when(userServiceAccess.create(anyList())).thenReturn(new BatchSummary(numberOfElementsToInsert));
@@ -500,10 +553,9 @@ public class UserBusinessServiceTest {
 
     /**
      * Test method for {@link UserBusinessService#updateEmailAndExecuteActionEmailVerify(long, String, User, boolean)}
-     * @throws Exception if any exception
      */
     @Test
-    public void testUpdateEmailAndExecuteActionEmailVerify() throws Exception {
+    public void testUpdateEmailAndExecuteActionEmailVerify() {
         User user = new UserEntity();
         user.setId(1L);
         user.setLogon("logon");
@@ -548,7 +600,7 @@ public class UserBusinessServiceTest {
      * @throws UserNotFoundException if user not found
      * @throws RemoteResourceException if any empty values of logon, email, first and last name
      */
-    private void prepareTestForSaveUserFirstNameLastNameIsNull(String first, String last) throws UserNotFoundException, RemoteResourceException {
+    private void prepareTestForCreateUserFirstNameLastNameIsNull(String first, String last) throws UserNotFoundException, RemoteResourceException {
         User user3 = new User();
         user3.setLogon("logon");
         user3.setUserEmail("email@email.com");
@@ -556,10 +608,10 @@ public class UserBusinessServiceTest {
         user3.setLastname(last);
         user3.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user3);
-        when(keycloakService.getSubFromEmail(anyString())).thenReturn( java.util.Optional.of( "sub1234ABCD" ) );
+        when(keycloakService.getSubFromEmail(anyString())).thenReturn( Optional.empty() );
         boolean success3 = true;
         try{
-            userBusinessService.save(user3, true);
+            userBusinessService.create(user3, true);
         } catch (RemoteResourceException | UniquenessConstraintException e){
             success3 = false;
         }

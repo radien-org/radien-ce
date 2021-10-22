@@ -231,25 +231,26 @@ public class UserDataModel extends AbstractManager implements Serializable {
     }
 
     /**
-     * Method to update a given user information that have been edited
-     * @param updateUser new user information to be saved
+     * Method to save (create or update) a given user information that have been edited
+     * @param saveUser new user information to be saved (create or update)
      */
     @ActiveTenantMandatory
-    public void updateUser(SystemUser updateUser){
+    public void saveUser(SystemUser saveUser){
         try{
-            if(updateUser != null){
-                if (updateUser.getId() == null) {
-                    updateUser.setCreateUser(userSessionEnabled.getUserId());
+            if(saveUser != null){
+                if (saveUser.getId() == null) {
+                    saveUser.setCreateUser(userSessionEnabled.getUserId());
+                    service.create(saveUser, saveUser.isDelegatedCreation());
                 } else {
-                    updateUser.setLastUpdateUser(userSessionEnabled.getUserId());
+                    saveUser.setLastUpdateUser(userSessionEnabled.getUserId());
+                    service.updateUser(saveUser);
                 }
-                service.updateUser(updateUser);
                 handleMessage(FacesMessage.SEVERITY_INFO,
-                        updateUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()) :
+                        saveUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()) :
                         JSFUtil.getMessage(DataModelEnum.EDIT_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
-            handleError(e, updateUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()) :
+            handleError(e, saveUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()) :
                     JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
     }
