@@ -144,10 +144,9 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
     /**
      * Test method selectedChangeTenant()
      * asserts ValueChangeEvent object info values
-     * @throws SystemException if any error
      */
     @Test
-    public void testSelectedChangeTenant() throws SystemException {
+    public void testSelectedChangeTenant() {
         ValueChangeEvent event = mock(ValueChangeEvent.class);
         doReturn(systemTenant).when(event).getNewValue();
 
@@ -164,7 +163,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         assertEquals(assignedUserTenantRoles, userTenantRolesManager.getAssignedRolesForUserTenant());
 
-        doReturn(assignedUserTenantRoles).when(this.tenantRoleRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
+        doReturn(assignedUserTenantRoles).when(this.tenantRoleUserRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
 
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         userTenantRolesManager.setIsRoleAssigned(isRoleAssigned);
@@ -184,7 +183,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         assertEquals(assignedUserTenantRoles, userTenantRolesManager.getAssignedRolesForUserTenant());
 
-        doThrow(RuntimeException.class).when(tenantRoleRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
+        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
 
         userTenantRolesManager.loadUserTenantRoles(systemTenant);
     }
