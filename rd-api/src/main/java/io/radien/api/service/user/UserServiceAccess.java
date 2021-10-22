@@ -66,14 +66,6 @@ public interface UserServiceAccess extends ServiceAccess {
      */
     public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
-//    /**
-//     * Saves/Updates the requested information into the db
-//     * @param user information to be stored
-//     * @throws UserNotFoundException in case of update and the user is not found
-//     * @throws UniquenessConstraintException in case of save and the record already exists or has duplicated fields
-//     */
-//    public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException;
-
     /**
      * CREATE a User association
      * @param user information to be created

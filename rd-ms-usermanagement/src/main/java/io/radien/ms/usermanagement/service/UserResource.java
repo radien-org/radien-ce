@@ -17,7 +17,6 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import javax.enterprise.context.RequestScoped;
