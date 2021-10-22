@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{roleDataModel.onload}"/>
+	</f:metadata>
+
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="roleManagementTableDiv" styleClass="tableContainer">
+			<b:row>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_role} "/></h1>
+					<hr />
+				</h:panelGroup>
+			</b:row>
+
+			<p:dataTable id="dataTable" value="#{roleDataModel.lazyModel}"
+						 var="role"
+						 paginator="true" rows="10"
+						 lazy="true"
+						 rowExpandMode="single"
+						 paginatorPosition="bottom"
+						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+						 rowsPerPageTemplate="5,10,20,50"
+						 styleClass = "tableDesign"
+						 selectionMode="single"
+						 selection="#{roleDataModel.selectedRole}">
+
+				<p:ajax event="rowSelect" listener="#{roleDataModel.onRowSelect}" update="@form:roleManagementTableDiv"
+						oncomplete="$('.formValidationModalClass').modal('show')"/>
+				<p:column headerText="#{msg.id}" sortBy="#{role.id}">
+					<h:outputText value="#{role.id}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.name}" sortBy="#{role.name}">
+					<h:outputText value="#{role.name}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.description}">
+					<h:outputText value="#{role.description}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.termination_date}">
+					<h:outputText value="#{role.terminationDate}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_permissions}">
+					<p:rowToggler/>
+				</p:column>
+				<p:ajax event="rowToggle" listener="#{rolePermissionManager.onRowExpand}"/>
+
+				<p:rowExpansion styleClass="headerInformation">
+					<b:container>
+						<p:dataTable id="dataTablePermission"
+									 value="#{permissionDataModel.lazyModel}"
+									 var="permission"
+									 rows="4"
+									 emptyMessage="#{msg.rd_permissions_not_found}"
+									 paginator="true"
+									 selectionPageOnly="false"
+									 paginatorPosition="bottom"
+									 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+									 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+									 rowsPerPageTemplate="4,8,20"
+									 styleClass = "tableDesign">
+
+							<p:column headerText="#{msg.rd_assign_unassigned_permission}" styleClass="no-visible-header-checkbox">
+								<p:selectBooleanButton value="#{rolePermissionManager.isPermissionsAssigned[permission.id]}"
+													   onIcon="pi pi-check"
+													   offIcon="pi pi-times"
+													   onLabel="" offLabel=""
+													   valueChangeListener="#{rolePermissionManager.isAssignableOrUnassignedPermission}">
+									<p:ajax listener="#{rolePermissionManager.isAssignableOrUnassignedRolePermission(permission)}"/>
+								</p:selectBooleanButton>
+							</p:column>
+
+							<p:column headerText="#{msg.id}">
+								<h:outputText value="#{permission.id}"/>
+							</p:column>
+
+							<p:column headerText="#{msg.name}">
+								<h:outputText value="#{permission.name}"/>
+							</p:column>
+						</p:dataTable>
+					</b:container>
+					<br />
+					<b:button id="cancel-permission-button" style="float:right;"
+							  onclick="$('.formValidationModalClassPermission').modal('show')"
+							  value="#{msg.cancel}"
+							  iconAwesome="fa-rotate-left"
+							  rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}">
+					</b:button>
+
+					<b:modal id="modalPermission"
+							 title="#{msg.confirmation}"
+							 styleClass="formValidationModalClassPermission"
+							 closable="false"
+							 close-on-escape="false" backdrop="false">
+						<p>#{msg.cancel_confirmation}</p>
+						<f:facet name="footer">
+							<b:button value="#{msg.no}" onclick="return false;" dismiss="modal" />
+							<b:commandButton value="#{msg.yes}" look="warning"
+											 actionListener="#{rolePermissionManager.refresh}"
+											 oncomplete="{ $('.formValidationModalClassPermission').modal('hide') } "/>
+						</f:facet>
+					</b:modal>
+					<b:commandButton style="float:right;"
+									 value="#{msg.save}"
+									 iconAwesome="fa-save"
+									 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"
+									 action="#{rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant}"/>
+				</p:rowExpansion>
+				<br />
+			</p:dataTable>
+
+			<b:button id="delete-role-button"
+					  onclick="$('.formValidationModalClassDelete').modal('show')"
+					  value="#{msg.delete}"
+					  icon="trash"
+					  update=":roleManagementTableDiv"
+					  rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}">
+			</b:button>
+
+			<b:modal id="modal"
+					 title="#{msg.confirmation}"
+					 styleClass="formValidationModalClassDelete"
+					 closable="false"
+					 close-on-escape="false" backdrop="false"
+					 rendered="#{not empty roleDataModel.selectedRole}">
+				<p>#{msg.rd_role_deletition_confirmation}</p>
+				<f:facet name="footer">
+					<b:commandButton value="#{msg.no}" dismiss="modal"/>
+					<b:commandButton value="#{msg.yes}" look="warning"
+									 actionListener="#{roleDataModel.delete}"
+									 oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
+				</f:facet>
+			</b:modal>
+
+			<b:commandButton value="#{msg.edit}"
+							 tooltip="#{msg.editRecordInformation}"
+							 iconAwesome="fa-edit"
+							 action="#{roleDataModel.editRecords}"
+							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
+			<b:commandButton id="refresh" value="#{msg.refreshValues}"
+							 ajax="false"
+							 iconAwesome="fa-refresh"
+							 icon-spin="true"
+							 tooltip="#{msg.refreshTooltip}"
+							 actionListener="#{roleDataModel.onload}"
+							 immediate="true" update="@form:roleManagementTableDiv"
+							 auto-update="true"
+							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
+			<b:commandButton value="#{msg.rd_add_role}"
+							 action="role"
+							 iconAwesome="fa-cube"
+							 tooltip="#{msg.create_new_record}"
+							 iconAlign="center"
+							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
+		</h:form>
+	</ui:define>
+</ui:composition>

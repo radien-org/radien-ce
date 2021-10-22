@@ -1,0 +1,7 @@
+[
+{ "name": "Create" },
+{ "name": "Read" },
+{ "name": "Update" },
+{ "name": "Delete" },
+{ "name": "All" }
+]

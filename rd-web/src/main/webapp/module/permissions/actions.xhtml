@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{actionDataModel.onload}"/>
+    </f:metadata>
+
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="actionManagementTableDiv" styleClass="tableContainer">
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_actions} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+
+            <p:dataTable id="dataTable" value="#{actionDataModel.lazyModel}"
+                         var="action"
+                         paginator="true" rows="10"
+                         lazy="true"
+                         paginatorPosition="bottom"
+                         paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                         rowsPerPageTemplate="5,10,20,50"
+                         styleClass = "tableDesign"
+                         selectionMode="single"
+                         selection="#{actionDataModel.selectedAction}">
+
+                <p:ajax event="rowSelect" listener="#{actionDataModel.onRowSelect}" update="@form:actionManagementTableDiv"
+                        oncomplete="$('.formValidationModalClass').modal('show')"/>
+                <p:column headerText="#{msg.id}" sortBy="#{action.id}">
+                    <h:outputText value="#{action.id}"/>
+                </p:column>
+
+                <p:column headerText="#{msg.name}">
+                    <h:outputText value="#{action.name}"/>
+                </p:column>
+            </p:dataTable>
+
+            <b:button id="delete-action-button"
+                      onclick="$('.formValidationModalClassDelete').modal('show')"
+                      value="#{msg.delete}"
+                      icon="trash"
+                      update=":actionManagementTableDiv">
+            </b:button>
+
+            <b:modal id="modal"
+                     title="#{msg.confirmation}"
+                     styleClass="formValidationModalClassDelete"
+                     closable="false"
+                     close-on-escape="false" backdrop="false"
+                     rendered="#{not empty actionDataModel.selectedAction}">
+                <p>#{msg.deleteConfirmation}</p>
+                <f:facet name="footer">
+                    <b:commandButton value="#{msg.no}" dismiss="modal"/>
+                    <b:commandButton value="#{msg.yes}" look="warning"
+                                     actionListener="#{actionDataModel.delete}"
+                                     oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
+                </f:facet>
+            </b:modal>
+
+            <b:commandButton value="#{msg.edit}"
+                             tooltip="#{msg.editRecordInformation}"
+                             iconAwesome="fa-edit"
+                             action="#{actionDataModel.editRecords}"/>
+            <b:commandButton id="refresh" value="#{msg.refreshValues}"
+                             ajax="false"
+                             iconAwesome="fa-refresh"
+                             icon-spin="true"
+                             tooltip="#{msg.refreshTooltip}"
+                             actionListener="#{actionDataModel.onload}"
+                             immediate="true" update="@form:actionManagementTableDiv"
+                             auto-update="true"/>
+            <b:commandButton value="#{msg.rd_add_action}"
+                             action="action"
+                             iconAwesome="fa-cube"
+                             tooltip="#{msg.create_new_record}"
+                             iconAlign="center"/>
+        </h:form>
+    </ui:define>
+</ui:composition>

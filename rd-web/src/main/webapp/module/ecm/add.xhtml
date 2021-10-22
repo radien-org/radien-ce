@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{sessionManager.checkUrlPermission('cms')}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <b:row styleClass="mar-left-medium mar-vertical-large">
+            <b:column>
+                <h:outputText styleClass="subtitle text-primary" value="#{msg.header_cms}"/>
+            </b:column>
+        </b:row>
+        <h:form id="fm01" enctype="multipart/form-data">
+            <b:row styleClass="text-center">
+                <b:column colXs="12" colSm="6" offsetSm="3">
+                    <h:outputText value="#{msg.addCMS}"/>
+                    <hr/>
+                </b:column>
+            </b:row>
+            <b:row styleClass="py-5">
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <b:inputText id="viewId" label="#{msg.view_id}" value="#{contentManager.newObject.viewId}" disabled="#{true}"
+                                 title="Wird automatisch generiert, wenn leer." size="100" maxlength="100"/>
+                </b:column>
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:panelGroup styleClass="bf--input">
+                        <b:selectOneMenu id="contentType" label="#{msg.contentType}" update=":fm01:appColumn"
+                                         value="#{contentManager.newObject.contentType}" select2="true">
+                            <f:selectItems value="#{contentManager.contentTypes}" var="contentType"/>
+                        </b:selectOneMenu>
+                    </h:panelGroup>
+                </b:column>
+                
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2" id="appColumn">
+                    <h:panelGroup styleClass="bf--input" rendered="#{contentManager.newObject.contentType == 'APP_INFO'}">
+                        <b:selectOneMenu id="app" label="#{msg.app_list}"
+                                         value="#{contentManager.newObject.app}" select2="true">
+                            <f:selectItems value="#{contentManager.apps}" var="app" itemLabel="#{app.name}" itemValue="#{app.name}"/>
+                        </b:selectOneMenu>
+                    </h:panelGroup>
+                </b:column>
+                
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2" id="tagColumn">
+                    <h:panelGroup styleClass="pf--input">
+                        <b:inputText label="#{msg.tags}" value="#{contentManager.newTag}">
+                            <f:ajax event="input" delay="500" render=":fm01:tagCloud" listener="#{contentManager.onInputTag}" />
+                        </b:inputText>
+                        <p:commandButton value="#{msg.add}" action="#{contentManager.saveTag}" icon="fa fa-plus" 
+                        	immediate="true" update=":fm01:tagColumn sys-messages" />
+                        <h:panelGroup id="tagCloud" layout="block">
+                            <p:tagCloud model="#{contentManager.tags}">
+                                <p:ajax event="select" update=":fm01:tagChips" listener="#{contentManager.onSelectTag}" />
+                            </p:tagCloud>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <h:panelGroup id="tagChips" layout="block" >
+                        <p:chips value="#{contentManager.newObject.tags}" 
+                        	rendered="#{not empty contentManager.newObject.tags}">
+                            <p:ajax event="itemUnselect" update=":fm01:tagChips" 
+                            	listener="#{contentManager.onUnselectChip}" />
+                        </p:chips>
+                    </h:panelGroup>
+                </b:column>
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:panelGroup styleClass="bf--input">
+                        <b:selectOneMenu id="language" label="#{msg.language}"
+                                         value="#{contentManager.newObject.language}" select2="true">
+                            <f:selectItems value="#{localeManager.supportedLanguages}" var="language"/>
+                        </b:selectOneMenu>
+                    </h:panelGroup>
+                </b:column>
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <p:selectBooleanCheckbox id="active" itemLabel="#{msg.active}"
+                                             value="#{contentManager.newObject.active}" styleClass="p--checkbox"/>
+                </b:column>
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <h:outputLabel for="image-upload" value="#{msg.image}"/>
+                    <br/>
+                    <p:fileUpload id="image-upload" value="#{contentImageManager.uploadFile}" mode="simple"
+                                  skinSimple="true" chooseIcon="icon i-upload">
+                                  <f:validator validatorId="org.openappframe.webapp.validator.UploadImageValidator" />
+                    </p:fileUpload>
+                    <br/>
+                    <p:graphicImage height="150" value="#{contentImageManager.content}"/>
+                </b:column>
+
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <b:inputText id="title" value="#{contentManager.newObject.name}" required="true" size="60"
+                                 label="#{msg.title}">
+                    	<f:validateLength minimum="3" maximum="60" />
+                    </b:inputText>
+                    <b:message for="title" />
+                </b:column>
+                <b:column colXs="12" colSm="6" offsetSm="3" styleClass="py-2">
+                    <p:textEditor id="editor1" widgetVar="editorWidget1" required="true"
+                    			  requiredMessage="#{msg['required.field.cms.content']}"
+                                  value="#{contentManager.newObject.htmlContent}" height="600"/>
+                    <b:message for="editor1" />
+                </b:column>
+            </b:row>
+            <b:row styleClass="py-5">
+                <b:column colXs="12" colSm="6" offsetSm="3">
+                    <b:row style="text-align: center">
+                        <b:column colXs="4">
+                            <b:commandButton
+                                action="#{navigation.navigate}"
+                                actionListener="#{navigation.processCMSAction}"
+                                value="#{msg.close}"
+                                ajax="true"
+                                immediate="true"
+                                styleClass="btn btn btn-default btn--secondary"
+                            >
+                                <f:param name="navigationNode" value="cms"/>
+                                <f:attribute name="navigationNode" value="cms"/>
+                                <f:param name="webAction" value="close"/>
+                                <f:attribute name="webAction" value="close"/>
+                            </b:commandButton>
+                        </b:column>
+                        <b:column colXs="4">
+                            <b:commandButton
+                                action="#{navigation.navigate}"
+                                actionListener="#{navigation.processCMSAction}"
+                                value="#{msg.save}"
+                                ajax="true"
+                                update="fm01 sys-messages"
+                                styleClass="btn btn btn-default btn--primary"
+                            >
+                                <f:param name="navigationNode" value="cms"/>
+                                <f:attribute name="navigationNode" value="cms"/>
+                                <f:param name="webAction" value="save"/>
+                                <f:attribute name="webAction" value="save"/>
+                            </b:commandButton>
+                        </b:column>
+                    </b:row>
+                </b:column>
+            </b:row>
+        </h:form>
+    </ui:define>
+</ui:composition>

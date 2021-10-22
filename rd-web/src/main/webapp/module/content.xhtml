@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml"
+>
+    <ui:define name="content">
+        <b:row class="page--title-container">
+            <b:column colXs="12">
+                <h:outputText value="#{contentViewManager.content.name}"/>
+            </b:column>
+        </b:row>
+        <h:form>
+            <b:row styleClass="py-5">
+                <b:column colXs="12" colSm="6" offsetSm="3">
+                    <h:outputText value="#{contentViewManager.content.htmlContent}" escape="false"/>
+                </b:column>
+            </b:row>
+        </h:form>
+    </ui:define>
+</ui:composition> 

@@ -1,0 +1,142 @@
+<pretty-config
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://ocpsoft.org/schema/rewrite-config-prettyfaces"
+	xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces
+                      http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
+
+	<url-mapping id="index">
+		<pattern value="/public/index" />
+		<view-id value="/public/index.oaf" />
+	</url-mapping>
+
+	<url-mapping id="logintrigger">
+		<pattern value="/module/logintrigger" />
+		<view-id value="/module/logintrigger.oaf" />
+	</url-mapping>
+
+	<url-mapping id="userprofile">
+		<pattern value="/module/user/profile" />
+		<view-id value="/module/userprofile/index.oaf" />
+	</url-mapping>
+
+	<!-- Usersmanagement -->
+	<url-mapping id="users">
+		<pattern value="/module/users" />
+		<view-id value="/module/users/users.oaf" />
+	</url-mapping>
+	<url-mapping id="user">
+		<pattern value="/module/users/user" />
+		<view-id value="/module/users/user.oaf" />
+	</url-mapping>
+	<url-mapping id="userProfile">
+		<pattern value="/module/users/userProfile" />
+		<view-id value="/module/users/userProfile.oaf" />
+	</url-mapping>
+	<url-mapping id="userTenantAssociation">
+		<pattern value="/module/users/userTenantAssociation" />
+		<view-id value="/module/users/userTenantAssociation.oaf" />
+	</url-mapping>
+	<url-mapping id="userRoles">
+		<pattern value="/module/users/userRoles" />
+		<view-id value="/module/users/userRoles.oaf" />
+	</url-mapping>
+	<url-mapping id="userDelete">
+		<pattern value="/module/users/userDelete" />
+		<view-id value="/module/users/userDelete.oaf" />
+	</url-mapping>
+	<url-mapping id="userUnAssign">
+		<pattern value="/module/users/userUnAssign" />
+		<view-id value="/module/users/userUnAssign.oaf" />
+	</url-mapping>
+
+	<!-- Rolesmanagement -->
+	<url-mapping id="roles">
+		<pattern value="/module/roles" />
+		<view-id value="/module/roles/roles.oaf" />
+	</url-mapping>
+	<url-mapping id="role">
+		<pattern value="/module/role" />
+		<view-id value="/module/role/role.oaf" />
+	</url-mapping>
+
+	<url-mapping id="tenantroles">
+		<pattern value="/module/tenantroles" />
+		<view-id value="/module/tenantroles/tenantroles.oaf" />
+	</url-mapping>
+	<url-mapping id="tenantrole">
+		<pattern value="/module/tenantrole" />
+		<view-id value="/module/tenantrole/tenantrole.oaf" />
+	</url-mapping>
+
+	<!-- Permissionsmanagement -->
+	<url-mapping id="permissions">
+		<pattern value="/module/permissions" />
+		<view-id value="/module/permissions/permissions.oaf" />
+	</url-mapping>
+	<url-mapping id="permission">
+		<pattern value="/module/permission" />
+		<view-id value="/module/permission/permission.oaf" />
+	</url-mapping>
+	
+	<url-mapping id="actions">
+		<pattern value="/module/actions" />
+		<view-id value="/module/permissions/actions.oaf" />
+	</url-mapping>
+	<url-mapping id="action">
+		<pattern value="/module/action" />
+		<view-id value="/module/permission/action.oaf" />
+	</url-mapping>
+
+	<url-mapping id="resources">
+		<pattern value="/module/resources" />
+		<view-id value="/module/permissions/resources.oaf" />
+	</url-mapping>
+	<url-mapping id="resource">
+		<pattern value="/module/resource" />
+		<view-id value="/module/permission/resource.oaf" />
+	</url-mapping>
+
+	<!-- Contractsmanagement -->
+	<url-mapping id="contracts">
+		<pattern value="/module/contracts" />
+		<view-id value="/module/contracts/contracts.oaf" />
+	</url-mapping>
+	<url-mapping id="contract">
+		<pattern value="/module/contract" />
+		<view-id value="/module/contract/contract.oaf" />
+	</url-mapping>
+
+	<url-mapping id="tenants">
+		<pattern value="/module/tenants" />
+		<view-id value="/module/tenants/tenants.oaf" />
+	</url-mapping>
+	<url-mapping id="tenant">
+		<pattern value="/module/tenant" />
+		<view-id value="/module/tenant/tenant.oaf" />
+	</url-mapping>
+	<url-mapping id="tenantDetails">
+		<pattern value="/module/tenantDetails" />
+		<view-id value="/module/tenant/tenantDetails.oaf" />
+	</url-mapping>
+
+	<url-mapping id="content_public">
+		<pattern
+			value="/public/content/display/#{contentViewManager.viewId}" />
+		<view-id value="/public/content.oaf" />
+	</url-mapping>
+	<url-mapping id="captcha">
+		<pattern value="/public/captcha" />
+		<view-id value="/captcha" />
+	</url-mapping>
+	<url-mapping id="index">
+		<pattern value="/public/#{index : contentViewManager.viewId}" />
+		<view-id value="/public/index.oaf" />
+	</url-mapping>
+
+	<url-mapping id="content">
+		<pattern
+			value="/module/content/display/#{contentViewManager.viewId}" />
+		<view-id value="/module/content.oaf" />
+	</url-mapping>
+
+</pretty-config>

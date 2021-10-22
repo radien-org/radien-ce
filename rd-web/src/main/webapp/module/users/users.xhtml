@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{userDataModel.onload}"/>
+	</f:metadata>
+
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="userManagementTableDiv" styleClass="tableContainer">
+			<b:row>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_users} "/></h1>
+					<hr />
+				</h:panelGroup>
+			</b:row>
+
+			<p:dataTable id="dataTable" value="#{userDataModel.lazyUserDataModel}"
+						 var="user"
+						 rowKey="#{user.id}"
+						 widgetVar="userDataTable"
+						 lazy="true"
+						 paginator="true" rows="10"
+						 paginatorPosition="bottom"
+						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+						 rowsPerPageTemplate="5,10,20,50"
+						 styleClass = "tableDesign"
+						 selectionMode="single"
+						 selection="#{userDataModel.selectedUser}">
+
+				<p:ajax event="rowSelect" listener="#{userDataModel.onRowSelect}" update="@form:userManagementTableDiv"
+						oncomplete="$('.formValidationModalClass').modal('show')"/>
+
+				<f:facet name="header">
+					<div class="text-right">
+						<b:commandButton value="#{msg.create}"
+										  tooltip="#{msg.rd_create_new_user}"
+										  iconAwesome="fa-cube"
+										  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+										  action="#{userDataModel.createRecord}"/>
+
+						<b:dropButton value="#{msg.rd_user_actions}" drop="down">
+							<b:navCommandLink value="#{msg.delete}"
+											  tooltip="#{msg.rd_delete_existent_user_info}"
+											  iconAwesome="fa-trash"
+											  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+											  action="#{userDataModel.deleteRecord}"/>
+
+							<b:navCommandLink value="#{msg.edit}"
+											 tooltip="#{msg.rd_edit_existent_user_info}"
+											 iconAwesome="fa-edit"
+											 rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+											 action="#{userDataModel.editRecord}"/>
+
+							<b:navCommandLink value="#{msg.profile}"
+											 tooltip="#{msg.rd_profile_existent_user}"
+											 iconAwesome="fa-user-plus"
+											 action="#{userDataModel.userProfile}"/>
+
+							<b:navCommandLink value="#{msg.rd_role_assignment}"
+											  tooltip="#{msg.rd_select_user_to_assign_unassigned_user_tenant_roles}"
+											  iconAwesome="fa-expand"
+											  action="#{userDataModel.userRoles}"
+											  actionListener="#{userTenantRolesManager.clearAssignableOrUnAssignedRoles}"/>
+
+							<b:navCommandLink value="#{msg.rd_unAssign}"
+											  tooltip="#{msg.rd_select_unAssign_user_activeTenant}"
+											  iconAwesome="fa-remove"
+											  action="#{userDataModel.userUnAssign}"
+											  actionListener="#{unAssignTenantUser.setTenantUserFieldsAsNull}"/>
+
+						</b:dropButton>
+
+						<b:commandButton id="refresh" value="#{msg.refreshValues}"
+										  ajax="false"
+										  iconAwesome="fa-refresh"
+										  icon-spin="true"
+										  tooltip="#{msg.rd_refresh_existent_user_data_table}"
+										  actionListener="#{userDataModel.onload}"
+										  immediate="true" update="@form:userManagementTableDiv"
+										  auto-update="true"/>
+					</div>
+				</f:facet>
+
+
+				<p:column headerText="#{msg.rd_user_logon}" sortBy="#{user.logon}">
+					<h:outputText value="#{user.logon}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.firstname}" sortBy="#{user.firstname}">
+					<h:outputText value="#{user.firstname}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.lastname}" sortBy="#{user.lastname}">
+					<h:outputText value="#{user.lastname}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.email}" sortBy="#{user.userEmail}">
+					<h:outputText value="#{user.userEmail}"/>
+				</p:column>
+			</p:dataTable>
+
+			<b:growl redisplay="false" showDetail="true" allowDismiss="true" delay="0"/>
+		</h:form>
+	</ui:define>
+</ui:composition>

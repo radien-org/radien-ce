@@ -1,0 +1,136 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.radien</groupId>
+		<artifactId>appframe</artifactId>
+	  <version>rd-1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<artifactId>rd-ms-openid</artifactId>
+	<packaging>jar</packaging>
+	<name>MS OpenId - ${project.version}</name>
+	<url>http://www.radien.io</url>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+				<configuration>
+					<source>${version.java.source}</source>
+					<target>${version.java.target}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>${version.maven-eclipse-plugin}</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${version.maven-jar-plugin}</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<app-version>${project.version}</app-version>
+							<!--suppress UnresolvedMavenProperty -->
+							<build-number>${buildNumber}</build-number>
+							<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-openid-client</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
+		<dependency>
+			<groupId>org.eclipse.microprofile</groupId>
+			<artifactId>microprofile</artifactId>
+			<version>${version.microprofile}</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>mbean-annotation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>jwks-rsa</artifactId>
+			<version>0.15.0</version>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- test -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.openjson</groupId>
+			<artifactId>openjson</artifactId>
+			<version>1.0.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-core</artifactId>
+			<version>1.2.10</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-mockito</artifactId>
+			<version>8.0.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-mp-client</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.config</groupId>
+			<artifactId>geronimo-config-impl</artifactId>
+			<version>1.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+    </dependencies>
+</project>

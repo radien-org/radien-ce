@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+   <ui:define name="content" bootsFacesDecorator="true">
+      <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+      <h:form id="userDeleteForm" styleClass="tableContainer">
+         <b:container>
+            <b:row>
+               <h:panelGroup layout="block" styleClass="headerInformation">
+                  <h1><h:outputText value="#{msg.rd_user_delete} "/></h1>
+                  <hr />
+               </h:panelGroup>
+            </b:row>
+
+            <b:panelGrid colSpans="2,10">
+               <h:outputLabel for="userId" value="#{msg.id}"/>
+               <b:inputText id="userId" value="#{userDataModel.selectedUser.id}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userFirstName" value="#{msg.firstname}"/>
+               <b:inputText id="userFirstName" value="#{userDataModel.selectedUser.firstname}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userLastName" value="#{msg.lastname}"/>
+               <b:inputText id="userLastName" value="#{userDataModel.selectedUser.lastname}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userLogon" value="#{msg.rd_user_logon}"/>
+               <b:inputText id="userLogon" value="#{userDataModel.selectedUser.logon}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userEmail" value="#{msg.email}"/>
+               <b:inputText id="userEmail" value="#{userDataModel.selectedUser.userEmail}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userSub" value="#{msg.sub}"/>
+               <b:inputText id="userSub" value="#{userDataModel.selectedUser.sub}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userEnabled" value="#{msg.enabled}"/>
+               <b:inputText id="userEnabled" value="#{userDataModel.selectedUser.enabled}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userCreatedDate" value="#{msg.createDate}"/>
+               <b:inputText id="userCreatedDate" value="#{userDataModel.selectedUser.createDate}" disabled="true" span="6"/>
+
+               <h:outputLabel for="userLastUpdate" value="#{msg.lastUpdate}"/>
+               <b:inputText id="userLastUpdate" value="#{userDataModel.selectedUser.lastUpdate}" disabled="true" span="6"/>
+            </b:panelGrid>
+
+
+            <b:commandButton value="#{msg.rd_users}"
+                             tooltip="#{msg.returnToUserList}"
+                             iconAwesome="fa-home"
+                             action="#{userDataModel.returnToDataTableRecords}"/>
+
+            <b:button id="delete-user-button"
+                      onclick="$('.formValidationModalUserDelete').modal('show')"
+                      value="#{msg.delete}" icon="trash"/>
+            <b:modal id="model"
+                     title="#{msg.confirmation}"
+                     styleClass="formValidationModalUserDelete"
+                     closable="false" close-on-escape="false" backdrop="false">
+               <p>#{msg.userSelectDeleteConfirmation}</p>
+               <f:facet name="footer">
+                  <b:commandButton value="#{msg.no}"
+                                   onclick="{ $('.formValidationModalUserDelete').modal('hide') } "/>
+                  <b:commandButton value="#{msg.yes}" look="warning"
+                                   actionListener="#{userDataModel.deleteUser}"
+                                   action="#{userDataModel.returnToDataTableRecords}"
+                                   oncomplete="{ $('.formValidationModalUserDelete').modal('hide') } "/>
+               </f:facet>
+            </b:modal>
+         </b:container>
+      </h:form>
+   </ui:define>
+</ui:composition>

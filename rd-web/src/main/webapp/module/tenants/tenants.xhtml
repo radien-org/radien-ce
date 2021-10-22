@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+
+	<f:metadata>
+		<f:viewAction action="#{tenantDataModel.onload}"/>
+	</f:metadata>
+
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="tenantManagementTableDiv" styleClass="tableContainer">
+			<b:row>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_tenants} "/></h1>
+					<hr />
+				</h:panelGroup>
+			</b:row>
+
+			<p:dataTable id="dataTable" value="#{tenantDataModel.lazyModel}"
+						 var="tenant"
+						 paginator="true" rows="10"
+						 lazy="true"
+						 paginatorPosition="bottom"
+						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+						 rowsPerPageTemplate="5,10,20,50"
+						 styleClass = "tableDesign"
+						 selectionMode="single"
+						 selection="#{tenantDataModel.selectedTenant}">
+
+				<p:ajax event="rowSelect" listener="#{tenantDataModel.onRowSelect}" update="@form:tenantManagementTableDiv"
+						oncomplete="$('.formValidationModalClass').modal('show')"/>
+				<p:column headerText="#{msg.id}" sortBy="#{tenant.id}">
+					<h:outputText value="#{tenant.id}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.name}">
+					<h:outputText value="#{tenant.name}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.key}">
+					<h:outputText value="#{tenant.tenantKey}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.type}">
+					<h:outputText value="#{tenant.tenantType.name}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.start_date}">
+					<h:outputText value="#{tenant.tenantStart}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.end_date}">
+					<h:outputText value="#{tenant.tenantEnd}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.address}">
+					<h:outputText value="#{tenant.clientAddress}"/>
+				</p:column>
+				<p:column headerText="#{msg.zipCode}">
+					<h:outputText value="#{tenant.clientZipCode}"/>
+				</p:column>
+				<p:column headerText="#{msg.city}">
+					<h:outputText value="#{tenant.clientCity}"/>
+				</p:column>
+				<p:column headerText="#{msg.country}">
+					<h:outputText value="#{tenant.clientCountry}"/>
+				</p:column>
+				<p:column headerText="#{msg.phoneNumber}">
+					<h:outputText value="#{tenant.clientPhoneNumber}"/>
+				</p:column>
+				<p:column headerText="#{msg.email}">
+					<h:outputText value="#{tenant.clientEmail}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_tenant_parent}">
+					<h:outputText value="#{tenant.parentId}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_tenant_client}">
+					<h:outputText value="#{tenant.clientId}"/>
+				</p:column>
+			</p:dataTable>
+
+			<!--@elvariable id="tenantDataModel" type="io.radien.webapp.tenant.TenantDataModel"-->
+			<b:button id="delete-tenant-button"
+					  onclick="$('.formValidationModalClassDelete').modal('show')"
+					  value="#{msg.delete}"
+					  icon="trash"
+					  update=":tenantManagementTableDiv">
+			</b:button>
+
+			<b:modal id="modal"
+					 title="#{msg.confirmation}"
+					 styleClass="formValidationModalClassDelete"
+					 closable="false"
+					 close-on-escape="false" backdrop="false"
+					 rendered="#{not empty tenantDataModel.selectedTenant}">
+				<p>#{msg.rd_tenant_deletition_confirmation}</p>
+				<f:facet name="footer">
+					<b:commandButton value="#{msg.no}" dismiss="modal"/>
+					<b:commandButton value="#{msg.yes}" look="warning"
+									 actionListener="#{tenantDataModel.deleteTenantHierarchy}"
+									 oncomplete="{ $('.formValidationModalClassDelete').modal('hide') } "/>
+				</f:facet>
+			</b:modal>
+
+			<b:commandButton value="#{msg.edit}"
+							 tooltip="#{msg.editRecordInformation}"
+							 iconAwesome="fa-edit"
+							 action="#{tenantDataModel.editRecords}"/>
+			<b:commandButton id="refresh" value="#{msg.refreshValues}"
+							 ajax="false"
+							 iconAwesome="fa-refresh"
+							 icon-spin="true"
+							 tooltip="#{msg.refreshTooltip}"
+							 actionListener="#{tenantDataModel.onload}"
+							 immediate="true" update="@form:tenantManagementTableDiv"
+							 auto-update="true"/>
+			<b:commandButton value="#{msg.rd_add_tenant}"
+							 action="tenant"
+							 iconAwesome="fa-cube"
+							 tooltip="#{msg.create_new_record}"
+							 iconAlign="center"/>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+<!-- 
+    <if condition='isDefined("catalina.base")'>
+        <then>
+            <property name="LOGFILE_APP_PATH" value="${catalina.base}/logs/oaf-web.log"/>
+            <property name="LOGFILE_AUDIT_PATH" value="${catalina.base}/logs/oaf-audit.log"/>
+        </then>
+        <else>
+            <property name="LOGFILE_APP_PATH" value="./target/logs/oaf-web.log"/>
+            <property name="LOGFILE_AUDIT_PATH" value="./target/logs/oaf-audit.log"/>
+        </else>
+    </if>
+ -->
+    
+    <property name="DEFAULT_PATTERN" value="[%thread] %highlight([%-5level]) | %d{HH:mm:ss} | %-60(%cyan(%class{36}.%M))  [%F:%L] - %msg%n"/>
+
+<!-- 
+    <appender name="FILE-APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGFILE_APP_PATH}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/archived/oaf-web.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>${LOG_FILE_SIZE:-10MB}</maxFileSize>
+            <totalSizeCap>${LOG_ARCHIVE_SIZE:-20GB}</totalSizeCap>
+            <maxHistory>${LOG_DAYS:-90}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+ 
+    <appender name="FILE-AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGFILE_AUDIT_PATH}</file>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>AUDIT</marker>
+            </evaluator>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/archived/oaf-audit.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>${LOG_FILE_SIZE:-10MB}</maxFileSize>
+            <totalSizeCap>${LOG_ARCHIVE_SIZE:-20GB}</totalSizeCap>
+            <maxHistory>${LOG_DAYS:-90}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+-->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="io.radien" level="info" additivity="false">
+        <!-- 
+        <appender-ref ref="FILE-AUDIT"/>
+        <appender-ref ref="FILE-APP"/>
+         -->
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="info">
+        <!-- 
+        <appender-ref ref="FILE-AUDIT"/>
+        <appender-ref ref="FILE-APP"/>
+         -->
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

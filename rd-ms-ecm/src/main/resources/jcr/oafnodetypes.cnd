@@ -1,0 +1,30 @@
+<rd = 'http://www.jcp.org/jcr/mix/1.0'>
+[rd:NodeType]
+  orderable mixin
+  - rd:viewId (string) version mandatory
+  - rd:name (string) version
+  - rd:contentType (string) mandatory
+  - rd:language (string) mandatory
+  - rd:step (string) mandatory version
+  - rd:htmlContent (string) version
+  - rd:fileSize (long) version
+  - rd:active (boolean)
+  - rd:system (boolean)
+  - rd:image (binary) version
+  - rd:imageName (string) version
+  - rd:imageMimeType (string) version
+  - rd:tags (string) multiple
+  - rd:app (string) version
+  - rd:lastEditDate (date) version
+  - rd:author (string)
+  - rd:permissions (boolean) version
+  - rd:externalPublic (boolean)
+  - rd:versionComment (string) version
+  - rd:validDate (date) version
+
+[rd:VersionableMixin]
+ orderable mixin
+  - rd:created (date) version
+  - rd:version (string) version
+  - rd:mandatoryView (boolean) version
+  - rd:mandatoryApproval (boolean) version

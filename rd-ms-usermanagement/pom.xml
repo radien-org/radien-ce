@@ -1,0 +1,225 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.radien</groupId>
+		<artifactId>appframe</artifactId>
+	  	<version>rd-1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>rd-ms-usermanagement</artifactId>
+	<packaging>war</packaging>
+	<name>Usermanagement Microservice - ${project.version}</name>
+	<url>http://www.radien.io</url>
+	<build>
+		<finalName>usermanagementservice</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${version.maven-surefire-plugin}</version>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${version.maven-war-plugin}</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.tomee.maven</groupId>
+				<artifactId>tomee-maven-plugin</artifactId>
+				<version>${version.tomee-maven-plugin}</version>
+			</plugin>
+
+			<!-- <plugin> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-maven-plugin</artifactId> 
+				<version>3.1.2</version> <executions> <execution> <id>enhancer</id> <phase>process-classes</phase> 
+				<goals> <goal>enhance</goal> </goals> </execution> </executions> <dependencies> 
+				<dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId> 
+				<version>3.1.2</version> </dependency> </dependencies> <configuration> <includes>**/entities/*.class</includes> 
+				<excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor> 
+				<enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration> 
+				</plugin> -->
+
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>tomee</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomee.maven</groupId>
+						<artifactId>tomee-maven-plugin</artifactId>
+						<version>${version.tomee-maven-plugin}</version>
+						<executions>
+							<execution>
+								<id>executable-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<context>${project.build.finalName}</context>
+							<tomeeClassifier>microprofile</tomeeClassifier>
+							<tomeeHttpPort>8081</tomeeHttpPort>
+							<tomeeShutdownPort>8006</tomeeShutdownPort>
+							<tomeeAjpPort>8010</tomeeAjpPort>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<dependencies>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-usermanagement-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-openid</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-authz-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-config-lib</artifactId>
+		</dependency>
+
+		<!-- Microprofile -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>javaee-api</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
+		<dependency>
+			<groupId>org.eclipse.microprofile</groupId>
+			<artifactId>microprofile</artifactId>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- test -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- ADD DEPENDENCIES FOR EVAL HERE -->
+		<!-- https://mvnrepository.com/artifact/org.apache.johnzon/johnzon-core -->
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-core</artifactId>
+			<version>1.2.10</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-mockito</artifactId>
+			<version>8.0.6</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- needed for Jax-rs resource testing -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-mp-client</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<version>14.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-multipart-provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-jackson2-provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-jaxb-provider</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.config</groupId>
+			<artifactId>geronimo-config-impl</artifactId>
+			<version>1.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>2.0.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito2</artifactId>
+			<version>2.0.9</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

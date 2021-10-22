@@ -1,0 +1,9 @@
+{
+  "org.apache.jackrabbit.oak.plugins.blob.datastore.S3DataStore" : {
+    "accessKey" : "${s3.accessKey}",
+    "secretKey" : "${s3.secretKey}",
+    "s3Bucket" : "${s3.container}",
+    "s3Region" : "${s3.region}",
+    "s3EndPoint" : "${s3.endpoint}"
+  }
+}

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <ui:define name="content">
+        <b:container>
+
+			<b:row>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_permission} "/></h1>
+					<hr />
+				</h:panelGroup>
+			</b:row>
+			<b:column>
+
+			<h:form>
+				<h:inputHidden id="id" value="#{permissionManager.permission.id}"/>
+				<b:row><h1/></b:row>
+				<b:row>
+					<b:column medium-screen="2">
+						<h:outputLabel value="#{msg.name}"/>
+					</b:column>
+					<b:column mediumScreen="4">
+						<p:inputText id="permissionName" value="#{permissionManager.permission.name}"
+									 requiredMessage="#{msg.rd_permission_name_is_mandatory}" size="53"/>
+					</b:column>
+				</b:row>
+				<b:row><h1/></b:row>
+				<b:row>
+					<b:column medium-screen="2">
+						<h:outputLabel value="#{msg.rd_action}"/>
+					</b:column>
+					<b:column mediumScreen="4">
+						<p:autoComplete id="autoCompleteForActions"
+										value="#{permissionManager.selectedAction}"
+										var="selectedAction" itemValue="${selectedAction}" itemLabel="${selectedAction.name}"
+										converter="#{actionConverter}"
+										completeMethod="#{permissionManager.filterActionsByName}"
+										label="#{msg.rd_action}"
+										emptyMessage="#{rd_actions_not_found}"
+										size="50" placeholder="#{msg.rd_permission_resource_placeholder}"
+										required="true" requiredMessage="#{msg.rd_action_is_mandatory}"
+										effect="fade" dropdown="true" forceSelection="true"
+										scrollHeight="150"
+										styleClass="p-field p-col-12 p-md-4"
+						/>
+					</b:column>
+				</b:row>
+
+				<b:row><h1/></b:row>
+
+				<b:row>
+					<b:column medium-screen="2">
+						<h:outputLabel value="#{msg.rd_resource}"/>
+					</b:column>
+					<b:column mediumScreen="4">
+						<p:autoComplete id="autoCompleteForResources"
+										value="#{permissionManager.selectedResource}"
+										var="res" itemValue="${res}" itemLabel="${res.name}"
+										converter="#{resourceConverter}"
+										completeMethod="#{permissionManager.filterResourcesByName}"
+										label="#{msg.rd_resource}"
+										emptyMessage="#{rd_resources_not_found}"
+										size="50" placeholder="#{msg.rd_permission_resource_placeholder}"
+										required="true" requiredMessage="#{msg.rd_resource_is_mandatory}"
+										effect="fade" dropdown="true" forceSelection="true"
+										scrollHeight="150"
+										styleClass="p-field p-col-12 p-md-4"
+						/>
+					</b:column>
+				</b:row>
+				<b:row><h1/></b:row>
+
+				<b:buttonGroup>
+					<b:commandButton value="#{msg.save}"
+									 action="#{permissionManager.save(permissionManager.permission)}"
+									 iconAwesome="fa-function"
+									 iconAlign="center"/>
+					<b:commandButton value="#{msg.returnButton}"
+									 action="permissions"
+									 iconAwesome="fa-arrow-circle-left"
+									 immediate="true"
+									 iconAlign="center"/>
+				</b:buttonGroup>
+			</h:form>
+			</b:column>
+		</b:container>
+    </ui:define>
+</ui:composition>

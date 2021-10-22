@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="tenantManagementTableDiv" styleClass="tableContainer">
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_tenants} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+
+            <b:panel title="#{msg.rd_tenant_information}" collapsible="false">
+            <b:panelGrid colSpans="4,4,4">
+                <b:panelGrid colSpans="3,9">
+                    <h:outputLabel value="#{msg.id}: "/>
+                    <h:outputText id="#{msg.rd_tenantId}" value="#{tenantDataModel.selectedTenant.id}"/>
+
+                    <h:outputLabel value="#{msg.name}: "/>
+                    <b:inputText id="#{msg.rd_tenantName}" value="#{tenantDataModel.selectedTenant.name}"
+                                 required="true" requiredMessage="#{msg.rd_tenant_name_is_mandatory}"/>
+                </b:panelGrid>
+
+                <b:panelGrid colSpans="3,9">
+                    <h:outputLabel value="#{msg.key}: "/>
+                    <h:outputText id="#{msg.rd_tenantKey}" value="#{tenantDataModel.selectedTenant.tenantKey}"/>
+
+                    <h:outputLabel value="#{msg.start_date}: "/>
+                    <h:outputText id="#{msg.rd_tenantStartDate}" value="#{tenantDataModel.selectedTenant.tenantStart}"/>
+                </b:panelGrid>
+
+                <b:panelGrid colSpans="3,9">
+                    <h:outputLabel value="#{msg.type}: "/>
+                    <h:outputText id="#{msg.rd_tenantType}" value="#{tenantDataModel.selectedTenant.tenantType}"/>
+
+                    <h:outputLabel value="#{msg.end_date}: "/>
+                    <h:outputText id="#{msg.rd_tenantEndDate}" value="#{tenantDataModel.selectedTenant.tenantEnd}"/>
+                </b:panelGrid>
+            </b:panelGrid>
+            </b:panel>
+
+            <b:panel title="#{msg.rd_tenant_client_information}" collapsible="false" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT'}">
+                <b:inputText id="#{msg.rd_tenantClientAddress}" value="#{tenantDataModel.selectedTenant.clientAddress}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_address_is_mandatory}"
+                             label="#{msg.address}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT'}"/>
+                <b:panelGrid colSpans="6,6">
+                    <b:inputText id="#{msg.rd_tenantClientZipCode}" value="#{tenantDataModel.selectedTenant.clientZipCode}"
+                                 required="true" requiredMessage="#{msg.rd_tenant_client_zip_code_is_mandatory}"
+                                 label="#{msg.zipCode}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT'}"/>
+                    <b:inputText id="#{msg.rd_tenantClientCity}" value="#{tenantDataModel.selectedTenant.clientCity}"
+                                 required="true" requiredMessage="#{msg.rd_tenant_client_city_is_mandatory}"
+                                 label="#{msg.city}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT'}"/>
+                </b:panelGrid>
+                <b:inputText id="#{msg.rd_tenantClientCountry}" value="#{tenantDataModel.selectedTenant.clientCountry}"
+                             required="true" requiredMessage="#{msg.rd_tenant_client_country_is_mandatory}"
+                             label="#{msg.country}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT'}"/>
+                <b:panelGrid colSpans="6,6">
+                    <b:inputText id="#{msg.rd_tenantClientPhoneNumber}" value="#{tenantDataModel.selectedTenant.clientPhoneNumber}"
+                                 required="true" requiredMessage="#{msg.rd_tenant_client_phone_is_mandatory}"
+                                 label="#{msg.phoneNumber}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT'}"/>
+                    <b:inputText id="#{msg.rd_tenantClientEmail}" value="#{tenantDataModel.selectedTenant.clientEmail}"
+                                 required="true" requiredMessage="#{msg.rd_tenant_client_email_is_mandatory}"
+                                 label="#{msg.email}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT'}"/>
+                </b:panelGrid>
+            </b:panel>
+
+            <b:panel title="#{msg.rd_tenant_information}" collapsible="false" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT' || tenantDataModel.selectedTenant.tenantType.name == 'SUB'}">
+                <b:panelGrid colSpans="6,6">
+                    <b:panelGrid colSpans="3,9">
+                        <h:outputLabel value="#{msg.rd_tenant_parent}: " rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT' || tenantDataModel.selectedTenant.tenantType.name == 'SUB'}"/>
+                        <h:outputText id="#{msg.rd_tenantParentId}" value="#{tenantDataModel.selectedTenant.parentId}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT' || tenantDataModel.selectedTenant.tenantType.name == 'SUB'}"/>
+                    </b:panelGrid>
+
+                    <b:panelGrid colSpans="3,9">
+                        <h:outputLabel value="#{msg.rd_tenant_client}: " rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT' || tenantDataModel.selectedTenant.tenantType.name == 'SUB'}"/>
+                        <h:outputText id="#{msg.rd_tenantClientId}" value="#{tenantDataModel.selectedTenant.clientId}" rendered="#{tenantDataModel.selectedTenant.tenantType.name == 'CLIENT' || tenantDataModel.selectedTenant.tenantType.name == 'SUB'}"/>
+                    </b:panelGrid>
+                </b:panelGrid>
+            </b:panel>
+
+            <b:commandButton value="#{msg.save}"
+                             tooltip="#{msg.saveChanges}"
+                             iconAwesome="fa-save"
+                             action="#{tenantDataModel.edit(tenantDataModel.selectedTenant)}"/>
+            <b:commandButton value="#{msg.rd_home_page}"
+                             tooltip="#{msg.returnToRecordList}"
+                             iconAwesome="fa-home"
+                             action="#{tenantDataModel.returnToDataTableRecords}"/>
+        </h:form>
+    </ui:define>
+</ui:composition>

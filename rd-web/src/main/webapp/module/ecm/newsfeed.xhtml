@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+        <h:panelGroup layout="block" styleClass="newsFeedSlider" rendered="#{not empty newsfeedManager.newsFeed}">
+			<p:carousel value="#{newsfeedManager.newsFeed}" var="news" numVisible="1" autoPlayInterval="15000" effect="easeInStrong" circular="true" responsive="false">
+				<p:tab>
+					<h:panelGroup layout="block" styleClass="col-sm-12">
+						<h:panelGroup layout="block" styleClass="col-sm-4 col-xs-12">
+							<h:panelGroup layout="block" styleClass="newsLead">
+								<h1><h:outputText for="newsfeed" value="#{news.title}" /></h1>
+								<h4><h:outputText id="newsfeed" value="#{news.summary}" escape="false" /></h4>
+								<b:button value="#{msg.readMore}" action="#" styleClass="btn btn--tertiary" />
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup layout="block" styleClass="col-sm-8 hidden-xs">
+							<h:panelGroup layout="block" styleClass="newsImage right" rendered="#{not empty news.image}" style="background-image: url('data:image/png;base64, #{news.image}')"/>
+						</h:panelGroup>
+					</h:panelGroup>
+				</p:tab>
+			</p:carousel>
+		</h:panelGroup>
+</ui:composition>

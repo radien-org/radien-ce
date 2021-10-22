@@ -1,0 +1,10 @@
+[
+  {
+    "description": "The mongodb document configuration",
+    "name": "document",
+    "provider": "org.jnosql.diana.mongodb.document.MongoDBDocumentConfiguration",
+    "settings": {
+      "mongo-server-host-1": "host.docker.internal:8083"
+    }
+  }
+]

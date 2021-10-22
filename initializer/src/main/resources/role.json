@@ -1,0 +1,13 @@
+[
+{ "name": "System Administrator", "description": "The BOSS!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Permission Administrator", "description": "The Role for Permission Management Testing purposes!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Role Administrator", "description": "The Role for Role Management Testing purposes!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "User Administrator", "description": "The Role for User Management Testing purposes!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Tenant Administrator", "description": "The Role for Tenant Management Testing purposes!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Client Tenant Administrator", "description": "The Role for the Client Tenant administrators!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Sub Tenant Administrator", "description": "The Role for the Sub Tenant administrators!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Guest", "description": "The Role for Guests!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Approver", "description": "The Role for users that only approve data!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Author", "description": "The Role for users that only create data!", "terminationDate": "2030-12-12T00:00:00" },
+{ "name": "Publisher", "description": "The Role for the publishers!", "terminationDate": "2030-12-12T00:00:00" }
+]

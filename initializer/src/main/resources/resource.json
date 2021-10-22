@@ -1,0 +1,11 @@
+[
+{ "name": "User" },
+{ "name": "Roles" },
+{ "name": "Permission" },
+{ "name": "Resource" },
+{ "name": "Action" },
+{ "name": "Tenant" },
+{ "name": "Tenant Role" },
+{ "name": "Tenant Role Permission" },
+{ "name": "Tenant Role User" }
+]

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/tpl_oaf.xhtml"
+>
+    <ui:define name="content">
+        <h:form>
+            <b:row>
+                <b:column span="2">
+                    <h:panelGroup rendered="#{!sessionManager.validSession}">
+                        <h:outputText value="#{msg.please_login_msg}"></h:outputText>
+                        <b:inputText id="login" value="#{sessionManager.login}" placeholder="#{msg.rd_user_logon}">
+                            <f:facet name="prepend">
+                                <b:iconAwesome name="user"></b:iconAwesome>
+                            </f:facet>
+                        </b:inputText>
+                        <p:message for="login" display="icon"></p:message>
+                        <b:inputSecret id="password" value="#{sessionManager.password}" placeholder="#{msg.password}">
+                            <f:facet name="prepend">
+                                <b:iconAwesome name="key"></b:iconAwesome>
+                            </f:facet>
+                        </b:inputSecret>
+                        <p:message for="password" display="icon"></p:message>
+                        <b:buttonGroup>
+                            <b:commandButton action="pretty:" actionListener="#{sessionManager.loginAction}"
+                                             value="" tooltip="#{msg.login}" icon="log-in"/>
+                            <b:commandButton actionListener="#{sessionManager.loginAction}" value=""
+                                             tooltip="#{msg.forgot_password}" icon="question-sign"/>
+                            <b:commandButton actionListener="#{sessionManager.loginAction}" value=""
+                                             tooltip="#{msg.register}" icon="info-sign"/>
+                        </b:buttonGroup>
+                    </h:panelGroup>
+                </b:column>
+            </b:row>
+        </h:form>
+    </ui:define>
+</ui:composition> 

@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>io.radien</groupId>
+	<artifactId>appframe</artifactId>
+	<packaging>pom</packaging>
+	<name>radien - an open appframe - ${project.version}</name>
+	<description>radien - an open app frame</description>
+	<version>rd-1.0.0-SNAPSHOT</version>
+	<modules>
+		<module>rd-api</module>
+		<module>rd-persistence</module>
+		<module>rd-openid</module>
+		<module>rd-kernel</module>
+		<module>rd-web-api</module>
+		<module>rd-web-impl</module>
+		<module>rd-web</module>
+		<module>rd-ms-openid-client</module>
+		<module>rd-ms-openid</module>
+		<module>rd-ms-authz-client</module>
+		<module>rd-ms-ecm</module>
+		<module>rd-ms-ecm-client</module>
+		<module>rd-ms-usermanagement</module>
+		<module>rd-ms-usermanagement-client</module>
+		<module>rd-ms-tenantmanagement</module>
+		<module>rd-ms-tenantmanagement-client</module>
+		<module>rd-aws-utils</module>
+		<module>rd-ms-permissionmanagement-client</module>
+		<module>rd-ms-permissionmanagement</module>
+		<module>rd-ms-rolemanagement</module>
+		<module>rd-ms-rolemanagement-client</module>
+		<module>rd-ms-config-lib</module>
+
+  </modules>
+	<properties>
+
+		<!-- SonarQube Properties -->
+		<sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+
+		<!-- Java Versions -->
+		<version.java.source>1.8</version.java.source>
+		<version.java.target>1.8</version.java.target>
+
+		<!-- Build -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- Maven Plugins -->
+		<version.maven-eclipse-plugin>2.10</version.maven-eclipse-plugin>
+		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
+		<version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
+		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
+		<version.maven-surefire-plugin>2.22.0</version.maven-surefire-plugin>
+
+		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
+
+		<!-- Jakarta EE -->
+		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
+		<version.jakarta.servlet-api>5.0.0</version.jakarta.servlet-api>
+
+		<version.javaee-api>8.0-5</version.javaee-api>
+
+		<!-- JSF -->
+		<version.jakarta.faces-api>2.3.2</version.jakarta.faces-api>
+		<version.tomee-mojarra>8.0.5</version.tomee-mojarra>
+		<version.bootsfaces>1.5.0</version.bootsfaces>
+		<version.omnifaces>3.8.1</version.omnifaces>
+
+		<!-- prettyfaces -->
+		<version.rewrite-config-prettyfaces>3.4.4.Final</version.rewrite-config-prettyfaces>
+		<version.rewrite-servlet>3.4.4.Final</version.rewrite-servlet>
+
+		<!-- Eclipselink -->
+		<version.eclipselink>2.7.7</version.eclipselink>
+
+		<!-- DB -->
+		<version.hsqldb>2.5.1</version.hsqldb>
+
+		<!-- Microprofile -->
+		<version.microprofile>3.3</version.microprofile>
+
+		<!-- CXF Core -->
+		<version.cxf-rt-rs-mp-client>3.4.3</version.cxf-rt-rs-mp-client>
+
+
+		<!-- Logging -->
+		<version.slf4j-api>1.7.30</version.slf4j-api>
+		<version.jcl-over-slf4j>1.7.30</version.jcl-over-slf4j>
+		<version.logback-classic>1.2.3</version.logback-classic>
+		<version.logback-core>1.2.3</version.logback-core>
+
+		<!-- Commons -->
+		<version.commons-lang3>3.11</version.commons-lang3>
+		<version.httpclient>4.5.13</version.httpclient>
+
+		<!-- Jackson xml -->
+		<version.jackson-core>2.12.0</version.jackson-core>
+
+		<!-- mail -->
+		<version.rmiio>2.1.2</version.rmiio>
+
+		<!-- Security -->
+		<version.jwks-rsa>0.15.0</version.jwks-rsa>
+
+		<!-- test -->
+		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
+		<version.junit>4.13.1</version.junit>
+		<version.junit.jupiter>5.7.1</version.junit.jupiter>
+		<version.mock.jupiter>5.7.1</version.mock.jupiter>
+		<version.mockito.core>2.23.0</version.mockito.core>
+		<version.powermock.core>2.0.9</version.powermock.core>
+
+		<!-- primeface -->
+		<version.primefaces>10.0.0</version.primefaces>
+		<version.primefaces.ext>10.0.0</version.primefaces.ext>
+
+		<!-- Props -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<timestamp>Build ${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyMMddHHmm</maven.build.timestamp.format>
+
+		<!-- Sonar -->
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.language>java</sonar.language>
+		<sonar.java.binaries>${project.basedir}/target/classes</sonar.java.binaries>
+	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<!-- radien modules -->
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-api</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-web-api</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-web-impl</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-kernel</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-persistence</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-openid</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-openid-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-openid</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-authz-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-ecm-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-usermanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-tenantmanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-permissionmanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-rolemanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-aws-utils</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-config-lib</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+
+			<!-- Jakarta EE -->
+			<!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api -->
+			<dependency>
+				<groupId>jakarta.platform</groupId>
+				<artifactId>jakarta.jakartaee-api</artifactId>
+				<version>${version.jakarta.jakartaee-api}</version>
+				<scope>provided</scope>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.tomee/javaee-api -->
+			<dependency>
+				<groupId>org.apache.tomee</groupId>
+				<artifactId>javaee-api</artifactId>
+				<version>${version.javaee-api}</version>
+				<scope>provided</scope>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
+			<dependency>
+				<groupId>org.eclipse.microprofile</groupId>
+				<artifactId>microprofile</artifactId>
+				<version>${version.microprofile}</version>
+				<type>pom</type>
+				<scope>provided</scope>
+			</dependency>
+
+
+			<!-- JSF -->
+			<!-- https://mvnrepository.com/artifact/jakarta.faces/jakarta.faces-api -->
+			<dependency>
+				<groupId>jakarta.faces</groupId>
+				<artifactId>jakarta.faces-api</artifactId>
+				<version>${version.jakarta.faces-api}</version>
+				<scope>provided</scope>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/net.bootsfaces/bootsfaces -->
+			<dependency>
+				<groupId>net.bootsfaces</groupId>
+				<artifactId>bootsfaces</artifactId>
+				<version>${version.bootsfaces}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.omnifaces/omnifaces -->
+			<dependency>
+				<groupId>org.omnifaces</groupId>
+				<artifactId>omnifaces</artifactId>
+				<version>${version.omnifaces}</version>
+			</dependency>
+
+
+
+			<!-- https://mvnrepository.com/artifact/org.apache.tomee/tomee-mojarra -->
+			<dependency>
+				<groupId>org.apache.tomee</groupId>
+				<artifactId>tomee-mojarra</artifactId>
+				<version>${version.tomee-mojarra}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.ocpsoft.rewrite/rewrite-servlet -->
+			<dependency>
+				<groupId>org.ocpsoft.rewrite</groupId>
+				<artifactId>rewrite-servlet</artifactId>
+				<version>${version.rewrite-servlet}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.ocpsoft.rewrite/rewrite-config-prettyfaces -->
+			<dependency>
+				<groupId>org.ocpsoft.rewrite</groupId>
+				<artifactId>rewrite-config-prettyfaces</artifactId>
+				<version>${version.rewrite-config-prettyfaces}</version>
+			</dependency>
+
+			<!-- JPA / Eclipselink -->
+			<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>eclipselink</artifactId>
+				<version>${version.eclipselink}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- JMX -->
+			<!-- https://mvnrepository.com/artifact/org.apache.openejb/mbean-annotation-api -->
+			<dependency>
+				<groupId>org.apache.openejb</groupId>
+				<artifactId>mbean-annotation-api</artifactId>
+				<version>4.7.5</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>${version.jakarta.servlet-api}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- Commons -->
+			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${version.commons-lang3}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${version.httpclient}</version>
+			</dependency>
+
+			<!-- jackson xml -->
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${version.jackson-core}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${version.jackson-core}</version>
+			</dependency>
+
+			<!-- Mail -->
+			<!-- https://mvnrepository.com/artifact/com.healthmarketscience.rmiio/rmiio -->
+			<dependency>
+				<groupId>com.healthmarketscience.rmiio</groupId>
+				<artifactId>rmiio</artifactId>
+				<version>${version.rmiio}</version>
+			</dependency>
+
+
+			<!-- Security -->
+			<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
+			<dependency>
+				<groupId>com.auth0</groupId>
+				<artifactId>jwks-rsa</artifactId>
+				<version>${version.jwks-rsa}</version>
+			</dependency>
+
+			<!-- Logging -->
+			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${version.slf4j-api}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${version.jcl-over-slf4j}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${version.logback-classic}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${version.logback-core}</version>
+			</dependency>
+
+			<!-- Test -->
+			<!-- https://mvnrepository.com/artifact/org.apache.tomee/arquillian-openejb-embedded -->
+			<dependency>
+				<groupId>org.apache.tomee</groupId>
+				<artifactId>arquillian-openejb-embedded</artifactId>
+				<version>${version.arquillian-openejb-embedded}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/junit/junit -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${version.junit}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${version.junit.jupiter}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>${version.hsqldb}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-mp-client</artifactId>
+				<version>${version.cxf-rt-rs-mp-client}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.primefaces</groupId>
+				<artifactId>primefaces</artifactId>
+				<version>${version.primefaces}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.primefaces.extensions</groupId>
+				<artifactId>primefaces-extensions</artifactId>
+				<version>${version.primefaces.ext}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${version.mockito.core}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-junit4</artifactId>
+				<version>${version.powermock.core}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito2</artifactId>
+				<version>${version.powermock.core}</version>
+				<scope>test</scope>
+			</dependency>
+
+
+		</dependencies>
+	</dependencyManagement>
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+				<configuration>
+					<source>${version.java.source}</source>
+					<target>${version.java.target}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.6</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+
+							<dataFile>target/jacoco.exec</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>target/reports</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
