@@ -6,9 +6,9 @@
 -->
 
 <p>
-<img  alt="Version"  src="https://img.shields.io/badge/version-1.0-blue.svg?cacheSeconds=2592000"  />
+<img  alt="Version"  src="https://img.shields.io/badge/version-Dorothee-blue.svg?cacheSeconds=2592000"  />
 <a  href="url"  target="_blank">
-<img  alt="License: MIT"  src="https://img.shields.io/badge/License-MIT-yellow.svg"  />
+<img  alt="License: Apache"  src="https://img.shields.io/badge/License-apache-green.svg"  />
 <img  alt="Coverage"  src="https://img.shields.io/badge/coverage-90%25-green"  />
 </a>
 </p>
