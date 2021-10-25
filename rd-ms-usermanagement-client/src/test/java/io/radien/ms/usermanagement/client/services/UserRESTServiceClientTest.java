@@ -204,7 +204,7 @@ public class UserRESTServiceClientTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("teste"));
+        when(resourceClient.create(any(User.class))).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
@@ -222,7 +222,7 @@ public class UserRESTServiceClientTest {
         Response response = Response.ok().build();
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("teste")).thenReturn(response);
+        when(resourceClient.create(any(User.class))).thenThrow(new TokenExpiredException("teste")).thenReturn(response);
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
@@ -423,10 +423,10 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testUpdateUserTokenExpiration() throws Exception {
-        SystemUser user = new User();
+        User user = new User(); user.setId(1L);
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("teste"));
+        when(resourceClient.update(user.getId(), user)).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
@@ -778,7 +778,7 @@ public class UserRESTServiceClientTest {
     public void testCreate() throws MalformedURLException, SystemException, TokenExpiredException {
         User u = new User();
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(u)).thenReturn(Response.ok().build());
+        when(resourceClient.create(u)).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         assertTrue(target.create(u,true));
     }
@@ -793,7 +793,7 @@ public class UserRESTServiceClientTest {
     public void testCreateFail() throws MalformedURLException, TokenExpiredException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         User u = new User();
-        when(resourceClient.save(u)).thenReturn(Response.serverError().entity("test error msg").build());
+        when(resourceClient.create(u)).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
         assertFalse(target.create(u,true));
     }
@@ -808,7 +808,7 @@ public class UserRESTServiceClientTest {
     public void testCreateProcessingException() throws MalformedURLException, TokenExpiredException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         User u = new User();
-        when(resourceClient.save(u)).thenThrow(new ProcessingException(""));
+        when(resourceClient.create(u)).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         target.create(u,true);
     }
@@ -975,14 +975,15 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testUpdateUser() throws MalformedURLException, TokenExpiredException{
+        User user = new User(); user.setId(1L);
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(dummyUser)).thenReturn(Response.ok().build());
+        when(resourceClient.update(user.getId(), user)).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        dummyUser.setFirstname("firstname-update");
+        user.setFirstname("firstname-update");
 
         boolean success = false;
         try {
-            assertTrue(target.updateUser(dummyUser));
+            assertTrue(target.updateUser(user));
         } catch (Exception e) {
             success = true;
         }
@@ -996,11 +997,12 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testUpdateUserFail() throws MalformedURLException, TokenExpiredException{
+        User user = new User(); user.setId(1L);
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(dummyUser)).thenReturn(Response.serverError().entity("test error msg").build());
+        when(resourceClient.update(user.getId(), user)).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
-        dummyUser.setLastname("lastname-updated");
-        assertFalse(target.updateUser(dummyUser));
+        user.setLastname("lastname-updated");
+        assertFalse(target.updateUser(user));
     }
 
     /**
@@ -1010,15 +1012,16 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testUpdateUserTokenExpirationReAttempt() throws MalformedURLException , TokenExpiredException {
+        User user = new User(); user.setId(1L);
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         Response response = Response.ok().build();
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("test update user")).thenReturn(response);
+        when(resourceClient.update(user.getId(), user)).thenThrow(new TokenExpiredException("test update user")).thenReturn(response);
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        assertTrue(target.updateUser(new User()));
+        assertTrue(target.updateUser(user));
     }
 
     /**

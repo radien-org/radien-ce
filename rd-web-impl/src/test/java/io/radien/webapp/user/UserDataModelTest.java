@@ -108,7 +108,6 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      *     or a previously selected one from the data grid)</li>
      * </ul>
      *
-     * @return true if the process can be handled/started, false otherwise
      * Success Case
      */
     @Test
@@ -157,7 +156,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      * Failure Case - No user available
      */
     @Test
-    public void testIsTenantAssociationProcessAllowedFailNoUserAvailable() throws SystemException {
+    public void testIsTenantAssociationProcessAllowedFailNoUserAvailable() {
 
        userDataModel.setHasTenantAdministratorRoleAccess(true);
 
@@ -575,18 +574,36 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
 
     /**
-     * Test for method {@link UserDataModel#deleteUser()}
+     * Test for method {@link UserDataModel#saveUser(SystemUser)}
      * corresponding to the case of user creation
+     * @throws SystemException thrown in any case of error
      */
     @Test
-    public void testSaveUser() {
+    public void testSaveCreateUser() throws SystemException {
+        User user = new User();
+        userDataModel.setSelectedUser(user);
+        when(userRESTServiceAccess.create(user, user.isDelegatedCreation())).thenReturn(true);
+        userDataModel.saveUser(user);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#saveUser(SystemUser)}
+     * corresponding to the case of user updating
+     */
+    @Test
+    public void testSaveUpdateUser() {
         Long currentLoggedUserId = 1111111L;
         when(userSessionEnabled.getUserId()).thenReturn(currentLoggedUserId);
 
         User user = new User();
         userDataModel.setSelectedUser(user);
         when(userRESTServiceAccess.updateUser(user)).thenReturn(true);
-        userDataModel.updateUser(user);
+        userDataModel.saveUser(user);
         assertEquals(currentLoggedUserId, user.getCreateUser());
     }
 
@@ -602,23 +619,24 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         User user = new User(); user.setId(1L);
         userDataModel.setSelectedUser(user);
         when(userRESTServiceAccess.updateUser(user)).thenReturn(true);
-        userDataModel.updateUser(user);
+        userDataModel.saveUser(user);
         assertEquals(currentLoggedUserId, user.getLastUpdateUser());
 
-        userDataModel.updateUser(null);
+        userDataModel.saveUser(null);
     }
 
     /**
-     * Test for method {@link UserDataModel#updateUser(SystemUser)}
+     * Test for method {@link UserDataModel#saveUser(SystemUser)}
      * when exception occurs for insert operation
+     * @throws SystemException for any caught error during creation proccess
      */
     @Test
-    public void testSaveUserWhenExceptionOccurs() {
+    public void testSaveCreateUserWhenExceptionOccurs() throws SystemException {
         Long currentLoggedUserId = 1111111L;
         User user = new User();
         when(userSessionEnabled.getUserId()).thenReturn(currentLoggedUserId);
-        when(userRESTServiceAccess.updateUser(user)).thenThrow(new RuntimeException("error"));
-        userDataModel.updateUser(user);
+        when(userRESTServiceAccess.create(user, user.isDelegatedCreation())).thenThrow(new RuntimeException("error"));
+        userDataModel.saveUser(user);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
@@ -629,7 +647,27 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     }
 
     /**
-     * Test for method {@link UserDataModel#updateUser(SystemUser)}
+     * Test for method {@link UserDataModel#saveUser(SystemUser)}
+     * when exception occurs for insert operation
+     */
+    @Test
+    public void testSaveUpdateUserWhenExceptionOccurs() {
+        Long currentLoggedUserId = 1111111L;
+        User user = new User(); user.setId(1L);
+        when(userSessionEnabled.getUserId()).thenReturn(currentLoggedUserId);
+        when(userRESTServiceAccess.updateUser(user)).thenThrow(new RuntimeException("error"));
+        userDataModel.saveUser(user);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals(DataModelEnum.EDIT_ERROR_MESSAGE.getValue(), captured.getSummary());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#saveUser(SystemUser)}
      * when exception occurs for edit/update operation
      */
     @Test
@@ -638,7 +676,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         User user = new User(); user.setId(111L);
         when(userSessionEnabled.getUserId()).thenReturn(currentLoggedUserId);
         when(userRESTServiceAccess.updateUser(user)).thenThrow(new RuntimeException("error"));
-        userDataModel.updateUser(user);
+        userDataModel.saveUser(user);
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
         verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());

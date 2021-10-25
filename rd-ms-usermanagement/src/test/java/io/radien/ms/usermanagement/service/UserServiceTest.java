@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
-import org.keycloak.representations.idm.UserRepresentation;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
@@ -92,7 +91,7 @@ public class UserServiceTest {
         } else {
             uTest = UserFactory.create("firstName", "lastName", "logon",
                     sub, "email@email.pt", 2L);
-            userServiceAccess.save(uTest);
+            userServiceAccess.create(uTest);
         }
     }
 
@@ -153,7 +152,7 @@ public class UserServiceTest {
     public void testAddDuplicatedUserEmail() {
         UserEntity u = UserFactory.create("testAddFirstName", "testAddLastName", "testAddLogon",
                 null, "email@email.pt", 2L);
-        Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.save(u));
+        Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.create(u));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address");
         String actualMessage = exception.getMessage();
 
@@ -170,7 +169,7 @@ public class UserServiceTest {
     public void testAddDuplicatedUserLogon() {
         UserEntity u = UserFactory.create("testAddFirstName", "testAddLastName", "logon", null,
                 "testAddEmail@testAddEmail.pt", 2L);
-        Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.save(u));
+        Exception exception = assertThrows(UniquenessConstraintException.class, () -> userServiceAccess.create(u));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon");
         String actualMessage = exception.getMessage();
 
@@ -179,14 +178,13 @@ public class UserServiceTest {
 
     /**
      * Test to get a user list
-     * @throws UserNotFoundException in case specified user does not exist
      * @throws UniquenessConstraintException in case there is a issue in the data and it is duplicated
      */
     @Test
-    public void testGetUserList() throws UserNotFoundException, UniquenessConstraintException {
+    public void testGetUserList() throws UniquenessConstraintException {
         UserEntity u = UserFactory.create("testGetIdFirstName2", "testGetIdLastName2", "testGetIdLogon2",
                 null, "testGetIdEmail2@testGetIdEmail2.pt", 2L);
-        userServiceAccess.save(u);
+        userServiceAccess.create(u);
         List<? extends SystemUser> result = userServiceAccess.getUserList();
         assertNotNull(result);
     }
@@ -204,7 +202,7 @@ public class UserServiceTest {
     public void testGetById() throws UserNotFoundException, UniquenessConstraintException {
         UserEntity u = UserFactory.create("testGetIdFirstName", "testGetIdLastName", "testGetIdLogon",
                 null, "testGetIdEmail@testGetIdEmail.pt", 2L);
-        userServiceAccess.save(u);
+        userServiceAccess.create(u);
         SystemUser result = userServiceAccess.get(u.getId());
         assertNotNull(result);
         assertEquals(u.getFirstname(), result.getFirstname());
@@ -221,16 +219,16 @@ public class UserServiceTest {
      * @throws UniquenessConstraintException in case of requested action is not well constructed
      */
     @Test
-    public void testGetByListOfIds() throws UniquenessConstraintException, UserNotFoundException {
+    public void testGetByListOfIds() throws UniquenessConstraintException {
         UserEntity u1 = UserFactory.create("testGetByListOfIdsFirstName1", "testGetByListOfIdsLastName1",
                 "testGetByListOfIdsLogon1", null,
                 "testGetByListOfIdsEmail1@testGetByListOfIdsEmail1.pt", 2L);
-        userServiceAccess.save(u1);
+        userServiceAccess.create(u1);
 
         UserEntity u2 = UserFactory.create("testGetByListOfIdsFirstName2", "testGetByListOfIdsLastName2",
                 "testGetByListOfIdsLogon2", null,
                 "testGetByListOfIdsEmail2@testGetByListOfIdsEmail2.pt", 2L);
-        userServiceAccess.save(u2);
+        userServiceAccess.create(u2);
 
         List<Long> userIds = Arrays.asList(u1.getId(), u2.getId());
         List<SystemUser> result = userServiceAccess.get(userIds);
@@ -259,7 +257,6 @@ public class UserServiceTest {
      */
     @Test(expected = UserNotFoundException.class)
     public void testDeleteById() throws UserNotFoundException {
-        SystemUser result = userServiceAccess.get(uTest.getId());
         userServiceAccess.delete(uTest.getId());
         userServiceAccess.get(uTest.getId());
     }
@@ -279,17 +276,17 @@ public class UserServiceTest {
         UserEntity u1 = UserFactory.create("testDeleteByListOfIdsFirstName1", "testDeleteByListOfIdsLastName1",
                 "testDeleteByListOfIdsLogon1", null,
                 "testDeleteByListOfIdsEmail1@testDeleteByListOfIdsEmail1.pt", 2L);
-        userServiceAccess.save(u1);
+        userServiceAccess.create(u1);
 
         UserEntity u2 = UserFactory.create("testDeleteByListOfIdsFirstName2", "testDeleteByListOfIdsLastName2",
                 "testDeleteByListOfIdsLogon2", null,
                 "testDeleteByListOfIdsEmail2@testDeleteByListOfIdsEmail2.pt", 2L);
-        userServiceAccess.save(u2);
+        userServiceAccess.create(u2);
 
         UserEntity u3 = UserFactory.create("testDeleteByListOfIdsFirstName3", "testDeleteByListOfIdsLastName3",
                 "testDeleteByListOfIdsLogon3", null,
                 "testDeleteByListOfIdsEmail3@testDeleteByListOfIdsEmail3.pt", 2L);
-        userServiceAccess.save(u3);
+        userServiceAccess.create(u3);
 
         List<Long> userIds = Arrays.asList(u1.getId(), u2.getId());
         userServiceAccess.delete(userIds);
@@ -312,18 +309,18 @@ public class UserServiceTest {
     public void testUpdateSuccess() throws Exception {
         SystemUser u1 = UserFactory.create("testUpdateFirstName1", "testUpdateLastName1",
                 "testUpdateLogon1", "testeUpdateSub1", "testeUpdateEmail1@testeUpdate1.pt", 2L);
-        userServiceAccess.save(u1);
+        userServiceAccess.create(u1);
 
         SystemUser u2 = UserFactory.create("testUpdateFirstName2", "testUpdateLastName2",
                 "testUpdateLogon2", "testeUpdateSub2", "testeUpdateEmail2@testeUpdate2.pt", 2L);
-        userServiceAccess.save(u2);
+        userServiceAccess.create(u2);
 
         SystemUser u3 = UserFactory.create("testUpdateFirstName1", "testUpdateLastName3",
                 "testUpdateLogon3", "testeUpdateSub3", "testeUpdateEmail3@testeUpdate3.pt", 2L);
 
         u3.setId(u1.getId());
 
-        userServiceAccess.save(u3);
+        userServiceAccess.update(u3);
 
         u1 = userServiceAccess.get(u1.getId());
 
@@ -338,7 +335,7 @@ public class UserServiceTest {
 
         u4.setId(u1.getId());
 
-        userServiceAccess.save(u4);
+        userServiceAccess.update(u4);
 
         u1 = userServiceAccess.get(u1.getId());
 
@@ -359,26 +356,26 @@ public class UserServiceTest {
                 "testUpdateFailureMultipleRecordsLastName1", "testUpdateFailureMultipleRecordsLogon1",
                 "testUpdateFailureMultipleRecordsSub1",
                 "testUpdateFailureMultipleRecordsEmail1@testUpdateFailureMultipleRecordsEmail1.pt", 2L);
-        userServiceAccess.save(u1);
+        userServiceAccess.create(u1);
 
         UserEntity u2 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName2",
                 "testUpdateFailureMultipleRecordsLastName2", "testUpdateFailureMultipleRecordsLogon2",
                 "testUpdateFailureMultipleRecordsSub2",
                 "testUpdateFailureMultipleRecordsEmail2@testUpdateFailureMultipleRecordsEmail2.pt", 2L);
-        userServiceAccess.save(u2);
+        userServiceAccess.create(u2);
 
         UserEntity u3 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName3",
                 "testUpdateFailureMultipleRecordsLastName3", "testUpdateFailureMultipleRecordsLogon3",
                 "testUpdateFailureMultipleRecordsSub3",
                 "testUpdateFailureMultipleRecordsEmail3@testUpdateFailureMultipleRecordsEmail3.pt", 2L);
-        userServiceAccess.save(u3);
+        userServiceAccess.create(u3);
 
         UserEntity u4 = UserFactory.create("testUpdateFailureMultipleRecordsFirstName4",
                 "testUpdateFailureMultipleRecordsLastName4", "testUpdateFailureMultipleRecordsLogon3",
                 "testUpdateFailureMultipleRecordsSub4",
                 "testUpdateFailureMultipleRecordsEmail2@testUpdateFailureMultipleRecordsEmail2.pt", 2L);
 
-        Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
+        Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.create(u4));
         String actualMessageEmailAndLogon = exceptionEmailAndLogon.getMessage();
         String expectedMessageEmailAndLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon");
         assertTrue(actualMessageEmailAndLogon.contains(expectedMessageEmailAndLogon));
@@ -398,20 +395,20 @@ public class UserServiceTest {
                 "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon1",
                 "testUpdateFailureDuplicatedEmailSub1",
                 "testUpdateFailureDuplicatedEmail1@testUpdateFailureDuplicatedEmail1.pt", 2L);
-        userServiceAccess.save(u1);
+        userServiceAccess.create(u1);
 
         UserEntity u2 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName2",
                 "testUpdateFailureDuplicatedEmailLastName2", "testUpdateFailureDuplicatedEmailLogon2",
                 "testUpdateFailureDuplicatedEmailSub2",
                 "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
-        userServiceAccess.save(u2);
+        userServiceAccess.create(u2);
 
         UserEntity u3 = UserFactory.create("testUpdateFailureDuplicatedEmailFirstName1",
                 "testUpdateFailureDuplicatedEmailLastName1", "testUpdateFailureDuplicatedEmailLogon3",
                 "testUpdateFailureDuplicatedEmailSub1",
                 "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
 
-        Exception exceptionEmail = assertThrows(Exception.class, () -> userServiceAccess.save(u3));
+        Exception exceptionEmail = assertThrows(Exception.class, () -> userServiceAccess.create(u3));
         String actualMessageEmail = exceptionEmail.getMessage();
         assertTrue(actualMessageEmail.contains(expectedMessageEmail));
 
@@ -420,7 +417,7 @@ public class UserServiceTest {
                 "testUpdateFailureDuplicatedEmailSub4",
                 "testUpdateFailureDuplicatedEmail2@testUpdateFailureDuplicatedEmail2.pt", 2L);
 
-        Exception exceptionEmail2 = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
+        Exception exceptionEmail2 = assertThrows(Exception.class, () -> userServiceAccess.create(u4));
         String actualMessageEmail2 = exceptionEmail2.getMessage();
         assertTrue(actualMessageEmail2.contains(expectedMessageEmail));
     }
@@ -432,26 +429,26 @@ public class UserServiceTest {
      */
     @Test
     public void testUpdateFailureDuplicatedLogon() throws Exception {
-        String expectedMessageLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon");;
+        String expectedMessageLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Logon");
 
         UserEntity u1 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName1",
                 "testUpdateFailureDuplicatedLogonLastName1", "testUpdateFailureDuplicatedLogonLogon1",
                 "testUpdateFailureDuplicatedLogonSub1",
                 "testUpdateFailureDuplicatedLogonEmail1@testUpdateFailureDuplicatedLogonEmail1.pt", 2L);
-        userServiceAccess.save(u1);
+        userServiceAccess.create(u1);
 
         UserEntity u2 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName2",
                 "testUpdateFailureDuplicatedLogonLastName2", "testUpdateFailureDuplicatedLogonLogon2",
                 "testUpdateFailureDuplicatedLogonSub2",
                 "testUpdateFailureDuplicatedLogonEmail2@testUpdateFailureDuplicatedLogonEmail2.pt", 2L);
-        userServiceAccess.save(u2);
+        userServiceAccess.create(u2);
 
         UserEntity u3 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName1",
                 "testUpdateFailureDuplicatedLogonLastName1", "testUpdateFailureDuplicatedLogonLogon2",
                 "testUpdateFailureDuplicatedLogonSub2",
                 "testUpdateFailureDuplicatedLogonEmail3@testUpdateFailureDuplicatedLogonEmail3.pt", 2L);
 
-        Exception exceptionLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u3));
+        Exception exceptionLogon = assertThrows(Exception.class, () -> userServiceAccess.create(u3));
         String actualMessageLogon = exceptionLogon.getMessage();
         assertTrue(actualMessageLogon.contains(expectedMessageLogon));
 
@@ -460,7 +457,7 @@ public class UserServiceTest {
                 "testUpdateFailureDuplicatedLogonSub4",
                 "testUpdateFailureDuplicatedLogonEmail4@testUpdateFailureDuplicatedLogonEmail4.pt", 2L);
 
-        Exception exceptionLogon2 = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
+        Exception exceptionLogon2 = assertThrows(Exception.class, () -> userServiceAccess.create(u4));
         String actualMessageLogon2 = exceptionLogon2.getMessage();
         assertTrue(actualMessageLogon2.contains(expectedMessageLogon));
     }
@@ -476,45 +473,44 @@ public class UserServiceTest {
                 "testUpdateFailureDuplicatedEmailAndLogonLastName1", "testUpdateFailureDuplicatedEmailAndLogonLogon1",
                 "testUpdateFailureDuplicatedEmailAndLogonSub1",
                 "testUpdateFailureDuplicatedEmailAndLogon1@testUpdateFailureDuplicatedEmailAndLogon1.pt", 2L);
-        userServiceAccess.save(u1);
+        userServiceAccess.create(u1);
 
         UserEntity u2 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName2",
                 "testUpdateFailureDuplicatedEmailAndLogonLastName2", "testUpdateFailureDuplicatedEmailAndLogonLogon2",
                 "testUpdateFailureDuplicatedEmailAndLogonSub2",
                 "testUpdateFailureDuplicatedEmailAndLogon2@testUpdateFailureDuplicatedEmailAndLogon2.pt", 2L);
-        userServiceAccess.save(u2);
+        userServiceAccess.create(u2);
 
         UserEntity u3 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName3",
                 "testUpdateFailureDuplicatedEmailAndLogonLastName3", "testUpdateFailureDuplicatedEmailAndLogonLogon3",
                 "testUpdateFailureDuplicatedEmailAndLogonSub3",
                 "testUpdateFailureDuplicatedEmailAndLogon3@testUpdateFailureDuplicatedEmailAndLogon3.pt", 2L);
-        userServiceAccess.save(u3);
+        userServiceAccess.create(u3);
 
         UserEntity u4 = UserFactory.create("testUpdateFailureDuplicatedEmailAndLogonFirstName1",
                 "testUpdateFailureDuplicatedEmailAndLogonLastName1", "testUpdateFailureDuplicatedEmailAndLogonLogon2",
                 "testUpdateFailureDuplicatedEmailAndLogonSub1",
                 "testUpdateFailureDuplicatedEmailAndLogon2@testUpdateFailureDuplicatedEmailAndLogon2.pt", 2L);
 
-        Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.save(u4));
+        Exception exceptionEmailAndLogon = assertThrows(Exception.class, () -> userServiceAccess.create(u4));
         System.out.println(exceptionEmailAndLogon.toString());
         String actualMessageEmailAndLogon = exceptionEmailAndLogon.getMessage();
-        String expectedMessageEmailAndLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon");;
+        String expectedMessageEmailAndLogon = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address and Logon");
         assertTrue(actualMessageEmailAndLogon.contains(expectedMessageEmailAndLogon));
     }
 
     /**
      * Test to attempt to get all the users in a sorting criteria order
      * @throws UniquenessConstraintException in case of duplicated data
-     * @throws UserNotFoundException in case certain user could not be found
      */
     @Test
-    public void testGetAllSort() throws UniquenessConstraintException, UserNotFoundException {
+    public void testGetAllSort() throws UniquenessConstraintException {
         SystemUser userA = UserFactory.create("a", "lastName", "aGetAllSort",
                 "a","aGetAllSort@email.pt", 2L);
-        userServiceAccess.save(userA);
+        userServiceAccess.create(userA);
         SystemUser userB = UserFactory.create("zzz", "lastName", "bGetAllSort",
                 "b","bGetAllSort@email.pt", 2L);
-        userServiceAccess.save(userB);
+        userServiceAccess.create(userB);
 
         List<String> orderby = new ArrayList<>();
         orderby.add("firstname");
@@ -538,10 +534,9 @@ public class UserServiceTest {
     /**
      * Test to retrieve the users with and without exact logical search
      * @throws UniquenessConstraintException in case of duplicated data
-     * @throws UserNotFoundException in case certain user could not be found
      */
     @Test
-    public void testGetByIsExactOrLogical() throws UniquenessConstraintException, UserNotFoundException {
+    public void testGetByIsExactOrLogical() throws UniquenessConstraintException {
         SystemUser testById1 = UserFactory.create("zz", "lastName", "zz",
                 "zz","zz@b.pt", 1L);
 
@@ -551,14 +546,14 @@ public class UserServiceTest {
         SystemUser testById3 = UserFactory.create("aabb", "lastName", "aabb",
                 "aabb","aabb@b.pt", 1L);
 
-        userServiceAccess.save(testById1);
-        userServiceAccess.save(testById2);
-        userServiceAccess.save(testById3);
+        userServiceAccess.create(testById1);
+        userServiceAccess.create(testById2);
+        userServiceAccess.create(testById3);
 
         List<? extends SystemUser> usersAnd = userServiceAccess.getUsers(new UserSearchFilter("zz","zz@b.pt","zz",null,true,true));
         assertEquals(1,usersAnd.size());
 
-        List<? extends SystemUser> usersOr = userServiceAccess.getUsers(new UserSearchFilter("aa","aa@b.pt","zz",new ArrayList(),true,false));
+        List<? extends SystemUser> usersOr = userServiceAccess.getUsers(new UserSearchFilter("aa","aa@b.pt","zz",new ArrayList<>(),true,false));
         assertEquals(2,usersOr.size());
 
         List<? extends SystemUser> usersNotExact = userServiceAccess.getUsers(new UserSearchFilter("aa","aa","aa",null,false,true));
@@ -694,5 +689,22 @@ public class UserServiceTest {
         userServiceAccess.updateEmail(1L, result);
 
         assertEquals(user.getId(), result.getId());
+    }
+
+    /**
+     * Test for a situation where is tried to update a user that
+     * does not exist in the database
+     * @throws UniquenessConstraintException in case there is a issue in the data and it is duplicated
+     * @throws UserNotFoundException in case certain user could not be found
+     */
+    @Test(expected = UserNotFoundException.class)
+    public void testUpdateNotExistentUser() throws UniquenessConstraintException, UserNotFoundException {
+        SystemUser user = new UserEntity();
+        user.setUserEmail("emailtest@email.com");
+        user.setId(111111111111L);
+        user.setLastUpdate(new Date());
+        user.setLastUpdateUser(1L);
+
+        userServiceAccess.update(user);
     }
 }

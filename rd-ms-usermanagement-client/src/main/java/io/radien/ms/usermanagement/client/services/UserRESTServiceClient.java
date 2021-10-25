@@ -248,16 +248,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case it founds multiple users or if URL is malformed
      */
     public boolean create(SystemUser user, boolean skipKeycloak) throws SystemException {
-        try {
-            return createUser(user, skipKeycloak);
-        } catch (TokenExpiredException e) {
-            refreshToken();
-            try {
-                return createUser(user, skipKeycloak);
-            } catch (TokenExpiredException tokenExpiredException) {
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::createUser, user, skipKeycloak);
     }
 
     /**
@@ -278,7 +269,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         if (skipKeycloak) {
             user.setDelegatedCreation(true);
         }
-        try (Response response = client.save((User) user)) {
+        try (Response response = client.create((User) user)) {
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -487,7 +478,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
     private boolean updateUser(User user) throws TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-            Response response = client.save(user);
+            Response response = client.update(user.getId(), user);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {

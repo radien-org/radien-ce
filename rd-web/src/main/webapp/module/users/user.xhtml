@@ -55,12 +55,12 @@
 								 tooltip="#{msg.saveChanges}"
 								 iconAwesome="fa-save"
 								 rendered="#{userDataModel.selectedUser != null}"
-								 action="#{userDataModel.updateUser(userDataModel.selectedUser)}"/>
+								 action="#{userDataModel.saveUser(userDataModel.selectedUser)}"/>
 				<b:commandButton value="#{msg.save}"
 								 tooltip="#{msg.saveChanges}"
 								 iconAwesome="fa-save"
 								 rendered="#{userDataModel.selectedUser == null}"
-								 action="#{userDataModel.updateUser(userDataModel.user)}"/>
+								 action="#{userDataModel.saveUser(userDataModel.user)}"/>
 
 				<b:commandButton value="#{msg.associate}"
 								 tooltip="#{msg.rd_tenant_association}"
