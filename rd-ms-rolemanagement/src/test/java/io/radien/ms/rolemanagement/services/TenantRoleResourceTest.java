@@ -19,7 +19,6 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.role.SystemRolesEnum;
-import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleIllegalArgumentException;
@@ -382,32 +381,6 @@ public class TenantRoleResourceTest {
         Response response = tenantRoleResource.isPermissionExistentForUser(1L,
                 2L, 3L);
         assertEquals(500, response.getStatus());
-    }
-
-
-    /**
-     * Tests response from getRoles method
-     */
-    @Test
-    public void testGetRoles() {
-        Response response = tenantRoleResource.getRolesForUserTenant(1L, 1L);
-        assertEquals(200, response.getStatus());
-    }
-
-    /**
-     * Tests response from getRoles method when exceptions occur during the processing
-     */
-    @Test
-    public void testGetRolesWithException() {
-        try {
-            doThrow(new RoleNotFoundException("error")).
-                    when(tenantRoleBusinessService).getRolesForUserTenant(1L, 1L);
-        }
-        catch (Exception e) {
-            fail("unexpected");
-        }
-        Response response = tenantRoleResource.getRolesForUserTenant(1L, 1L);
-        assertEquals(404, response.getStatus());
     }
 
     /**

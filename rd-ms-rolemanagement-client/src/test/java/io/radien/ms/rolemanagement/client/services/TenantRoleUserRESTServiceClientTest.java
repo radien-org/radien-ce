@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.security.TokensPlaceHolder;
@@ -56,6 +57,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -805,4 +808,65 @@ public class TenantRoleUserRESTServiceClientTest {
 
         target.getTenants(1L, 2L);
     }
+
+
+    /**
+     * Test method getRoles()
+     * Test case - success scenario
+     */
+    @Test
+    public void testGetRoles() {
+
+        String jsonArray = "[{\"id\": 1, \"role\": \"Role-1\", \"roleDescription\": \"RoleDescription-1\" }, " +
+                "{\"id\": 2, \"role\": \"Role-2\", \"roleDescription\": \"RoleDescription-2\"}]";
+        InputStream is = new ByteArrayInputStream(jsonArray.getBytes());
+        Response response = Response.ok(is).build();
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(client.getRolesForUserTenant(1L, 1L)).thenReturn(response);
+        assertDoesNotThrow(() -> when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
+                thenReturn(client));
+
+        List<? extends SystemRole> result = assertDoesNotThrow(() -> target.getRolesForUserTenant(1L, 1L));
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+    }
+
+    /**
+     * Test method getRoles()
+     * Test case - failure scenario of
+     * Token expire
+     * @throws Exception if any error
+     */
+    @Test(expected = SystemException.class)
+    public void testGetRolesTokenExpiration() throws Exception {
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+        when(client.getRolesForUserTenant(anyLong(), anyLong())).thenThrow(new TokenExpiredException("test"));
+
+        target.getRolesForUserTenant(1L, 1L);
+    }
+
+    /**
+     * Test method getRoles()
+     * Test case - failure scenario
+     * @throws Exception if any error
+     */
+    @Test(expected = SystemException.class)
+    public void testGetRolesException() throws Exception {
+        TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
+
+        when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getRolesForUserTenant(anyLong(), anyLong())).thenThrow(new ProcessingException("test"));
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getRolesForUserTenant(1L, 1L);
+    }
+
 }

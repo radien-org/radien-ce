@@ -20,7 +20,6 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
-import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
@@ -98,7 +97,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      * roles for the Tenant User
      * @param systemTenant the selected value object
      */
-    public void selectedChangeTenant (ValueChangeEvent systemTenant) throws SystemException {
+    public void selectedChangeTenant (ValueChangeEvent systemTenant) {
         if(systemTenant.getNewValue() != null){
             clearDefaultRolesAssignedMap();
             loadUserTenantRoles((SystemTenant) systemTenant.getNewValue());
@@ -111,7 +110,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      */
     public void loadUserTenantRoles(SystemTenant systemTenant) {
         try{
-            assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleRESTServiceAccess
+            assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleUserRESTServiceAccess
                     .getRolesForUserTenant(userDataModel.getSelectedUser().getId(), systemTenant.getId()));
 
             if(!assignedRolesForUserTenant.isEmpty()){

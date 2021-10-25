@@ -207,6 +207,24 @@ public class TenantRoleUserResource extends AuthorizationChecker implements Tena
         }
     }
 
+
+
+    /**
+     * Retrieves the Roles for which a User is associated under a Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return Response OK with List containing roles. Response 500 in case of any other error.
+     */
+    @Override
+    public Response getRolesForUserTenant(Long userId, Long tenantId) {
+        log.info("Retrieving Roles for user {} and tenant {}", userId, tenantId);
+        try {
+            return Response.ok().entity(tenantRoleUserBusinessService.getRolesForUserTenant(userId, tenantId)).build();
+        } catch (Exception e) {
+            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        }
+    }
+
     /**
      * Retrieves TenantRole User associations that met the following parameter
      * @param tenantRoleId TenantRole identifier

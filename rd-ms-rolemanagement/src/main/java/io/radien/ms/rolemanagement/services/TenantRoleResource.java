@@ -20,7 +20,6 @@ import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
-import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleIllegalArgumentException;
@@ -241,22 +240,6 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
         }
     }
 
-
-    /**
-     * Retrieves the Roles for which a User is associated under a Tenant
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @return Response OK with List containing roles. Response 500 in case of any other error.
-     */
-    @Override
-    public Response getRolesForUserTenant(Long userId, Long tenantId) {
-        log.info("Retrieving Roles for user {} and tenant {}", userId, tenantId);
-        try {
-            return Response.ok().entity(tenantRoleBusinessService.getRolesForUserTenant(userId, tenantId)).build();
-        } catch (RoleNotFoundException e) {
-            return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
-        }
-    }
 
     /**
      * Check if Role exists for a User (Optionally under a Tenant)

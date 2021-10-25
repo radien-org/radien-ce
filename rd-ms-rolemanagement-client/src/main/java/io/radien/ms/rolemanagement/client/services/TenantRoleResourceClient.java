@@ -18,23 +18,21 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import javax.ws.rs.PUT;
-import javax.ws.rs.HEAD;
-
-import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.util.List;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 /**
  * Tenant Role REST requests and services
@@ -155,17 +153,6 @@ public interface TenantRoleResourceClient {
     @Path("/{tenantId}/{roleId}")
     Response exists(@PathParam("tenantId") Long tenantId,
                     @PathParam("roleId") Long roleId);
-
-    /**
-     * Retrieves the Roles for which a User is associated under a Tenant
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @return Response OK if operation concludes with success.
-     * Response 500 in case of error
-     */
-    @GET
-    @Path("/rolesUserTenant")
-    Response getRolesForUserTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
 
     /**
      * Check if Role exists for a User (Optionally under a Tenant)

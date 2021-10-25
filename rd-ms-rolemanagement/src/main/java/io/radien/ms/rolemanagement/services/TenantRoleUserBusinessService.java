@@ -16,6 +16,7 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
@@ -29,15 +30,16 @@ import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.TenantRoleUserDuplicationException;
 import io.radien.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
-import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
-import io.radien.ms.tenantmanagement.client.services.ActiveTenantFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND;
@@ -52,6 +54,8 @@ import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_
 public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusinessService implements Serializable {
     private static final long serialVersionUID = -5658845596283229172L;
 
+    private static final Logger log = LoggerFactory.getLogger(TenantRoleUserBusinessService.class);
+
     @Inject
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
 
@@ -64,7 +68,6 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
      * @param tru TenantRoleUser bean that contains information regarding user and Tenant role association
      * @throws TenantRoleException for the case of any inconsistency found
      * @throws UniquenessConstraintException in case of error during the insertion
-     * @throws SystemException in case of any communication issue with the endpoint
      */
     public void assignUser(TenantRoleUserEntity tru) throws TenantRoleException, UniquenessConstraintException {
         persistTenantRoleUser(tru);
@@ -76,7 +79,6 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
      * @param tru TenantRoleUser bean that contains information regarding user and Tenant role association
      * @throws TenantRoleException for the case of any inconsistency found
      * @throws UniquenessConstraintException in case of error during the insertion
-     * @throws SystemException in case of any communication issue with the endpoint
      */
     public void update(TenantRoleUserEntity tru) throws TenantRoleException, UniquenessConstraintException {
         persistTenantRoleUser(tru);
@@ -207,6 +209,26 @@ public class TenantRoleUserBusinessService extends AbstractTenantRoleDomainBusin
             activeTenantRESTServiceAccess.deleteByTenantAndUser(tenant, user);
         }
     }
+
+
+    /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing roles
+     */
+    public List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) {
+        checkIfMandatoryParametersWereInformed(userId);
+        String msg = String.format("Get Roles for User:%d Tenant:%d",userId,tenantId);
+        log.info(msg);
+        List<Long> ids = this.getTenantRoleServiceAccess().getRoleIdsForUserTenant(userId, tenantId);
+        if(ids == null || ids.isEmpty()){
+            return new ArrayList<>();
+        }
+        return getRoleServiceAccess().getSpecificRoles(new RoleSearchFilter(null,
+                null, ids, true,true));
+    }
+
 
     /**
      * Getter for the property {@link TenantRoleUserBusinessService#activeTenantRESTServiceAccess}

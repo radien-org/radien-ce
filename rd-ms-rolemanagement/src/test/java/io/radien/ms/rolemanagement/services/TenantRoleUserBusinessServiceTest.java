@@ -16,14 +16,19 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.SystemVariables;
+import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.role.SystemRoleSearchFilter;
+import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.TenantRoleUserException;
+import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 import java.util.ArrayList;
@@ -31,19 +36,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static io.radien.exception.GenericErrorCodeMessage.GENERIC_ERROR;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_FIELD_MANDATORY;
 import static io.radien.exception.GenericErrorCodeMessage.TENANT_ROLE_NO_TENANT_ROLE_FOUND;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -66,6 +70,9 @@ class TenantRoleUserBusinessServiceTest {
 
     @Mock
     private TenantRoleUserServiceAccess tenantRoleUserServiceAccess;
+
+    @Mock
+    private RoleServiceAccess roleServiceAccess;
 
     Long userId = 1L;
     Long tenantId = 2L;
@@ -111,10 +118,9 @@ class TenantRoleUserBusinessServiceTest {
     /**
      * Test for method {@link TenantRoleUserBusinessService#update(TenantRoleUserEntity)}
      * in a well succeed scenario .
-     * @throws SystemException in case of communication issues with REST client
      */
     @Test
-    void testTenantRoleUserUpdateOK() throws SystemException {
+    void testTenantRoleUserUpdateOK() {
         TenantRoleUserEntity trp = new TenantRoleUserEntity();
         trp.setId(1L);
         trp.setTenantRoleId(2L);
@@ -133,10 +139,9 @@ class TenantRoleUserBusinessServiceTest {
     /**
      * Test for method {@link TenantRoleUserBusinessService#update(TenantRoleUserEntity)}
      * in a bad succeed scenario where tenantRoleId does not exist in the database
-     * @throws SystemException in case of communication issues with REST client
      */
     @Test
-    void testUpdateTenantRoleNOK() throws SystemException {
+    void testUpdateTenantRoleNOK() {
         TenantRoleUserEntity trp = new TenantRoleUserEntity();
         trp.setId(1L);
         trp.setTenantRoleId(2L);
@@ -154,10 +159,9 @@ class TenantRoleUserBusinessServiceTest {
     /**
      * Test for method {@link TenantRoleUserBusinessService#update(TenantRoleUserEntity)}
      * in a bad succeed scenario where userId was not informed
-     * @throws SystemException in case of communication issues with REST client
      */
     @Test
-    void testUpdateUserIdNOK() throws SystemException {
+    void testUpdateUserIdNOK() {
         TenantRoleUserEntity trp = new TenantRoleUserEntity();
         String errorMsg = TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.USER_ID.getLabel());
         Exception e = assertThrows(TenantRoleIllegalArgumentException.class, () ->
@@ -168,10 +172,9 @@ class TenantRoleUserBusinessServiceTest {
     /**
      * Test for method {@link TenantRoleUserBusinessService#update(TenantRoleUserEntity)}
      * in a bad succeed scenario where tenantRoleId was not informed
-     * @throws SystemException in case of communication issues with REST client
      */
     @Test
-    void testUpdateWhenTenantRoleIdNotInformed() throws SystemException {
+    void testUpdateWhenTenantRoleIdNotInformed() {
         TenantRoleUserEntity trp = new TenantRoleUserEntity();
         trp.setUserId(1L);
         String errorMsg = TENANT_ROLE_FIELD_MANDATORY.toString(SystemVariables.TENANT_ROLE_ID.getLabel());
@@ -184,10 +187,9 @@ class TenantRoleUserBusinessServiceTest {
      * Test for method {@link TenantRoleUserBusinessService#update(TenantRoleUserEntity)}
      * in a bad succeed scenario where the combination of tenantRoleId and permissionId already
      * exist for another TenantRoleUser entity/row (Comparison taking in consideration the id).
-     * @throws SystemException in case of communication issues with REST client
      */
     @Test
-    void testUpdateAssociationAlreadyExist() throws SystemException {
+    void testUpdateAssociationAlreadyExist() {
         TenantRoleUserEntity trp = new TenantRoleUserEntity();
         trp.setId(1L);
         trp.setTenantRoleId(2L);
@@ -198,7 +200,7 @@ class TenantRoleUserBusinessServiceTest {
         tr.setTenantId(222L);
         tr.setRoleId(333L);
 
-        String errorMsg = GENERIC_ERROR.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
+        String errorMsg = GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.
                 toString(String.valueOf(tr.getTenantId()), String.valueOf(tr.getRoleId())) ;
 
         when(tenantRoleServiceAccess.get(trp.getTenantRoleId())).thenReturn(tr);
@@ -208,6 +210,41 @@ class TenantRoleUserBusinessServiceTest {
         TenantRoleException tre = assertThrows(TenantRoleException.class, () ->
                 tenantRoleUserBusinessService.update(trp));
         assertEquals(errorMsg, tre.getMessage());
+    }
+
+    /**
+     * Test for {@link TenantRoleUserBusinessService#getRolesForUserTenant(Long, Long)}
+     */
+    @Test
+    public void testGetRoles() {
+        Long userId = 1L;
+        Long tenantId = 2L;
+
+        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+        List<SystemRole> roles = new ArrayList<>();
+        Role role1 = new Role(); role1.setId(1L);
+        roles.add(role1);
+        Role role2 = new Role(); role2.setId(1L);
+        roles.add(role2);
+        Role role3 = new Role(); role3.setId(1L);
+        roles.add(role3);
+
+        when(tenantRoleServiceAccess.getRoleIdsForUserTenant(userId, tenantId)).thenReturn(ids);
+        when(roleServiceAccess.getSpecificRoles(any(SystemRoleSearchFilter.class))).then(i->roles);
+
+        assertEquals(roles, tenantRoleUserBusinessService.getRolesForUserTenant(userId, tenantId));
+    }
+
+    /**
+     * Test for {@link TenantRoleUserBusinessService#getRolesForUserTenant(Long, Long)}
+     * where roles could be retrieved by a given pair of tenantId and userId
+     */
+    @Test
+    public void testGetRolesEmpty() {
+        Long userId = 1L;
+        Long tenantId = 2L;
+        when(tenantRoleServiceAccess.getRoleIdsForUserTenant(userId, tenantId)).thenReturn(new ArrayList<>());
+        assertEquals(0, tenantRoleUserBusinessService.getRolesForUserTenant(userId, tenantId).size());
     }
 
 }

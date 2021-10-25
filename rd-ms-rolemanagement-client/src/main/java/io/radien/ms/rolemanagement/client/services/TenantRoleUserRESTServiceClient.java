@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
@@ -30,6 +31,7 @@ import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
+import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import io.radien.ms.rolemanagement.client.util.TenantRoleUserModelMapper;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import java.io.InputStream;
@@ -424,6 +426,38 @@ public class TenantRoleUserRESTServiceClient extends AuthorizationChecker implem
         return Optional.empty();
     }
 
+
+    /**
+     * Retrieves the existent Roles for a User of specific associated Tenant
+     * For this, it Invokes the core method counterpart and handles TokenExpiration error
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing Roles
+     * @throws SystemException in case of any error
+     */
+    @Override
+    public List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws SystemException {
+        return get(this::getRolesForUserTenantCore, userId, tenantId);
+    }
+
+    /**
+     * Core method that retrieves the existent Roles for a User of specific associated Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing Roles
+     * @throws TokenExpiredException if JWT token expires
+     * @throws SystemException in case of any error
+     */
+    private List<? extends SystemRole> getRolesForUserTenantCore(Long userId, Long tenantId) throws SystemException {
+        TenantRoleUserResourceClient client = getClient();
+        try (Response response = client.getRolesForUserTenant(userId, tenantId)) {
+            return RoleModelMapper.mapList((InputStream) response.getEntity());
+        }
+        catch (ProcessingException | ParseException | BadRequestException |
+                io.radien.exception.InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
 
     /**
      * Assemblies a {@link TenantRoleUserResourceClient} instance using RestClientBuilder Microprofile API
