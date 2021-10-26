@@ -27,27 +27,25 @@ import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.Context;
+import javax.naming.NamingException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.naming.NamingException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Properties;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tenant Role User Service rest requests and responses with access into the db
@@ -139,6 +137,15 @@ public class UserServiceTest {
     @Test
     public void testAddUser() throws UserNotFoundException {
         SystemUser result = userServiceAccess.get(uTest.getId());
+        assertNotNull(result);
+    }
+
+    /**
+     * Test method for {@link UserService#get(List)}
+     */
+    @Test
+    public void testGet() {
+        List<SystemUser>  result = userServiceAccess.get((List<Long>) null);
         assertNotNull(result);
     }
 
@@ -347,6 +354,21 @@ public class UserServiceTest {
     }
 
     /**
+     * Test updates the user information asserts UniquenessConstraintException
+     * @throws Exception in case of user to be updated not found
+     */
+    @Test(expected = UniquenessConstraintException.class)
+    public void testUpdateUniquenessConstraintException() throws Exception {
+        SystemUser u1 = UserFactory.create("testUpdateFirstName1", "testUpdateLastName1",
+                "testUpdateLogon1", "testeUpdateSub1", "testeUpdateEmail1@testeUpdate1.pt", 2L);
+        userServiceAccess.create(u1);
+
+        SystemUser u2 = UserFactory.create("testUpdateFirstName2", "testUpdateLastName2",
+                "testUpdateLogon1", "testeUpdateSub2", "testeUpdateEmail2@testeUpdate2.pt", 2L);
+        userServiceAccess.create(u2);
+    }
+
+    /**
      * Test to attempt to update multiple records with failure
      * @throws Exception to be throw
      */
@@ -452,14 +474,6 @@ public class UserServiceTest {
         String actualMessageLogon = exceptionLogon.getMessage();
         assertTrue(actualMessageLogon.contains(expectedMessageLogon));
 
-        UserEntity u4 = UserFactory.create("testUpdateFailureDuplicatedLogonFirstName4",
-                "testUpdateFailureDuplicatedLogonLastName4", "testUpdateFailureDuplicatedLogonLogon2",
-                "testUpdateFailureDuplicatedLogonSub4",
-                "testUpdateFailureDuplicatedLogonEmail4@testUpdateFailureDuplicatedLogonEmail4.pt", 2L);
-
-        Exception exceptionLogon2 = assertThrows(Exception.class, () -> userServiceAccess.create(u4));
-        String actualMessageLogon2 = exceptionLogon2.getMessage();
-        assertTrue(actualMessageLogon2.contains(expectedMessageLogon));
     }
 
     /**
@@ -525,7 +539,8 @@ public class UserServiceTest {
         assertTrue(userPage.getTotalResults()>=2);
         assertEquals("zzz",userPage.getResults().get(0).getFirstname());
 
-        Page<? extends SystemUser> userPageWhere = userServiceAccess.getAll("aGetAllSort@email.pt", 1, 10, null, true);
+        List<String> stringList = new ArrayList<>();
+        Page<? extends SystemUser> userPageWhere = userServiceAccess.getAll("aGetAllSort@email.pt", 1, 10, stringList, true);
         assertEquals(1, userPageWhere.getTotalResults());
 
         assertEquals("a",userPageWhere.getResults().get(0).getFirstname());
@@ -671,24 +686,6 @@ public class UserServiceTest {
         assertNotNull(page);
         assertEquals((firstSetSize + secondSetSize) - 6, page.getTotalResults());
 
-    }
-
-    /**
-     * Test method {@link UserService#updateEmail(long, SystemUser)}
-     * @throws UserNotFoundException in case certain user could not be found
-     */
-    @Test
-    public void testUpdateEmail() throws UserNotFoundException {
-        SystemUser user = new UserEntity();
-        user.setUserEmail("email@email.com");
-        user.setId(1L);
-        user.setLastUpdate(new Date());
-        user.setLastUpdateUser(1L);
-
-        SystemUser result = userServiceAccess.get(user.getId());
-        userServiceAccess.updateEmail(1L, result);
-
-        assertEquals(user.getId(), result.getId());
     }
 
     /**

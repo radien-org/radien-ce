@@ -20,7 +20,6 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
-import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
@@ -522,16 +521,19 @@ public class UserDataModel extends AbstractManager implements Serializable {
     /**
      * Updates email and sends verification email for a user
      */
-    public void updateUserEmailAndExecuteActionEmailVerify(){
+    public String updateUserEmailAndExecuteActionEmailVerify(){
         try{
             if(selectedUser.getId() != null && updateEmail.getUserEmail() != null){
                 service.updateEmailAndExecuteActionEmailVerify(selectedUser.getId(), updateEmail);
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_SUCCESS.getValue()),
                         JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+                onload();
+                returnToDataTableRecords();
             }
         }catch (Exception e){
             handleError(e, JSFUtil.getMessage(DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
+        return DataModelEnum.USERS_PATH.getValue();
     }
 
     /**

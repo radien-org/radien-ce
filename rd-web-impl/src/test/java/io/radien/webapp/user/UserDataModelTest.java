@@ -802,4 +802,17 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         this.userDataModel.setAllowedToUpdateUserEmail(true);
         assertTrue(this.userDataModel.isAllowedToUpdateUserEmail());
     }
+
+    /**
+     * Test for method
+     * {@link UserDataModel#getUpdateEmail()}
+     * {@link UserDataModel#setUpdateEmail(SystemUser)}
+     */
+    @Test
+    public void testGetterSetterUpdateEmail() {
+        SystemUser systemUser = new User();
+        systemUser.setUserEmail("email@email.com");
+        this.userDataModel.setUpdateEmail(systemUser);
+        assertEquals(systemUser, userDataModel.getUpdateEmail());
+    }
 }
