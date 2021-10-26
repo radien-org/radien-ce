@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,9 +215,9 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 
 	/**
 	 * Gets the correct user id based on the given subject
-	 * @param sub sub from the current logged logged user
+	 * @param sub sub from the current logged user
 	 * @return user id
-	 * @throws SystemException SystemException is thrown by the common language runtime when errors occur
+	 * @throws SystemException is thrown by the common language runtime when errors occur
 	 * that are nonfatal and recoverable by user programs.
 	 */
 	@Override
@@ -240,16 +240,6 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
 		roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
 		return hasGrantMultipleRoles(roleNames);
-	}
-
-	public boolean checkUserPermission(boolean create) throws SystemException{
-		String action;
-		if(create){
-			action="Create";
-		} else {
-			action="Update";
-		}
-		return hasPermission(null, action, "User");
 	}
 
 	/**
@@ -325,7 +315,8 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	public Response updateEmailAndExecuteActionEmailVerify(long userId, User user, boolean emailVerify){
 		try {
 			SystemUser systemUser = userBusinessService.get(userId);
-			userBusinessService.updateEmailAndExecuteActionEmailVerify(systemUser.getId(), systemUser.getSub(), user, emailVerify);
+			systemUser.setUserEmail(user.getUserEmail());
+			userBusinessService.updateEmailAndExecuteActionEmailVerify((User) systemUser, emailVerify);
 			return Response.ok().build();
 		} catch(Exception e) {
 			return getResponseFromException(e);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -82,7 +81,7 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 	@Override
 	public Long getUserId(String userSub) {
 		if (userSub == null || userSub.trim().length() == 0) {
-			throw new IllegalArgumentException(GenericErrorCodeMessage.USER_FIELD_MANDATORY.toString("user subject"));
+			throw new IllegalArgumentException( GenericErrorCodeMessage.USER_FIELD_MANDATORY.toString("user subject"));
 		}
 		String query = "Select u.id From UserEntity u where u.sub = :pUserSub";
 		TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
@@ -389,20 +388,6 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 		batchSummary.addNonProcessedItems(issues.values());
 
 		return batchSummary;
-	}
-
-	/**
-	 * Updates user email attribute in the db
-	 * @param user object info
-	 */
-	@Override
-	public void updateEmail(long id, SystemUser user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<UserEntity> criteriaUpdate = cb.createCriteriaUpdate(UserEntity.class);
-		Root<UserEntity> root = criteriaUpdate.from(UserEntity.class);
-		criteriaUpdate.set(root.get(SystemVariables.USER_EMAIL.getFieldName()), user.getUserEmail());
-		criteriaUpdate.where(cb.equal(root.get(SystemVariables.ID.getFieldName()), id));
-		em.createQuery(criteriaUpdate).executeUpdate();
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -801,5 +801,18 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     public void testGetterSetterAllowedToUpdateUserEmail() {
         this.userDataModel.setAllowedToUpdateUserEmail(true);
         assertTrue(this.userDataModel.isAllowedToUpdateUserEmail());
+    }
+
+    /**
+     * Test for method
+     * {@link UserDataModel#getUpdateEmail()}
+     * {@link UserDataModel#setUpdateEmail(SystemUser)}
+     */
+    @Test
+    public void testGetterSetterUpdateEmail() {
+        SystemUser systemUser = new User();
+        systemUser.setUserEmail("email@email.com");
+        this.userDataModel.setUpdateEmail(systemUser);
+        assertEquals(systemUser, userDataModel.getUpdateEmail());
     }
 }

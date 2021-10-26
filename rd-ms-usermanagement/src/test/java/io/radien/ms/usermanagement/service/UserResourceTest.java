@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.authz.client.PermissionClient;
@@ -41,6 +42,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -102,6 +104,15 @@ public class UserResourceTest {
         when(userBusinessService.getUserId("login1")).thenReturn(null);
         Response response = userResource.getUserIdBySub("login1");
         assertEquals(404, response.getStatus());
+    }
+
+    /**
+     * Test of user not found where we get the user on base of his subject
+     */
+    @Test(expected = SystemException.class)
+    public void testGetCurrentUserIdBySubNotFoundCase() throws SystemException {
+        when(userBusinessService.getUserId("login1")).thenReturn(null);
+        userResource.getCurrentUserIdBySub("login1");
     }
 
     /**
@@ -540,13 +551,13 @@ public class UserResourceTest {
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
         doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
+                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), 1L);
         doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
+                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), 1L);
 
         doThrow(new RemoteResourceException()).when(userBusinessService).update(any(), anyBoolean());
 
-        User user = new User(); user.setId(1L);
+        User user = new User(); user.setId(1L); user.setSub("aaa-bbb-ccc-ddd");
         Response response = userResource.update(user.getId(), user);
         assertEquals(500, response.getStatus());
     }
@@ -795,7 +806,20 @@ public class UserResourceTest {
     }
 
     /**
-     * Private method to mock the pre process method requested while validating the roles
+     * Tests the refresh token with generic exception
+     */
+    @Test
+    public void testRefreshTokenGenericException() {
+        Response responseEmpty = userResource.refreshToken("");
+        assertEquals("refresh token null or empty",responseEmpty.getEntity().toString());
+
+        Response responseNull = userResource.refreshToken(null);
+        assertEquals("refresh token null or empty",responseNull.getEntity().toString());
+
+    }
+
+    /**
+     * Private method to mock the preprocess method requested while validating the roles
      */
     private void preProcessAuthentication() {
         HttpSession session = Mockito.mock(HttpSession.class);

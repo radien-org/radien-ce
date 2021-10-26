@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -552,7 +552,7 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#updateEmailAndExecuteActionEmailVerify(long, String, User, boolean)}
+     * Test method for {@link UserBusinessService#updateEmailAndExecuteActionEmailVerify(User, boolean)}
      */
     @Test
     public void testUpdateEmailAndExecuteActionEmailVerify() {
@@ -562,7 +562,7 @@ public class UserBusinessServiceTest {
         user.setUserEmail("email@email.com");
         boolean success = true;
         try {
-            userBusinessService.updateEmailAndExecuteActionEmailVerify(1L, "", user, true);
+            userBusinessService.updateEmailAndExecuteActionEmailVerify(user, true);
         } catch (Exception e) {
             success = false;
         }
@@ -570,12 +570,12 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test method for {@link UserBusinessService#updateEmailAndExecuteActionEmailVerify(long, String, User, boolean)}
+     * Test method for {@link UserBusinessService#updateEmailAndExecuteActionEmailVerify(User, boolean)}
      */
     @Test(expected = Test.None.class)
     public void testUpdateUserEmailAndExecuteActionEmailVerifyException() throws Exception {
         User user = new UserEntity();
-        userBusinessService.updateEmailAndExecuteActionEmailVerify(1L, "", user, true);
+        userBusinessService.updateEmailAndExecuteActionEmailVerify(user, true);
     }
 
 

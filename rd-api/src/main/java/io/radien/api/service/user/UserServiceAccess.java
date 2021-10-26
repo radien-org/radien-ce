@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,12 +112,5 @@ public interface UserServiceAccess extends ServiceAccess {
      * @return a batch summary with a report saying which records have been or not been deleted
      */
     public BatchSummary create(List<? extends SystemUser> users);
-
-    /**
-     * Saves/Updates the requested information into the db
-     * @param id user to be updated
-     * @param user information contains email update info
-     */
-    public void updateEmail(long id, SystemUser user);
 
 }
