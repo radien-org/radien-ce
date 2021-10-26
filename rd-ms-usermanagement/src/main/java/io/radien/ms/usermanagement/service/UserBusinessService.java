@@ -24,8 +24,6 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -41,7 +39,6 @@ import java.util.List;
 public class UserBusinessService implements Serializable {
 
 	private static final long serialVersionUID = 9136599710056928804L;
-	private static final Logger log = LoggerFactory.getLogger(UserBusinessService.class);
 	@Inject
 	private UserServiceAccess userServiceAccess;
 	@Inject
@@ -191,15 +188,13 @@ public class UserBusinessService implements Serializable {
 	/**
 	 * Method to request the keycloak client to send new updated email to verify for the specific user and
 	 * Updates user email attribute in the db
-	 * @param id user object id
-	 * @param sub user object sub
 	 * @param user user object update email info
 	 * @param emailVerify boolean flag
 	 * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
 	 */
-	public void updateEmailAndExecuteActionEmailVerify(long id, String sub, User user, boolean emailVerify) throws RemoteResourceException {
-		userServiceAccess.updateEmail(id, user);
-		keycloakService.updateEmailAndExecuteActionEmailVerify(user.getUserEmail(), sub, emailVerify);
+	public void updateEmailAndExecuteActionEmailVerify(User user, boolean emailVerify) throws RemoteResourceException, UserNotFoundException, UniquenessConstraintException {
+		userServiceAccess.update(user);
+		keycloakService.updateEmailAndExecuteActionEmailVerify(user.getUserEmail(), user.getSub(), emailVerify);
 	}
 
 	/**
