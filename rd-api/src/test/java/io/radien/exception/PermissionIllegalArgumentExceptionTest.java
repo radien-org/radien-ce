@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.ms.client.exceptions;
+package io.radien.exception;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-public class BadRequestExceptionTest {
+/**
+ * Class that aggregates UnitTest PermissionIllegalArgumentException
+ *
+ * @author Rajesh Gavvala
+ */
+public class PermissionIllegalArgumentExceptionTest {
+    /**
+     * Asserts PermissionIllegalArgumentException
+     */
     @Test
-    public void testBadRequestException(){
-        BadRequestException exception = new BadRequestException();
-        assertNotNull(exception);
-        BadRequestException exception2 = new BadRequestException("message");
-        assertEquals("message",exception2.getMessage());
+    public void testPermissionIllegalArgumentException(){
+        PermissionIllegalArgumentException exception = new PermissionIllegalArgumentException("permissionIllegalArgumentException");
+        assertEquals("permissionIllegalArgumentException",exception.getMessage());
     }
+
 }

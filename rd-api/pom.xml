@@ -111,5 +111,10 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${version.slf4j-api}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-common</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

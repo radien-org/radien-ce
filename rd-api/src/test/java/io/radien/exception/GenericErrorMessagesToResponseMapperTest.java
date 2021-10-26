@@ -15,9 +15,12 @@
  */
 package io.radien.exception;
 
+import javax.ws.rs.core.Response;
 import org.junit.Test;
-
 import org.powermock.core.classloader.annotations.PrepareForTest;
+
+import static org.junit.Assert.assertEquals;
+
 /**
  * Class that aggregates UnitTest GenericErrorMessagesToResponseMapper
  *
@@ -28,46 +31,53 @@ public class GenericErrorMessagesToResponseMapperTest {
 
     /**
      * Asserts exception
-     * Test method getGenericError()
+     * Test method {@link GenericErrorMessagesToResponseMapper#getGenericError(Exception)}
      */
-    @Test(expected = Exception.class)
+    @Test
     public void testGetGenericError(){
-        GenericErrorMessagesToResponseMapper.getGenericError(new Exception("error"));
+        Exception exception = new InternalServerErrorException("Generic Error.");
+        Response response = GenericErrorMessagesToResponseMapper.getGenericError(exception);
+        assertEquals(500, response.getStatus());
     }
 
     /**
      * Asserts exception
-     * Test method getInvalidRequestResponse()
+     * Test method {@link GenericErrorMessagesToResponseMapper#getInvalidRequestResponse(String)}
      */
-    @Test(expected = Exception.class)
+    @Test
     public void testGetInvalidRequestResponse(){
-        GenericErrorMessagesToResponseMapper.getInvalidRequestResponse("error");
+        Response response = GenericErrorMessagesToResponseMapper.getInvalidRequestResponse("invalid");
+        assertEquals(400, response.getStatus());
     }
 
     /**
      * Asserts exception
-     * Test method getResourceNotFoundException()
+     * Test method {@link GenericErrorMessagesToResponseMapper#getNotInformedParametersResponse(String)}
      */
-    @Test(expected = Exception.class)
-    public void testGetResourceNotFoundException(){
-        GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
-    }
-
-    /**
-     * Asserts exception
-     * Test method getNotInformedParametersResponse()
-     */
-    @Test(expected = Exception.class)
+    @Test
     public void testGetNotInformedParametersResponse(){
-        GenericErrorMessagesToResponseMapper.getNotInformedParametersResponse("parameterName");
+        Response response = GenericErrorMessagesToResponseMapper.getNotInformedParametersResponse("not informed");
+        assertEquals(400, response.getStatus());
     }
 
     /**
      * Asserts exception
-     * Test method getForbiddenResponse()
+     * Test method {@link GenericErrorMessagesToResponseMapper#getResourceNotFoundException()}
      */
-    @Test(expected = Exception.class)
-    public void testGetForbiddenResponse(){
-        GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+    @Test
+    public void testGetResourceNotFoundException(){
+        Response response = GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+        assertEquals(404, response.getStatus());
     }
+
+    /**
+     * Asserts exception
+     * Test method {@link GenericErrorMessagesToResponseMapper#getForbiddenResponse()}
+     */
+    @Test
+    public void testGetForbiddenResponse(){
+        Response response = GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+        assertEquals(403, response.getStatus());
+    }
+
 }

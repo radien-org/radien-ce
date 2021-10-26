@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.ms.client.exceptions;
+package io.radien.exception;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-public class RemoteResourceExceptionTest {
+/**
+ * Class that aggregates UnitTest TenantRolePermissionNotFoundException
+ *
+ * @author Rajesh Gavvala
+ */
+public class TenantRolePermissionNotFoundExceptionTest {
+    /**
+     * Asserts TenantRolePermissionNotFoundException
+     */
     @Test
-    public void testRemoteResourceException(){
-        RemoteResourceException exception = new RemoteResourceException();
-        assertNotNull(exception);
-        RemoteResourceException exception2 = new RemoteResourceException("message");
-        assertEquals("message",exception2.getMessage());
+    public void testTenantRolePermissionNotFoundException(){
+        TenantRolePermissionNotFoundException exception = new TenantRolePermissionNotFoundException("tenantRolePermissionNotFoundException");
+        assertEquals("tenantRolePermissionNotFoundException",exception.getMessage());
     }
+
 }

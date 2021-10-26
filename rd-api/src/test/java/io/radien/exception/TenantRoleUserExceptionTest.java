@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.ms.client.exceptions;
+package io.radien.exception;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ErrorCodeMessageTest {
+/**
+ * Class that aggregates UnitTest TenantRoleUserException
+ *
+ * @author Rajesh Gavvala
+ */
+public class TenantRoleUserExceptionTest {
+    /**
+     * Asserts TenantRoleUserException
+     */
     @Test
-    public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Email Address\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+    public void testTenantRolePermissionNotFoundException(){
+        TenantRoleUserException exception = new TenantRoleUserException("tenantRoleUserException");
+        assertEquals("tenantRoleUserException",exception.getMessage());
     }
 }
