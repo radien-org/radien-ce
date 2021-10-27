@@ -200,4 +200,15 @@ public interface TenantRoleResourceClient {
                                          @QueryParam("permissionId") Long permissionId,
                                          @QueryParam("tenantId") Long tenantId);
 
+    /**
+     * Retrieves the Roles for which a User is associated under a Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return Response OK if operation concludes with success.
+     * Response 500 in case of error
+     */
+    @GET
+    @Path("/rolesUserTenant")
+    Response getRolesForUserTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
+
 }

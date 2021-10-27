@@ -16,6 +16,7 @@
 package io.radien.api.service.tenantrole;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.exception.SystemException;
 import java.util.List;
@@ -94,5 +95,13 @@ public interface TenantRoleRESTServiceAccess {
     List<? extends SystemTenantRole> getTenantRoles(Long tenantId, Long roleId, boolean isLogicalConjunction)
             throws SystemException;
 
+    /**
+     * Retrieves the existent Roles for a User that associated Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing roles
+     * @throws SystemException in case of any error
+     */
+    List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws SystemException;
 
 }

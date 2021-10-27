@@ -16,15 +16,20 @@
 package io.radien.ms.rolemanagement.services;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TenantRoleException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleSearchFilter;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -188,5 +193,23 @@ public class TenantRoleBusinessService extends AbstractTenantRoleDomainBusinessS
 
     public long count(){
         return getTenantRoleServiceAccess().count();
+    }
+
+    /**
+     * Retrieves the existent Roles for a User of a specific Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing roles
+     */
+    public List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws RoleNotFoundException {
+        checkIfMandatoryParametersWereInformed(userId);
+        String msg = String.format("Get Roles for User:%d Tenant:%d",userId,tenantId);
+        log.info(msg);
+        List<Long> ids = this.getTenantRoleServiceAccess().getRoleIdsForUserTenant(userId, tenantId);
+        if(ids == null || ids.isEmpty()){
+            return new ArrayList<>();
+        }
+        return getRoleServiceAccess().getSpecificRoles(new RoleSearchFilter(null,
+                null, ids, true,true));
     }
 }
