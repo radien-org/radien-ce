@@ -16,15 +16,16 @@
 package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
-
 import io.radien.ms.usermanagement.client.entities.User;
 
 import io.radien.webapp.AbstractManager;
@@ -37,6 +38,7 @@ import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -70,6 +72,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
     @Inject
     private ActiveTenantDataModelManager activeTenantDataModelManager;
+    
+    @Inject
+    private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
 
@@ -261,7 +266,19 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public void deleteUser(){
         try{
             if(selectedUser != null){
-                service.deleteUser(selectedUser.getId());
+                Long userId = selectedUser.getId();
+                service.deleteUser(userId);
+                
+                List <? extends SystemTenantRoleUser> tenantRolesUser = tenantRoleUserRESTServiceAccess.getTenantRoleUsers(null, userId, false);
+                for(SystemTenantRoleUser systemTenantRoleUser : tenantRolesUser) {
+                    tenantRoleUserRESTServiceAccess.delete(systemTenantRoleUser.getTenantRoleId());
+                }
+
+                List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByUserAndTenant(userId, null);
+                for(SystemActiveTenant systemActiveTenant : activeTenants) {
+                    activeTenantRESTServiceAccess.delete(systemActiveTenant.getId());
+                }
+                
                 handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
