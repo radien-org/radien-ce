@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.ms.client.exceptions;
+package io.radien.exception;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-public class InternalServerErrorExceptionTest {
+/**
+ * Class that aggregates UnitTest TenantRoleUserException
+ *
+ * @author Rajesh Gavvala
+ */
+public class TenantRoleUserExceptionTest {
+    /**
+     * Asserts TenantRoleUserException
+     */
     @Test
-    public void testInternalServerErrorException(){
-        InternalServerErrorException exception = new InternalServerErrorException();
-        assertNotNull(exception);
-        InternalServerErrorException exception2 = new InternalServerErrorException("message");
-        assertEquals("message",exception2.getMessage());
+    public void testTenantRolePermissionNotFoundException(){
+        TenantRoleUserException exception = new TenantRoleUserException("tenantRoleUserException");
+        assertEquals("tenantRoleUserException",exception.getMessage());
     }
 }

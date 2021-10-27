@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.ms.client.exceptions;
+package io.radien.exception;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ErrorCodeMessageTest {
+/**
+ * Class that aggregates UnitTest PermissionIllegalArgumentException
+ *
+ * @author Rajesh Gavvala
+ */
+public class PermissionIllegalArgumentExceptionTest {
+    /**
+     * Asserts PermissionIllegalArgumentException
+     */
     @Test
-    public void testToString() {
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: %s\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString());
-        assertEquals("{\"code\":101, \"key\":\"error.duplicated.field\", \"message\":\"There is more than one resource with the same value for the field: Email Address\"}", ErrorCodeMessage.DUPLICATED_FIELD.toString("Email Address"));
+    public void testPermissionIllegalArgumentException(){
+        PermissionIllegalArgumentException exception = new PermissionIllegalArgumentException("permissionIllegalArgumentException");
+        assertEquals("permissionIllegalArgumentException",exception.getMessage());
     }
+
 }

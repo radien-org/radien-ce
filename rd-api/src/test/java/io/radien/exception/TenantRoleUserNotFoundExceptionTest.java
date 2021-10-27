@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rd.microservice.ms.client.exceptions;
+package io.radien.exception;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-public class BadRequestExceptionTest {
+/**
+ * Class that aggregates UnitTest TenantRoleUserNotFoundException
+ *
+ * @author Rajesh Gavvala
+ */
+public class TenantRoleUserNotFoundExceptionTest {
+    /**
+     * Asserts TenantRoleUserNotFoundException
+     */
     @Test
-    public void testBadRequestException(){
-        BadRequestException exception = new BadRequestException();
-        assertNotNull(exception);
-        BadRequestException exception2 = new BadRequestException("message");
-        assertEquals("message",exception2.getMessage());
+    public void testTenantRolePermissionNotFoundException(){
+        TenantRoleUserNotFoundException exception = new TenantRoleUserNotFoundException("tenantRoleUserNotFoundException");
+        assertEquals("tenantRoleUserNotFoundException",exception.getMessage());
     }
 }

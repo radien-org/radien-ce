@@ -112,6 +112,7 @@
 		<version.mock.jupiter>5.7.1</version.mock.jupiter>
 		<version.mockito.core>2.23.0</version.mockito.core>
 		<version.powermock.core>2.0.9</version.powermock.core>
+		<version.jersey.common>2.22.2</version.jersey.common>
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
@@ -450,29 +451,30 @@
 				<artifactId>primefaces-extensions</artifactId>
 				<version>${version.primefaces.ext}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${version.mockito.core}</version>
 				<scope>test</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
 				<version>${version.powermock.core}</version>
 				<scope>test</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-api-mockito2</artifactId>
 				<version>${version.powermock.core}</version>
 				<scope>test</scope>
 			</dependency>
-
-
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-common</artifactId>
+				<version>${version.jersey.common}</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
