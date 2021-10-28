@@ -28,6 +28,7 @@ import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
 import io.radien.ms.authz.util.BiFunction;
 import io.radien.ms.authz.util.Consumer;
+import io.radien.ms.authz.util.FourthFunction;
 import io.radien.ms.authz.util.Function;
 import io.radien.ms.authz.util.FunctionReturn;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -472,6 +473,19 @@ public abstract class AuthorizationChecker implements Serializable {
             refreshToken();
             try {
                 return function.apply(input1,input2);
+            } catch (TokenExpiredException expiredException) {
+                throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    public <T,U,R,A,B> R get(FourthFunction<T,U,R,A,B> function, T input1, U input2, A input3, B input4 ) throws SystemException {
+        try {
+            return function.apply(input1,input2, input3, input4);
+        } catch (TokenExpiredException tokenExpiredException) {
+            refreshToken();
+            try {
+                return function.apply(input1,input2, input3, input4);
             } catch (TokenExpiredException expiredException) {
                 throw new SystemException( GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
