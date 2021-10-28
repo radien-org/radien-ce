@@ -274,7 +274,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
                     tenantRoleUserRESTServiceAccess.delete(systemTenantRoleUser.getTenantRoleId());
                 }
 
-                List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByUserAndTenant(userId, null);
+                List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userId, null);
                 for(SystemActiveTenant systemActiveTenant : activeTenants) {
                     activeTenantRESTServiceAccess.delete(systemActiveTenant.getId());
                 }
