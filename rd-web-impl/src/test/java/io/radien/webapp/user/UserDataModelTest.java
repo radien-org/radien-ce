@@ -15,15 +15,18 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
-
+import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.usermanagement.client.entities.User;
 
@@ -35,6 +38,8 @@ import io.radien.webapp.authz.WebAuthorizationChecker;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.faces.application.FacesMessage;
@@ -60,7 +65,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -86,6 +91,12 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
+    
+    @Mock
+    private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
+    
+    @Mock
+    private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
 
     @Mock
     private UserSessionEnabled userSessionEnabled;
@@ -540,18 +551,54 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
     /**
      * Test for method {@link UserDataModel#deleteUser()}
+     * @throws SystemException 
      */
     @Test
-    public void testDeleteUser() {
+    public void testDeleteUser() throws SystemException {
         User user = new User(); user.setId(1L);
         userDataModel.setSelectedUser(user);
         when(userRESTServiceAccess.deleteUser(user.getId())).thenReturn(true);
+        
+        List<? extends SystemTenantRoleUser> tenantRoleUsers = getTenantRoleUsersForDeleteUser(user.getId());
+        doReturn(tenantRoleUsers).when(tenantRoleUserRESTServiceAccess).getTenantRoleUsers(null, user.getId(), false);
+        when(tenantRoleUserRESTServiceAccess.delete(anyLong())).thenReturn(true);
+
+        List<? extends SystemActiveTenant> systemActiveTenants = getActiveTenantForDeleteUser(user.getId());
+        doReturn(systemActiveTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(user.getId(), null);
+        when(activeTenantRESTServiceAccess.delete(anyLong())).thenReturn(true);
+        
         userDataModel.deleteUser();
         assertNotNull(userDataModel.getSelectedUser());
 
         userDataModel.setSelectedUser(null);
         userDataModel.deleteUser();
         assertNull(userDataModel.getSelectedUser());
+    }
+
+    private List<? extends SystemTenantRoleUser> getTenantRoleUsersForDeleteUser(Long userId) {
+        List<SystemTenantRoleUser> result = new ArrayList<>();
+        
+        SystemTenantRoleUser stru = new TenantRoleUser();
+        stru.setId(1L);
+        stru.setTenantRoleId(1L);
+        stru.setUserId(userId);
+        
+        result.add(stru);
+        
+        return result;
+    }
+
+    private List<? extends SystemActiveTenant> getActiveTenantForDeleteUser(Long userId) {
+        List<SystemActiveTenant> result = new ArrayList<>();
+        
+        SystemActiveTenant sat = new ActiveTenant();
+        sat.setId(1L);
+        sat.setTenantId(2L);
+        sat.setUserId(userId);
+        
+        result.add(sat);
+        
+        return result;
     }
 
     /**
