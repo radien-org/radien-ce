@@ -104,25 +104,6 @@ public class ActiveTenantResourceTest {
     }
 
     /**
-     * Tests response of the get specific association
-     */
-    @Test
-    public void testGetByUserAndTenant() {
-        Response response = activeTenantResource.getByUserAndTenant(2L, 2L);
-        assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Tests exception from the get specific association
-     */
-    @Test
-    public void testGetByUserAndTenantException() {
-        when(activeTenantServiceAccess.getByUserAndTenant(anyLong(), anyLong())).thenThrow(new RuntimeException());
-        Response response = activeTenantResource.getByUserAndTenant(2L,2L);
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Get by ID with success should return a 200 code message
      */
     @Test

@@ -66,7 +66,6 @@ public interface ActiveTenantResourceClient {
      * Gets a list of requested active tenants based on some filtered information
      * @param userId to be searched for
      * @param tenantId of the tenant to be searched
-     * @param isTenantActive should the values be exact to the given ones
      * @param isLogicalConjunction in case of true query will use an and in case of false query will use a or
      * @return 200 response code in case of success or 500 in case of any issue
      */
@@ -84,15 +83,6 @@ public interface ActiveTenantResourceClient {
     @GET
     @Path("/{id}")
     public Response getById(@NotNull @PathParam("id") Long id);
-
-    /**
-     * Gets active tenant based on the given id
-     * @param userId to be searched for
-     * @param tenantId to be searched for
-     * @return 200 code message in case of success or 500 in case of any error
-     */
-    @GET
-    public Response getByUserAndTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
 
     /**
      * Requests to a active tenant be deleted by given his id

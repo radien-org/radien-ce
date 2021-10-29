@@ -63,46 +63,6 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     /**
      * Gets requester to get the active tenant in the DB searching for the field Id
      *
-     * @param userId to be looked after
-     * @param tenantId to be looked after
-     * @return list of active tenant
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
-     */
-    @Override
-    public List<? extends SystemActiveTenant> getActiveTenantByUserAndTenant(Long userId, Long tenantId) throws SystemException {
-        try {
-            return getActiveTenantByUserAndTenantRequester(userId, tenantId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getActiveTenantByUserAndTenantRequester(userId, tenantId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    /**
-     * Gets the active tenant in the DB searching for the field Id
-     * @param userId to be looked after
-     * @param tenantId to be looked after
-     * @return list of tenant
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
-     */
-    private List<? extends SystemActiveTenant> getActiveTenantByUserAndTenantRequester(Long userId, Long tenantId) throws SystemException {
-        try {
-            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.getByUserAndTenant(userId, tenantId);
-            return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
-        }  catch (ExtensionException | ProcessingException | MalformedURLException| ParseException es){
-            throw new SystemException(es.getMessage());
-        }
-    }
-
-    /**
-     * Gets requester to get the active tenant in the DB searching for the field Id
-     *
      * @param id to be looked after
      * @return Optional list of active tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed

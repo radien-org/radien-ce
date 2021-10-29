@@ -38,20 +38,9 @@ public interface ActiveTenantRESTServiceAccess {
     public Optional<SystemActiveTenant> getActiveTenantById(Long id) throws SystemException;
 
     /**
-     * Search for a active tenant with user id and tenant id
-     * @param userId of the active tenant to be retrieved
-     * @param tenantId of the active tenant to be retrieved
-     * @return list of the requested active tenant
-     * @throws SystemException in case of token expiration or any issue on the application
-     */
-    public List<? extends SystemActiveTenant> getActiveTenantByUserAndTenant(Long userId, Long tenantId) throws SystemException;
-
-    /**
      * Search for a active tenant for a given user
      * @param userId to be search
      * @param tenantId to be search
-     * @param tenantName to be search
-     * @param isTenantActive to be search
      * @return a list of all the possible active tenants
      * @throws SystemException in case of token expiration or any issue on the application
      */
