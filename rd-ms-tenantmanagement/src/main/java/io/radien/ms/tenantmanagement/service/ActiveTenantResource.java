@@ -20,6 +20,7 @@ import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.ActiveTenantNotFoundException;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -168,7 +169,9 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 			return Response.ok().build();
 		}catch (ActiveTenantException | UniquenessConstraintException u){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
-		} catch (Exception e){
+		}catch (ActiveTenantNotFoundException e) {
+			return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+		}catch (Exception e){
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}

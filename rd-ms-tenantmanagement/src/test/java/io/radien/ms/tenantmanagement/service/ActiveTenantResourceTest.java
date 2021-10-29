@@ -18,6 +18,7 @@ package io.radien.ms.tenantmanagement.service;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.ActiveTenantNotFoundException;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
@@ -224,22 +225,40 @@ public class ActiveTenantResourceTest {
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
      * @throws ActiveTenantException in case of any issue in the validation of the data of the active tenant
+     * @throws ActiveTenantNotFoundException if there is no ActiveTenant for the informed id
      */
     @Test
-    public void testUpdateInvalid() throws UniquenessConstraintException, ActiveTenantException {
+    public void testUpdateInvalid() throws UniquenessConstraintException, ActiveTenantException, ActiveTenantNotFoundException {
         doThrow(new UniquenessConstraintException()).when(activeTenantServiceAccess).update(any());
         Response response = activeTenantResource.update(1L,new ActiveTenant());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
     }
+
+
+    /**
+     * Tries to update an ActiveTenant that does not exist
+     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
+     * message reason
+     * @throws ActiveTenantException in case of any issue in the validation of the data of the active tenant
+     * @throws ActiveTenantNotFoundException if there is no ActiveTenant for the informed id
+     */
+    @Test
+    public void testUpdateNotFoundActiveTenant() throws UniquenessConstraintException, ActiveTenantException, ActiveTenantNotFoundException {
+        doThrow(new ActiveTenantNotFoundException("error")).when(activeTenantServiceAccess).update(any());
+        Response response = activeTenantResource.update(1L,new ActiveTenant());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),response.getStatus());
+    }
+
 
     /**
      * Creation of a record with error. Should return a generic error message 500
      * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
      * message reason
      * @throws ActiveTenantException in case of any issue in the validation of the data of the active tenant
+     * @throws ActiveTenantNotFoundException if there is no ActiveTenant for the informed id
      */
     @Test
-    public void testUpdateGenericError() throws UniquenessConstraintException, ActiveTenantException {
+    public void testUpdateGenericError() throws UniquenessConstraintException, ActiveTenantException, ActiveTenantNotFoundException {
         doThrow(new RuntimeException()).when(activeTenantServiceAccess).update(any());
         Response response = activeTenantResource.update(1L,new ActiveTenant());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());

@@ -20,6 +20,7 @@ import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.ActiveTenantNotFoundException;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
@@ -81,7 +82,7 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
      * @throws UniquenessConstraintException in case of duplicates
      * @throws ActiveTenantException in case of any data issues
      */
-    public void update(SystemActiveTenant activeTenant) throws UniquenessConstraintException, ActiveTenantException;
+    public void update(SystemActiveTenant activeTenant) throws UniquenessConstraintException, ActiveTenantException, ActiveTenantNotFoundException;
 
     /**
      * Deletes a requested active tenant
