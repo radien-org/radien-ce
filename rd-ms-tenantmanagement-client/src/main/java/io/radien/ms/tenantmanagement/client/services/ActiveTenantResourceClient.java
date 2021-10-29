@@ -47,7 +47,8 @@ public interface ActiveTenantResourceClient {
 
     /**
      * Gets all the active tenants information into a paginated mode and return those information to the user.
-     * @param search name description for some active tenant
+     * @param tenantId tenant identifier (Optional)
+     * @param userId user identifier (Optional)
      * @param pageNo of the requested information. Where the active tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
@@ -56,7 +57,8 @@ public interface ActiveTenantResourceClient {
      * error.
      */
     @GET
-    public Response getAll(@QueryParam("search") String search,
+    public Response getAll(@QueryParam("tenantId") Long tenantId,
+                           @QueryParam("userId") Long userId,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,

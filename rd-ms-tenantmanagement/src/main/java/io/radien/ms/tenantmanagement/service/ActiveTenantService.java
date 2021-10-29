@@ -20,6 +20,7 @@ import static io.radien.api.SystemVariables.TENANT_ID;
 import static io.radien.api.SystemVariables.TENANT_NAME;
 import static io.radien.api.SystemVariables.USER_ID;
 
+import io.radien.api.SystemVariables;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -95,7 +96,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	/**
 	 * Gets all the active tenants into a pagination mode.
 	 *
-	 * @param search      name description for some active tenants
+	 * @param tenantId tenant identifier
+	 * @param userId user identifier
 	 * @param pageNo      of the requested information. Where the active tenant is.
 	 * @param pageSize    total number of pages returned in the request.
 	 * @param sortBy      sort filter criteria.
@@ -103,7 +105,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * @return a page of system active tenants.
 	 */
 	@Override
-	public Page<SystemActiveTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<SystemActiveTenant> getAll(Long tenantId, Long userId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		EntityManager entityManager = emh.getEm();
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ActiveTenantEntity> criteriaQuery = criteriaBuilder.createQuery(ActiveTenantEntity.class);
@@ -111,8 +113,15 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 		criteriaQuery.select(activeTenantRoot);
 		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-		if (search != null) {
-			global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get(TENANT_NAME.getFieldName()), search));
+		if (tenantId != null) {
+			global = criteriaBuilder.and(global, criteriaBuilder.equal(activeTenantRoot.get(
+					SystemVariables.TENANT_ID.getFieldName()), tenantId));
+		}
+		if (userId != null) {
+			global = criteriaBuilder.and(global, criteriaBuilder.equal(activeTenantRoot.get(
+					SystemVariables.USER_ID.getFieldName()), userId));
+		}
+		if (tenantId != null || userId != null) {
 			criteriaQuery.where(global);
 		}
 		if (sortBy != null && !sortBy.isEmpty()) {

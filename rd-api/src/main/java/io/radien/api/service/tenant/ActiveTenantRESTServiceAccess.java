@@ -48,7 +48,8 @@ public interface ActiveTenantRESTServiceAccess {
 
     /**
      * Fetches all the existent active tenants
-     * @param search specific value to be found
+     * @param tenantId tenant identifier
+     * @param userId user identifier
      * @param pageNo where the user currently is
      * @param pageSize number of records to be show by page
      * @param sortBy column to be sorted
@@ -56,7 +57,8 @@ public interface ActiveTenantRESTServiceAccess {
      * @return a page of system active tenants
      * @throws SystemException in case of token expiration or any issue on the application
      */
-    public Page<? extends SystemActiveTenant> getAll(String search,
+    public Page<? extends SystemActiveTenant> getAll(Long tenantId,
+                                               Long userId,
                                                int pageNo,
                                                int pageSize,
                                                List<String> sortBy,

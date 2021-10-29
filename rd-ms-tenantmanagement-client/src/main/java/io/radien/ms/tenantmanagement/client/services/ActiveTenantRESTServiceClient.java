@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
+import io.radien.exception.InternalServerErrorException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -140,7 +141,8 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     /**
      * Gets the requester to get all the active tenants into a pagination mode.
-     * @param search name description for some active tenant (optional)
+     * @param tenantId tenant identifier (Optional)
+     * @param userId user identifier (Optional)
      * @param pageNo of the requested information. Where the active tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
@@ -149,26 +151,19 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public Page<? extends SystemActiveTenant> getAll(String search,
+    public Page<? extends SystemActiveTenant> getAll(Long tenantId,
+                                               Long userId,
                                                int pageNo,
                                                int pageSize,
                                                List<String> sortBy,
                                                boolean isAscending) throws SystemException {
-        try {
-            return getActiveTenantPage(search, pageNo, pageSize, sortBy, isAscending);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getActiveTenantPage(search, pageNo, pageSize, sortBy, isAscending);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(() -> getActiveTenantPage(tenantId, userId, pageNo, pageSize, sortBy, isAscending));
     }
 
     /**
      * Get all the active tenants into a pagination mode.
-     * @param search name description for some active tenant (optional)
+     * @param tenantId tenant identifier (Optional)
+     * @param userId user identifier (Optional)
      * @param pageNo of the requested information. Where the active tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
@@ -176,13 +171,13 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * @return a page of system active tenants.
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private Page<ActiveTenant> getActiveTenantPage(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    private Page<ActiveTenant> getActiveTenantPage(Long tenantId, Long userId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            Response response = client.getAll(tenantId, userId, pageNo, pageSize, sortBy, isAscending);
             return ActiveTenantModelMapper.mapToPage((InputStream) response.getEntity());
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+        } catch (ExtensionException | ProcessingException | InternalServerErrorException | MalformedURLException e){
             throw new SystemException(e);
         }
     }

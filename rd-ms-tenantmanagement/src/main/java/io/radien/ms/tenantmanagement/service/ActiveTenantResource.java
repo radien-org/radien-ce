@@ -49,7 +49,8 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 
 	/**
 	 * Gets all the active tenant information into a paginated mode and return those information to the user.
-	 * @param search name description for some active tenant
+	 * @param tenantId tenant identifier (Optional)
+	 * @param userId user identifier (Optional)
 	 * @param pageNo of the requested information. Where the active tenant is.
 	 * @param pageSize total number of pages returned in the request.
 	 * @param sortBy sort filter criteria.
@@ -58,11 +59,11 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	 * error.
 	 */
 	@Override
-	public Response getAll(String search, int pageNo, int pageSize,
+	public Response getAll(Long tenantId, Long userId, int pageNo, int pageSize,
 						   List<String> sortBy, boolean isAscending) {
 		try {
 			log.info("Will get all the active tenant information I can find!");
-			return Response.ok(activeTenantServiceAccess.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
+			return Response.ok(activeTenantServiceAccess.getAll(tenantId, userId, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch(Exception e) {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}

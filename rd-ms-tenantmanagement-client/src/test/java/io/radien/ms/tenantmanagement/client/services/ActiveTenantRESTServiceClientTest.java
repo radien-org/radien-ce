@@ -172,13 +172,13 @@ public class ActiveTenantRESTServiceClientTest {
 
         ActiveTenantResourceClient activeTenantResourceClient = Mockito.mock(ActiveTenantResourceClient.class);
 
-        when(activeTenantResourceClient.getAll(null,1, 10, null, false)).thenReturn(response);
+        when(activeTenantResourceClient.getAll(null,null,1, 10, null, false)).thenReturn(response);
 
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(activeTenantResourceClient);
 
         List<? extends SystemActiveTenant> list = new ArrayList<>();
 
-        List<? extends SystemActiveTenant> returnedList = target.getAll(null,1, 10, null, false).getResults();
+        List<? extends SystemActiveTenant> returnedList = target.getAll(null,null,1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);
     }
@@ -191,7 +191,7 @@ public class ActiveTenantRESTServiceClientTest {
     @Test(expected = SystemException.class)
     public void testGetAllException() throws Exception {
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(new MalformedURLException());
-        target.getAll(null,1, 10, null, false);
+        target.getAll(null,null,1, 10, null, false);
     }
 
     /**
@@ -203,13 +203,13 @@ public class ActiveTenantRESTServiceClientTest {
         ActiveTenantResourceClient client = Mockito.mock(ActiveTenantResourceClient.class);
 
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(client);
-        when(client.getAll(anyString(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(client.getAll(anyLong(), anyLong(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getAll("", 1, 10, null, true);
+        target.getAll(1L, 1L, 1, 10, null, true);
     }
 
     /**

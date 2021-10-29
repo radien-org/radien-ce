@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
@@ -245,13 +246,34 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testGetAll() throws UniquenessConstraintException, ActiveTenantException {
+        Long tenantId = 1111111L;
+        Long userId1 = 1111111L, userId2 = 1111112L;
+
         SystemActiveTenant c = new ActiveTenantEntity();
-        c.setId(7L);
-        c.setUserId(2L);
-        c.setTenantId(2L);
+        c.setUserId(userId1);
+        c.setTenantId(tenantId);
         activeTenantServiceAccess.create(c);
-        Page<SystemActiveTenant> result = activeTenantServiceAccess.getAll(null,1,10,null,false);
+
+        Page<SystemActiveTenant> result = activeTenantServiceAccess.getAll(tenantId, userId1,1,10,
+                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),false);
         assertNotNull(result);
+        assertEquals(1, result.getTotalResults());
+
+        SystemActiveTenant c2 = new ActiveTenantEntity();
+        c2.setId(1000L);
+        c2.setUserId(userId2);
+        c2.setTenantId(tenantId);
+        activeTenantServiceAccess.create(c2);
+
+        result = activeTenantServiceAccess.getAll(null, userId2,1,10,
+                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),false);
+        assertNotNull(result);
+        assertEquals(1, result.getTotalResults());
+
+        result = activeTenantServiceAccess.getAll(tenantId,null,1,10,
+                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),false);
+        assertNotNull(result);
+        assertEquals(2, result.getTotalResults());
     }
 
     /**
@@ -314,7 +336,7 @@ public class ActiveTenantServiceTest {
         activeTenant2.setTenantId(2L);
         activeTenantServiceAccess.create(activeTenant2);
 
-        Page<SystemActiveTenant> page = activeTenantServiceAccess.getAll(null,1,100,null,false);
+        Page<SystemActiveTenant> page = activeTenantServiceAccess.getAll(null, null,1,100,null,false);
         assertTrue(page.getTotalResults()>2);
     }
 }

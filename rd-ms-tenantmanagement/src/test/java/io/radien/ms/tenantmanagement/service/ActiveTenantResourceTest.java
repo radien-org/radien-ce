@@ -60,7 +60,7 @@ public class ActiveTenantResourceTest {
      */
     @Test
     public void testGetAll() {
-        Response response = activeTenantResource.getAll(null, 1, 10, null, false);
+        Response response = activeTenantResource.getAll(null, null,1, 10, null, false);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -69,9 +69,9 @@ public class ActiveTenantResourceTest {
      */
     @Test
     public void testGetAllGenericException() {
-        when(activeTenantResource.getAll(null,1, 10, null, false))
+        when(activeTenantResource.getAll(null,null,1, 10, null, false))
                 .thenThrow(new RuntimeException());
-        Response response = activeTenantResource.getAll(null,1, 10, null, false);
+        Response response = activeTenantResource.getAll(null,null,1, 10, null, false);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 
@@ -215,7 +215,7 @@ public class ActiveTenantResourceTest {
      */
     @Test
     public void testUpdate() {
-        Response response = activeTenantResource.update(1l,new ActiveTenant());
+        Response response = activeTenantResource.update(1L,new ActiveTenant());
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -228,7 +228,7 @@ public class ActiveTenantResourceTest {
     @Test
     public void testUpdateInvalid() throws UniquenessConstraintException, ActiveTenantException {
         doThrow(new UniquenessConstraintException()).when(activeTenantServiceAccess).update(any());
-        Response response = activeTenantResource.update(1l,new ActiveTenant());
+        Response response = activeTenantResource.update(1L,new ActiveTenant());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),response.getStatus());
     }
 
@@ -241,7 +241,7 @@ public class ActiveTenantResourceTest {
     @Test
     public void testUpdateGenericError() throws UniquenessConstraintException, ActiveTenantException {
         doThrow(new RuntimeException()).when(activeTenantServiceAccess).update(any());
-        Response response = activeTenantResource.update(1l,new ActiveTenant());
+        Response response = activeTenantResource.update(1L,new ActiveTenant());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 
