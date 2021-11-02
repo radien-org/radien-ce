@@ -23,8 +23,15 @@ For each of these entities there will be one particular endpoint providing CRUD 
     Deployment: rd-ms-tenantmanagement:war exploded
     Application Context: /tenantmanagementservice
 
+## Running from IDE (ex: Intellij)
+
+<img src="doc/config-tmms-intellij-part1.png" width="400" height="400"/>
+
+<img src="doc/config-tmms-intellij-part2.png" width="400" height="400"/>
+
 #
-Let's check the operations that exists for each endpoint and how to perform them via cURL
+# cURLs: 
+Let's check the operations that exists for each endpoint and how to perform them via cURL (using http port 8080)
 
 #
 # Tenant Endpoint:

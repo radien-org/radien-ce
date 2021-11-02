@@ -22,13 +22,13 @@ In other words, provide CRUD specific operations to create, update, delete and r
 
 ## Running from IDE (ex: Intellij)
 
-![image info](doc/config-umms-intellij-part1.png)
+<img src="doc/config-umms-intellij-part1.png" width="400" height="400"/>
 
-![image info](doc/config-umms-intellij-part2.png)
+<img src="doc/config-umms-intellij-part2.png" width="400" height="400"/>
 
 #
 # cURLs: 
-Let's check the operations and how to perform them via cURL
+Let's check the operations and how to perform them via cURL (using http port 8080)
 
 - Get Data:
     - <span style="color:blue">**Get User by ID**:</span> Returns the User found for an informed Id.    

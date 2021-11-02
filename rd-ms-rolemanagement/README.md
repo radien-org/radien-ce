@@ -28,8 +28,15 @@ A small glimpses regarding the following entities:
     Deployment: rd-ms-rolemanagement:war exploded
     Application Context: /rolemanagementservice
 
+## Running from IDE (ex: Intellij)
+
+<img src="doc/config-rmms-intellij-part1.png" width="400" height="400"/>
+
+<img src="doc/config-rmms-intellij-part2.png" width="400" height="400"/>
+
 #
-Let's check the operations that exists for each endpoint and how to perform them via cURL
+# cURLs: 
+Let's check the operations that exists for each endpoint and how to perform them via cURL (using http port 8080)
 
 #
 # Role Endpoint:
