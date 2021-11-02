@@ -20,6 +20,9 @@ import static io.radien.api.SystemVariables.TENANT_ID;
 import static io.radien.api.SystemVariables.TENANT_NAME;
 import static io.radien.api.SystemVariables.USER_ID;
 
+import io.radien.api.SystemVariables;
+import io.radien.exception.ActiveTenantNotFoundException;
+import io.radien.exception.UniquenessConstraintException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -95,7 +98,8 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	/**
 	 * Gets all the active tenants into a pagination mode.
 	 *
-	 * @param search      name description for some active tenants
+	 * @param tenantId tenant identifier
+	 * @param userId user identifier
 	 * @param pageNo      of the requested information. Where the active tenant is.
 	 * @param pageSize    total number of pages returned in the request.
 	 * @param sortBy      sort filter criteria.
@@ -103,7 +107,7 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * @return a page of system active tenants.
 	 */
 	@Override
-	public Page<SystemActiveTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<SystemActiveTenant> getAll(Long tenantId, Long userId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		EntityManager entityManager = emh.getEm();
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ActiveTenantEntity> criteriaQuery = criteriaBuilder.createQuery(ActiveTenantEntity.class);
@@ -111,8 +115,15 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 
 		criteriaQuery.select(activeTenantRoot);
 		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-		if (search != null) {
-			global = criteriaBuilder.and(criteriaBuilder.like(activeTenantRoot.get(TENANT_NAME.getFieldName()), search));
+		if (tenantId != null) {
+			global = criteriaBuilder.and(global, criteriaBuilder.equal(activeTenantRoot.get(
+					SystemVariables.TENANT_ID.getFieldName()), tenantId));
+		}
+		if (userId != null) {
+			global = criteriaBuilder.and(global, criteriaBuilder.equal(activeTenantRoot.get(
+					SystemVariables.USER_ID.getFieldName()), userId));
+		}
+		if (tenantId != null || userId != null) {
 			criteriaQuery.where(global);
 		}
 		if (sortBy != null && !sortBy.isEmpty()) {
@@ -214,9 +225,17 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * Creates the requested and given active tenant information into the DB.
 	 *
 	 * @param activeTenant to be added
+	 * @throws ActiveTenantException thrown in case of inconsistencies
+	 * @throws UniquenessConstraintException thrown in case of repeated information
 	 */
 	@Override
-	public void create(SystemActiveTenant activeTenant) throws ActiveTenantException {
+	public void create(SystemActiveTenant activeTenant) throws ActiveTenantException, UniquenessConstraintException {
+		if (activeTenant.getUserId() == null || activeTenant.getTenantId() == null) {
+			throw new ActiveTenantException(GenericErrorCodeMessage.
+					ACTIVE_TENANT_ERROR_MISSING_CORE_PARAMETERS.toString());
+		}
+		EntityManager em = emh.getEm();
+		checkUniqueness(activeTenant, em);
 		emh.getEm().persist(activeTenant);
 	}
 
@@ -224,10 +243,77 @@ public class ActiveTenantService implements ActiveTenantServiceAccess {
 	 * Updates the requested and given Active tenant information into the DB.
 	 *
 	 * @param activeTenant to be updated
+	 * @throws ActiveTenantException thrown in case of inconsistencies
+	 * @throws UniquenessConstraintException thrown in case of repeated information
+	 * @throws ActiveTenantNotFoundException thrown in case of not existent active tenant
 	 */
 	@Override
-	public void update(SystemActiveTenant activeTenant) throws ActiveTenantException {
-		emh.getEm().merge(activeTenant);
+	public void update(SystemActiveTenant activeTenant) throws ActiveTenantException, UniquenessConstraintException, ActiveTenantNotFoundException {
+		if (activeTenant.getUserId() == null || activeTenant.getTenantId() == null) {
+			throw new ActiveTenantException(GenericErrorCodeMessage.
+					ACTIVE_TENANT_ERROR_MISSING_CORE_PARAMETERS.toString());
+		}
+		EntityManager em = emh.getEm();
+		if(em.find(ActiveTenantEntity.class, activeTenant.getId()) == null) {
+			throw new ActiveTenantNotFoundException(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString());
+		}
+		checkUniqueness(activeTenant, em);
+		em.merge(activeTenant);
+	}
+
+	/**
+	 * Seek for eventual duplicated information
+	 * @param activeTenant base entity bean to seek for repeated information
+	 * @param em entity manager
+	 * @throws UniquenessConstraintException thrown in case of repeated information
+	 */
+	private void checkUniqueness(SystemActiveTenant activeTenant, EntityManager em) throws UniquenessConstraintException, ActiveTenantException {
+		boolean alreadyExistentRecords = isAssociationAlreadyExistent(activeTenant.getUserId(),
+				activeTenant.getTenantId(), activeTenant.getId(), em);
+		if (alreadyExistentRecords) {
+			throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("userId and tenantId"));
+		}
+	}
+
+	/**
+	 * Check if a user is already assigned/associated with a tenant (and vice-versa)
+	 * @param userId User identifier
+	 * @param tenantId Tenant Identifier
+	 * @param currentActiveTenantId Optional parameter. Corresponds to a current active tenant,
+	 *                            and In case of an update operation this helps to make sure
+	 *                            that a possible new combination (user+tenant) do not exist for other ids
+	 * @param em already created entity manager (reuse)
+	 * @return true in case association exists in the db
+	 */
+	protected boolean isAssociationAlreadyExistent(Long userId, Long tenantId,
+												   Long currentActiveTenantId, EntityManager em) throws ActiveTenantException {
+		if (userId == null || tenantId == null) {
+			throw new ActiveTenantException(GenericErrorCodeMessage.
+					ACTIVE_TENANT_ERROR_MISSING_CORE_PARAMETERS.toString());
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> sc = cb.createQuery(Long.class);
+		Root<ActiveTenantEntity> root = sc.from(ActiveTenantEntity.class);
+
+		sc.select(cb.count(root));
+
+		if (currentActiveTenantId != null) {
+			sc.where(
+					cb.equal(root.get(SystemVariables.TENANT_ID.getFieldName()), tenantId),
+					cb.equal(root.get(SystemVariables.USER_ID.getFieldName()), userId),
+					cb.notEqual(root.get(SystemVariables.ID.getFieldName()), currentActiveTenantId)
+			);
+		}
+		else {
+			sc.where(
+					cb.equal(root.get(SystemVariables.TENANT_ID.getFieldName()), tenantId),
+					cb.equal(root.get(SystemVariables.USER_ID.getFieldName()), userId)
+			);
+		}
+
+		List<Long> count = em.createQuery(sc).getResultList();
+		return count.get(0) > 0;
 	}
 
 	/**

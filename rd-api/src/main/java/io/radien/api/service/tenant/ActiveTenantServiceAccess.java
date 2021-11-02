@@ -20,6 +20,7 @@ import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.ActiveTenantNotFoundException;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
@@ -35,14 +36,15 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
 
     /**
      * Gets all the active tenants into a pagination mode.
-     * @param search name description for some active tenant
+     * @param tenantId tenant identifier (Optional)
+     * @param userId user identifier (Optional)
      * @param pageNo of the requested information. Where the active tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
      * @param isAscending ascending filter criteria.
      * @return a page of system active tenants.
      */
-    public Page<SystemActiveTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    public Page<SystemActiveTenant> getAll(Long tenantId, Long userId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
      * Gets specific active tenant by the id
@@ -80,7 +82,7 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
      * @throws UniquenessConstraintException in case of duplicates
      * @throws ActiveTenantException in case of any data issues
      */
-    public void update(SystemActiveTenant activeTenant) throws UniquenessConstraintException, ActiveTenantException;
+    public void update(SystemActiveTenant activeTenant) throws UniquenessConstraintException, ActiveTenantException, ActiveTenantNotFoundException;
 
     /**
      * Deletes a requested active tenant

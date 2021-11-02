@@ -115,6 +115,7 @@ public enum GenericErrorCodeMessage {
             "Insufficient params to perform delete. Is necessary at least tenant or user id"),
     ACTIVE_TENANT_ERROR_VALIDATING("AC2", "error.validating.active.tenant",
             "Error checking active tenants"),
+    ACTIVE_TENANT_ERROR_MISSING_CORE_PARAMETERS("AC3", "error.insufficient.params", "Insufficient params to perform operation. Is necessary at least tenant or user id"),
 
     /**
      * Permission Business Error Code Messages

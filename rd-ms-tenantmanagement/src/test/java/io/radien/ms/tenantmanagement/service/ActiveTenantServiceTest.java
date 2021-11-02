@@ -15,10 +15,12 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantServiceAccess;
 import io.radien.exception.ActiveTenantException;
+import io.radien.exception.ActiveTenantNotFoundException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -87,7 +89,7 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testCreate() throws UniquenessConstraintException, ActiveTenantException {
-        SystemActiveTenant result = createActiveTenant(300L);
+        SystemActiveTenant result = createActiveTenant(300L, 300L, 300L);
         assertNotNull(result);
     }
 
@@ -101,7 +103,7 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testGetById() throws UniquenessConstraintException, ActiveTenantException {
-        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(500L, 2L, 2L));
+        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(500L, 2L, 8L));
         activeTenantServiceAccess.create(c);
         SystemActiveTenant result = activeTenantServiceAccess.get(c.getId());
         assertNotNull(result);
@@ -118,7 +120,7 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testDeleteById() throws UniquenessConstraintException, ActiveTenantException {
-        SystemActiveTenant activeTenant = createActiveTenant(4L);
+        SystemActiveTenant activeTenant = createActiveTenant(4L, 4L, 4L);
         SystemActiveTenant result = activeTenantServiceAccess.get(activeTenant.getId());
         assertNotNull(result);
         assertEquals(activeTenant.getUserId(), result.getUserId());
@@ -137,7 +139,7 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testDeleteByListId() throws UniquenessConstraintException, ActiveTenantException {
-        SystemActiveTenant activeTenant = createActiveTenant(5L);
+        SystemActiveTenant activeTenant = createActiveTenant(5L, 5L, 5L);
         SystemActiveTenant result = activeTenantServiceAccess.get(activeTenant.getId());
         assertNotNull(result);
         assertEquals(activeTenant.getUserId(), result.getUserId());
@@ -198,7 +200,7 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testUpdateSuccess() throws Exception {
-        SystemActiveTenant c1 = createActiveTenant(6L);
+        SystemActiveTenant c1 = createActiveTenant(6L, 6L, 6L);
         c1.setUserId(3L);
         activeTenantServiceAccess.update(c1);
         c1 = activeTenantServiceAccess.get(c1.getId());
@@ -213,11 +215,11 @@ public class ActiveTenantServiceTest {
      * @throws UniquenessConstraintException in case of duplicates
      * @throws ActiveTenantException in case of any issue in the data
      */
-    private SystemActiveTenant createActiveTenant(Long id) throws UniquenessConstraintException, ActiveTenantException {
+    private SystemActiveTenant createActiveTenant(Long id, Long tenantId, Long userId) throws UniquenessConstraintException, ActiveTenantException {
         SystemActiveTenant activeTenant = new ActiveTenantEntity();
         activeTenant.setId(id);
-        activeTenant.setUserId(2L);
-        activeTenant.setTenantId(2L);
+        activeTenant.setUserId(userId);
+        activeTenant.setTenantId(tenantId);
         activeTenantServiceAccess.create(activeTenant);
         return activeTenant;
     }
@@ -245,13 +247,34 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testGetAll() throws UniquenessConstraintException, ActiveTenantException {
+        Long tenantId = 1111111L;
+        Long userId1 = 1111111L, userId2 = 1111112L;
+
         SystemActiveTenant c = new ActiveTenantEntity();
-        c.setId(7L);
-        c.setUserId(2L);
-        c.setTenantId(2L);
+        c.setUserId(userId1);
+        c.setTenantId(tenantId);
         activeTenantServiceAccess.create(c);
-        Page<SystemActiveTenant> result = activeTenantServiceAccess.getAll(null,1,10,null,false);
+
+        Page<SystemActiveTenant> result = activeTenantServiceAccess.getAll(tenantId, userId1,1,10,
+                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),false);
         assertNotNull(result);
+        assertEquals(1, result.getTotalResults());
+
+        SystemActiveTenant c2 = new ActiveTenantEntity();
+        c2.setId(1000L);
+        c2.setUserId(userId2);
+        c2.setTenantId(tenantId);
+        activeTenantServiceAccess.create(c2);
+
+        result = activeTenantServiceAccess.getAll(null, userId2,1,10,
+                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),false);
+        assertNotNull(result);
+        assertEquals(1, result.getTotalResults());
+
+        result = activeTenantServiceAccess.getAll(tenantId,null,1,10,
+                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),false);
+        assertNotNull(result);
+        assertEquals(2, result.getTotalResults());
     }
 
     /**
@@ -261,7 +284,7 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testGet() throws UniquenessConstraintException, ActiveTenantException {
-        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(8L, 2L, 2L));
+        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(8L, 2L, 3L));
         activeTenantServiceAccess.create(c);
         ActiveTenantSearchFilter filter = new ActiveTenantSearchFilter(2L, null, false);
         List<? extends SystemActiveTenant> result = activeTenantServiceAccess.get(filter);
@@ -276,7 +299,7 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testGetIsLogicConjunction() throws UniquenessConstraintException, ActiveTenantException {
-        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(9L, 2L, 2L));
+        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(9L, 2L, 9L));
         activeTenantServiceAccess.create(c);
         ActiveTenantSearchFilter filter = new ActiveTenantSearchFilter(2L, null, true);
         List<? extends SystemActiveTenant> result = activeTenantServiceAccess.get(filter);
@@ -292,9 +315,9 @@ public class ActiveTenantServiceTest {
      */
     @Test
     public void testExists() throws UniquenessConstraintException, NotFoundException, ActiveTenantException {
-        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(10L, 2L, 2L));
+        SystemActiveTenant c = new ActiveTenantEntity(new io.radien.ms.tenantmanagement.client.entities.ActiveTenant(10L, 2L, 12L));
         activeTenantServiceAccess.create(c);
-        assertTrue(activeTenantServiceAccess.exists(2L, 2L));
+        assertTrue(activeTenantServiceAccess.exists(2L, 12L));
     }
 
     /**
@@ -305,16 +328,84 @@ public class ActiveTenantServiceTest {
     @Test
     public void testRetrieveAllPossibleTenants() throws UniquenessConstraintException, ActiveTenantException {
         SystemActiveTenant activeTenant = new ActiveTenantEntity();
-        activeTenant.setUserId(2L);
+        activeTenant.setUserId(4L);
         activeTenant.setTenantId(2L);
         activeTenantServiceAccess.create(activeTenant);
 
         SystemActiveTenant activeTenant2 = new ActiveTenantEntity();
-        activeTenant2.setUserId(2L);
-        activeTenant2.setTenantId(2L);
+        activeTenant2.setUserId(4L);
+        activeTenant2.setTenantId(3L);
         activeTenantServiceAccess.create(activeTenant2);
 
-        Page<SystemActiveTenant> page = activeTenantServiceAccess.getAll(null,1,100,null,false);
+        Page<SystemActiveTenant> page = activeTenantServiceAccess.getAll(null, null,1,100,null,false);
         assertTrue(page.getTotalResults()>2);
     }
+
+    /**
+     * Try to update an ActiveTenant that does not exist
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws ActiveTenantException in case of any issue in the data
+     * @throws ActiveTenantNotFoundException to indicate that no ActiveTenant could be found
+     */
+    @Test(expected = ActiveTenantNotFoundException.class)
+    public void testUpdateNotExistent() throws ActiveTenantNotFoundException, UniquenessConstraintException, ActiveTenantException {
+        SystemActiveTenant activeTenant = new ActiveTenantEntity();
+        activeTenant.setId(11111111111L);
+        activeTenant.setUserId(4L);
+        activeTenant.setTenantId(2L);
+        activeTenantServiceAccess.update(activeTenant);
+    }
+
+    /**
+     * Try to create an Active without informing Tenant Id
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws ActiveTenantException in case of any issue in the data
+     */
+    @Test(expected = ActiveTenantException.class)
+    public void testCreateWithNoTenantId() throws UniquenessConstraintException, ActiveTenantException {
+        SystemActiveTenant activeTenant = new ActiveTenantEntity();
+        activeTenant.setUserId(1L);
+        activeTenantServiceAccess.create(activeTenant);
+    }
+
+
+    /**
+     * Try to create an Active without informing User Id
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws ActiveTenantException in case of any issue in the data
+     */
+    @Test(expected = ActiveTenantException.class)
+    public void testCreateWithNoUserId() throws UniquenessConstraintException, ActiveTenantException {
+        SystemActiveTenant activeTenant = new ActiveTenantEntity();
+        activeTenant.setTenantId(1L);
+        activeTenantServiceAccess.create(activeTenant);
+    }
+
+
+    /**
+     * Try to update an Active without informing Tenant Id
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws ActiveTenantException in case of any issue in the data
+     * @throws ActiveTenantNotFoundException to indicate that no ActiveTenant could be found
+     */
+    @Test(expected = ActiveTenantException.class)
+    public void testUpdateWithNoTenantId() throws ActiveTenantNotFoundException, UniquenessConstraintException, ActiveTenantException {
+        SystemActiveTenant activeTenant = new ActiveTenantEntity();
+        activeTenant.setUserId(1L);
+        activeTenantServiceAccess.update(activeTenant);
+    }
+
+    /**
+     * Try to update an Active without informing User Id
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws ActiveTenantException in case of any issue in the data
+     * @throws ActiveTenantNotFoundException to indicate that no ActiveTenant could be found
+     */
+    @Test(expected = ActiveTenantException.class)
+    public void testUpdateWithNoUserId() throws ActiveTenantNotFoundException, UniquenessConstraintException, ActiveTenantException {
+        SystemActiveTenant activeTenant = new ActiveTenantEntity();
+        activeTenant.setTenantId(1L);
+        activeTenantServiceAccess.update(activeTenant);
+    }
+
 }
