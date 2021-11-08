@@ -174,33 +174,6 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
 
     /**
      * Test to validate if a specific current user has the correct role access for
-     * system administrator or user administrator
-     * @throws SystemException in case of any issue while validating the roles
-     */
-    @Test
-    public void testHasUserAdministratorRoleAccess() throws SystemException {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-
-        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
-
-        assertFalse(webAuthorizationChecker.hasUserAdministratorRoleAccess());
-    }
-
-    /**
-     * Test to validate if a specific current user has the correct role access for
      * system administrator or tenant administrator
      * @throws SystemException in case of any issue while validating the roles
      */
