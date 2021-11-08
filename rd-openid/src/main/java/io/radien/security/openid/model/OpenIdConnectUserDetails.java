@@ -15,23 +15,13 @@
  */
 package io.radien.security.openid.model;
 
-import static org.springframework.security.core.authority.AuthorityUtils.commaSeparatedStringToAuthorityList;
-
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import javax.json.JsonObject;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-/**
- * @author Marco Weiland
- * @author Rafael Fernandes
- */
 public class OpenIdConnectUserDetails implements UserDetails {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 	private String sub;
 	private String username;
@@ -48,13 +38,20 @@ public class OpenIdConnectUserDetails implements UserDetails {
 		this.givenname = userInfo.get("given_name");
 		this.familyname = userInfo.get("family_name");
 		this.fullName = givenname + " " + familyname;
-		
-		
+	}
+
+	public OpenIdConnectUserDetails(JsonObject userInfo) {
+		this.sub = userInfo.getString("sub");
+		this.userEmail = userInfo.getString("email");
+		this.username = userInfo.getString("preferred_username");
+		this.givenname = userInfo.getString("given_name");
+		this.familyname = userInfo.getString("family_name");
+		this.fullName = givenname + " " + familyname;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return commaSeparatedStringToAuthorityList("USER");
+		return Collections.singletonList(new SimpleGrantedAuthority("USER"));
 	}
 
 	@Override

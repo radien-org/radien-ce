@@ -279,6 +279,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		try {
 			log.info("going to start logout process");
 			request.logout();
+			request.getSession().invalidate();
 			String logoutUrl = getLogoutURL();
 			log.info("going to redirect to the following url {}", logoutUrl);
 			response.sendRedirect(logoutUrl);

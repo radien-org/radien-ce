@@ -15,6 +15,8 @@
  */
 package io.radien.webapp.security;
 
+import io.radien.security.openid.context.SecurityContextHolder;
+import io.radien.security.openid.model.Authentication;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -23,8 +25,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import io.radien.api.OAFProperties;
 import io.radien.api.kernel.messages.SystemMessages;
@@ -51,20 +51,22 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	 */
 	@Override
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		HttpServletRequest request =(HttpServletRequest) req;
+		HttpSession httpSession = request.getSession();
+		Authentication auth = (Authentication) httpSession.getAttribute("Authentication");
+
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		boolean isAnonymous = auth == null
-				|| "anonymousUser".equalsIgnoreCase(SecurityContextHolder.getContext().getAuthentication().getName());
+				|| "anonymousUser".equalsIgnoreCase(auth.getName());
 		try {
 			if (!isAnonymous && !session.isActive()) {
-				String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				HttpServletRequest request =(HttpServletRequest) req;
-				HttpSession httpSession = request.getSession(false);
+				String userName = auth.getName();
+				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) auth.getPrincipal();
+
 				String accessToken = httpSession.getAttribute("accessToken").toString();
 				String refreshToken = httpSession.getAttribute("refreshToken").toString();
 				session.login(userDetails.getSub(),userDetails.getUserEmail(),userDetails.getUsername(),
 						userDetails.getGivenname(),userDetails.getFamilyname(),accessToken,refreshToken);
-
 
 				log.info("User has logged in via OIDC. {}", userName);
 			}
