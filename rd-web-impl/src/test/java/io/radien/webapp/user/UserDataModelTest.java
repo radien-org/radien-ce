@@ -380,6 +380,24 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     }
 
     /**
+     * Test for method {@link UserDataModel#init()}
+     * Asserts lazyUserDataModel object
+     */
+    @Test
+    public void testInitWhenNullTenantId() {
+
+        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenReturn(Boolean.FALSE);
+        userDataModel.setAllowedDeleteUser(true);
+        userDataModel.setAllowedReadUser(true);
+        userDataModel.setAllowedUpdateUser(true);
+        userDataModel.setAllowedCreateUser(true);
+        when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
+        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenThrow(new RuntimeException("error"));
+        userDataModel.init();
+        assertNull(userDataModel.getLazyUserDataModel().getRowData());
+    }
+
+    /**
      * Test for method {@link UserDataModel#init()} when exception occurs
      */
     @Test

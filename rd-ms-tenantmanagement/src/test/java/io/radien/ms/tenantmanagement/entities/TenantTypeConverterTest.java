@@ -18,22 +18,13 @@ package io.radien.ms.tenantmanagement.entities;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
- * Class that aggregates UnitTest cases for TenantTypeConverter
- * {@link io.radien.ms.tenantmanagement.entities.TenantTypeConverter}
- *
  * @author Bruno Gama
  */
 public class TenantTypeConverterTest {
 
-    /**
-     * Asserts Type Tenant
-     * Test method {@link TenantTypeConverter#convertToDatabaseColumn(TenantType)}
-     */
     @Test
     public void convertToDatabaseColumn() {
         TenantTypeConverter converter = new TenantTypeConverter();
@@ -42,21 +33,6 @@ public class TenantTypeConverterTest {
         assertEquals((Long) 1L, type);
     }
 
-    /**
-     * Asserts null tenant type
-     * Test method {@link TenantTypeConverter#convertToDatabaseColumn(TenantType)}
-     */
-    @Test
-    public void convertToDatabaseColumnAsNullType() {
-        TenantTypeConverter converter = new TenantTypeConverter();
-        Long type = converter.convertToDatabaseColumn(null);
-
-        assertNull(type);
-    }
-
-    /**
-     * Test method {@link TenantTypeConverter#convertToEntityAttribute(Long)}
-     */
     @Test
     public void convertToEntityAttribute() {
         TenantTypeConverter converter = new TenantTypeConverter();
@@ -65,9 +41,6 @@ public class TenantTypeConverterTest {
         assertEquals(TenantType.CLIENT, type);
     }
 
-    /**
-     * Test method {@link TenantTypeConverter#convertToEntityAttribute(Long)}
-     */
     @Test
     public void testToString() {
         TenantTypeConverter converter = new TenantTypeConverter();

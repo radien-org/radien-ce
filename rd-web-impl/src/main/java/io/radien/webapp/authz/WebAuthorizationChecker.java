@@ -106,6 +106,24 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     }
 
     /**
+     * Validates if the current user has any of the multiple correct roles given
+     * System Administrator or User Administrator
+     * @return true if user has one of those
+     */
+    public boolean hasUserAdministratorRoleAccess() {
+        try {
+            List<String> roleNames = new ArrayList<>();
+            roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+            roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
+            return super.hasGrantMultipleRoles(roleNames);
+        }
+        catch (Exception e) {
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+            return false;
+        }
+    }
+
+    /**
      * Verifies if the current logged user has relevant roles to perform actions
      * regarding tenant administration. It includes System Administrator, Tenant Administrator
      * Client Tenant Administrator and Sub Tenant Administrator
