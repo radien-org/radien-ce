@@ -49,7 +49,6 @@ import com.nimbusds.oauth2.sdk.token.Tokens;
 import io.radien.exception.AuthorizationCodeRequestException;
 import io.radien.exception.InvalidAccessTokenException;
 import io.radien.exception.TokenRequestException;
-import io.radien.security.openid.context.SecurityContextHolder;
 import io.radien.security.openid.context.client.ClientContext;
 import io.radien.security.openid.model.Authentication;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
@@ -119,26 +118,7 @@ public class OpenIdConnectFilter implements Filter {
     private String logoutRedirectUri;
 
     @Inject
-    @ConfigProperty(name="api")
-    private String apiPrefix;
-
-    @Inject
-    @ConfigProperty(name="auth.csrfEnabled")
-    private boolean csrfEnabled;
-
-    @Inject
-    @ConfigProperty(name="auth.issuer")
-    private String issuer;
-
-    @Inject
-    @ConfigProperty(name="auth.jwkUrl")
-    private String jwkUrl;
-
-    @Inject
     private ClientContext clientContext;
-
-    // State string for pairing the response to the request
-    private State state;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -156,7 +136,7 @@ public class OpenIdConnectFilter implements Filter {
         try {
             if (isAuthorizationCodeCallbackURI(request)) {
                 AuthorizationCode code = processAuthCodeCallback(request);
-                Tokens tokens = requestAccessToken(request, code);
+                Tokens tokens = requestAccessToken(code);
                 Authentication authentication = validateAccessToken(tokens.getAccessToken());
                 saveInformation(authentication, tokens, request);
             }
@@ -171,11 +151,9 @@ public class OpenIdConnectFilter implements Filter {
             chain.doFilter(request, response);
         }
         catch (URISyntaxException | AuthorizationCodeRequestException | TokenRequestException | InvalidAccessTokenException e) {
-            SecurityContextHolder.clearContext();
             log.error("An internal error occurred while trying to authenticate the user.", e);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Failed authentication..");
-            response.setContentType("application/json; charset=UTF-8");
+            this.clientContext.clear();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Failed authentication..");
         }
     }
 
@@ -193,7 +171,7 @@ public class OpenIdConnectFilter implements Filter {
         URI callback = new URI(getCallbackURI());
 
         // Generate random state string for pairing the response to the request
-        this.state = new State();
+        State state = new State();
         clientContext.setState(state);
 
         // Build the request
@@ -216,7 +194,7 @@ public class OpenIdConnectFilter implements Filter {
             AuthorizationResponse response = AuthorizationResponse.parse(new URI(getCompleteURL(request)));
 
             // Check the returned state parameter, must match the original
-            if (!state.equals(response.getState())) {
+            if (!this.clientContext.getState().equals(response.getState())) {
                 throw new AuthorizationCodeRequestException("Unexpected or tampered response, stop!!!");
             }
 
@@ -237,7 +215,7 @@ public class OpenIdConnectFilter implements Filter {
         }
     }
 
-    protected Tokens requestAccessToken(HttpServletRequest servletRequest, AuthorizationCode code) throws TokenRequestException {
+    protected Tokens requestAccessToken(AuthorizationCode code) throws TokenRequestException {
         try {
             // Construct the code grant from the code obtained from the authz endpoint
             // and the original callback URI used at the auth endpoint
@@ -334,9 +312,9 @@ public class OpenIdConnectFilter implements Filter {
     protected void saveInformation(Authentication authentication, Tokens tokens, HttpServletRequest servletRequest) {
         this.clientContext.setAccessToken(tokens.getAccessToken());
         this.clientContext.setRefreshToken(tokens.getRefreshToken());
+        this.clientContext.setAuthentication(authentication);
         servletRequest.getSession().setAttribute("accessToken", tokens.getAccessToken().getValue());
-        servletRequest.getSession().setAttribute("refreshToken", tokens.getRefreshToken());
-        servletRequest.getSession().setAttribute("Authentication", authentication);
+        servletRequest.getSession().setAttribute("refreshToken", tokens.getRefreshToken().getValue());
     }
 
     protected String getCompleteURL(HttpServletRequest request) {

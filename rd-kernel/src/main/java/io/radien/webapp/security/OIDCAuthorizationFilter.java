@@ -15,8 +15,9 @@
  */
 package io.radien.webapp.security;
 
-import io.radien.security.openid.context.SecurityContextHolder;
+import io.radien.security.openid.context.client.ClientContext;
 import io.radien.security.openid.model.Authentication;
+import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -41,6 +42,9 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	private static final long serialVersionUID = -6910833814070691420L;
 	private static final Logger log = LoggerFactory.getLogger(OIDCAuthorizationFilter.class);
 
+	@Inject
+	private ClientContext clientContext;
+
 	/**
 	 * Processes all requests that have no user in session and are within the
 	 * openappframe modules, redirecting the user to the index page in tis case
@@ -51,22 +55,20 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	 */
 	@Override
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
-		HttpServletRequest request =(HttpServletRequest) req;
-		HttpSession httpSession = request.getSession();
-		Authentication auth = (Authentication) httpSession.getAttribute("Authentication");
-
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Authentication auth = this.clientContext.getAuthentication();
 		boolean isAnonymous = auth == null
 				|| "anonymousUser".equalsIgnoreCase(auth.getName());
 		try {
 			if (!isAnonymous && !session.isActive()) {
 				String userName = auth.getName();
 				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) auth.getPrincipal();
-
+				HttpServletRequest request =(HttpServletRequest) req;
+				HttpSession httpSession = request.getSession(false);
 				String accessToken = httpSession.getAttribute("accessToken").toString();
 				String refreshToken = httpSession.getAttribute("refreshToken").toString();
 				session.login(userDetails.getSub(),userDetails.getUserEmail(),userDetails.getUsername(),
 						userDetails.getGivenname(),userDetails.getFamilyname(),accessToken,refreshToken);
+
 
 				log.info("User has logged in via OIDC. {}", userName);
 			}
