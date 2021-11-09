@@ -18,10 +18,16 @@ package io.radien.security.openid.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import javax.json.JsonObject;
 
+/**
+ * @author Marco Weiland
+ * @author Rafael Fernandes
+ */
 public class OpenIdConnectUserDetails implements UserDetails {
 
+	/**
+	 *
+	 */
 	private static final long serialVersionUID = 1L;
 	private String sub;
 	private String username;
@@ -38,15 +44,8 @@ public class OpenIdConnectUserDetails implements UserDetails {
 		this.givenname = userInfo.get("given_name");
 		this.familyname = userInfo.get("family_name");
 		this.fullName = givenname + " " + familyname;
-	}
 
-	public OpenIdConnectUserDetails(JsonObject userInfo) {
-		this.sub = userInfo.getString("sub");
-		this.userEmail = userInfo.getString("email");
-		this.username = userInfo.getString("preferred_username");
-		this.givenname = userInfo.getString("given_name");
-		this.familyname = userInfo.getString("family_name");
-		this.fullName = givenname + " " + familyname;
+
 	}
 
 	@Override
