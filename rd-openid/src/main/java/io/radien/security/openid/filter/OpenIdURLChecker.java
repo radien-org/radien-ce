@@ -11,7 +11,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -23,7 +22,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * 3 - If is about a private URI and there is no Authentication information (user did not authenticate himself)
  * 4 - Redirects to the URI that triggers the authentication process.
  */
-@WebFilter("/*")
 public class OpenIdURLChecker implements Filter {
 
     @Inject
@@ -62,12 +60,12 @@ public class OpenIdURLChecker implements Filter {
      * Check if the current requests refers a private URI, in other words, if is a URI that can only
      * be accessed by an authenticated user.
      * @param request servlet request parameter from which the URI will be extracted
-     * @return
+     * @return true if is a private URI, otherwise false
      */
     protected boolean isPrivateURI(HttpServletRequest request) {
         Collection<String> contexts = getPrivateContextList();
         for (String ctx:contexts) {
-            if (request.getRequestURI().startsWith(ctx)) {
+            if (request.getServletPath().startsWith(ctx)) {
                 return true;
             }
         }

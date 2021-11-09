@@ -8,6 +8,7 @@ import javax.enterprise.context.SessionScoped;
 
 @SessionScoped
 public class OAuthClientContext implements ClientContext {
+    private static final long serialVersionUID = -8073015720062843473L;
     private AccessToken accessToken;
     private RefreshToken refreshToken;
     private State state;

@@ -74,7 +74,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -85,13 +84,12 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Marco Weiland
  */
-@WebFilter("/*")
 public class OpenIdConnectFilter implements Filter {
 
     private static final String LOGIN_URI = "/login";
     private static final String AUTH_CALLBACK_URI = "/auth";
 
-    private static Logger log = LoggerFactory.getLogger(OpenIdConnectFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenIdConnectFilter.class);
 
     @Inject
     @ConfigProperty(name="SCRIPT_CLIENT_ID_VALUE")
@@ -112,10 +110,6 @@ public class OpenIdConnectFilter implements Filter {
     @Inject
     @ConfigProperty(name="auth.redirectUri")
     private String redirectUri;
-
-    @Inject
-    @ConfigProperty(name="AUTH_LOGOUT_REDIRECT_URI_LOCAL")
-    private String logoutRedirectUri;
 
     @Inject
     private ClientContext clientContext;
