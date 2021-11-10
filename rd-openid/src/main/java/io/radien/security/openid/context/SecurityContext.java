@@ -1,12 +1,12 @@
-package io.radien.security.openid.context.client;
+package io.radien.security.openid.context;
 
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
-import io.radien.security.openid.model.Authentication;
+import io.radien.security.openid.model.UserDetails;
 import java.io.Serializable;
 
-public interface ClientContext extends Serializable {
+public interface SecurityContext extends Serializable {
     AccessToken getAccessToken();
     void setAccessToken(AccessToken accessToken);
 
@@ -16,8 +16,8 @@ public interface ClientContext extends Serializable {
     State getState();
     void setState(State state);
 
-    Authentication getAuthentication();
-    void setAuthentication(Authentication authentication);
+    UserDetails getUserDetails();
+    void setUserDetails(UserDetails userDetails);
 
     void clear();
 }

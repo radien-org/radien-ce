@@ -1,6 +1,6 @@
 package io.radien.security.openid.filter;
 
-import io.radien.security.openid.context.client.ClientContext;
+import io.radien.security.openid.context.SecurityContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +25,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class OpenIdURLChecker implements Filter {
 
     @Inject
-    private ClientContext clientContext;
+    private SecurityContext securityContext;
 
     @Inject
     @ConfigProperty(name="auth.privateContexts", defaultValue = "/module")
@@ -49,7 +49,7 @@ public class OpenIdURLChecker implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if (isPrivateURI(request) && clientContext.getAuthentication() == null) {
+        if (isPrivateURI(request) && securityContext.getUserDetails() == null) {
             response.sendRedirect(this.authenticationTriggerURI);
             return;
         }

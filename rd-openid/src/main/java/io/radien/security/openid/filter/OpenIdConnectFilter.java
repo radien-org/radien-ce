@@ -48,10 +48,9 @@ import com.nimbusds.oauth2.sdk.token.Tokens;
 import io.radien.exception.AuthorizationCodeRequestException;
 import io.radien.exception.InvalidAccessTokenException;
 import io.radien.exception.TokenRequestException;
-import io.radien.security.openid.context.client.ClientContext;
-import io.radien.security.openid.model.Authentication;
+import io.radien.security.openid.context.SecurityContext;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
-import io.radien.security.openid.model.UsernamePasswordAuthenticationToken;
+import io.radien.security.openid.model.UserDetails;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -120,7 +119,7 @@ public class OpenIdConnectFilter implements Filter {
     private String appBaseContext;
 
     @Inject
-    private ClientContext clientContext;
+    private SecurityContext securityContext;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -139,22 +138,22 @@ public class OpenIdConnectFilter implements Filter {
             if (isAuthorizationCodeCallbackURI(request)) {
                 AuthorizationCode code = processAuthCodeCallback(request);
                 Tokens tokens = requestAccessToken(code);
-                Authentication authentication = validateAccessToken(tokens.getAccessToken());
-                saveInformation(authentication, tokens, request);
+                UserDetails userDetails = validateAccessToken(tokens.getAccessToken());
+                saveInformation(userDetails, tokens, request);
             }
             else {
-                AccessToken accessToken = this.clientContext.getAccessToken();
+                AccessToken accessToken = this.securityContext.getAccessToken();
                 if (accessToken == null) {
                     requestAuthzCode(response);
                     return;
                 }
             }
-            response.sendRedirect(getAppBaseURL());
+            response.sendRedirect(getAppBaseURL(request));
             chain.doFilter(request, response);
         }
         catch (URISyntaxException | AuthorizationCodeRequestException | TokenRequestException | InvalidAccessTokenException e) {
             log.error("An internal error occurred while trying to authenticate the user.", e);
-            this.clientContext.clear();
+            this.securityContext.clear();
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Failed authentication..");
         }
     }
@@ -174,7 +173,7 @@ public class OpenIdConnectFilter implements Filter {
 
         // Generate random state string for pairing the response to the request
         State state = new State();
-        clientContext.setState(state);
+        securityContext.setState(state);
 
         // Build the request
         AuthorizationRequest request = new AuthorizationRequest.Builder(
@@ -196,7 +195,7 @@ public class OpenIdConnectFilter implements Filter {
             AuthorizationResponse response = AuthorizationResponse.parse(new URI(getCompleteURL(request)));
 
             // Check the returned state parameter, must match the original
-            if (!this.clientContext.getState().equals(response.getState())) {
+            if (!this.securityContext.getState().equals(response.getState())) {
                 throw new AuthorizationCodeRequestException("Unexpected or tampered response, stop!!!");
             }
 
@@ -251,7 +250,7 @@ public class OpenIdConnectFilter implements Filter {
         }
     }
 
-    protected Authentication validateAccessToken(AccessToken accessToken) throws InvalidAccessTokenException {
+    protected UserDetails validateAccessToken(AccessToken accessToken) throws InvalidAccessTokenException {
         try {
             JWSObject jwsObject = JWSObject.parse(accessToken.getValue());
             JWSHeader header = jwsObject.getHeader();
@@ -281,20 +280,19 @@ public class OpenIdConnectFilter implements Filter {
                 throw new InvalidAccessTokenException("Token Expired");
             }
 
-            return assemblyAuthentication(payloadMap);
+            return assemblyUserDetails(payloadMap);
 
         } catch (java.text.ParseException | MalformedURLException | JwkException | JOSEException e) {
             throw new InvalidAccessTokenException(e);
         }
     }
 
-    protected Authentication assemblyAuthentication(Map<String, Object> mainMap) {
+    protected UserDetails assemblyUserDetails(Map<String, Object> mainMap) {
         List<String> expectedKeys = Arrays.asList("sub", "email", "preferred_username",
                 "given_name", "family_name");
         Map<String, String> subMap = mainMap.entrySet().stream().filter(m -> expectedKeys.contains(m.getKey())).
                 collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().toString()));
-        OpenIdConnectUserDetails user = new OpenIdConnectUserDetails(subMap);
-        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        return new OpenIdConnectUserDetails(subMap);
     }
 
     protected boolean isTriggeringURI(HttpServletRequest request) {
@@ -310,10 +308,10 @@ public class OpenIdConnectFilter implements Filter {
         return this.redirectUri + AUTH_CALLBACK_URI;
     }
 
-    protected void saveInformation(Authentication authentication, Tokens tokens, HttpServletRequest servletRequest) {
-        this.clientContext.setAccessToken(tokens.getAccessToken());
-        this.clientContext.setRefreshToken(tokens.getRefreshToken());
-        this.clientContext.setAuthentication(authentication);
+    protected void saveInformation(UserDetails userDetails, Tokens tokens, HttpServletRequest servletRequest) {
+        this.securityContext.setAccessToken(tokens.getAccessToken());
+        this.securityContext.setRefreshToken(tokens.getRefreshToken());
+        this.securityContext.setUserDetails(userDetails);
         servletRequest.getSession().setAttribute("accessToken", tokens.getAccessToken().getValue());
         servletRequest.getSession().setAttribute("refreshToken", tokens.getRefreshToken().getValue());
     }
@@ -326,7 +324,18 @@ public class OpenIdConnectFilter implements Filter {
         return requestURL.toString();
     }
 
-    protected String getAppBaseURL() {
+    protected String getAppBaseURL(HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder();
+
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        int portNumber = request.getServerPort();
+        String contextPath = request.getContextPath();
+        String servletPath = request.getServletPath();
+        String pathInfo = request.getPathInfo();
+        String query = request.getQueryString();
         return redirectUri.substring(0, redirectUri.lastIndexOf("/"));
     }
+
+
 }

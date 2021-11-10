@@ -15,8 +15,7 @@
  */
 package io.radien.webapp.security;
 
-import io.radien.security.openid.context.client.ClientContext;
-import io.radien.security.openid.model.Authentication;
+import io.radien.security.openid.context.SecurityContext;
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
@@ -43,7 +42,7 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	private static final Logger log = LoggerFactory.getLogger(OIDCAuthorizationFilter.class);
 
 	@Inject
-	private ClientContext clientContext;
+	private SecurityContext securityContext;
 
 	/**
 	 * Processes all requests that have no user in session and are within the
@@ -55,13 +54,11 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 	 */
 	@Override
 	protected void process(ServletRequest req, ServletResponse res, FilterChain chain) {
-		Authentication auth = this.clientContext.getAuthentication();
-		boolean isAnonymous = auth == null
-				|| "anonymousUser".equalsIgnoreCase(auth.getName());
+		OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) this.securityContext.getUserDetails();
+		boolean isAnonymous = userDetails == null || "anonymousUser".equalsIgnoreCase(userDetails.getUsername());
 		try {
 			if (!isAnonymous && !session.isActive()) {
-				String userName = auth.getName();
-				OpenIdConnectUserDetails userDetails = (OpenIdConnectUserDetails) auth.getPrincipal();
+				String userName = userDetails.getUsername();
 				HttpServletRequest request =(HttpServletRequest) req;
 				HttpSession httpSession = request.getSession(false);
 				String accessToken = httpSession.getAttribute("accessToken").toString();
