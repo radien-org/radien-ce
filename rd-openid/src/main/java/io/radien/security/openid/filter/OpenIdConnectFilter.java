@@ -121,13 +121,24 @@ public class OpenIdConnectFilter implements Filter {
     @Inject
     private SecurityContext securityContext;
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
-    }
-
-    protected void doFilter(HttpServletRequest request, HttpServletResponse response,
-                            FilterChain chain) throws IOException, ServletException {
+    /**
+     * Intercept the request and In case of being a trigger URI, It will start
+     * an authentication based on Authorization Code Flow, compounded by the following steps:
+     * 1 - Prepare an Authorization code request
+     * 2 - Send it to Identity Server
+     * 3 - Via callback URI (Return), process the status code and obtains the Authorization Code
+     * 4 - With the obtained Authorization code, prepares an Access Code request.
+     * 5 - Obtains an validate the Access Code
+     *
+     * @param servletRequest servlet request parameter (See {@link ServletRequest}
+     * @param servletResponse servlet response parameter (See {@link ServletResponse}
+     * @param chain filter chain parameter (See {@link FilterChain}
+     * @throws IOException in case of any issue doing I/O processing
+     * @throws ServletException in case of any issue processing servlet stuff
+     */
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         if (!isTriggeringURI(request)) {
             chain.doFilter(request, response);
@@ -148,7 +159,7 @@ public class OpenIdConnectFilter implements Filter {
                     return;
                 }
             }
-            response.sendRedirect(getAppBaseURL(request));
+            response.sendRedirect(getAppContextURL(request));
             chain.doFilter(request, response);
         }
         catch (URISyntaxException | AuthorizationCodeRequestException | TokenRequestException | InvalidAccessTokenException e) {
@@ -158,17 +169,18 @@ public class OpenIdConnectFilter implements Filter {
         }
     }
 
+    /**
+     * Performs the Authorization Code Request operation
+     * @param servletResponse instance of servlet response used to redirect request to Identity Id server
+     * @throws URISyntaxException in case of parsing error regarding userAuthorizationUri parameter
+     * @throws IOException in case of error during redirection to the Identity Id server
+     */
     protected void requestAuthzCode(HttpServletResponse servletResponse) throws URISyntaxException, IOException {
-        // The authorisation endpoint of the server
         URI authEndpoint = new URI(this.userAuthorizationUri);
-
-        // The client identifier provisioned by the server
         ClientID clientID = new ClientID(this.clientId);
-
-        // The requested scope values for the token
         Scope scope = new Scope("openid", "email", "profile");
 
-        // The client callback URI, typically pre-registered with the server
+        // The client callback URI
         URI callback = new URI(getCallbackURI());
 
         // Generate random state string for pairing the response to the request
@@ -184,11 +196,20 @@ public class OpenIdConnectFilter implements Filter {
                 .endpointURI(authEndpoint)
                 .build();
 
-        // Use this URI to send the end-user's browser to the server
-        URI requestURI = request.toURI();
-        servletResponse.sendRedirect(requestURI.toString());
+        // Use this URI to send/redirect the current browser to the server
+        servletResponse.sendRedirect(request.toURI().toString());
     }
 
+    /**
+     * Corresponds to the final part of authorization code request operation.
+     * OpenId has processed the operation and now is communicating the response
+     * via callback URL, the status code and the code in self are store as
+     * Query String parameters
+     * @param request used as parameter to read/parse the callback URI
+     * @return in case of success returns a instance of {@link AuthorizationCode} containing
+     * the authorization code
+     * @throws AuthorizationCodeRequestException in case of any issue regarding authorization code operation
+     */
     protected AuthorizationCode processAuthCodeCallback(HttpServletRequest request) throws AuthorizationCodeRequestException {
         try {
             // Parse the authorisation response from the callback URI
@@ -196,7 +217,7 @@ public class OpenIdConnectFilter implements Filter {
 
             // Check the returned state parameter, must match the original
             if (!this.securityContext.getState().equals(response.getState())) {
-                throw new AuthorizationCodeRequestException("Unexpected or tampered response, stop!!!");
+                throw new AuthorizationCodeRequestException("Unexpected response");
             }
 
             if (!response.indicatesSuccess()) {
@@ -207,7 +228,7 @@ public class OpenIdConnectFilter implements Filter {
 
             AuthorizationSuccessResponse successResponse = response.toSuccessResponse();
 
-            // Retrieve the authorisation code, to be used later to exchange the code for
+            // Authorisation code, to be used to exchange the code for
             // an access token at the token endpoint of the server
             return successResponse.getAuthorizationCode();
         }
@@ -216,6 +237,13 @@ public class OpenIdConnectFilter implements Filter {
         }
     }
 
+    /**
+     * Given a previously obtained Authorization Code, performs the Access Token request operation
+     * @param code authorization code obtained previously
+     * @return in case of success returns a instance of {@link Tokens} containing
+     * the access token and refresh token as well
+     * @throws TokenRequestException in case of any occurred during request token operation
+     */
     protected Tokens requestAccessToken(AuthorizationCode code) throws TokenRequestException {
         try {
             // Construct the code grant from the code obtained from the authz endpoint
@@ -250,6 +278,13 @@ public class OpenIdConnectFilter implements Filter {
         }
     }
 
+    /**
+     * Check if access token is valid and assemblies a UserDetails bean (Object that encapsulates information regarding
+     * the authenticated user)
+     * @param accessToken OpenIDConnect bean that encapsulates Access Token information
+     * @return instance of UserDetails bean assembled using data from access token payload
+     * @throws InvalidAccessTokenException in case of any validation issue found regarding Access token
+     */
     protected UserDetails validateAccessToken(AccessToken accessToken) throws InvalidAccessTokenException {
         try {
             JWSObject jwsObject = JWSObject.parse(accessToken.getValue());
@@ -287,6 +322,11 @@ public class OpenIdConnectFilter implements Filter {
         }
     }
 
+    /**
+     * Given a map obtained from a Access token payload, mounts a User Details bean
+     * @param mainMap map containing information regarding user
+     * @return instance of UserDetails
+     */
     protected UserDetails assemblyUserDetails(Map<String, Object> mainMap) {
         List<String> expectedKeys = Arrays.asList("sub", "email", "preferred_username",
                 "given_name", "family_name");
@@ -295,19 +335,40 @@ public class OpenIdConnectFilter implements Filter {
         return new OpenIdConnectUserDetails(subMap);
     }
 
+    /**
+     * Check if current request corresponds to the URI that triggers the OIDC authentication
+     * process, or is related with
+     * @param request Http servlet request to be used as parameter to check the URI
+     * @return true if corresponds to triggering URI, otherwise false
+     */
     protected boolean isTriggeringURI(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         return requestURI.endsWith(LOGIN_URI) || requestURI.endsWith(AUTH_CALLBACK_URI);
     }
 
+    /**
+     * Checks if the current request (URL) corresponds to the authorization code callback
+     * @param request Http servlet request to be used as parameter to check the URI
+     * @return true if corresponds to callback, otherwise false
+     */
     protected boolean isAuthorizationCodeCallbackURI(HttpServletRequest request) {
         return request.getRequestURI().endsWith(AUTH_CALLBACK_URI);
     }
 
+    /**
+     * Assemblies an URI to be used as callback during Authorization Code request
+     * @return String that corresponds to Authorization Code Callback
+     */
     protected String getCallbackURI() {
         return this.redirectUri + AUTH_CALLBACK_URI;
     }
 
+    /**
+     * Stores information to be referred in other contexts
+     * @param userDetails Object that encapsulates information regarding the authenticated user
+     * @param tokens Tokens obtained during OIDC authentication
+     * @param servletRequest Http servlet request used as parameter to access session object
+     */
     protected void saveInformation(UserDetails userDetails, Tokens tokens, HttpServletRequest servletRequest) {
         this.securityContext.setAccessToken(tokens.getAccessToken());
         this.securityContext.setRefreshToken(tokens.getRefreshToken());
@@ -316,6 +377,12 @@ public class OpenIdConnectFilter implements Filter {
         servletRequest.getSession().setAttribute("refreshToken", tokens.getRefreshToken().getValue());
     }
 
+    /**
+     * Retrieve/assemblies the URL referred by a Http Request object, what includes
+     * the Query String part
+     * @param request Http servlet request used as parameter
+     * @return String describing the complete URL
+     */
     protected String getCompleteURL(HttpServletRequest request) {
         StringBuffer requestURL = request.getRequestURL();
         if (request.getQueryString() != null) {
@@ -324,17 +391,24 @@ public class OpenIdConnectFilter implements Filter {
         return requestURL.toString();
     }
 
-    protected String getAppBaseURL(HttpServletRequest request) {
+    /**
+     * Retrieves/assemblies application context URL
+     * @param request Http servlet request used as parameter
+     * @return String describing the Application context URL
+     */
+    protected String getAppContextURL(HttpServletRequest request) {
         StringBuilder sb = new StringBuilder();
-
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int portNumber = request.getServerPort();
-        String contextPath = request.getContextPath();
-        String servletPath = request.getServletPath();
-        String pathInfo = request.getPathInfo();
-        String query = request.getQueryString();
-        return redirectUri.substring(0, redirectUri.lastIndexOf("/"));
+        sb.append(request.getScheme()).append("://");
+        sb.append(request.getServerName());
+        if (request.getServerPort() > 0) {
+            sb.append(":");
+            sb.append(request.getServerPort());
+        }
+        if (!this.appBaseContext.startsWith("/")) {
+            sb.append("/");
+        }
+        sb.append(this.appBaseContext);
+        return sb.toString();
     }
 
 
