@@ -523,28 +523,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.github.jeluard</groupId>
-				<artifactId>plantuml-maven-plugin</artifactId>
-				<version>7940</version>
-				<configuration>
-					<outputDirectory>${basedir}/plantuml/resources/images</outputDirectory>
-					<sourceFiles>
-						<directory>${basedir}</directory>
-						<includes>
-							<include>src/main/plantuml/**/*.puml</include>
-						</includes>
-					</sourceFiles>
-				</configuration>
-				<!-- https://mvnrepository.com/artifact/net.sourceforge.plantuml/plantuml -->
-				<dependencies>
-					<dependency>
-						<groupId>net.sourceforge.plantuml</groupId>
-						<artifactId>plantuml</artifactId>
-						<version>${version.net.sourceforge.plantuml}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
 		</plugins>
 	</build>
 </project>
