@@ -13,6 +13,7 @@
 </a>
 </p>
 
+<p align="center"><b>We are not in Kansas AnyMore</b><p>
 
 __radien is an open source end to end Serverless Architecture__  which provisions, scales and maintains the workload automatically so that developers can focus on product development rather managing the infrastructure.
 
