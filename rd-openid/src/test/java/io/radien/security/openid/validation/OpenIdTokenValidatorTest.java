@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.radien.security.openid.validation;
 
 import com.auth0.jwk.Jwk;
@@ -12,19 +27,16 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import io.radien.exception.InvalidAccessTokenException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -33,7 +45,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
 /**
@@ -203,41 +214,6 @@ public class OpenIdTokenValidatorTest {
         when(jsonToBeValidated.getHeader()).thenReturn(jwsHeader);
         when(provider.get(keyId)).thenReturn(jwk);
         when(jsonToBeValidated.verify(any(RSASSAVerifier.class))).thenReturn(Boolean.FALSE);
-
-        openIdTokenValidator.validate(jsonToBeValidated);
-    }
-
-    /**
-     * Test for method {@link OpenIdTokenValidator#validate(JWSObject)}
-     * Scenario where client is invalid
-     * @throws Exception thrown in case of invalid public key
-     */
-    @Test(expected = InvalidAccessTokenException.class)
-    public void testValidateInvalidClient() throws Exception {
-        String keyId = "11111";
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("iss", issuer);
-        map.put("typ", "Bearer");
-        map.put("aud", "1");
-        Payload payload = new Payload(map);
-
-        JWSObject jsonToBeValidated = mock(JWSObject.class);
-        when(jsonToBeValidated.getPayload()).thenReturn(payload);
-
-        RSAPublicKey mockedPublicKey = mock(RSAPublicKey.class);
-        Jwk jwk = mock(Jwk.class);
-        when(jwk.getPublicKey()).thenReturn(mockedPublicKey);
-
-        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.EdDSA,
-                JOSEObjectType.JWT, "cty", new HashSet<>(),
-                new URI("jku"), null, new URI("x5u"),
-                null, null, new ArrayList<>(), keyId, true,
-                new HashMap<>(), null);
-
-        when(jsonToBeValidated.getHeader()).thenReturn(jwsHeader);
-        when(provider.get(keyId)).thenReturn(jwk);
-        when(jsonToBeValidated.verify(any(RSASSAVerifier.class))).thenReturn(Boolean.TRUE);
 
         openIdTokenValidator.validate(jsonToBeValidated);
     }

@@ -162,14 +162,11 @@ public class OpenIdConnectFilter implements Filter {
         ClientID clientID = new ClientID(this.clientId);
         Scope scope = new Scope("openid", "email", "profile");
 
-        // The client callback URI
         URI callback = new URI(getCallbackURI());
 
-        // Generate random state string for pairing the response to the request
         State state = new State();
         securityContext.setState(state);
 
-        // Build the request
         AuthorizationRequest request = new AuthorizationRequest.Builder(
                 new ResponseType(ResponseType.Value.CODE), clientID)
                 .scope(scope)
@@ -178,7 +175,6 @@ public class OpenIdConnectFilter implements Filter {
                 .endpointURI(authEndpoint)
                 .build();
 
-        // Use this URI to send/redirect the current browser to the server
         servletResponse.sendRedirect(request.toURI().toString());
     }
 
@@ -194,25 +190,19 @@ public class OpenIdConnectFilter implements Filter {
      */
     protected AuthorizationCode processAuthCodeCallback(HttpServletRequest request) throws AuthorizationCodeRequestException {
         try {
-            // Parse the authorisation response from the callback URI
             AuthorizationResponse response = AuthorizationResponse.parse(new URI(getCompleteURL(request)));
 
-            // Check the returned state parameter, must match the original
             if (!this.securityContext.getState().equals(response.getState())) {
                 throw new AuthorizationCodeRequestException("Invalid State");
             }
 
             if (!response.indicatesSuccess()) {
-                // The request was denied or some error occurred
                 ErrorObject errorObject = response.toErrorResponse().getErrorObject();
                 String msg = errorObject.getCode() + " " + errorObject.getDescription() + " " + errorObject.getHTTPStatusCode();
                 throw new AuthorizationCodeRequestException(msg);
             }
 
             AuthorizationSuccessResponse successResponse = response.toSuccessResponse();
-
-            // Authorisation code, to be used to exchange the code for
-            // an access token at the token endpoint of the server
             return successResponse.getAuthorizationCode();
         }
         catch (URISyntaxException | ParseException e) {
@@ -229,26 +219,18 @@ public class OpenIdConnectFilter implements Filter {
      */
     protected Tokens requestAccessToken(AuthorizationCode code) throws TokenRequestException {
         try {
-            // Construct the code grant from the code obtained from the authz endpoint
-            // and the original callback URI used at the auth endpoint
             URI callback = new URI(this.getCallbackURI());
             AuthorizationGrant codeGrant = new AuthorizationCodeGrant(code, callback);
 
-            // The credentials to authenticate the client at the token endpoint
             ClientID clientID = new ClientID(this.clientId);
-            Secret clientSecret = new Secret(this.clientSecret);
-            ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecret);
+            Secret clientSecretObj = new Secret(this.clientSecret);
+            ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecretObj);
 
-            // The token endpoint
             URI tokenEndpoint = new URI(this.accessTokenUri);
-
-            // Make the token request
             TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant);
-
             TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
 
             if (!response.indicatesSuccess()) {
-                // We got an error response...
                 ErrorObject errorObject = response.toErrorResponse().getErrorObject();
                 String msg = errorObject.getCode() + " " + errorObject.getDescription() + " " + errorObject.getHTTPStatusCode();
                 throw new TokenRequestException(msg);

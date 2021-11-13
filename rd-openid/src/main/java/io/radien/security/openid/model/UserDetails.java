@@ -15,12 +15,12 @@
  */
 package io.radien.security.openid.model;
 
-import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * Interface that describes a contract to store information regarding the authenticated user
  */
-public interface UserDetails {
+public interface UserDetails extends Serializable {
 
     /**
      * Returns the username used to authenticate the user. Cannot return

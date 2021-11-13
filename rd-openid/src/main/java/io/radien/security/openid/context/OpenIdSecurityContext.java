@@ -67,7 +67,7 @@ public class OpenIdSecurityContext implements SecurityContext {
      * Set/Store the current/last state of AuthorizationCode request
      * @param state instance of {@link State} to be stored
      */
-    public void setState(State state) { this.state = state; };
+    public void setState(State state) { this.state = state; }
 
     /**
      * Retrieve the currently authenticated user
