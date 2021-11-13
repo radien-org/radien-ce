@@ -29,42 +29,6 @@ import java.io.Serializable;
 public interface SecurityContext extends Serializable {
 
     /**
-     * Retrieve the currently obtained access token
-     * @return instance of {@link AccessToken}
-     */
-    AccessToken getAccessToken();
-
-    /**
-     * Set/Store the currently obtained access token
-     * @param accessToken instance of {@link AccessToken} to be stored
-     */
-    void setAccessToken(AccessToken accessToken);
-
-    /**
-     * Retrieve the currently obtained refresh token
-     * @return instance of {@link RefreshToken}
-     */
-    RefreshToken getRefreshToken();
-
-    /**
-     * Set/Store the currently obtained refresh token
-     * @param refreshToken instance of {@link RefreshToken} to be stored
-     */
-    void setRefreshToken(RefreshToken refreshToken);
-
-    /**
-     * Retrieve the current/last state of AuthorizationCode request
-     * @return instance of {@link State}
-     */
-    State getState();
-
-    /**
-     * Set/Store the current/last state of AuthorizationCode request
-     * @param state instance of {@link State} to be stored
-     */
-    void setState(State state);
-
-    /**
      * Retrieve the currently authenticated user
      * @return instance of {@link UserDetails}
      */

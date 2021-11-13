@@ -62,6 +62,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.radien.api.SystemVariables.ACCESS_TOKEN;
+import static io.radien.api.SystemVariables.OIDC_STATE;
+import static io.radien.api.SystemVariables.REFRESH_TOKEN;
+
 /**
  * @author Marco Weiland
  */
@@ -135,9 +139,9 @@ public class OpenIdConnectFilter implements Filter {
                 saveInformation(userDetails, tokens, request);
             }
             else {
-                AccessToken accessToken = this.securityContext.getAccessToken();
+                String accessToken = (String) request.getSession().getAttribute(ACCESS_TOKEN.getFieldName());
                 if (accessToken == null) {
-                    requestAuthzCode(response);
+                    requestAuthzCode(request, response);
                     return;
                 }
             }
@@ -157,7 +161,7 @@ public class OpenIdConnectFilter implements Filter {
      * @throws URISyntaxException in case of parsing error regarding userAuthorizationUri parameter
      * @throws IOException in case of error during redirection to the Identity Id server
      */
-    protected void requestAuthzCode(HttpServletResponse servletResponse) throws URISyntaxException, IOException {
+    protected void requestAuthzCode(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws URISyntaxException, IOException {
         URI authEndpoint = new URI(this.userAuthorizationUri);
         ClientID clientID = new ClientID(this.clientId);
         Scope scope = new Scope("openid", "email", "profile");
@@ -165,7 +169,7 @@ public class OpenIdConnectFilter implements Filter {
         URI callback = new URI(getCallbackURI());
 
         State state = new State();
-        securityContext.setState(state);
+        servletRequest.getSession().setAttribute(OIDC_STATE.getFieldName(), state.getValue());
 
         AuthorizationRequest request = new AuthorizationRequest.Builder(
                 new ResponseType(ResponseType.Value.CODE), clientID)
@@ -191,8 +195,8 @@ public class OpenIdConnectFilter implements Filter {
     protected AuthorizationCode processAuthCodeCallback(HttpServletRequest request) throws AuthorizationCodeRequestException {
         try {
             AuthorizationResponse response = AuthorizationResponse.parse(new URI(getCompleteURL(request)));
-
-            if (!this.securityContext.getState().equals(response.getState())) {
+            String savedState = (String) request.getSession().getAttribute(OIDC_STATE.getFieldName());
+            if (!response.getState().getValue().equals(savedState)) {
                 throw new AuthorizationCodeRequestException("Invalid State");
             }
 
@@ -309,11 +313,12 @@ public class OpenIdConnectFilter implements Filter {
      * @param servletRequest Http servlet request used as parameter to access session object
      */
     protected void saveInformation(UserDetails userDetails, Tokens tokens, HttpServletRequest servletRequest) {
-        this.securityContext.setAccessToken(tokens.getAccessToken());
-        this.securityContext.setRefreshToken(tokens.getRefreshToken());
         this.securityContext.setUserDetails(userDetails);
-        servletRequest.getSession().setAttribute("accessToken", tokens.getAccessToken().getValue());
-        servletRequest.getSession().setAttribute("refreshToken", tokens.getRefreshToken().getValue());
+        servletRequest.getSession().setAttribute(ACCESS_TOKEN.getFieldName(),
+                tokens.getAccessToken().getValue());
+        servletRequest.getSession().setAttribute(REFRESH_TOKEN.getFieldName(),
+                tokens.getRefreshToken().getValue());
+        servletRequest.getSession().removeAttribute(OIDC_STATE.getFieldName());
     }
 
     /**

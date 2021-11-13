@@ -66,6 +66,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static io.radien.api.SystemVariables.ACCESS_TOKEN;
+import static io.radien.api.SystemVariables.OIDC_STATE;
+import static io.radien.api.SystemVariables.REFRESH_TOKEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -75,6 +78,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.setInternalState;
@@ -101,7 +105,7 @@ public class OpenIdConnectFilterTest {
     }
 
     /**
-     * Test for method {@link OpenIdConnectFilter#requestAuthzCode(HttpServletResponse)}
+     * Test for method {@link OpenIdConnectFilter#requestAuthzCode(HttpServletRequest, HttpServletResponse)}
      * Expected outcome: redirection to authorization endpoint
      *
      * @throws IOException        in case of error during redirection to the Identity Id server
@@ -110,17 +114,22 @@ public class OpenIdConnectFilterTest {
     @Test
     public void testRequestAuthzCode() throws IOException, URISyntaxException {
         HttpServletResponse response = mock(HttpServletResponse.class);
-        securityContext = mock(SecurityContext.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+
+        when(request.getSession()).thenReturn(session);
+
+//        securityContext = mock(SecurityContext.class);
 
         String authEndPoint = "http://opendid.net/auth";
         String callbackUri = "http://radien.net/web/auth";
         setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
         setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 
-        this.openIdConnectFilter.requestAuthzCode(response);
+        this.openIdConnectFilter.requestAuthzCode(request, response);
         verify(response).sendRedirect(uriCaptor.capture());
 
         String redirectionURL = uriCaptor.getValue();
@@ -308,8 +317,16 @@ public class OpenIdConnectFilterTest {
 
         openIdConnectFilter.saveInformation(userDetails, tokens, request);
         assertEquals(userDetails, securityContext.getUserDetails());
-        assertEquals(accessToken, securityContext.getAccessToken());
-        assertEquals(refreshToken, securityContext.getRefreshToken());
+
+        ArgumentCaptor<String> sessionAttr = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> objectValue = ArgumentCaptor.forClass(String.class);
+
+        verify(session, times(2)).setAttribute(sessionAttr.capture(), objectValue.capture());
+
+        assertTrue(sessionAttr.getAllValues().contains(ACCESS_TOKEN.getFieldName()));
+        assertTrue(sessionAttr.getAllValues().contains(REFRESH_TOKEN.getFieldName()));
+        assertTrue(objectValue.getAllValues().contains(accessToken.getValue()));
+        assertTrue(objectValue.getAllValues().contains(refreshToken.getValue()));
     }
 
     /**
@@ -415,10 +432,12 @@ public class OpenIdConnectFilterTest {
         ResponseMode responseMode = ResponseMode.JWT;
 
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
         when(request.getRequestURL()).thenReturn(new StringBuffer("test"));
 
         SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getState()).thenReturn(state);
+        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -445,10 +464,12 @@ public class OpenIdConnectFilterTest {
         ResponseMode responseMode = ResponseMode.JWT;
 
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
         when(request.getRequestURL()).thenReturn(new StringBuffer("test"));
 
         SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getState()).thenReturn(new State("222"));
+        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn("222");
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -485,10 +506,12 @@ public class OpenIdConnectFilterTest {
         State state = new State("1");
 
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
         when(request.getRequestURL()).thenReturn(new StringBuffer("test"));
 
         SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getState()).thenReturn(state);
+        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -534,8 +557,10 @@ public class OpenIdConnectFilterTest {
     public void testFilterProcessRequestAuthCode() throws IOException, ServletException {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
         FilterChain filterChain = mock(FilterChain.class);
 
+        when(request.getSession()).thenReturn(session);
         when(request.getRequestURI()).thenReturn("/login");
 
         String authEndPoint = "http://opendid.net/auth";
@@ -570,8 +595,10 @@ public class OpenIdConnectFilterTest {
     public void testFilterAuthAlreadyDone() throws IOException, ServletException {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
         FilterChain filterChain = mock(FilterChain.class);
 
+        when(request.getSession()).thenReturn(session);
         when(request.getRequestURI()).thenReturn("/login");
         when(request.getScheme()).thenReturn("https");
         when(request.getServerName()).thenReturn("int.radien.io");
@@ -579,12 +606,7 @@ public class OpenIdConnectFilterTest {
         String authEndPoint = "http://opendid.net/auth";
         setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
 
-        AccessToken accessToken = mock(AccessToken.class);
-        UserDetails userDetails = mock(UserDetails.class);
-        securityContext = mock(SecurityContext.class);
-
-        when(securityContext.getAccessToken()).thenReturn(accessToken);
-        when(securityContext.getUserDetails()).thenReturn(userDetails);
+        when(session.getAttribute(ACCESS_TOKEN.getFieldName())).thenReturn("11111");
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
         setInternalState(openIdConnectFilter, "appBaseContext", "web");
 
@@ -639,7 +661,7 @@ public class OpenIdConnectFilterTest {
 
         // Parameters to retrieve authorization code and callback processing
         State state = new State("1");
-        securityContext.setState(state);
+        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
 
         PowerMockito.mockStatic(TokenResponse.class);
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -691,6 +713,8 @@ public class OpenIdConnectFilterTest {
     public void testFilterProcessingAuthCodeFailure() throws IOException, ServletException, URISyntaxException, ParseException {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
         FilterChain filterChain = mock(FilterChain.class);
 
         securityContext = new OpenIdSecurityContext();
@@ -708,7 +732,7 @@ public class OpenIdConnectFilterTest {
 
         // Parameters to retrieve authorization code and callback processing
         State state = new State("1");
-        securityContext.setState(state);
+        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
 

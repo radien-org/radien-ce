@@ -28,46 +28,7 @@ import javax.enterprise.context.SessionScoped;
 @SessionScoped
 public class OpenIdSecurityContext implements SecurityContext {
     private static final long serialVersionUID = -8073015720062843473L;
-    private AccessToken accessToken;
-    private RefreshToken refreshToken;
-    private State state;
     private UserDetails userDetails;
-
-    /**
-     * Retrieve the currently obtained access token
-     * @return instance of {@link AccessToken}
-     */
-    public AccessToken getAccessToken() { return this.accessToken; }
-
-    /**
-     * Set/Store the currently obtained access token
-     * @param accessToken instance of {@link AccessToken} to be stored
-     */
-    public void setAccessToken(AccessToken accessToken) { this.accessToken = accessToken; }
-
-    /**
-     * Retrieve the currently obtained refresh token
-     * @return instance of {@link RefreshToken}
-     */
-    public RefreshToken getRefreshToken() { return this.refreshToken; }
-
-    /**
-     * Set/Store the currently obtained refresh token
-     * @param refreshToken instance of {@link RefreshToken} to be stored
-     */
-    public void setRefreshToken(RefreshToken refreshToken) { this.refreshToken = refreshToken; }
-
-    /**
-     * Retrieve the current/last state of AuthorizationCode request
-     * @return instance of {@link State}
-     */
-    public State getState() { return this.state; }
-
-    /**
-     * Set/Store the current/last state of AuthorizationCode request
-     * @param state instance of {@link State} to be stored
-     */
-    public void setState(State state) { this.state = state; }
 
     /**
      * Retrieve the currently authenticated user
@@ -88,8 +49,5 @@ public class OpenIdSecurityContext implements SecurityContext {
      */
     public void clear() {
         this.userDetails = null;
-        this.accessToken = null;
-        this.refreshToken = null;
-        this.state = null;
     }
 }
