@@ -15,8 +15,6 @@
  */
 package io.radien.security.openid.model;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -47,17 +45,6 @@ public class OpenIdConnectUserDetails implements UserDetails {
 
 
 	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singletonList(new SimpleGrantedAuthority("USER"));
-	}
-
-	@Override
-	public String getPassword() {
-		return null;
-	}
-
 	@Override
 	public String getUsername() {
 		return username;
@@ -67,25 +54,6 @@ public class OpenIdConnectUserDetails implements UserDetails {
 		return userEmail;
 	}
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
 
 	/**
 	 * @return the sub

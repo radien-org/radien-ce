@@ -15,27 +15,18 @@
  */
 package io.radien.security.openid.filter;
 
-import com.auth0.jwk.Jwk;
-import com.auth0.jwk.JwkException;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwk.UrlJwkProvider;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
-import com.nimbusds.oauth2.sdk.AuthorizationErrorResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationGrant;
 import com.nimbusds.oauth2.sdk.AuthorizationRequest;
 import com.nimbusds.oauth2.sdk.AuthorizationResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationSuccessResponse;
+import com.nimbusds.oauth2.sdk.ErrorObject;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import com.nimbusds.oauth2.sdk.Scope;
-import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.TokenResponse;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
@@ -51,15 +42,10 @@ import io.radien.exception.TokenRequestException;
 import io.radien.security.openid.context.SecurityContext;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
 import io.radien.security.openid.model.UserDetails;
+import io.radien.security.openid.validation.TokenValidator;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.interfaces.RSAPublicKey;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -107,19 +93,15 @@ public class OpenIdConnectFilter implements Filter {
     private String redirectUri;
 
     @Inject
-    @ConfigProperty(name = "AUTH_ISSUER")
-    private String issuer;
-
-    @Inject
-    @ConfigProperty(name = "AUTH_JWKURL")
-    private String jwkUrl;
-
-    @Inject
     @ConfigProperty(name = "auth.appBaseContext", defaultValue = "/web")
     private String appBaseContext;
 
     @Inject
     private SecurityContext securityContext;
+
+    @Inject
+    private TokenValidator tokenValidator;
+
 
     /**
      * Intercept the request and In case of being a trigger URI, It will start
@@ -217,13 +199,14 @@ public class OpenIdConnectFilter implements Filter {
 
             // Check the returned state parameter, must match the original
             if (!this.securityContext.getState().equals(response.getState())) {
-                throw new AuthorizationCodeRequestException("Unexpected response");
+                throw new AuthorizationCodeRequestException("Invalid State");
             }
 
             if (!response.indicatesSuccess()) {
                 // The request was denied or some error occurred
-                AuthorizationErrorResponse errorResponse = response.toErrorResponse();
-                throw new AuthorizationCodeRequestException(errorResponse.getErrorObject().toString());
+                ErrorObject errorObject = response.toErrorResponse().getErrorObject();
+                String msg = errorObject.getCode() + " " + errorObject.getDescription() + " " + errorObject.getHTTPStatusCode();
+                throw new AuthorizationCodeRequestException(msg);
             }
 
             AuthorizationSuccessResponse successResponse = response.toSuccessResponse();
@@ -266,8 +249,9 @@ public class OpenIdConnectFilter implements Filter {
 
             if (!response.indicatesSuccess()) {
                 // We got an error response...
-                TokenErrorResponse errorResponse = response.toErrorResponse();
-                throw new TokenRequestException(errorResponse.toString());
+                ErrorObject errorObject = response.toErrorResponse().getErrorObject();
+                String msg = errorObject.getCode() + " " + errorObject.getDescription() + " " + errorObject.getHTTPStatusCode();
+                throw new TokenRequestException(msg);
             }
 
             AccessTokenResponse successResponse = response.toSuccessResponse();
@@ -288,37 +272,10 @@ public class OpenIdConnectFilter implements Filter {
     protected UserDetails validateAccessToken(AccessToken accessToken) throws InvalidAccessTokenException {
         try {
             JWSObject jwsObject = JWSObject.parse(accessToken.getValue());
-            JWSHeader header = jwsObject.getHeader();
-
-            String kid = header.getKeyID();
-            final JwkProvider provider = new UrlJwkProvider(new URL(jwkUrl));
-            final Jwk jwk = provider.get(kid);
-
-            JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) jwk.getPublicKey());
-            if (!jwsObject.verify(verifier)) {
-                throw new InvalidAccessTokenException("Invalid verify");
-            }
-
-            Map<String, Object> payloadMap = jwsObject.getPayload().toJSONObject();
-
-            if (!issuer.equals(payloadMap.get("iss"))) {
-                throw new InvalidAccessTokenException("Invalid iss");
-            }
-
-            if (!payloadMap.get("typ").equals("Bearer")) {
-                throw new InvalidAccessTokenException("Invalid type");
-            }
-
-            Long expAttr = (Long) payloadMap.get("exp");
-            LocalDateTime exp = LocalDateTime.ofInstant(Instant.ofEpochSecond(expAttr), ZoneId.systemDefault());
-            if (exp.isBefore(LocalDateTime.now())) {
-                throw new InvalidAccessTokenException("Token Expired");
-            }
-
-            return assemblyUserDetails(payloadMap);
-
-        } catch (java.text.ParseException | MalformedURLException | JwkException | JOSEException e) {
-            throw new InvalidAccessTokenException(e);
+            tokenValidator.validate(jwsObject);
+            return assemblyUserDetails(jwsObject.getPayload().toJSONObject());
+        } catch (java.text.ParseException p) {
+            throw new InvalidAccessTokenException(p);
         }
     }
 

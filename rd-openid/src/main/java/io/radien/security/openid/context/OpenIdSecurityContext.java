@@ -21,6 +21,10 @@ import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import io.radien.security.openid.model.UserDetails;
 import javax.enterprise.context.SessionScoped;
 
+/**
+ * Component to store the details of the currently authenticated user
+ * @author newton carvalho
+ */
 @SessionScoped
 public class OpenIdSecurityContext implements SecurityContext {
     private static final long serialVersionUID = -8073015720062843473L;
@@ -29,26 +33,59 @@ public class OpenIdSecurityContext implements SecurityContext {
     private State state;
     private UserDetails userDetails;
 
-    public AccessToken getAccessToken() {
-        return accessToken;
-    }
-    public void setAccessToken(AccessToken accessToken) {
-        this.accessToken = accessToken;
+    /**
+     * Retrieve the currently obtained access token
+     * @return instance of {@link AccessToken}
+     */
+    public AccessToken getAccessToken() { return this.accessToken; }
+
+    /**
+     * Set/Store the currently obtained access token
+     * @param accessToken instance of {@link AccessToken} to be stored
+     */
+    public void setAccessToken(AccessToken accessToken) { this.accessToken = accessToken; }
+
+    /**
+     * Retrieve the currently obtained refresh token
+     * @return instance of {@link RefreshToken}
+     */
+    public RefreshToken getRefreshToken() { return this.refreshToken; }
+
+    /**
+     * Set/Store the currently obtained refresh token
+     * @param refreshToken instance of {@link RefreshToken} to be stored
+     */
+    public void setRefreshToken(RefreshToken refreshToken) { this.refreshToken = refreshToken; }
+
+    /**
+     * Retrieve the current/last state of AuthorizationCode request
+     * @return instance of {@link State}
+     */
+    public State getState() { return this.state; }
+
+    /**
+     * Set/Store the current/last state of AuthorizationCode request
+     * @param state instance of {@link State} to be stored
+     */
+    public void setState(State state) { this.state = state; };
+
+    /**
+     * Retrieve the currently authenticated user
+     * @return instance of {@link UserDetails}
+     */
+    public UserDetails getUserDetails() { return this.userDetails; }
+
+    /**
+     * Set/Store the currently authenticated user
+     * @param userDetails instance of {@link UserDetails}
+     */
+    public void setUserDetails(UserDetails userDetails) {
+        this.userDetails = userDetails;
     }
 
-    public RefreshToken getRefreshToken() {
-        return refreshToken;
-    }
-    public void setRefreshToken(RefreshToken refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public State getState() { return state; }
-    public void setState(State state) { this.state = state; }
-
-    public UserDetails getUserDetails() { return userDetails; };
-    public void setUserDetails(UserDetails userDetails) { this.userDetails = userDetails; }
-
+    /**
+     * Clear all the store information
+     */
     public void clear() {
         this.userDetails = null;
         this.accessToken = null;
