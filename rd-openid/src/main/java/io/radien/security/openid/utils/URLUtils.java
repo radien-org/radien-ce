@@ -24,6 +24,12 @@ import javax.servlet.http.HttpServletRequest;
 public class URLUtils {
 
     /**
+     * Convention for Utility classes:
+     * Add a private constructor to hide the implicit public one
+     */
+    private URLUtils() {}
+
+    /**
      * Given a request, assemblies the URL that corresponds
      * to the application context
      * @param request parameter to supply information for url assembling

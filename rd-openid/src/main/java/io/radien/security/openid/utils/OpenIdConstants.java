@@ -20,6 +20,12 @@ package io.radien.security.openid.utils;
  */
 public final class OpenIdConstants {
 
+    /**
+     * Convention for Utility classes:
+     * Add a private constructor to hide the implicit public one
+     */
+    private OpenIdConstants() {}
+
     /** URI regarding authentication process triggering */
     public static final String LOGIN_URI = "/login";
 
