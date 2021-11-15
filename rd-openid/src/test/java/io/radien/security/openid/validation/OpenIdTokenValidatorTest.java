@@ -72,7 +72,6 @@ public class OpenIdTokenValidatorTest {
         setInternalState(openIdTokenValidator, "provider", provider);
         setInternalState(openIdTokenValidator, "issuer", issuer);
         setInternalState(openIdTokenValidator, "jwkUrl", jwkUrl);
-        setInternalState(openIdTokenValidator, "clientId", clientId);
     }
 
 

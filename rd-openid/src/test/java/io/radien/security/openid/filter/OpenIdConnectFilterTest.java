@@ -67,8 +67,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static io.radien.api.SystemVariables.ACCESS_TOKEN;
-import static io.radien.api.SystemVariables.OIDC_STATE;
 import static io.radien.api.SystemVariables.REFRESH_TOKEN;
+import static io.radien.security.openid.utils.OpenIdConstants.OIDC_STATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -245,31 +245,7 @@ public class OpenIdConnectFilterTest {
         assertEquals(expectedErrorMsg, e.getMessage());
     }
 
-    /**
-     * Test for method {@link OpenIdConnectFilter#getAppContextURL(HttpServletRequest)}
-     */
-    @Test
-    public void testGetAppContextURL() {
-        setInternalState(openIdConnectFilter, "appBaseContext", "web");
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getScheme()).thenReturn("https");
-        when(request.getServerName()).thenReturn("int.radien.io");
-        when(request.getServerPort()).thenReturn(0);
-
-        String expectedURL = "https://int.radien.io/web";
-        String obtainedURL = openIdConnectFilter.getAppContextURL(request);
-        assertEquals(expectedURL, obtainedURL);
-
-        HttpServletRequest request2 = mock(HttpServletRequest.class);
-        when(request2.getScheme()).thenReturn("https");
-        when(request2.getServerName()).thenReturn("server1");
-        when(request2.getServerPort()).thenReturn(8443);
-
-        expectedURL = "https://server1:8443/web";
-        obtainedURL = openIdConnectFilter.getAppContextURL(request2);
-        assertEquals(expectedURL, obtainedURL);
-    }
 
     /**
      * Test for method {@link OpenIdConnectFilter#assemblyUserDetails(Map)}
@@ -327,23 +303,6 @@ public class OpenIdConnectFilterTest {
         assertTrue(sessionAttr.getAllValues().contains(REFRESH_TOKEN.getFieldName()));
         assertTrue(objectValue.getAllValues().contains(accessToken.getValue()));
         assertTrue(objectValue.getAllValues().contains(refreshToken.getValue()));
-    }
-
-    /**
-     * Test for method {@link OpenIdConnectFilter#getCompleteURL(HttpServletRequest)}
-     */
-    @Test
-    public void testGetCompleteURL() {
-        StringBuffer requestURL = new StringBuffer("https://localhost:8443/web/login/auth");
-        String queryString = "state=1111&session_state=1233455&code=7e8ff1b3";
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(requestURL);
-        when(request.getQueryString()).thenReturn(queryString);
-
-        String expected = requestURL + "?" + queryString;
-        String resultURL = openIdConnectFilter.getCompleteURL(request);
-        assertEquals(expected, resultURL);
     }
 
     /**
@@ -437,7 +396,7 @@ public class OpenIdConnectFilterTest {
         when(request.getRequestURL()).thenReturn(new StringBuffer("test"));
 
         SecurityContext securityContext = mock(SecurityContext.class);
-        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
+        when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -469,7 +428,7 @@ public class OpenIdConnectFilterTest {
         when(request.getRequestURL()).thenReturn(new StringBuffer("test"));
 
         SecurityContext securityContext = mock(SecurityContext.class);
-        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn("222");
+        when(session.getAttribute(OIDC_STATE)).thenReturn("222");
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -511,7 +470,7 @@ public class OpenIdConnectFilterTest {
         when(request.getRequestURL()).thenReturn(new StringBuffer("test"));
 
         SecurityContext securityContext = mock(SecurityContext.class);
-        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
+        when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -601,6 +560,7 @@ public class OpenIdConnectFilterTest {
         when(request.getSession()).thenReturn(session);
         when(request.getRequestURI()).thenReturn("/login");
         when(request.getScheme()).thenReturn("https");
+        when(request.getContextPath()).thenReturn("/web");
         when(request.getServerName()).thenReturn("int.radien.io");
 
         String authEndPoint = "http://opendid.net/auth";
@@ -608,7 +568,6 @@ public class OpenIdConnectFilterTest {
 
         when(session.getAttribute(ACCESS_TOKEN.getFieldName())).thenReturn("11111");
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
-        setInternalState(openIdConnectFilter, "appBaseContext", "web");
 
         ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -655,13 +614,12 @@ public class OpenIdConnectFilterTest {
         setInternalState(openIdConnectFilter, "clientId", "1234");
         setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
-        setInternalState(openIdConnectFilter, "appBaseContext", "web");
-
+        when(request.getContextPath()).thenReturn("/web");
         ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 
         // Parameters to retrieve authorization code and callback processing
         State state = new State("1");
-        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
+        when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
 
         PowerMockito.mockStatic(TokenResponse.class);
         PowerMockito.mockStatic(AuthorizationResponse.class);
@@ -728,11 +686,11 @@ public class OpenIdConnectFilterTest {
         setInternalState(openIdConnectFilter, "clientId", "1234");
         setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
         setInternalState(openIdConnectFilter, "securityContext", securityContext);
-        setInternalState(openIdConnectFilter, "appBaseContext", "web");
+        when(request.getContextPath()).thenReturn("/web");
 
         // Parameters to retrieve authorization code and callback processing
         State state = new State("1");
-        when(session.getAttribute(OIDC_STATE.getFieldName())).thenReturn(state.getValue());
+        when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
 
         PowerMockito.mockStatic(AuthorizationResponse.class);
 

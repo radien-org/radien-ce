@@ -25,6 +25,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -53,7 +54,6 @@ public class OpenIdURLCheckerTest {
         openIdURLChecker = new OpenIdURLChecker();
         securityContext = new OpenIdSecurityContext();
         setInternalState(openIdURLChecker, "securityContext", securityContext);
-        setInternalState(openIdURLChecker, "authenticationTriggerURI", authTriggerURI);
         setInternalState(openIdURLChecker, "privateContexts", privateContexts);
     }
 
@@ -91,8 +91,15 @@ public class OpenIdURLCheckerTest {
     public void testDoFilterAccessingPrivateURI() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
         FilterChain filterChain = mock(FilterChain.class);
+        when(request.getSession()).thenReturn(session);
+        when(request.getScheme()).thenReturn("https");
+        when(request.getServerName()).thenReturn("localhost");
+        when(request.getServerPort()).thenReturn(8443);
+        when(request.getContextPath()).thenReturn("/web");
         when(request.getServletPath()).thenReturn("/module/permissions");
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8443/web/module/permissions"));
 
         ArgumentCaptor<String> urlPath = ArgumentCaptor.forClass(String.class);
 

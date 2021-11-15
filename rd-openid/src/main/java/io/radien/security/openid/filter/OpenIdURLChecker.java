@@ -16,6 +16,7 @@
 package io.radien.security.openid.filter;
 
 import io.radien.security.openid.context.SecurityContext;
+import io.radien.security.openid.utils.URLUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static io.radien.security.openid.utils.OpenIdConstants.LOGIN_URI;
+import static io.radien.security.openid.utils.OpenIdConstants.SAVED_URL_STATE;
 
 /**
  * The aims for this filter:
@@ -39,16 +45,14 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  */
 public class OpenIdURLChecker implements Filter {
 
+    private static final Logger log = LoggerFactory.getLogger(OpenIdURLChecker.class);
+
     @Inject
     private SecurityContext securityContext;
 
     @Inject
     @ConfigProperty(name="auth.privateContexts", defaultValue = "/module")
     private String privateContexts;
-
-    @Inject
-    @ConfigProperty(name="auth.redirectUri")
-    private String authenticationTriggerURI;
 
     /**
      * Where the interception takes place. The request will be checked,
@@ -65,10 +69,24 @@ public class OpenIdURLChecker implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         if (isPrivateURI(request) && securityContext.getUserDetails() == null) {
-            response.sendRedirect(this.authenticationTriggerURI);
+            redirectToAuthProcess(request, response);
             return;
         }
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Saves the current URL to be retrieve afterward (in case of successful authentication)
+     * Assemblies URL that will trigger Authentication process and do the redirection.
+     * @param request parameter to supply information for url assembling
+     * @throws IOException in case of i/o issue during redirection process
+     */
+    protected void redirectToAuthProcess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("Saving current url {}", request.getServletPath());
+        request.getSession().setAttribute(SAVED_URL_STATE, request.getRequestURL().toString());
+        String authUrl = URLUtils.getAppContextURL(request) + LOGIN_URI;
+        log.info("Redirecting to auth url {}", authUrl);
+        response.sendRedirect(authUrl);
     }
 
     /**

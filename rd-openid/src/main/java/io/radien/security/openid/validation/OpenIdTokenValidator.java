@@ -51,10 +51,6 @@ public class OpenIdTokenValidator implements TokenValidator {
     @ConfigProperty(name = "AUTH_JWKURL")
     private String jwkUrl;
 
-    @Inject
-    @ConfigProperty(name="SCRIPT_CLIENT_ID_VALUE")
-    private String clientId;
-
     JwkProvider provider;
 
     /**

@@ -43,6 +43,7 @@ import io.radien.security.openid.context.SecurityContext;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
 import io.radien.security.openid.model.UserDetails;
 import io.radien.security.openid.validation.TokenValidator;
+import io.radien.security.openid.utils.URLUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,16 +64,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static io.radien.api.SystemVariables.ACCESS_TOKEN;
-import static io.radien.api.SystemVariables.OIDC_STATE;
 import static io.radien.api.SystemVariables.REFRESH_TOKEN;
+import static io.radien.security.openid.utils.OpenIdConstants.AUTH_CALLBACK_URI;
+import static io.radien.security.openid.utils.OpenIdConstants.LOGIN_URI;
+import static io.radien.security.openid.utils.OpenIdConstants.OIDC_STATE;
+import static io.radien.security.openid.utils.OpenIdConstants.SAVED_URL_STATE;
+import static io.radien.security.openid.utils.URLUtils.getCompleteURL;
 
 /**
  * @author Marco Weiland
  */
 public class OpenIdConnectFilter implements Filter {
-
-    private static final String LOGIN_URI = "/login";
-    private static final String AUTH_CALLBACK_URI = "/auth";
 
     private static final Logger log = LoggerFactory.getLogger(OpenIdConnectFilter.class);
 
@@ -95,10 +97,6 @@ public class OpenIdConnectFilter implements Filter {
     @Inject
     @ConfigProperty(name="auth.redirectUri")
     private String redirectUri;
-
-    @Inject
-    @ConfigProperty(name = "auth.appBaseContext", defaultValue = "/web")
-    private String appBaseContext;
 
     @Inject
     private SecurityContext securityContext;
@@ -145,7 +143,7 @@ public class OpenIdConnectFilter implements Filter {
                     return;
                 }
             }
-            response.sendRedirect(getAppContextURL(request));
+            onAuthSuccess(request, response);
             chain.doFilter(request, response);
         }
         catch (URISyntaxException | AuthorizationCodeRequestException | TokenRequestException | InvalidAccessTokenException e) {
@@ -169,7 +167,7 @@ public class OpenIdConnectFilter implements Filter {
         URI callback = new URI(getCallbackURI());
 
         State state = new State();
-        servletRequest.getSession().setAttribute(OIDC_STATE.getFieldName(), state.getValue());
+        servletRequest.getSession().setAttribute(OIDC_STATE, state.getValue());
 
         AuthorizationRequest request = new AuthorizationRequest.Builder(
                 new ResponseType(ResponseType.Value.CODE), clientID)
@@ -195,7 +193,7 @@ public class OpenIdConnectFilter implements Filter {
     protected AuthorizationCode processAuthCodeCallback(HttpServletRequest request) throws AuthorizationCodeRequestException {
         try {
             AuthorizationResponse response = AuthorizationResponse.parse(new URI(getCompleteURL(request)));
-            String savedState = (String) request.getSession().getAttribute(OIDC_STATE.getFieldName());
+            String savedState = (String) request.getSession().getAttribute(OIDC_STATE);
             if (!response.getState().getValue().equals(savedState)) {
                 throw new AuthorizationCodeRequestException("Invalid State");
             }
@@ -318,42 +316,25 @@ public class OpenIdConnectFilter implements Filter {
                 tokens.getAccessToken().getValue());
         servletRequest.getSession().setAttribute(REFRESH_TOKEN.getFieldName(),
                 tokens.getRefreshToken().getValue());
-        servletRequest.getSession().removeAttribute(OIDC_STATE.getFieldName());
     }
 
     /**
-     * Retrieve/assemblies the URL referred by a Http Request object, what includes
-     * the Query String part
-     * @param request Http servlet request used as parameter
-     * @return String describing the complete URL
+     * Obtains the URL to perform redirection after authentication
+     * First try to get the initial URL saved, if does not exists, get
+     * the application context url
+     * @param request parameter to supply information for url assembling
+     * @param response parameter to perform url redirection
+     * @throws IOException in case of any i/o issue during redirection
      */
-    protected String getCompleteURL(HttpServletRequest request) {
-        StringBuffer requestURL = request.getRequestURL();
-        if (request.getQueryString() != null) {
-            requestURL.append("?").append(request.getQueryString());
+    protected void onAuthSuccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("Authentication concluded, retrieving url to perform app redirection");
+        String url = (String) request.getSession().getAttribute(SAVED_URL_STATE);
+        if (url == null) {
+            url = URLUtils.getAppContextURL(request);
+        } else {
+            request.getSession().removeAttribute(SAVED_URL_STATE);
         }
-        return requestURL.toString();
+        log.info("Redirecting to app url {}", url);
+        response.sendRedirect(url);
     }
-
-    /**
-     * Retrieves/assemblies application context URL
-     * @param request Http servlet request used as parameter
-     * @return String describing the Application context URL
-     */
-    protected String getAppContextURL(HttpServletRequest request) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(request.getScheme()).append("://");
-        sb.append(request.getServerName());
-        if (request.getServerPort() > 0) {
-            sb.append(":");
-            sb.append(request.getServerPort());
-        }
-        if (!this.appBaseContext.startsWith("/")) {
-            sb.append("/");
-        }
-        sb.append(this.appBaseContext);
-        return sb.toString();
-    }
-
-
 }
