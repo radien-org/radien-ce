@@ -22,6 +22,7 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.LoginHook;
 import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import io.radien.webapp.JSFUtil;
@@ -61,12 +62,19 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	private String accessToken;
 
 	private String refreshToken;
+
+	private String language = "en";
+
+	@Inject
+	private LocaleManagerAccess localeManager;
+
 	/**
 	 * Initialization of the user session
 	 */
 	@PostConstruct
 	private void init() {
 		log.info("Session initiated");
+		localeManager.setActiveLanguage(language);
 	}
 
 	/**
@@ -311,5 +319,13 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 				oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
 		log.info("application url {}", applicationUrl);
 		return applicationUrl;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 }
