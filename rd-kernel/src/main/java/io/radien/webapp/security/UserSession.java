@@ -63,7 +63,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	private String refreshToken;
 
-	private String language = "en";
+	private String language;
 
 	@Inject
 	private LocaleManagerAccess localeManager;
@@ -74,6 +74,9 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	@PostConstruct
 	private void init() {
 		log.info("Session initiated");
+		if(language == null) {
+			language = "en";
+		}
 		localeManager.setActiveLanguage(language);
 	}
 

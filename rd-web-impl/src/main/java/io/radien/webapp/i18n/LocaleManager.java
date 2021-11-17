@@ -31,6 +31,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.webapp.AbstractLocaleManager;
 import io.radien.webapp.JSFUtil;
+import io.radien.webapp.security.UserSession;
 
 /**
  * Class responsible for managing the i8n on openappframe resource bundle
@@ -47,6 +48,9 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 	private static final long serialVersionUID = 1L;
 
 	@Inject
+	private UserSession userSession;
+
+	@Inject
 	private OAFAccess oaf;
 
 	public void languageChanged(ValueChangeEvent e) {
@@ -54,6 +58,8 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 		for (String language : super.getSupportedLanguages()) {
 			if (language.equals(newLocaleValue)) {
 				FacesContext.getCurrentInstance().getViewRoot().setLocale(oaf.findLocale(language));
+				userSession.setLanguage(newLocaleValue);
+				super.setActiveLanguage(newLocaleValue);
 			}
 		}
 	}
@@ -76,5 +82,7 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 	public String getUserLanguage() {
 		return super.getActiveLanguage();
 	}
+
+
 
 }
