@@ -22,9 +22,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
-import io.radien.api.service.ecm.model.ContentType;
-import io.radien.api.service.ecm.model.EnterpriseContent;
-import io.radien.api.service.ecm.model.RestTreeNode;
+import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.factory.ContentFactory;
@@ -46,6 +44,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionManager;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
@@ -125,6 +124,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	private void process(Session session, EnterpriseContent obj, String language, Node content,
 						 Node parent, boolean isMoveCommand, String nameEscaped, String newPath) {
 		try {
+			boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent && ((SystemVersionableEnterpriseContent)obj).isVersionable();
 			if (content == null) {
 				switch (obj.getContentType()) {
 					case DOCUMENT:
@@ -153,16 +153,30 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 					throw new RepositoryException("Content is null");
 				}
 				setupNodeMixins(content, obj);
-				contentFactory.syncNode(content, obj, session);
-
-				session.save();
-
-				if (isMoveCommand) {
-					session.move(content.getPath(), newPath);
-				}
-				session.save();
-				log.info("[+] Added content:{} ", content.getIdentifier());
 			}
+			VersionManager versionManager = session.getWorkspace().getVersionManager();
+			if(isVersionable && !content.isCheckedOut()) {
+				versionManager.checkout(content.getPath());
+			}
+
+			contentFactory.syncNode(content, obj, session);
+			session.save();
+
+			if(isVersionable && content.isCheckedOut()) {
+				versionManager.checkin(content.getPath());
+			}
+
+			if (isMoveCommand) {
+				if(isVersionable && !content.isCheckedOut()) {
+					versionManager.checkout(content.getPath());
+				}
+				session.move(content.getPath(), newPath);
+				if(isVersionable && content.isCheckedOut()) {
+					versionManager.checkin(content.getPath());
+				}
+			}
+			session.save();
+			log.info("[+] Added content:{} ", content.getIdentifier());
 		} catch (ItemExistsException e) {
 			log.warn("Item {} already exists in this repository, skipping", obj.getName());
 		} catch (RepositoryException e) {
@@ -179,6 +193,13 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			content.addMixin(CmsConstants.RADIEN_FILE_CONTENT_MIXIN);
 		} else if(ContentType.HTML.equals(obj.getContentType())) {
 			content.addMixin(CmsConstants.RADIEN_HTML_CONTENT_MIXIN);
+		}
+		if(obj instanceof SystemVersionableEnterpriseContent) {
+			content.addMixin(JcrConstants.MIX_VERSIONABLE);
+			content.addMixin(CmsConstants.RADIEN_VERSIONABLE_CONTENT_MIXIN);
+		}
+		if(obj instanceof SystemMandatoryEnterpriseContent) {
+			content.addMixin(CmsConstants.RADIEN_MANDATORY_CONTENT_MIXIN);
 		}
 	}
 
@@ -238,7 +259,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		if(parent != null) {
 			content = parent.addNode(nameEscaped, JcrConstants.NT_FOLDER);
 		}
-		content = addSupportedLocalesFolder(content, parent, nameEscaped);
+		addSupportedLocalesFolder(content, parent, nameEscaped);
 		return content;
 	}
 
@@ -417,21 +438,20 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		}
 	}
 
-	private Node addSupportedLocalesFolder(Node content, Node parent, String nameEscaped) throws RepositoryException {
+	private void addSupportedLocalesFolder(Node content, Node parent, String nameEscaped) throws RepositoryException {
 		if (nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class)) ||
 				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, String.class))) {
 
 			for (String lang : dataProvider.getSupportedLanguages()) {
 				try {
 					if (StringUtils.isNotBlank(lang)) {
-						content = parent.addNode(nameEscaped + FILE_SEPARATOR + lang, JcrConstants.NT_FOLDER);
+						parent.addNode(nameEscaped + FILE_SEPARATOR + lang, JcrConstants.NT_FOLDER);
 					}
 				} catch(ItemExistsException e) {
 					log.info("Language {} already exists, skipping...", lang);
 				}
 			}
 		}
-		return content;
 	}
 
 	public List<EnterpriseContent> getByContentType(ContentType contentType, boolean activeOnly,

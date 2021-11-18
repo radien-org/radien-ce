@@ -3,8 +3,6 @@
   - rd:name (string) version
   - rd:contentType (string) mandatory
   - rd:language (string) mandatory
-  - rd:active (boolean)
-  - rd:system (boolean)
   - rd:image (binary) version
   - rd:imageName (string) version
   - rd:imageMimeType (string) version
@@ -19,6 +17,8 @@
 [rd:genericContent]
     orderable mixin
   - rd:viewId (string) version mandatory
+  - rd:active (boolean)
+  - rd:system (boolean)
 
 [rd:htmlContent]
     orderable mixin
@@ -33,5 +33,8 @@
   - rd:version (string) version
   - rd:versionComment (string) version
   - rd:validDate (date) version
+
+[rd:mandatoryContent]
+ orderable mixin
   - rd:mandatoryView (boolean) version
   - rd:mandatoryApproval (boolean) version

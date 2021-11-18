@@ -46,6 +46,8 @@ public class EnterpriseContentDeserializer extends JsonDeserializer<EnterpriseCo
 		if (root != null) {
 
 			ContentType contentType = ContentType.getByKey(root.get("contentType").asText());
+			boolean isVersionable = root.has("versionable");
+			boolean isMandatory = root.has("mandatoryView");
 
 			switch (contentType) {
 				case IMAGE:
@@ -59,6 +61,13 @@ public class EnterpriseContentDeserializer extends JsonDeserializer<EnterpriseCo
 				case NOTIFICATION:
 				case TAG:
 				default:
+					if(isVersionable && isMandatory) {
+						return mapper.readValue(root.toString(), MandatoryVersionableEnterpriseContent.class);
+					} else if(isVersionable) {
+						return mapper.readValue(root.toString(), VersionableEnterpriseContent.class);
+					} else if(isMandatory) {
+						return mapper.readValue(root.toString(), MandatoryEnterpriseContent.class);
+					}
 					return mapper.readValue(root.toString(), GenericEnterpriseContent.class);
 
 				}

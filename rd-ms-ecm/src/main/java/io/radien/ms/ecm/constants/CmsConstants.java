@@ -102,6 +102,7 @@ public class CmsConstants {
 
     public static final String RADIEN_VERSIONABLE_CONTENT_MIXIN = NAMESPACE + ":versionableContent";
 
+    public static final String RADIEN_MANDATORY_CONTENT_MIXIN = NAMESPACE + ":mandatoryContent";
 
     /**
      * the content viewId property key

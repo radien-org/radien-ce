@@ -236,22 +236,18 @@ public @ApplicationScoped class ECMSeeder {
         }
     }
 
-    //TODO: VALIDATE NECESSITY
-    private boolean shouldUpdateContent(EnterpriseContent content, EnterpriseContent rootVersion) throws ElementNotFoundException, ContentRepositoryNotAvailableException {
-        /*
+    private boolean shouldUpdateContent(EnterpriseContent content, EnterpriseContent rootVersion) {
         if (rootVersion == null || rootVersion.getContentType().equals(ContentType.ERROR)
                 || (rootVersion.getContentType() != ContentType.TAG && !rootVersion.getParentPath().equals(content.getParentPath()))) {
             return true;
         }
         else {
-            if (content instanceof GenericMandatoryVersionableEnterpriseContent) {
+            if (content instanceof SystemVersionableEnterpriseContent) {
                 return false;
             } else {
                 return true;
             }
         }
-         */
-        return true;
     }
 
     @Asynchronous

@@ -18,10 +18,7 @@ package io.radien.ms.ecm.factory;
 
 import com.google.common.io.ByteStreams;
 import io.radien.api.service.ecm.exception.NameNotValidException;
-import io.radien.api.service.ecm.model.Content;
-import io.radien.api.service.ecm.model.GenericEnterpriseContent;
-import io.radien.api.service.ecm.model.ContentType;
-import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.constants.CmsConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,17 +36,17 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeTypeDefinition;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class responsible for creating generic content that can be manipulated in the cms
@@ -62,7 +59,7 @@ public @RequestScoped class ContentFactory implements Serializable {
 	private static final Logger log = LoggerFactory.getLogger(ContentFactory.class);
 	private static final long serialVersionUID = -5005556415803181075L;
 
-	public EnterpriseContent convertJSONObject(JSONObject json) throws IOException {
+	public EnterpriseContent convertJSONObject(JSONObject json) throws IOException, ParseException {
 		String viewId = (String) json.get("viewId");
 		String htmlContent = (String) json.get("htmlContent");
 		String name = (String) json.get("name");
@@ -71,15 +68,28 @@ public @RequestScoped class ContentFactory implements Serializable {
 		String active = (String) json.get("active");
 		String system = (String) json.get("system");
 		String parentPath = (String) json.get("parentPath");
+
+		//Versionable Properties
 		String versionable = null;
 		String versionComment = null;
 		String validDate = null;
-		String updateOnLaunch = null;
+		String version = null;
+
+		//Mandatory Properties
+		String mandatoryApprove = null;
+		String mandatoryView = null;
+
 		if(json.containsKey("versionable")) {
 			versionable = (String) json.get("versionable");
 			versionComment = (String) json.get("versionComment");
 			validDate = (String) json.get("validDate");
-			updateOnLaunch = (String) json.get("updateOnLaunch");
+			if(json.containsKey("version")) {
+				version = (String) json.get("version");
+			}
+		}
+		if(json.containsKey("mandatoryApprove")) {
+			mandatoryApprove = (String) json.get("mandatoryApprove");
+			mandatoryView = (String) json.get("mandatoryView");
 		}
 		String externalPublic = (String) json.get("externalPublic");
 		String permissions = (String) json.get("permissions");
@@ -93,7 +103,38 @@ public @RequestScoped class ContentFactory implements Serializable {
 				tags.add((String) obj);
 			}
 		}
-		EnterpriseContent content = new Content(Text.escapeIllegalJcrChars(name), htmlContent);
+		EnterpriseContent content = null;
+		if(versionable != null && mandatoryApprove != null) {
+			content = new MandatoryVersionableEnterpriseContent();
+			content.setName(name);
+			content.setHtmlContent(htmlContent);
+			((MandatoryVersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
+			((MandatoryVersionableEnterpriseContent)content).setVersionComment(versionComment);
+			((MandatoryVersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat("yyyy-MM-dd").parse(validDate));
+			((MandatoryVersionableEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
+			((MandatoryVersionableEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
+			if(version != null) {
+				((MandatoryVersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
+			}
+		} else if(versionable != null) {
+			content = new VersionableEnterpriseContent();
+			content.setName(name);
+			content.setHtmlContent(htmlContent);
+			((VersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
+			((VersionableEnterpriseContent)content).setVersionComment(versionComment);
+			((VersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat("yyyy-MM-dd").parse(validDate));
+			if(version != null) {
+				((VersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
+			}
+		} else if(mandatoryApprove != null) {
+			content = new MandatoryEnterpriseContent();
+			content.setName(name);
+			content.setHtmlContent(htmlContent);
+			((MandatoryEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
+			((MandatoryEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
+		} else {
+			content = new Content(Text.escapeIllegalJcrChars(name), htmlContent);
+		}
 		content.setViewId(viewId);
 		content.setContentType(ContentType.getByKey(contentType));
 		content.setActive(Boolean.parseBoolean(active));
@@ -176,22 +217,36 @@ public @RequestScoped class ContentFactory implements Serializable {
 		}
 	}
 
-	//TODO
 	public EnterpriseContent convertJCRNode(Node node) throws RepositoryException {
 		try {
 			EnterpriseContent systemContent = null;
-				try {
-					systemContent = new GenericEnterpriseContent(Text.unescapeIllegalJcrChars(node.getName()));
-				systemContent.setJcrPath(node.getPath());
-				systemContent.setParentPath(node.getParent().getPath());
-				} catch (NameNotValidException e1) {
-					log.info("Error converting JCR node", e1);
-			}
 
-			if (isRadienNode(node) && systemContent != null) {
+			boolean isVersionableNode = node.hasProperty(CmsConstants.RADIEN_VERSION);
+			boolean isMandatoryNode = node.hasProperty(CmsConstants.RADIEN_MANDATORY_VIEW);
+				try {
+					if(isVersionableNode && isMandatoryNode) {
+						systemContent = new MandatoryVersionableEnterpriseContent();
+						systemContent.setName(node.getName());
+					} else if(isVersionableNode) {
+						systemContent = new VersionableEnterpriseContent();
+						systemContent.setName(node.getName());
+
+					} else if(isMandatoryNode) {
+						systemContent = new MandatoryEnterpriseContent();
+						systemContent.setName(node.getName());
+
+					} else {
+						systemContent = new GenericEnterpriseContent(Text.unescapeIllegalJcrChars(node.getName()));
+					}
+					systemContent.setJcrPath(node.getPath());
+					systemContent.setParentPath(node.getParent().getPath());
+					} catch (NameNotValidException e1) {
+						log.info("Error converting JCR node", e1);
+					}
+
+			if ((isRadienNode(node) || node.hasProperty(CmsConstants.RADIEN_VIEW_ID)) && systemContent != null) {
 				try {
 					systemContent.setViewId(node.getProperty(CmsConstants.RADIEN_VIEW_ID).getString());
-					systemContent.setHtmlContent(node.getProperty(CmsConstants.RADIEN_HTML_CONTENT).getString());
 					systemContent.setContentType(
 							ContentType.getByKey(node.getProperty(CmsConstants.RADIEN_CONTENT_TYPE).getString()));
 					systemContent.setActive(node.getProperty(CmsConstants.RADIEN_ACTIVE).getBoolean());
@@ -199,6 +254,27 @@ public @RequestScoped class ContentFactory implements Serializable {
 					systemContent.setLanguage(node.getProperty(CmsConstants.RADIEN_CONTENT_LANG).getString());
 					systemContent.setCreateDate(node.getProperty(JcrConstants.JCR_CREATED).getDate().getTime());
 
+					if(node.hasProperty(CmsConstants.RADIEN_HTML_CONTENT)) {
+						systemContent.setHtmlContent(node.getProperty(CmsConstants.RADIEN_HTML_CONTENT).getString());
+					}
+
+					if(isVersionableNode && isMandatoryNode) {
+						((MandatoryVersionableEnterpriseContent)systemContent).setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).toString()));
+						((MandatoryVersionableEnterpriseContent)systemContent).setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
+						((MandatoryVersionableEnterpriseContent)systemContent).setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
+						((MandatoryVersionableEnterpriseContent)systemContent).setVersionable(true);
+
+						((MandatoryVersionableEnterpriseContent)systemContent).setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
+						((MandatoryVersionableEnterpriseContent)systemContent).setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
+
+					} else if(isVersionableNode) {
+						((VersionableEnterpriseContent)systemContent).setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
+						((VersionableEnterpriseContent)systemContent).setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
+						((VersionableEnterpriseContent)systemContent).setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
+						((VersionableEnterpriseContent)systemContent).setVersionable(true);
+					} else if(isMandatoryNode) {
+						((MandatoryEnterpriseContent)systemContent).setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
+						((MandatoryEnterpriseContent)systemContent).setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());					}
 					InputStream stream = null;
 					try {
 						Binary bin = null;
@@ -228,18 +304,9 @@ public @RequestScoped class ContentFactory implements Serializable {
 					}
 
 					try {
-						switch (systemContent.getContentType()) {
-
-							case DOCUMENT:
-							case HTML:
-							case NEWS_FEED:
-							case NOTIFICATION:
-								systemContent.setMimeType(node.getNode(JcrConstants.JCR_CONTENT)
-										.getProperty(JcrConstants.JCR_MIMETYPE).getString());
-								break;
-
-							default:
-								break;
+						if (systemContent.getContentType() == ContentType.DOCUMENT) {
+							systemContent.setMimeType(node.getNode(JcrConstants.JCR_CONTENT)
+									.getProperty(JcrConstants.JCR_MIMETYPE).getString());
 						}
 
 					} catch (PathNotFoundException e) {
@@ -289,14 +356,14 @@ public @RequestScoped class ContentFactory implements Serializable {
 		Calendar now = Calendar.getInstance();
 		try {
 			node.setProperty(CmsConstants.RADIEN_VIEW_ID, obj.getViewId());
+			node.setProperty(CmsConstants.RADIEN_ACTIVE, obj.isActive());
+			node.setProperty(CmsConstants.RADIEN_SYSTEM, obj.isSystem());
 		} catch (RepositoryException e) {
 			log.error("Error adding common properties.", e);
 		}
 		if (isRadienNode(node)) {
 			try {
 				node.setProperty(CmsConstants.RADIEN_CONTENT_TYPE, obj.getContentType().key());
-				node.setProperty(CmsConstants.RADIEN_ACTIVE, obj.isActive());
-				node.setProperty(CmsConstants.RADIEN_SYSTEM, obj.isSystem());
 				node.setProperty(CmsConstants.RADIEN_CONTENT_LANG, obj.getLanguage());
 
 			} catch(Exception e){
@@ -353,6 +420,27 @@ public @RequestScoped class ContentFactory implements Serializable {
 
 					case FOLDER:
 						break;
+				}
+
+				boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent;
+				boolean isMandatory = obj instanceof SystemMandatoryEnterpriseContent;
+
+				if(isVersionable && isMandatory) {
+					node.setProperty(CmsConstants.RADIEN_VERSION, ((MandatoryVersionableEnterpriseContent)obj).getVersion().getVersion());
+					node.setProperty(CmsConstants.RADIEN_VERSION_COMMENT, ((MandatoryVersionableEnterpriseContent)obj).getVersionComment());
+					now.setTime(((MandatoryVersionableEnterpriseContent)obj).getValidDate());
+					node.setProperty(CmsConstants.RADIEN_VALID_DATE, now);
+
+					node.setProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL, ((MandatoryVersionableEnterpriseContent)obj).isMandatoryApproval());
+					node.setProperty(CmsConstants.RADIEN_MANDATORY_VIEW, ((MandatoryVersionableEnterpriseContent)obj).isMandatoryView());
+				} else if(isVersionable) {
+					node.setProperty(CmsConstants.RADIEN_VERSION, ((VersionableEnterpriseContent)obj).getVersion().getVersion());
+					node.setProperty(CmsConstants.RADIEN_VERSION_COMMENT, ((VersionableEnterpriseContent)obj).getVersionComment());
+					now.setTime(((VersionableEnterpriseContent)obj).getValidDate());
+					node.setProperty(CmsConstants.RADIEN_VALID_DATE, now);
+				} else if(isMandatory) {
+					node.setProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL, ((MandatoryEnterpriseContent)obj).isMandatoryApproval());
+					node.setProperty(CmsConstants.RADIEN_MANDATORY_VIEW, ((MandatoryEnterpriseContent)obj).isMandatoryView());
 				}
 			} catch (PathNotFoundException e) {
 				log.error("no image attached");
