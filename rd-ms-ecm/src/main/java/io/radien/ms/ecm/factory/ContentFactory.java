@@ -259,7 +259,7 @@ public @RequestScoped class ContentFactory implements Serializable {
 					}
 
 					if(isVersionableNode && isMandatoryNode) {
-						((MandatoryVersionableEnterpriseContent)systemContent).setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).toString()));
+						((MandatoryVersionableEnterpriseContent)systemContent).setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
 						((MandatoryVersionableEnterpriseContent)systemContent).setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
 						((MandatoryVersionableEnterpriseContent)systemContent).setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
 						((MandatoryVersionableEnterpriseContent)systemContent).setVersionable(true);
@@ -274,7 +274,8 @@ public @RequestScoped class ContentFactory implements Serializable {
 						((VersionableEnterpriseContent)systemContent).setVersionable(true);
 					} else if(isMandatoryNode) {
 						((MandatoryEnterpriseContent)systemContent).setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
-						((MandatoryEnterpriseContent)systemContent).setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());					}
+						((MandatoryEnterpriseContent)systemContent).setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
+					}
 					InputStream stream = null;
 					try {
 						Binary bin = null;
