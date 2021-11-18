@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.security.openid.config;
+package io.radien.security.openid.validation;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import com.nimbusds.jose.JWSObject;
+import io.radien.exception.InvalidAccessTokenException;
 
 /**
- * @author Marco Weiland
+ * Contract for a class/component whose concern is validate a token
+ * @author Newton Carvalho
  */
-@EnableWebMvc
-@ComponentScan("org.openappframe.security.oidc.rp.controller")
-public class WebConfig implements WebMvcConfigurer {
+public interface TokenValidator {
+
+    /**
+     * Validates a token
+     * @param jwsObject token to be validate
+     * @throws InvalidAccessTokenException thrown in case of token being invalid
+     */
+    void validate(JWSObject jwsObject) throws InvalidAccessTokenException;
 }

@@ -45,9 +45,25 @@
 
 
 	<filter>
+		<filter-name>OpenId URL Checker Filter</filter-name>
+		<filter-class>io.radien.security.openid.filter.OpenIdURLChecker</filter-class>
+	</filter>
+	<filter>
+		<filter-name>OpenId Connect Filter</filter-name>
+		<filter-class>io.radien.security.openid.filter.OpenIdConnectFilter</filter-class>
+	</filter>
+	<filter>
 		<filter-name>OAF Authfilter</filter-name>
 		<filter-class>io.radien.webapp.security.OIDCAuthorizationFilter</filter-class>
 	</filter>
+	<filter-mapping>
+		<filter-name>OpenId URL Checker Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>OpenId Connect Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 	<filter-mapping>
 		<filter-name>OAF Authfilter</filter-name>
 		<url-pattern>/*</url-pattern>

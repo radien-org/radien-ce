@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.security.openid.service;
+package io.radien.security.openid.model;
 
-import org.springframework.stereotype.Service;
+import java.io.Serializable;
 
 /**
- * @author Marco Weiland
+ * Interface that describes a contract to store information regarding the authenticated user
  */
-@Service
-public class PublicService {
-	private static final String PUBLIC_SERVICE_RESPONSE_TEXT = "This service available for all users including unauthorized";
+public interface UserDetails extends Serializable {
 
-	public String shared() {
-		return PUBLIC_SERVICE_RESPONSE_TEXT;
-	}
+    /**
+     * Returns the username used to authenticate the user. Cannot return
+     * <code>null</code>.
+     * @return the username (never <code>null</code>)
+     */
+    String getUsername();
+
 }

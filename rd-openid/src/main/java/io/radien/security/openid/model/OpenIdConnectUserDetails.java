@@ -15,13 +15,7 @@
  */
 package io.radien.security.openid.model;
 
-import static org.springframework.security.core.authority.AuthorityUtils.commaSeparatedStringToAuthorityList;
-
-import java.util.Collection;
 import java.util.Map;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * @author Marco Weiland
@@ -48,20 +42,9 @@ public class OpenIdConnectUserDetails implements UserDetails {
 		this.givenname = userInfo.get("given_name");
 		this.familyname = userInfo.get("family_name");
 		this.fullName = givenname + " " + familyname;
-		
-		
-	}
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return commaSeparatedStringToAuthorityList("USER");
-	}
 
-	@Override
-	public String getPassword() {
-		return null;
 	}
-
 	@Override
 	public String getUsername() {
 		return username;
@@ -71,25 +54,6 @@ public class OpenIdConnectUserDetails implements UserDetails {
 		return userEmail;
 	}
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
 
 	/**
 	 * @return the sub

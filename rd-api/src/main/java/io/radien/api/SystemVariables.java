@@ -49,7 +49,9 @@ public enum SystemVariables {
     USER_ID("userId", "User ID"),
     TENANT_ROLE_ID("tenantRoleId", "Tenant Role ID"),
     PERMISSION_ID("permissionId", "Permission ID"),
-    ROLE_TENANT_ID("roleTenantId", "Role Tenant ID");
+    ROLE_TENANT_ID("roleTenantId", "Role Tenant ID"),
+    ACCESS_TOKEN("accessToken", "Access Token"),
+    REFRESH_TOKEN("refreshToken", "Refresh Token");
 
     private final String fieldName;
     private final String label;

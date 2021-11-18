@@ -41,6 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.servlet.http.HttpSession;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -329,9 +330,12 @@ public class UserSessionTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
         when(JSFUtil.getExternalContext().getRequest()).thenReturn(request);
         when(JSFUtil.getExternalContext().getResponse()).thenReturn(response);
         doNothing().when(request).logout();
+        doNothing().when(session).invalidate();
 
         String mockedUrl = "https://domain.io/auth/realms/realmtest/protocol/openid-connect/logout";
         when(oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI)).thenReturn(mockedUrl);
