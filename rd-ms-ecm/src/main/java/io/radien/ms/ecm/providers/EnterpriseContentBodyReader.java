@@ -18,6 +18,8 @@ package io.radien.ms.ecm.providers;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.util.EnterpriseContentEntityMapper;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -35,7 +37,11 @@ import java.lang.reflect.Type;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
+@ApplicationScoped
 public class EnterpriseContentBodyReader implements MessageBodyReader<EnterpriseContent> {
+
+    @Inject
+    private EnterpriseContentEntityMapper entityMapper;
 
     /**
      * Validator of the Action message body to see if it is readable
@@ -67,6 +73,6 @@ public class EnterpriseContentBodyReader implements MessageBodyReader<Enterprise
                            Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders,
                            InputStream entityStream) throws IOException, WebApplicationException {
-        return EnterpriseContentEntityMapper.map(entityStream);
+        return entityMapper.map(entityStream);
     }
 }

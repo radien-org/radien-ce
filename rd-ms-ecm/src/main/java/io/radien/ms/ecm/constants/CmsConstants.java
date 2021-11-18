@@ -90,27 +90,18 @@ public class CmsConstants {
 
 
     /**
-     * Mixin node name
+     * Main node Type
      */
-    public static final String RADIEN_MIXIN_NODE_PROPS = NAMESPACE + ":NodeType";
+    public static final String RADIEN_BASE_NODE_TYPE = NAMESPACE + ":NodeType";
 
-    /**
-     * Versionable mixin
-     */
-    public static final String RADIEN_MIXIN_VERSIONABLE = NAMESPACE + ":versionable";
+    public static final String RADIEN_GENERIC_CONTENT_MIXIN = NAMESPACE + ":genericContent";
 
-    /**
-     * Versionable create date mixin
-     */
-    public static final String RADIEN_MIXIN_VERSIONABLE_CREATE = NAMESPACE + ":VersionableCreateMixin";
-    /**
-     * Versionable version identifier mixin
-     */
-    public static final String RADIEN_MIXIN_VERSION = NAMESPACE + ":VersionMixin";
-    /**
-     * Mandatory content mixin
-     */
-    public static final String RADIEN_MIXIN_MANDATORY_CONTENT = NAMESPACE + ":MandatoryContent";
+    public static final String RADIEN_HTML_CONTENT_MIXIN = NAMESPACE + ":htmlContent";
+
+    public static final String RADIEN_FILE_CONTENT_MIXIN = NAMESPACE + ":fileContent";
+
+    public static final String RADIEN_VERSIONABLE_CONTENT_MIXIN = NAMESPACE + ":versionableContent";
+
 
     /**
      * the content viewId property key

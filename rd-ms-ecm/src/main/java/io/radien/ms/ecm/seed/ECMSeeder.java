@@ -3,9 +3,7 @@ package io.radien.ms.ecm.seed;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
-import io.radien.api.service.ecm.model.ContentType;
-import io.radien.api.service.ecm.model.EnterpriseContent;
-import io.radien.api.service.ecm.model.Folder;
+import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.ContentRepository;
 import io.radien.ms.ecm.client.entities.I18NProperty;
 import io.radien.ms.ecm.constants.CmsConstants;
@@ -137,7 +135,6 @@ public @ApplicationScoped class ECMSeeder {
         if (rootNode == null || rootNode.getContentType().equals(ContentType.ERROR)) {
 
             log.info("[CMS] : ENABLED : Content Repository Root Node initialization");
-
             rootNode = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_ROOT, String.class));
             rootNode.setParentPath(repository.getRootNodePath());
             rootNode.setViewId(rootNode.getName());
@@ -156,36 +153,35 @@ public @ApplicationScoped class ECMSeeder {
     private void initDocumentsNode(EnterpriseContent rootNode)throws RepositoryException, ContentRepositoryNotAvailableException  {
         EnterpriseContent documentsNode = contentService
                 .getFirstByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class), false, null);
-        EnterpriseContent oafDocumentsContent = null;
         if (documentsNode == null || documentsNode.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository Documents Node initialization");
 
-            oafDocumentsContent = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class));
-            oafDocumentsContent.setParentPath(rootNode.getJcrPath());
-            oafDocumentsContent.setViewId(oafDocumentsContent.getName());
+            documentsNode = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class));
+            documentsNode.setParentPath(rootNode.getJcrPath());
+            documentsNode.setViewId(documentsNode.getName());
 
-            documentsNode = oafDocumentsContent;
-            contentService.save(oafDocumentsContent);
+            contentService.save(documentsNode);
 
-            log.info("[CMS] : DOCUMENTS NODE : INITIALIZED {}", oafDocumentsContent);
+            log.info("[CMS] : DOCUMENTS NODE : INITIALIZED {}", documentsNode);
         } else {
             log.info("[CMS] : ENABLED : Content Repository Documents Node already initialized; Checking for updated locales.");
             repository.updateFolderSupportedLanguages(documentsNode.getParentPath(), config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class));
-            oafDocumentsContent = documentsNode;
         }
-        if(documentsNode != null) {
-            String[] folderNames = config.getValue(CmsConstants.PropertyKeys.SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS, String.class)
-                    .split(",");
-            List<String> children = contentService.getChildrenFiles(documentsNode.getViewId())
-                    .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER).map(EnterpriseContent::getName).collect(Collectors.toList());
-            for (String folderName : folderNames) {
-                if (!children.contains(folderName)) {
-                    EnterpriseContent folder = new Folder(folderName);
-                    folder.setParentPath(oafDocumentsContent.getJcrPath());
-                    folder.setViewId(folderName);
-                    contentService.save(folder);
-                    log.info("[CMS] folder created: {}", folder);
-                }
+        autoCreateDocumentFolders(documentsNode);
+    }
+
+    private void autoCreateDocumentFolders(EnterpriseContent documentsNode) throws ContentRepositoryNotAvailableException {
+        String[] folderNames = config.getValue(CmsConstants.PropertyKeys.SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS, String.class)
+                .split(",");
+        List<String> children = contentService.getChildrenFiles(documentsNode.getViewId())
+                .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER).map(EnterpriseContent::getName).collect(Collectors.toList());
+        for (String folderName : folderNames) {
+            if (!children.contains(folderName)) {
+                EnterpriseContent folder = new Folder(folderName);
+                folder.setParentPath(documentsNode.getJcrPath());
+                folder.setViewId(folderName);
+                contentService.save(folder);
+                log.info("[CMS] folder created: {}", folder);
             }
         }
     }
@@ -206,9 +202,7 @@ public @ApplicationScoped class ECMSeeder {
             oafHTMLContent.setViewId(oafHTMLContent.getName());
 
             contentService.save(oafHTMLContent);
-
             log.info("[CMS] : HTML NODE : INITIALIZED {}", oafHTMLContent);
-
         } else {
             log.info("[CMS] : ENABLED : Content Repository HTML Node already initialized; Checking for updated locales.");
             repository.updateFolderSupportedLanguages(oafHTMLContent.getParentPath(), config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class));

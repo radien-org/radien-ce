@@ -17,17 +17,22 @@ package io.radien.ms.ecm.util;
  */
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.factory.ContentFactory;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.json.JsonObject;
-import javax.json.Json;
-import javax.json.JsonReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 
+@ApplicationScoped
 public class EnterpriseContentEntityMapper {
+
+    @Inject
+    private ContentFactory contentFactory;
 
     /**
      * Maps one Action into a Json Object
@@ -58,13 +63,15 @@ public class EnterpriseContentEntityMapper {
      * @param is input stream to be converted into action
      * @return action object retrieved from the input stream
      */
-    public static EnterpriseContent map(InputStream is) {
-        try(JsonReader jsonReader = Json.createReader(is)) {
-            JsonObject jsonObject = jsonReader.readObject();
-            return ContentFactory.convertJsonObject(jsonObject);
+    public EnterpriseContent map(InputStream is) {
+        try {
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject)jsonParser.parse(
+                    new InputStreamReader(is, StandardCharsets.UTF_8));
+            return contentFactory.convertJSONObject(jsonObject);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (org.json.simple.parser.ParseException e) {
             e.printStackTrace();
         }
         return null;
