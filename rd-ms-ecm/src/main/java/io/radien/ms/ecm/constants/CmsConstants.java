@@ -45,7 +45,7 @@ public class CmsConstants {
      * Node type base.
      */
 
-    private static final String NAMESPACE = "oaf";
+    private static final String NAMESPACE = "rd";
 
     /**
      * The subpath for the metadata under sling:File resources
@@ -90,111 +90,103 @@ public class CmsConstants {
 
 
     /**
-     * Mixin node name
+     * Main node Type
      */
-    public static final String OAF_MIXIN_NODE_PROPS = "oaf:NodeType";
+    public static final String RADIEN_BASE_NODE_TYPE = NAMESPACE + ":NodeType";
 
-    /**
-     * Versionable mixin
-     */
-    public static final String OAF_MIXIN_VERSIONABLE = "oaf:versionable";
+    public static final String RADIEN_GENERIC_CONTENT_MIXIN = NAMESPACE + ":genericContent";
 
-    /**
-     * Versionable create date mixin
-     */
-    public static final String OAF_MIXIN_VERSIONABLE_CREATE = "oaf:VersionableCreateMixin";
-    /**
-     * Versionable version identifier mixin
-     */
-    public static final String OAF_MIXIN_VERSION = "oaf:VersionMixin";
-    /**
-     * Mandatory content mixin
-     */
-    public static final String OAF_MIXIN_MANDATORY_CONTENT = "oaf:MandatoryContent";
+    public static final String RADIEN_HTML_CONTENT_MIXIN = NAMESPACE + ":htmlContent";
+
+    public static final String RADIEN_FILE_CONTENT_MIXIN = NAMESPACE + ":fileContent";
+
+    public static final String RADIEN_VERSIONABLE_CONTENT_MIXIN = NAMESPACE + ":versionableContent";
+
+    public static final String RADIEN_MANDATORY_CONTENT_MIXIN = NAMESPACE + ":mandatoryContent";
 
     /**
      * the content viewId property key
      */
-    public static final String OAF_VIEW_ID = "oaf:viewId";
+    public static final String RADIEN_VIEW_ID = NAMESPACE + ":viewId";
     /**
      * the content name property
      */
-    public static final String OAF_NAME = "oaf:name";
+    public static final String RADIEN_NAME = NAMESPACE + ":name";
     /**
      * i18n locale property
      */
-    public static final String OAF_CONTENT_LANG = "oaf:language";
+    public static final String RADIEN_CONTENT_LANG = NAMESPACE + ":language";
     /**
      * the content type property key
      */
-    public static final String OAF_CONTENT_TYPE = "oaf:contentType";
+    public static final String RADIEN_CONTENT_TYPE = NAMESPACE + ":contentType";
     /**
      * the content active property key
      */
-    public static final String OAF_ACTIVE = "oaf:active";
+    public static final String RADIEN_ACTIVE = NAMESPACE + ":active";
     /**
      * the content htmlContent property key
      */
-    public static final String OAF_HTML_CONTENT = "oaf:htmlContent";
+    public static final String RADIEN_HTML_CONTENT = NAMESPACE + ":htmlContent";
     /**
      * the content viewId property key
      */
-    public static final String OAF_VERSION_COMMENT = "oaf:versionComment";
+    public static final String RADIEN_VERSION_COMMENT = NAMESPACE + ":versionComment";
     /**
      * the content viewId property key
      */
-    public static final String OAF_MANDATORY_VIEW = "oaf:mandatoryView";
+    public static final String RADIEN_MANDATORY_VIEW = NAMESPACE + ":mandatoryView";
     /**
      * the content viewId property key
      */
-    public static final String OAF_VERSION = "oaf:version";
+    public static final String RADIEN_VERSION = NAMESPACE + ":version";
     /**
      * the content viewId property key
      */
-    public static final String OAF_MANDATORY_APPROVAL = "oaf:mandatoryApproval";
+    public static final String RADIEN_MANDATORY_APPROVAL = NAMESPACE + ":mandatoryApproval";
     /**
      * the content system property key
      */
-    public static final String OAF_SYSTEM = NAMESPACE + ":system";
+    public static final String RADIEN_SYSTEM = NAMESPACE + ":system";
 
-    public static final String OAF_CONTENT_PERMISSIONS = NAMESPACE + ":permissions" ;
+    public static final String RADIEN_CONTENT_PERMISSIONS = NAMESPACE + ":permissions" ;
     /**
      * Published flag property
      */
-    public static final String OAF_STEP = NAMESPACE + ":step";
+    public static final String RADIEN_STEP = NAMESPACE + ":step";
     /**
      * the content fileSize property key
      */
-    public static final String OAF_FILE_SIZE = NAMESPACE + ":fileSize";
+    public static final String RADIEN_FILE_SIZE = NAMESPACE + ":fileSize";
     /**
      * the content tags property key
      */
-    public static final String OAF_TAGS = NAMESPACE + ":tags";
+    public static final String RADIEN_TAGS = NAMESPACE + ":tags";
     /**
      * the content linked application property key
      */
-    public static final String OAF_APP = NAMESPACE + ":app";
+    public static final String RADIEN_APP = NAMESPACE + ":app";
 
     /**
      * the content image property key
      */
-    public static final String OAF_IMAGE = NAMESPACE + ":image";
+    public static final String RADIEN_IMAGE = NAMESPACE + ":image";
     /**
      * the content image name property key
      */
-    public static final String OAF_IMAGE_NAME = NAMESPACE + ":imageName";
+    public static final String RADIEN_IMAGE_NAME = NAMESPACE + ":imageName";
     /**
      * the content image mime type property key
      */
-    public static final String OAF_IMAGE_MIME_TYPE = NAMESPACE + ":imageMimeType";
+    public static final String RADIEN_IMAGE_MIME_TYPE = NAMESPACE + ":imageMimeType";
     /**
      * the content last edit date property
      */
-    public static final String OAF_LAST_EDIT_DATE = NAMESPACE + ":lastEditDate";
+    public static final String RADIEN_LAST_EDIT_DATE = NAMESPACE + ":lastEditDate";
     /**
      * the content valid date property
      */
-    public static final String OAF_VALID_DATE = NAMESPACE + ":validDate";
+    public static final String RADIEN_VALID_DATE = NAMESPACE + ":validDate";
     /**
      * the content creation date property
      */
@@ -202,16 +194,16 @@ public class CmsConstants {
     /**
      * the content creation date property
      */
-    public static final String OAF_CREATED = "oaf:created";
+    public static final String RADIEN_CREATED = NAMESPACE + ":created";
     /**
      * the content author property
      */
-    public static final String OAF_CONTENT_AUTHOR = NAMESPACE + ":author";
+    public static final String RADIEN_CONTENT_AUTHOR = NAMESPACE + ":author";
 
     /**
      * The resource types which can be published
      */
-    protected static final String[] PUBLISHABLE_TYPES = new String[] { CmsConstants.NT_FILE, CmsConstants.NT_NEWS_FEED, CmsConstants.NT_APP_INFO, CmsConstants.OAF_HTML_CONTENT };
+    protected static final String[] PUBLISHABLE_TYPES = new String[] { CmsConstants.NT_FILE, CmsConstants.NT_NEWS_FEED, CmsConstants.NT_APP_INFO, CmsConstants.RADIEN_HTML_CONTENT };
 
     /**
      * The name of the admin user

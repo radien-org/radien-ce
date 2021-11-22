@@ -20,19 +20,25 @@ import com.fasterxml.jackson.core.TreeNode;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.mail.model.MailType;
 import io.radien.ms.ecm.factory.ContentFactory;
 import io.radien.ms.ecm.ContentRepository;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.Date;
 
 /**
  * Default implementation of the ContentService using JackRabbit
@@ -50,6 +56,10 @@ class ContentService implements ContentServiceAccess {
 
     @Inject
     private ContentRepository contentRepository;
+
+    @Inject
+    @ConfigProperty(name = "system.default.language")
+    private String defaultLanguage;
 
     public List<EnterpriseContent> getChildrenFiles(String viewId) {
         List<EnterpriseContent> results = new ArrayList<>();
@@ -84,7 +94,7 @@ class ContentService implements ContentServiceAccess {
 
     @Override
     public EnterpriseContent loadFile(String jcrPath) throws ElementNotFoundException, ContentRepositoryNotAvailableException {
-        return null;
+        return contentRepository.loadFile(jcrPath);
     }
 
     @Override
@@ -118,7 +128,7 @@ class ContentService implements ContentServiceAccess {
         return content;
     }
 
-    public void save(EnterpriseContent obj) {
+    public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
         try {
             contentRepository.save(obj);
         } catch (Exception e) {
@@ -126,12 +136,7 @@ class ContentService implements ContentServiceAccess {
         }
     }
 
-    public EnterpriseContent loadFile(EnterpriseContent content)
-            throws ElementNotFoundException, ContentRepositoryNotAvailableException {
-        return contentRepository.loadFile(content);
-    }
-
-    public void delete(EnterpriseContent obj) {
+    public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
         try {
             contentRepository.delete(obj);
         } catch (Exception e) {
@@ -204,6 +209,48 @@ class ContentService implements ContentServiceAccess {
 
     @Override
     public List<EnterpriseContent> getByViewIdLanguage(String viewId, boolean activeOnly, String language) {
-        return null;
+        Optional<List<EnterpriseContent>> contentList;
+        try {
+            contentList = contentRepository.getByViewIdLanguage(viewId, activeOnly, language);
+
+            if (contentList.isPresent() && !contentList.get().isEmpty()) {
+                return contentList.get();
+            } else {
+                log.warn("[ContentService] : Error on retrieving content with viewId: {} and language {} - we are trying to get that content with default language: {}",viewId, language, defaultLanguage);
+                contentList = contentRepository.getByViewIdLanguage(viewId, activeOnly, defaultLanguage);
+
+                if (contentList.isPresent() && !contentList.get().isEmpty()) {
+                    return contentList.get();
+                } else {
+                    log.error("[ContentService] : Error on retrieving default content with viewId: {} and language {}",viewId, defaultLanguage);
+
+                    List<EnterpriseContent> list = new ArrayList<>();
+                    list.add(createErrorContent(viewId, language));
+                    return list;
+                }
+            }
+        } catch (ContentRepositoryNotAvailableException e) {
+            log.error("CMS not available!", e);
+        }
+
+        List<EnterpriseContent> list = new ArrayList<>();
+        list.add(createErrorContent(viewId, language));
+        return list;
+    }
+
+    private EnterpriseContent createErrorContent(String viewId, String language) {
+        log.error("content not found: viewId={} in {}", viewId, language);
+
+        EnterpriseContent content = null;
+        try {
+            content = new GenericEnterpriseContent("<ERROR> Content not found");
+            content.setContentType(ContentType.ERROR);
+            content.setViewId(UUID.randomUUID().toString());
+            content.setHtmlContent("Oooops! Something went wrong. The elemt which should be displayed is not found, and there is not fallbackelement. The Support has been informed about that matter!");
+            content.setCreateDate(new Date());
+        } catch (NameNotValidException e) {
+            log.error("Could not create ERROR Content Type", e);
+        }
+        return content;
     }
 }

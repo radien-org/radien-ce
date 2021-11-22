@@ -22,15 +22,16 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
-import io.radien.api.service.ecm.model.ContentType;
-import io.radien.api.service.ecm.model.EnterpriseContent;
-import io.radien.api.service.ecm.model.RestTreeNode;
+import io.radien.api.service.ecm.model.*;
+import io.radien.ms.ecm.constants.CmsConstants;
+import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.factory.ContentFactory;
-import io.radien.ms.ecm.util.OafConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.util.Text;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,21 +39,16 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
+import javax.jcr.*;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionManager;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Main implementation of the
@@ -62,136 +58,236 @@ import java.util.List;
 public @RequestScoped @Default class ContentRepository implements Serializable, Appframeable {
 
 	private static final Logger log = LoggerFactory.getLogger(ContentRepository.class);
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3705349362214763287L;
+
+	private long initCount = 0;
+
+	private static final String FILE_SEPARATOR = "/";
+
+	private static final String JCR_OR = " or [";
+	private static final String JCR_AND = " and [";
+	private static final String JCR_AND_ESCAPED = "' " + JCR_AND;
+	public static final String JCR_END_OBJ = "] = '";
+	public static final String IS_TRUE = "] = 'true' ";
+
 	@Inject
 	private OAFAccess oaf;
 	@Inject
+	private Config properties;
+	@Inject
 	private ContentFactory contentFactory;
 	@Inject
-	private Session session;
+	private ContentDataProvider dataProvider;
+	@Inject
+	private Repository repository;
 
 	@PostConstruct
 	private void init() {
-
 	}
 
-	public void save(EnterpriseContent obj) {
+	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 		String viewId = obj.getViewId();
+		String language = obj.getLanguage();
 		Node content = null;
-		Node parent = null;
 		boolean isMoveCommand = false;
+		String newPath = null;
 		String nameEscaped = Text.escapeIllegalJcrChars(obj.getName());
 
-		if (viewId == null || viewId.equalsIgnoreCase("")) {
+		if (StringUtils.isBlank(viewId) || StringUtils.isBlank(language)) {
+			//TODO: REVIEW - Sets default properties
 			contentFactory.decorateNewContent(obj);
 		} else {
 			try {
-				content = getNodeByViewId(viewId, false);
-				if (obj.getParentPath() == null) {
+				List<Node> nodeList = getNodeByViewIdLanguage(session, viewId, false, language);
+
+				if (!nodeList.isEmpty()) {
+					content = nodeList.get(nodeList.size() - 1);
+				}
+				if (content != null && obj.getParentPath() == null) {
 					obj.setParentPath(content.getParent().getPath());
 				}
-				String newPath = obj.getParentPath() + "/" + nameEscaped;
-				if (!newPath.equals(content.getPath())) {
+				newPath = obj.getParentPath() + FILE_SEPARATOR + nameEscaped;
+				if (content != null && !newPath.equals(content.getPath())) {
 					isMoveCommand = true;
 				}
-			} catch (Exception e) {
-				// log.info("Error saving content", e);
-				// TODO jsr: refactor all this mess
+			} catch (RepositoryException | ContentRepositoryNotAvailableException e) {
+				log.error("Error accessing the JCR repository while trying to find content", e);
 			}
 		}
+		content = getContentIfPathExists(session, obj, content);
+		Node parent = getParentIfParentPathExists(session, obj);
 
+		process(session, obj, language, content, parent, isMoveCommand, nameEscaped, newPath);
+	}
+
+	private void process(Session session, EnterpriseContent obj, String language, Node content,
+						 Node parent, boolean isMoveCommand, String nameEscaped, String newPath) {
 		try {
-			if (content == null) {
-				if (obj.getJcrPath() != null && !obj.getJcrPath().equalsIgnoreCase("")) {
-					content = session.getNode(obj.getJcrPath());
-				}
-			}
-
-		} catch (RepositoryException e) {
-			log.info("Error saving the content", e);
-		}
-
-		try {
-			if (obj.getParentPath() != null && !obj.getParentPath().equalsIgnoreCase("")) {
-				parent = session.getNode(obj.getParentPath());
-			}
-		} catch (RepositoryException e) {
-			log.error("ERror saving content", e);
-		}
-
-		try {
+			boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent && ((SystemVersionableEnterpriseContent)obj).isVersionable();
 			if (content == null) {
 				switch (obj.getContentType()) {
 					case DOCUMENT:
-						if (parent == null) {
-							parent = getDocumentsContentNode();
-						}
-						content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
-						break;
-					case FOLDER:
-						if (parent == null) {
-							parent = getDocumentsContentNode();
-						}
-						content = parent.addNode(nameEscaped, JcrConstants.NT_FOLDER);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false);
 						break;
 					case HTML:
-						if (parent == null) {
-							parent = getHTMLContentNode();
-						}
-						content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
-						break;
-					case NEWS_FEED:
-						if (parent == null) {
-							parent = getNewsFeedContentNode();
-						}
-						content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, true);
 						break;
 					case IMAGE:
-						if (parent == null) {
-							parent = getImageContentNode();
-						}
-						content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_IMAGE, false);
+						break;
+					case FOLDER:
+						content = prepareFolderNode(session, language, parent, nameEscaped);
 						break;
 					case NOTIFICATION:
-						if (parent == null) {
-							parent = getNotificationContentNode();
-						}
-						content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, true);
 						break;
+					case TAG:
+						content = prepareTagNode(session, language, parent, nameEscaped);
+						break;
+					default:
+						log.error("Unknown doc type {}", obj.getContentType());
 				}
 
-				content.addMixin(OafConstants.OAF_MIXIN_NODE_PROPS);
-
+				if (content == null) {
+					throw new RepositoryException("Content is null");
+				}
+				setupNodeMixins(content, obj);
+			}
+			VersionManager versionManager = session.getWorkspace().getVersionManager();
+			if(isVersionable && !content.isCheckedOut()) {
+				versionManager.checkout(content.getPath());
 			}
 
 			contentFactory.syncNode(content, obj, session);
+			session.save();
 
-			if (isMoveCommand) {
-				session.move(content.getPath(), obj.getParentPath() + "/" + nameEscaped);
+			if(isVersionable && content.isCheckedOut()) {
+				versionManager.checkin(content.getPath());
 			}
 
+			if (isMoveCommand) {
+				if(isVersionable && !content.isCheckedOut()) {
+					versionManager.checkout(content.getPath());
+				}
+				session.move(content.getPath(), newPath);
+				if(isVersionable && content.isCheckedOut()) {
+					versionManager.checkin(content.getPath());
+				}
+			}
 			session.save();
-		} catch (ContentRepositoryNotAvailableException | RepositoryException e) {
+			log.info("[+] Added content:{} ", content.getIdentifier());
+		} catch (ItemExistsException e) {
+			log.warn("Item {} already exists in this repository, skipping", obj.getName());
+		} catch (RepositoryException e) {
 			log.error("Error saving content", e);
+		} finally {
+			session.logout();
 		}
 
 	}
 
-	public EnterpriseContent loadFile(EnterpriseContent content)
-			throws ElementNotFoundException, ContentRepositoryNotAvailableException {
+	private void setupNodeMixins(Node content, EnterpriseContent obj) throws RepositoryException {
+		content.addMixin(CmsConstants.RADIEN_GENERIC_CONTENT_MIXIN);
+		if(Arrays.asList(ContentType.DOCUMENT, ContentType.IMAGE).contains(obj.getContentType())) {
+			content.addMixin(CmsConstants.RADIEN_FILE_CONTENT_MIXIN);
+		} else if(ContentType.HTML.equals(obj.getContentType())) {
+			content.addMixin(CmsConstants.RADIEN_HTML_CONTENT_MIXIN);
+		}
+		if(obj instanceof SystemVersionableEnterpriseContent) {
+			content.addMixin(JcrConstants.MIX_VERSIONABLE);
+			content.addMixin(CmsConstants.RADIEN_VERSIONABLE_CONTENT_MIXIN);
+		}
+		if(obj instanceof SystemMandatoryEnterpriseContent) {
+			content.addMixin(CmsConstants.RADIEN_MANDATORY_CONTENT_MIXIN);
+		}
+	}
+
+	private Node getContentIfPathExists(Session session, EnterpriseContent obj, Node content) {
 		try {
-			content.setFile(contentFactory.getFile(session, content.getJcrPath()));
-		} catch (PathNotFoundException e) {
-			log.error("Error lading EnterPriseOCntent File", e);
-			throw new ElementNotFoundException(e.getMessage());
-		} catch (RepositoryException | IOException e) {
-			log.error("Error loading file", e);
-			throw new ContentRepositoryNotAvailableException();
+			if (content == null && StringUtils.isNotBlank(obj.getJcrPath())) {
+				content = JcrUtils.getNodeIfExists(obj.getJcrPath(), session);
+			}
+		} catch(RepositoryException e) {
+				log.warn("could not retrieve {}",obj.getJcrPath(), e);
+				log.warn("could not retrieve",e);
 		}
 		return content;
 	}
 
-	public void delete(EnterpriseContent obj) {
+	private Node getParentIfParentPathExists(Session session, EnterpriseContent obj) {
+		Node parent = null;
+		try {
+			if(StringUtils.isNotBlank(obj.getParentPath())) {
+				parent = JcrUtils.getNodeIfExists(obj.getParentPath(), session);
+			}
+		} catch (RepositoryException e) {
+			log.warn("could not retrieve {}",obj.getJcrPath(), e);
+			log.warn("could not retrieve",e);
+		}
+		return parent;
+	}
+
+	private Node addNodeToParent(Session session, String language, Node parent, String viewID, String systemCmsCfgNodeDocs,
+								 boolean b) throws RepositoryException {
+		Node content = null;
+		if(parent == null) {
+			parent = getNode(session, systemCmsCfgNodeDocs, b, language);
+		}
+		if(parent != null) {
+			content = parent.addNode(viewID, CmsConstants.RADIEN_BASE_NODE_TYPE);
+		}
+		return content;
+	}
+
+	private Node prepareTagNode(Session session, String language, Node parent, String nameEscaped) throws RepositoryException {
+		Node content = null;
+		if(parent == null) {
+			parent = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_TAG, false, language);
+		}
+		if(parent != null) {
+			content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
+		}
+		return content;
+	}
+
+	private Node prepareFolderNode(Session session, String language, Node parent, String nameEscaped) throws RepositoryException {
+		Node content = null;
+		if(parent == null) {
+			parent = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, language);
+		}
+		if(parent != null) {
+			content = parent.addNode(nameEscaped, JcrConstants.NT_FOLDER);
+		}
+		addSupportedLocalesFolder(content, parent, nameEscaped);
+		return content;
+	}
+
+	public EnterpriseContent loadFile(String jcrPath)
+			throws ContentRepositoryNotAvailableException {
+		EnterpriseContent content = null;
+			Session session = createSession();
+		try {
+			content = getContentByPath(jcrPath, session);
+			content.setFile(contentFactory.getFile(session, jcrPath));
+		} catch (PathNotFoundException e) {
+			log.error("Error loading EnterpriseContent File", e);
+		} catch (RepositoryException | IOException e) {
+			log.error("Error loading file", e);
+			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
+		}
+		return content;
+	}
+
+	private EnterpriseContent getContentByPath(String jcrPath, Session session) throws RepositoryException {
+		Node result = JcrUtils.getNodeIfExists(jcrPath, session);
+		return contentFactory.convertJCRNode(result);
+	}
+
+	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 		try {
 
 			session.removeItem(obj.getJcrPath());
@@ -200,12 +296,14 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			log.error("Error deleting EnterpriseContent file", e);
+		} finally {
+			session.logout();
 		}
 	}
 
 	private Node getNodeByViewId(String viewId, boolean activeOnly)
 			throws ContentRepositoryNotAvailableException, ElementNotFoundException {
-
+		Session session = createSession();
 		List<Node> results = new ArrayList<>();
 
 		// Obtain the query manager for the session via the workspace ...
@@ -213,10 +311,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		try {
 			queryManager = session.getWorkspace().getQueryManager();
 
-			String expression = "" + "select * from " + "[" + JcrConstants.NT_BASE + "] as node " + "where ["
-					+ OafConstants.OAF_VIEW_ID + "] = '" + viewId + "' ";
+			String expression = "" + "select * from " + "[" + CmsConstants.RADIEN_BASE_NODE_TYPE + "] as node " + "where ["
+					+ CmsConstants.RADIEN_VIEW_ID + "] = '" + viewId + "' ";
 			if (activeOnly) {
-				expression += " and [" + OafConstants.OAF_ACTIVE + "] = '" + activeOnly + "' ";
+				expression += " and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
 			}
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
@@ -234,6 +332,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 		if (!results.isEmpty()) {
 			return results.get(0);
@@ -255,7 +355,59 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	}
 
-	public void registerCNDNodeTypes(String cndFileName) {
+	public Optional<List<EnterpriseContent>> getByViewIdLanguage(String viewId, boolean activeOnly, String language)
+			throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
+		List<Node> nodeList = getNodeByViewIdLanguage(session, viewId, activeOnly, language);
+		if (nodeList.isEmpty()) {
+			return Optional.empty();
+		}
+
+		try {
+			List<EnterpriseContent> ecList = new ArrayList<>();
+			for (Node node : nodeList) {
+				ecList.add(contentFactory.convertJCRNode(node));
+			}
+			return Optional.ofNullable(ecList);
+		} catch (RepositoryException e) {
+			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
+		}
+	}
+
+	private List<Node> getNodeByViewIdLanguage(Session session, String viewId, boolean activeOnly, String language)
+			throws ContentRepositoryNotAvailableException {
+
+		List<Node> results = new ArrayList<>();
+		QueryManager queryManager;
+		try {
+			queryManager = session.getWorkspace().getQueryManager();
+
+			String expression = "select * from " + "[" + CmsConstants.RADIEN_GENERIC_CONTENT_MIXIN + "] as node " + "where ["
+					+ CmsConstants.RADIEN_VIEW_ID + JCR_END_OBJ + viewId + "' ";
+
+			if (StringUtils.isNotBlank(language)) {
+				expression += JCR_AND + CmsConstants.RADIEN_CONTENT_LANG + JCR_END_OBJ + language + "' ";
+			}
+			if (activeOnly) {
+				expression += JCR_AND + CmsConstants.RADIEN_ACTIVE + IS_TRUE;
+			}
+
+			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
+			NodeIterator nodes = query.execute().getNodes();
+			while (nodes.hasNext()) {
+				results.add((Node) nodes.next());
+			}
+		} catch (RepositoryException e) {
+			throw new ContentRepositoryNotAvailableException();
+		}
+
+		return results;
+	}
+
+	public void registerCNDNodeTypes(String cndFileName) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 		NodeType[] nodeTypes;
 		try {
 			nodeTypes = CndImporter.registerNodeTypes(
@@ -265,12 +417,46 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			}
 		} catch (Exception e) {
 			log.error("Error registering node type", e);
+		} finally {
+			session.logout();
 		}
+	}
 
+	public void updateFolderSupportedLanguages(String contentPath, String nameEscaped) throws RepositoryException, ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
+		try {
+			Node contentNode = session.getNode(contentPath);
+			Node rootNode = session.getRootNode().getNode("radien");
+			addSupportedLocalesFolder(contentNode, rootNode, nameEscaped);
+			session.save();
+		} catch (RepositoryException e) {
+			log.error("Repository exception. Not possible to update {}", nameEscaped, e);
+			throw e;
+		} finally {
+			session.logout();
+		}
+	}
+
+	private void addSupportedLocalesFolder(Node content, Node parent, String nameEscaped) throws RepositoryException {
+		if (nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class)) ||
+				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, String.class))) {
+
+			for (String lang : dataProvider.getSupportedLanguages()) {
+				try {
+					if (StringUtils.isNotBlank(lang)) {
+						parent.addNode(nameEscaped + FILE_SEPARATOR + lang, JcrConstants.NT_FOLDER);
+					}
+				} catch(ItemExistsException e) {
+					log.info("Language {} already exists, skipping...", lang);
+				}
+			}
+		}
 	}
 
 	public List<EnterpriseContent> getByContentType(ContentType contentType, boolean activeOnly,
 													boolean includeSystemContent) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
 
 		List<EnterpriseContent> fooList = new ArrayList<>();
 
@@ -280,10 +466,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + contentType.key() + "' " + "and ["
-					+ OafConstants.OAF_SYSTEM + "] = '" + includeSystemContent + "' ";
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + contentType.key() + "' " + "and ["
+					+ CmsConstants.RADIEN_SYSTEM + "] = '" + includeSystemContent + "' ";
 			if (activeOnly) {
-				expression += "and [" + OafConstants.OAF_ACTIVE + "] = '" + activeOnly + "' ";
+				expression += "and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
 			}
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
@@ -309,6 +495,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 
 		return fooList;
@@ -317,6 +505,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	public List<EnterpriseContent> searchContent(int pageSize, int pageNumber, String searchTerm,
 												 boolean enableSystemContent) throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
 		if (pageNumber == 0) {
 			pageNumber = 1;
 		}
@@ -331,10 +521,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ OafConstants.OAF_SYSTEM + "] = '" + enableSystemContent + "' " + "and (" + "["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + ContentType.HTML.key() + "' " + " or ["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + ContentType.NEWS_FEED.key() + "' " + " or ["
-					+ OafConstants.OAF_CONTENT_TYPE + "] = '" + ContentType.NOTIFICATION.key() + "' " + ") ";
+					+ CmsConstants.RADIEN_SYSTEM + "] = '" + enableSystemContent + "' " + "and (" + "["
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.HTML.key() + "' " + " or ["
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NEWS_FEED.key() + "' " + " or ["
+					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NOTIFICATION.key() + "' " + ") ";
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 			// TODO: IMPLEMENT PAGINATING
@@ -359,17 +549,46 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 
 		return fooList;
 	}
 
+	public String getRootNodePath() throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
+		try {
+			return session.getRootNode().getPath();
+		} catch (RepositoryException e) {
+			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
+		}
+	}
+
 	protected Node getRootNode() throws ContentRepositoryNotAvailableException {
+		Session session = createSession();
+
 		try {
 			return session.getRootNode();
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
+	}
+
+	private Node getNode(Session session, String nodeType, boolean findLanguage, String language) throws RepositoryException {
+		Node resultNode = session.getRootNode().getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT));
+		if (resultNode != null) {
+			resultNode = resultNode.getNode(getOAF().getProperty(OAFProperties.valueOfKey(nodeType)));
+		}
+		if (findLanguage && resultNode != null) {
+			resultNode = resultNode.getNode(language);
+		}
+		return resultNode;
 	}
 
 	protected Node getNode(String nodeId) throws ContentRepositoryNotAvailableException {
@@ -457,47 +676,70 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		}
 	}
 
-	public Collection<? extends EnterpriseContent> getChildren(String viewId)
+	public Collection<EnterpriseContent> getChildren(String viewId)
 			throws ContentRepositoryNotAvailableException, ElementNotFoundException {
 
-		Node parent = getNodeByViewId(viewId, true);
+		Session session = createSession();
+		List<Node> nodes = getNodeByViewIdLanguage(session, viewId, true, null);
 
+		if (nodes.isEmpty()) {
+			throw new ElementNotFoundException("Element [" + viewId + "] and [ ] not found");
+		}
+
+		Node parent = nodes.get(0);
 		List<EnterpriseContent> results = new ArrayList<>();
 
 		try {
 			for (Node node : JcrUtils.getChildNodes(parent)) {
-				try {
-
-					loopNodes(results, node);
-
-				} catch (RepositoryException e) {
-					log.error("Error getting content children", e);
-				}
+				loopNodes(results, node, -1, -1);
 			}
 		} catch (PathNotFoundException e) {
 			throw new ElementNotFoundException(e.getMessage());
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			session.logout();
 		}
 
 		return results;
 	}
 
-	private void loopNodes(List<EnterpriseContent> results, Node node) throws RepositoryException {
-
+	private void loopNodes(List<EnterpriseContent> results, Node node, int cLevel, int nLevels) throws RepositoryException {
 		if (node.getName().equals(JcrConstants.JCR_SYSTEM)) {
 			return;
 		}
-
 		if (!node.getName().equalsIgnoreCase(JcrConstants.JCR_CONTENT)) {
 			EnterpriseContent doc = contentFactory.convertJCRNode(node);
 			results.add(doc);
 		}
-
 		NodeIterator nodes = node.getNodes();
-		while (nodes.hasNext()) {
-			loopNodes(results, nodes.nextNode());
+		if(nLevels == -1 || cLevel < nLevels) {
+			while (nodes.hasNext()) {
+				loopNodes(results, nodes.nextNode(), cLevel + 1, nLevels);
+			}
 		}
+	}
+
+	private Session createSession() throws ContentRepositoryNotAvailableException {
+		boolean error = false;
+		try {
+			return repository.login(getAdminCredentials());
+		} catch (Exception e) {
+			log.error("Error creating new JCR session", e);
+			error = true;
+			throw new ContentRepositoryNotAvailableException();
+		} finally {
+			if (!error) {
+				initCount++;
+				log.info("{} |ACTION: -createJCRSession | INIT COUNT: {}", this, initCount);
+			} else {
+				log.error("{} | ACTION: -createJCRSession FAILED!", this.getClass());
+			}
+		}
+	}
+
+	private static SimpleCredentials getAdminCredentials() {
+		return new SimpleCredentials(CmsConstants.USER_ADMIN, "admin".toCharArray());
 	}
 
 	@Override

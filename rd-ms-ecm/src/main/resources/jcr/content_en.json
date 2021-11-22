@@ -1,0 +1,36 @@
+[
+  {
+    "viewId": "contact",
+    "contentType": "html",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "Contact",
+    "htmlContent": "For any information please contact us through the email <a href=mailto:m.weiland@radien.io> m.weiland@radien.io</a>",
+    "image": "logo.png",
+    "tags": [
+      "Radien"
+    ]
+  },
+
+  {
+    "viewId": "testDoc",
+    "contentType": "document",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "Test Document for Terms and Conditions",
+    "image": "logo.png",
+    "parentPath": "/radien/rd_documents/legal_documents",
+    "file": "legal_documents/dpp-en.html",
+    "versionable": "true",
+    "updateOnLaunch": "false",
+    "versionComment": "Initial EN Version",
+    "validDate": "2020-07-28",
+    "externalPublic": "true",
+    "version": "2.1.0",
+    "tags": [
+      "Cloud radien"
+    ]
+  }
+]

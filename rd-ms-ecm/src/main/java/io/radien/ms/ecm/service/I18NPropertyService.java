@@ -22,7 +22,7 @@ import io.radien.ms.ecm.client.entities.Translation;
 import io.radien.ms.ecm.entities.I18NPropertyEntity;
 import io.radien.ms.ecm.client.services.SystemI18NPropertyService;
 import io.radien.ms.ecm.util.I18NPropertyEntityMapper;
-import io.radien.ms.ecm.util.ResourceBundleLoader;
+import io.radien.ms.ecm.domain.ResourceBundleLoader;
 import org.jnosql.artemis.document.DocumentTemplate;
 import org.jnosql.diana.api.document.DocumentQuery;
 
@@ -69,9 +69,7 @@ public class I18NPropertyService implements SystemI18NPropertyService {
      */
     @Override
     public I18NProperty save(I18NProperty property) {
-        I18NPropertyEntity entity = I18NPropertyEntityMapper.mapToEntity(property);
-        entity = documentTemplate.insert(entity);
-        return I18NPropertyEntityMapper.mapToDTO(entity);
+        return saveOrUpdate(property);
     }
 
     /**
@@ -140,6 +138,16 @@ public class I18NPropertyService implements SystemI18NPropertyService {
         ResourceBundleLoader loader = new ResourceBundleLoader(availableLanguages, defaultLanguage);
 
         saveOrUpdate(loader.getAllProperties());
+    }
+
+    private I18NProperty saveOrUpdate(I18NProperty property) {
+        I18NPropertyEntity entity = I18NPropertyEntityMapper.mapToEntity(property);
+        if(getByKey(property.getKey()) != null) {
+            documentTemplate.update(entity);
+        } else {
+            documentTemplate.insert(entity);
+        }
+        return I18NPropertyEntityMapper.mapToDTO(entity);
     }
 
     /**
