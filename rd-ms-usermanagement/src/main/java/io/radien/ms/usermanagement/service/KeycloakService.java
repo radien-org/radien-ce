@@ -17,6 +17,8 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.SystemProperties;
 import io.radien.api.model.user.SystemUser;
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.UserChangeCredentialException;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.api.KeycloakConfigs;
 import org.eclipse.microprofile.config.Config;
@@ -160,4 +162,22 @@ public class KeycloakService {
         return config.getValue(cfg.propKey(),String.class);
     }
 
+    /**
+     * Performs the logic regarding changing password process.
+     * First, Validates the combination of username and password. In case of success, call api method to change
+     * the user password.
+     * @param username user logon
+     * @param subject user identifier from the perspective of KeyCloak
+     * @param password user password
+     * @param newPassword new password value to be defined
+     * @throws UserChangeCredentialException thrown in case of invalid credentials
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
+     */
+    public void validateChangeCredentials(String username, String subject, String password, String newPassword) throws UserChangeCredentialException, RemoteResourceException {
+        KeycloakClient client = getKeycloakClient();
+        if (!client.validateCredentials(username, password)) {
+            throw new UserChangeCredentialException(GenericErrorCodeMessage.ERROR_INVALID_CREDENTIALS.toString());
+        }
+        client.changePassword(subject, newPassword);
+    }
 }

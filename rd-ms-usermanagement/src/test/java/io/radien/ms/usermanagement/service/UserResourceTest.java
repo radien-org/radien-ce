@@ -44,7 +44,6 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -52,7 +51,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -843,9 +841,10 @@ public class UserResourceTest {
      * Simple scenario where operation is concluded with success.
      * Expected return status: 200 (OK)
      * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
      */
     @Test
-    public void testUpdatePassword() throws UserChangeCredentialException {
+    public void testUpdatePassword() throws UserChangeCredentialException, RemoteResourceException {
         String subject = "aaa-bbb-ccc-ddd";
 
         UserPasswordChanging u = new UserPasswordChanging();
@@ -867,9 +866,10 @@ public class UserResourceTest {
      * Scenario: Changing password process not being requested by the current logged user and FOR
      * the current logged user. Expected return status: 403 (FORBIDDEN)
      * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
      */
     @Test
-    public void testUpdatePasswordNotAllowed() throws UserChangeCredentialException {
+    public void testUpdatePasswordNotAllowed() throws UserChangeCredentialException, RemoteResourceException {
         String subject = "aaa-bbb-ccc-ddd";
 
         UserPasswordChanging u = new UserPasswordChanging();
@@ -891,9 +891,10 @@ public class UserResourceTest {
      * Scenario: Some business rule not met when trying to update user password
      * Expected return status: 400 (BAD REQUEST)
      * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
      */
     @Test
-    public void testUpdatePasswordInvalidRule() throws UserChangeCredentialException {
+    public void testUpdatePasswordInvalidRule() throws UserChangeCredentialException, RemoteResourceException {
         String subject = "aaa-bbb-ccc-ddd";
 
         UserPasswordChanging u = new UserPasswordChanging();
@@ -915,9 +916,10 @@ public class UserResourceTest {
      * Scenario: Unexpected error when changing password.
      * Expected return status: 500 (SERVER ERROR)
      * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
      */
     @Test
-    public void testUpdatePasswordUnexpectedError() throws UserChangeCredentialException {
+    public void testUpdatePasswordUnexpectedError() throws UserChangeCredentialException, RemoteResourceException {
         String subject = "aaa-bbb-ccc-ddd";
 
         UserPasswordChanging u = new UserPasswordChanging();

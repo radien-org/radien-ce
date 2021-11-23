@@ -21,8 +21,10 @@ import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserChangeCredentialException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
@@ -39,6 +41,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static io.radien.api.SystemVariables.CONFIRM_NEW_PASSWORD;
+import static io.radien.api.SystemVariables.LOGON;
+import static io.radien.api.SystemVariables.NEW_PASSWORD;
+import static io.radien.api.SystemVariables.OLD_PASSWORD;
+import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARAMETER;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -618,4 +628,96 @@ public class UserBusinessServiceTest {
         Assert.assertTrue(success3);
     }
 
+    /**
+     * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
+     * Scenario: Logon not informed
+     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
+     */
+    @Test
+    public void testChangePassword() throws UserChangeCredentialException, RemoteResourceException {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setLogin("test.test");
+        u.setOldPassword("test");
+        u.setNewPassword("test1");
+        u.setConfirmNewPassword("test1");
+        String subject = "12345";
+        doNothing().when(keycloakService).validateChangeCredentials(u.getLogin(), subject,
+                u.getOldPassword(), u.getNewPassword());
+        try {
+            userBusinessService.changePassword(subject, u);
+        } catch (UserChangeCredentialException | RemoteResourceException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
+     * Scenario: Logon not informed
+     */
+    @Test
+    public void testChangePasswordLoginEmpty() {
+        UserPasswordChanging u = new UserPasswordChanging();
+        UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
+                ()->userBusinessService.changePassword("12345", u));
+        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(LOGON.getLabel()), e.getMessage());
+    }
+
+    /**
+     * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
+     * Scenario: Old password not informed
+     */
+    @Test
+    public void testChangePasswordOldPasswordEmpty() {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setLogin("test.test");
+        UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
+                ()->userBusinessService.changePassword("12345", u));
+        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(OLD_PASSWORD.getLabel()), e.getMessage());
+    }
+
+    /**
+     * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
+     * Scenario: New password not informed
+     */
+    @Test
+    public void testChangePasswordNewPasswordEmpty() {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setLogin("test.test");
+        u.setOldPassword("test");
+        UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
+                ()->userBusinessService.changePassword("12345", u));
+        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(NEW_PASSWORD.getLabel()), e.getMessage());
+    }
+
+    /**
+     * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
+     * Scenario: Confirmation password not informed
+     */
+    @Test
+    public void testChangePasswordConfirmNewPasswordEmpty() {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setLogin("test.test");
+        u.setOldPassword("test");
+        u.setNewPassword("test");
+        UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
+                ()->userBusinessService.changePassword("12345", u));
+        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(CONFIRM_NEW_PASSWORD.getLabel()), e.getMessage());
+    }
+
+    /**
+     * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
+     * Scenario: New password and confirmation password do not matching
+     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
+     */
+    @Test
+    public void testChangePasswordWithInconsistentValues() throws UserChangeCredentialException, RemoteResourceException {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setNewPassword("test");
+        u.setConfirmNewPassword("test1");
+        UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
+                ()->userBusinessService.changePassword("12345", u));
+        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(CONFIRM_NEW_PASSWORD.getLabel()), e.getMessage());
+    }
 }

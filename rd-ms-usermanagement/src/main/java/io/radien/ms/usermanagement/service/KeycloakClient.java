@@ -20,11 +20,15 @@ import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 
 
 import io.radien.ms.usermanagement.config.KeycloakEmailActions;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
 
+import kong.unirest.UnirestParsingException;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import org.slf4j.Logger;
@@ -183,6 +187,65 @@ public class KeycloakClient {
         } else {
             //TODO: improve Error handling
             throw new RemoteResourceException("Error on login");
+        }
+    }
+
+    /**
+     * Validate credentials against KeyCloak
+     * @param username user logon
+     * @param password user pass
+     * @return true if the combination matches, otherwise return false
+     */
+    public boolean validateCredentials(String username, String password) {
+        String url = this.idpUrl + this.radienTokenPath;
+        String clientId = this.radienClientId;
+        String clientSecret = this.radienSecret;
+        HttpResponse<HashMap> response = Unirest.post(url)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .field("client_id", clientId)
+                .field("client_secret",clientSecret)
+                .field("grant_type", "password")
+                .field("username", username)
+                .field("password", password)
+                .asObject(HashMap.class);
+        if (response.isSuccess()) {
+            return true;
+        }
+        Optional<UnirestParsingException> parsingError = response.getParsingError();
+        if (parsingError.isPresent()) {
+            log.error("Message: {}", parsingError.get().getMessage());
+        } else {
+            if (response.getBody() != null) {
+                log.error(response.getBody().toString());
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Change user password on keycloak
+     * @param subject User identifier on KeyCloak
+     * @param newPassword New password value
+     * @throws RemoteResourceException in case of any issue regarding KeyCloak communication
+     */
+    public void changePassword(String subject, String newPassword) throws RemoteResourceException {
+        String url = this.idpUrl + this.userPath + subject + "/reset-password";
+
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("value", newPassword);
+        builder.add("type", "password");
+
+        JsonObject body = builder.build();
+
+        HttpResponse<String> response = Unirest.post(url)
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body(body)
+                .asObject(String.class);
+
+        if (!response.isSuccess()) {
+            throw new RemoteResourceException(GenericErrorCodeMessage.ERROR_CHANGE_PASSWORD.
+                    toString(response.getStatusText(), response.getBody()));
         }
     }
 
