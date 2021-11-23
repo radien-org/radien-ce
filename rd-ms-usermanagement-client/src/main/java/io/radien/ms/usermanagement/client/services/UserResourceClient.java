@@ -185,6 +185,7 @@ public interface UserResourceClient {
      * @return OK if changing process is concluded with success. Status 400 in case of any
      * business logic inconsistency found. Return error 500 in case of technical issues
      */
+    @PATCH
     @Path("/{sub}/passCredential")
     Response updatePassword(@PathParam("sub") String sub, UserPasswordChanging change);
 }
