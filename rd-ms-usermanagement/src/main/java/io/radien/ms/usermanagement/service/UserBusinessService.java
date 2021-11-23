@@ -21,8 +21,10 @@ import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserChangeCredentialException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 
 import javax.ejb.Stateless;
@@ -207,4 +209,13 @@ public class UserBusinessService implements Serializable {
 		return keycloakService.refreshToken(refreshToken);
 	}
 
+	/**
+	 * Perform business logic for changing password process
+	 * @param subject user identifier from the perspective of Identity provider (keycloak)
+	 * @param changing contains information necessary to perform password changing
+	 * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+	 */
+	public void changePassword(String subject, UserPasswordChanging changing) throws UserChangeCredentialException {
+
+	}
 }

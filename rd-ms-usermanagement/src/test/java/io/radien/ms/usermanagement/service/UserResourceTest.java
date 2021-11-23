@@ -22,11 +22,13 @@ import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserChangeCredentialException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.authz.client.PermissionClient;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +49,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -832,5 +836,101 @@ public class UserResourceTest {
         when(servletRequest.getSession(false)).thenReturn(session);
         when(session.getAttribute("USER")).thenReturn(principal);
         doReturn(1001L).when(this.userBusinessService).getUserId(principal.getSub());
+    }
+
+    /**
+     * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
+     * Simple scenario where operation is concluded with success.
+     * Expected return status: 200 (OK)
+     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     */
+    @Test
+    public void testUpdatePassword() throws UserChangeCredentialException {
+        String subject = "aaa-bbb-ccc-ddd";
+
+        UserPasswordChanging u = new UserPasswordChanging();
+        Principal principal = new Principal();
+        principal.setSub(subject);
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doNothing().when(userBusinessService).changePassword(subject, u);
+        assertEquals(200, userResource.updatePassword(subject, u).getStatus());
+    }
+
+    /**
+     * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
+     * Scenario: Changing password process not being requested by the current logged user and FOR
+     * the current logged user. Expected return status: 403 (FORBIDDEN)
+     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     */
+    @Test
+    public void testUpdatePasswordNotAllowed() throws UserChangeCredentialException {
+        String subject = "aaa-bbb-ccc-ddd";
+
+        UserPasswordChanging u = new UserPasswordChanging();
+        Principal principal = new Principal();
+        principal.setSub("1");
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doNothing().when(userBusinessService).changePassword(subject, u);
+        assertEquals(403, userResource.updatePassword(subject, u).getStatus());
+    }
+
+    /**
+     * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
+     * Scenario: Some business rule not met when trying to update user password
+     * Expected return status: 400 (BAD REQUEST)
+     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     */
+    @Test
+    public void testUpdatePasswordInvalidRule() throws UserChangeCredentialException {
+        String subject = "aaa-bbb-ccc-ddd";
+
+        UserPasswordChanging u = new UserPasswordChanging();
+        Principal principal = new Principal();
+        principal.setSub(subject);
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doThrow(new UserChangeCredentialException("test")).when(userBusinessService).changePassword(subject, u);
+        assertEquals(400, userResource.updatePassword(subject, u).getStatus());
+    }
+
+    /**
+     * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
+     * Scenario: Unexpected error when changing password.
+     * Expected return status: 500 (SERVER ERROR)
+     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+     */
+    @Test
+    public void testUpdatePasswordUnexpectedError() throws UserChangeCredentialException {
+        String subject = "aaa-bbb-ccc-ddd";
+
+        UserPasswordChanging u = new UserPasswordChanging();
+        Principal principal = new Principal();
+        principal.setSub(subject);
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+        doThrow(new RuntimeException("test")).when(userBusinessService).changePassword(subject, u);
+        assertEquals(500, userResource.updatePassword(subject, u).getStatus());
     }
 }
