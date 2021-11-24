@@ -224,19 +224,19 @@ public class UserBusinessService implements Serializable {
 	 * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
 	 */
 	public void changePassword(String subject, UserPasswordChanging change) throws UserChangeCredentialException, RemoteResourceException {
-		if (change.getLogin() == null || change.getLogin().length() == 0) {
+		if (change.getLogin() == null || change.getLogin().isEmpty()) {
 			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
 					toString(LOGON.getLabel()));
 		}
-		if (change.getOldPassword() == null || change.getOldPassword().length() == 0) {
+		if (change.getOldPassword() == null || change.getOldPassword().isEmpty()) {
 			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
 					toString(OLD_PASSWORD.getLabel()));
 		}
-		if (change.getNewPassword() == null || change.getNewPassword().length() == 0) {
+		if (change.getNewPassword() == null || change.getNewPassword().isEmpty()) {
 			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
 					toString(NEW_PASSWORD.getLabel()));
 		}
-		if (change.getConfirmNewPassword() == null || change.getConfirmNewPassword().length() == 0) {
+		if (change.getConfirmNewPassword() == null || change.getConfirmNewPassword().isEmpty()) {
 			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
 					toString(CONFIRM_NEW_PASSWORD.getLabel()));
 		}

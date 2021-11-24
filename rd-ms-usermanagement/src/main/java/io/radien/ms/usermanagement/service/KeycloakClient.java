@@ -213,11 +213,10 @@ public class KeycloakClient {
         }
         Optional<UnirestParsingException> parsingError = response.getParsingError();
         if (parsingError.isPresent()) {
-            log.error("Message: {}", parsingError.get().getMessage());
-        } else {
-            if (response.getBody() != null) {
-                log.error(response.getBody().toString());
-            }
+            log.error("Error Message: {}", parsingError.get().getMessage());
+        }
+        if (response.getBody() != null) {
+            log.error("Error body {}", response.getBody());
         }
         return false;
     }
@@ -234,10 +233,9 @@ public class KeycloakClient {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("value", newPassword);
         builder.add("type", "password");
+        String body = builder.build().toString();
 
-        JsonObject body = builder.build();
-
-        HttpResponse<String> response = Unirest.post(url)
+        HttpResponse<String> response = Unirest.put(url)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .body(body)

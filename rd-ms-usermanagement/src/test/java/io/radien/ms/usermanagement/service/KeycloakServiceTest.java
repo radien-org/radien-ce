@@ -15,138 +15,115 @@
  */
 package io.radien.ms.usermanagement.service;
 
-import static org.mockito.ArgumentMatchers.*;
-
 import io.radien.api.model.user.SystemUser;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UserChangeCredentialException;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
+import java.util.Optional;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(fullyQualifiedNames = "io.radien.ms.usermanagement.service.KeycloakService")
 public class KeycloakServiceTest extends TestCase {
+
+    @InjectMocks
     KeycloakService target;
 
+    @Mock
     KeycloakClient client;
+
+    @Mock
+    KeycloakClientFactory keycloakClientFactory;
+
+    static String EMPTY_MOCK_RESPONSE = "";
 
     @Before
     public void setUp() throws Exception {
-        target = spy(new KeycloakService());
-        client = spy(new KeycloakClient());
+        MockitoAnnotations.initMocks(this);
+        when(keycloakClientFactory.getKeycloakClient()).thenReturn(client);
     }
 
     @Test
     public void testCreateUser() throws Exception {
-        String createResponse = PowerMockito.mock(String.class);
-        doReturn(client).when(target,"getKeycloakClient");
-        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
-
+        doReturn(EMPTY_MOCK_RESPONSE).when(client).createUser(any());
         doNothing().when(client).refreshToken();
         doNothing().when(client).sendUpdatePasswordEmail(any());
-
         String firstName = "a";
         UserEntity u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
         String sub = target.createUser(u);
-
         assertEquals("", sub);
     }
 
     @Test
     public void testCreateUserException() throws Exception {
-        String createResponse = PowerMockito.mock(String.class);
-        doReturn(client).when(target,"getKeycloakClient");
-        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
-
+        doReturn(EMPTY_MOCK_RESPONSE).when(client).createUser(any());
         doNothing().when(client).refreshToken();
         doThrow(new RemoteResourceException()).when(client).sendUpdatePasswordEmail(any());
         doNothing().when(client).deleteUser(any());
 
         String firstName = "a";
         UserEntity u = UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L);
-
         boolean success = false;
-
         try{
             target.createUser(u);
         }catch (Exception e) {
             success = true;
         }
-
         assertTrue(success);
     }
 
     @Test
     public void testUpdateUser() throws Exception {
-        String createResponse = PowerMockito.mock(String.class);
-        doReturn(client).when(target,"getKeycloakClient");
-        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
-
+        doReturn(EMPTY_MOCK_RESPONSE).when(client).createUser(any());
         SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
-
         doNothing().when(client).updateUser(any(), any());
         boolean success = true;
-
         try{
             target.updateUser(u);
         }catch (Exception e) {
             success = false;
         }
-
         assertTrue(success);
     }
 
     @Test
     public void testSendUpdatePasswordEmail() throws Exception {
-        String createResponse = PowerMockito.mock(String.class);
-        doReturn(client).when(target,"getKeycloakClient");
-        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
-
+        doReturn(EMPTY_MOCK_RESPONSE).when(client).createUser(any());
         SystemUser u = UserFactory.create("firstname", "", "a4", "teste","a@b.pt", 0L);
-
         doNothing().when(client).sendUpdatePasswordEmail(any());
         boolean success = true;
-
         try{
             target.sendUpdatePasswordEmail(u);
         }catch (Exception e) {
             success = false;
         }
-
         assertTrue(success);
     }
 
     @Test
     public void testRefreshToken() throws Exception {
-        String createResponse = PowerMockito.mock(String.class);
-        doReturn(client).when(target,"getKeycloakClient");
-        doReturn(createResponse).when(client,"createUser", ArgumentMatchers.any());
-
-        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
-
-        doReturn("teste").when(client).refreshToken(any());
-
+        doReturn(EMPTY_MOCK_RESPONSE).when(client).refreshToken(any());
         String refreshToken = target.refreshToken("test");
-
-        assertEquals("teste", refreshToken);
+        assertEquals(EMPTY_MOCK_RESPONSE, refreshToken);
     }
 
     @Test
     public void testDeleteUser() throws Exception {
-        doReturn(client).when(target,"getKeycloakClient");
-        doNothing().when(client,"deleteUser", ArgumentMatchers.any());
-
+        doNothing().when(client).deleteUser(any());
         boolean success = true;
         try {
             target.deleteUser("");
@@ -170,7 +147,6 @@ public class KeycloakServiceTest extends TestCase {
         String newPassword = "test2";
         doReturn(Boolean.TRUE).when(client).validateCredentials(username, password);
         doNothing().when(client).changePassword(subject, newPassword);
-        doReturn(client).when(target,"getKeycloakClient");
         try {
             target.validateChangeCredentials(username, subject, password, newPassword);
         }
@@ -192,7 +168,6 @@ public class KeycloakServiceTest extends TestCase {
         String password = "test";
         String newPassword = "test2";
         doReturn(Boolean.FALSE).when(client).validateCredentials(username, password);
-        doReturn(client).when(target,"getKeycloakClient");
         target.validateChangeCredentials(username, subject, password, newPassword);
     }
 
@@ -210,29 +185,44 @@ public class KeycloakServiceTest extends TestCase {
         String password = "test";
         String newPassword = "test2";
         doReturn(Boolean.TRUE).when(client).validateCredentials(username, password);
-        doReturn(client).when(target,"getKeycloakClient");
         doThrow(new RemoteResourceException("error")).when(client).changePassword(subject, newPassword);
         target.validateChangeCredentials(username, subject, password, newPassword);
     }
 
-/*
-//    /**
-//     * Performs the logic regarding changing password process.
-//     * First, Validates the combination of username and password. In case of success, call api method to change
-//     * the user password.
-//     * @param username user logon
-//     * @param subject user identifier from the perspective of KeyCloak
-//     * @param password user password
-//     * @param newPassword new password value to be defined
-//     * @throws UserChangeCredentialException thrown in case of invalid credentials
-//     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
-//     */
-//public void validateChangeCredentials(String username, String subject, String password, String newPassword) throws UserChangeCredentialException, RemoteResourceException {
-//    KeycloakClient client = getKeycloakClient();
-//    if (!client.validateCredentials(username, password)) {
-//        throw new UserChangeCredentialException(GenericErrorCodeMessage.ERROR_INVALID_CREDENTIALS.toString());
-//    }
-//    client.changePassword(subject, newPassword);
-//}
-//*/
+    /**
+     * Test for method {@link KeycloakService#updateEmailAndExecuteActionEmailVerify(String, String, boolean)}
+     * @throws RemoteResourceException thrown in case of any communication issue with KeyCloak
+     */
+    @Test
+    public void testUpdateEmailAndExecuteActionEmailVerify() throws RemoteResourceException {
+        String email = "test.test@test.com";
+        String sub = "111-22-2222-eeee";
+        boolean emailVerify = true;
+        doNothing().when(client).updateEmailAndExecuteActionEmailVerify(argThat(sub::equals),
+                argThat(ur -> ur.getEmail().equals(email) && ur.isEmailVerified() == emailVerify));
+        doNothing().when(client).sendUpdatedEmailToVerify(sub);
+        try {
+            target.updateEmailAndExecuteActionEmailVerify(email, sub, emailVerify);
+        } catch (RemoteResourceException r) {
+            fail();
+        }
+    }
+
+    /**
+     * Test for method {@link KeycloakService#getSubFromEmail(String)}
+     * @throws RemoteResourceException thrown in case of any communication issue with KeyCloak
+     */
+    @Test
+    public void testGetSubFromEmail() throws RemoteResourceException{
+        String email = "test.test@test.com";
+        String sub = "aaa-bbb-ccc-ddd";
+        doReturn(Optional.of(sub)).when(client).getSubFromEmail(email);
+        try {
+            target.getSubFromEmail(email);
+        } catch (RemoteResourceException r) {
+            fail();
+        }
+    }
+
+
 }
