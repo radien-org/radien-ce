@@ -49,7 +49,6 @@ public class KeycloakClientFactory {
         KeycloakClient client = new KeycloakClient()
                 .clientId(clientId)
                 .clientSecret(getProperty(KeycloakConfigs.ADMIN_CLIENT_SECRET))
-                //TODO : ADD missing configurations
                 .idpUrl(idpUrl)
                 .tokenPath(tokenPath)
                 .userPath(userPath)
