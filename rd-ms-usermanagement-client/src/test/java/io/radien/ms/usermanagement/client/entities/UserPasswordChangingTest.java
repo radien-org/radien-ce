@@ -37,7 +37,6 @@ public class UserPasswordChangingTest {
         assertNull(u.getLogin());
         assertNull(u.getOldPassword());
         assertNull(u.getNewPassword());
-        assertNull(u.getConfirmNewPassword());
     }
 
     /**
@@ -61,18 +60,6 @@ public class UserPasswordChangingTest {
         String newPass = "test";
         u.setNewPassword(newPass);
         assertEquals(newPass, u.getNewPassword());
-    }
-
-
-    /**
-     * Test for setter {@link UserPasswordChanging#setConfirmNewPassword(String)}
-     */
-    @Test
-    public void testSettingConfirmNewPassword() {
-        UserPasswordChanging u = new UserPasswordChanging();
-        String confirmNewPass = "test";
-        u.setConfirmNewPassword(confirmNewPass);
-        assertEquals(confirmNewPass, u.getConfirmNewPassword());
     }
 
     /**

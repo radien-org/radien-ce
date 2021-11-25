@@ -27,7 +27,6 @@ public class UserPasswordChanging implements Serializable {
     private String login;
     private String oldPassword;
     private String newPassword;
-    private String confirmNewPassword;
 
     /**
      * Default constructor
@@ -82,20 +81,4 @@ public class UserPasswordChanging implements Serializable {
         this.newPassword = newPassword;
     }
 
-
-    /**
-     * Getter for confirm new password property
-     * @return String that represents confirm new password property
-     */
-    public String getConfirmNewPassword() {
-        return confirmNewPassword;
-    }
-
-    /**
-     * Setter for confirm new password property
-     * @param confirmNewPassword String that represents confirm new password property
-     */
-    public void setConfirmNewPassword(String confirmNewPassword) {
-        this.confirmNewPassword = confirmNewPassword;
-    }
 }

@@ -236,13 +236,6 @@ public class UserBusinessService implements Serializable {
 			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
 					toString(NEW_PASSWORD.getLabel()));
 		}
-		if (change.getConfirmNewPassword() == null || change.getConfirmNewPassword().isEmpty()) {
-			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
-					toString(CONFIRM_NEW_PASSWORD.getLabel()));
-		}
-		if (!change.getNewPassword().equals(change.getConfirmNewPassword())) {
-			throw new UserChangeCredentialException(GenericErrorCodeMessage.USER_CHANGE_PASS_INCONSISTENT_VALUES.toString());
-		}
 		keycloakService.validateChangeCredentials(change.getLogin(), subject,
 				change.getOldPassword(), change.getNewPassword());
 	}

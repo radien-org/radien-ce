@@ -640,7 +640,6 @@ public class UserBusinessServiceTest {
         u.setLogin("test.test");
         u.setOldPassword("test");
         u.setNewPassword("test1");
-        u.setConfirmNewPassword("test1");
         String subject = "12345";
         doNothing().when(keycloakService).validateChangeCredentials(u.getLogin(), subject,
                 u.getOldPassword(), u.getNewPassword());
@@ -692,21 +691,6 @@ public class UserBusinessServiceTest {
 
     /**
      * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
-     * Scenario: Confirmation password not informed
-     */
-    @Test
-    public void testChangePasswordConfirmNewPasswordEmpty() {
-        UserPasswordChanging u = new UserPasswordChanging();
-        u.setLogin("test.test");
-        u.setOldPassword("test");
-        u.setNewPassword("test");
-        UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
-                ()->userBusinessService.changePassword("12345", u));
-        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(CONFIRM_NEW_PASSWORD.getLabel()), e.getMessage());
-    }
-
-    /**
-     * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
      * Scenario: New password and confirmation password do not matching
      * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
      * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
@@ -715,7 +699,6 @@ public class UserBusinessServiceTest {
     public void testChangePasswordWithInconsistentValues() throws UserChangeCredentialException, RemoteResourceException {
         UserPasswordChanging u = new UserPasswordChanging();
         u.setNewPassword("test");
-        u.setConfirmNewPassword("test1");
         UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
                 ()->userBusinessService.changePassword("12345", u));
         assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(CONFIRM_NEW_PASSWORD.getLabel()), e.getMessage());
