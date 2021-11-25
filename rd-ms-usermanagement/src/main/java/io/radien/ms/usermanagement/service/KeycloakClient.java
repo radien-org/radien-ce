@@ -20,9 +20,6 @@ import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 
 
 import io.radien.ms.usermanagement.config.KeycloakEmailActions;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -53,6 +50,10 @@ public class KeycloakClient {
     private static final String REFRESH_TOKEN="refresh_token";
     private static final String CLIENT_ID="client_id";
     private static final String GRANT_TYPE="grant_type";
+    private static final String CLIENT_SECRET="client_secret";
+    private static final String PASSWORD = "password";
+    private static final String USERNAME = "username";
+    private static final String JSON_BODY_AS_STRING = "{\"value\": \"%s\",\"type\": \"password\"}";
     private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
 
     private HashMap<String, String> result;
@@ -179,7 +180,7 @@ public class KeycloakClient {
                 .field(CLIENT_ID, clientId)
                 //.field("redirect_uri", "https://localhost:8443/web/login")
                 .field(GRANT_TYPE, "client_credentials")
-                .field("client_secret", clientSecret)
+                .field(CLIENT_SECRET, clientSecret)
                 .asObject(HashMap.class);
         if (response.isSuccess()) {
             result = (HashMap<String, String>) response.getBody();
@@ -198,23 +199,22 @@ public class KeycloakClient {
      */
     public boolean validateCredentials(String username, String password) {
         String url = this.idpUrl + this.radienTokenPath;
-        String clientId = this.radienClientId;
-        String clientSecret = this.radienSecret;
-        HttpResponse<HashMap> response = Unirest.post(url)
+        String clientIdValue = this.radienClientId;
+        String clientSecretValue = this.radienSecret;
+        HttpResponse<?> response = Unirest.post(url)
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .field("client_id", clientId)
-                .field("client_secret",clientSecret)
-                .field("grant_type", "password")
-                .field("username", username)
-                .field("password", password)
+                .field(CLIENT_ID, clientIdValue)
+                .field(CLIENT_SECRET,clientSecretValue)
+                .field(GRANT_TYPE, PASSWORD)
+                .field(USERNAME, username)
+                .field(PASSWORD, password)
                 .asObject(HashMap.class);
         if (response.isSuccess()) {
             return true;
         }
+
         Optional<UnirestParsingException> parsingError = response.getParsingError();
-        if (parsingError.isPresent()) {
-            log.error("Error Message: {}", parsingError.get().getMessage());
-        }
+        parsingError.ifPresent(e -> log.error("Error Message: {}", e.getMessage()));
         if (response.getBody() != null) {
             log.error("Error body {}", response.getBody());
         }
@@ -229,11 +229,7 @@ public class KeycloakClient {
      */
     public void changePassword(String subject, String newPassword) throws RemoteResourceException {
         String url = this.idpUrl + this.userPath + subject + "/reset-password";
-
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        builder.add("value", newPassword);
-        builder.add("type", "password");
-        String body = builder.build().toString();
+        String body = String.format(JSON_BODY_AS_STRING, newPassword);
 
         HttpResponse<String> response = Unirest.put(url)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
@@ -348,7 +344,7 @@ public class KeycloakClient {
         HttpResponse<?> response = Unirest.post(idpUrl + radienTokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, radienClientId)
-                .field("client_secret", radienSecret)
+                .field(CLIENT_SECRET, radienSecret)
                 .field(GRANT_TYPE, REFRESH_TOKEN)
                 .field(REFRESH_TOKEN, refreshToken)
                 .asObject(HashMap.class);

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 public class KeycloakService {
-    protected static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
+    protected static final Logger log = LoggerFactory.getLogger(KeycloakService.class);
 
     @Inject
     private KeycloakClientFactory keycloakClientFactory;
