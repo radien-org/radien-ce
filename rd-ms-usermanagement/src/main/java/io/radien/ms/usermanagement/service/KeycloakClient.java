@@ -228,7 +228,7 @@ public class KeycloakClient {
      * @throws RemoteResourceException in case of any issue regarding KeyCloak communication
      */
     public void changePassword(String subject, String newPassword) throws RemoteResourceException {
-        String url = this.idpUrl + this.userPath + subject + "/reset-password";
+        String url = this.idpUrl + this.userPath + "/" + subject + "/reset-password";
         String body = String.format(JSON_BODY_AS_STRING, newPassword);
 
         HttpResponse<String> response = Unirest.put(url)

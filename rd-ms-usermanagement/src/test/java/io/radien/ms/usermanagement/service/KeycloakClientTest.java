@@ -537,11 +537,11 @@ public class KeycloakClientTest {
     @Test
     public void testChangePassword() {
         String idpUrl = "http://test.net";
-        String rdUserPath = "/test/";
+        String rdUserPath = "/test";
         String subject = "aaa-bbb-ccc-ddd-eee";
         String newPassword = "test";
         String accessToken = "1237474848448";
-        String endpointUrl = idpUrl + rdUserPath + subject + "/reset-password";
+        String endpointUrl = idpUrl + rdUserPath + "/" + subject + "/reset-password";
 
         String authorizationHeaderValue = "Bearer " + accessToken;
         HashMap<String, String> resultAuth = new HashMap<>();
@@ -580,11 +580,11 @@ public class KeycloakClientTest {
     @Test(expected = RemoteResourceException.class)
     public void testChangePasswordFail() throws RemoteResourceException {
         String idpUrl = "http://test.net";
-        String rdUserPath = "/test/";
+        String rdUserPath = "/test";
         String subject = "aaa-bbb-ccc-ddd-eee";
         String newPassword = "test";
         String accessToken = "1237474848448";
-        String endpointUrl = idpUrl + rdUserPath + subject + "/reset-password";
+        String endpointUrl = idpUrl + rdUserPath + "/" + subject + "/reset-password";
 
         String authorizationHeaderValue = "Bearer " + accessToken;
         HashMap<String, String> resultAuth = new HashMap<>();

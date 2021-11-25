@@ -16,12 +16,6 @@
 package io.radien.ms.usermanagement.client.entities;
 
 import java.io.Serializable;
-import org.apache.commons.codec.binary.Base64;
-
-import static io.radien.api.SystemVariables.CONFIRM_NEW_PASSWORD;
-import static io.radien.api.SystemVariables.NEW_PASSWORD;
-import static io.radien.api.SystemVariables.OLD_PASSWORD;
-import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARAMETER;
 
 /**
  * Pojo bean encapsulating information regarding password changing
@@ -61,10 +55,7 @@ public class UserPasswordChanging implements Serializable {
      * @return String that represents old password property
      */
     public String getOldPassword() {
-        if (oldPassword != null) {
-            return new String(Base64.decodeBase64(oldPassword));
-        }
-        return null;
+        return oldPassword;
     }
 
     /**
@@ -72,11 +63,7 @@ public class UserPasswordChanging implements Serializable {
      * @param oldPassword String that represents old password property
      */
     public void setOldPassword(String oldPassword) {
-        if (oldPassword == null) {
-            throw new IllegalArgumentException(INVALID_VALUE_FOR_PARAMETER.
-                    toString(OLD_PASSWORD.getLabel()));
-        }
-        this.oldPassword = Base64.encodeBase64String(oldPassword.getBytes());
+        this.oldPassword = oldPassword;
     }
 
     /**
@@ -84,10 +71,7 @@ public class UserPasswordChanging implements Serializable {
      * @return String that represents new password property
      */
     public String getNewPassword() {
-        if (newPassword != null) {
-            return new String(Base64.decodeBase64(newPassword));
-        }
-        return null;
+        return newPassword;
     }
 
     /**
@@ -95,11 +79,7 @@ public class UserPasswordChanging implements Serializable {
      * @param newPassword String that represents new password property
      */
     public void setNewPassword(String newPassword) {
-        if (newPassword == null) {
-            throw new IllegalArgumentException(INVALID_VALUE_FOR_PARAMETER.
-                    toString(NEW_PASSWORD.getLabel()));
-        }
-        this.newPassword = Base64.encodeBase64String(newPassword.getBytes());
+        this.newPassword = newPassword;
     }
 
 
@@ -108,10 +88,7 @@ public class UserPasswordChanging implements Serializable {
      * @return String that represents confirm new password property
      */
     public String getConfirmNewPassword() {
-        if (confirmNewPassword != null) {
-            return new String(Base64.decodeBase64(confirmNewPassword));
-        }
-        return null;
+        return confirmNewPassword;
     }
 
     /**
@@ -119,10 +96,6 @@ public class UserPasswordChanging implements Serializable {
      * @param confirmNewPassword String that represents confirm new password property
      */
     public void setConfirmNewPassword(String confirmNewPassword) {
-        if (confirmNewPassword == null) {
-            throw new IllegalArgumentException(INVALID_VALUE_FOR_PARAMETER.
-                    toString(CONFIRM_NEW_PASSWORD.getLabel()));
-        }
-        this.confirmNewPassword = Base64.encodeBase64String(confirmNewPassword.getBytes());
+        this.confirmNewPassword = confirmNewPassword;
     }
 }
