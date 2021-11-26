@@ -20,7 +20,6 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserChangeCredentialException;
 import io.radien.exception.UserNotFoundException;
@@ -33,7 +32,6 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
 
-import static io.radien.api.SystemVariables.CONFIRM_NEW_PASSWORD;
 import static io.radien.api.SystemVariables.LOGON;
 import static io.radien.api.SystemVariables.NEW_PASSWORD;
 import static io.radien.api.SystemVariables.OLD_PASSWORD;
