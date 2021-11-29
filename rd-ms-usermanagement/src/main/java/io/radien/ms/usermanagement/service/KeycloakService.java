@@ -15,18 +15,16 @@
  */
 package io.radien.ms.usermanagement.service;
 
-import io.radien.api.SystemProperties;
 import io.radien.api.model.user.SystemUser;
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.UserChangeCredentialException;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.api.KeycloakConfigs;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
+import java.util.Optional;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import java.util.Optional;
 
 /**
  * Keycloak request services and actions
@@ -35,33 +33,10 @@ import java.util.Optional;
  */
 @Stateless
 public class KeycloakService {
-    private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
-    /**
-     * Method to retrieve active keycloak client
-     * @return the active keycloak client session
-     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
-     */
-    private KeycloakClient getKeycloakClient() throws RemoteResourceException {
+    protected static final Logger log = LoggerFactory.getLogger(KeycloakService.class);
 
-
-        String idpUrl =getProperty(KeycloakConfigs.IDP_URL);
-        String tokenPath= getProperty(KeycloakConfigs.TOKEN_PATH);
-        String userPath = getProperty(KeycloakConfigs.USER_PATH);
-        String clientId = getProperty(KeycloakConfigs.ADMIN_CLIENT_ID);
-        log.info("Idp url:{} tokenPath:{} userPath:{} clientId:{}",idpUrl,tokenPath,userPath,clientId);
-        KeycloakClient client = new KeycloakClient()
-                .clientId(clientId)
-                .clientSecret(getProperty(KeycloakConfigs.ADMIN_CLIENT_SECRET))
-                //TODO : ADD missing configurations
-                .idpUrl(idpUrl)
-                .tokenPath(tokenPath)
-                .userPath(userPath)
-                .radienClientId(getProperty(KeycloakConfigs.RADIEN_CLIENT_ID))
-                .radienSecret(getProperty(KeycloakConfigs.RADIEN_SECRET))
-                .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH));
-        client.login();
-        return client;
-    }
+    @Inject
+    private KeycloakClientFactory keycloakClientFactory;
 
     /**
      * Request to the keycloak client to create given user
@@ -71,7 +46,7 @@ public class KeycloakService {
      */
     public String createUser(SystemUser user) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(user);
-        KeycloakClient client = getKeycloakClient();
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         userRepresentation.setEmailVerified(false);
         String sub= client.createUser(userRepresentation);
         try {
@@ -90,7 +65,7 @@ public class KeycloakService {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public void deleteUser(String sub) throws RemoteResourceException {
-        KeycloakClient client = getKeycloakClient();
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         client.deleteUser(sub);
     }
 
@@ -101,7 +76,7 @@ public class KeycloakService {
      */
     public void updateUser(SystemUser newUser) throws RemoteResourceException {
         UserRepresentation userRepresentation = KeycloakFactory.convertToUserRepresentation(newUser);
-        KeycloakClient client = getKeycloakClient();
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         client.updateUser(newUser.getSub(), userRepresentation);
     }
 
@@ -111,7 +86,7 @@ public class KeycloakService {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public void sendUpdatePasswordEmail(SystemUser user) throws RemoteResourceException{
-        KeycloakClient client = getKeycloakClient();
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         client.sendUpdatePasswordEmail(user.getSub());
     }
 
@@ -124,7 +99,7 @@ public class KeycloakService {
      */
     public void updateEmailAndExecuteActionEmailVerify(String email, String sub, boolean emailVerify) throws RemoteResourceException{
         UserRepresentation userRepresentation = KeycloakFactory.convertUpdateEmailToUserRepresentation(email, emailVerify);
-        KeycloakClient client = getKeycloakClient();
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         client.updateEmailAndExecuteActionEmailVerify(sub, userRepresentation);
         client.sendUpdatedEmailToVerify(sub);
     }
@@ -136,7 +111,7 @@ public class KeycloakService {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public String refreshToken(String refreshToken) throws RemoteResourceException {
-        KeycloakClient client = getKeycloakClient();
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         return client.refreshToken(refreshToken);
     }
 
@@ -146,18 +121,27 @@ public class KeycloakService {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public Optional<String> getSubFromEmail(String email) throws RemoteResourceException {
-        KeycloakClient client = getKeycloakClient();
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         return client.getSubFromEmail(email);
     }
 
-    /**
-     * Method to retrieve the keycloak client configuration
-     * @param cfg to be retrieved
-     * @return a string value of the keycloak property configuration
-     */
-    private String getProperty(SystemProperties cfg) {
-        Config config = ConfigProvider.getConfig();
-        return config.getValue(cfg.propKey(),String.class);
-    }
 
+    /**
+     * Performs the logic regarding changing password process.
+     * First, Validates the combination of username and password. In case of success, call api method to change
+     * the user password.
+     * @param username user logon
+     * @param subject user identifier from the perspective of KeyCloak
+     * @param password user password
+     * @param newPassword new password value to be defined
+     * @throws UserChangeCredentialException thrown in case of invalid credentials
+     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
+     */
+    public void validateChangeCredentials(String username, String subject, String password, String newPassword) throws UserChangeCredentialException, RemoteResourceException {
+        KeycloakClient client = keycloakClientFactory.getKeycloakClient();
+        if (!client.validateCredentials(username, password)) {
+            throw new UserChangeCredentialException(GenericErrorCodeMessage.ERROR_INVALID_CREDENTIALS.toString());
+        }
+        client.changePassword(subject, newPassword);
+    }
 }

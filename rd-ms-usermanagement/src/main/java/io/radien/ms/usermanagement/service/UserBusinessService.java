@@ -21,14 +21,21 @@ import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserChangeCredentialException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
+
+import static io.radien.api.SystemVariables.LOGON;
+import static io.radien.api.SystemVariables.NEW_PASSWORD;
+import static io.radien.api.SystemVariables.OLD_PASSWORD;
+import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARAMETER;
 
 /**
  * User service requests between the rest services and the db
@@ -207,4 +214,27 @@ public class UserBusinessService implements Serializable {
 		return keycloakService.refreshToken(refreshToken);
 	}
 
+	/**
+	 * Perform business logic for changing password process
+	 * @param subject user identifier from the perspective of Identity provider (keycloak)
+	 * @param change contains information necessary to perform password changing
+	 * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
+	 * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
+	 */
+	public void changePassword(String subject, UserPasswordChanging change) throws UserChangeCredentialException, RemoteResourceException {
+		if (change.getLogin() == null || change.getLogin().isEmpty()) {
+			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
+					toString(LOGON.getLabel()));
+		}
+		if (change.getOldPassword() == null || change.getOldPassword().isEmpty()) {
+			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
+					toString(OLD_PASSWORD.getLabel()));
+		}
+		if (change.getNewPassword() == null || change.getNewPassword().isEmpty()) {
+			throw new UserChangeCredentialException(INVALID_VALUE_FOR_PARAMETER.
+					toString(NEW_PASSWORD.getLabel()));
+		}
+		keycloakService.validateChangeCredentials(change.getLogin(), subject,
+				change.getOldPassword(), change.getNewPassword());
+	}
 }

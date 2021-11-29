@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
@@ -31,9 +32,12 @@ import kong.unirest.GetRequest;
 import kong.unirest.Headers;
 import kong.unirest.HttpRequestWithBody;
 import kong.unirest.HttpResponse;
+import kong.unirest.MultipartBody;
 import kong.unirest.RequestBodyEntity;
 import kong.unirest.Unirest;
 
+import kong.unirest.UnirestException;
+import kong.unirest.UnirestParsingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,11 +54,17 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 /**
  * Class that aggregates UnitTest cases for KeycloakClient
@@ -78,6 +88,7 @@ public class KeycloakClientTest {
 
     String inputBody_EmailVerify = "[\"" + KeycloakEmailActions.VERIFY_EMAIL + "\"]";
     String inputBody_UpdatePassword = "[\"" + KeycloakEmailActions.UPDATE_PASSWORD + "\"]";
+    final String jsonBodyChangePassword = "{\"value\": \"%s\",\"type\": \"password\"}";
 
     /**
      * Prepares required mock objects
@@ -432,6 +443,408 @@ public class KeycloakClientTest {
         keycloakClient.getSubFromEmail( "email@email.com" );
     }
 
+    /**
+     * Test for method {@link KeycloakClient#validateCredentials(String, String)}
+     * Scenario: validation concluded successfully concluded (Returning true)
+     */
+    @Test
+    public void testValidateCredentials() {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String rdClientId = "test";
+        String rdClientSecret = "test";
+        String username = "test";
+        String passwordValue = "test";
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "radienTokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "radienClientId", rdClientId);
+        setInternalState(this.keycloakClient, "radienSecret", rdClientSecret);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", "application/x-www-form-urlencoded")).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", rdClientId)).thenReturn(multipartBody);
+        when(multipartBody.field("client_secret", rdClientSecret)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "password")).thenReturn(multipartBody);
+        when(multipartBody.field("username", username)).thenReturn(multipartBody);
+        when(multipartBody.field("password", passwordValue)).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+
+        when(response.isSuccess()).thenReturn(Boolean.TRUE);
+        assertTrue(this.keycloakClient.validateCredentials(username, passwordValue));
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#validateCredentials(String, String)}
+     * Scenario: validation concluded successfully concluded (Returning true)
+     */
+    @Test
+    public void testValidateCredentialsFail() {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String rdClientId = "test";
+        String rdClientSecret = "test";
+        String username = "test";
+        String passwordValue = "test";
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "radienTokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "radienClientId", rdClientId);
+        setInternalState(this.keycloakClient, "radienSecret", rdClientSecret);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", "application/x-www-form-urlencoded")).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", rdClientId)).thenReturn(multipartBody);
+        when(multipartBody.field("client_secret", rdClientSecret)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "password")).thenReturn(multipartBody);
+        when(multipartBody.field("username", username)).thenReturn(multipartBody);
+        when(multipartBody.field("password", passwordValue)).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+
+        UnirestException unirestException = new UnirestException("error validating credentials: Invalid user credentials");
+        HashMap<Object, Object> hashMapError = new HashMap<>();
+        hashMapError.put("status", 401);
+        hashMapError.put("error", "invalid_grant");
+        hashMapError.put("error_description", "Invalid user credentials");
+        String bodyError = "{\"error\": \"invalid_grant\", \"error_description\": \"Invalid user credentials\"}";
+        UnirestParsingException unirestParsingException = new UnirestParsingException(bodyError, unirestException);
+
+        when(response.isSuccess()).thenReturn(Boolean.FALSE);
+        when(response.getStatus()).thenReturn(401);
+        when(response.getParsingError()).thenReturn(Optional.of(unirestParsingException));
+        when(response.getBody()).thenReturn(hashMapError);
+
+        assertFalse(this.keycloakClient.validateCredentials(username, passwordValue));
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#changePassword(String, String)}
+     */
+    @Test
+    public void testChangePassword() {
+        String idpUrl = "http://test.net";
+        String rdUserPath = "/test";
+        String subject = "aaa-bbb-ccc-ddd-eee";
+        String newPassword = "test";
+        String accessToken = "1237474848448";
+        String endpointUrl = idpUrl + rdUserPath + "/" + subject + "/reset-password";
+
+        String authorizationHeaderValue = "Bearer " + accessToken;
+        HashMap<String, String> resultAuth = new HashMap<>();
+        resultAuth.put("access_token", accessToken);
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "userPath", rdUserPath);
+        setInternalState(this.keycloakClient, "result", resultAuth);
+
+        String body = String.format(jsonBodyChangePassword, newPassword);
+
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<String> response = mock(HttpResponse.class);
+        RequestBodyEntity bodyEntity = mock(RequestBodyEntity.class);
+
+        when(Unirest.put(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header(HttpHeaders.AUTHORIZATION, authorizationHeaderValue)).thenReturn(requestWithBody);
+        when(requestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(requestWithBody);
+        when(requestWithBody.body(body)).thenReturn(bodyEntity);
+        when(bodyEntity.asObject(String.class)).thenReturn(response);
+        when(response.isSuccess()).thenReturn(Boolean.TRUE);
+
+        try {
+            this.keycloakClient.changePassword(subject, newPassword);
+        }
+        catch(RemoteResourceException r) {
+            fail();
+        }
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#changePassword(String, String)}
+     * Scenario: Change password fail
+     * @throws RemoteResourceException in case of any issue regarding communication with keycloak
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testChangePasswordFail() throws RemoteResourceException {
+        String idpUrl = "http://test.net";
+        String rdUserPath = "/test";
+        String subject = "aaa-bbb-ccc-ddd-eee";
+        String newPassword = "test";
+        String accessToken = "1237474848448";
+        String endpointUrl = idpUrl + rdUserPath + "/" + subject + "/reset-password";
+
+        String authorizationHeaderValue = "Bearer " + accessToken;
+        HashMap<String, String> resultAuth = new HashMap<>();
+        resultAuth.put("access_token", accessToken);
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "userPath", rdUserPath);
+        setInternalState(this.keycloakClient, "result", resultAuth);
+
+        String body = String.format(jsonBodyChangePassword, newPassword);
+
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<String> response = mock(HttpResponse.class);
+        RequestBodyEntity bodyEntity = mock(RequestBodyEntity.class);
+
+        when(Unirest.put(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header(HttpHeaders.AUTHORIZATION, authorizationHeaderValue)).thenReturn(requestWithBody);
+        when(requestWithBody.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)).thenReturn(requestWithBody);
+        when(requestWithBody.body(body)).thenReturn(bodyEntity);
+        when(bodyEntity.asObject(String.class)).thenReturn(response);
+        when(response.isSuccess()).thenReturn(Boolean.FALSE);
+        when(response.getStatusText()).thenReturn("500");
+        when(response.getBody()).thenReturn("error");
+        this.keycloakClient.changePassword(subject, newPassword);
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#refreshToken()}
+     */
+    @Test
+    public void testRefreshToken() {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String clientId = "test";
+        String refreshTokenValue = "12344";
+
+        Map<String, String> result = new HashMap<>();
+        result.put("refresh_token", refreshTokenValue);
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "tokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "clientId", clientId);
+        setInternalState(this.keycloakClient, "result", result);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+        HashMap<String, String> map = new HashMap<>();
+        when(response.getBody()).thenReturn(map);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED)).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", clientId)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "refresh_token")).thenReturn(multipartBody);
+        when(multipartBody.field("refresh_token", refreshTokenValue)).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+
+        when(response.isSuccess()).thenReturn(Boolean.TRUE);
+
+        try {
+            this.keycloakClient.refreshToken();
+        }
+        catch (RemoteResourceException r) {
+            fail();
+        }
+        Object outcome = getInternalState(this.keycloakClient, "result");
+        assertEquals(map, outcome);
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#refreshToken()}
+     * @throws RemoteResourceException in case of any issue regarding communication with Keycloak
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testRefreshTokenFailure() throws RemoteResourceException {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String clientId = "test";
+        String refreshTokenValue = "12344";
+
+        Map<String, String> result = new HashMap<>();
+        result.put("refresh_token", refreshTokenValue);
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "tokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "clientId", clientId);
+        setInternalState(this.keycloakClient, "result", result);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+        HashMap<String, String> map = new HashMap<>();
+        when(response.getBody()).thenReturn(map);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED)).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", clientId)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "refresh_token")).thenReturn(multipartBody);
+        when(multipartBody.field("refresh_token", refreshTokenValue)).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+
+        when(response.isSuccess()).thenReturn(Boolean.FALSE);
+        this.keycloakClient.refreshToken();
+    }
+    
+    /**
+     * Test for method {@link KeycloakClient#refreshToken(String)}
+     */
+    @Test
+    public void testParameterizedRefreshToken() {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String clientId = "test";
+        String secret = "test";
+        String refreshTokenValue = "12344";
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "radienTokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "radienClientId", clientId);
+        setInternalState(this.keycloakClient, "radienSecret", secret);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+        HashMap<String, String> map = new HashMap<>();
+        when(response.getBody()).thenReturn(map);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED)).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", clientId)).thenReturn(multipartBody);
+        when(multipartBody.field("client_secret", secret)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "refresh_token")).thenReturn(multipartBody);
+        when(multipartBody.field("refresh_token", refreshTokenValue)).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+        when(response.isSuccess()).thenReturn(Boolean.TRUE);
+        try {
+            this.keycloakClient.refreshToken(refreshTokenValue);
+        } catch (RemoteResourceException r) {
+            fail();
+        }
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#refreshToken(String)}
+     * @throws RemoteResourceException in case of any issue regarding communication with Keycloak
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testParameterizedRefreshTokenWhenFails() throws RemoteResourceException {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String clientId = "test";
+        String secret = "test";
+        String refreshTokenValue = "12344";
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "radienTokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "radienClientId", clientId);
+        setInternalState(this.keycloakClient, "radienSecret", secret);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+        HashMap<String, String> map = new HashMap<>();
+        when(response.getBody()).thenReturn(map);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED)).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", clientId)).thenReturn(multipartBody);
+        when(multipartBody.field("client_secret", secret)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "refresh_token")).thenReturn(multipartBody);
+        when(multipartBody.field("refresh_token", refreshTokenValue)).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+        when(response.isSuccess()).thenReturn(Boolean.FALSE);
+        this.keycloakClient.refreshToken(refreshTokenValue);
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#login()}
+     * @throws RemoteResourceException in case of any issue regarding communication with keycloak
+     */
+    @Test
+    public void testLogin() throws RemoteResourceException {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String clientId = "test";
+        String clientSecret = "test";
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "tokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "clientId", clientId);
+        setInternalState(this.keycloakClient, "clientSecret", clientSecret);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+        HashMap<String, String> map = new HashMap<>();
+        when(response.getBody()).thenReturn(map);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED)).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", clientId)).thenReturn(multipartBody);
+        when(multipartBody.field("client_secret", clientSecret)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "client_credentials")).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+
+        when(response.isSuccess()).thenReturn(Boolean.TRUE);
+        assertEquals(map, this.keycloakClient.login());
+    }
+
+    /**
+     * Test for method {@link KeycloakClient#login()}
+     * Scenario:
+     * @throws RemoteResourceException in case of any issue regarding communication with keycloak
+     */
+    @Test(expected = RemoteResourceException.class)
+    public void testLoginFail() throws RemoteResourceException {
+
+        String idpUrl = "http://test.net";
+        String rdTokenPath = "/test";
+        String endpointUrl = idpUrl + rdTokenPath;
+        String clientId = "test";
+        String clientSecret = "test";
+
+        setInternalState(this.keycloakClient, "idpUrl", idpUrl);
+        setInternalState(this.keycloakClient, "tokenPath", rdTokenPath);
+        setInternalState(this.keycloakClient, "clientId", clientId);
+        setInternalState(this.keycloakClient, "clientSecret", clientSecret);
+
+        MultipartBody multipartBody = mock(MultipartBody.class);
+        HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
+        HttpResponse<HashMap> response = mock(HttpResponse.class);
+        HashMap<String, String> map = new HashMap<>();
+        when(response.getBody()).thenReturn(map);
+
+        when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(requestWithBody.header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED)).
+                thenReturn(requestWithBody);
+        when(requestWithBody.field("client_id", clientId)).thenReturn(multipartBody);
+        when(multipartBody.field("client_secret", clientSecret)).thenReturn(multipartBody);
+        when(multipartBody.field("grant_type", "client_credentials")).thenReturn(multipartBody);
+        when(multipartBody.asObject(HashMap.class)).thenReturn(response);
+        when(response.isSuccess()).thenReturn(Boolean.FALSE);
+
+        keycloakClient.login();
+    }
 
     /**
      * Prepares mock objects for the invoke methods

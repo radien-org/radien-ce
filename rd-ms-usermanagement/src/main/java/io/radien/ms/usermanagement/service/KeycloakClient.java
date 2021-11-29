@@ -25,6 +25,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
 
+import kong.unirest.UnirestParsingException;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import org.slf4j.Logger;
@@ -49,6 +50,10 @@ public class KeycloakClient {
     private static final String REFRESH_TOKEN="refresh_token";
     private static final String CLIENT_ID="client_id";
     private static final String GRANT_TYPE="grant_type";
+    private static final String CLIENT_SECRET="client_secret";
+    private static final String PASSWORD = "password";
+    private static final String USERNAME = "username";
+    private static final String JSON_BODY_AS_STRING = "{\"value\": \"%s\",\"type\": \"password\"}";
     private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
 
     private HashMap<String, String> result;
@@ -175,7 +180,7 @@ public class KeycloakClient {
                 .field(CLIENT_ID, clientId)
                 //.field("redirect_uri", "https://localhost:8443/web/login")
                 .field(GRANT_TYPE, "client_credentials")
-                .field("client_secret", clientSecret)
+                .field(CLIENT_SECRET, clientSecret)
                 .asObject(HashMap.class);
         if (response.isSuccess()) {
             result = (HashMap<String, String>) response.getBody();
@@ -183,6 +188,58 @@ public class KeycloakClient {
         } else {
             //TODO: improve Error handling
             throw new RemoteResourceException("Error on login");
+        }
+    }
+
+    /**
+     * Validate credentials against KeyCloak
+     * @param username user logon
+     * @param password user pass
+     * @return true if the combination matches, otherwise return false
+     */
+    public boolean validateCredentials(String username, String password) {
+        String url = this.idpUrl + this.radienTokenPath;
+        String clientIdValue = this.radienClientId;
+        String clientSecretValue = this.radienSecret;
+        HttpResponse<?> response = Unirest.post(url)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .field(CLIENT_ID, clientIdValue)
+                .field(CLIENT_SECRET,clientSecretValue)
+                .field(GRANT_TYPE, PASSWORD)
+                .field(USERNAME, username)
+                .field(PASSWORD, password)
+                .asObject(HashMap.class);
+        if (response.isSuccess()) {
+            return true;
+        }
+
+        Optional<UnirestParsingException> parsingError = response.getParsingError();
+        parsingError.ifPresent(e -> log.error("Error Message: {}", e.getMessage()));
+        if (response.getBody() != null) {
+            log.error("Error body {}", response.getBody());
+        }
+        return false;
+    }
+
+    /**
+     * Change user password on keycloak
+     * @param subject User identifier on KeyCloak
+     * @param newPassword New password value
+     * @throws RemoteResourceException in case of any issue regarding KeyCloak communication
+     */
+    public void changePassword(String subject, String newPassword) throws RemoteResourceException {
+        String url = this.idpUrl + this.userPath + "/" + subject + "/reset-password";
+        String body = String.format(JSON_BODY_AS_STRING, newPassword);
+
+        HttpResponse<String> response = Unirest.put(url)
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body(body)
+                .asObject(String.class);
+
+        if (!response.isSuccess()) {
+            throw new RemoteResourceException(GenericErrorCodeMessage.ERROR_CHANGE_PASSWORD.
+                    toString(response.getStatusText(), response.getBody()));
         }
     }
 
@@ -287,7 +344,7 @@ public class KeycloakClient {
         HttpResponse<?> response = Unirest.post(idpUrl + radienTokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, radienClientId)
-                .field("client_secret", radienSecret)
+                .field(CLIENT_SECRET, radienSecret)
                 .field(GRANT_TYPE, REFRESH_TOKEN)
                 .field(REFRESH_TOKEN, refreshToken)
                 .asObject(HashMap.class);

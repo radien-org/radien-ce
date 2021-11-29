@@ -53,6 +53,7 @@ public enum GenericErrorCodeMessage {
     ERROR_METHOD_INTERCEPTION("G14", "error.method.interception", "Exception during method interception: %s"),
     INIT_CONNECTION_TIME_REBOOT("G15", "init.connection.time.reboot", "Connection was opened {0} since last reboot {1}"),
     ENTITY_ID_NULL("G16", "entity.id.null", "{0} id was null. Skipped"),
+    INVALID_VALUE_FOR_PARAMETER("G17", "invalid.value.for.parameter", "Invalid value for parameter {0}"),
 
     /**
      * Tenant Business Error Code Messages
@@ -137,6 +138,7 @@ public enum GenericErrorCodeMessage {
      * User Business Error Code Messages
      */
     USER_FIELD_MANDATORY("U1", "error.user.field.mandatory", "User %s is mandatory."),
+    USER_CHANGE_PASS_INCONSISTENT_VALUES("U2", "error.change.pass.inconsistent.values", "Inconsistent values for Password"),
 
     /**
      * Role Business Error Code Messages
@@ -156,7 +158,9 @@ public enum GenericErrorCodeMessage {
      */
     ERROR_SEND_UPDATE_PASSWORD_EMAIL("KYC1", "error.send.password.email", "Unable to send update password email"),
     ERROR_SEND_UPDATE_EMAIL_VERIFY("KYC2", "error.send.update.email.verify", "Unable to send update email and email verify attribute"),
-    ERROR_SEND_EXECUTE_ACTION_EMAIL_VERIFY("KYC3", "error.send.execute.action.email.verify", "Unable to send verification email for an updated email ");
+    ERROR_SEND_EXECUTE_ACTION_EMAIL_VERIFY("KYC3", "error.send.execute.action.email.verify", "Unable to send verification email for an updated email "),
+    ERROR_CHANGE_PASSWORD("KYC4", "error.change.password", "Unable to change password. Status: %s. Description: %s"),
+    ERROR_INVALID_CREDENTIALS("KYC5", "error.invalid.credentials", "Invalid Credentials");
 
     private final String code;
     private final String key;

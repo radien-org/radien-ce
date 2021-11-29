@@ -17,7 +17,9 @@ package io.radien.ms.usermanagement.service;
 
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.exception.UserChangeCredentialException;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -209,8 +211,18 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @return true  or false
 	 */
 	public boolean isSelfOnboard(SystemUser user) {
+		return isSelfOnboard(user.getSub());
+	}
+
+	/**
+	 * Check if the the current logged user is trying to register
+	 * himself into the radien repository
+	 * @param sub subject/identifier regarding the current user
+	 * @return true  or false
+	 */
+	public boolean isSelfOnboard(String sub) {
 		SystemUser invoker = getInvokerUser();
-		return invoker != null && invoker.getSub().equals(user.getSub());
+		return invoker != null && invoker.getSub().equals(sub);
 	}
 
 	/**
@@ -336,6 +348,29 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		try {
 			return Response.ok(userBusinessService.refreshToken(refreshToken)).build();
 		} catch(Exception e) {
+			return GenericErrorMessagesToResponseMapper.getGenericError(e);
+		}
+	}
+
+	/**
+	 * Endpoint to change user password
+	 * @param sub OpenId user identifier (subject)
+	 * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+	 * @return OK if changing process is concluded with success. Status 400 in case of any
+	 * business logic inconsistency found. Return error 500 in case of technical issues
+	 */
+	public Response updatePassword(String sub, UserPasswordChanging change) {
+		if (!isSelfOnboard(sub)) {
+			return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+		}
+		try {
+			userBusinessService.changePassword(sub, change);
+			return Response.ok().build();
+		}
+		catch (UserChangeCredentialException u) {
+			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
+		}
+		catch (Exception e) {
 			return GenericErrorMessagesToResponseMapper.getGenericError(e);
 		}
 	}

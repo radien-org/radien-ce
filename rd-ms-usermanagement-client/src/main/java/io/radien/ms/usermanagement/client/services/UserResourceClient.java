@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import java.util.Collection;
 import java.util.List;
 
@@ -177,4 +178,14 @@ public interface UserResourceClient {
     @Path("/refresh")
     public Response refreshToken(String refreshToken);
 
+    /**
+     * Endpoint to change user password
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return OK if changing process is concluded with success. Status 400 in case of any
+     * business logic inconsistency found. Return error 500 in case of technical issues
+     */
+    @PATCH
+    @Path("/{sub}/passCredential")
+    Response updatePassword(@PathParam("sub") String sub, UserPasswordChanging change);
 }
