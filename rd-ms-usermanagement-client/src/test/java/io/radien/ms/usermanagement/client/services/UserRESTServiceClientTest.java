@@ -29,8 +29,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.radien.api.model.user.SystemUserPasswordChanging;
+import io.radien.exception.BadRequestException;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -1067,6 +1071,77 @@ public class UserRESTServiceClientTest {
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
         assertTrue(target.deleteUser(2000L));
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test
+    public void testChangeUserPassword() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        assertTrue(target.updatePassword(sub, passwordChanging));
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * Scenario: Failure due wrong URL
+     * Expected: SystemException
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test(expected = SystemException.class)
+    public void testChangeUserPasswordWithWrongURL() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).
+                thenThrow(new MalformedURLException("wrong url"));
+        target.updatePassword(sub, passwordChanging);
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * Scenario: Failure due wrong parameters
+     * Expected: SystemException
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test(expected = SystemException.class)
+    public void testChangeUserPasswordBadRequest() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenThrow(new BadRequestException("fail"));
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        target.updatePassword(sub, passwordChanging);
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * Scenario: Failure (Response not equals 200 family)
+     * Expected: SystemException
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test
+    public void testChangeUserPasswordFail() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenReturn(Response.status(300).build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        assertFalse(target.updatePassword(sub, passwordChanging));
     }
 
     /**

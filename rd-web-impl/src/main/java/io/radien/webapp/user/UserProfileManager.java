@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
@@ -22,6 +23,7 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.ProcessingException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
@@ -32,6 +34,9 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
+import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 
 /**
@@ -61,6 +66,9 @@ public class UserProfileManager extends AbstractManager {
     private Long tabIndex = 0L;
 
     private SystemUser clonedLogInUser;
+
+    private UserPasswordChanging changing = new UserPasswordChanging();
+    private String confirmationInfo;
 
     /**
      * This method initializes and constructs
@@ -254,5 +262,74 @@ public class UserProfileManager extends AbstractManager {
      */
     public String getHomeGui() {
         return DataModelEnum.PRETTY_INDEX.getValue();
+    }
+
+    /**
+     * Getter method for the {@link UserProfileManager#changing} attribute
+     * @return instance of {@link UserPasswordChanging}
+     */
+    public UserPasswordChanging getChanging() { return changing; }
+
+    /**
+     * Setter method for the {@link UserProfileManager#changing} attribute
+     * @param changing instance of {@link UserPasswordChanging}
+     */
+    public void setChanging(UserPasswordChanging changing) { this.changing = changing; }
+
+    /**
+     * Getter method for the {@link UserProfileManager#confirmationInfo} attribute
+     * @return String value for confirmationInfo
+     */
+    public String getConfirmationInfo() {
+        return confirmationInfo;
+    }
+
+    /**
+     * Setter method for the {@link UserProfileManager#confirmationInfo} attribute
+     * @param confirmationInfo String value for confirmationInfo
+     */
+    public void setConfirmationInfo(String confirmationInfo) {
+        this.confirmationInfo = confirmationInfo;
+    }
+
+    /**
+     * Listener that invokes REST API responsible to change the the password
+     */
+    public void changePasswordListener() {
+        try {
+            String username = this.userSession.getUser().getLogon();
+            String sub = this.userSession.getUserIdSubject();
+            this.changing.setLogin(username);
+            userService.updatePassword(sub, this.changing);
+            setTabIndex(0L);
+            this.changing.clear();
+            this.confirmationInfo = "";
+            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_SUCCESS.getValue()));
+        }
+        catch(Exception e) {
+            handleError(e, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue()));
+        }
+    }
+
+    /**
+     * Listener/Validator to check if password and confirmation password matches
+     * @param event validation event
+     */
+    public void validateComparePasswords(ComponentSystemEvent event) {
+        setTabIndex(0L);
+        UIComponent components = event.getComponent();
+        UIInput uiNewPassword = (UIInput) components.findComponent(SystemVariables.NEW_PASSWORD.getFieldName());
+        String pass = uiNewPassword.getValue() == null ? "" : uiNewPassword.getValue().toString();
+
+        UIInput uiConfirmPassword = (UIInput) components.findComponent(SystemVariables.CONFIRM_NEW_PASSWORD.getFieldName());
+        String confirm = uiConfirmPassword.getValue() == null ? "" : uiConfirmPassword.getValue().toString();
+
+        if (pass.isEmpty() || confirm.isEmpty()) {
+            return;
+        }
+        if (!pass.equals(confirm)) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_NO_MATCHES.getValue()));
+            JSFUtil.getFacesContext().renderResponse();
+        }
     }
 }

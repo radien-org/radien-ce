@@ -17,7 +17,6 @@ package io.radien.webapp.i18n;
 
 import io.radien.webapp.AbstractLocaleManager;
 import io.radien.webapp.JSFUtil;
-import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -40,14 +39,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 /**
  * Class that aggregates UnitTest cases for LocaleManager
@@ -80,6 +80,17 @@ public class LocaleManagerTest {
     public void before() {
         MockitoAnnotations.initMocks(this);
 
+        PowerMockito.mockStatic(FacesContext.class);
+        PowerMockito.mockStatic(JSFUtil.class);
+
+        context = mock(FacesContext.class);
+        when(FacesContext.getCurrentInstance()).thenReturn(context);
+
+        ExternalContext externalContext = mock(ExternalContext.class);
+        when(context.getExternalContext()).thenReturn(externalContext);
+
+        when(JSFUtil.getFacesContext()).thenReturn(context);
+        when(JSFUtil.getExternalContext()).thenReturn(externalContext);
 
         defaultLocalList.add("en");
         defaultLocalList.add("new_language");
@@ -97,9 +108,14 @@ public class LocaleManagerTest {
         localeManager.languageChanged(valueChangeEvent);
     }
 
-    @Test(expected = ExceptionInInitializerError.class)
+    @Test(expected = NullPointerException.class)
     public void timeZoneChangedListener_getClientOffset_exception_test() {
-        when( Objects.requireNonNull( JSFUtil.getExternalContext()).getRequestLocale()).thenReturn(Locale.forLanguageTag("en-US"));
+        when(Objects.requireNonNull(JSFUtil.getExternalContext()).getRequestLocale()).thenReturn(Locale.forLanguageTag("en-US"));
+
+        UIViewRoot uiViewRoot = Mockito.mock(UIViewRoot.class);
+        when(context.getViewRoot()).thenReturn(uiViewRoot);
+
+        localeManager.setClientTzOffset(null);
         localeManager.timezoneChangedListener(ajaxBehaviorEvent);
     }
 

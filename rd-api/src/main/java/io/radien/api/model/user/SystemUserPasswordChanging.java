@@ -13,81 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.client.entities;
+package io.radien.api.model.user;
 
-import io.radien.api.model.user.SystemUserPasswordChanging;
+import java.io.Serializable;
 
 /**
- * Pojo bean encapsulating information regarding password changing
+ * Contract describing information regarding password changing
  * @author newton carvalho
  */
-public class UserPasswordChanging implements SystemUserPasswordChanging {
-
-    private static final long serialVersionUID = 1860536680922155716L;
-    private String login;
-    private String oldPassword;
-    private String newPassword;
-
-    /**
-     * Default constructor
-     */
-    public UserPasswordChanging(){}
+public interface SystemUserPasswordChanging extends Serializable {
 
     /**
      * Getter for login property
      * @return String that represents login property
      */
-    public String getLogin() {
-        return login;
-    }
+    String getLogin();
 
     /**
      * Setter for login property
      * @param login String that represents login property
      */
-    public void setLogin(String login) {
-        this.login = login;
-    }
+    void setLogin(String login);
 
     /**
      * Getter for old password property
      * @return String that represents old password property
      */
-    public String getOldPassword() {
-        return oldPassword;
-    }
+    String getOldPassword();
 
     /**
      * Setter for old password property
      * @param oldPassword String that represents old password property
      */
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
-    }
+    void setOldPassword(String oldPassword);
 
     /**
      * Getter for new password property
      * @return String that represents new password property
      */
-    public String getNewPassword() {
-        return newPassword;
-    }
+    String getNewPassword();
 
     /**
      * Setter for new password property
      * @param newPassword String that represents new password property
      */
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
-
-    /**
-     * Erase all properties
-     */
-    public void clear() {
-        this.oldPassword = null;
-        this.newPassword = null;
-        this.login = null;
-    }
-
+    void setNewPassword(String newPassword);
 }

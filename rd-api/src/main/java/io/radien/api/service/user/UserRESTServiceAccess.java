@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.user;
 
+import io.radien.api.model.user.SystemUserPasswordChanging;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.List;
@@ -128,4 +129,13 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @throws SystemException in case of token expiration or any issue on the application
      */
     public boolean refreshToken() throws SystemException;
+
+    /**
+     * Changes user password
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return true if changing process is concluded with success.
+     * @throws SystemException in case of any issue regarding communication with User endpoint
+     */
+    boolean updatePassword(String sub, SystemUserPasswordChanging change) throws SystemException;
 }

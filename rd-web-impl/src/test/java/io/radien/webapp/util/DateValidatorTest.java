@@ -69,7 +69,7 @@ public class DateValidatorTest extends JSFUtilAndFaceContextMessagesTest {
      * Test method validator()
      * Asserts an exception
      */
-    @Test(expected = ExceptionInInitializerError.class)
+    @Test(expected = javax.faces.validator.ValidatorException.class)
     public void testValidatorComponent() {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("validatorMessage", "");

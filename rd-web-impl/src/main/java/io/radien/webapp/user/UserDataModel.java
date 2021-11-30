@@ -91,7 +91,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     private boolean hasTenantAdministratorRoleAccess = false;
     private boolean allowedToResetPassword = false;
     private boolean allowedToUpdateUserEmail = false;
-
+    
     /**
      * Post construction method for user management page
      * @throws SystemException is thrown by the common language runtime when errors occur
@@ -586,4 +586,6 @@ public class UserDataModel extends AbstractManager implements Serializable {
     public void setUpdateEmail(SystemUser updateEmail) {
         this.updateEmail = updateEmail;
     }
+
+
 }

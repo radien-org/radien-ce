@@ -15,7 +15,11 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.api.model.user.SystemUserPasswordChanging;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Collection;
@@ -488,6 +492,50 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             log.error(e.getMessage(), e);
         }
         return false;
+    }
+
+    /**
+     * Changes user password (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return true if changing process is concluded with success.
+     * @throws SystemException in case of any issue regarding communication with User endpoint
+     */
+    public boolean updatePassword(String sub, SystemUserPasswordChanging change) throws SystemException {
+        return get(this::updatePasswordCore, sub, change);
+    }
+
+    /**
+     * Main method invoked that changes user password
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return true if changing process is concluded with success.
+     * @throws SystemException in case of any issue regarding communication with User endpoint
+     */
+    private boolean updatePasswordCore(String sub, SystemUserPasswordChanging change) throws SystemException {
+        UserResourceClient userResourceClient = getUserResourceClient();
+        try (Response response = userResourceClient.updatePassword(sub, (UserPasswordChanging) change)) {
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }
+        catch (ExtensionException | ProcessingException | BadRequestException |
+                InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Assemblies a {@link UserResourceClient} instance via Rest Client Builder,
+     * using as parameter the URL referred by {@link OAFProperties#SYSTEM_MS_ENDPOINT_USERMANAGEMENT}
+     * @return Rest Client instance for USer endpoint
+     * @throws SystemException thrown in case of invalid URL
+     */
+    private UserResourceClient getUserResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.
+                    SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+        } catch (MalformedURLException e) {
+            throw new SystemException(e);
+        }
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
@@ -23,6 +24,8 @@ import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
+import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 import java.util.ArrayList;
@@ -30,9 +33,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
+import javax.faces.event.ComponentSystemEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +49,7 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.primefaces.component.inputtext.InputText;
 
 import static io.radien.ms.tenantmanagement.client.services.TenantFactory.create;
 import static org.junit.Assert.assertEquals;
@@ -51,11 +58,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.nullable;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -451,5 +461,131 @@ public class UserProfileManagerTest {
 
         assertEquals(new Long(0), userProfileManager.getTabIndex());
         assertEquals(userProfileManager.getHomeGui(), returnUrl);
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#changePasswordListener()}
+     * for successful scenarios
+     * @throws SystemException in case of any error/issue regarding communication with user
+     * endpoint
+     */
+    @Test
+    public void testChangePasswordListenerSuccess() throws SystemException {
+        String logon = "test.test";
+        String sub = "123-45-bb";
+        String pass = "1234", newPass = "123456";
+
+        systemUser.setLogon(logon);
+        when(userSession.getUser()).thenReturn(systemUser);
+        when(userSession.getUserIdSubject()).thenReturn(sub);
+
+        UserPasswordChanging userPasswordChanging = new UserPasswordChanging();
+        userPasswordChanging.setOldPassword(pass);
+        userPasswordChanging.setNewPassword(newPass);
+        this.userProfileManager.setChanging(userPasswordChanging);
+        this.userProfileManager.setConfirmationInfo(newPass);
+        when(this.userRESTServiceAccess.updatePassword(sub, userPasswordChanging)).
+                thenReturn(Boolean.TRUE);
+        this.userProfileManager.changePasswordListener();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_SUCCESS.getValue(), captured.getSummary());
+
+        assertNull(userPasswordChanging.getLogin());
+        assertNull(userPasswordChanging.getOldPassword());
+        assertNull(userPasswordChanging.getNewPassword());
+        assertEquals("", userProfileManager.getConfirmationInfo());
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#changePasswordListener()}
+     * for unsuccessful scenarios
+     * @throws SystemException in case of any error/issue regarding communication with user
+     * endpoint
+     */
+    @Test
+    public void testChangePasswordListenerFail() throws SystemException{
+        String logon = "test.test";
+        String sub = "123-45-bb";
+        String pass = "1234", newPass = "123456";
+
+        systemUser.setLogon(logon);
+        when(userSession.getUser()).thenReturn(systemUser);
+        when(userSession.getUserIdSubject()).thenReturn(sub);
+
+        UserPasswordChanging userPasswordChanging = new UserPasswordChanging();
+        userPasswordChanging.setOldPassword(pass);
+        userPasswordChanging.setNewPassword(newPass);
+        this.userProfileManager.setChanging(userPasswordChanging);
+        this.userProfileManager.setConfirmationInfo(newPass);
+        when(this.userRESTServiceAccess.updatePassword(sub, userPasswordChanging)).
+                thenThrow(new SystemException("fail"));
+        this.userProfileManager.changePasswordListener();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue(), captured.getSummary());
+
+        assertNotNull(userPasswordChanging.getLogin());
+        assertNotNull(userPasswordChanging.getOldPassword());
+        assertNotNull(userPasswordChanging.getNewPassword());
+        assertNotNull(userProfileManager.getConfirmationInfo());
+    }
+
+    /**
+     * Test for {@link UserProfileManager#validateComparePasswords(ComponentSystemEvent)}
+     */
+    @Test
+    public void testValidateComparePassword() {
+        String newPass = "1234";
+        String confirmNewPass = "12345";
+
+        UIInput uiConfirmPassword = new InputText();
+        uiConfirmPassword.setValue(confirmNewPass);
+        UIInput uiNewPassword = new UIInput();
+        uiNewPassword.setValue(newPass);
+        UIComponent components = mock(UIComponent.class);
+
+        when(components.findComponent(SystemVariables.NEW_PASSWORD.getFieldName())).thenReturn(uiNewPassword);
+        when(components.findComponent(SystemVariables.CONFIRM_NEW_PASSWORD.getFieldName())).thenReturn(uiConfirmPassword);
+
+        ComponentSystemEvent event = mock(ComponentSystemEvent.class);
+        when(event.getComponent()).thenReturn(components);
+
+        userProfileManager.validateComparePasswords(event);
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_NO_MATCHES.getValue(), captured.getSummary());
+    }
+
+    /**
+     * Test for setter {@link UserProfileManager#setChanging(UserPasswordChanging)}
+     */
+    @Test
+    public void testSetChanging() {
+        UserPasswordChanging changing = new UserPasswordChanging();
+        this.userProfileManager.setChanging(changing);
+        assertEquals(changing, userProfileManager.getChanging());
+    }
+
+    /**
+     * Test for setter {@link UserProfileManager#setConfirmationInfo(String)}
+     */
+    @Test
+    public void testSetConfirmationInfo() {
+        String confirmInfo = "test";
+        this.userProfileManager.setConfirmationInfo(confirmInfo);
+        assertEquals(confirmInfo, userProfileManager.getConfirmationInfo());
     }
 }

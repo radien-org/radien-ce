@@ -162,5 +162,11 @@
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.faces</artifactId>
+			<scope>test</scope>
+			<version>2.4.0</version>
+		</dependency>
 	</dependencies>
 </project>

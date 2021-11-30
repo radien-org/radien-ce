@@ -701,6 +701,6 @@ public class UserBusinessServiceTest {
         u.setNewPassword("test");
         UserChangeCredentialException e = assertThrows(UserChangeCredentialException.class,
                 ()->userBusinessService.changePassword("12345", u));
-        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(CONFIRM_NEW_PASSWORD.getLabel()), e.getMessage());
+        assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(LOGON.getLabel()), e.getMessage());
     }
 }

@@ -45,10 +45,15 @@
 											 immediate="true"
 											 action="#{userProfileManager.getHomeGui}"/>
 
+							<b:button id="changePassword" onclick="$('.changePwdDialog').modal('show')"
+									  value="#{msg.change_password}" tooltip="#{msg.change_password}"
+									  iconAwesome="fa-key"/>
+
 							<b:button id="updateUserProfile"
 									  onclick="$('.formValidationModalUserProfileUpdate').modal('show')"
 									  value="#{msg.save}" tooltip="#{msg.rd_user_profile_update}"
 									  iconAwesome="fa-save"/>
+
 							<b:modal id="model"
 									 title="#{msg.confirmation}"
 									 styleClass="formValidationModalUserProfileUpdate"
@@ -118,5 +123,48 @@
 				</b:tabView>
 			</b:container>
 		</h:form>
-    </ui:define>
+
+		<!-- Change password Form -->
+		<b:modal title="#{msg.change_password}" styleClass="changePwdDialog"
+				 closable="true" closeOnEscape="true">
+			<b:form>
+				<b:panelGrid colSpans="2,10">
+
+					<f:event listener="#{userProfileManager.validateComparePasswords}" type="postValidate" />
+
+					<!-- Old Password -->
+					<b:inputSecret id="oldPassword"
+								   label="#{msg.actual_password}"
+								   required="true"
+								   requiredMessage="#{msg.actual_password_mandatory}"
+								   value="#{userProfileManager.changing.oldPassword}"/>
+
+					<!-- New Password -->
+					<b:inputSecret id="newPassword"
+								   label="#{msg.new_password}"
+								   required="true"
+								   requiredMessage="#{msg.new_password_mandatory}"
+								   value="#{userProfileManager.changing.newPassword}"/>
+
+					<!-- Confirm New Password -->
+					<b:inputSecret id="confirmNewPassword"
+								   label="#{msg.confirm_new_password}"
+								   required="true"
+								   requiredMessage="#{msg.confirm_new_password_mandatory}"
+								   value="#{userProfileManager.confirmationInfo}"/>
+
+				</b:panelGrid>
+				<b:button value="#{msg.cancel}"
+								 onclick="{ $('.changePwdDialog').modal('hide') } "/>
+
+				<b:commandButton largeScreen="half" update="@form"
+								 dismiss="modal"
+								 value="#{msg.confirm}" look="warning"
+								 actionListener="#{userProfileManager.changePasswordListener}"
+								 oncomplete="if(!validationFailed &amp;&amp; !bfHasError &amp;&amp; !bfHasInfo) { $('.changePwdDialog').modal('hide') } "/>
+				<b:fetchBeanInfos />
+				<b:messages />
+			</b:form>
+		</b:modal>
+	</ui:define>
 </ui:composition>
