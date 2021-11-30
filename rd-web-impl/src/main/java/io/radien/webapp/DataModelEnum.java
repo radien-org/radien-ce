@@ -103,6 +103,7 @@ public enum DataModelEnum {
     USER_CHANGE_PASSWORD_SUCCESS("rd_change_password_successfully"),
     USER_CHANGE_PASSWORD_UNSUCCESSFUL("rd_change_password_unsuccessfully"),
     USER_CHANGE_PASSWORD_NO_MATCHES("rd_change_password_no_match"),
+    USER_CHANGE_PASSWORD_ACTUAL_PASSWORD_INVALID("actual_password_invalid"),
     USER_RESET_PASSWORD_CONFIRM_MESSAGE("userResetPasswordConfirmation"),
     USER_PATH("pretty:user"),
     PRETTY_USER("pretty:user"),

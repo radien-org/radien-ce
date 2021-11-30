@@ -186,7 +186,7 @@ public enum GenericErrorCodeMessage {
     @Override
     public String toString() {
         return "{" +
-                "\"code\":" + code +
+                "\"code\":\"" + code + "\"" +
                 ", \"key\":\"" + key + "\"" +
                 ", \"message\":\"" + fallBackMessage + "\"" +
                 "}";
@@ -199,9 +199,25 @@ public enum GenericErrorCodeMessage {
     public String toString(String... args) {
         String message = String.format(fallBackMessage, args);
         return "{" +
-                "\"code\":" + code +
+                "\"code\":\"" + code + "\"" +
                 ", \"key\":\"" + key + "\"" +
                 ", \"message\":\"" + message + "\"" +
                 "}";
+    }
+
+    /**
+     * Getter for property code
+     * @return String that corresponds to the property code
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * Getter for property key
+     * @return String that corresponds to the property key
+     */
+    public String getKey() {
+        return key;
     }
 }

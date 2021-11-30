@@ -54,7 +54,10 @@ public enum SystemVariables {
     REFRESH_TOKEN("refreshToken", "Refresh Token"),
     OLD_PASSWORD("oldPassword", "Old Password"),
     NEW_PASSWORD("newPassword", "New Password"),
-    CONFIRM_NEW_PASSWORD("confirmNewPassword", "Confirm New Password");
+    CONFIRM_NEW_PASSWORD("confirmNewPassword", "Confirm New Password"),
+    GENERIC_ERROR_MESSAGE_CODE("code", "code"),
+    GENERIC_ERROR_MESSAGE_KEY("key", "key"),
+    GENERIC_ERROR_MESSAGE_MESSAGE("message", "message");
 
     private final String fieldName;
     private final String label;

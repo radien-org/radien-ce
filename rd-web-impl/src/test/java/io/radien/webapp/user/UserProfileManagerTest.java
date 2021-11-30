@@ -20,6 +20,8 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.BadRequestException;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
@@ -524,6 +526,89 @@ public class UserProfileManagerTest {
         this.userProfileManager.setConfirmationInfo(newPass);
         when(this.userRESTServiceAccess.updatePassword(sub, userPasswordChanging)).
                 thenThrow(new SystemException("fail"));
+        this.userProfileManager.changePasswordListener();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue(), captured.getSummary());
+
+        assertNotNull(userPasswordChanging.getLogin());
+        assertNotNull(userPasswordChanging.getOldPassword());
+        assertNotNull(userPasswordChanging.getNewPassword());
+        assertNotNull(userProfileManager.getConfirmationInfo());
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#changePasswordListener()}
+     * for specific unsuccessful scenario where actual/current password is invalid
+     * @throws SystemException in case of any error/issue regarding communication with user
+     * endpoint
+     */
+    @Test
+    public void testChangePasswordListenerInvalidCurrentPassword() throws SystemException{
+        String logon = "test.test";
+        String sub = "123-45-bb";
+        String pass = "1234", newPass = "123456";
+
+        systemUser.setLogon(logon);
+        when(userSession.getUser()).thenReturn(systemUser);
+        when(userSession.getUserIdSubject()).thenReturn(sub);
+
+        BadRequestException badRequestException =
+                new BadRequestException(GenericErrorCodeMessage.ERROR_INVALID_CREDENTIALS.toString());
+
+        UserPasswordChanging userPasswordChanging = new UserPasswordChanging();
+        userPasswordChanging.setOldPassword(pass);
+        userPasswordChanging.setNewPassword(newPass);
+        this.userProfileManager.setChanging(userPasswordChanging);
+        this.userProfileManager.setConfirmationInfo(newPass);
+        when(this.userRESTServiceAccess.updatePassword(sub, userPasswordChanging)).
+                thenThrow(new SystemException(badRequestException));
+        this.userProfileManager.changePasswordListener();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_ACTUAL_PASSWORD_INVALID.getValue(), captured.getSummary());
+
+        assertNotNull(userPasswordChanging.getLogin());
+        assertNotNull(userPasswordChanging.getOldPassword());
+        assertNotNull(userPasswordChanging.getNewPassword());
+        assertNotNull(userProfileManager.getConfirmationInfo());
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#changePasswordListener()}
+     * for specific unsuccessful scenario where actual/current password is invalid,
+     * but Exception is encapsulating a wron Json message
+     * @throws SystemException in case of any error/issue regarding communication with user
+     * endpoint
+     */
+    @Test
+    public void testChangePasswordListenerInvalidJsonMessage() throws SystemException{
+        String logon = "test.test";
+        String sub = "123-45-bb";
+        String pass = "1234", newPass = "123456";
+
+        systemUser.setLogon(logon);
+        when(userSession.getUser()).thenReturn(systemUser);
+        when(userSession.getUserIdSubject()).thenReturn(sub);
+
+        String wrongJsonMsg = "{\"code\":KYC5, \"key\":\"error.invalid.credentials\", \"message\":\"Invalid Credentials\"}";
+        BadRequestException badRequestException = new BadRequestException(wrongJsonMsg);
+
+        UserPasswordChanging userPasswordChanging = new UserPasswordChanging();
+        userPasswordChanging.setOldPassword(pass);
+        userPasswordChanging.setNewPassword(newPass);
+        this.userProfileManager.setChanging(userPasswordChanging);
+        this.userProfileManager.setConfirmationInfo(newPass);
+        when(this.userRESTServiceAccess.updatePassword(sub, userPasswordChanging)).
+                thenThrow(new SystemException(badRequestException));
         this.userProfileManager.changePasswordListener();
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);

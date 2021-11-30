@@ -30,6 +30,7 @@ import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
@@ -38,6 +39,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
+
+import static io.radien.exception.GenericErrorCodeMessage.ERROR_INVALID_CREDENTIALS;
 
 /**
  * Class Responsible to update/save logged in user profile
@@ -307,6 +310,14 @@ public class UserProfileManager extends AbstractManager {
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_SUCCESS.getValue()));
         }
         catch(Exception e) {
+            Map<String, String> map = (Map<String, String>) this.getWrappedErrorDescriptor(e);
+            if (map != null) {
+                String code = map.get(SystemVariables.GENERIC_ERROR_MESSAGE_CODE.getFieldName());
+                if (code != null && code.equals(ERROR_INVALID_CREDENTIALS.getCode())) {
+                    handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_ACTUAL_PASSWORD_INVALID.getValue()));
+                    return;
+                }
+            }
             handleError(e, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue()));
         }
     }

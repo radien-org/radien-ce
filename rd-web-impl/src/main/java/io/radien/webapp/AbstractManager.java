@@ -15,6 +15,10 @@
  */
 package io.radien.webapp;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +37,11 @@ import java.text.MessageFormat;
  */
 public abstract class AbstractManager implements Serializable {
 
+    private static final long serialVersionUID = 1660384525695042610L;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private static final String JSON_OPEN_BRACKET = "{";
+    private static final String JSON_CLOSE_BRACKET = "}";
 
     protected void handleError(Exception e, String pattern, Object ... params) {
         String msg = MessageFormat.format(pattern, params);
@@ -88,5 +96,28 @@ public abstract class AbstractManager implements Serializable {
     protected void redirectToPage(String pagePath) throws IOException {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + pagePath);
+    }
+
+    /**
+     * Given a {@link Exception}, extracts a {@link HashMap} that corresponds to
+     * an error descriptor (that eventually exists as a json encapsulated message).
+     * @param exception {@link Exception} instance
+     * @return HashMap containing attributes regarding error obtained from Exception message,
+     * or null if the encapsulated messaged does not contain a Json descriptor.
+     */
+    public Map<?,?> getWrappedErrorDescriptor(Exception exception) {
+        String originalMessage = exception.getMessage();
+        int index1 = originalMessage.indexOf(JSON_OPEN_BRACKET);
+        int index2 = originalMessage.lastIndexOf(JSON_CLOSE_BRACKET);
+        if (index1 !=-1 && index2 != -1) {
+            String message = originalMessage.substring(index1, index2+1);
+            try (Jsonb jsonb = JsonbBuilder.create()) {
+                return jsonb.fromJson(message, HashMap.class);
+            }
+            catch (Exception e) {
+                log.error("error closing resource", e);
+            }
+        }
+        return null;
     }
 }
