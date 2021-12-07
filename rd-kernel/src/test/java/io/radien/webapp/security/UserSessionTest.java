@@ -16,7 +16,6 @@
 package io.radien.webapp.security;
 
 import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.entities.User;
 
@@ -24,13 +23,13 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 
 import io.radien.exception.SystemException;
 
-import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 
 import io.radien.webapp.JSFUtil;
 
 import java.io.IOException;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.faces.context.ExternalContext;
@@ -42,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import javax.servlet.http.HttpSession;
+import org.eclipse.microprofile.config.Config;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +58,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -85,6 +84,9 @@ public class UserSessionTest {
 
     @Mock
     private UserRESTServiceAccess userRESTServiceAccess;
+
+    @Mock
+    private Config config;
 
     private FacesContext facesContext;
 
@@ -329,16 +331,21 @@ public class UserSessionTest {
         userSession.setUser(user);
 
         HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getScheme()).thenReturn("https");
+        when(request.getServerName()).thenReturn("int.radien.io");
+        when(request.getServerPort()).thenReturn(0);
+        when(request.getContextPath()).thenReturn("/web");
+
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
-        when(JSFUtil.getExternalContext().getRequest()).thenReturn(request);
+        when(Objects.requireNonNull(JSFUtil.getExternalContext()).getRequest()).thenReturn(request);
         when(JSFUtil.getExternalContext().getResponse()).thenReturn(response);
         doNothing().when(request).logout();
         doNothing().when(session).invalidate();
 
-        String mockedUrl = "https://domain.io/auth/realms/realmtest/protocol/openid-connect/logout";
-        when(oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI)).thenReturn(mockedUrl);
+        when(config.getValue("IDP_LOGOUT_URL_PATTERN", String.class)).thenReturn("https://domain.io");
+        when(config.getValue("SCRIPT_CLIENT_ID_VALUE", String.class)).thenReturn("realmtest");
 
         when(request.toString()).thenReturn("https://localhost:8443/web/public/index.oaf");
         when(request.getServletPath()).thenReturn("/public/index.oaf");
@@ -348,12 +355,32 @@ public class UserSessionTest {
     }
 
     /**
-     * Test for method {@link UserSession#logout()} when there is no user active
+     * Test for method {@link UserSession#logout()}
+     * Scenario: External context could not be loaded
      * @throws ServletException in case of i/o error during request.logout
      * @throws IOException in case of i/o error when performing sendRedirect
      */
     @Test
-    public void testLogoutWhenNoUserActive() throws ServletException, IOException {
+    public void testLogoutWhenExternalContextNull() throws ServletException, IOException {
+        SystemUser user = mock(SystemUser.class);
+        when(user.isEnabled()).thenReturn(Boolean.TRUE);
+        userSession.setUser(user);
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        when(JSFUtil.getExternalContext()).thenReturn(null);
+        doNothing().when(request).logout();
+        doNothing().when(session).invalidate();
+        assertFalse(userSession.logout());
+    }
+
+    /**
+     * Test for method {@link UserSession#logout()} when there is no user active
+     */
+    @Test
+    public void testLogoutWhenNoUserActive() {
         SystemUser user = mock(SystemUser.class);
         when(user.isEnabled()).thenReturn(Boolean.FALSE);
         userSession.setUser(user);
@@ -363,17 +390,16 @@ public class UserSessionTest {
     /**
      * Test for method {@link UserSession#logout()}
      * @throws ServletException in case of i/o error during request.logout
-     * @throws IOException in case of i/o error when performing sendRedirect
      */
     @Test
-    public void testLogoutWhenExceptionOccurs() throws ServletException, IOException {
+    public void testLogoutWhenExceptionOccurs() throws ServletException {
         SystemUser user = mock(SystemUser.class);
         when(user.isEnabled()).thenReturn(Boolean.TRUE);
         userSession.setUser(user);
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(JSFUtil.getExternalContext().getRequest()).thenReturn(request);
+        when(Objects.requireNonNull(JSFUtil.getExternalContext()).getRequest()).thenReturn(request);
         when(JSFUtil.getExternalContext().getResponse()).thenReturn(response);
         doThrow(new ServletException("error")).when(request).logout();
         Assert.assertFalse(userSession.logout());

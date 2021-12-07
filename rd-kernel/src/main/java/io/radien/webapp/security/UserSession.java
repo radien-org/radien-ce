@@ -15,6 +15,7 @@
  */
 package io.radien.webapp.security;
 
+import io.radien.api.KeycloakConfigs;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.user.SystemUser;
@@ -25,6 +26,7 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
+import io.radien.security.openid.utils.URLUtils;
 import io.radien.webapp.JSFUtil;
 import java.io.IOException;
 import java.util.Optional;
@@ -38,6 +40,7 @@ import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +70,11 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	@Inject
 	private LocaleManagerAccess localeManager;
+
+	@Inject
+	private Config config;
+
+	private static final String IDP_LOGOUT_URL_PATTERN = "%s/auth/realms/%s/protocol/openid-connect/logout";
 
 	/**
 	 * Initialization of the user session
@@ -272,6 +280,10 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	public boolean logout() {
 		if (isActive()) {
 			ExternalContext externalContext = JSFUtil.getExternalContext();
+			if (externalContext == null) {
+				log.error("External context is null");
+				return false;
+			}
 			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
 			HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
 			return logout(request, response);
@@ -291,7 +303,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			log.info("going to start logout process");
 			request.logout();
 			request.getSession().invalidate();
-			String logoutUrl = getLogoutURL();
+			String logoutUrl = getLogoutURL(request);
 			log.info("going to redirect to the following url {}", logoutUrl);
 			response.sendRedirect(logoutUrl);
 			return true;
@@ -305,22 +317,19 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 * Retrieve the logout URL
 	 * @return String that represents the logout url
 	 */
-	protected String getLogoutURL() {
-		String keyCloakLogoutURL = oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI);
-		StringBuilder sb = new StringBuilder().
-				append(keyCloakLogoutURL).
-				append("?redirect_uri=").
-				append(getApplicationURL());
-		return sb.toString();
+	protected String getLogoutURL(HttpServletRequest request) {
+		String keyCloakLogoutURL = String.format(IDP_LOGOUT_URL_PATTERN,
+				config.getValue(KeycloakConfigs.IDP_URL.propKey(), String.class),
+				config.getValue(KeycloakConfigs.APP_REALM.propKey(), String.class));
+		return keyCloakLogoutURL + "?redirect_uri=" + getApplicationURL(request);
 	}
 
 	/**
 	 * Retrieves the base url (schema + server name + port + context) for the current application
 	 * @return String that represent the context url path
 	 */
-	protected String getApplicationURL() {
-		String applicationUrl = oaf.getProperty(OAFProperties.SYS_HOSTNAME) +
-				oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
+	protected String getApplicationURL(HttpServletRequest request) {
+		String applicationUrl = URLUtils.getAppContextURL(request);
 		log.info("application url {}", applicationUrl);
 		return applicationUrl;
 	}
