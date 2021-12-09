@@ -88,13 +88,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
     private boolean allowedDeleteUser = false;
     private boolean allowedCreateUser = false;
 
-    private boolean hasTenantAdministratorRoleAccess = false;
+    private boolean allowedAssociateTenantAndUser = false;
     private boolean allowedToResetPassword = false;
     private boolean allowedToUpdateUserEmail = false;
     
     /**
      * Post construction method for user management page
-     * @throws SystemException is thrown by the common language runtime when errors occur
      * that are nonfatal and recoverable by user programs.
      */
     @PostConstruct
@@ -113,8 +112,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
                 if (!allowedCreateUser) {
                     allowedCreateUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_CREATE.getActionName(), null);
                 }
-                if (!hasTenantAdministratorRoleAccess) {
-                    hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
+                if (!allowedAssociateTenantAndUser) {
+                    allowedAssociateTenantAndUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.TENANT_ROLE_USER.getResourceName(),
+                            SystemActionsEnum.ACTION_CREATE.getActionName(), null);
                 }
 
                 Long tenantId = getCurrentActiveTenantId();
@@ -152,7 +152,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * that are nonfatal and recoverable by user programs.
      */
     @ActiveTenantMandatory
-    public void onload() throws SystemException {
+    public void onload() {
         init();
     }
 
@@ -409,7 +409,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Check if the tenant association process is allowed to be started from
      * the following perspective:
      * <ul>
-     *     <li>Current logged user has the right roles (the one who will start/trigger the process)</li>
+     *     <li>Current logged user has the right permission (ex: to associate an user to one tenant)</li>
      *     <li>There is a user available to be associated with a Tenant (i.e a newly created user
      *     or a previously selected one from the data grid)</li>
      * </ul>
@@ -418,7 +418,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     public boolean isTenantAssociationProcessAllowed() {
         try {
-            if (!hasTenantAdministratorRoleAccess) {
+            if (!allowedAssociateTenantAndUser) {
                 return false;
             }
             this.userForTenantAssociation = findUserToAssociate();
@@ -491,21 +491,19 @@ public class UserDataModel extends AbstractManager implements Serializable {
     }
 
     /**
-     * Flag indicating if current user has System Administrator or any other Tenant Administration role
+     * Flag indicating if current user has permission to associate another user to one tenant
      * @return true if such condition is affirmative, false otherwise
      */
-    public boolean isHasTenantAdministratorRoleAccess() {
-        return hasTenantAdministratorRoleAccess;
-    }
+    public boolean isAllowedAssociateTenantAndUser() { return allowedAssociateTenantAndUser; }
 
     /**
-     * Sets a flag indicating if the current user has System Administrator or
-     * any other Tenant Administration role
-     * @param hasTenantAdministratorRoleAccess boolean value to be set
+     * Sets a flag indicating if the current user has permission to associate another user to one tenant
+     * @param allowedAssociateTenantAndUser boolean value to be set
      */
-    public void setHasTenantAdministratorRoleAccess(boolean hasTenantAdministratorRoleAccess) {
-        this.hasTenantAdministratorRoleAccess = hasTenantAdministratorRoleAccess;
+    public void setAllowedAssociateTenantAndUser(boolean allowedAssociateTenantAndUser) {
+        this.allowedAssociateTenantAndUser = allowedAssociateTenantAndUser;
     }
+
 
     /**
      * Getter that refers tne User for whom will be applied the association with a tenant and a role

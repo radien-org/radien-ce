@@ -32,15 +32,13 @@ import static org.mockito.Mockito.when;
  * @author Rajesh Gavvala
  */
 public abstract class JSFUtilAndFaceContextMessagesTest {
-    FacesContext facesContext;
+    protected FacesContext facesContext;
 
     /**
      * This method constructs and handles JSF util and
      * FaceContext messages
      */
     public final void handleJSFUtilAndFaceContextMessages(){
-        FacesContext facesContext;
-
         PowerMockito.mockStatic(FacesContext.class);
         PowerMockito.mockStatic(JSFUtil.class);
 

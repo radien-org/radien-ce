@@ -8,6 +8,7 @@
 				template="/WEB-INF/templates/tpl_oaf.xhtml">
 	<f:metadata>
 		<f:viewAction action="#{roleDataModel.onload}"/>
+		<f:viewAction action="#{roleDataModel.calculatePermissionsOnRootActiveTenant}"/>
 	</f:metadata>
 
 	<ui:define name="content" bootsFacesDecorator="true">
@@ -95,7 +96,7 @@
 							  onclick="$('.formValidationModalClassPermission').modal('show')"
 							  value="#{msg.cancel}"
 							  iconAwesome="fa-rotate-left"
-							  rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}">
+							  rendered="#{roleDataModel.allowedAssociateRolePermission}">
 					</b:button>
 
 					<b:modal id="modalPermission"
@@ -114,7 +115,7 @@
 					<b:commandButton style="float:right;"
 									 value="#{msg.save}"
 									 iconAwesome="fa-save"
-									 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"
+									 rendered="#{roleDataModel.allowedAssociateRolePermission}"
 									 action="#{rolePermissionManager.assignOrUnassignedPermissionsToActiveUserTenant}"/>
 				</p:rowExpansion>
 				<br />
@@ -125,7 +126,7 @@
 					  value="#{msg.delete}"
 					  icon="trash"
 					  update=":roleManagementTableDiv"
-					  rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}">
+					  rendered="#{roleDataModel.allowedDeleteRole}">
 			</b:button>
 
 			<b:modal id="modal"
@@ -147,7 +148,7 @@
 							 tooltip="#{msg.editRecordInformation}"
 							 iconAwesome="fa-edit"
 							 action="#{roleDataModel.editRecords}"
-							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
+							 rendered="#{roleDataModel.allowedUpdateRole}"/>
 			<b:commandButton id="refresh" value="#{msg.refreshValues}"
 							 ajax="false"
 							 iconAwesome="fa-refresh"
@@ -156,13 +157,13 @@
 							 actionListener="#{roleDataModel.onload}"
 							 immediate="true" update="@form:roleManagementTableDiv"
 							 auto-update="true"
-							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
+							 rendered="#{roleDataModel.allowedReadRole}"/>
 			<b:commandButton value="#{msg.rd_add_role}"
 							 action="role"
 							 iconAwesome="fa-cube"
 							 tooltip="#{msg.create_new_record}"
 							 iconAlign="center"
-							 rendered="#{userTenantGlobalRolesManager.roleAdministratorInRootContext}"/>
+							 rendered="#{roleDataModel.allowedCreateRole}"/>
 		</h:form>
 	</ui:define>
 </ui:composition>

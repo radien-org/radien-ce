@@ -15,6 +15,9 @@
  */
 package io.radien.webapp.role;
 
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.SystemException;
 
 import io.radien.api.model.role.SystemRole;
@@ -22,11 +25,15 @@ import io.radien.api.service.role.RoleRESTServiceAccess;
 
 import io.radien.ms.rolemanagement.client.entities.Role;
 
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 
+import io.radien.webapp.authz.WebAuthorizationChecker;
+import java.util.Optional;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -34,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -44,12 +52,22 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.primefaces.event.SelectEvent;
 
 
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_CREATE;
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_DELETE;
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_READ;
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_UPDATE;
+import static io.radien.api.service.permission.SystemResourcesEnum.ROLES;
+import static io.radien.api.service.permission.SystemResourcesEnum.TENANT_ROLE_PERMISSION;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 /**
  * Class that aggregates UnitTest cases for RoleDataModel
@@ -67,6 +85,12 @@ public class RoleDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
+
+    @Mock
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
+
+    @Mock
+    private WebAuthorizationChecker webAuthorizationChecker;
 
     SystemRole systemRole;
 
@@ -245,4 +269,173 @@ public class RoleDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         assertEquals(systemRole, roleDataModel.getSelectedRole());
     }
 
+    /**
+     * Test for method {@link RoleDataModel#calculatePermissionsOnRootActiveTenant()}
+     * Scenario: Logged user switched to Root Tenant and has all the necessary permissions
+     * regarding role domain
+     * @throws SystemException in case of any error regarding endpoint communication
+     */
+    @Test
+    public void testCalcPermissions() throws SystemException {
+        Long tenantId = 1L;
+        SystemActiveTenant activeTenant = mock(SystemActiveTenant.class);
+        SystemTenant tenant = mock(SystemTenant.class);
+        when(activeTenant.getTenantId()).thenReturn(tenantId);
+        when(tenant.getId()).thenReturn(tenantId);
+        when(tenant.getTenantType()).thenReturn(TenantType.ROOT);
+        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(activeTenant);
+        when(tenantRESTServiceAccess.getTenantById(tenantId)).thenReturn(Optional.of(tenant));
+
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                ROLES.getResourceName(), ACTION_READ.getActionName(), tenantId);
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                ROLES.getResourceName(), ACTION_READ.getActionName(), tenantId);
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                ROLES.getResourceName(), ACTION_CREATE.getActionName(), tenantId);
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                ROLES.getResourceName(), ACTION_UPDATE.getActionName(), tenantId);
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                ROLES.getResourceName(), ACTION_DELETE.getActionName(), tenantId);
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                TENANT_ROLE_PERMISSION.getResourceName(), ACTION_DELETE.getActionName(), tenantId);
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                TENANT_ROLE_PERMISSION.getResourceName(), ACTION_CREATE.getActionName(), tenantId);
+
+        roleDataModel.calculatePermissionsOnRootActiveTenant();
+
+        assertTrue(roleDataModel.isAllowedCreateRole());
+        assertTrue(roleDataModel.isAllowedUpdateRole());
+        assertTrue(roleDataModel.isAllowedDeleteRole());
+        assertTrue(roleDataModel.isAllowedReadRole());
+        assertTrue(roleDataModel.isAllowedAssociateRolePermission());
+    }
+
+    /**
+     * Test for method {@link RoleDataModel#calculatePermissionsOnRootActiveTenant()}
+     * Scenario: No ActiveTenant available
+     */
+    @Test
+    public void testCalcPermissionsNoActiveTenantAvailable() {
+        doReturn(null).when(activeTenantDataModelManager).getActiveTenant();
+        roleDataModel.calculatePermissionsOnRootActiveTenant();
+        assertFalse(roleDataModel.isAllowedCreateRole());
+        assertFalse(roleDataModel.isAllowedUpdateRole());
+        assertFalse(roleDataModel.isAllowedDeleteRole());
+        assertFalse(roleDataModel.isAllowedReadRole());
+        assertFalse(roleDataModel.isAllowedAssociateRolePermission());
+    }
+
+    /**
+     * Test for method {@link RoleDataModel#calculatePermissionsOnRootActiveTenant()}
+     * Scenario: No Tenant available
+     * @throws SystemException in case of any error regarding endpoint communication
+     */
+    @Test
+    public void testCalcPermissionsNoTenantAvailable() throws SystemException{
+        Long tenantId = 111L;
+        SystemActiveTenant activeTenant = mock(SystemActiveTenant.class);
+        doReturn(tenantId).when(activeTenant).getTenantId();
+        doReturn(Optional.empty()).when(tenantRESTServiceAccess).getTenantById(tenantId);
+        doReturn(activeTenant).when(activeTenantDataModelManager).getActiveTenant();
+        roleDataModel.calculatePermissionsOnRootActiveTenant();
+        assertFalse(roleDataModel.isAllowedCreateRole());
+        assertFalse(roleDataModel.isAllowedUpdateRole());
+        assertFalse(roleDataModel.isAllowedDeleteRole());
+        assertFalse(roleDataModel.isAllowedReadRole());
+        assertFalse(roleDataModel.isAllowedAssociateRolePermission());
+    }
+
+    /**
+     * Test for method {@link RoleDataModel#calculatePermissionsOnRootActiveTenant()}
+     * Scenario: Current Tenant available is not Root Type
+     * @throws SystemException in case of any error regarding endpoint communication
+     */
+    @Test
+    public void testCalcPermissionsNoRootTenantAvailable() throws SystemException {
+        Long tenantId = 111L;
+        SystemActiveTenant activeTenant = mock(SystemActiveTenant.class);
+        SystemTenant tenant = mock(SystemTenant.class);
+        doReturn(tenantId).when(tenant).getId();
+        doReturn(TenantType.CLIENT).when(tenant).getTenantType();
+        doReturn(tenantId).when(activeTenant).getTenantId();
+        doReturn(Optional.of(tenant)).when(tenantRESTServiceAccess).getTenantById(tenantId);
+        doReturn(activeTenant).when(activeTenantDataModelManager).getActiveTenant();
+        roleDataModel.calculatePermissionsOnRootActiveTenant();
+        assertFalse(roleDataModel.isAllowedCreateRole());
+        assertFalse(roleDataModel.isAllowedUpdateRole());
+        assertFalse(roleDataModel.isAllowedDeleteRole());
+        assertFalse(roleDataModel.isAllowedReadRole());
+        assertFalse(roleDataModel.isAllowedAssociateRolePermission());
+    }
+
+    /**
+     * Test for method {@link RoleDataModel#calculatePermissionsOnRootActiveTenant()}
+     * Scenario: Failure when checking permissions
+     * @throws SystemException in case of any error regarding endpoint communication
+     */
+    @Test
+    public void testCalcPermissionsWhenFailure() throws SystemException {
+        Long tenantId = 111L;
+        SystemActiveTenant activeTenant = mock(SystemActiveTenant.class);
+        SystemTenant tenant = mock(SystemTenant.class);
+        doReturn(tenantId).when(tenant).getId();
+        doReturn(TenantType.CLIENT).when(tenant).getTenantType();
+        doReturn(tenantId).when(activeTenant).getTenantId();
+        doReturn(activeTenant).when(activeTenantDataModelManager).getActiveTenant();
+        doThrow(new SystemException("error")).when(tenantRESTServiceAccess).getTenantById(tenantId);
+
+        roleDataModel.calculatePermissionsOnRootActiveTenant();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue(), captured.getSummary());
+    }
+
+    /**
+     * Test for getter {@link RoleDataModel#isAllowedReadRole()}
+     */
+    @Test
+    public void testIsAllowedReadRole() {
+        roleDataModel.setAllowedReadRole(true);
+        assertTrue(roleDataModel.isAllowedReadRole());
+    }
+
+    /**
+     * Test for getter {@link RoleDataModel#isAllowedCreateRole()}
+     */
+    @Test
+    public void testIsAllowedCreateRole() {
+        roleDataModel.setAllowedCreateRole(true);
+        assertTrue(roleDataModel.isAllowedCreateRole());
+    }
+
+    /**
+     * Test for getter {@link RoleDataModel#isAllowedUpdateRole()}
+     */
+    @Test
+    public void testIsAllowedUpdateRole() {
+        roleDataModel.setAllowedUpdateRole(true);
+        assertTrue(roleDataModel.isAllowedUpdateRole());
+    }
+
+    /**
+     * Test for getter {@link RoleDataModel#isAllowedDeleteRole()}
+     */
+    @Test
+    public void testIsAllowedDeleteRole() {
+        roleDataModel.setAllowedDeleteRole(true);
+        assertTrue(roleDataModel.isAllowedDeleteRole());
+    }
+
+    /**
+     * Test for getter {@link RoleDataModel#isAllowedAssociateRolePermission()} ()}
+     */
+    @Test
+    public void testIsAllowedAssociateRolePermission() {
+        roleDataModel.setAllowedAssociateRolePermission(true);
+        assertTrue(roleDataModel.isAllowedAssociateRolePermission());
+    }
 }

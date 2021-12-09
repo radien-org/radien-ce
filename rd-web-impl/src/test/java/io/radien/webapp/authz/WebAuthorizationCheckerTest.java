@@ -19,7 +19,6 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
-import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
@@ -43,9 +42,7 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_ALL;
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE;
-import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_ALL;
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -170,65 +167,6 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
         assertTrue(this.webAuthorizationChecker.hasGrant(tenantId, role1));
         assertFalse(this.webAuthorizationChecker.hasGrant(tenantId, role1));
         assertFalse(this.webAuthorizationChecker.hasGrant(tenantId, role2));
-    }
-
-    /**
-     * Test to validate if a specific current user has the correct role access for
-     * system administrator or user administrator
-     * @throws SystemException in case of any issue while validating the roles
-     */
-    @Test
-    public void testHasUserAdministratorRoleAccess() throws SystemException {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-
-        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), null);
-
-        assertFalse(webAuthorizationChecker.hasUserAdministratorRoleAccess());
-    }
-
-    /**
-     * Test to validate if a specific current user has the correct role access for
-     * system administrator or tenant administrator
-     * @throws SystemException in case of any issue while validating the roles
-     */
-    @Test
-    public void testHasTenantAdministratorRoleAccess() {
-        HttpSession session = Mockito.mock(HttpSession.class);
-        when(servletRequest.getSession()).thenReturn(session);
-
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-
-        Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.TENANT_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.CLIENT_TENANT_ADMINISTRATOR.getRoleName(), null);
-        doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
-                1001L, SystemRolesEnum.SUB_TENANT_ADMINISTRATOR.getRoleName(), null);
-
-        assertFalse(webAuthorizationChecker.hasTenantAdministratorRoleAccess());
     }
 
     /**

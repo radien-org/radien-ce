@@ -18,7 +18,6 @@ package io.radien.webapp.authz;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
-import io.radien.api.service.role.SystemRolesEnum;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -33,8 +32,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE;
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
@@ -46,6 +43,7 @@ import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY
 @Named("authzChecker")
 public class WebAuthorizationChecker extends AuthorizationChecker {
 
+    private static final long serialVersionUID = -2440821831002121277L;
     @Inject
     HttpServletRequest servletRequest;
 
@@ -60,7 +58,7 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
         return this.servletRequest;
     }
 
-    private Logger log = LoggerFactory.getLogger(WebAuthorizationChecker.class);
+    private final transient Logger log = LoggerFactory.getLogger(WebAuthorizationChecker.class);
 
     /**
      * Will get the active user id
@@ -98,45 +96,6 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     public boolean hasGrant(Long tenantId, String roleName) {
         try {
             return super.hasGrant(tenantId, roleName);
-        }
-        catch (Exception e) {
-            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
-            return false;
-        }
-    }
-
-    /**
-     * Validates if the current user has any of the multiple correct roles given
-     * System Administrator or User Administrator
-     * @return true if user has one of those
-     */
-    public boolean hasUserAdministratorRoleAccess() {
-        try {
-            List<String> roleNames = new ArrayList<>();
-            roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
-            return super.hasGrantMultipleRoles(roleNames);
-        }
-        catch (Exception e) {
-            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
-            return false;
-        }
-    }
-
-    /**
-     * Verifies if the current logged user has relevant roles to perform actions
-     * regarding tenant administration. It includes System Administrator, Tenant Administrator
-     * Client Tenant Administrator and Sub Tenant Administrator
-     * @return true if user has some of these roles, otherwise false
-     */
-    public boolean hasTenantAdministratorRoleAccess() {
-        try {
-            List<String> roleNames = new ArrayList<>();
-            roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.TENANT_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.CLIENT_TENANT_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.SUB_TENANT_ADMINISTRATOR.getRoleName());
-            return super.hasGrantMultipleRoles(roleNames);
         }
         catch (Exception e) {
             log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);

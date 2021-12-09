@@ -66,6 +66,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -128,7 +129,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
         SystemUser selectedUser = new User(); selectedUser.setId(3L); selectedUser.setLogon("a.b");
 
-        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(anyString(), anyString(), anyLong());
         doReturn(Optional.of(user)).when(userRESTServiceAccess).getUserByLogon(any());
 
         // Call on load to check permission
@@ -138,13 +139,13 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         this.userDataModel.setUser(user);
 
         boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
-        assertTrue(expected);
+        assertFalse(expected);
 
         // Set selectedUser
         this.userDataModel.setSelectedUser(selectedUser);
 
         expected = this.userDataModel.isTenantAssociationProcessAllowed();
-        assertTrue(expected);
+        assertFalse(expected);
     }
 
     /**
@@ -152,8 +153,9 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      * Failure Case - No role available
      */
     @Test
-    public void testIsTenantAssociationProcessAllowedFailNoRoleAvailable() throws SystemException {
-        doReturn(Boolean.FALSE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
+    public void testIsTenantAssociationProcessAllowedFailNoRoleAvailable() {
+        doReturn(Boolean.FALSE).when(webAuthorizationChecker).hasPermissionAccess(SystemResourcesEnum.TENANT_ROLE_USER.getResourceName(),
+                SystemActionsEnum.ACTION_CREATE.getActionName(), null);
 
         // Call on load to check permission
         this.userDataModel.onload();
@@ -169,7 +171,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     @Test
     public void testIsTenantAssociationProcessAllowedFailNoUserAvailable() {
 
-       userDataModel.setHasTenantAdministratorRoleAccess(true);
+       userDataModel.setAllowedAssociateTenantAndUser(true);
 
         boolean expected = this.userDataModel.isTenantAssociationProcessAllowed();
         assertFalse(expected);
@@ -183,9 +185,11 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     public void testIsTenantAssociationProcessAllowedFoundUserAvailable() throws SystemException {
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
         Optional<SystemUser> optionalSystemUser = Optional.of(user);
-        userDataModel.setHasTenantAdministratorRoleAccess(true);
+        userDataModel.setAllowedAssociateTenantAndUser(true);
 
-        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
+        doReturn(Boolean.TRUE).when(webAuthorizationChecker).hasPermissionAccess(
+                SystemResourcesEnum.TENANT_ROLE_USER.getResourceName(),
+                SystemActionsEnum.ACTION_CREATE.getActionName(), null);
         doReturn(optionalSystemUser).when(userRESTServiceAccess).getUserByLogon(user.getLogon());
 
         // Call on load to check permission
@@ -205,9 +209,11 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     @Test
     public void testIsTenantAssociationProcessAllowedFailException() throws SystemException {
         SystemUser user = new User(); user.setId(1L); user.setLogon("a.bdd");
-        userDataModel.setHasTenantAdministratorRoleAccess(true);
+        userDataModel.setAllowedAssociateTenantAndUser(true);
 
-        doReturn(Boolean.FALSE).when(webAuthorizationChecker).hasTenantAdministratorRoleAccess();
+        doReturn(Boolean.FALSE).when(webAuthorizationChecker).hasPermissionAccess(
+                SystemResourcesEnum.TENANT_ROLE_USER.getResourceName(),
+                SystemActionsEnum.ACTION_CREATE.getActionName(), null);
         doThrow(new SystemException("test")).when(userRESTServiceAccess).getUserByLogon(user.getLogon());
 
         // Call on load to check permission
@@ -233,8 +239,8 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testGetterSetterForHasTenantAdministratorRoles() {
-        this.userDataModel.setHasTenantAdministratorRoleAccess(true);
-        assertTrue(this.userDataModel.isHasTenantAdministratorRoleAccess());
+        this.userDataModel.setAllowedAssociateTenantAndUser(true);
+        assertTrue(this.userDataModel.isAllowedAssociateTenantAndUser());
     }
 
 
@@ -365,10 +371,10 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testInit() {
-        userDataModel.setHasTenantAdministratorRoleAccess(true);
+        userDataModel.setAllowedAssociateTenantAndUser(true);
         when(webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_READ.getActionName(), null)).thenReturn(Boolean.TRUE);
-        when(webAuthorizationChecker.hasTenantAdministratorRoleAccess()).thenReturn(Boolean.TRUE);
-
+        when(webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.TENANT_ROLE_USER.getResourceName(),
+                SystemActionsEnum.ACTION_CREATE.getActionName(), null)).thenReturn(Boolean.TRUE);
         ActiveTenant activeTenant = new ActiveTenant(); activeTenant.setTenantId(1L);
         when(activeTenantDataModelManager.getActiveTenant()).thenReturn(activeTenant);
         when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
@@ -377,24 +383,6 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
         assertEquals(activeTenant.getTenantId(), ((LazyTenantingUserDataModel) userDataModel.
                 getLazyUserDataModel()).getTenantId());
-    }
-
-    /**
-     * Test for method {@link UserDataModel#init()}
-     * Asserts lazyUserDataModel object
-     */
-    @Test
-    public void testInitWhenNullTenantId() {
-
-        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenReturn(Boolean.FALSE);
-        userDataModel.setAllowedDeleteUser(true);
-        userDataModel.setAllowedReadUser(true);
-        userDataModel.setAllowedUpdateUser(true);
-        userDataModel.setAllowedCreateUser(true);
-        when(activeTenantDataModelManager.isTenantActive()).thenReturn(Boolean.TRUE);
-        when(webAuthorizationChecker.hasUserAdministratorRoleAccess()).thenThrow(new RuntimeException("error"));
-        userDataModel.init();
-        assertNull(userDataModel.getLazyUserDataModel().getRowData());
     }
 
     /**
@@ -551,7 +539,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
     /**
      * Test for method {@link UserDataModel#deleteUser()}
-     * @throws SystemException 
+     * @throws SystemException in case of any issue regarding REST API communication
      */
     @Test
     public void testDeleteUser() throws SystemException {
