@@ -18,6 +18,7 @@ package io.radien.webapp.security;
 import io.radien.api.KeycloakConfigs;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.kernel.messages.SystemMessages;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
@@ -26,7 +27,6 @@ import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
-import io.radien.security.openid.utils.URLUtils;
 import io.radien.webapp.JSFUtil;
 import java.io.IOException;
 import java.util.Optional;
@@ -321,15 +321,34 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		String keyCloakLogoutURL = String.format(IDP_LOGOUT_URL_PATTERN,
 				config.getValue(KeycloakConfigs.IDP_URL.propKey(), String.class),
 				config.getValue(KeycloakConfigs.APP_REALM.propKey(), String.class));
-		return keyCloakLogoutURL + "?redirect_uri=" + getApplicationURL(request);
+		return keyCloakLogoutURL + "?redirect_uri=" + getRedirectionURL(request);
 	}
 
 	/**
-	 * Retrieves the base url (schema + server name + port + context) for the current application
-	 * @return String that represent the context url path
+	 * Retrieves the redirection URL that corresponds for the current application
+	 * (To be used as callback uri regarding the logout process)
+	 * @return String that represent the redirection url path
 	 */
-	protected String getApplicationURL(HttpServletRequest request) {
-		String applicationUrl = URLUtils.getAppContextURL(request);
+	protected String getRedirectionURL(HttpServletRequest request) {
+		String host = oaf.getProperty(OAFProperties.SYS_HOSTNAME);
+		String context = oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
+
+		if (host.startsWith(SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message())) {
+			log.info("Property {} not defined", OAFProperties.SYS_HOSTNAME);
+			StringBuilder sb = new StringBuilder();
+			sb.append(request.getScheme()).append("://");
+			sb.append(request.getServerName());
+			if (request.getServerName().equals("localhost")) {
+				sb.append(":");
+				sb.append(request.getServerPort());
+			}
+			host = sb.toString();
+		}
+		if (context.startsWith(SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message())) {
+			log.info("Property {} not defined", OAFProperties.SYS_APPLICATION_CONTEXT);
+			context = request.getContextPath();
+		}
+		String applicationUrl = host + context;
 		log.info("application url {}", applicationUrl);
 		return applicationUrl;
 	}

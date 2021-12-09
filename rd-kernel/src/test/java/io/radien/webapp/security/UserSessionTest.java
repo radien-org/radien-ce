@@ -16,6 +16,8 @@
 package io.radien.webapp.security;
 
 import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
+import io.radien.api.kernel.messages.SystemMessages;
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.entities.User;
 
@@ -330,10 +332,21 @@ public class UserSessionTest {
         when(user.isEnabled()).thenReturn(Boolean.TRUE);
         userSession.setUser(user);
 
+        String host = oaf.getProperty(OAFProperties.SYS_HOSTNAME);
+        String context = oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
+
+        when(oaf.getProperty(OAFProperties.SYS_HOSTNAME)).
+                thenReturn(SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message() +
+                        OAFProperties.SYS_HOSTNAME.propKey());
+
+        when(oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT)).
+                thenReturn(SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message() +
+                        OAFProperties.SYS_APPLICATION_CONTEXT.propKey());
+
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getScheme()).thenReturn("https");
-        when(request.getServerName()).thenReturn("int.radien.io");
-        when(request.getServerPort()).thenReturn(0);
+        when(request.getServerName()).thenReturn("localhost");
+        when(request.getServerPort()).thenReturn(8443);
         when(request.getContextPath()).thenReturn("/web");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
