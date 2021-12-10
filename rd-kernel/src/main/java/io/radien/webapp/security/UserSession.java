@@ -83,7 +83,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	private void init() {
 		log.info("Session initiated");
 		if(language == null) {
-			language = "en";
+			language = "de";
 		}
 		localeManager.setActiveLanguage(language);
 	}
