@@ -162,8 +162,9 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 * Content service folder contents getter
 	 * @param path to be retrieved
 	 * @return a list of all the contents existent in a given path
+	 * @throws Exception 
 	 */
-	List<EnterpriseContent> getFolderContents(String path);
+	List<EnterpriseContent> getFolderContents(String path) throws Exception;
 
 	/**
 	 * Content service content versions getter
@@ -172,7 +173,6 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 */
 	List<EnterpriseContent> getContentVersions(String path);
 
-	//TODO: What is this?
 	String getOrCreateDocumentsPath(String path);
 
 	/**
