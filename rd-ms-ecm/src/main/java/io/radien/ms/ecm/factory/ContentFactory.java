@@ -19,8 +19,10 @@ package io.radien.ms.ecm.factory;
 import com.google.common.io.ByteStreams;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.*;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.ecm.constants.CmsConstants;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -37,6 +39,8 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeTypeDefinition;
+import javax.json.JsonArray;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -180,32 +184,43 @@ public @RequestScoped class ContentFactory implements Serializable {
 	}
 
 	private void getFileResource(JSONObject json, EnterpriseContent content) throws IOException {
-		InputStream stream = null;
-		try {
-			String file = (String) json.get("file");
-			if (StringUtils.isNotBlank(file)) {
-				stream = getClass().getClassLoader().getResourceAsStream(file);
+	    InputStream stream = null;
+	    try {
 
-				if (stream != null) {
-					byte[] fileArray = IOUtils.toByteArray(stream);
-					log.trace("Read {} bytes from content file with path: {}", fileArray.length, file);
-					log.trace("Content Read from file {}", fileArray);
-					content.setFile(fileArray);
+	        String fileString = (String) json.get("file");
 
-					String filePath = getClass().getClassLoader().getResource(file).getPath();
-					String mimeType = Files.probeContentType(new File(filePath).toPath());
-					content.setMimeType(mimeType);
+	        if(!fileString.isEmpty()) {
+	            if(fileString.contains(",")) {
+	                String file = fileString.substring(1, fileString.length() - 1);
+	                List<Byte> listaDeString = Arrays.stream(file.split(", ")).map(Byte::valueOf).collect(Collectors.toList());
+	                Byte[] bytes = listaDeString.toArray(new Byte[listaDeString.size()]);
+	                byte[] bArray = ArrayUtils.toPrimitive(bytes);
+	                content.setFileSize(bArray.length);
+	                content.setFile(bArray);
+	            } else {
+	                stream = getClass().getClassLoader().getResourceAsStream(fileString);
 
-					content.setFileSize(fileArray.length);
-				}
-			}
-		} catch (Exception e) {
-			log.warn("Error converting json object", e);
-		} finally {
-			if (stream != null) {
-				stream.close();
-			}
-		}
+	                if (stream != null) {
+	                    byte[] fileArray = IOUtils.toByteArray(stream);
+	                    log.trace("Read {} bytes from content file with path: {}", fileArray.length, fileString);
+	                    log.trace("Content Read from file {}", fileArray);
+	                    content.setFile(fileArray);
+
+	                    String filePath = getClass().getClassLoader().getResource(fileString).getPath();
+	                    String mimeType = Files.probeContentType(new File(filePath).toPath());
+	                    content.setMimeType(mimeType);
+
+	                    content.setFileSize(fileArray.length);
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        log.warn("Error converting json object", e);
+	    } finally {
+	        if (stream != null) {
+	            stream.close();
+	        }
+	    }
 	}
 
 	public boolean isRadienNode(Node node) {
