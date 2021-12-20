@@ -746,5 +746,41 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	public OAFAccess getOAF() {
 		return oaf;
 	}
+	
+	public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+	    Session session = createSession();
+	    try {
+	        String root = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
+	        Node docsNode = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
+	        if (docsNode == null) {
+	            throw new RepositoryException(String.format("%s not found", CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS));
+	        }
+	        JcrUtils.getOrCreateByPath(String.format("/%s/%s%s", root, docsNode.getName(), path), JcrConstants.NT_FOLDER, session);
+	        session.save();
+	    } catch (Exception e) {
+	        log.error("ERROR " , e);
+	    }finally {
+	        session.logout();
+	    }
+	    return path;
+	}
+
+    public List<EnterpriseContent> getFolderContents(String path) throws Exception {
+        Session session = createSession();
+        List<EnterpriseContent> results = new ArrayList<>();
+        try {
+            Node resultNode = session.getRootNode().getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT));
+            if (resultNode != null) {
+                resultNode = resultNode.getNode(String.format("%s%s", getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_DOCS), path));
+            }
+            loopNodes(results, resultNode, 0, 1);
+        } catch (Exception e) {
+            log.error("ERROR " , e);
+            throw e;
+        }finally {
+            session.logout();
+        }
+        return results;
+    }
 
 }

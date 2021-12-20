@@ -63,6 +63,18 @@ public class ContentController {
                                                           @PathParam(value = "lang") String lang) {
         return contentServiceAccess.getByViewIdLanguage(id,true,lang);
     }
+    
+    @GET
+    @Path(value = "/content/getOrCreateDocumentsPath")
+    public String getOrCreateDocumentsPath(@QueryParam("path") String path) {
+        return contentServiceAccess.getOrCreateDocumentsPath(path);
+    }
+    
+    @GET
+    @Path(value = "/content/getFolderContents")
+    public  List<EnterpriseContent> getFolderContents(@QueryParam("path") String path) throws Exception {
+        return contentServiceAccess.getFolderContents(path);
+    }
 
     @POST
     @Path("/content")

@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.jcr.RepositoryException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -103,8 +105,8 @@ class ContentService implements ContentServiceAccess {
     }
 
     @Override
-    public List<EnterpriseContent> getFolderContents(String path) {
-        return null;
+    public List<EnterpriseContent> getFolderContents(String path) throws Exception {
+        return contentRepository.getFolderContents(path);
     }
 
     @Override
@@ -114,7 +116,12 @@ class ContentService implements ContentServiceAccess {
 
     @Override
     public String getOrCreateDocumentsPath(String path) {
-        return null;
+        try {
+            return contentRepository.getOrCreateDocumentsPath(path);
+        } catch (ContentRepositoryNotAvailableException | RepositoryException e) {
+            log.error("Error on getOrCreateDocumentsPath", e);
+            return null;
+        }
     }
 
     @Override
