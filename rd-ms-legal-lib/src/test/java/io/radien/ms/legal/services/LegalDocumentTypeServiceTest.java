@@ -285,15 +285,15 @@ public class LegalDocumentTypeServiceTest {
         Page page  = legalDocumentTypeService.getAll("T%", 1, 1,
                 Arrays.asList(SystemVariables.ID.getFieldName(), SystemVariables.NAME.getFieldName()), true);
 
-        assertEquals(page.getTotalPages(), 3);
-        assertEquals(page.getCurrentPage(), 1);
-        assertEquals(page.getTotalResults(), 3);
+        assertEquals(3, page.getTotalPages());
+        assertEquals(1, page.getCurrentPage());
+        assertEquals(3, page.getTotalResults());
 
         page  = legalDocumentTypeService.getAll(null, 1, 1, null, false);
-        assertEquals(page.getTotalPages(), 4);
+        assertEquals(4, page.getTotalPages());
 
         page  = legalDocumentTypeService.getAll("ZZ", 1, 1, null, false);
-        assertEquals(page.getTotalPages(), 0);
+        assertEquals(0, page.getTotalPages());
 
         legalDocumentTypeService.delete(legalDocumentType.getId());
         legalDocumentTypeService.delete(legalDocumentType2.getId());
