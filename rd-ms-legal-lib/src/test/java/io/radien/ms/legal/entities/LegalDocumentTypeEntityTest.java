@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present openappframe.org & its legal owners. All rights reserved.
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,21 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-package io.radien.ms.ecm.client.entities.legal;
+package io.radien.ms.legal.entities;
 
+import io.radien.ms.ecm.client.entities.legal.LegalDocumentType;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
- * Test class for {@link LegalDocumentType}
+ * Test for class {@link LegalDocumentTypeEntity}
  */
-public class LegalDocumentTypeTest {
+public class LegalDocumentTypeEntityTest {
 
     /**
-     * Test for constructor {@link LegalDocumentType#LegalDocumentType(LegalDocumentType)}
+     * Test for constructor {@link LegalDocumentTypeEntity#LegalDocumentTypeEntity(LegalDocumentType)}
      */
     @Test
     public void testConstructor() {
@@ -37,12 +38,16 @@ public class LegalDocumentTypeTest {
         ldt.setToBeShown(true);
         ldt.setToBeAccepted(true);
 
-        LegalDocumentType ldt2 = new LegalDocumentType(ldt);
+        LegalDocumentTypeEntity ldt2 = new LegalDocumentTypeEntity(ldt);
 
         assertEquals(ldt.getId(), ldt2.getId());
         assertEquals(ldt.getName(), ldt2.getName());
         assertEquals(ldt.getTenantId(), ldt2.getTenantId());
         assertEquals(ldt.isToBeShown(), ldt2.isToBeShown());
         assertEquals(ldt.isToBeAccepted(), ldt2.isToBeAccepted());
+
+        LegalDocumentTypeEntity ldt3 = new LegalDocumentTypeEntity();
+        assertFalse(ldt3.isToBeAccepted());
+        assertFalse(ldt3.isToBeShown());
     }
 }

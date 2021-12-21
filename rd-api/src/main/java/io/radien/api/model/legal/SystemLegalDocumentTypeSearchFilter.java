@@ -15,6 +15,7 @@
  */
 package io.radien.api.model.legal;
 
+import io.radien.api.search.SystemSearchFilterCriteria;
 import io.radien.api.search.SystemSearchableByIds;
 
 /**
@@ -22,7 +23,7 @@ import io.radien.api.search.SystemSearchableByIds;
  *
  * @author Newton Carvalho
  */
-public interface SystemLegalDocumentTypeSearchFilter extends SystemSearchableByIds {
+public interface SystemLegalDocumentTypeSearchFilter extends SystemSearchFilterCriteria, SystemSearchableByIds {
 
     /**
      * Getter method regarding <strong>name</strong> search property

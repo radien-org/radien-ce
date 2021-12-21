@@ -20,6 +20,7 @@
 		<module>rd-ms-authz-client</module>
 		<module>rd-ms-ecm</module>
 		<module>rd-ms-ecm-client</module>
+		<module>rd-ms-legal-lib</module>
 		<module>rd-ms-usermanagement</module>
 		<module>rd-ms-usermanagement-client</module>
 		<module>rd-ms-tenantmanagement</module>
@@ -184,6 +185,11 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-ecm-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-legal-lib</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
