@@ -31,8 +31,8 @@ public class LegalDocumentTypeSearchFilter extends SearchableByIds
 
     private String name;
     private Long tenantId;
-    private boolean toBeShown;
-    private boolean toBeAccepted;
+    private Boolean toBeShown;
+    private Boolean toBeAccepted;
 
     /**
      * Default empty constructor
@@ -49,8 +49,8 @@ public class LegalDocumentTypeSearchFilter extends SearchableByIds
      * @param isExact to be search
      * @param isLogicConjunction to be search
      */
-    public LegalDocumentTypeSearchFilter(String name, Long tenantId, boolean toBeShown,
-                                         boolean toBeAccepted, Collection<Long> ids,
+    public LegalDocumentTypeSearchFilter(String name, Long tenantId, Boolean toBeShown,
+                                         Boolean toBeAccepted, Collection<Long> ids,
                                          boolean isExact, boolean isLogicConjunction) {
         super(ids, isExact, isLogicConjunction);
         this.setName(name);

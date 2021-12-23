@@ -18,6 +18,7 @@ package io.radien.api.util;
 import io.radien.api.SystemVariables;
 import java.io.Serializable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +50,8 @@ public class ModelServiceUtil implements Serializable {
      * @return An entity model based object predicate
      */
     public static Predicate getFilteredPredicateFromModelService(boolean isFilterIds,
-                                                                List<Long>  filterIds, boolean filterIsLogicConjunction,
-                                                                CriteriaBuilder criteriaBuilder, Root<?> objectRoot){
+                                                                 Collection<Long> filterIds, boolean filterIsLogicConjunction,
+                                                                 CriteriaBuilder criteriaBuilder, Root<?> objectRoot){
         Predicate global;
         // is LogicalConjunction represents if you join the fields on the predicates with "or" or "and"
         // the predicate is build with the logic (start,operator,newPredicate)
@@ -129,10 +130,10 @@ public class ModelServiceUtil implements Serializable {
                                              CriteriaBuilder criteriaBuilder,
                                              Expression<? extends Object> objectExpression, Predicate global){
         Predicate subPredicate;
-        if (filterIsExact) {
-            subPredicate = criteriaBuilder.equal(objectExpression, value);
-        } else {
+        if (value instanceof String && !filterIsExact) {
             subPredicate = criteriaBuilder.like((Expression<String>)  objectExpression, "%" + value + "%");
+        } else {
+            subPredicate = criteriaBuilder.equal(objectExpression, value);
         }
 
         if(filterIsLogicConjunction) {

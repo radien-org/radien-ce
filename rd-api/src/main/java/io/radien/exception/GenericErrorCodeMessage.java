@@ -54,7 +54,8 @@ public enum GenericErrorCodeMessage {
     INIT_CONNECTION_TIME_REBOOT("G15", "init.connection.time.reboot", "Connection was opened {0} since last reboot {1}"),
     ENTITY_ID_NULL("G16", "entity.id.null", "{0} id was null. Skipped"),
     INVALID_VALUE_FOR_PARAMETER("G17", "invalid.value.for.parameter", "Invalid value for parameter %s"),
-
+    DUPLICATED_FIELD_COMBINATION("G18", "error.duplicated.field.combination",
+            "There is more than one resource with the same value for the fields: %s and %s"),
     /**
      * Tenant Business Error Code Messages
      */
@@ -117,6 +118,12 @@ public enum GenericErrorCodeMessage {
     ACTIVE_TENANT_ERROR_VALIDATING("AC2", "error.validating.active.tenant",
             "Error checking active tenants"),
     ACTIVE_TENANT_ERROR_MISSING_CORE_PARAMETERS("AC3", "error.insufficient.params", "Insufficient params to perform operation. Is necessary at least tenant or user id"),
+
+
+    /**
+     * Legal Document Types Code Message
+     */
+    LEGAL_DOCUMENT_TYPE_FIELD_MANDATORY("LDT1", "error.legal.document.type.field.mandatory", "Field %s is mandatory."),
 
     /**
      * Permission Business Error Code Messages
