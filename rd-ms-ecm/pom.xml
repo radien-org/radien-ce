@@ -96,14 +96,6 @@
 		</dependency>
 		<dependency>
 			<groupId>io.radien</groupId>
-			<artifactId>rd-ms-openid</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-ms-legal-lib</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-ecm-client</artifactId>
 		</dependency>
 		<dependency>

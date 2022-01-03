@@ -16,9 +16,8 @@
  */
 package io.radien.ms.ecm.client.entities.legal;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * Test class for {@link LegalDocumentType}

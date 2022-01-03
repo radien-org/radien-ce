@@ -18,12 +18,13 @@ package io.radien.ms.ecm.client.entities.legal;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * Test class {@link LegalDocumentTypeSearchFilter}
@@ -38,8 +39,8 @@ public class LegalDocumentTypeSearchFilterTest {
         LegalDocumentTypeSearchFilter filter = new LegalDocumentTypeSearchFilter();
         assertNull(filter.getIds());
         assertNull(filter.getName());
-        assertNull(filter.isToBeShown());
-        assertNull(filter.isToBeAccepted());
+        assertFalse(filter.isToBeShown());
+        assertFalse(filter.isToBeAccepted());
         assertFalse(filter.isExact());
         assertFalse(filter.isLogicConjunction());
 
