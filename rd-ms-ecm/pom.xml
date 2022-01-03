@@ -200,28 +200,6 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.12.7</version>
 		</dependency>
-		<!--JNoSQL Dependencies -->
-		<!-- https://mvnrepository.com/artifact/org.jnosql/jnosql-parent -->
-		<dependency>
-			<groupId>org.jnosql.diana</groupId>
-			<artifactId>diana-document</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jnosql.diana</groupId>
-			<artifactId>mongodb-driver</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jnosql.artemis</groupId>
-			<artifactId>artemis-configuration</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jnosql.artemis</groupId>
-			<artifactId>artemis-document</artifactId>
-			<version>0.0.9</version>
-		</dependency>
 		<!-- Commons -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -231,8 +209,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-
-
 
 		<!-- -->
 		<!-- EVAL -->

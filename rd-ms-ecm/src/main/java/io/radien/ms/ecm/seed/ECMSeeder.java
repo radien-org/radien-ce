@@ -2,15 +2,11 @@ package io.radien.ms.ecm.seed;
 
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
-import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.ContentRepository;
-import io.radien.ms.ecm.client.entities.I18NProperty;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
-import io.radien.ms.ecm.domain.ResourceBundleLoader;
 import io.radien.ms.ecm.event.ApplicationInitializedEvent;
-import io.radien.ms.ecm.service.I18NPropertyService;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -30,10 +26,6 @@ import java.util.stream.Collectors;
 public @ApplicationScoped class ECMSeeder {
     private static final Logger log = LoggerFactory.getLogger(ECMSeeder.class);
 
-    private ResourceBundleLoader dataProvider;
-
-    @Inject
-    private I18NPropertyService i18n;
     @Inject
     private ContentRepository repository;
     @Inject
@@ -56,34 +48,8 @@ public @ApplicationScoped class ECMSeeder {
         log.info("Initializing CMS");
         if (Boolean.parseBoolean(config.getValue("system.jcr.seed.content", String.class))) {
             boolean insertOnly = Boolean.parseBoolean(config.getValue("system.jcr.seed.insert.only", String.class));
-            dataProvider = new ResourceBundleLoader(supportedLanguages, defaultLanguage);
-            initI18NProperties(insertOnly);
             initStructure();
             initContent(insertOnly);
-        }
-    }
-
-    private void initI18NProperties(boolean insertOnly) {
-        List<I18NProperty> allProperties = dataProvider.getAllProperties();
-        List<String> currentProperties = i18n.getAll().stream().map(I18NProperty::getKey).collect(Collectors.toList());
-        for (I18NProperty property : allProperties) {
-            if (insertOnly) {
-                if (!currentProperties.contains(property.getKey())) {
-                    saveProperty(property);
-                } else {
-                    log.info("Property skipped {}; Already existing.", property.getKey());
-                }
-            } else {
-                saveProperty(property);
-            }
-        }
-    }
-
-    private void saveProperty(I18NProperty property) {
-        try {
-            i18n.save(property);
-        } catch (Exception e) {
-            log.warn("error saving property: {}", property.getKey(), e);
         }
     }
 
