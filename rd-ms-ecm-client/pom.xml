@@ -151,11 +151,7 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-mp-client</artifactId>
-			<scope>provided</scope>
-		</dependency>
+
 
 		<!-- -->
 		<!-- EVAL -->
@@ -208,9 +204,5 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>io.radien</groupId>
-            <artifactId>rd-ms-authz-client</artifactId>
-        </dependency>
-    </dependencies>
+	</dependencies>
 </project>
