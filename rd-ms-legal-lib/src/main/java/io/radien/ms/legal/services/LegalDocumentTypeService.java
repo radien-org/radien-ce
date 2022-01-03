@@ -85,10 +85,6 @@ public class LegalDocumentTypeService implements LegalDocumentTypeServiceAccess 
      */
     public Page<SystemLegalDocumentType> getAll(String search, int pageNo, int pageSize, List<String> sortBy,
                                                 boolean isAscending) {
-
-        log.info("Retrieving legal document types using pagination, search {} pageNo {}, pageSize {}, sortBy {} asc {}",
-                search, pageNo, pageSize, sortBy, isAscending);
-
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<LegalDocumentTypeEntity> criteriaQuery = criteriaBuilder.createQuery(LegalDocumentTypeEntity.class);
         Root<LegalDocumentTypeEntity> entityRoot = criteriaQuery.from(LegalDocumentTypeEntity.class);
