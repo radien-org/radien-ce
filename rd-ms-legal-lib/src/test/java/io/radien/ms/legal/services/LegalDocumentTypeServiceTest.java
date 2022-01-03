@@ -54,6 +54,11 @@ public class LegalDocumentTypeServiceTest {
     @BeforeClass
     public static void start() {
         p = new Properties();
+        p.put("appframeDatabase", "new://Resource?type=DataSource");
+        p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
+        p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radien");
+        p.put("appframeDatabase.userName", "sa");
+        p.put("appframeDatabase.password", "");
         container = EJBContainer.createEJBContainer(p);
     }
 
