@@ -32,5 +32,45 @@
     "tags": [
       "Cloud radien"
     ]
+  },
+  {
+    "viewId": "termsAndConditions.pdf;123",
+    "contentType": "document",
+    "language": "de",
+    "active": "true",
+    "system": "true",
+    "name": "TermsAndConditions",
+    "image": "logo.png",
+    "parentPath": "/radien/rd_documents/legal_documents",
+    "file": "legal_documents/DS-Hinweise Pro-Tec.pdf",
+    "versionable": "true",
+    "updateOnLaunch": "false",
+    "versionComment": "Initial EN Version",
+    "validDate": "2020-07-28",
+    "externalPublic": "true",
+    "version": "1.0.0",
+    "tags": [
+      "Cloud radien"
+    ]
+  },
+  {
+    "viewId": "legalData.pdf;123",
+    "contentType": "document",
+    "language": "de",
+    "active": "true",
+    "system": "true",
+    "name": "LegalData",
+    "image": "logo.png",
+    "parentPath": "/radien/rd_documents/legal_documents",
+    "file": "legal_documents/Nutzungsbedingungen.pdf",
+    "versionable": "true",
+    "updateOnLaunch": "false",
+    "versionComment": "Initial EN Version",
+    "validDate": "2020-07-28",
+    "externalPublic": "true",
+    "version": "1.0.0",
+    "tags": [
+      "Cloud radien"
+    ]
   }
 ]
