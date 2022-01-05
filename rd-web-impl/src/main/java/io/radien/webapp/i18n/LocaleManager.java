@@ -54,12 +54,14 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 	private OAFAccess oaf;
 
 	public void languageChanged(ValueChangeEvent e) {
-		String newLocaleValue = e.getNewValue().toString();
+		languageChangedReceivedValue(e.getNewValue().toString());
+	}
+
+	public void languageChangedReceivedValue(String languageReceived) {
 		for (String language : super.getSupportedLanguages()) {
-			if (language.equals(newLocaleValue)) {
+			if (language.equals(languageReceived)) {
 				FacesContext.getCurrentInstance().getViewRoot().setLocale(oaf.findLocale(language));
-				userSession.setLanguage(newLocaleValue);
-				super.setActiveLanguage(newLocaleValue);
+				userSession.setLanguage(languageReceived);
 			}
 		}
 	}
