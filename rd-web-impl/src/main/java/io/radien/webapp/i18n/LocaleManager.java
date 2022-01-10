@@ -62,6 +62,7 @@ public class LocaleManager extends AbstractLocaleManager implements LocaleManage
 			if (language.equals(languageReceived)) {
 				FacesContext.getCurrentInstance().getViewRoot().setLocale(oaf.findLocale(language));
 				userSession.setLanguage(languageReceived);
+				super.setActiveLanguage(languageReceived);
 			}
 		}
 	}
