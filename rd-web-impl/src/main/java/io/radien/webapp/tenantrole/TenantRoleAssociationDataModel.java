@@ -98,7 +98,7 @@ public class TenantRoleAssociationDataModel extends AbstractManager {
     /**
      * Makes the LazyDataModel perform the onload event/method
      */
-    @ActiveTenantMandatory
+
     public void onload() {
         init();
     }

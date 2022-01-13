@@ -83,7 +83,7 @@ public class PermissionDataModel extends AbstractManager implements Serializable
     /**
      * Data reload method
      */
-    @ActiveTenantMandatory
+
     public void onload() {
         init();
     }
@@ -219,7 +219,7 @@ public class PermissionDataModel extends AbstractManager implements Serializable
      * Prepare a selected permission to be updated
      * @return the correct page to where the user should be redirected
      */
-    @ActiveTenantMandatory
+
     public String editRecords() {
         try {
             if (selectedPermission != null && selectedPermission.getId() != null) {

@@ -99,7 +99,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
-    @ActiveTenantMandatory
+
     public void onload() {
         init();
     }
@@ -111,7 +111,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @return a string value to redirect the user into the correct page either send him to the table in case of success,
      * or into the edit menu in case of error
      */
-    @ActiveTenantMandatory
+
     public String save(SystemTenant systemTenantToSave) {
         try {
             fillParentClientId(systemTenantToSave);
@@ -138,7 +138,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Automatically fill the parent id and client id if necessary
      * @param systemTenantToSave system tenant to be updated
      */
-    @ActiveTenantMandatory
+
     private void fillParentClientId(SystemTenant systemTenantToSave) throws SystemException {
         if(systemTenantToSave.getTenantType().equals(TenantType.CLIENT)) {
             retrieveParentTenantId(systemTenantToSave);
@@ -152,7 +152,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * By a given tenant will calculate the previous one the given belongs to (parent tenant)
      * @param systemTenantToSave to be verified
      */
-    @ActiveTenantMandatory
+
     private void retrieveParentTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
             List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUserId(), null);
@@ -171,7 +171,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * By a given tenant will calculate the previous client one the given belongs to (client tenant)
      * @param systemTenantToSave to be verified
      */
-    @ActiveTenantMandatory
+
     private void retrieveClientTenantId(SystemTenant systemTenantToSave) throws SystemException {
         try {
             List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userSession.getUserId(), null);
@@ -193,7 +193,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @param tenantId of the last upper tenant
      * @throws SystemException in case of token expiration or any issue on the application
      */
-    @ActiveTenantMandatory
+
     private void requestUpperTenant(SystemTenant systemTenantToSave, Long tenantId) throws SystemException {
         try {
             Optional<SystemTenant> tenantToBeSearch = service.getTenantById(tenantId);
@@ -219,7 +219,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * Tenant update edit record method
      * @return the correct page to where the user should be redirected
      */
-    @ActiveTenantMandatory
+
     public String editRecords() throws IOException {
         if (selectedTenant != null) {
             return DataModelEnum.TENANT_DETAIL_PAGE.getValue();
@@ -234,7 +234,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
     /**
      * Tenant deletion in cascade method
      */
-    @ActiveTenantMandatory
+
     public void deleteTenantHierarchy(){
         try {
             if (selectedTenant != null) {
@@ -266,7 +266,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @param r to be validated
      * @throws Exception in case of incoherence in the data
      */
-    @ActiveTenantMandatory
+
     private void validateMandatoryFields(SystemTenant r) throws Exception {
         if(r != null && r.getTenantType().equals(TenantType.CLIENT)) {
             clientAddressValidation(r);
@@ -360,7 +360,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @param systemTenantToEdit to be edited and updated
      * @return a string value to where the user should be redirected
      */
-    @ActiveTenantMandatory
+
     public String edit(SystemTenant systemTenantToEdit) throws IOException {
         try {
             this.service.update(systemTenantToEdit);
@@ -377,7 +377,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @param tenantStartDate to be converted
      * @param tenantEndDate to be converted
      */
-    @ActiveTenantMandatory
+
     protected void convertAndSetDates(SystemTenant tenant, Date tenantStartDate, Date tenantEndDate) {
         if (tenantStartDate != null) {
             LocalDate startDate = this.tenantStartDate.toInstant().atZone(ZoneId.systemDefault()).

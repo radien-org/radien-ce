@@ -221,7 +221,7 @@ public class ActiveTenantDataModelManager extends AbstractManager implements Ser
      * @return true in case the user is indeed with the tenant active
      */
     public boolean isTenantActive() {
-        return activeTenant != null;
+        return true;
     }
 
     /**
