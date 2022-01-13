@@ -15,11 +15,11 @@
 			</b:row>
 
 			<b:column offsetXs="2" colXs="8">
-				<b:inputText id="#{msg.rd_roleName}" value="#{roleDataModel.role.name}"
+				<b:inputText id="rd_roleName" value="#{roleDataModel.role.name}"
 							 required="true" requiredMessage="#{msg.rd_role_name_is_mandatory}"
 							 label="#{msg.name}"/>
 
-				<b:inputText id="#{msg.rd_roleDescription}" value="#{roleDataModel.role.description}"
+				<b:inputText id="rd_roleDescription" value="#{roleDataModel.role.description}"
 							 label="#{msg.description}"/>
 
 				<b:datepicker validator="basicDateValidator"

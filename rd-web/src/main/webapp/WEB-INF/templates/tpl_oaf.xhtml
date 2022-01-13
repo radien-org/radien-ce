@@ -74,7 +74,7 @@
 						</b:dropMenu>
 
 						<b:navbarLinks pull="right">
-							<b:selectOneMenu id="#{msg.activeTenantCombobox}" value="#{activeTenantDataModelManager.activeTenantValue}"
+							<b:selectOneMenu id="activeTenantCombobox" value="#{activeTenantDataModelManager.activeTenantValue}"
 											 onchange="submit()" valueChangeListener="#{activeTenantDataModelManager.tenantChanged}" required="true"
 											 requiredMessage="#{msg.rd_active_tenant_must_be_choose}" rendered="#{userSession.active}"
 											 update="@all">

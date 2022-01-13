@@ -16,10 +16,10 @@
 			</b:row>
 
 			<b:column offsetXs="2" colXs="8">
-				<b:inputText id="#{msg.rd_tenantName}" value="#{tenantDataModel.tenant.name}"
+				<b:inputText id="rd_tenantName" value="#{tenantDataModel.tenant.name}"
 							 required="true" requiredMessage="#{msg.rd_tenant_name_is_mandatory}"
 							 label="#{msg.name}"/>
-				<b:inputText id="#{msg.rd_tenantKey}" value="#{tenantDataModel.tenant.tenantKey}"
+				<b:inputText id="rd_tenantKey" value="#{tenantDataModel.tenant.tenantKey}"
 							 required="true" requiredMessage="#{msg.rd_tenant_key_is_mandatory}"
 							 label="#{msg.key}"/>
 				<b:datepicker validatorMessage="#{msg.rd_tenant_start_date_invalid}"
@@ -30,7 +30,7 @@
 								  value="#{tenantDataModel.tenantEndDate}"
 								  required="false"
 								  label="#{msg.end}"/>
-				<b:selectOneMenu id="#{msg.rd_tenantType}" value="#{tenantDataModel.tenant.tenantType}"
+				<b:selectOneMenu id="rd_tenantType" value="#{tenantDataModel.tenant.tenantType}"
 								 required="true" requiredMessage="#{msg.rd_tenant_type_is_mandatory}"
 								 label="#{msg.type}" select2="true" update="@parent" process="@form">
 					<f:selectItem itemLabel="#{msg.rd_tenant_remind_select_tenant_type}" itemValue="#{null}"/>
@@ -38,18 +38,18 @@
 								   itemValue="#{tenantType}" itemLabel="#{tenantType.description}"/>
 				</b:selectOneMenu>
 
-				<b:row id="#{msg.rd_clientInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT'}">
-					<b:inputText id="#{msg.rd_tenantClientAddress}" value="#{tenantDataModel.tenant.clientAddress}"
+				<b:row id="rd_clientInformations" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT'}">
+					<b:inputText id="rd_tenantClientAddress" value="#{tenantDataModel.tenant.clientAddress}"
 								 label="#{msg.address}"/>
-					<b:inputText id="#{msg.rd_tenantClientZipCode}" value="#{tenantDataModel.tenant.clientZipCode}"
+					<b:inputText id="rd_tenantClientZipCode" value="#{tenantDataModel.tenant.clientZipCode}"
 								 label="#{msg.zipCode}"/>
-					<b:inputText id="#{msg.rd_tenantClientCity}" value="#{tenantDataModel.tenant.clientCity}"
+					<b:inputText id="rd_tenantClientCity" value="#{tenantDataModel.tenant.clientCity}"
 								 label="#{msg.city}"/>
-					<b:inputText id="#{msg.rd_tenantClientCountry}" value="#{tenantDataModel.tenant.clientCountry}"
+					<b:inputText id="rd_tenantClientCountry" value="#{tenantDataModel.tenant.clientCountry}"
 								 label="#{msg.country}"/>
-					<b:inputText id="#{msg.rd_tenantClientPhoneNumber}" value="#{tenantDataModel.tenant.clientPhoneNumber}"
+					<b:inputText id="rd_tenantClientPhoneNumber" value="#{tenantDataModel.tenant.clientPhoneNumber}"
 								 label="#{msg.phoneNumber}"/>
-					<b:inputText id="#{msg.rd_tenantClientEmail}" value="#{tenantDataModel.tenant.clientEmail}"
+					<b:inputText id="rd_tenantClientEmail" value="#{tenantDataModel.tenant.clientEmail}"
 								 label="#{msg.email}"/>
 				</b:row>
 
