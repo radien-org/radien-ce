@@ -142,9 +142,8 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return long value that corresponds to the tenant id
      */
     protected Long getCurrentActiveTenantId() {
-//        SystemActiveTenant activeTenant = activeTenantDataModelManager.getActiveTenant();
-//        return activeTenant != null ? activeTenant.getTenantId() : null;
-        return 1L;
+        SystemActiveTenant activeTenant = activeTenantDataModelManager.getActiveTenant();
+        return activeTenant != null ? activeTenant.getTenantId() : null;
     }
 
     /**
@@ -152,6 +151,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @throws SystemException SystemException is thrown by the common language runtime when errors occur
      * that are nonfatal and recoverable by user programs.
      */
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }
@@ -238,6 +238,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Method to save (create or update) a given user information that have been edited
      * @param saveUser new user information to be saved (create or update)
      */
+    @ActiveTenantMandatory
     public void saveUser(SystemUser saveUser){
         try{
             if(saveUser != null){
@@ -261,6 +262,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     /**
      * Deletes the requested user and all his information
      */
+    @ActiveTenantMandatory
     public void deleteUser(){
         try{
             if(selectedUser != null){
@@ -314,6 +316,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Redirects user to the page of editing the user
      * @return a new HTML page
      */
+    @ActiveTenantMandatory
     public String editRecord() {
         if (selectedUser != null) {
             return DataModelEnum.USER_PATH.getValue();
@@ -325,6 +328,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Redirects user to the page of delete the user
      * @return a new HTML page
      */
+    @ActiveTenantMandatory
     public String deleteRecord() {
         if (selectedUser != null) {
             return DataModelEnum.USER_DELETE_PATH.getValue();
@@ -336,6 +340,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Redirects user to the page of creation the user
      * @return a new HTML page
      */
+    @ActiveTenantMandatory
     public String createRecord() {
         user = new User();
         user.setEnabled(true);
@@ -346,6 +351,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Redirects user to the page of user profile information
      * @return a new HTML page
      */
+    @ActiveTenantMandatory
     public String userProfile() {
         if(selectedUser != null) {
             return DataModelEnum.USERS_PROFILE_PATH.getValue();
@@ -409,6 +415,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * </ul>
      * @return true if the process can be handled/started, false otherwise
      */
+    @ActiveTenantMandatory
     public boolean isTenantAssociationProcessAllowed() {
         try {
             if (!allowedAssociateTenantAndUser) {
@@ -428,7 +435,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return SystemUser instance, or null in case of not found any user
      * @throws SystemException in case of any error during the attempt to retrieve SystemUser
      */
-
+    @ActiveTenantMandatory
     protected SystemUser findUserToAssociate() throws SystemException{
         // Corresponds to the user picked from the data grid (user selected to be update, etc)
         if (this.selectedUser != null && this.selectedUser.getId() != null) {

@@ -112,24 +112,23 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
      * @return true if the current logged user has grant to the permission, otherwise false
      */
     public boolean hasPermissionAccess(String resource, String action, Long tenant) {
-//        try {
-//            if(!isLoggedIn()){
-//                log.error("Checking if has permission without being logged in");
-//                return false;
-//            }
-//            Optional<Long> optional = permissionRESTServiceAccess.
-//                    getIdByResourceAndAction(resource, action);
-//            if (optional.isPresent()) {
-//                return hasGrant(optional.get(), tenant);
-//            }
-//            log.info("Permission not found for resource {} and action {}", resource, action);
-//            return false;
-//        }
-//        catch (Exception e) {
-//            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
-//            return false;
-//        }
-        return true;
+        try {
+            if(!isLoggedIn()){
+                log.error("Checking if has permission without being logged in");
+                return false;
+            }
+            Optional<Long> optional = permissionRESTServiceAccess.
+                    getIdByResourceAndAction(resource, action);
+            if (optional.isPresent()) {
+                return hasGrant(optional.get(), tenant);
+            }
+            log.info("Permission not found for resource {} and action {}", resource, action);
+            return false;
+        }
+        catch (Exception e) {
+            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
+            return false;
+        }
     }
 
     /**

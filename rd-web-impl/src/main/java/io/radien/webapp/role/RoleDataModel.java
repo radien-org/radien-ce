@@ -136,7 +136,7 @@ public class RoleDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
-
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }
@@ -147,7 +147,7 @@ public class RoleDataModel extends AbstractManager implements Serializable {
      * @return a string value to redirect the user into the correct page either send him to the table in case of success,
      * or into the edit menu in case of error
      */
-
+    @ActiveTenantMandatory
     public String save(SystemRole systemRoleToSave) {
         try {
             if (systemRoleToSave.getId() == null) {
@@ -169,7 +169,7 @@ public class RoleDataModel extends AbstractManager implements Serializable {
      * Role update edit record method
      * @return the correct page to where the user should be redirected
      */
-
+    @ActiveTenantMandatory
     public String editRecords() {
         try {
             if (selectedRole != null) {
@@ -187,7 +187,7 @@ public class RoleDataModel extends AbstractManager implements Serializable {
     /**
      * Tenant deletion role record method
      */
-
+    @ActiveTenantMandatory
     public void delete(){
         try {
             if (selectedRole != null) {
@@ -224,7 +224,7 @@ public class RoleDataModel extends AbstractManager implements Serializable {
      * @param systemRoleToEdit to be edited and updated
      * @return a string value to where the user should be redirected
      */
-
+    @ActiveTenantMandatory
     public String edit(SystemRole systemRoleToEdit) {
         try {
             if(systemRoleToEdit != null && !systemRoleToEdit.getName().isEmpty()) {

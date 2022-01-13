@@ -75,7 +75,7 @@ public class ActionDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
-
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }
@@ -86,7 +86,7 @@ public class ActionDataModel extends AbstractManager implements Serializable {
      * @return a string value to redirect the user into the correct page either send him to the table in case of success,
      * or into the edit menu in case of error
      */
-
+    @ActiveTenantMandatory
     public String save(SystemAction systemAction) {
         try {
             this.service.create(systemAction);
@@ -104,7 +104,7 @@ public class ActionDataModel extends AbstractManager implements Serializable {
      * Action update edit record method
      * @return the correct page to where the user should be redirected
      */
-
+    @ActiveTenantMandatory
     public String editRecords() {
         try {
             if (selectedAction != null) {
@@ -122,7 +122,7 @@ public class ActionDataModel extends AbstractManager implements Serializable {
     /**
      * Action record deletion method
      */
-
+    @ActiveTenantMandatory
     public void delete(){
         try {
             if (selectedAction != null) {
@@ -143,7 +143,7 @@ public class ActionDataModel extends AbstractManager implements Serializable {
     /**
      * Redirect user into action table page
      */
-
+    @ActiveTenantMandatory
     public String returnToDataTableRecords() {
         try {
             action = new Action();
@@ -160,7 +160,7 @@ public class ActionDataModel extends AbstractManager implements Serializable {
      * @param systemAction to be edited and updated
      * @return a string value to where the user should be redirected
      */
-
+    @ActiveTenantMandatory
     public String edit(SystemAction systemAction) {
         try {
             if (systemAction != null && !systemAction.getName().isEmpty()) {

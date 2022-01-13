@@ -76,7 +76,7 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
     /**
      * Data reload method
      */
-
+    @ActiveTenantMandatory
     public void onload() {
         init();
     }
@@ -87,7 +87,7 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
      * @return a string value to redirect the user into the correct page either send him to the table in case of success,
      * or into the edit menu in case of error
      */
-
+    @ActiveTenantMandatory
     public String save(SystemResource systemResourceToSave) {
         try {
             this.service.create(systemResourceToSave);
@@ -105,7 +105,7 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
      * Resource update edit record method
      * @return the correct page to where the user should be redirected
      */
-
+    @ActiveTenantMandatory
     public String editRecords() {
         try {
             if (selectedResource != null) {
@@ -123,7 +123,7 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
     /**
      * Resource deletion in cascade method
      */
-
+    @ActiveTenantMandatory
     public void delete(){
         try {
             if (selectedResource != null) {
@@ -159,7 +159,7 @@ public class ResourceDataModel extends AbstractManager implements Serializable {
      * @param systemResourceToEdit to be edited and updated
      * @return a string value to where the user should be redirected
      */
-
+    @ActiveTenantMandatory
     public String edit(SystemResource systemResourceToEdit) {
         try {
             if(systemResourceToEdit != null && !systemResourceToEdit.getName().isEmpty()) {
