@@ -32,7 +32,7 @@
 							<h:outputLabel value="#{msg.rd_tenant}"/>
 						</b:column>
 						<b:column mediumScreen="4">
-							<b:selectOneMenu id="rd_tenants" value="#{tenantRoleAssociationManager.tenant.id}"
+							<b:selectOneMenu id="#{msg.rd_tenants}" value="#{tenantRoleAssociationManager.tenant.id}"
 											 required="true" requiredMessage="#{msg.rd_tenant_is_mandatory}"
 											 select2="true">
 								<f:selectItem itemLabel="#{msg.rd_tenant_remind_select_tenant}" itemValue="#{null}"/>
@@ -47,7 +47,7 @@
 							<h:outputLabel value="#{msg.rd_role}"/>
 						</b:column>
 						<b:column mediumScreen="4" >
-							<b:selectOneMenu id="rd_roles" value="#{tenantRoleAssociationManager.role.id}"
+							<b:selectOneMenu id="#{msg.rd_roles}" value="#{tenantRoleAssociationManager.role.id}"
 												 required="true" requiredMessage="#{msg.rd_role_is_mandatory}"
 												 select2="true">
 									<f:selectItem itemLabel="#{msg.rd_role_remind_select_role}" itemValue="#{null}"/>
