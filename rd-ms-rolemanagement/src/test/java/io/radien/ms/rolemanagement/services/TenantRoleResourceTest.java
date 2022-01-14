@@ -467,6 +467,7 @@ public class TenantRoleResourceTest {
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(1001L, "System Administrator", null);
 
         Response response = tenantRoleResource.update(1L, new TenantRole());
         assertEquals(200,response.getStatus());
@@ -491,6 +492,8 @@ public class TenantRoleResourceTest {
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(1001L, "System Administrator", null);
+
 
         TenantRole tenantRole = new TenantRole();
         tenantRole.setRoleId(1L); tenantRole.setTenantId(2L);
@@ -560,6 +563,8 @@ public class TenantRoleResourceTest {
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(1001L, "System Administrator", null);
+
         doThrow(new TenantRoleNotFoundException("not found")).when(tenantRoleBusinessService).update(any());
         Response response = tenantRoleResource.update(1L, new TenantRole());
         assertEquals(404,response.getStatus());
