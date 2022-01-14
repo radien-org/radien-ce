@@ -211,14 +211,14 @@ public class TenantRoleResource extends AuthorizationChecker implements TenantRo
 
     private boolean isCreateAllowed() throws SystemException {
         return tenantRoleBusinessService.count()==0L ||
-                hasPermission(null, SystemActionsEnum.ACTION_CREATE.getActionName(), SystemResourcesEnum.TENANT_ROLE.getResourceName())
-                || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+                hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName())
+                || hasPermission(null, SystemActionsEnum.ACTION_CREATE.getActionName(), SystemResourcesEnum.TENANT_ROLE.getResourceName());
     }
 
 
     private boolean isUpdateAllowed() throws SystemException {
-        return hasPermission(null, SystemActionsEnum.ACTION_UPDATE.getActionName(), SystemResourcesEnum.TENANT_ROLE.getResourceName())
-                || hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
+        return hasGrant(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName())
+                || hasPermission(null, SystemActionsEnum.ACTION_UPDATE.getActionName(), SystemResourcesEnum.TENANT_ROLE.getResourceName());
     }
 
     /**
