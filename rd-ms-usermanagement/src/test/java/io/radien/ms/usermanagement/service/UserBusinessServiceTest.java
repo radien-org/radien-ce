@@ -135,6 +135,12 @@ public class UserBusinessServiceTest {
         Assert.assertEquals( listUsers, results );
     }
 
+    @Test
+    public void testCount() {
+        when(userServiceAccess.count()).thenReturn(1L);
+        assertEquals(1L, (long) userServiceAccess.count());
+    }
+
     /**
      * Test for method {@link UserBusinessService#delete(long)}
      * @throws UserNotFoundException if user not found

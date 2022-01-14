@@ -18,11 +18,11 @@ package io.radien.util;
 import io.radien.api.KeycloakConfigs;
 import io.radien.api.OAFProperties;
 
+import io.radien.api.SystemVariables;
 import java.io.File;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import io.radien.api.entity.Page;
+import kong.unirest.GenericType;
 import kong.unirest.UnirestParsingException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -67,12 +67,24 @@ public class Initializer {
     public static final String CONTROL_FILE_NAME_INIT_PATTERN = "loaded-on-env-";
     public static final String RADIEN_ENV_PROPERTY = "RADIEN_ENV";
     public static final String INITIALIZER_CONFIG_DIR_PROPERTY = "initializer.configuration.location";
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String BEARER = "Bearer ";
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String TENANT_LOCAL_PATH = "/tenant";
+    public static final String ROLE_LOCAL_PATH = "/role";
+    public static final String TENANTROLE_LOCAL_PATH = "/tenantrole";
+    public static final String TENANT_ID = "tenantId";
+    public static final String STATUS = " Status:";
+    public static final String SUCCESS = " Success:";
     private static Map<Object,Object> tenants;
     private static Map<Object, Object> roles;
     private static Map<Object,Object> actions;
     private static Map<Object, Object> resources;
     private static Map<Long, Map<Long,Object>> tenantRoles;
     private static Map<Long, Map<Long,Object>> permissions;
+
+    private static JSONObject jsonUser;
 
     /**
      * Method that retrieves a config property
@@ -111,6 +123,14 @@ public class Initializer {
      */
     public static String getTenantManagementBaseURL() {
         return getConfigProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT.propKey());
+
+    }
+    /**
+     * Retrieve the URL that corresponds to User Management Endpoint
+     * @return String that corresponds to the User Management URL
+     */
+    public static String getUserManagementBaseURL() {
+        return getConfigProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT.propKey());
     }
 
     /**
@@ -122,23 +142,40 @@ public class Initializer {
     public static List<String> getTokens() {
         String url = getConfigProperty(KeycloakConfigs.IDP_URL.propKey()) +
                 getConfigProperty(KeycloakConfigs.RADIEN_TOKEN_PATH.propKey());
+        String userInfoUrl = getConfigProperty(KeycloakConfigs.RADIEN_USER_INFO_PATH.propKey());
+
         String clientId = getConfigProperty(KeycloakConfigs.RADIEN_CLIENT_ID.propKey());
         String clientSecret = getConfigProperty(KeycloakConfigs.RADIEN_SECRET.propKey());
         String username = getConfigProperty(KeycloakConfigs.RADIEN_USERNAME.propKey());
         String password = getConfigProperty(KeycloakConfigs.RADIEN_PASSWORD.propKey());
 
-        HttpResponse<HashMap> response = Unirest.post(url)
-                .header("Content-Type", "application/x-www-form-urlencoded")
+        HttpResponse<HashMap<String,Object>> response = Unirest.post(url)
+                .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
                 .field("client_id", clientId)
                 .field("client_secret",clientSecret)
                 .field("grant_type", "password")
                 .field("username", username)
                 .field("password", password)
-                .asObject(HashMap.class);
+                .asObject(new GenericType<HashMap<String,Object>>(){});
         HashMap<String,Object> body = response.getBody();
         String accessToken = (String)body.get("access_token");
         String refreshToken = (String)body.get("refresh_token");
-        
+
+        response = Unirest.get(userInfoUrl)
+                .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .asObject(new GenericType<HashMap<String,Object>>(){});
+        body = response.getBody();
+
+        jsonUser = new JSONObject(new HashMap<String,Object>());
+        jsonUser.put(SystemVariables.SUB.getFieldName(), body.get("sub"));
+        jsonUser.put(SystemVariables.FIRST_NAME.getFieldName(), body.get("given_name"));
+        jsonUser.put(SystemVariables.LAST_NAME.getFieldName(), body.get("family_name"));
+        jsonUser.put(SystemVariables.USER_EMAIL.getFieldName(), body.get("email"));
+        jsonUser.put(SystemVariables.LOGON.getFieldName(), body.get("email"));
+        jsonUser.put(SystemVariables.USER_DELEGATION.getFieldName(), true);
+        jsonUser.put(SystemVariables.USER_ENABLED.getFieldName(), true);
+
         return Arrays.asList(accessToken,refreshToken);
     }
 
@@ -196,19 +233,26 @@ public class Initializer {
     private static void bootStart(String accessToken) {
         String bootStartLocation = getConfigProperty("initializer.bootStart.directory.location");
 
+        System.out.println("Creating admin user...");
+        String userUrl = getUserManagementBaseURL() + "/user";
+        Unirest.post(userUrl)
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
+                .body(jsonUser.toJSONString()).asObject(HashMap.class);
+
         System.out.println("Creating base tenant...");
-        String tenantUrl= getTenantManagementBaseURL() + "/tenant";
-        loadEntitiesFromDirectory(bootStartLocation+"/tenant", accessToken, tenantUrl, "bootStart_tenant",null);
+        String tenantUrl= getTenantManagementBaseURL() + TENANT_LOCAL_PATH;
+        loadEntitiesFromDirectory(bootStartLocation+ TENANT_LOCAL_PATH, accessToken, tenantUrl, "bootStart_tenant",null);
 
         System.out.println("Creating base Role...");
-        String roleUrl= getRoleManagementBaseURL() + "/role";
-        loadEntitiesFromDirectory(bootStartLocation+"/role", accessToken, roleUrl, "bootStart_role",null);
+        String roleUrl= getRoleManagementBaseURL() + ROLE_LOCAL_PATH;
+        loadEntitiesFromDirectory(bootStartLocation+ ROLE_LOCAL_PATH, accessToken, roleUrl, "bootStart_role",null);
 
         initializeTenantAndRoleMaps(accessToken);
 
         System.out.println("Creating base tenant role...");
-        String tenantRoleUrl = getRoleManagementBaseURL() + "/tenantrole";
-        loadEntitiesFromDirectory(bootStartLocation+"/tenantRole", accessToken, tenantRoleUrl, "bootStart_tenantRole",Initializer::tenantRoleTranslator);
+        String tenantRoleUrl = getRoleManagementBaseURL() + TENANTROLE_LOCAL_PATH;
+        loadEntitiesFromDirectory(bootStartLocation+TENANTROLE_LOCAL_PATH, accessToken, tenantRoleUrl, "bootStart_tenantRole",Initializer::tenantRoleTranslator);
 
         loadTenantRoleUsers(accessToken,bootStartLocation+"/tenantRoleUser","bootStart_tenantRoleUser");
         tenants = null;
@@ -239,7 +283,7 @@ public class Initializer {
     public static void tenantCreation(String accessToken){
         System.out.println("Starting tenant...");
         String location = getConfigProperty("initializer.tenant.directory.location");
-        String tenantUrl= getTenantManagementBaseURL() + "/tenant";
+        String tenantUrl= getTenantManagementBaseURL() + TENANT_LOCAL_PATH;
         loadEntitiesFromDirectory(location, accessToken, tenantUrl, "tenant",null);
     }
 
@@ -250,7 +294,7 @@ public class Initializer {
      */
     private static void tenantRoleCreation(String accessToken) {
         System.out.println("Starting tenant role...");
-        String tenantRoleUrl = getRoleManagementBaseURL() + "/tenantrole";
+        String tenantRoleUrl = getRoleManagementBaseURL() + TENANTROLE_LOCAL_PATH;
         String location = getConfigProperty("initializer.tenantRole.directory.location");
         loadEntitiesFromDirectory(location, accessToken, tenantRoleUrl, "tenantRole",Initializer::tenantRoleTranslator);
 
@@ -266,8 +310,8 @@ public class Initializer {
 
     private static void initializeTenantRoleMap(String accessToken) {
         if(tenantRoles == null) {
-            String tenantUrl = getRoleManagementBaseURL() + "/tenantrole";
-            tenantRoles = getDoubleMapFromPage(tenantUrl, "tenantId","roleId", "tenantRoleFinder", accessToken);
+            String tenantUrl = getRoleManagementBaseURL() + TENANTROLE_LOCAL_PATH;
+            tenantRoles = getDoubleMapFromPage(tenantUrl, TENANT_ID,"roleId", "tenantRoleFinder", accessToken);
         }
 
     }
@@ -286,7 +330,7 @@ public class Initializer {
             tenants = getMapFromList(tenantUrl, "name", "tenantFinder", accessToken);
         }
         if(roles == null) {
-            String roleUrl = getRoleManagementBaseURL() + "/role";
+            String roleUrl = getRoleManagementBaseURL() + ROLE_LOCAL_PATH;
             roles = getMapFromPage(roleUrl, "name", "RoleFinder", accessToken);
         }
     }
@@ -323,7 +367,7 @@ public class Initializer {
                     System.out.println("Role not found "+ roleName);
                     System.exit(-10);
                 }
-                tenantRole.put("tenantId",((Double)tenant.get("id")).longValue());
+                tenantRole.put(TENANT_ID,((Double)tenant.get("id")).longValue());
                 tenantRole.put("roleId",((Double)role.get("id")).longValue());
                 results.add(tenantRole.toJSONString());
 
@@ -481,16 +525,16 @@ public class Initializer {
             Long tenantRoleId = (Long) json.get("tenantRoleId");
             Long userId = (Long) json.get("userId");
 
-            String urlGetTenantRoleById = getRoleManagementBaseURL() + "/tenantrole/" + tenantRoleId;
+            String urlGetTenantRoleById = getRoleManagementBaseURL() + TENANTROLE_LOCAL_PATH + "/" + tenantRoleId;
             HashMap map = makeGetRequest(urlGetTenantRoleById, "retrievingTenantRole", accessToken);
 
-            Long tenantId = ((Double) map.get("tenantId")).longValue();
+            Long tenantId = ((Double) map.get(TENANT_ID)).longValue();
             String urlGetTenantById = getTenantManagementBaseURL() + "/tenant/" + tenantId;
             map = makeGetRequest(urlGetTenantById, "retrievingTenant", accessToken);
 
             String tenantName = map.get("name").toString();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("tenantId", tenantId);
+            jsonObject.put(TENANT_ID, tenantId);
             jsonObject.put("userId", userId);
 
             String activeTenantUrl = getTenantManagementBaseURL() + "/activeTenant";
@@ -504,7 +548,7 @@ public class Initializer {
      */
     private static void roleCreation(String accessToken) {
         System.out.println("Starting roles...");
-        String roleUrl= getRoleManagementBaseURL() + "/role";
+        String roleUrl= getRoleManagementBaseURL() + ROLE_LOCAL_PATH;
 
         String location = getConfigProperty("initializer.role.directory.location");
         loadEntitiesFromDirectory(location, accessToken, roleUrl, "role",null);
@@ -723,13 +767,13 @@ public class Initializer {
     public static Map<Object,Object> getMapFromList(String url, String fieldForKey,String identifier, String accessToken){
         System.out.println(url);
         HttpResponse<ArrayList> response = Unirest.get(url)
-                .header("Authorization", "Bearer "+accessToken)
-                .header("Content-Type","application/json")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .asObject(ArrayList.class);
 
         String msg =identifier + " " + response.getStatus();
 
-        System.out.println(identifier + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        System.out.println(identifier + STATUS + response.getStatus() + SUCCESS + response.isSuccess());
         checkResponse(response,identifier);
         ArrayList<Map<Object,Object>> list = response.getBody();
         return list.stream().collect(Collectors.toMap(k->k.get(fieldForKey),v->v));
@@ -738,21 +782,21 @@ public class Initializer {
     public static Map<Object,Object> getMapFromPage(String url, String fieldForKey,String identifier, String accessToken){
         System.out.println(url);
         HttpResponse<Map> response = Unirest.get(url)
-                .header("Authorization", "Bearer "+accessToken)
-                .header("Content-Type","application/json")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .asObject(Map.class);
 
         String msg =identifier + " " + response.getStatus();
 
-        System.out.println(identifier + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        System.out.println(identifier + STATUS + response.getStatus() + SUCCESS + response.isSuccess());
         checkResponse(response,identifier);
         String urlTemp= url+"?pageSize=" + ((Double)response.getBody().get("totalResults")).intValue();
         System.out.println(urlTemp);
         response = Unirest.get(urlTemp)
-                .header("Authorization", "Bearer "+accessToken)
-                .header("Content-Type","application/json")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .asObject(Map.class);
-        System.out.println(identifier+2 + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        System.out.println(identifier+2 + STATUS + response.getStatus() + SUCCESS + response.isSuccess());
         checkResponse(response,identifier);
 
         List<Map> list = (List<Map>) response.getBody().get("results");
@@ -762,19 +806,19 @@ public class Initializer {
     public static Map<Long,Map<Long,Object>> getDoubleMapFromPage(String url, String fieldForKey1,String fieldForKey2,String identifier, String accessToken){
         System.out.println(url);
         HttpResponse<Map> response = Unirest.get(url)
-                .header("Authorization", "Bearer "+accessToken)
-                .header("Content-Type","application/json")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .asObject(Map.class);
 
-        System.out.println(identifier + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        System.out.println(identifier + STATUS + response.getStatus() + SUCCESS + response.isSuccess());
         checkResponse(response,identifier);
         String urlTemp= url+"?pageSize=" + ((Double)response.getBody().get("totalResults")).intValue();
         System.out.println(urlTemp);
         response = Unirest.get(urlTemp)
-                .header("Authorization", "Bearer "+accessToken)
-                .header("Content-Type","application/json")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .asObject(Map.class);
-        System.out.println(identifier+2 + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        System.out.println(identifier+2 + STATUS + response.getStatus() + SUCCESS + response.isSuccess());
         checkResponse(response,identifier);
 
         List<Map> list = (List<Map>) response.getBody().get("results");
@@ -795,11 +839,11 @@ public class Initializer {
     public static Map<Long,Map<Long,Object>> getDoubleMapFromList(String url, String fieldForKey1,String fieldForKey2,String identifier, String accessToken){
         System.out.println(url);
         HttpResponse<ArrayList> response = Unirest.get(url)
-                .header("Authorization", "Bearer "+accessToken)
-                .header("Content-Type","application/json")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .asObject(ArrayList.class);
 
-        System.out.println(identifier + " Status:" + response.getStatus() + " Success:" + response.isSuccess());
+        System.out.println(identifier + STATUS + response.getStatus() + SUCCESS + response.isSuccess());
         checkResponse(response,identifier);
 
         List<Map> list = (List<Map>) response.getBody();
@@ -828,8 +872,8 @@ public class Initializer {
     public static HashMap makePostRequest(String url,String identifier, String accessToken, String body){
         System.out.println(url);
         HttpResponse<HashMap> response = Unirest.post(url)
-                .header("Authorization", "Bearer "+accessToken)
-                .header("Content-Type","application/json")
+                .header(AUTHORIZATION, BEARER +accessToken)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .body(body).asObject(HashMap.class);
 
 
@@ -849,7 +893,7 @@ public class Initializer {
     public static HashMap makeGetRequest(String url,String identifier, String accessToken){
         System.out.println(url);
         HttpResponse<HashMap> response = Unirest.get(url)
-                .header("Authorization", "Bearer "+accessToken)
+                .header(AUTHORIZATION, BEARER +accessToken)
                 .asObject(HashMap.class);
         System.out.println(identifier + " " + response.getStatus());
         checkResponse(response,identifier);
