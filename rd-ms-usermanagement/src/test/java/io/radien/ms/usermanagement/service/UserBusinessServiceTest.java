@@ -138,7 +138,7 @@ public class UserBusinessServiceTest {
     @Test
     public void testCount() {
         when(userServiceAccess.count()).thenReturn(1L);
-        assertEquals(1L, (long) userServiceAccess.count());
+        assertEquals(1L, (long) userBusinessService.count());
     }
 
     /**
