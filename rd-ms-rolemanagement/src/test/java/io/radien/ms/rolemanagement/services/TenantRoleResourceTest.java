@@ -46,6 +46,8 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -467,7 +469,7 @@ public class TenantRoleResourceTest {
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
-        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(1001L, "System Administrator", null);
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(anyLong(), anyString(), any());
 
         Response response = tenantRoleResource.update(1L, new TenantRole());
         assertEquals(200,response.getStatus());
@@ -492,7 +494,7 @@ public class TenantRoleResourceTest {
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
-        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(1001L, "System Administrator", null);
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(anyLong(), anyString(), any());
 
 
         TenantRole tenantRole = new TenantRole();
@@ -563,7 +565,7 @@ public class TenantRoleResourceTest {
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
-        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(1001L, "System Administrator", null);
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isRoleExistentForUser(anyLong(), anyString(), any());
 
         doThrow(new TenantRoleNotFoundException("not found")).when(tenantRoleBusinessService).update(any());
         Response response = tenantRoleResource.update(1L, new TenantRole());
