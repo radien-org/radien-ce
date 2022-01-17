@@ -21,9 +21,10 @@ import com.google.common.collect.Maps;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.ms.ecm.constants.JcrSourceEnum;
+import javax.annotation.PreDestroy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.oak.run.osgi.OakOSGiRepositoryFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -160,7 +161,7 @@ public @ApplicationScoped class JCRRepositoryProducer implements Serializable {
         config.put(OakOSGiRepositoryFactory.REPOSITORY_HOME, repoHomeDir.getAbsolutePath());
         config.put(OakOSGiRepositoryFactory.REPOSITORY_CONFIG_FILE, commaSepFilePaths(repoConfigs));
         config.put(OakOSGiRepositoryFactory.REPOSITORY_SHUTDOWN_ON_TIMEOUT, true);
-        config.put(OakOSGiRepositoryFactory.REPOSITORY_ENV_SPRING_BOOT, true);
+        config.put(OakOSGiRepositoryFactory.REPOSITORY_ENV_SPRING_BOOT, false);
         config.put(OakOSGiRepositoryFactory.REPOSITORY_TIMEOUT_IN_SECS, 10);
 
         //Set of properties used to perform property substitution in
@@ -211,5 +212,13 @@ public @ApplicationScoped class JCRRepositoryProducer implements Serializable {
         return repository;
     }
 
+    @PreDestroy
+    public void close() {
+        if (repository instanceof JackrabbitRepository) {
+            ((JackrabbitRepository) repository).shutdown();
+            log.info("Repository shutdown complete");
+            repository = null;
+        }
+    }
 
 }
