@@ -364,6 +364,7 @@ public class UserResourceTest {
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
         when(session.getAttribute("USER")).thenReturn(loggedUser);
+        when(userBusinessService.count()).thenReturn(1L);
         when(this.userBusinessService.getUserId(loggedUser.getSub())).thenReturn(1001L);
 
         Response notFoundResponse = Response.status(Response.Status.NOT_FOUND).entity(GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString()).build();

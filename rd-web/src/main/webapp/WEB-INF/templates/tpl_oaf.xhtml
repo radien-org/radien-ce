@@ -40,6 +40,7 @@
 	                        <f:attribute name="navigationNode" value="logintrigger" />
 	                    </b:navCommandLink>
 
+					<b:navbarLinks pull="right" style="display: flex">
 						<b:dropMenu value="#{msg.rd_system_menu}" rendered="#{userSession.active and activeTenantDataModelManager.isTenantActive()}">
 							<b:navCommandLink value="#{msg.rd_users_menu}" action="#{navigation.navigate}"
 											  actionListener="#{navigation.navigationAction}"
@@ -73,15 +74,14 @@
 							</b:navCommandLink>
 						</b:dropMenu>
 
-						<b:navbarLinks pull="right">
-							<b:selectOneMenu id="#{msg.activeTenantCombobox}" value="#{activeTenantDataModelManager.activeTenantValue}"
+						<b:selectOneMenu id="activeTenantCombobox" value="#{activeTenantDataModelManager.activeTenantValue}"
 											 onchange="submit()" valueChangeListener="#{activeTenantDataModelManager.tenantChanged}" required="true"
 											 requiredMessage="#{msg.rd_active_tenant_must_be_choose}" rendered="#{userSession.active}"
+										 	 style="margin-top: 10px"
 											 update="@all">
 								<f:selectItem itemLabel="#{msg.choose_active_tenant}" itemValue="#{msg.rd_no_active_tenant}" />
 								<f:selectItems value="#{activeTenantDataModelManager.getUserAvailableTenants()}" var="t" itemValue="#{t.id}" itemLabel="#{t.name}" />
 							</b:selectOneMenu>
-						</b:navbarLinks>
 
 	                    <b:dropMenu value="#{userSession.userFullName}" rendered="#{userSession.active}">
 							<b:navCommandLink value="#{msg.rd_user_profile}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}">

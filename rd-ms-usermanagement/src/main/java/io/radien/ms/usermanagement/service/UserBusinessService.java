@@ -92,6 +92,10 @@ public class UserBusinessService implements Serializable {
 		return userServiceAccess.get(id);
 	}
 
+	public Long count() {
+		return userServiceAccess.count();
+	}
+
 	/**
 	 * Returns a list of system users with the specific required information search by the user IDs.
 	 * @param ids to be search

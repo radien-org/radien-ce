@@ -292,6 +292,13 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 		em.createQuery(criteriaDelete).executeUpdate();
 	}
 
+	@Override
+	public Long count() {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)),
+				criteriaBuilder.createQuery(Long.class).from(UserEntity.class));
+	}
+
 	/**
 	 * Get UsersBy unique columns
 	 * @param filter entity with available filters to search user

@@ -167,7 +167,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response create(io.radien.ms.usermanagement.client.entities.User user) {
 		try {
-			if (!isSelfOnboard(user) && !hasPermission(null,
+			if (userBusinessService.count() != 0 && !isSelfOnboard(user) && !hasPermission(null,
 					SystemActionsEnum.ACTION_CREATE.getActionName(),
 					SystemResourcesEnum.USER.getResourceName())
 			) {

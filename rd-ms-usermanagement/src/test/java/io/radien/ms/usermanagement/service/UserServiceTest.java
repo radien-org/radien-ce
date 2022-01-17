@@ -546,6 +546,13 @@ public class UserServiceTest {
         assertEquals("a",userPageWhere.getResults().get(0).getFirstname());
     }
 
+    @Test
+    public void testCount() {
+        Long result = userServiceAccess.count();
+        assertNotNull(result);
+        assertTrue(result > 0);
+    }
+
     /**
      * Test to retrieve the users with and without exact logical search
      * @throws UniquenessConstraintException in case of duplicated data
