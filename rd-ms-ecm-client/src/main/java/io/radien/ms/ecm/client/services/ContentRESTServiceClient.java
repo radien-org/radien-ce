@@ -20,6 +20,7 @@ package io.radien.ms.ecm.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.service.ecm.ContentRESTServiceAccess;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.exception.SystemException;
@@ -38,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RequestScoped
-public class ContentRESTServiceClient extends AuthorizationChecker {
+public class ContentRESTServiceClient extends AuthorizationChecker implements ContentRESTServiceAccess {
     private static final Logger log = LoggerFactory.getLogger(ContentRESTServiceClient.class);
 
     @Inject
@@ -46,6 +47,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
     @Inject
     private OAFAccess oaf;
 
+    @Override
     public EnterpriseContent getByViewIdAndLanguage(String viewId, String language) throws SystemException {
         return get(() -> {
             try {
@@ -59,6 +61,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
         });
     }
 
+    @Override
     public EnterpriseContent getFileContent(String jcrAbsolutePath) throws SystemException {
         return get(() -> {
             try {
@@ -72,6 +75,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
         });
     }
 
+    @Override
     public List<EnterpriseContent> getFolderContents(String jcrAbsolutePath) throws SystemException {
         return get(() -> {
             try {
@@ -85,6 +89,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
         });
     }
 
+    @Override
     public String getOrCreateDocumentsPath(String jcrRelativePath) throws SystemException {
         return get(() -> {
             try {
@@ -104,6 +109,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
         });
     }
 
+    @Override
     public boolean saveContent(EnterpriseContent enterpriseContent) throws SystemException {
         return get(() -> {
             try {
@@ -123,6 +129,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
         });
     }
 
+    @Override
     public boolean deleteContentByPath(String absolutePath) throws SystemException {
         return get(() -> {
             try {
@@ -142,6 +149,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
         });
     }
 
+    @Override
     public boolean deleteContentByViewIDLanguage(String viewId, String language) throws SystemException {
         return get(() -> {
             try {
@@ -188,5 +196,10 @@ public class ContentRESTServiceClient extends AuthorizationChecker {
             log.error(entity);
             return null;
         }
+    }
+
+    @Override
+    public OAFAccess getOAF() {
+        return oaf;
     }
 }
