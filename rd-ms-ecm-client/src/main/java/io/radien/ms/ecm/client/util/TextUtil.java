@@ -19,6 +19,10 @@
 package io.radien.ms.ecm.client.util;
 
 public class TextUtil {
+    private TextUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String escapeIllegalJcrChars(String name) {
         return escapeIllegalChars(name, "%/:[]*|\t\r\n");
     }

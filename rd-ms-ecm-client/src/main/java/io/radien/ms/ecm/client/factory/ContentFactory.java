@@ -42,55 +42,48 @@ import org.slf4j.LoggerFactory;
 public class ContentFactory {
     private static final Logger log = LoggerFactory.getLogger(ContentFactory.class);
 
-    public static EnterpriseContent convertJSONObject(JSONObject json) throws IOException, ParseException {
-        String viewId = json.get("viewId") == null ? null : json.get("viewId").toString();
-        String htmlContent =  json.get("htmlContent") == null ? null : json.get("htmlContent").toString();
-        String name =  json.get("name") == null ? null : json.get("name").toString();
-        String contentType =  json.get("contentType") == null ? null : json.get("contentType").toString();
-        String language =  json.get("language") == null ? null : json.get("language").toString();
-        String active =  json.get("active") == null ? null : json.get("active").toString();
-        String system =  json.get("system") == null ? null : json.get("system").toString();
-        String parentPath =  json.get("parentPath") == null ? null : json.get("parentPath").toString();
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-        String jcrPath = null;
-        String createDate = null;
+    private ContentFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static EnterpriseContent convertJSONObject(JSONObject json) throws ParseException {
+        String viewId = tryGetJsonProperty(json, "viewId");
+        String htmlContent = tryGetJsonProperty(json, "htmlContent");
+        String name = tryGetJsonProperty(json, "name");
+        String contentType = tryGetJsonProperty(json, "contentType");
+        String language = tryGetJsonProperty(json, "language");
+        String active = tryGetJsonProperty(json, "active");
+        String system = tryGetJsonProperty(json, "system");
+        String parentPath = tryGetJsonProperty(json, "parentPath");
+
+        String jcrPath = tryGetJsonProperty(json, "jcrPath");
+        String createDate = tryGetJsonProperty(json, "createDate");
+        String externalPublic =  tryGetJsonProperty(json, "externalPublic");
         //Versionable Properties
-        String versionable = null;
-        String versionComment = null;
-        String validDate = null;
+        String versionable = tryGetJsonProperty(json, "versionable");
+        String versionComment = tryGetJsonProperty(json, "versionComment");
+        String validDate = tryGetJsonProperty(json, "validDate");
         String version = null;
-
         //Mandatory Properties
-        String mandatoryApprove = null;
-        String mandatoryView = null;
+        String mandatoryApprove = tryGetJsonProperty(json, "mandatoryApprove");
+        String mandatoryView = tryGetJsonProperty(json, "mandatoryView");
 
-        if(json.containsKey("jcrPath")) {
-            jcrPath = json.get("jcrPath").toString();
-        }
-        if(json.containsKey("createDate")) {
-            createDate = json.get("createDate").toString();
-        }
-        if(json.containsKey("versionable")) {
-            versionable =  json.get("versionable").toString();
-            versionComment =  json.get("versionComment").toString();
-            validDate =  json.get("validDate").toString();
-            if(json.containsKey("version")) {
-                if(json.get("version") instanceof JSONObject) {
-                    version = ((JSONObject) json.get("version")).get("version").toString();
-                } else {
-                    version = json.get("version").toString();
-                }
+        if(Boolean.parseBoolean(versionable) && json.containsKey("version")) {
+            Object versionValue = json.get("version");
+            if(versionValue instanceof JSONObject) {
+                version = ((JSONObject) json.get("version")).get("version").toString();
+            } else {
+                version = json.get("version").toString();
             }
         }
-        if(json.containsKey("mandatoryApprove")) {
-            mandatoryApprove =  json.get("mandatoryApprove").toString();
-            mandatoryView =  json.get("mandatoryView").toString();
-        }
-        String externalPublic =  json.get("externalPublic") == null ? null : json.get("externalPublic").toString();
-        String permissions =  (String) json.get("permissions");
+
+        String permissions =  tryGetJsonProperty(json, "permissions");
         if(permissions == null) {
             permissions = "NONE";
         }
+
         JSONArray jsonArray = (JSONArray) json.get("tags");
         List<String> tags = new ArrayList<>();
         if (jsonArray != null) {
@@ -98,38 +91,9 @@ public class ContentFactory {
                 tags.add((String) obj);
             }
         }
-        EnterpriseContent content = null;
-        if(versionable != null && mandatoryApprove != null) {
-            content = new MandatoryVersionableEnterpriseContent();
-            content.setName(name);
-            content.setHtmlContent(htmlContent);
-            ((MandatoryVersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
-            ((MandatoryVersionableEnterpriseContent)content).setVersionComment(versionComment);
-            ((MandatoryVersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat("yyyy-MM-dd").parse(validDate));
-            ((MandatoryVersionableEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
-            ((MandatoryVersionableEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
-            if(version != null) {
-                ((MandatoryVersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
-            }
-        } else if(versionable != null) {
-            content = new VersionableEnterpriseContent();
-            content.setName(name);
-            content.setHtmlContent(htmlContent);
-            ((VersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
-            ((VersionableEnterpriseContent)content).setVersionComment(versionComment);
-            ((VersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat("yyyy-MM-dd").parse(validDate));
-            if(version != null) {
-                ((VersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
-            }
-        } else if(mandatoryApprove != null) {
-            content = new MandatoryEnterpriseContent();
-            content.setName(name);
-            content.setHtmlContent(htmlContent);
-            ((MandatoryEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
-            ((MandatoryEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
-        } else {
-            content = new Content(TextUtil.escapeIllegalJcrChars(name), htmlContent);
-        }
+
+        EnterpriseContent content = createEnterpriseContent(htmlContent, name, versionable,
+                versionComment, validDate, version, mandatoryApprove, mandatoryView);
         content.setViewId(viewId);
         content.setContentType(ContentType.getByKey(contentType));
         content.setJcrPath(jcrPath);
@@ -141,30 +105,94 @@ public class ContentFactory {
         content.setExternalPublic(Boolean.parseBoolean(externalPublic));
         content.setPermissions(permissions);
         content.setCreateDate(createDate == null ? null :
-                new SimpleDateFormat("yyyy-MM-dd").parse(createDate));
+                new SimpleDateFormat(DATE_FORMAT).parse(createDate));
 
-        if (contentType.equalsIgnoreCase(ContentType.DOCUMENT.key())) {
+        if (contentType != null && contentType.equalsIgnoreCase(ContentType.DOCUMENT.key())) {
             getFileResource(json, content);
         }
         return content;
     }
 
-    private static void getFileResource(JSONObject json, EnterpriseContent content) throws IOException {
+    private static EnterpriseContent createEnterpriseContent(String htmlContent, String name, String versionable,
+                                                             String versionComment, String validDate, String version,
+                                                             String mandatoryApprove, String mandatoryView) throws ParseException {
+        EnterpriseContent content = null;
+        if(versionable != null && mandatoryApprove != null) {
+            content = createVersionableMandatoryContent(htmlContent, name, versionable, versionComment, validDate,
+                    version, mandatoryApprove, mandatoryView);
+        } else if(versionable != null) {
+            content = createVersionableContent(htmlContent, name, versionable, versionComment, validDate, version);
+        } else if(mandatoryApprove != null) {
+            content = createMandatoryContent(htmlContent, name, mandatoryApprove, mandatoryView);
+        } else {
+            content = new Content(TextUtil.escapeIllegalJcrChars(name), htmlContent);
+        }
+        return content;
+    }
+
+    private static EnterpriseContent createMandatoryContent(String htmlContent, String name, String mandatoryApprove,
+                                                            String mandatoryView) {
+        EnterpriseContent content;
+        content = new MandatoryEnterpriseContent();
+        content.setName(name);
+        content.setHtmlContent(htmlContent);
+        ((MandatoryEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
+        ((MandatoryEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
+        return content;
+    }
+
+    private static EnterpriseContent createVersionableContent(String htmlContent, String name, String versionable,
+                                                              String versionComment, String validDate, String version) throws ParseException {
+        EnterpriseContent content;
+        content = new VersionableEnterpriseContent();
+        content.setName(name);
+        content.setHtmlContent(htmlContent);
+        ((VersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
+        ((VersionableEnterpriseContent)content).setVersionComment(versionComment);
+        ((VersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat(DATE_FORMAT).parse(validDate));
+        if(version != null) {
+            ((VersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
+        }
+        return content;
+    }
+
+    private static EnterpriseContent createVersionableMandatoryContent(String htmlContent, String name, String versionable,
+                                                                       String versionComment, String validDate, String version,
+                                                                       String mandatoryApprove, String mandatoryView) throws ParseException {
+        EnterpriseContent content;
+        content = new MandatoryVersionableEnterpriseContent();
+        content.setName(name);
+        content.setHtmlContent(htmlContent);
+        ((MandatoryVersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
+        ((MandatoryVersionableEnterpriseContent)content).setVersionComment(versionComment);
+        ((MandatoryVersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat(DATE_FORMAT).parse(validDate));
+        ((MandatoryVersionableEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
+        ((MandatoryVersionableEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
+        if(version != null) {
+            ((MandatoryVersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
+        }
+        return content;
+    }
+
+    private static void getFileResource(JSONObject json, EnterpriseContent content) {
         try {
             String fileString =  json.get("file") == null ? null : json.get("file").toString();
 
-            if(fileString != null && !fileString.isEmpty()) {
-                if(fileString.contains(",")) {
-                    String file = fileString.substring(1, fileString.length() - 1);
-                    List<Byte> listaDeString = Arrays.stream(file.split(",")).map(Byte::valueOf).collect(Collectors.toList());
-                    Byte[] bytes = listaDeString.toArray(new Byte[listaDeString.size()]);
-                    byte[] bArray = ArrayUtils.toPrimitive(bytes);
-                    content.setFileSize(bArray.length);
-                    content.setFile(bArray);
-                }
+            if(fileString != null && fileString.contains(",")) {
+                String file = fileString.substring(1, fileString.length() - 1);
+                List<Byte> listaDeString = Arrays.stream(file.split(",")).map(Byte::valueOf).collect(Collectors.toList());
+                Byte[] bytes = listaDeString.toArray(new Byte[listaDeString.size()]);
+                byte[] bArray = ArrayUtils.toPrimitive(bytes);
+                content.setFileSize(bArray.length);
+                content.setFile(bArray);
             }
         } catch (Exception e) {
             log.warn("Error converting json object", e);
         }
+    }
+
+    private static String tryGetJsonProperty(JSONObject object, String key) {
+        Object value = object.get(key);
+        return value != null ? value.toString() : null;
     }
 }

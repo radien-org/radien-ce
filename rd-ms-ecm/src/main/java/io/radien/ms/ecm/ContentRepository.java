@@ -23,9 +23,14 @@ import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
+import io.radien.exception.SystemException;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
+import java.text.MessageFormat;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.version.VersionException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -290,9 +295,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		Session session = createSession();
 		try {
 			session.removeItem(path);
-		} catch (RepositoryException e) {
-			log.error("Could not delete path {}", path, e);
-			throw e;
 		} finally {
 			session.logout();
 		}
@@ -301,14 +303,8 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		try {
-
 			session.removeItem(obj.getJcrPath());
-
 			session.save();
-
-		} catch (RepositoryException e) {
-			log.error("Error deleting EnterpriseContent file", e);
-			throw e;
 		} finally {
 			session.logout();
 		}
@@ -696,7 +692,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		List<Node> nodes = getNodeByViewIdLanguage(session, viewId, true, null);
 
 		if (nodes.isEmpty()) {
-			throw new ElementNotFoundException("Element [" + viewId + "] and [ ] not found");
+			throw new ElementNotFoundException("Element [" + viewId + "] not found");
 		}
 
 		Node parent = nodes.get(0);

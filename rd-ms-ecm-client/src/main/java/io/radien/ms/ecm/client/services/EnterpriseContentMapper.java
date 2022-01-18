@@ -32,6 +32,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class EnterpriseContentMapper {
+    private EnterpriseContentMapper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static EnterpriseContent map(InputStream is) throws IOException, ParseException, java.text.ParseException {
         JSONParser jsonParser = new JSONParser();
         JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(is, StandardCharsets.UTF_8));

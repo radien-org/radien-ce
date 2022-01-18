@@ -21,7 +21,6 @@ package io.radien.ms.ecm.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.security.TokensPlaceHolder;
-import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
@@ -194,7 +193,7 @@ public class ContentRESTServiceClientTest {
         when(contentController.getFolderContents("/absolute/path/to/file"))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("NOT FOUND").build());
         List<EnterpriseContent> resultList = contentClient.getFolderContents("/absolute/path/to/file");
-        assertNull(resultList);
+        assertEquals(0, resultList.size());
     }
 
     @Test(expected = SystemException.class)

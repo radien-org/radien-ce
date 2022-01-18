@@ -30,6 +30,8 @@ import io.radien.ms.ecm.client.util.ClientServiceUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -55,8 +57,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                 Response response = client.getContentByViewIdLanguage(viewId, language);
                 return parseResponseForEnterpriseContent(response);
             } catch (IOException | ParseException | java.text.ParseException e) {
-                log.error("Error getting content by view ID and Language {}, {}", viewId, language, e);
-                throw new SystemException(e);
+                throw new SystemException(MessageFormat.format("Error getting content by view ID and Language {0}, {1}", viewId, language), e);
             }
         });
     }
@@ -69,8 +70,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                 Response response = client.getContentFile(jcrAbsolutePath);
                 return parseResponseForEnterpriseContent(response);
             } catch (IOException | ParseException | java.text.ParseException e) {
-                log.error("Error getting file content by Path {}", jcrAbsolutePath, e);
-                throw new SystemException(e);
+                throw new SystemException(MessageFormat.format("Error getting file content by Path {0}", jcrAbsolutePath), e);
             }
         });
     }
@@ -83,8 +83,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                 Response response = client.getFolderContents(jcrAbsolutePath);
                 return parseResponseForMultipleEnterpriseContent(response);
             } catch (IOException | ParseException | java.text.ParseException e) {
-                log.error("Error getting file content by Path {}", jcrAbsolutePath, e);
-                throw new SystemException(e);
+                throw new SystemException(MessageFormat.format("Error getting file content by Path {0}", jcrAbsolutePath), e);
             }
         });
     }
@@ -103,8 +102,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                     return null;
                 }
             } catch (IOException e) {
-                log.error("Error getting file content by Path {}", jcrRelativePath, e);
-                throw new SystemException(e);
+                throw new SystemException(MessageFormat.format("Error getting file content by Path {0}", jcrRelativePath), e);
             }
         });
     }
@@ -123,8 +121,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                     return false;
                 }
             } catch (IOException e) {
-                log.error("Error saving enterprise content", e);
-                throw new SystemException(e);
+                throw new SystemException("Error saving enterprise content", e);
             }
         });
     }
@@ -143,8 +140,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                     return false;
                 }
             } catch (IOException e) {
-                log.error("Error deleting by path {}", absolutePath, e);
-                throw new SystemException(e);
+                throw new SystemException(MessageFormat.format("Error deleting by path {0}", absolutePath), e);
             }
         });
     }
@@ -163,8 +159,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                     return false;
                 }
             } catch (IOException e) {
-                log.error("Error deleting by viewID and Language {} - {}", viewId, language, e);
-                throw new SystemException(e);
+                throw new SystemException(MessageFormat.format("Error deleting by viewID and Language {0} - {1}", viewId, language), e);
             }
         });
     }
@@ -194,7 +189,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
         } else {
             String entity = response.readEntity(String.class);
             log.error(entity);
-            return null;
+            return new ArrayList<>();
         }
     }
 

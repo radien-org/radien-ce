@@ -22,6 +22,7 @@ import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.constants.CmsConstants;
+import javax.jcr.nodetype.NodeType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -103,7 +104,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 		InputStream stream = null;
 		try {
 			String image = (String) json.get("image");
-			if (software.amazon.awssdk.utils.StringUtils.isNotBlank(image)) {
+			if (StringUtils.isNotBlank(image)) {
 				stream = getClass().getClassLoader().getResourceAsStream(image);
 
 				if (stream != null) {
@@ -140,237 +141,214 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 			boolean isVersionableNode = node.hasProperty(CmsConstants.RADIEN_VERSION);
 			boolean isMandatoryNode = node.hasProperty(CmsConstants.RADIEN_MANDATORY_VIEW);
-				try {
-					if(isVersionableNode && isMandatoryNode) {
-						systemContent = new MandatoryVersionableEnterpriseContent();
-						systemContent.setName(node.getName());
-					} else if(isVersionableNode) {
-						systemContent = new VersionableEnterpriseContent();
-						systemContent.setName(node.getName());
-
-					} else if(isMandatoryNode) {
-						systemContent = new MandatoryEnterpriseContent();
-						systemContent.setName(node.getName());
-
-					} else {
-						systemContent = new GenericEnterpriseContent(Text.unescapeIllegalJcrChars(node.getName()));
-					}
-					systemContent.setJcrPath(node.getPath());
-					systemContent.setParentPath(node.getParent().getPath());
-					} catch (NameNotValidException e1) {
-						log.info("Error converting JCR node", e1);
-					}
-
-			if ((isRadienNode(node) || node.hasProperty(CmsConstants.RADIEN_VIEW_ID)) && systemContent != null) {
-				try {
-					systemContent.setViewId(node.getProperty(CmsConstants.RADIEN_VIEW_ID).getString());
+			if ((isRadienNode(node) || node.hasProperty(CmsConstants.RADIEN_VIEW_ID))) {
+				if(isVersionableNode && isMandatoryNode) {
+					systemContent = setupMandatoryVersionableEnterpriseContent(node);
+				} else if(isVersionableNode) {
+					systemContent = setupVersionableEnterpriseContent(node);
+				} else if(isMandatoryNode) {
+					systemContent = setupMandatoryEnterpriseContent(node);
+				} else {
+					systemContent = new GenericEnterpriseContent(Text.unescapeIllegalJcrChars(node.getName()));
+				}
+				systemContent.setViewId(node.getProperty(CmsConstants.RADIEN_VIEW_ID).getString());
+				systemContent.setActive(getPropertyBooleanIfPresent(node, CmsConstants.RADIEN_ACTIVE));
+				systemContent.setSystem(getPropertyBooleanIfPresent(node, CmsConstants.RADIEN_SYSTEM));
+				systemContent.setJcrPath(node.getPath());
+				systemContent.setParentPath(node.getParent().getPath());
+				if(isRadienNode(node)) {
 					systemContent.setContentType(
 							ContentType.getByKey(node.getProperty(CmsConstants.RADIEN_CONTENT_TYPE).getString()));
-					systemContent.setActive(node.getProperty(CmsConstants.RADIEN_ACTIVE).getBoolean());
-					systemContent.setSystem(node.getProperty(CmsConstants.RADIEN_SYSTEM).getBoolean());
 					systemContent.setLanguage(node.getProperty(CmsConstants.RADIEN_CONTENT_LANG).getString());
 					systemContent.setCreateDate(node.getProperty(JcrConstants.JCR_CREATED).getDate().getTime());
+					systemContent.setHtmlContent(getPropertyStringIfPresent(node, CmsConstants.RADIEN_HTML_CONTENT));
 
-					if(node.hasProperty(CmsConstants.RADIEN_HTML_CONTENT)) {
-						systemContent.setHtmlContent(node.getProperty(CmsConstants.RADIEN_HTML_CONTENT).getString());
-					}
-
-					if(isVersionableNode && isMandatoryNode) {
-						((MandatoryVersionableEnterpriseContent)systemContent).setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
-						((MandatoryVersionableEnterpriseContent)systemContent).setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
-						((MandatoryVersionableEnterpriseContent)systemContent).setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
-						((MandatoryVersionableEnterpriseContent)systemContent).setVersionable(true);
-
-						((MandatoryVersionableEnterpriseContent)systemContent).setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
-						((MandatoryVersionableEnterpriseContent)systemContent).setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
-
-					} else if(isVersionableNode) {
-						((VersionableEnterpriseContent)systemContent).setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
-						((VersionableEnterpriseContent)systemContent).setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
-						((VersionableEnterpriseContent)systemContent).setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
-						((VersionableEnterpriseContent)systemContent).setVersionable(true);
-					} else if(isMandatoryNode) {
-						((MandatoryEnterpriseContent)systemContent).setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
-						((MandatoryEnterpriseContent)systemContent).setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
-					}
-					InputStream stream = null;
-					try {
-						Binary bin = null;
-						if (node.hasProperty(CmsConstants.RADIEN_IMAGE)) {
-							bin = node.getProperty(CmsConstants.RADIEN_IMAGE).getBinary();
-						}
-						if (bin != null) {
-							stream = bin.getStream();
-							byte[] imageArray = ByteStreams.toByteArray(stream);
-							systemContent.setImage(imageArray);
-							systemContent.setImageMimeType(node.getProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE).getString());
-							systemContent.setImageName(node.getProperty(CmsConstants.RADIEN_IMAGE_NAME).getString());
-						}
-					} catch (Exception e) {
-						log.error("Error getting oaf:image from JCR", e);
-					}
-
-					try {
-						if (systemContent.getContentType() == ContentType.DOCUMENT) {
-							systemContent.setFileSize(node.getProperty(CmsConstants.RADIEN_FILE_SIZE).getLong());
-						}
-
-					} catch (PathNotFoundException e) {
-						log.info("Error converting JCR node", e);
-					} catch (Exception e) {
-						log.error("Error converting JCR node", e);
-					}
-
-					try {
-						if (systemContent.getContentType() == ContentType.DOCUMENT) {
-							systemContent.setMimeType(node.getNode(JcrConstants.JCR_CONTENT)
-									.getProperty(JcrConstants.JCR_MIMETYPE).getString());
-						}
-
-					} catch (PathNotFoundException e) {
-						log.info("Error converting JCR node", e);
-					} catch (Exception e) {
-						log.error("Error converting JCR node", e);
-					}
-
-				} catch (Exception e) {
-					log.info("Error converting JCR node", e);
+					setupImageProperties(node, systemContent);
+					setupDocumentOnlyProperties(node, systemContent);
 				}
 			}
-
 			return systemContent;
-		} catch (RepositoryException e) {
-			log.error("Error while converting JCR node!");
-			throw new RepositoryException(e.getMessage());
+		} catch (RepositoryException | NameNotValidException e) {
+			throw new RepositoryException("Error while converting JCR node!", e);
 		}
+	}
 
+	private void setupImageProperties(Node node, EnterpriseContent systemContent) {
+		InputStream stream = null;
+		try {
+			Binary bin = null;
+			if (node.hasProperty(CmsConstants.RADIEN_IMAGE)) {
+				bin = node.getProperty(CmsConstants.RADIEN_IMAGE).getBinary();
+			}
+			if (bin != null) {
+				stream = bin.getStream();
+				byte[] imageArray = ByteStreams.toByteArray(stream);
+				systemContent.setImage(imageArray);
+				systemContent.setImageMimeType(node.getProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE).getString());
+				systemContent.setImageName(node.getProperty(CmsConstants.RADIEN_IMAGE_NAME).getString());
+			}
+		} catch (Exception e) {
+			log.error("Error getting oaf:image from JCR", e);
+		}
+	}
+
+	private void setupDocumentOnlyProperties(Node node, EnterpriseContent systemContent) {
+		try {
+			if (systemContent.getContentType() == ContentType.DOCUMENT) {
+				systemContent.setFileSize(node.getProperty(CmsConstants.RADIEN_FILE_SIZE).getLong());
+				systemContent.setMimeType(node.getNode(JcrConstants.JCR_CONTENT)
+						.getProperty(JcrConstants.JCR_MIMETYPE).getString());
+			}
+		} catch (PathNotFoundException e) {
+			log.info("Error converting JCR node", e);
+		} catch (Exception e) {
+			log.error("Error converting JCR node", e);
+		}
+	}
+
+	private EnterpriseContent setupMandatoryEnterpriseContent(Node node) throws RepositoryException {
+		MandatoryEnterpriseContent systemContent = new MandatoryEnterpriseContent();
+		systemContent.setName(node.getName());
+		systemContent.setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
+		systemContent.setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
+		return systemContent;
+	}
+
+	private EnterpriseContent setupVersionableEnterpriseContent(Node node) throws RepositoryException {
+		VersionableEnterpriseContent systemContent = new VersionableEnterpriseContent();
+		systemContent.setName(node.getName());
+		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
+		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
+		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
+		systemContent.setVersionable(true);
+		return systemContent;
+	}
+
+	private EnterpriseContent setupMandatoryVersionableEnterpriseContent(Node node) throws RepositoryException {
+		MandatoryVersionableEnterpriseContent systemContent = new MandatoryVersionableEnterpriseContent();
+		systemContent.setName(node.getName());
+		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
+		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
+		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
+		systemContent.setVersionable(true);
+
+		systemContent.setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
+		systemContent.setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
+		return systemContent;
 	}
 
 	public byte[] getFile(Session session, String path) throws RepositoryException, IOException {
-
 		Node fileNode = session.getNode(path);
 		InputStream stream;
 		if (fileNode != null) {
 			stream = JcrUtils.readFile(fileNode);
-			byte[] fileArray = ByteStreams.toByteArray(stream);
-			log.trace("Read {} bytes from content file with path: {}", fileArray.length, path);
-			log.trace("Content Read from file {}", fileArray);
-			return fileArray;
+			return ByteStreams.toByteArray(stream);
 		}
 		return StringUtils.EMPTY.getBytes();
 	}
 
-	private Node getContentNode(Node node, Node contentNode) {
+	private Node getContentNode(Node node) {
 		try {
-			contentNode = node.getNode(JcrConstants.JCR_CONTENT);
+			return node.getNode(JcrConstants.JCR_CONTENT);
 		} catch (Exception ignored) {
 			//Swallow exception
 		}
-		return contentNode;
+		return null;
 	}
 
-	public void syncNode(Node node, EnterpriseContent obj, Session session) {
+	public void syncNode(Node node, EnterpriseContent obj, Session session) throws RepositoryException {
 		decorateNewContent(obj);
 		Calendar now = Calendar.getInstance();
-		try {
-			node.setProperty(CmsConstants.RADIEN_VIEW_ID, obj.getViewId());
-			node.setProperty(CmsConstants.RADIEN_ACTIVE, obj.isActive());
-			node.setProperty(CmsConstants.RADIEN_SYSTEM, obj.isSystem());
-		} catch (RepositoryException e) {
-			log.error("Error adding common properties.", e);
-		}
-		if (isRadienNode(node)) {
-			try {
-				node.setProperty(CmsConstants.RADIEN_CONTENT_TYPE, obj.getContentType().key());
-				node.setProperty(CmsConstants.RADIEN_CONTENT_LANG, obj.getLanguage());
 
-			} catch(Exception e){
-				log.error("Error syncing node", e);
+		node.setProperty(CmsConstants.RADIEN_VIEW_ID, obj.getViewId());
+		node.setProperty(CmsConstants.RADIEN_ACTIVE, obj.isActive());
+		node.setProperty(CmsConstants.RADIEN_SYSTEM, obj.isSystem());
+
+		if (isRadienNode(node)) {
+			node.setProperty(CmsConstants.RADIEN_CONTENT_TYPE, obj.getContentType().key());
+			node.setProperty(CmsConstants.RADIEN_CONTENT_LANG, obj.getLanguage());
+
+			syncNodeImageProperties(node, obj, session);
+
+			switch (obj.getContentType()) {
+				case DOCUMENT:
+				case IMAGE:
+					syncNodeFileProperties(node, obj, session, now);
+					break;
+				case HTML:
+				case NEWS_FEED:
+				case NOTIFICATION:
+					node.setProperty(CmsConstants.RADIEN_HTML_CONTENT, obj.getHtmlContent());
+					break;
+				case FOLDER:
+					break;
 			}
 
-			try {
-				Binary binary = null;
-				if (obj.getImage() != null) {
-					try (InputStream stream = new ByteArrayInputStream(obj.getImage())) {
-						binary = session.getValueFactory().createBinary(stream);
+			boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent;
+			boolean isMandatory = obj instanceof SystemMandatoryEnterpriseContent;
 
-						if (binary != null) {
-							node.setProperty(CmsConstants.RADIEN_IMAGE, binary);
-							node.setProperty(CmsConstants.RADIEN_IMAGE_NAME, obj.getImageName());
-							node.setProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE, obj.getImageMimeType());
-						}
-					} catch (Exception e) {
-						log.error("Error attaching image {} to EnterpriseContent - {}", obj.getImageName(), obj.getName(), e);
-					}
-				}
+			if(isVersionable && isMandatory) {
+				node.setProperty(CmsConstants.RADIEN_VERSION, ((MandatoryVersionableEnterpriseContent)obj).getVersion().getVersion());
+				node.setProperty(CmsConstants.RADIEN_VERSION_COMMENT, ((MandatoryVersionableEnterpriseContent)obj).getVersionComment());
+				now.setTime(((MandatoryVersionableEnterpriseContent)obj).getValidDate());
+				node.setProperty(CmsConstants.RADIEN_VALID_DATE, now);
+
+				node.setProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL, ((MandatoryVersionableEnterpriseContent)obj).isMandatoryApproval());
+				node.setProperty(CmsConstants.RADIEN_MANDATORY_VIEW, ((MandatoryVersionableEnterpriseContent)obj).isMandatoryView());
+			} else if(isVersionable) {
+				node.setProperty(CmsConstants.RADIEN_VERSION, ((VersionableEnterpriseContent)obj).getVersion().getVersion());
+				node.setProperty(CmsConstants.RADIEN_VERSION_COMMENT, ((VersionableEnterpriseContent)obj).getVersionComment());
+				now.setTime(((VersionableEnterpriseContent)obj).getValidDate());
+				node.setProperty(CmsConstants.RADIEN_VALID_DATE, now);
+			} else if(isMandatory) {
+				node.setProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL, ((MandatoryEnterpriseContent)obj).isMandatoryApproval());
+				node.setProperty(CmsConstants.RADIEN_MANDATORY_VIEW, ((MandatoryEnterpriseContent)obj).isMandatoryView());
+			}
+		}
+
+		try {
+			obj.setJcrPath(node.getPath());
+			obj.setParentPath(node.getParent().getPath());
+		} catch (RepositoryException e) {
+			log.error("Could not retrieve JCRPath and or Parent Path");
+		}
+	}
+
+	private void syncNodeFileProperties(Node node, EnterpriseContent obj, Session session, Calendar now) throws RepositoryException {
+		if (obj.getFile() != null) {
+			Node contentNode = null;
+			contentNode = getContentNode(node);
+			if (contentNode == null) {
+				contentNode = node.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
+			}
+			InputStream streamFile = new ByteArrayInputStream(obj.getFile());
+			Binary file = session.getValueFactory().createBinary(streamFile);
+			contentNode.setProperty(JcrConstants.JCR_DATA, file);
+			contentNode.setProperty(JcrConstants.JCR_MIMETYPE, obj.getMimeType());
+			contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, now);
+			node.setProperty(CmsConstants.RADIEN_FILE_SIZE, file.getSize());
+		}
+	}
+
+	private void syncNodeImageProperties(Node node, EnterpriseContent obj, Session session) throws RepositoryException {
+		if (obj.getImage() != null) {
+			Binary binary = null;
+			try (InputStream stream = new ByteArrayInputStream(obj.getImage())) {
+				binary = session.getValueFactory().createBinary(stream);
 
 				if (binary != null) {
 					node.setProperty(CmsConstants.RADIEN_IMAGE, binary);
 					node.setProperty(CmsConstants.RADIEN_IMAGE_NAME, obj.getImageName());
 					node.setProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE, obj.getImageMimeType());
 				}
-
-				switch (obj.getContentType()) {
-					case DOCUMENT:
-					case IMAGE:
-						if (obj.getFile() != null) {
-							Node contentNode = null;
-							contentNode = getContentNode(node, contentNode);
-
-							if (contentNode == null) {
-								contentNode = node.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
-							}
-
-							InputStream streamFile = new ByteArrayInputStream(obj.getFile());
-							Binary file = session.getValueFactory().createBinary(streamFile);
-							contentNode.setProperty(JcrConstants.JCR_DATA, file);
-							contentNode.setProperty(JcrConstants.JCR_MIMETYPE, obj.getMimeType());
-							contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, now);
-							node.setProperty(CmsConstants.RADIEN_FILE_SIZE, file.getSize());
-
-						}
-						break;
-					case HTML:
-					case NEWS_FEED:
-					case NOTIFICATION:
-						node.setProperty(CmsConstants.RADIEN_HTML_CONTENT, obj.getHtmlContent());
-						break;
-
-					case FOLDER:
-						break;
-				}
-
-				boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent;
-				boolean isMandatory = obj instanceof SystemMandatoryEnterpriseContent;
-
-				if(isVersionable && isMandatory) {
-					node.setProperty(CmsConstants.RADIEN_VERSION, ((MandatoryVersionableEnterpriseContent)obj).getVersion().getVersion());
-					node.setProperty(CmsConstants.RADIEN_VERSION_COMMENT, ((MandatoryVersionableEnterpriseContent)obj).getVersionComment());
-					now.setTime(((MandatoryVersionableEnterpriseContent)obj).getValidDate());
-					node.setProperty(CmsConstants.RADIEN_VALID_DATE, now);
-
-					node.setProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL, ((MandatoryVersionableEnterpriseContent)obj).isMandatoryApproval());
-					node.setProperty(CmsConstants.RADIEN_MANDATORY_VIEW, ((MandatoryVersionableEnterpriseContent)obj).isMandatoryView());
-				} else if(isVersionable) {
-					node.setProperty(CmsConstants.RADIEN_VERSION, ((VersionableEnterpriseContent)obj).getVersion().getVersion());
-					node.setProperty(CmsConstants.RADIEN_VERSION_COMMENT, ((VersionableEnterpriseContent)obj).getVersionComment());
-					now.setTime(((VersionableEnterpriseContent)obj).getValidDate());
-					node.setProperty(CmsConstants.RADIEN_VALID_DATE, now);
-				} else if(isMandatory) {
-					node.setProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL, ((MandatoryEnterpriseContent)obj).isMandatoryApproval());
-					node.setProperty(CmsConstants.RADIEN_MANDATORY_VIEW, ((MandatoryEnterpriseContent)obj).isMandatoryView());
-				}
-			} catch (PathNotFoundException e) {
-				log.error("no image attached");
 			} catch (Exception e) {
-				log.error("Error syncing node", e);
+				log.error("Error attaching image {} to EnterpriseContent - {}", obj.getImageName(), obj.getName(), e);
 			}
-		}
-		try {
-			obj.setJcrPath(node.getPath());
-			obj.setParentPath(node.getParent().getPath());
-		} catch (RepositoryException e) {
-			log.error("Could not retrieve JCRPath and or Parent Path");
+			if (binary != null) {
+				node.setProperty(CmsConstants.RADIEN_IMAGE, binary);
+				node.setProperty(CmsConstants.RADIEN_IMAGE_NAME, obj.getImageName());
+				node.setProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE, obj.getImageMimeType());
+			}
 		}
 	}
 
@@ -397,6 +375,29 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 			log.error("Error creating node", e);
 		}
 		return content;
+	}
+
+	private boolean hasMixinType(Node node, String mixinType) throws RepositoryException {
+		for (NodeType nodeType : node.getMixinNodeTypes()) {
+			if (nodeType.getName().equals(mixinType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private String getPropertyStringIfPresent(Node node, String propertyName) throws RepositoryException {
+		if(node.hasProperty(propertyName)) {
+			return node.getProperty(propertyName).getString();
+		}
+		return null;
+	}
+
+	private boolean getPropertyBooleanIfPresent(Node node, String propertyName) throws RepositoryException {
+		if(node.hasProperty(propertyName)) {
+			return node.getProperty(propertyName).getBoolean();
+		}
+		return false;
 	}
 
 }

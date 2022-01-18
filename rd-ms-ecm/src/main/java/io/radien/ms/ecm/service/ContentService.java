@@ -28,6 +28,7 @@ import io.radien.api.service.mail.model.MailType;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import io.radien.ms.ecm.ContentRepository;
+import java.text.MessageFormat;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,7 +149,7 @@ class ContentService implements ContentServiceAccess {
         try {
             contentRepository.delete(obj);
         } catch (RepositoryException e) {
-            throw new SystemException(e);
+            throw new SystemException(MessageFormat.format("Could not delete enterprise content in path {0}", obj.getJcrPath()), e);
         }
     }
 
@@ -156,7 +157,7 @@ class ContentService implements ContentServiceAccess {
         try {
             contentRepository.delete(path);
         } catch (ContentRepositoryNotAvailableException | RepositoryException e) {
-            throw new SystemException(e);
+            throw new SystemException(MessageFormat.format("Could not delete by path {0}", path), e);
         }
     }
 

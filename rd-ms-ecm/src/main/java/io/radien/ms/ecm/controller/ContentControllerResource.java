@@ -36,6 +36,8 @@ public class ContentControllerResource implements ContentController {
 
     private static final Logger log = LoggerFactory.getLogger(ContentControllerResource.class);
 
+    private static final String REPOSITORY_NOT_AVAILABLE = "JCR not available";
+
     private static final long serialVersionUID = -8196891572077112658L;
 
     @Inject
@@ -49,7 +51,7 @@ public class ContentControllerResource implements ContentController {
             log.error("Element not found", e);
             return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error("JCR not available", e);
+            log.error(REPOSITORY_NOT_AVAILABLE, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("JCR Not available; " + e.getMessage())
                     .build();
         }
@@ -81,7 +83,7 @@ public class ContentControllerResource implements ContentController {
             contentServiceAccess.save(content);
             return Response.ok().build();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error("JCR not available", e);
+            log.error(REPOSITORY_NOT_AVAILABLE, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("JCR Not available; " + e.getMessage())
                     .build();
         }
@@ -92,7 +94,7 @@ public class ContentControllerResource implements ContentController {
             contentServiceAccess.delete(path);
             return Response.ok().build();
         } catch (SystemException e) {
-            log.error("Could not delete by path", e);
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not delete by path; " + e.getMessage())
                     .build();
         }
@@ -106,7 +108,7 @@ public class ContentControllerResource implements ContentController {
             }
             return Response.ok().build();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error("JCR not available", e);
+            log.error(REPOSITORY_NOT_AVAILABLE, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("JCR Not available; " + e.getMessage())
                     .build();
         } catch (SystemException e) {
