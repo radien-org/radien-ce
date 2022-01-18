@@ -18,7 +18,7 @@
 package io.radien.ms.ecm.domain;
 
 import io.radien.api.service.ecm.model.EnterpriseContent;
-import io.radien.ms.ecm.factory.ContentFactory;
+import io.radien.ms.ecm.util.ContentMappingUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -42,7 +42,7 @@ public class ContentDataProvider {
     private static final String INIT_FILE = "jcr/content.json";
 
     @Inject
-    private ContentFactory contentFactory;
+    private ContentMappingUtils contentMappingUtils;
     @Inject
     @ConfigProperty(name = "system.supported.languages")
     private String supportedLanguages;
@@ -54,7 +54,7 @@ public class ContentDataProvider {
         log.info("Reading init file: {}", INIT_FILE);
         try {
             for (Object o : getJSONDataSourceArray()) {
-                EnterpriseContent content = contentFactory.convertJSONObject((JSONObject)o);
+                EnterpriseContent content = contentMappingUtils.convertSeederJSONObject((JSONObject) o);
                 if (content != null) {
                     contents.add(content);
                 }

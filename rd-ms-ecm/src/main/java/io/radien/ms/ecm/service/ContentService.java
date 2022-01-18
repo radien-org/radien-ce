@@ -25,7 +25,8 @@ import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.mail.model.MailType;
-import io.radien.ms.ecm.factory.ContentFactory;
+import io.radien.exception.SystemException;
+import io.radien.ms.ecm.util.ContentMappingUtils;
 import io.radien.ms.ecm.ContentRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ class ContentService implements ContentServiceAccess {
     private static final long serialVersionUID = 8354030307902734111L;
 
     @Inject
-    private ContentFactory factory;
+    private ContentMappingUtils factory;
 
     @Inject
     private ContentRepository contentRepository;
@@ -143,11 +144,19 @@ class ContentService implements ContentServiceAccess {
         }
     }
 
-    public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+    public void delete(EnterpriseContent obj) throws SystemException {
         try {
             contentRepository.delete(obj);
-        } catch (Exception e) {
-            throw e;
+        } catch (RepositoryException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    public void delete(String path) throws SystemException {
+        try {
+            contentRepository.delete(path);
+        } catch (ContentRepositoryNotAvailableException | RepositoryException e) {
+            throw new SystemException(e);
         }
     }
 
@@ -193,7 +202,7 @@ class ContentService implements ContentServiceAccess {
         return contentRepository.getDocumentsTreeModel();
     }
 
-    public ContentFactory getFactory() {
+    public ContentMappingUtils getFactory() {
         return factory;
     }
 

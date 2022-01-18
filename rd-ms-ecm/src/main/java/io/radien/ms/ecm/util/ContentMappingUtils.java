@@ -1,33 +1,32 @@
 /*
- * Copyright (c) 2021-present radien GmbH. All rights reserved.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *
+ *  * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ *  * <p>
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  * <p>
+ *  * http://www.apache.org/licenses/LICENSE-2.0
+ *  * <p>
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
  */
-package io.radien.ms.ecm.factory;
+package io.radien.ms.ecm.util;
 
 import com.google.common.io.ByteStreams;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.*;
-import io.radien.api.util.FactoryUtilService;
+import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.constants.CmsConstants;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +37,6 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeTypeDefinition;
-import javax.json.JsonArray;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,9 +45,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Class responsible for creating generic content that can be manipulated in the cms
@@ -58,110 +53,57 @@ import java.util.stream.Collectors;
  * @author Marco Weiland
  * @author jrodrigues
  */
-public @RequestScoped class ContentFactory implements Serializable {
+public @RequestScoped class ContentMappingUtils implements Serializable {
 
-	private static final Logger log = LoggerFactory.getLogger(ContentFactory.class);
+	private static final Logger log = LoggerFactory.getLogger(ContentMappingUtils.class);
 	private static final long serialVersionUID = -5005556415803181075L;
 
-	public EnterpriseContent convertJSONObject(JSONObject json) throws IOException, ParseException {
-		String viewId = (String) json.get("viewId");
-		String htmlContent = (String) json.get("htmlContent");
-		String name = (String) json.get("name");
-		String contentType = (String) json.get("contentType");
-		String language = (String) json.get("language");
-		String active = (String) json.get("active");
-		String system = (String) json.get("system");
-		String parentPath = (String) json.get("parentPath");
-
-		//Versionable Properties
-		String versionable = null;
-		String versionComment = null;
-		String validDate = null;
-		String version = null;
-
-		//Mandatory Properties
-		String mandatoryApprove = null;
-		String mandatoryView = null;
-
-		if(json.containsKey("versionable")) {
-			versionable = (String) json.get("versionable");
-			versionComment = (String) json.get("versionComment");
-			validDate = (String) json.get("validDate");
-			if(json.containsKey("version")) {
-				version = (String) json.get("version");
-			}
-		}
-		if(json.containsKey("mandatoryApprove")) {
-			mandatoryApprove = (String) json.get("mandatoryApprove");
-			mandatoryView = (String) json.get("mandatoryView");
-		}
-		String externalPublic = (String) json.get("externalPublic");
-		String permissions = (String) json.get("permissions");
-		if(permissions == null) {
-			permissions = "NONE";
-		}
-		JSONArray jsonArray = (JSONArray) json.get("tags");
-		List<String> tags = new ArrayList<>();
-		if (jsonArray != null) {
-			for (Object obj : jsonArray) {
-				tags.add((String) obj);
-			}
-		}
-		EnterpriseContent content = null;
-		if(versionable != null && mandatoryApprove != null) {
-			content = new MandatoryVersionableEnterpriseContent();
-			content.setName(name);
-			content.setHtmlContent(htmlContent);
-			((MandatoryVersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
-			((MandatoryVersionableEnterpriseContent)content).setVersionComment(versionComment);
-			((MandatoryVersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat("yyyy-MM-dd").parse(validDate));
-			((MandatoryVersionableEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
-			((MandatoryVersionableEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
-			if(version != null) {
-				((MandatoryVersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
-			}
-		} else if(versionable != null) {
-			content = new VersionableEnterpriseContent();
-			content.setName(name);
-			content.setHtmlContent(htmlContent);
-			((VersionableEnterpriseContent)content).setVersionable(Boolean.parseBoolean(versionable));
-			((VersionableEnterpriseContent)content).setVersionComment(versionComment);
-			((VersionableEnterpriseContent)content).setValidDate(new SimpleDateFormat("yyyy-MM-dd").parse(validDate));
-			if(version != null) {
-				((VersionableEnterpriseContent)content).setVersion(new ContentVersion(version));
-			}
-		} else if(mandatoryApprove != null) {
-			content = new MandatoryEnterpriseContent();
-			content.setName(name);
-			content.setHtmlContent(htmlContent);
-			((MandatoryEnterpriseContent)content).setMandatoryView(Boolean.parseBoolean(mandatoryView));
-			((MandatoryEnterpriseContent)content).setMandatoryApproval(Boolean.parseBoolean(mandatoryApprove));
-		} else {
-			content = new Content(Text.escapeIllegalJcrChars(name), htmlContent);
-		}
-		content.setViewId(viewId);
-		content.setContentType(ContentType.getByKey(contentType));
-		content.setActive(Boolean.parseBoolean(active));
-		content.setSystem(Boolean.parseBoolean(system));
-		content.setLanguage(language);
-		content.setTags(tags);
-		content.setParentPath(parentPath);
-		content.setExternalPublic(Boolean.parseBoolean(externalPublic));
-		content.setPermissions(permissions);
-
+	public EnterpriseContent convertSeederJSONObject(JSONObject json) throws IOException, ParseException {
+		EnterpriseContent content = ContentFactory.convertJSONObject(json);
 		getImageResource(json, content);
 
-		if (contentType.equalsIgnoreCase(ContentType.DOCUMENT.key())) {
+		if(content.getFileSize() == 0 || content.getFile() == null || content.getFile().length == 0) {
 			getFileResource(json, content);
 		}
 		return content;
+	}
+
+	private void getFileResource(JSONObject json, EnterpriseContent content) throws IOException {
+		InputStream stream = null;
+		try {
+
+			String fileString = (String) json.get("file");
+
+			if(!fileString.isEmpty()) {
+				stream = getClass().getClassLoader().getResourceAsStream(fileString);
+
+				if (stream != null) {
+					byte[] fileArray = IOUtils.toByteArray(stream);
+					log.trace("Read {} bytes from content file with path: {}", fileArray.length, fileString);
+					log.trace("Content Read from file {}", fileArray);
+					content.setFile(fileArray);
+
+					String filePath = getClass().getClassLoader().getResource(fileString).getPath();
+					String mimeType = Files.probeContentType(new File(filePath).toPath());
+					content.setMimeType(mimeType);
+
+					content.setFileSize(fileArray.length);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Error converting json object", e);
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
 	}
 
 	private void getImageResource(JSONObject json, EnterpriseContent content) throws IOException {
 		InputStream stream = null;
 		try {
 			String image = (String) json.get("image");
-			if (StringUtils.isNotBlank(image)) {
+			if (software.amazon.awssdk.utils.StringUtils.isNotBlank(image)) {
 				stream = getClass().getClassLoader().getResourceAsStream(image);
 
 				if (stream != null) {
@@ -181,46 +123,6 @@ public @RequestScoped class ContentFactory implements Serializable {
 				stream.close();
 			}
 		}
-	}
-
-	private void getFileResource(JSONObject json, EnterpriseContent content) throws IOException {
-	    InputStream stream = null;
-	    try {
-
-	        String fileString = (String) json.get("file");
-
-	        if(!fileString.isEmpty()) {
-	            if(fileString.contains(",")) {
-	                String file = fileString.substring(1, fileString.length() - 1);
-	                List<Byte> listaDeString = Arrays.stream(file.split(", ")).map(Byte::valueOf).collect(Collectors.toList());
-	                Byte[] bytes = listaDeString.toArray(new Byte[listaDeString.size()]);
-	                byte[] bArray = ArrayUtils.toPrimitive(bytes);
-	                content.setFileSize(bArray.length);
-	                content.setFile(bArray);
-	            } else {
-	                stream = getClass().getClassLoader().getResourceAsStream(fileString);
-
-	                if (stream != null) {
-	                    byte[] fileArray = IOUtils.toByteArray(stream);
-	                    log.trace("Read {} bytes from content file with path: {}", fileArray.length, fileString);
-	                    log.trace("Content Read from file {}", fileArray);
-	                    content.setFile(fileArray);
-
-	                    String filePath = getClass().getClassLoader().getResource(fileString).getPath();
-	                    String mimeType = Files.probeContentType(new File(filePath).toPath());
-	                    content.setMimeType(mimeType);
-
-	                    content.setFileSize(fileArray.length);
-	                }
-	            }
-	        }
-	    } catch (Exception e) {
-	        log.warn("Error converting json object", e);
-	    } finally {
-	        if (stream != null) {
-	            stream.close();
-	        }
-	    }
 	}
 
 	public boolean isRadienNode(Node node) {

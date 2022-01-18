@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.ecm;
 
+import io.radien.exception.SystemException;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +88,7 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 *
 	 * @param obj the {@link EnterpriseContent} to be deleted
 	 */
-	void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException;
+	void delete(EnterpriseContent obj) throws SystemException;
 
 	/**
 	 * Retrieves a list of enterprise contents search by his content typ
@@ -182,4 +183,6 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 * @return the {@link EnterpriseContent} if it finds it, or else null
 	 */
 	EnterpriseContent getByViewId(String viewId, boolean activeOnly);
+
+	void delete(String path) throws SystemException;
 }
