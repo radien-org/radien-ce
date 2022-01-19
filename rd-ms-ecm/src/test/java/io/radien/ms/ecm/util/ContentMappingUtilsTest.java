@@ -45,6 +45,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -54,7 +55,6 @@ public class ContentMappingUtilsTest {
     private final static String viewID = "viewId";
     private final static String htmlContent = "htmlContent";
     private final static String name = "contentName";
-    private final static String contentTypeDocument = "document";
     private final static String contentTypeHtml = "html";
     private final static String language = "en";
     private final static Boolean active = Boolean.TRUE;
@@ -64,23 +64,18 @@ public class ContentMappingUtilsTest {
     private final static String createDate = "2020-10-10";
     private final static Boolean versionable = Boolean.TRUE;
     private final static String versionComment = "versionComment";
-    private final static String validDate = "2020-10-10";
     private final static String version = "1.1.0";
-    private final static String majorVersion = "1";
-    private final static String minorVersion = "1";
-    private final static String hotfixVersion = "0";
     private final static Boolean mandatoryView = Boolean.TRUE;
     private final static Boolean mandatoryApprove = Boolean.TRUE;
     private final static Boolean externalPublic = Boolean.TRUE;
     private final static String permissions = null;
-    private final static String file = "[101,120,97,109,112,108,101]";
-    private final static long fileSize = 7;
+    private final static String file = "META-INF/beans.xml";
 
     @InjectMocks
     private ContentMappingUtils contentMappingUtils;
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         MockitoAnnotations.initMocks(this);
     }
 
@@ -103,6 +98,58 @@ public class ContentMappingUtilsTest {
         object.put("tags", tagArray);
 
         EnterpriseContent content = contentMappingUtils.convertSeederJSONObject(object);
+        validateEnterpriseContent(content, contentTypeHtml);
+    }
+
+    @Test
+    public void testConvertSeederJSONObjectNoImageFile() throws IOException, ParseException {
+        JSONObject object = new JSONObject();
+        object.put("viewId", viewID);
+        object.put("htmlContent", htmlContent);
+        object.put("name", name);
+        object.put("contentType", contentTypeHtml);
+        object.put("language", language);
+        object.put("active", active);
+        object.put("system", system);
+        object.put("parentPath", parentPath);
+        object.put("jcrPath", jcrPath);
+        object.put("createDate", createDate);
+        object.put("externalPublic", externalPublic);
+        object.put("permissions", permissions);
+        object.put("file", file);
+        JSONArray tagArray = new JSONArray();
+        object.put("tags", tagArray);
+
+        EnterpriseContent content = contentMappingUtils.convertSeederJSONObject(object);
+        validateEnterpriseContent(content, contentTypeHtml);
+        assertNotNull(content.getFile());
+        assertEquals(content.getFileSize(), content.getFile().length);
+    }
+
+    @Test
+    public void testConvertSeederJSONObjectImageNoFile() throws IOException, ParseException {
+        JSONObject object = new JSONObject();
+        object.put("viewId", viewID);
+        object.put("htmlContent", htmlContent);
+        object.put("name", name);
+        object.put("contentType", contentTypeHtml);
+        object.put("language", language);
+        object.put("active", active);
+        object.put("system", system);
+        object.put("parentPath", parentPath);
+        object.put("jcrPath", jcrPath);
+        object.put("createDate", createDate);
+        object.put("externalPublic", externalPublic);
+        object.put("permissions", permissions);
+        object.put("image", file);
+        JSONArray tagArray = new JSONArray();
+        object.put("tags", tagArray);
+
+        EnterpriseContent content = contentMappingUtils.convertSeederJSONObject(object);
+        validateEnterpriseContent(content, contentTypeHtml);
+        assertNotNull(content.getImage());
+        assertEquals("image/png", content.getImageMimeType());
+        assertEquals(file, content.getImageName());
     }
 
     @Test
