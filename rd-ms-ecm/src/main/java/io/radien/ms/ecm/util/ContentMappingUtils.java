@@ -377,15 +377,6 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 		return content;
 	}
 
-	private boolean hasMixinType(Node node, String mixinType) throws RepositoryException {
-		for (NodeType nodeType : node.getMixinNodeTypes()) {
-			if (nodeType.getName().equals(mixinType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private String getPropertyStringIfPresent(Node node, String propertyName) throws RepositoryException {
 		if(node.hasProperty(propertyName)) {
 			return node.getProperty(propertyName).getString();
