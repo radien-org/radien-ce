@@ -295,19 +295,14 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		Session session = createSession();
 		try {
 			session.removeItem(path);
+			session.save();
 		} finally {
 			session.logout();
 		}
 	}
 
 	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
-		Session session = createSession();
-		try {
-			session.removeItem(obj.getJcrPath());
-			session.save();
-		} finally {
-			session.logout();
-		}
+		delete(obj.getJcrPath());
 	}
 
 	private Node getNodeByViewId(String viewId, boolean activeOnly)
