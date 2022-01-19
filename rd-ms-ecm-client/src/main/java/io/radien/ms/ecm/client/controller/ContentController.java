@@ -32,40 +32,38 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
-@Path("cms")
+@Path("cms/content")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface ContentController extends Serializable {
 
     @GET
-    @Path(value = "/content/getContentByViewIdLanguage")
+    Response getContentFile(@QueryParam("path") String jcrPath);
+
+    @POST
+    Response saveContent(EnterpriseContent content);
+
+    @DELETE
+    Response deleteByPath(@QueryParam("path") String path);
+
+    @GET
+    @Path(value = "/metadata")
     Response getContentByViewIdLanguage(@QueryParam("viewId") String viewId,
                                         @QueryParam("lang") String language);
 
     @GET
-    @Path(value = "/content/files")
-    Response getContentFile(@QueryParam("path") String jcrPath);
-
-    @GET
-    @Path(value = "/content/getFolderContents")
+    @Path(value = "/metadata/childNodes")
     Response getFolderContents(@QueryParam("path") String path);
 
     @GET
-    @Path(value = "/content/getOrCreateDocumentPath")
+    @Path(value = "/path")
     Response getOrCreateDocumentsPath(@QueryParam("path") String path);
 
-    @POST
-    @Path(value = "/content")
-    Response saveContent(EnterpriseContent content);
-
     @DELETE
     @Path(value = "/content")
-    Response deleteByPath(@QueryParam("path") String path);
-
-    @DELETE
-    @Path(value = "/content/deleteMultple")
-    Response deleteContent(@QueryParam("viewId") String vieId,
+    //TODO CHECK BACK
+    Response deleteContent(@QueryParam("viewId") String viewId,
                            @QueryParam("lang") String lang);
 
 

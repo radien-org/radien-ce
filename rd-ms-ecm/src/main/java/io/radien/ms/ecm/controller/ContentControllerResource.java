@@ -19,12 +19,15 @@
 package io.radien.ms.ecm.controller;
 
 import io.radien.api.service.ecm.ContentServiceAccess;
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.controller.ContentController;
+import java.text.MessageFormat;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +39,7 @@ public class ContentControllerResource implements ContentController {
 
     private static final Logger log = LoggerFactory.getLogger(ContentControllerResource.class);
 
-    private static final String REPOSITORY_NOT_AVAILABLE = "JCR not available";
+    private static final String REPOSITORY_NOT_AVAILABLE = "JCR not available; ";
 
     private static final long serialVersionUID = -8196891572077112658L;
 
@@ -58,7 +61,18 @@ public class ContentControllerResource implements ContentController {
     }
 
     public Response getContentByViewIdLanguage(String viewId, String language) {
-        return Response.ok(contentServiceAccess.getByViewIdLanguage(viewId, true, language).get(0))
+        List<EnterpriseContent> resultList = contentServiceAccess.getByViewIdLanguage(viewId, true, language);
+        if(!resultList.isEmpty()) {
+            EnterpriseContent result = resultList.get(0);
+            if(result.getContentType().equals(ContentType.ERROR)) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(MessageFormat.format("Could not find content for viewID and language {0} - {1}", viewId, language))
+                        .build();
+            }
+            return Response.ok(result).build();
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(MessageFormat.format("Could not find content for viewID and language {0} - {1}", viewId, language))
                 .build();
     }
 
@@ -66,16 +80,34 @@ public class ContentControllerResource implements ContentController {
         try {
             return Response.ok(contentServiceAccess.getFolderContents(path))
                     .build();
-        } catch (Exception e) {
-            log.error("Error retrieving folder contents", e);
-            return Response.ok(Response.Status.INTERNAL_SERVER_ERROR).entity("Error retrieving folder contents; " + e.getMessage())
+        } catch (ContentRepositoryNotAvailableException e) {
+            log.error(REPOSITORY_NOT_AVAILABLE, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
+                    .build();
+        } catch(ContentNotAvailableException e) {
+            log.error("Unable to retrieve folder contents", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unable to retrieve folder contents; " + e.getMessage())
                     .build();
         }
     }
 
     public Response getOrCreateDocumentsPath(String path) {
-        return Response.ok(contentServiceAccess.getOrCreateDocumentsPath(path))
-                .build();
+        try {
+            return Response.ok(contentServiceAccess.getOrCreateDocumentsPath(path))
+                    .build();
+        } catch (ContentRepositoryNotAvailableException e) {
+            log.error(REPOSITORY_NOT_AVAILABLE, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
+                    .build();
+        } catch (ContentNotAvailableException e) {
+            log.error(e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     public Response saveContent(EnterpriseContent content) {
@@ -84,7 +116,12 @@ public class ContentControllerResource implements ContentController {
             return Response.ok().build();
         } catch (ContentRepositoryNotAvailableException e) {
             log.error(REPOSITORY_NOT_AVAILABLE, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("JCR Not available; " + e.getMessage())
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
+                    .build();
+        } catch (ContentNotAvailableException e) {
+            log.error(e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
                     .build();
         }
     }
@@ -109,9 +146,9 @@ public class ContentControllerResource implements ContentController {
             return Response.ok().build();
         } catch (ContentRepositoryNotAvailableException e) {
             log.error(REPOSITORY_NOT_AVAILABLE, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("JCR Not available; " + e.getMessage())
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
                     .build();
-        } catch (SystemException e) {
+        } catch (ContentNotAvailableException e) {
             log.error("Could not delete documents by viewId and Language {} -- {}", viewId, language, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not delete documents by viewId and Language; " + e.getMessage())
                     .build();

@@ -90,7 +90,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	private void init() {
 	}
 
-	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		String viewId = obj.getViewId();
 		String language = obj.getLanguage();
@@ -127,7 +127,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	}
 
 	private void process(Session session, EnterpriseContent obj, String language, Node content,
-						 Node parent, boolean isMoveCommand, String nameEscaped, String newPath) {
+						 Node parent, boolean isMoveCommand, String nameEscaped, String newPath) throws RepositoryException {
 		try {
 			boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent && ((SystemVersionableEnterpriseContent)obj).isVersionable();
 			if (content == null) {
@@ -184,9 +184,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			log.info("[+] Added content:{} ", content.getIdentifier());
 		} catch (ItemExistsException e) {
 			log.warn("Item {} already exists in this repository, skipping", obj.getName());
-		} catch (RepositoryException e) {
-			log.error("Error saving content", e);
-		} finally {
+		}  finally {
 			session.logout();
 		}
 
@@ -769,15 +767,12 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	    return path;
 	}
 
-    public List<EnterpriseContent> getFolderContents(String path) throws Exception {
+    public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
         Session session = createSession();
         List<EnterpriseContent> results = new ArrayList<>();
         try {
 			Node resultNode = session.getNode(path);
             loopNodes(results, resultNode, 0, 1);
-        } catch (Exception e) {
-            log.error("ERROR " , e);
-            throw e;
         } finally {
             session.logout();
         }

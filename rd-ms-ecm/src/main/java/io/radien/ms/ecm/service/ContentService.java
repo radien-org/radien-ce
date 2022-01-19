@@ -18,6 +18,7 @@ package io.radien.ms.ecm.service;
 
 import com.fasterxml.jackson.core.TreeNode;
 import io.radien.api.service.ecm.ContentServiceAccess;
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
@@ -97,7 +98,7 @@ class ContentService implements ContentServiceAccess {
     }
 
     @Override
-    public EnterpriseContent loadFile(String jcrPath) throws ElementNotFoundException, ContentRepositoryNotAvailableException {
+    public EnterpriseContent loadFile(String jcrPath) throws ContentRepositoryNotAvailableException {
         return contentRepository.loadFile(jcrPath);
     }
 
@@ -107,8 +108,12 @@ class ContentService implements ContentServiceAccess {
     }
 
     @Override
-    public List<EnterpriseContent> getFolderContents(String path) throws Exception {
-        return contentRepository.getFolderContents(path);
+    public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        try {
+            return contentRepository.getFolderContents(path);
+        } catch(RepositoryException e) {
+            throw new ContentNotAvailableException("Could not retriede folder contents", e);
+        }
     }
 
     @Override
@@ -117,12 +122,11 @@ class ContentService implements ContentServiceAccess {
     }
 
     @Override
-    public String getOrCreateDocumentsPath(String path) {
+    public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException{
         try {
             return contentRepository.getOrCreateDocumentsPath(path);
-        } catch (ContentRepositoryNotAvailableException | RepositoryException e) {
-            log.error("Error on getOrCreateDocumentsPath", e);
-            return null;
+        } catch (RepositoryException e) {
+            throw new ContentNotAvailableException("Error on getOrCreateDocumentsPath", e);
         }
     }
 
@@ -137,19 +141,19 @@ class ContentService implements ContentServiceAccess {
         return content;
     }
 
-    public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+    public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         try {
             contentRepository.save(obj);
-        } catch (Exception e) {
-            throw e;
+        } catch (RepositoryException e) {
+            throw new ContentNotAvailableException("Error saving object", e);
         }
     }
 
-    public void delete(EnterpriseContent obj) throws SystemException {
+    public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         try {
             contentRepository.delete(obj);
         } catch (RepositoryException e) {
-            throw new SystemException(MessageFormat.format("Could not delete enterprise content in path {0}", obj.getJcrPath()), e);
+            throw new ContentNotAvailableException(MessageFormat.format("Could not delete enterprise content in path {0}", obj.getJcrPath()), e);
         }
     }
 

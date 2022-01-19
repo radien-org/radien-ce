@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.ecm;
 
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.exception.SystemException;
 import java.util.List;
 import java.util.Map;
@@ -81,14 +82,14 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 *
 	 * @param obj the {@link EnterpriseContent} to be persisted
 	 */
-	void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException;
+	void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
 	/**
 	 * Deletes the target enterprise content
 	 *
 	 * @param obj the {@link EnterpriseContent} to be deleted
 	 */
-	void delete(EnterpriseContent obj) throws SystemException;
+	void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
 	/**
 	 * Retrieves a list of enterprise contents search by his content typ
@@ -165,7 +166,7 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 * @return a list of all the contents existent in a given path
 	 * @throws Exception 
 	 */
-	List<EnterpriseContent> getFolderContents(String path) throws Exception;
+	List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
 	/**
 	 * Content service content versions getter
@@ -174,7 +175,7 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 */
 	List<EnterpriseContent> getContentVersions(String path);
 
-	String getOrCreateDocumentsPath(String path);
+	String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
 	/**
 	 * Attempts to return a content based on its identifier and active flag
