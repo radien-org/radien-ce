@@ -50,7 +50,7 @@
 		<version.maven-war-plugin>3.3.2</version.maven-war-plugin>
 		<version.maven-surefire-plugin>2.22.2</version.maven-surefire-plugin>
 
-		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
+		<version.tomee-maven-plugin>8.0.9</version.tomee-maven-plugin>
 
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
