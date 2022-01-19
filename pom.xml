@@ -30,8 +30,6 @@
 		<module>rd-ms-rolemanagement</module>
 		<module>rd-ms-rolemanagement-client</module>
 		<module>rd-ms-config-lib</module>
-
-		<module>rd-ms-demo</module>
 	</modules>
 	<properties>
 
