@@ -95,22 +95,10 @@
 			<artifactId>cxf-rt-rs-mp-client</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.openjson</groupId>
-			<artifactId>openjson</artifactId>
-			<version>1.0.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.johnzon</groupId>
-			<artifactId>johnzon-core</artifactId>
-			<version>1.2.10</version>
-			<scope>test</scope>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
 		<dependency>

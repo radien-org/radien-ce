@@ -25,7 +25,8 @@ import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
-import io.radien.ms.ecm.client.controller.ContentController;
+import io.radien.ms.ecm.client.controller.ContentResource;
+import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import io.radien.ms.ecm.client.util.ClientServiceUtil;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +54,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     public EnterpriseContent getByViewIdAndLanguage(String viewId, String language) throws SystemException {
         return get(() -> {
             try {
-                ContentController client = getClient();
+                ContentResource client = getClient();
                 Response response = client.getContentByViewIdLanguage(viewId, language);
                 return parseResponseForEnterpriseContent(response);
             } catch (IOException | ParseException | java.text.ParseException e) {
@@ -66,7 +67,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     public EnterpriseContent getFileContent(String jcrAbsolutePath) throws SystemException {
         return get(() -> {
             try {
-                ContentController client = getClient();
+                ContentResource client = getClient();
                 Response response = client.getContentFile(jcrAbsolutePath);
                 return parseResponseForEnterpriseContent(response);
             } catch (IOException | ParseException | java.text.ParseException e) {
@@ -79,7 +80,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     public List<EnterpriseContent> getFolderContents(String jcrAbsolutePath) throws SystemException {
         return get(() -> {
             try {
-                ContentController client = getClient();
+                ContentResource client = getClient();
                 Response response = client.getFolderContents(jcrAbsolutePath);
                 return parseResponseForMultipleEnterpriseContent(response);
             } catch (IOException | ParseException | java.text.ParseException e) {
@@ -92,7 +93,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     public String getOrCreateDocumentsPath(String jcrRelativePath) throws SystemException {
         return get(() -> {
             try {
-                ContentController client = getClient();
+                ContentResource client = getClient();
                 Response response = client.getOrCreateDocumentsPath(jcrRelativePath);
                 String entity = response.readEntity(String.class);
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
@@ -111,7 +112,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     public boolean saveContent(EnterpriseContent enterpriseContent) throws SystemException {
         return get(() -> {
             try {
-                ContentController client = getClient();
+                ContentResource client = getClient();
                 Response response = client.saveContent(enterpriseContent);
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return true;
@@ -130,8 +131,8 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     public boolean deleteContentByPath(String absolutePath) throws SystemException {
         return get(() -> {
             try {
-                ContentController client = getClient();
-                Response response = client.deleteByPath(absolutePath);
+                ContentResource client = getClient();
+                Response response = client.deleteContent(new DeleteContentFilter(absolutePath));
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return true;
                 } else {
@@ -149,8 +150,8 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     public boolean deleteContentByViewIDLanguage(String viewId, String language) throws SystemException {
         return get(() -> {
             try {
-                ContentController client = getClient();
-                Response response = client.deleteContent(viewId, language);
+                ContentResource client = getClient();
+                Response response = client.deleteContent(new DeleteContentFilter(viewId, language));
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return true;
                 } else {
@@ -165,7 +166,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     }
 
 
-    private ContentController getClient() throws MalformedURLException {
+    private ContentResource getClient() throws MalformedURLException {
         return clientServiceUtil.getResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ECM));
     }
 

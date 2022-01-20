@@ -27,7 +27,8 @@ import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
-import io.radien.ms.ecm.client.controller.ContentController;
+import io.radien.ms.ecm.client.controller.ContentResource;
+import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import io.radien.ms.ecm.client.util.ClientServiceUtil;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
@@ -56,7 +57,7 @@ public class ContentRESTServiceClientTest {
     @Mock
     private ClientServiceUtil clientServiceUtil;
     @Mock
-    private ContentController contentController;
+    private ContentResource contentResource;
     @Mock
     private AuthorizationChecker authorizationChecker;
     @Mock
@@ -71,7 +72,7 @@ public class ContentRESTServiceClientTest {
         MockitoAnnotations.initMocks(this);
         when(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ECM))
                 .thenReturn("http://a.url.com");
-        when(clientServiceUtil.getResourceClient(anyString())).thenReturn(contentController);
+        when(clientServiceUtil.getResourceClient(anyString())).thenReturn(contentResource);
 
     }
 
@@ -85,7 +86,7 @@ public class ContentRESTServiceClientTest {
         object.put("viewId", content.getViewId());
         object.put("contentType", content.getContentType().key());
 
-        when(contentController.getContentByViewIdLanguage("viewId", "language"))
+        when(contentResource.getContentByViewIdLanguage("viewId", "language"))
                 .thenReturn(Response.ok(new ByteArrayInputStream(object.toJSONString().getBytes())).build());
         EnterpriseContent result = contentClient.getByViewIdAndLanguage("viewId", "language");
         assertEquals(content.getName(), result.getName());
@@ -110,7 +111,7 @@ public class ContentRESTServiceClientTest {
         object.put("viewId", content.getViewId());
         object.put("contentType", content.getContentType().key());
 
-        when(contentController.getContentByViewIdLanguage("viewId", "language"))
+        when(contentResource.getContentByViewIdLanguage("viewId", "language"))
                 .thenReturn(Response.ok(new ByteArrayInputStream(object.toJSONString().getBytes())).build());
         EnterpriseContent result = contentClient.getByViewIdAndLanguage("viewId", "language");
         assertEquals(content.getName(), result.getName());
@@ -128,7 +129,7 @@ public class ContentRESTServiceClientTest {
         object.put("viewId", content.getViewId());
         object.put("contentType", content.getContentType().key());
 
-        when(contentController.getContentByViewIdLanguage("viewId", "language"))
+        when(contentResource.getContentByViewIdLanguage("viewId", "language"))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
         EnterpriseContent result = contentClient.getByViewIdAndLanguage("viewId", "language");
         assertNull(result);
@@ -146,7 +147,7 @@ public class ContentRESTServiceClientTest {
         object.put("jcrPath", content.getJcrPath());
         object.put("contentType", content.getContentType().key());
 
-        when(contentController.getContentFile("/absolute/path/to/file"))
+        when(contentResource.getContentFile("/absolute/path/to/file"))
                 .thenReturn(Response.ok(new ByteArrayInputStream(object.toJSONString().getBytes())).build());
         EnterpriseContent result = contentClient.getFileContent("/absolute/path/to/file");
         assertEquals(content.getName(), result.getName());
@@ -177,7 +178,7 @@ public class ContentRESTServiceClientTest {
         array.add(object);
         array.add(object);
 
-        when(contentController.getFolderContents("/absolute/path/to/file"))
+        when(contentResource.getFolderContents("/absolute/path/to/file"))
                 .thenReturn(Response.ok(new ByteArrayInputStream(array.toJSONString().getBytes())).build());
         List<EnterpriseContent> resultList = contentClient.getFolderContents("/absolute/path/to/file");
         for(EnterpriseContent result : resultList) {
@@ -190,7 +191,7 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testGetFolderContentsError() throws SystemException {
-        when(contentController.getFolderContents("/absolute/path/to/file"))
+        when(contentResource.getFolderContents("/absolute/path/to/file"))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("NOT FOUND").build());
         List<EnterpriseContent> resultList = contentClient.getFolderContents("/absolute/path/to/file");
         assertEquals(0, resultList.size());
@@ -205,7 +206,7 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testGetOrCreateDocumentsPathSuccess() throws SystemException {
-        when(contentController.getOrCreateDocumentsPath("relative/path"))
+        when(contentResource.getOrCreateDocumentsPath("relative/path"))
                 .thenReturn(Response.ok("/abolute/path/relative/path").build());
         String result = contentClient.getOrCreateDocumentsPath("relative/path");
         assertEquals("/abolute/path/relative/path", result);
@@ -213,7 +214,7 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testGetOrCreateDocumentsPathError() throws SystemException {
-        when(contentController.getOrCreateDocumentsPath("relative/path"))
+        when(contentResource.getOrCreateDocumentsPath("relative/path"))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND)
                         .entity("an error").build());
         String result = contentClient.getOrCreateDocumentsPath("relative/path");
@@ -230,7 +231,7 @@ public class ContentRESTServiceClientTest {
     @Test
     public void testSaveContentSuccess() throws SystemException {
         EnterpriseContent content = new GenericEnterpriseContent("name");
-        when(contentController.saveContent(any(EnterpriseContent.class)))
+        when(contentResource.saveContent(any(EnterpriseContent.class)))
                 .thenReturn(Response.ok().build());
         assertTrue(contentClient.saveContent(content));
     }
@@ -238,7 +239,7 @@ public class ContentRESTServiceClientTest {
     @Test
     public void testSaveContentFail() throws SystemException {
         EnterpriseContent content = new GenericEnterpriseContent("name");
-        when(contentController.saveContent(any(EnterpriseContent.class)))
+        when(contentResource.saveContent(any(EnterpriseContent.class)))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("Error saving").build());
         assertFalse(contentClient.saveContent(content));
     }
@@ -253,14 +254,14 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testDeleteContentByPathSuccess() throws SystemException {
-        when(contentController.deleteByPath("/abolute/path/relative/path"))
+        when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.ok().build());
         assertTrue(contentClient.deleteContentByPath("/abolute/path/relative/path"));
     }
 
     @Test
     public void testDeleteContentByPathError() throws SystemException {
-        when(contentController.deleteByPath("/abolute/path/relative/path"))
+        when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("NOT FOUND").build());
         assertFalse(contentClient.deleteContentByPath("/abolute/path/relative/path"));
     }
@@ -274,14 +275,14 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testDeleteContentByViewIDLanguageSuccess() throws SystemException {
-        when(contentController.deleteContent("viewId", "language"))
+        when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.ok().build());
         assertTrue(contentClient.deleteContentByViewIDLanguage("viewId", "language"));
     }
 
     @Test
     public void testDeleteContentByViewIDLanguageError() throws SystemException {
-        when(contentController.deleteContent("viewId", "language"))
+        when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("NOT FOUND").build());
         assertFalse(contentClient.deleteContentByViewIDLanguage("viewId", "language"));
     }

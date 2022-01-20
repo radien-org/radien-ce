@@ -18,7 +18,7 @@
 
 package io.radien.ms.ecm.client.util;
 
-import io.radien.ms.ecm.client.controller.ContentController;
+import io.radien.ms.ecm.client.controller.ContentResource;
 import io.radien.ms.ecm.client.exception.ContentExceptionMapper;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,13 +33,13 @@ import org.slf4j.LoggerFactory;
 public class ClientServiceUtil {
     private static final Logger log = LoggerFactory.getLogger(ClientServiceUtil.class);
 
-    public ContentController getResourceClient(String urlStr) throws MalformedURLException {
+    public ContentResource getResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         log.info("Content Controller Resource Client Url - {}", urlStr);
         return RestClientBuilder
                 .newBuilder()
                 .baseUrl(url)
                 .register(ContentExceptionMapper.class)
-                .build(ContentController.class);
+                .build(ContentResource.class);
     }
 }

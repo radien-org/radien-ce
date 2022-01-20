@@ -26,7 +26,8 @@ import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
-import io.radien.ms.ecm.client.controller.ContentController;
+import io.radien.ms.ecm.client.controller.ContentResource;
+import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import java.text.MessageFormat;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
@@ -34,10 +35,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
+import software.amazon.awssdk.utils.StringUtils;
 
-public class ContentControllerResource implements ContentController {
+public class ContentResourceClient implements ContentResource {
 
-    private static final Logger log = LoggerFactory.getLogger(ContentControllerResource.class);
+    private static final Logger log = LoggerFactory.getLogger(ContentResourceClient.class);
 
     private static final String REPOSITORY_NOT_AVAILABLE = "JCR not available; ";
 
@@ -126,18 +128,17 @@ public class ContentControllerResource implements ContentController {
         }
     }
 
-    public Response deleteByPath(String path) {
-        try {
-            contentServiceAccess.delete(path);
-            return Response.ok().build();
-        } catch (SystemException e) {
-            log.error(e.getMessage(), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not delete by path; " + e.getMessage())
-                    .build();
+    public Response deleteContent(DeleteContentFilter deleteContentFilter) {
+        if(!StringUtils.isEmpty(deleteContentFilter.getViewId())) {
+            return deleteContentByViewIdLanguage(deleteContentFilter.getViewId(), deleteContentFilter.getLanguage());
+        } else if(!StringUtils.isEmpty(deleteContentFilter.getAbsoluteJcrPath())) {
+            return deleteContentByJcrPath(deleteContentFilter.getAbsoluteJcrPath());
+        } else {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse("Please provide a valid filter object for deletion");
         }
     }
 
-    public Response deleteContent(String viewId, String language) {
+    private Response deleteContentByViewIdLanguage(String viewId, String language) {
         try {
             List<EnterpriseContent> byViewIdLanguage = contentServiceAccess.getByViewIdLanguage(viewId,true,language);
             for (EnterpriseContent obj : byViewIdLanguage) {
@@ -155,6 +156,15 @@ public class ContentControllerResource implements ContentController {
         }
     }
 
-
+    private Response deleteContentByJcrPath(String path) {
+        try {
+            contentServiceAccess.delete(path);
+            return Response.ok().build();
+        } catch (SystemException e) {
+            log.error(e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not delete by path; " + e.getMessage())
+                    .build();
+        }
+    }
 
 }

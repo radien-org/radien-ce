@@ -27,6 +27,7 @@ import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.exception.SystemException;
+import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.ws.rs.core.Response;
@@ -41,9 +42,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-public class ContentControllerResourceTest {
+public class ContentResourceClientTest {
     @InjectMocks
-    private ContentControllerResource controllerResource;
+    private ContentResourceClient controllerResource;
 
     @Mock
     private ContentServiceAccess contentServiceAccess;
@@ -209,31 +210,31 @@ public class ContentControllerResourceTest {
 
     @Test
     public void testDeleteByPath() {
-        Response responseResult = controllerResource.deleteByPath("a/path");
+        Response responseResult = controllerResource.deleteContent(new DeleteContentFilter("a/path"));
         assertEquals(Response.Status.OK.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
     @Test
     public void testDeleteByPathException() throws SystemException {
         doThrow(new ContentRepositoryNotAvailableException()).when(contentServiceAccess).delete(anyString());
-        Response responseResult = controllerResource.deleteByPath("a/path");
+        Response responseResult = controllerResource.deleteContent(new DeleteContentFilter("a/path"));
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
     @Test
-    public void testDeleteContent() throws NameNotValidException {
+    public void testDeleteContentViewIdLanguage() throws NameNotValidException {
         EnterpriseContent result = new GenericEnterpriseContent("name");
         result.setContentType(ContentType.HTML);
         result.setViewId("viewId");
         result.setLanguage("en");
         when(contentServiceAccess.getByViewIdLanguage("viewId", true, "en"))
                 .thenReturn(Collections.singletonList(result));
-        Response responseResult = controllerResource.deleteContent("viewId", "en");
+        Response responseResult = controllerResource.deleteContent(new DeleteContentFilter("viewId", "en"));
         assertEquals(Response.Status.OK.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
     @Test
-    public void testDeleteContentRepositoryNotAvailable() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void testDeleteContentViewIdLanguageRepositoryNotAvailable() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
         EnterpriseContent result = new GenericEnterpriseContent("name");
         result.setContentType(ContentType.HTML);
         result.setViewId("viewId");
@@ -242,12 +243,12 @@ public class ContentControllerResourceTest {
                 .thenReturn(Collections.singletonList(result));
         doThrow(new ContentRepositoryNotAvailableException())
                 .when(contentServiceAccess).delete(result);
-        Response responseResult = controllerResource.deleteContent("viewId", "en");
+        Response responseResult = controllerResource.deleteContent(new DeleteContentFilter("viewId", "en"));
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
     @Test
-    public void testDeleteContentNotAvailable() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void testDeleteContentViewIdLanguageNotAvailable() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
         EnterpriseContent result = new GenericEnterpriseContent("name");
         result.setContentType(ContentType.HTML);
         result.setViewId("viewId");
@@ -256,7 +257,7 @@ public class ContentControllerResourceTest {
                 .thenReturn(Collections.singletonList(result));
         doThrow(new ContentNotAvailableException())
                 .when(contentServiceAccess).delete(result);
-        Response responseResult = controllerResource.deleteContent("viewId", "en");
+        Response responseResult = controllerResource.deleteContent(new DeleteContentFilter("viewId", "en"));
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 }

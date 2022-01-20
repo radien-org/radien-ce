@@ -19,6 +19,7 @@
 package io.radien.ms.ecm.client.controller;
 
 import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import io.radien.ms.ecm.client.entities.GlobalHeaders;
 import java.io.Serializable;
 import javax.ws.rs.Consumes;
@@ -36,7 +37,7 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
-public interface ContentController extends Serializable {
+public interface ContentResource extends Serializable {
 
     @GET
     Response getContentFile(@QueryParam("path") String jcrPath);
@@ -45,7 +46,7 @@ public interface ContentController extends Serializable {
     Response saveContent(EnterpriseContent content);
 
     @DELETE
-    Response deleteByPath(@QueryParam("path") String path);
+    Response deleteContent(DeleteContentFilter deleteContentFilter);
 
     @GET
     @Path(value = "/metadata")
@@ -59,12 +60,6 @@ public interface ContentController extends Serializable {
     @GET
     @Path(value = "/path")
     Response getOrCreateDocumentsPath(@QueryParam("path") String path);
-
-    @DELETE
-    @Path(value = "/content")
-    //TODO CHECK BACK
-    Response deleteContent(@QueryParam("viewId") String viewId,
-                           @QueryParam("lang") String lang);
 
 
 }
