@@ -160,7 +160,23 @@ public enum GenericErrorCodeMessage {
     ERROR_SEND_UPDATE_EMAIL_VERIFY("KYC2", "error.send.update.email.verify", "Unable to send update email and email verify attribute"),
     ERROR_SEND_EXECUTE_ACTION_EMAIL_VERIFY("KYC3", "error.send.execute.action.email.verify", "Unable to send verification email for an updated email "),
     ERROR_CHANGE_PASSWORD("KYC4", "error.change.password", "Unable to change password. Status: %s. Description: %s"),
-    ERROR_INVALID_CREDENTIALS("KYC5", "error.invalid.credentials", "Invalid Credentials");
+    ERROR_INVALID_CREDENTIALS("KYC5", "error.invalid.credentials", "Invalid Credentials"),
+
+    /**
+     * CMS Error Code Messages
+     */
+    REPOSITORY_NOT_AVAILABLE("CMS1", "error.cms.repository.not.available", "JCR not available"),
+    NOT_FOUND_VIEWID_LANGUAGE("CMS2", "error.cms.not.found.viewid.language", "Could not find content for viewID and language %s - %s"),
+    ERROR_RETRIEVING_FOLDER_CONTENTS("CMS3", "error.cms.retrieve.folder.contents", "Unable to retrieve folder contents"),
+    ERROR_INVALID_CMS_FILTER_OBJECT("CMS4", "error.cms.invalid.filter", "Please provide a valid filter object"),
+    ERROR_DELETE_VIEWID_LANGUAGE("CMS5", "error.cms.delete.viewid.language", "Could not delete documents by viewId and Language %s - %s"),
+    ERROR_DELETE_PATH("CMS6", "error.cms.delete.path", "Could not delete documents by path %s"),
+    ERROR_GET_FILE_CONTENT("CMS7", "error.cms.file.content", "Error getting file content by path %s"),
+    ERROR_GET_OR_CREATE_DOCUMENTS_PATH("CMS8", "error.cms.documents.get.create.path", "Error getting or creating documents path"),
+    ERROR_SAVING_CONTENT("CMS8", "error.cms.content.saving", "Error saving enterprise content"),
+    ERROR_RETRIEVING_RESULT("CMS9", "error.cms.retrieve.result", "Result not retrieved correctly from CMS System. Please check CMS logs for the error message");
+
+
 
     private final String code;
     private final String key;

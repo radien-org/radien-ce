@@ -25,7 +25,7 @@ import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
-import io.radien.ms.ecm.factory.ContentFactory;
+import io.radien.ms.ecm.util.ContentMappingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -68,14 +68,14 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	private static final String JCR_AND = " and [";
 	private static final String JCR_AND_ESCAPED = "' " + JCR_AND;
 	public static final String JCR_END_OBJ = "] = '";
-	public static final String IS_TRUE = "] = 'true' ";
+	public static final String IS_TRUE = "] = true ";
 
 	@Inject
 	private OAFAccess oaf;
 	@Inject
 	private Config properties;
 	@Inject
-	private ContentFactory contentFactory;
+	private ContentMappingUtils contentMappingUtils;
 	@Inject
 	private ContentDataProvider dataProvider;
 	@Inject
@@ -85,7 +85,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	private void init() {
 	}
 
-	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		String viewId = obj.getViewId();
 		String language = obj.getLanguage();
@@ -96,7 +96,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		if (StringUtils.isBlank(viewId) || StringUtils.isBlank(language)) {
 			//TODO: REVIEW - Sets default properties
-			contentFactory.decorateNewContent(obj);
+			contentMappingUtils.decorateNewContent(obj);
 		} else {
 			try {
 				List<Node> nodeList = getNodeByViewIdLanguage(session, viewId, false, language);
@@ -122,7 +122,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	}
 
 	private void process(Session session, EnterpriseContent obj, String language, Node content,
-						 Node parent, boolean isMoveCommand, String nameEscaped, String newPath) {
+						 Node parent, boolean isMoveCommand, String nameEscaped, String newPath) throws RepositoryException {
 		try {
 			boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent && ((SystemVersionableEnterpriseContent)obj).isVersionable();
 			if (content == null) {
@@ -159,7 +159,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 				versionManager.checkout(content.getPath());
 			}
 
-			contentFactory.syncNode(content, obj, session);
+			contentMappingUtils.syncNode(content, obj, session);
 			session.save();
 
 			if(isVersionable && content.isCheckedOut()) {
@@ -179,9 +179,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			log.info("[+] Added content:{} ", content.getIdentifier());
 		} catch (ItemExistsException e) {
 			log.warn("Item {} already exists in this repository, skipping", obj.getName());
-		} catch (RepositoryException e) {
-			log.error("Error saving content", e);
-		} finally {
+		}  finally {
 			session.logout();
 		}
 
@@ -269,7 +267,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			Session session = createSession();
 		try {
 			content = getContentByPath(jcrPath, session);
-			content.setFile(contentFactory.getFile(session, jcrPath));
+			content.setFile(contentMappingUtils.getFile(session, jcrPath));
 		} catch (PathNotFoundException e) {
 			log.error("Error loading EnterpriseContent File", e);
 		} catch (RepositoryException | IOException e) {
@@ -283,22 +281,21 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	private EnterpriseContent getContentByPath(String jcrPath, Session session) throws RepositoryException {
 		Node result = JcrUtils.getNodeIfExists(jcrPath, session);
-		return contentFactory.convertJCRNode(result);
+		return contentMappingUtils.convertJCRNode(result);
 	}
 
-	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException {
+	public void delete(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		try {
-
-			session.removeItem(obj.getJcrPath());
-
+			session.removeItem(path);
 			session.save();
-
-		} catch (RepositoryException e) {
-			log.error("Error deleting EnterpriseContent file", e);
 		} finally {
 			session.logout();
 		}
+	}
+
+	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
+		delete(obj.getJcrPath());
 	}
 
 	private Node getNodeByViewId(String viewId, boolean activeOnly)
@@ -348,7 +345,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		Node node = getNodeByViewId(viewId, activeOnly);
 
 		try {
-			return contentFactory.convertJCRNode(node);
+			return contentMappingUtils.convertJCRNode(node);
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
 		}
@@ -366,7 +363,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		try {
 			List<EnterpriseContent> ecList = new ArrayList<>();
 			for (Node node : nodeList) {
-				ecList.add(contentFactory.convertJCRNode(node));
+				ecList.add(contentMappingUtils.convertJCRNode(node));
 			}
 			return Optional.ofNullable(ecList);
 		} catch (RepositoryException e) {
@@ -483,7 +480,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			while (nodes.hasNext()) {
 				Node contentNode = (Node) nodes.next();
 				try {
-					EnterpriseContent content = contentFactory.convertJCRNode(contentNode);
+					EnterpriseContent content = contentMappingUtils.convertJCRNode(contentNode);
 					if (content != null) {
 						fooList.add(content);
 					}
@@ -537,7 +534,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			while (nodes.hasNext()) {
 				Node contentNode = (Node) nodes.next();
 				try {
-					EnterpriseContent content = contentFactory.convertJCRNode(contentNode);
+					EnterpriseContent content = contentMappingUtils.convertJCRNode(contentNode);
 					if (content != null) {
 						fooList.add(content);
 					}
@@ -637,7 +634,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 			EnterpriseContent enterpriseContent = null;
 
-			enterpriseContent = contentFactory.create(rootName, rootName, ContentType.FOLDER);
+			enterpriseContent = contentMappingUtils.create(rootName, rootName, ContentType.FOLDER);
 
 			root = new RestTreeNode(enterpriseContent, null);
 			for (Node node : JcrUtils.getChildNodes(getDocumentsContentNode())) {
@@ -658,7 +655,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			return;
 		}
 
-		EnterpriseContent doc = contentFactory.convertJCRNode(node);
+		EnterpriseContent doc = contentMappingUtils.convertJCRNode(node);
 		TreeNode treeNode = null;
 		switch (doc.getContentType()) {
 			case DOCUMENT:
@@ -683,7 +680,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		List<Node> nodes = getNodeByViewIdLanguage(session, viewId, true, null);
 
 		if (nodes.isEmpty()) {
-			throw new ElementNotFoundException("Element [" + viewId + "] and [ ] not found");
+			throw new ElementNotFoundException("Element [" + viewId + "] not found");
 		}
 
 		Node parent = nodes.get(0);
@@ -709,7 +706,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			return;
 		}
 		if (!node.getName().equalsIgnoreCase(JcrConstants.JCR_CONTENT)) {
-			EnterpriseContent doc = contentFactory.convertJCRNode(node);
+			EnterpriseContent doc = contentMappingUtils.convertJCRNode(node);
 			results.add(doc);
 		}
 		NodeIterator nodes = node.getNodes();
@@ -765,22 +762,15 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	    return path;
 	}
 
-    public List<EnterpriseContent> getFolderContents(String path) throws Exception {
+    public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
         Session session = createSession();
         List<EnterpriseContent> results = new ArrayList<>();
         try {
-            Node resultNode = session.getRootNode().getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT));
-            if (resultNode != null) {
-                resultNode = resultNode.getNode(String.format("%s%s", getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_DOCS), path));
-            }
+			Node resultNode = session.getNode(path);
             loopNodes(results, resultNode, 0, 1);
-        } catch (Exception e) {
-            log.error("ERROR " , e);
-            throw e;
-        }finally {
+        } finally {
             session.logout();
         }
         return results;
     }
-
 }

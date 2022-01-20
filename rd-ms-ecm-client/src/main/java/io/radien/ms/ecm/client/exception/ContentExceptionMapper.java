@@ -16,20 +16,18 @@
  *
  */
 
-package io.radien.ms.ecm.listener;
+package io.radien.ms.ecm.client.exception;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
-import javax.servlet.ServletContextEvent;
+import io.radien.exception.ModelResponseExceptionMapper;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
-public class ApplicationListener extends AbstractApplicationListener {
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        super.contextInitialized(sce);
+public class ContentExceptionMapper extends ModelResponseExceptionMapper {
+    public boolean legalDocTypeHandles(int statusCode, MultivaluedMap<String, Object> headers) {
+        return handles(statusCode, headers);
     }
 
-    @Override
-    protected BeanManager getBeanManager() {
-        return CDI.current().getBeanManager();
+    public Exception legalDocTypeToThrowable(Response response) {
+        return toThrowable(response);
     }
 }

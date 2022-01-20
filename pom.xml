@@ -103,6 +103,9 @@
 		<!-- Templating -->
 		<version.antlr.st4>4.3.1</version.antlr.st4>
 
+		<!-- JSON -->
+		<version.json.simple>1.1.1</version.json.simple>
+
 		<!-- test -->
 		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
 		<version.junit>4.13.1</version.junit>
@@ -364,6 +367,13 @@
 				<groupId>org.antlr</groupId>
 				<artifactId>ST4</artifactId>
 				<version>${version.antlr.st4}</version>
+			</dependency>
+
+			<!-- JSON -->
+			<dependency>
+				<groupId>com.googlecode.json-simple</groupId>
+				<artifactId>json-simple</artifactId>
+				<version>${version.json.simple}</version>
 			</dependency>
 
 			<!-- Logging -->

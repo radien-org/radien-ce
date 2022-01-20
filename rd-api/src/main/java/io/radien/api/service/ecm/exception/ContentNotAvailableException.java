@@ -39,4 +39,8 @@ public class ContentNotAvailableException extends SystemException {
 	public ContentNotAvailableException(String message) {
 		super(message);
 	}
+
+	public ContentNotAvailableException(String message, Exception e) {
+		super(message, e);
+	}
 }

@@ -1,6 +1,7 @@
 package io.radien.ms.ecm.seed;
 
 import io.radien.api.service.ecm.ContentServiceAccess;
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.ContentRepository;
@@ -89,7 +90,7 @@ public @ApplicationScoped class ECMSeeder {
     }
 
     @NotNull
-    private EnterpriseContent initRootNode() throws ContentRepositoryNotAvailableException {
+    private EnterpriseContent initRootNode() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         EnterpriseContent rootNode = null;
         List<EnterpriseContent> byViewIdLanguage = contentService.getByViewIdLanguage(
                 config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_ROOT, String.class),
@@ -116,7 +117,7 @@ public @ApplicationScoped class ECMSeeder {
         return rootNode;
     }
 
-    private void initDocumentsNode(EnterpriseContent rootNode)throws RepositoryException, ContentRepositoryNotAvailableException  {
+    private void initDocumentsNode(EnterpriseContent rootNode) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
         EnterpriseContent documentsNode = contentService
                 .getFirstByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class), false, null);
         if (documentsNode == null || documentsNode.getContentType().equals(ContentType.ERROR)) {
@@ -136,7 +137,7 @@ public @ApplicationScoped class ECMSeeder {
         autoCreateDocumentFolders(documentsNode);
     }
 
-    private void autoCreateDocumentFolders(EnterpriseContent documentsNode) throws ContentRepositoryNotAvailableException {
+    private void autoCreateDocumentFolders(EnterpriseContent documentsNode) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         String[] folderNames = config.getValue(CmsConstants.PropertyKeys.SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS, String.class)
                 .split(",");
         List<String> children = contentService.getChildrenFiles(documentsNode.getViewId())
@@ -152,7 +153,7 @@ public @ApplicationScoped class ECMSeeder {
         }
     }
 
-    private void initHTMLContentNode(EnterpriseContent rootNode, EnterpriseContent oafHTMLContent)throws RepositoryException, ContentRepositoryNotAvailableException  {
+    private void initHTMLContentNode(EnterpriseContent rootNode, EnterpriseContent oafHTMLContent) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
         List<EnterpriseContent> tmpContent = contentService
                 .getByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class), false, "");
 

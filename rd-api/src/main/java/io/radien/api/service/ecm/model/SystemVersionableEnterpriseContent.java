@@ -52,15 +52,4 @@ public interface SystemVersionableEnterpriseContent extends EnterpriseContent {
      */
     void setVersion(SystemContentVersion version);
 
-    /**
-     * ECM versional name getter
-     * @return the ecm versional name
-     */
-    String getVersionableName();
-
-    /**
-     * ECM versional name setter
-     * @param name to be set
-     */
-    void setVersionableName(String name);
 }
