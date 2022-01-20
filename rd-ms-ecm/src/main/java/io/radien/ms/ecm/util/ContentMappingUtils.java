@@ -22,7 +22,6 @@ import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.constants.CmsConstants;
-import javax.jcr.nodetype.NodeType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -280,7 +279,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 				case NOTIFICATION:
 					node.setProperty(CmsConstants.RADIEN_HTML_CONTENT, obj.getHtmlContent());
 					break;
-				case FOLDER:
+				default:
 					break;
 			}
 

@@ -26,7 +26,6 @@ import io.radien.api.service.ecm.model.MandatoryEnterpriseContent;
 import io.radien.api.service.ecm.model.MandatoryVersionableEnterpriseContent;
 import io.radien.api.service.ecm.model.VersionableEnterpriseContent;
 import io.radien.ms.ecm.client.util.TextUtil;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ public class ContentFactory {
     private static final Logger log = LoggerFactory.getLogger(ContentFactory.class);
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String VERSION_JSON_KEY = "version";
 
     private ContentFactory() {
         throw new IllegalStateException("Utility class");
@@ -70,12 +70,12 @@ public class ContentFactory {
         String mandatoryApprove = tryGetJsonProperty(json, "mandatoryApprove");
         String mandatoryView = tryGetJsonProperty(json, "mandatoryView");
 
-        if(Boolean.parseBoolean(versionable) && json.containsKey("version")) {
-            Object versionValue = json.get("version");
+        if(Boolean.parseBoolean(versionable) && json.containsKey(VERSION_JSON_KEY)) {
+            Object versionValue = json.get(VERSION_JSON_KEY);
             if(versionValue instanceof JSONObject) {
-                version = ((JSONObject) json.get("version")).get("version").toString();
+                version = ((JSONObject) json.get(VERSION_JSON_KEY)).get(VERSION_JSON_KEY).toString();
             } else {
-                version = json.get("version").toString();
+                version = json.get(VERSION_JSON_KEY).toString();
             }
         }
 

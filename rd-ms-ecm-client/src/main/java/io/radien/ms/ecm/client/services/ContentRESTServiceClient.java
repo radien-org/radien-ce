@@ -84,7 +84,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                 Response response = client.getFolderContents(jcrAbsolutePath);
                 return parseResponseForMultipleEnterpriseContent(response);
             } catch (IOException | ParseException | java.text.ParseException e) {
-                throw new SystemException(MessageFormat.format("Error getting file content by Path {0}", jcrAbsolutePath), e);
+                throw new SystemException(MessageFormat.format("Error getting folder contents by Path {0}", jcrAbsolutePath), e);
             }
         });
     }
@@ -103,7 +103,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
                     return null;
                 }
             } catch (IOException e) {
-                throw new SystemException(MessageFormat.format("Error getting file content by Path {0}", jcrRelativePath), e);
+                throw new SystemException(MessageFormat.format("Error getting or creating documents Path {0}", jcrRelativePath), e);
             }
         });
     }
