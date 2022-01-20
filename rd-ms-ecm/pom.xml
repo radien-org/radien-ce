@@ -19,7 +19,7 @@
 		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
 	</properties>
 	<build>
-		<finalName>rd-ms-ecm</finalName>
+		<finalName>cms</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
