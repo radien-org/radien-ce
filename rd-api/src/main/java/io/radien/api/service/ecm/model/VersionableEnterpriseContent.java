@@ -9,7 +9,6 @@ public class VersionableEnterpriseContent extends AbstractECMModel implements Sy
     private String versionComment;
     private Date validDate;
     private SystemContentVersion version;
-    private String versionableName;
 
     public VersionableEnterpriseContent() {
         this.version = new ContentVersion("1.0.0");
@@ -77,22 +76,6 @@ public class VersionableEnterpriseContent extends AbstractECMModel implements Sy
      */
     public void setVersion(SystemContentVersion version) {
         this.version = version;
-    }
-
-    /**
-     * ECM Version name getter
-     * @return the versional Name
-     */
-    public String getVersionableName() {
-        return versionableName;
-    }
-
-    /**
-     * ECM Version name setter
-     * @param versionableName the versional Name to set
-     */
-    public void setVersionableName(String versionableName) {
-        this.versionableName = versionableName;
     }
 
     @Override

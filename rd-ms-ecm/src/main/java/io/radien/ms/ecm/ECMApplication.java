@@ -24,7 +24,7 @@ import javax.ws.rs.core.Application;
  * @author Marco Weiland
  * @author andresousa
  */
-@ApplicationPath("/ecm")
+@ApplicationPath("/v1")
 public class ECMApplication extends Application {
 
 }
