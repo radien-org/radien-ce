@@ -26,15 +26,23 @@ import io.radien.api.service.ecm.model.MandatoryEnterpriseContent;
 import io.radien.api.service.ecm.model.MandatoryVersionableEnterpriseContent;
 import io.radien.api.service.ecm.model.VersionableEnterpriseContent;
 import io.radien.ms.ecm.constants.CmsConstants;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.stream.Collectors;
+import javax.jcr.Binary;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.NodeType;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,6 +56,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +66,7 @@ public class ContentMappingUtilsTest {
     private final static String htmlContent = "htmlContent";
     private final static String name = "contentName";
     private final static String contentTypeHtml = "html";
+    private final static String contentTypeDocument = "document";
     private final static String language = "en";
     private final static Boolean active = Boolean.TRUE;
     private final static Boolean system = Boolean.TRUE;
@@ -70,6 +81,8 @@ public class ContentMappingUtilsTest {
     private final static Boolean externalPublic = Boolean.TRUE;
     private final static String permissions = null;
     private final static String file = "META-INF/beans.xml";
+    private final static String fileArray = "101,120,97,109,112,108,101";
+
 
     @InjectMocks
     private ContentMappingUtils contentMappingUtils;
@@ -190,6 +203,102 @@ public class ContentMappingUtilsTest {
     }
 
     @Test
+    public void convertJCRNodeGenericImageHTML() throws RepositoryException, ParseException {
+        Calendar calendar = Calendar.getInstance();
+        Node mockNode = initGenericMockNode(calendar);
+        when(mockNode.hasProperty(CmsConstants.RADIEN_IMAGE))
+                .thenReturn(true);
+        Binary mockBinary = mock(Binary.class);
+        when(mockBinary.getStream())
+                .thenReturn(new ByteArrayInputStream(fileArray.getBytes()));
+        Property mockImageProperty = mock(Property.class);
+        when(mockImageProperty.getBinary())
+                .thenReturn(mockBinary);
+        when(mockNode.getProperty(CmsConstants.RADIEN_IMAGE))
+                .thenReturn(mockImageProperty);
+        Property mockImageMimeTypeProperty = initMockStringProperty("image/png");
+
+        when(mockNode.hasProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE))
+                .thenReturn(true);
+        when(mockNode.getProperty(CmsConstants.RADIEN_IMAGE_MIME_TYPE))
+                .thenReturn(mockImageMimeTypeProperty);
+        Property mockImageNameProperty = initMockStringProperty("imageName");
+        when(mockNode.hasProperty(CmsConstants.RADIEN_IMAGE_NAME))
+                .thenReturn(true);
+        when(mockNode.getProperty(CmsConstants.RADIEN_IMAGE_NAME))
+                .thenReturn(mockImageNameProperty);
+        EnterpriseContent content = contentMappingUtils.convertJCRNode(mockNode);
+        validateEnterpriseContent(content, contentTypeHtml);
+        assertNotNull(content.getImage());
+        assertEquals("image/png", content.getImageMimeType());
+        assertEquals("imageName", content.getImageName());
+    }
+
+    @Test
+    public void convertJCRNodeGenericNoImageDocument() throws RepositoryException, ParseException {
+        Calendar calendar = Calendar.getInstance();
+        Node mockNode = initGenericMockNode(calendar);
+        Property mockContentTypeProperty = initMockStringProperty(contentTypeDocument);
+        when(mockNode.getProperty(CmsConstants.RADIEN_CONTENT_TYPE))
+                .thenReturn(mockContentTypeProperty);
+        when(mockNode.hasProperty(CmsConstants.RADIEN_CONTENT_TYPE))
+                .thenReturn(true);
+        Property mockFileSizeProperty = initMockLongProperty(10);
+        when(mockNode.getProperty(CmsConstants.RADIEN_FILE_SIZE))
+                .thenReturn(mockFileSizeProperty);
+        Node mockContentNode = initMockNode("nt:file");
+        Property mockMimeTypeProperty = initMockStringProperty("application/html");
+        when(mockContentNode.getProperty(JcrConstants.JCR_MIMETYPE))
+                .thenReturn(mockMimeTypeProperty);
+        when(mockNode.getNode(JcrConstants.JCR_CONTENT))
+                .thenReturn(mockContentNode);
+
+        EnterpriseContent content = contentMappingUtils.convertJCRNode(mockNode);
+        validateEnterpriseContent(content, contentTypeDocument);
+        assertEquals(10, content.getFileSize());
+        assertEquals("application/html", content.getMimeType());
+    }
+
+    @Test
+    public void convertJCRNodeGenericNoImageDocumentPathNotFound() throws RepositoryException, ParseException {
+        Calendar calendar = Calendar.getInstance();
+        Node mockNode = initGenericMockNode(calendar);
+        Property mockContentTypeProperty = initMockStringProperty(contentTypeDocument);
+        when(mockNode.getProperty(CmsConstants.RADIEN_CONTENT_TYPE))
+                .thenReturn(mockContentTypeProperty);
+        when(mockNode.hasProperty(CmsConstants.RADIEN_CONTENT_TYPE))
+                .thenReturn(true);
+        Property mockFileSizeProperty = initMockLongProperty(10);
+        when(mockNode.getProperty(CmsConstants.RADIEN_FILE_SIZE))
+                .thenReturn(mockFileSizeProperty);
+        when(mockNode.getNode(JcrConstants.JCR_CONTENT))
+                .thenThrow(new PathNotFoundException());
+
+        EnterpriseContent content = contentMappingUtils.convertJCRNode(mockNode);
+        validateEnterpriseContent(content, contentTypeDocument);
+        assertEquals(10, content.getFileSize());
+        assertNull(content.getMimeType());
+    }
+
+    @Test
+    public void convertJCRNodeGenericNoImageDocumentException() throws RepositoryException, ParseException {
+        Calendar calendar = Calendar.getInstance();
+        Node mockNode = initGenericMockNode(calendar);
+        Property mockContentTypeProperty = initMockStringProperty(contentTypeDocument);
+        when(mockNode.getProperty(CmsConstants.RADIEN_CONTENT_TYPE))
+                .thenReturn(mockContentTypeProperty);
+        when(mockNode.hasProperty(CmsConstants.RADIEN_CONTENT_TYPE))
+                .thenReturn(true);
+        when(mockNode.getProperty(CmsConstants.RADIEN_FILE_SIZE))
+                .thenThrow(new PathNotFoundException());
+
+        EnterpriseContent content = contentMappingUtils.convertJCRNode(mockNode);
+        validateEnterpriseContent(content, contentTypeDocument);
+        assertEquals(0, content.getFileSize());
+        assertNull(content.getMimeType());
+    }
+
+    @Test
     public void convertJCRNodeVersionableMandatoryNoImageHTML() throws RepositoryException, ParseException {
         Calendar calendar = Calendar.getInstance();
         Node mockNode = initGenericMockNode(calendar);
@@ -241,6 +350,89 @@ public class ContentMappingUtilsTest {
                 .thenReturn(mockParentNode);
 
         contentMappingUtils.syncNode(mockNode, genericContent, mock(Session.class));
+        assertEquals(jcrPath, mockNode.getPath());
+        assertEquals(parentPath, mockNode.getParent().getPath());
+    }
+
+    @Test(expected = RepositoryException.class)
+    public void testGetFile() throws RepositoryException, IOException {
+        Session mockSession = mock(Session.class);
+        Node mockNode = initMockNode(JcrConstants.NT_RESOURCE);
+        when(mockSession.getNode(anyString()))
+                .thenReturn(mockNode);
+        contentMappingUtils.getFile(mockSession, "/a/path");
+    }
+
+    @Test
+    public void testGetFileNoFileNode() throws RepositoryException, IOException {
+        Session mockSession = mock(Session.class);
+        when(mockSession.getNode(anyString()))
+                .thenReturn(null);
+        byte[] result = contentMappingUtils.getFile(mockSession, "/a/path");
+        assertEquals(0, result.length);
+    }
+
+    @Test
+    public void testSyncNodeGenericImageHTML() throws NameNotValidException, RepositoryException {
+        EnterpriseContent genericContent = new GenericEnterpriseContent(name);
+        genericContent.setActive(system);
+        genericContent.setSystem(active);
+        genericContent.setContentType(ContentType.getByKey(contentTypeHtml));
+        genericContent.setLanguage(language);
+        genericContent.setHtmlContent(htmlContent);
+        genericContent.setImage(ArrayUtils.toPrimitive(Arrays.stream(fileArray.split(","))
+                .map(Byte::valueOf).collect(Collectors.toList()).toArray(new Byte[0])));
+        genericContent.setImageMimeType("image/png");
+        genericContent.setImageName("imageName");
+        Node mockNode = initMockNode("rd:NodeType");
+        when(mockNode.getPath())
+                .thenReturn(jcrPath);
+        Node mockParentNode = initMockNode("rd:NodeType");
+        when(mockParentNode.getPath())
+                .thenReturn(parentPath);
+        when(mockNode.getParent())
+                .thenReturn(mockParentNode);
+
+        Session mockSession = mock(Session.class);
+        ValueFactory mockValueFactory = mock(ValueFactory.class);
+        when(mockValueFactory.createBinary(any(InputStream.class)))
+                .thenReturn(mock(Binary.class));
+        when(mockSession.getValueFactory()).thenReturn(mockValueFactory);
+        contentMappingUtils.syncNode(mockNode, genericContent, mockSession);
+        assertEquals(jcrPath, mockNode.getPath());
+        assertEquals(parentPath, mockNode.getParent().getPath());
+    }
+
+    @Test
+    public void testSyncNodeGenericNoImageDocument() throws NameNotValidException, RepositoryException {
+        EnterpriseContent genericContent = new GenericEnterpriseContent(name);
+        genericContent.setActive(system);
+        genericContent.setSystem(active);
+        genericContent.setContentType(ContentType.getByKey(contentTypeDocument));
+        genericContent.setLanguage(language);
+        genericContent.setHtmlContent(htmlContent);
+        genericContent.setFile(ArrayUtils.toPrimitive(Arrays.stream(fileArray.split(","))
+                .map(Byte::valueOf).collect(Collectors.toList()).toArray(new Byte[0])));
+        genericContent.setImageMimeType("application/pdf");
+        genericContent.setImageName("fileName");
+        Node mockNode = initMockNode("rd:NodeType");
+        Node mockContentNode = initMockNode(JcrConstants.NT_RESOURCE);
+        when(mockNode.getNode(JcrConstants.JCR_CONTENT))
+                .thenReturn(mockContentNode);
+        when(mockNode.getPath())
+                .thenReturn(jcrPath);
+        Node mockParentNode = initMockNode("rd:NodeType");
+        when(mockParentNode.getPath())
+                .thenReturn(parentPath);
+        when(mockNode.getParent())
+                .thenReturn(mockParentNode);
+
+        Session mockSession = mock(Session.class);
+        ValueFactory mockValueFactory = mock(ValueFactory.class);
+        when(mockValueFactory.createBinary(any(InputStream.class)))
+                .thenReturn(mock(Binary.class));
+        when(mockSession.getValueFactory()).thenReturn(mockValueFactory);
+        contentMappingUtils.syncNode(mockNode, genericContent, mockSession);
         assertEquals(jcrPath, mockNode.getPath());
         assertEquals(parentPath, mockNode.getParent().getPath());
     }
@@ -474,6 +666,12 @@ public class ContentMappingUtilsTest {
     private Property initMockDateProperty(Calendar calendar) throws RepositoryException {
         Property mockProperty = mock(Property.class);
         when(mockProperty.getDate()).thenReturn(calendar);
+        return mockProperty;
+    }
+
+    private Property initMockLongProperty(long value) throws RepositoryException {
+        Property mockProperty = mock(Property.class);
+        when(mockProperty.getLong()).thenReturn(value);
         return mockProperty;
     }
 
