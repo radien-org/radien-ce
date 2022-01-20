@@ -24,6 +24,7 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.controller.ContentResource;
@@ -41,8 +42,6 @@ public class ContentResourceClient implements ContentResource {
 
     private static final Logger log = LoggerFactory.getLogger(ContentResourceClient.class);
 
-    private static final String REPOSITORY_NOT_AVAILABLE = "JCR not available; ";
-
     private static final long serialVersionUID = -8196891572077112658L;
 
     @Inject
@@ -56,8 +55,8 @@ public class ContentResourceClient implements ContentResource {
             log.error("Element not found", e);
             return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error(REPOSITORY_NOT_AVAILABLE, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("JCR Not available; " + e.getMessage())
+            log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE + e.getMessage())
                     .build();
         }
     }
@@ -68,13 +67,13 @@ public class ContentResourceClient implements ContentResource {
             EnterpriseContent result = resultList.get(0);
             if(result.getContentType().equals(ContentType.ERROR)) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity(MessageFormat.format("Could not find content for viewID and language {0} - {1}", viewId, language))
+                        .entity(GenericErrorCodeMessage.NOT_FOUND_VIEWID_LANGUAGE.toString(viewId, language))
                         .build();
             }
             return Response.ok(result).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(MessageFormat.format("Could not find content for viewID and language {0} - {1}", viewId, language))
+                .entity(GenericErrorCodeMessage.NOT_FOUND_VIEWID_LANGUAGE.toString(viewId, language))
                 .build();
     }
 
@@ -83,14 +82,14 @@ public class ContentResourceClient implements ContentResource {
             return Response.ok(contentServiceAccess.getFolderContents(path))
                     .build();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error(REPOSITORY_NOT_AVAILABLE, e);
+            log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
+                    .entity(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE + e.getMessage())
                     .build();
         } catch(ContentNotAvailableException e) {
-            log.error("Unable to retrieve folder contents", e);
+            log.error(GenericErrorCodeMessage.ERROR_RETRIEVING_FOLDER_CONTENTS.toString(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unable to retrieve folder contents; " + e.getMessage())
+                    .entity(GenericErrorCodeMessage.ERROR_RETRIEVING_FOLDER_CONTENTS + e.getMessage())
                     .build();
         }
     }
@@ -100,9 +99,9 @@ public class ContentResourceClient implements ContentResource {
             return Response.ok(contentServiceAccess.getOrCreateDocumentsPath(path))
                     .build();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error(REPOSITORY_NOT_AVAILABLE, e);
+            log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
+                    .entity(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE + e.getMessage())
                     .build();
         } catch (ContentNotAvailableException e) {
             log.error(e.getMessage());
@@ -117,8 +116,9 @@ public class ContentResourceClient implements ContentResource {
             contentServiceAccess.save(content);
             return Response.ok().build();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error(REPOSITORY_NOT_AVAILABLE, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
+            log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE + e.getMessage())
                     .build();
         } catch (ContentNotAvailableException e) {
             log.error(e.getMessage());
@@ -129,12 +129,16 @@ public class ContentResourceClient implements ContentResource {
     }
 
     public Response deleteContent(DeleteContentFilter deleteContentFilter) {
+        if(!StringUtils.isEmpty(deleteContentFilter.getViewId()) && !StringUtils.isEmpty(deleteContentFilter.getAbsoluteJcrPath())) {
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(GenericErrorCodeMessage.ERROR_INVALID_CMS_FILTER_OBJECT.toString());
+        }
+
         if(!StringUtils.isEmpty(deleteContentFilter.getViewId())) {
             return deleteContentByViewIdLanguage(deleteContentFilter.getViewId(), deleteContentFilter.getLanguage());
         } else if(!StringUtils.isEmpty(deleteContentFilter.getAbsoluteJcrPath())) {
             return deleteContentByJcrPath(deleteContentFilter.getAbsoluteJcrPath());
         } else {
-            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse("Please provide a valid filter object for deletion");
+            return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(GenericErrorCodeMessage.ERROR_INVALID_CMS_FILTER_OBJECT.toString());
         }
     }
 
@@ -146,12 +150,14 @@ public class ContentResourceClient implements ContentResource {
             }
             return Response.ok().build();
         } catch (ContentRepositoryNotAvailableException e) {
-            log.error(REPOSITORY_NOT_AVAILABLE, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(REPOSITORY_NOT_AVAILABLE + e.getMessage())
+            log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE + e.getMessage())
                     .build();
         } catch (ContentNotAvailableException e) {
-            log.error("Could not delete documents by viewId and Language {} -- {}", viewId, language, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not delete documents by viewId and Language; " + e.getMessage())
+            log.error(GenericErrorCodeMessage.ERROR_DELETE_VIEWID_LANGUAGE.toString(viewId, language), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_DELETE_VIEWID_LANGUAGE.toString(viewId, language) + e.getMessage())
                     .build();
         }
     }
@@ -162,7 +168,8 @@ public class ContentResourceClient implements ContentResource {
             return Response.ok().build();
         } catch (SystemException e) {
             log.error(e.getMessage(), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not delete by path; " + e.getMessage())
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_DELETE_PATH.toString(path) + e.getMessage())
                     .build();
         }
     }
