@@ -119,6 +119,12 @@ public enum GenericErrorCodeMessage {
     ACTIVE_TENANT_ERROR_MISSING_CORE_PARAMETERS("AC3", "error.insufficient.params", "Insufficient params to perform operation. Is necessary at least tenant or user id"),
 
     /**
+     * Ticket Business Error Code Messages
+     */
+    TICKET_FIELD_NOT_PROVIDED("TT1", "error.ticket.field.not.provided", "Ticket %s was not provided."),
+    TICKET_TYPE_NOT_FOUND("TT2", "ticket.type.not.found", "No ticket type found"),
+
+    /**
      * Permission Business Error Code Messages
      */
 

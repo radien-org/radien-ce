@@ -25,7 +25,10 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Factory Util service for converting objects into json ones or vice versa
@@ -97,6 +100,24 @@ public class FactoryUtilService implements Serializable {
      * @param json object with the values to be retrieved
      * @return Long value
      */
+    public static JsonObject getJsonObject(String key, JsonObject json) {
+        if(isObjectNotNull(key,json)){
+            for(Map.Entry<String, JsonValue> entry : json.entrySet()){
+                if(!isValueNotNull(entry.getKey(), json)){
+                    return null;
+                }
+            }
+        }
+
+        return json;
+    }
+
+    /**
+     * Retrieves the Long value from the Json Object
+     * @param key of the value to be retrieved
+     * @param json object with the values to be retrieved
+     * @return Long value
+     */
     public static Long getLongFromJson(String key, JsonObject json) {
         Long returnedValue = null;
         // case where key is present with value null
@@ -149,6 +170,11 @@ public class FactoryUtilService implements Serializable {
      */
     private static boolean isValueNotNull(String key, JsonObject json) {
         JsonValue val = json.get(key);
+        return val != null && !val.toString().equalsIgnoreCase("null");
+    }
+
+    private static boolean isObjectNotNull(String key, JsonObject json) {
+        JsonObject val = json.getJsonObject(key);
         return val != null && !val.toString().equalsIgnoreCase("null");
     }
 

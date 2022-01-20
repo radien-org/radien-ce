@@ -120,6 +120,8 @@ public enum OAFProperties implements SystemProperties{
 
     SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT("system.ms.endpoint.tenantmanagement"),
 
+    SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT("system.ms.endpoint.ticketmanagement"),
+
     SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT("system.ms.endpoint.permissionmanagement"),
 
     SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT("system.ms.endpoint.rolemanagement"),

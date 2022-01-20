@@ -134,6 +134,15 @@ public class Initializer {
     }
 
     /**
+     * Retrieve the URL that corresponds to Ticket Management Endpoint
+     * @return String that corresponds to the Ticket Management URL
+     */
+    public static String getTicketManagementBaseURL() {
+        return getConfigProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT.propKey());
+
+    }
+
+    /**
      * Method responsible for retrieving an access token generated via Keycloak.
      * The access token is a crucial parameter to invoke the endpoints (regarding
      * Tenant, Role, Permission, etc)
