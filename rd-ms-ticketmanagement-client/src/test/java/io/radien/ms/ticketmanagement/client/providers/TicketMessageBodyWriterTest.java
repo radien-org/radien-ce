@@ -16,8 +16,14 @@
 package io.radien.ms.ticketmanagement.client.providers;
 
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
+import io.radien.ms.ticketmanagement.client.services.TicketFactory;
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import javax.json.Json;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
 
 /**
  * @author Rui Soares
@@ -34,5 +40,23 @@ public class TicketMessageBodyWriterTest extends TestCase {
     public void testGetSize() {
         TicketMessageBodyWriter target = new TicketMessageBodyWriter();
         assertEquals(0L,target.getSize(null,null,null,null,null));
+    }
+
+    @Test
+    public void testWriteTo() throws IOException {
+        String result = "{\"id\":null," +
+                "\"userId\":1," +
+                "\"token\":\"token\"," +
+                "\"ticketType\":" + Json.createValue("{\"id\":1,\"type\":\"email_change\"}") + "," +
+                "\"expireDate\":" + Json.createValue(LocalDate.now().plusDays(30).toString()) + "," +
+                "\"createUser\":1," +
+                "\"lastUpdateUser\":1}";
+        TicketMessageBodyWriter target = new TicketMessageBodyWriter();
+        Ticket ticket = TicketFactory.create(1L,"token", 1L,null, 1L);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        target.writeTo(ticket,null,null,null, null,null, baos);
+
+        assertEquals(result,baos.toString().substring(0, baos.toString().indexOf("createDate")-2).trim() + "}");
+
     }
 }

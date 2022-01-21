@@ -65,4 +65,14 @@ public class TicketTest {
         assertNull(ticket4.getTicketType());
         assertNull(ticket4.getData());
     }
+
+    @Test
+    public void testTicketTypeString(){
+        String result = "{" +
+                "\"id\":" + 2 +
+                ", \"type\":\"reference_link\"" +
+                "}";
+        String type = TicketType.getById(ticket.getTicketType()).toString();
+        assertEquals(type, result);
+    }
 }

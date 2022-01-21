@@ -22,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.net.MalformedURLException;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -46,6 +47,17 @@ public class ClientServiceUtilTest {
             valid = false;
         }
         assertTrue(valid);
+    }
+
+    @Test
+    public void testInvalidGetTicketResourceClient() {
+        boolean valid = true;
+        try {
+            clientServiceUtil.getTicketResourceClient("urlToGet") ;
+        } catch (MalformedURLException e) {
+            valid = false;
+        }
+        assertFalse(valid);
     }
 
 }

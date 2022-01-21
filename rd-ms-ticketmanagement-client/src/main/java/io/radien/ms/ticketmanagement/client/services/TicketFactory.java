@@ -181,7 +181,7 @@ public class TicketFactory {
      * @throws ParseException in case of any issue while parsing the JSON
      */
     public static Page<Ticket> convertJsonToPage(JsonObject page) throws ParseException {
-        int currentPage = io.radien.api.util.FactoryUtilService.getIntFromJson("page", page);
+        int currentPage = io.radien.api.util.FactoryUtilService.getIntFromJson("currentPage", page);
         JsonArray results = io.radien.api.util.FactoryUtilService.getArrayFromJson("results", page);
         int totalPages = io.radien.api.util.FactoryUtilService.getIntFromJson("totalPages", page);
         int totalResults = io.radien.api.util.FactoryUtilService.getIntFromJson("totalResults", page);

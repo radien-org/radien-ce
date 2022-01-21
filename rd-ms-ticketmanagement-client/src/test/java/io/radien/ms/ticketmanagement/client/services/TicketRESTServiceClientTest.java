@@ -17,8 +17,10 @@ package io.radien.ms.ticketmanagement.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.ticket.SystemTicket;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -33,12 +35,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -137,6 +144,35 @@ public class TicketRESTServiceClientTest {
     }
 
     @Test
+    public void testGetAll() throws MalformedURLException, SystemException {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueInt(builder, "currentPage", 1);
+        FactoryUtilService.addValueInt(builder, "totalPages", 1);
+        FactoryUtilService.addValueInt(builder, "totalResults", 1);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeObject(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        TicketResourceClient ticketResourceClient = Mockito.mock(TicketResourceClient.class);
+
+        when(ticketResourceClient.getAll(null,1, 10, null, false)).thenReturn(response);
+
+        when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenReturn(ticketResourceClient);
+
+        List<? extends SystemTicket> list = new ArrayList<>();
+
+        List<? extends SystemTicket> returnedList = target.getAll(null,1, 10, null, false).getResults();
+
+        assertEquals(list, returnedList);
+    }
+
+    @Test
     public void testGetAllException() throws Exception {
         boolean success = false;
         when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenThrow(new MalformedURLException());
@@ -199,6 +235,17 @@ public class TicketRESTServiceClientTest {
             success = true;
         }
         assertTrue(success);
+
+        success=false;
+        when(ticketServiceUtil.getTicketResourceClient(any())).thenThrow(MalformedURLException.class);
+
+        try {
+            target.create(new Ticket());
+        }catch (SystemException e){
+            success = true;
+        }
+
+        assertTrue(success);
     }
 
     /**
@@ -258,8 +305,22 @@ public class TicketRESTServiceClientTest {
         }catch (SystemException se){
             success = true;
         }
+
+        assertTrue(success);
+
+        success=false;
+        when(ticketServiceUtil.getTicketResourceClient(any())).thenThrow(MalformedURLException.class);
+
+        try {
+            target.delete(2L);
+        }catch (SystemException e){
+            success = true;
+        }
+
         assertTrue(success);
     }
+
+
 
     /**
      * Test for method delete(ticketId)
@@ -313,6 +374,17 @@ public class TicketRESTServiceClientTest {
         }catch (SystemException se){
             success = true;
         }
+        assertTrue(success);
+
+        success=false;
+        when(ticketServiceUtil.getTicketResourceClient(any())).thenThrow(MalformedURLException.class);
+
+        try {
+            target.update(dummyTicket);
+        }catch (SystemException e){
+            success = true;
+        }
+
         assertTrue(success);
     }
 
