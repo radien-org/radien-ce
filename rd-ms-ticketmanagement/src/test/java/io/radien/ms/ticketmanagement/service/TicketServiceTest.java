@@ -169,13 +169,13 @@ public class TicketServiceTest {
      * @throws TicketException in case of any issue in the data
      */
     private SystemTicket createTicket(Long ticketType) throws TicketException, UniquenessConstraintException {
-        SystemTicket systemTicket = new TicketEntity();
-        systemTicket.setUserId(new Random().nextLong());
-        systemTicket.setTicketType(ticketType);
-        systemTicket.setData("Random Data");
-        systemTicket.setToken(RandomStringUtils.random(12, true, true));
-        ticketServiceAccess.create(systemTicket);
-        return systemTicket;
+        SystemTicket systemTicketNew = new TicketEntity();
+        systemTicketNew.setUserId(new Random().nextLong());
+        systemTicketNew.setTicketType(ticketType);
+        systemTicketNew.setData("Random Data");
+        systemTicketNew.setToken(RandomStringUtils.random(12, true, true));
+        ticketServiceAccess.create(systemTicketNew);
+        return systemTicketNew;
     }
 
     /**
@@ -261,10 +261,8 @@ public class TicketServiceTest {
      * Tested methods: void update(Ticket ticket)
      */
     @Test
-    public void testUpdateDuplicated() throws UniquenessConstraintException, TicketException {
-        SystemTicket c = createTicket(2L);
-        c.setToken("token11");
-        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDate.now(), "token11", "dataaaa"));
+    public void testUpdateDuplicated() {
+        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDate.now(), systemTicket.getToken(), "dataaaa"));
         Exception exception = assertThrows(UniquenessConstraintException.class, () ->
                 ticketServiceAccess.update(duplicated));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName());
@@ -274,11 +272,8 @@ public class TicketServiceTest {
     }
 
     @Test
-    public void testCreateDuplicated() throws UniquenessConstraintException, TicketException {
-        SystemTicket c = createTicket(1L);
-        c.setToken(SystemVariables.TOKEN.getFieldName());
-        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDate.now(), SystemVariables.TOKEN.getFieldName(), "dataaaa"));
-        duplicated.setId(99L);
+    public void testCreateDuplicated() {
+        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDate.now(), systemTicket.getToken(), "dataaaa"));
         Exception exception = assertThrows(UniquenessConstraintException.class, () ->
                 ticketServiceAccess.create(duplicated));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName());
