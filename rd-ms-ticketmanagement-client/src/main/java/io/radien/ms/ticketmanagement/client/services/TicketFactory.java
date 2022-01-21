@@ -47,6 +47,10 @@ public class TicketFactory {
 
     private static Logger log = LoggerFactory.getLogger(TicketFactory.class);
 
+    private TicketFactory() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
     public static Ticket create(Long userId, String token, Long type,
                                 String data, Long createdUser){
         Ticket ticket = new Ticket();

@@ -45,8 +45,7 @@ public class TicketFactoryTest extends TestCase {
 
     @Test
     public void testCreate() {
-        TicketFactory ticketFactory = new TicketFactory();
-        Ticket newTicketConstructed = ticketFactory.create(2L, "token", 1L, "data", 1L);
+        Ticket newTicketConstructed = TicketFactory.create(2L, "token", 1L, "data", 1L);
 
         assertEquals(ticket.getToken(), newTicketConstructed.getToken());
         assertEquals(ticket.getUserId(), newTicketConstructed.getUserId());

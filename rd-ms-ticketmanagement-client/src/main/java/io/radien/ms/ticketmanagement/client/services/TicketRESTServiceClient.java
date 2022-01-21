@@ -167,7 +167,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
         }
     }
 
-    private Page<Ticket> getAllRequester(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    private Page<? extends SystemTicket> getAllRequester(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             TicketResourceClient client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);

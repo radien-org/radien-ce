@@ -52,6 +52,7 @@ public enum SystemVariables {
     ROLE_TENANT_ID("roleTenantId", "Role Tenant ID"),
     ACCESS_TOKEN("accessToken", "Access Token"),
     REFRESH_TOKEN("refreshToken", "Refresh Token"),
+    TOKEN("token", "Token"),
     OLD_PASSWORD("oldPassword", "Old Password"),
     NEW_PASSWORD("newPassword", "New Password"),
     CONFIRM_NEW_PASSWORD("confirmNewPassword", "Confirm New Password"),

@@ -30,11 +30,11 @@ import java.util.ResourceBundle;
 @ApplicationScoped
 public class TicketConfiguration implements OAFAccess {
 
-    private final Config config;
+    private Config config;
 
     private Map<String, Locale> supportedLocales;
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(TicketConfiguration.class);
 
     /**
      * ticket OAF Configuration constructor
@@ -126,17 +126,20 @@ public class TicketConfiguration implements OAFAccess {
     private void loadSupportedLocales() {
         try {
             for (String languageTag : getProperty(OAFProperties.SYS_SUPPORTED_LOCALES).split(",")) {
-                try {
-                    Locale locale = Locale.forLanguageTag(languageTag);
-                    supportedLocales.put(locale.toLanguageTag(), locale);
-                    log.info("[OAF] added locale {}", locale);
-                } catch (Exception e) {
-                    log.error("[OAF] IETF BCP 47 languageTag {} for registering supported locale is not supported.", languageTag);
-                }
-
+                loadLanguage(languageTag);
             }
         } catch (Exception e) {
             log.error(SystemMessages.KERNEL_LOCALE_ERROR.message(), e);
+        }
+    }
+
+    private void loadLanguage(String languageTag) {
+        try {
+            Locale locale = Locale.forLanguageTag(languageTag);
+            supportedLocales.put(locale.toLanguageTag(), locale);
+            log.info("[OAF] added locale {}", locale);
+        } catch (Exception e) {
+            log.error("[OAF] IETF BCP 47 languageTag {} for registering supported locale is not supported.", languageTag);
         }
     }
 

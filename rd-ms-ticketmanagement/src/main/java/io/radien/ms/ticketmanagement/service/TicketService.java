@@ -53,7 +53,7 @@ public class TicketService implements TicketServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(ticket);
         } else {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Token"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName()));
         }
     }
 
@@ -73,7 +73,7 @@ public class TicketService implements TicketServiceAccess {
         criteriaQuery.select(ticketRoot);
         Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(ticketRoot.get("token"), search));
+            global = criteriaBuilder.and(criteriaBuilder.like(ticketRoot.get(SystemVariables.TOKEN.getFieldName()), search));
             criteriaQuery.where(global);
         }
         if(sortBy != null && !sortBy.isEmpty()){
@@ -97,7 +97,7 @@ public class TicketService implements TicketServiceAccess {
 
         log.info("New pagination ready to be showed!");
 
-        return new Page<SystemTicket>(systemTickets, pageNo, totalRecords, totalPages);
+        return new Page<>(systemTickets, pageNo, totalRecords, totalPages);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class TicketService implements TicketServiceAccess {
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(ticket);
         } else {
-            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Token"));
+            throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName()));
         }
 
     }
@@ -122,7 +122,7 @@ public class TicketService implements TicketServiceAccess {
 
     private void validateEmptyToken(SystemTicket ticket) throws TicketException {
         if (validateIfFieldsAreEmpty(ticket.getToken())) {
-            throw new TicketException(GenericErrorCodeMessage.TICKET_FIELD_NOT_PROVIDED.toString("token"));
+            throw new TicketException(GenericErrorCodeMessage.TICKET_FIELD_NOT_PROVIDED.toString(SystemVariables.TOKEN.getFieldName()));
         }
     }
 
@@ -163,7 +163,7 @@ public class TicketService implements TicketServiceAccess {
         Root<TicketEntity> root = criteriaQuery.from(TicketEntity.class);
         criteriaQuery.select(root);
         Predicate global =
-                criteriaBuilder.equal(root.get("token"), ticket.getToken());
+                criteriaBuilder.equal(root.get(SystemVariables.TOKEN.getFieldName()), ticket.getToken());
         if (ticket.getId() != null) {
             global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), ticket.getId()));
         }
