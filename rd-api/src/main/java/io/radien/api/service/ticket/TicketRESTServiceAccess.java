@@ -11,6 +11,7 @@
 
 package io.radien.api.service.ticket;
 
+import io.radien.api.Appframeable;
 import io.radien.api.entity.Page;
 import io.radien.api.model.ticket.SystemTicket;
 import io.radien.exception.SystemException;
@@ -18,7 +19,7 @@ import io.radien.exception.SystemException;
 import java.util.List;
 import java.util.Optional;
 
-public interface TicketRESTServiceAccess {
+public interface TicketRESTServiceAccess extends Appframeable{
 
     public Page<? extends SystemTicket> getAll(String search,
                                                int pageNo,

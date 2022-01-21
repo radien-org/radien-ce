@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequestScoped
+@Default
 public class TicketRESTServiceClient extends AuthorizationChecker implements TicketRESTServiceAccess {
 
     private static final long serialVersionUID = 4007939167636938896L;
@@ -46,10 +48,6 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
-
-
-    @Inject
-    private OAFAccess oafAccess;
 
     @Override
     public boolean create(SystemTicket ticket) throws SystemException {
@@ -68,7 +66,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
     private boolean createRequester(Ticket ticket) throws SystemException {
         TicketResourceClient client;
         try {
-            client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
+            client = clientServiceUtil.getTicketResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
         } catch (MalformedURLException malformedURLException){
             throw new SystemException(malformedURLException.getMessage());
         }
@@ -102,7 +100,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
     private boolean deleteRequester(long tenantId) throws SystemException {
         TicketResourceClient client;
         try {
-            client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
+            client = clientServiceUtil.getTicketResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
         } catch (MalformedURLException malformedURLException){
             throw new SystemException(malformedURLException.getMessage());
         }
@@ -136,7 +134,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
     private boolean updateRequester(SystemTicket ticket) throws SystemException {
         TicketResourceClient client;
         try {
-            client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
+            client = clientServiceUtil.getTicketResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
         } catch (MalformedURLException malformedURLException){
             throw new SystemException(malformedURLException.getMessage());
         }
@@ -169,7 +167,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
 
     private Page<? extends SystemTicket> getAllRequester(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         try {
-            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
+            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
             Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
             return TicketModelMapper.mapToPage((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
@@ -193,11 +191,16 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
 
     private Optional<SystemTicket> getTicketByIdRequester(Long id) throws SystemException {
         try {
-            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
+            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
             Response response = client.getById(id);
             return Optional.of(TicketModelMapper.map((InputStream) response.getEntity()));
         }  catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
             throw new SystemException(es.getMessage());
         }
+    }
+
+    @Override
+    public OAFAccess getOAF() {
+        return getOafAccess();
     }
 }

@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateful;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -41,8 +41,8 @@ public class TicketService implements TicketServiceAccess {
 
     private static final long serialVersionUID = 6159752149574674022L;
 
-    @Inject
-    private EntityManagerHolder emh;
+    @PersistenceContext(unitName = "persistenceUnit")
+    private EntityManager entityManager;
 
     private static final Logger log = LoggerFactory.getLogger(TicketService.class);
 
@@ -51,7 +51,7 @@ public class TicketService implements TicketServiceAccess {
         validateEmptyToken(ticket);
         List<TicketEntity> alreadyExistentRecords = searchDuplicatedFields(ticket);
         if (alreadyExistentRecords.isEmpty()) {
-            emh.getEm().persist(ticket);
+            entityManager.persist(ticket);
         } else {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName()));
         }
@@ -59,13 +59,13 @@ public class TicketService implements TicketServiceAccess {
 
     @Override
     public SystemTicket get(Long ticketId) {
-        return emh.getEm().find(TicketEntity.class, ticketId);
+        return entityManager.find(TicketEntity.class, ticketId);
     }
 
     @Override
     public Page<SystemTicket> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
         log.info("Going to create a new pagination!");
-        EntityManager entityManager = emh.getEm();
+        EntityManager entityManager = this.entityManager;
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TicketEntity> criteriaQuery = criteriaBuilder.createQuery(TicketEntity.class);
         Root<TicketEntity> ticketRoot = criteriaQuery.from(TicketEntity.class);
@@ -105,7 +105,7 @@ public class TicketService implements TicketServiceAccess {
         validateEmptyToken(ticket);
         List<TicketEntity> alreadyExistentRecords = searchDuplicatedFields(ticket);
         if (alreadyExistentRecords.isEmpty()) {
-            emh.getEm().merge(ticket);
+            entityManager.merge(ticket);
         } else {
             throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName()));
         }
@@ -115,8 +115,7 @@ public class TicketService implements TicketServiceAccess {
 
     @Override
     public boolean delete(Long tenantId) {
-        EntityManager em = emh.getEm();
-        return delete(tenantId, em);
+        return delete(tenantId, entityManager);
     }
 
 
@@ -142,23 +141,21 @@ public class TicketService implements TicketServiceAccess {
     private long getCount(Predicate global, Root<TicketEntity> userRoot) {
 
         log.info("Going to count the existent records.");
-        EntityManager em = emh.getEm();
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
         criteriaQuery.where(global);
 
         criteriaQuery.select(criteriaBuilder.count(userRoot));
 
-        TypedQuery<Long> q= em.createQuery(criteriaQuery);
+        TypedQuery<Long> q= entityManager.createQuery(criteriaQuery);
 
         return q.getSingleResult();
     }
 
     private List<TicketEntity> searchDuplicatedFields(SystemTicket ticket) {
-        EntityManager em = emh.getEm();
         List<TicketEntity> alreadyExistentRecords;
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TicketEntity> criteriaQuery = criteriaBuilder.createQuery(TicketEntity.class);
         Root<TicketEntity> root = criteriaQuery.from(TicketEntity.class);
         criteriaQuery.select(root);
@@ -168,7 +165,7 @@ public class TicketService implements TicketServiceAccess {
             global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), ticket.getId()));
         }
         criteriaQuery.where(global);
-        TypedQuery<TicketEntity> q = em.createQuery(criteriaQuery);
+        TypedQuery<TicketEntity> q = entityManager.createQuery(criteriaQuery);
         alreadyExistentRecords = q.getResultList();
         return alreadyExistentRecords;
     }
