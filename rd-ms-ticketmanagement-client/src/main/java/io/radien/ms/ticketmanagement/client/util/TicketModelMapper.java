@@ -22,12 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.util.List;
+
 
 /**
  * Mapper from a given information into a JSON or a contract
@@ -38,18 +37,18 @@ public class TicketModelMapper {
     protected static final Logger log = LoggerFactory.getLogger(TicketModelMapper.class);
 
     /**
-     * Maps into a Json Object a Tenant
-     * @param model tenant that has the information to be converted
-     * @return a json object created based the tenant
+     * Maps into a Json Object a Ticket
+     * @param model ticket that has the information to be converted
+     * @return a json object created based the ticket
      */
     public static JsonObject map(Ticket model) {
         return TicketFactory.convertToJsonObject(model);
     }
 
     /**
-     * Creates a tenant based a received inputted information
+     * Creates a ticket based a received inputted information
      * @param is inputted information to be converted into the object
-     * @return a tenant object based in the received information
+     * @return a ticket object based in the received information
      */
     public static Ticket map(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
@@ -58,9 +57,9 @@ public class TicketModelMapper {
     }
 
     /**
-     * Creates a tenants based a received inputted information
+     * Creates a tickets based a received inputted information
      * @param is inputted information to be converted into the object
-     * @return a page of tenants object based in the received information
+     * @return a page of tickets object based in the received information
      */
     public static Page<Ticket> mapToPage(InputStream is) {
         Page<Ticket> page = null;

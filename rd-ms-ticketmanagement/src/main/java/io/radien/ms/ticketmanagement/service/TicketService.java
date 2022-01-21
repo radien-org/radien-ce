@@ -1,7 +1,18 @@
+/*
+ * Copyright (c) 2006-present radien GmbH & its legal owners.
+ * All rights reserved.<p>Licensed under the Apache License, Version 2.0
+ * (the "License");you may not use this file except in compliance with the
+ * License.You may obtain a copy of the License at<p>http://www.apache.org/licenses/LICENSE-2.0<p>Unless required by applicable law or
+ * agreed to in writing, softwaredistributed under the License is distributed
+ * on an "AS IS" BASIS,WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.See the License for the specific language
+ * governing permissions andlimitations under the License.
+ */
+
 package io.radien.ms.ticketmanagement.service;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
-import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.ticket.SystemTicket;
 import io.radien.api.service.ticket.TicketServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
@@ -15,7 +26,13 @@ import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.CriteriaDelete;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +48,7 @@ public class TicketService implements TicketServiceAccess {
 
     @Override
     public void create(SystemTicket ticket) throws TicketException, UniquenessConstraintException {
-        validateTicket(ticket);
+        validateEmptyToken(ticket);
         List<TicketEntity> alreadyExistentRecords = searchDuplicatedFields(ticket);
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().persist(ticket);
@@ -85,7 +102,7 @@ public class TicketService implements TicketServiceAccess {
 
     @Override
     public void update(SystemTicket ticket) throws TicketException, UniquenessConstraintException {
-        validateTicket(ticket);
+        validateEmptyToken(ticket);
         List<TicketEntity> alreadyExistentRecords = searchDuplicatedFields(ticket);
         if (alreadyExistentRecords.isEmpty()) {
             emh.getEm().merge(ticket);
@@ -103,7 +120,7 @@ public class TicketService implements TicketServiceAccess {
     }
 
 
-    private void validateTicket(SystemTicket ticket) throws TicketException {
+    private void validateEmptyToken(SystemTicket ticket) throws TicketException {
         if (validateIfFieldsAreEmpty(ticket.getToken())) {
             throw new TicketException(GenericErrorCodeMessage.TICKET_FIELD_NOT_PROVIDED.toString("token"));
         }
@@ -117,7 +134,7 @@ public class TicketService implements TicketServiceAccess {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<TicketEntity> criteriaDelete = cb.createCriteriaDelete(TicketEntity.class);
         Root<TicketEntity> userRoot = criteriaDelete.from(TicketEntity.class);
-        criteriaDelete.where(cb.equal(userRoot.get("id"), ticketId));
+        criteriaDelete.where(cb.equal(userRoot.get(SystemVariables.ID.getFieldName()), ticketId));
         int ret = entityManager.createQuery(criteriaDelete).executeUpdate();
         return ret > 0;
     }

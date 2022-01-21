@@ -8,7 +8,6 @@ import io.radien.exception.TicketException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TicketServiceAccess extends ServiceAccess {
 

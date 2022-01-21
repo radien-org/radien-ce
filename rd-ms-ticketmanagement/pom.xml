@@ -67,9 +67,9 @@
                         <configuration>
                             <context>${project.build.finalName}</context>
                             <tomeeClassifier>microprofile</tomeeClassifier>
-                            <tomeeHttpPort>8082</tomeeHttpPort>
-                            <tomeeShutdownPort>8007</tomeeShutdownPort>
-                            <tomeeAjpPort>8011</tomeeAjpPort>
+                            <tomeeHttpPort>8083</tomeeHttpPort>
+                            <tomeeShutdownPort>8009</tomeeShutdownPort>
+                            <tomeeAjpPort>8013</tomeeAjpPort>
                         </configuration>
                     </plugin>
                 </plugins>

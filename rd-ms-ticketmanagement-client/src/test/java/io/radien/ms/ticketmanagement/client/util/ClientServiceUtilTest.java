@@ -15,7 +15,6 @@
  */
 package io.radien.ms.ticketmanagement.client.util;
 
-import io.radien.ms.ticketmanagement.client.util.ClientServiceUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +25,7 @@ import java.net.MalformedURLException;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author Bruno Gama
+ * @author Rui Soares
  */
 public class ClientServiceUtilTest {
 

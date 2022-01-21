@@ -15,6 +15,7 @@
  */
 package io.radien.ms.ticketmanagement.client.services;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.GenericErrorCodeMessage;
@@ -23,7 +24,11 @@ import io.radien.ms.ticketmanagement.client.entities.TicketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.*;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonObjectBuilder;
+import javax.json.Json;
+import javax.json.JsonArray;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,9 +47,7 @@ public class TicketFactory {
 
     private static Logger log = LoggerFactory.getLogger(TicketFactory.class);
 
-    private static SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-
-    public static Ticket create(Long userId, String token, Long type, LocalDate expirationDate,
+    public static Ticket create(Long userId, String token, Long type,
                                 String data, Long createdUser){
         Ticket ticket = new Ticket();
         ticket.setUserId(userId);
@@ -70,11 +73,10 @@ public class TicketFactory {
      * @throws ParseException in case of any issue while parsing the JSON
      */
     public static Ticket convert(JsonObject jsonTicket) throws ParseException {
-        Long id = FactoryUtilService.getLongFromJson("id", jsonTicket);
+        Long id = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), jsonTicket);
         Long userId = FactoryUtilService.getLongFromJson("userId", jsonTicket);
         JsonObject ticketType = convertTypeToJson(FactoryUtilService.getStringFromJson("ticketType", jsonTicket));
-        Long ticketTypeId = FactoryUtilService.getLongFromJson("id", ticketType);
-        String description = FactoryUtilService.getStringFromJson("type", ticketType);
+        Long ticketTypeId = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), ticketType);
         String token = FactoryUtilService.getStringFromJson("token", jsonTicket);
         String data = FactoryUtilService.getStringFromJson("data", jsonTicket);
 
@@ -84,11 +86,11 @@ public class TicketFactory {
         String createDate = FactoryUtilService.getStringFromJson("createDate", jsonTicket);
         String lastUpdate = FactoryUtilService.getStringFromJson("lastUpdate", jsonTicket);
 
-        Ticket ticket = create(userId, token, ticketTypeId, setExpirationDate(ticketTypeId), data, createUser);
+        Ticket ticket = create(userId, token, ticketTypeId, data, createUser);
 
         ticket.setId(id);
 
-
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
         ticket.setLastUpdateUser(lastUpdateUser);
 
@@ -108,8 +110,9 @@ public class TicketFactory {
     }
 
     private static JsonObject convertTypeToJson(String ticket){
-        JsonReader jsonReader = Json.createReader(new StringReader(ticket));
-        return jsonReader.readObject();
+        try(JsonReader jsonReader = Json.createReader(new StringReader(ticket))){
+            return jsonReader.readObject();
+        }
     }
 
     /**

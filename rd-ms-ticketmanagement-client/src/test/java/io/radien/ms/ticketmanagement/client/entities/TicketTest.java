@@ -16,7 +16,6 @@
 
 package io.radien.ms.ticketmanagement.client.entities;
 
-import io.radien.ms.ticketmanagement.client.entities.Ticket;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -25,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- * Active Tenant test class {@link io.radien.ms.ticketmanagement.client.entities.Ticket}
+ * Active Ticket test class {@link io.radien.ms.ticketmanagement.client.entities.Ticket}
  *
  * @author Rui Soares
  */
@@ -34,7 +33,7 @@ public class TicketTest {
     Ticket ticket;
 
     /**
-     * Active tenant entity constructor test
+     * Active ticket entity constructor test
      */
     public TicketTest(){
         ticket = new Ticket(2L, 2L, LocalDate.now(), "token", "data");

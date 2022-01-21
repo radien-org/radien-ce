@@ -19,14 +19,11 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.ticket.SystemTicket;
 import io.radien.api.security.TokensPlaceHolder;
-import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
-import io.radien.ms.ticketmanagement.client.services.TicketRESTServiceClient;
-import io.radien.ms.ticketmanagement.client.services.TicketResourceClient;
 import io.radien.ms.ticketmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.ticketmanagement.client.util.TicketModelMapper;
 import org.junit.Before;
@@ -36,15 +33,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.json.*;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -53,7 +47,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * @author Bruno Gama
+ * @author Rui Soares
  */
 public class TicketRESTServiceClientTest {
 

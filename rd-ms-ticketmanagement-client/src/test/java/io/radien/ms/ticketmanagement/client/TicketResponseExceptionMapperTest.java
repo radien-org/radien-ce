@@ -16,7 +16,6 @@
 package io.radien.ms.ticketmanagement.client;
 
 import io.radien.exception.*;
-import io.radien.ms.ticketmanagement.client.TicketResponseExceptionMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

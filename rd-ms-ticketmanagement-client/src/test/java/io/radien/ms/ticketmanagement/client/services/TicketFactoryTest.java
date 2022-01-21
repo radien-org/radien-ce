@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import javax.json.*;
 import java.text.ParseException;
-import java.time.LocalDate;
 
 import static org.junit.Assert.assertThrows;
 
@@ -47,7 +46,7 @@ public class TicketFactoryTest extends TestCase {
     @Test
     public void testCreate() {
         TicketFactory ticketFactory = new TicketFactory();
-        Ticket newTicketConstructed = ticketFactory.create(2L, "token", 1L, LocalDate.now(), "data", 1L);
+        Ticket newTicketConstructed = ticketFactory.create(2L, "token", 1L, "data", 1L);
 
         assertEquals(ticket.getToken(), newTicketConstructed.getToken());
         assertEquals(ticket.getUserId(), newTicketConstructed.getUserId());
@@ -55,7 +54,7 @@ public class TicketFactoryTest extends TestCase {
 
     @Test
     public void testCreateInvalid(){
-        assertThrows(IllegalStateException.class, () ->TicketFactory.create(2L, "token", null, LocalDate.now(), "data", 1L));
+        assertThrows(IllegalStateException.class, () ->TicketFactory.create(2L, "token", null, "data", 1L));
     }
 
     @Test

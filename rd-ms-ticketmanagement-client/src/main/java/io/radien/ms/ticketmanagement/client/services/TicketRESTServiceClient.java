@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2006-present radien GmbH & its legal owners.
+ * All rights reserved.<p>Licensed under the Apache License, Version 2.0
+ * (the "License");you may not use this file except in compliance with the
+ * License.You may obtain a copy of the License at<p>http://www.apache.org/licenses/LICENSE-2.0<p>Unless required by applicable law or
+ * agreed to in writing, softwaredistributed under the License is distributed
+ * on an "AS IS" BASIS,WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.See the License for the specific language
+ * governing permissions andlimitations under the License.
+ */
+
 package io.radien.ms.ticketmanagement.client.services;
 
 import io.radien.api.OAFAccess;
@@ -43,94 +54,18 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
     @Override
     public boolean create(SystemTicket ticket) throws SystemException {
         try {
-            return createTicket((Ticket) ticket);
+            return createRequester((Ticket) ticket);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return createTicket((Ticket) ticket);
+                return createRequester((Ticket) ticket);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
         }
     }
 
-    @Override
-    public boolean delete(long ticketId) throws SystemException {
-        try {
-            return deleteRequester(ticketId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return deleteRequester(ticketId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    @Override
-    public boolean update(SystemTicket ticket) throws SystemException {
-        try {
-            return updateTicket(ticket);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return updateTicket(ticket);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    @Override
-    public Page<? extends SystemTicket> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
-        try {
-            return getTicketPage(search, pageNo, pageSize, sortBy, isAscending);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getTicketPage(search, pageNo, pageSize, sortBy, isAscending);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    private Page<Ticket> getTicketPage(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
-        try {
-            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
-            return TicketModelMapper.mapToPage((InputStream) response.getEntity());
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
-            throw new SystemException(e);
-        }
-    }
-
-    @Override
-    public Optional<SystemTicket> getTicketById(Long ticketId) throws SystemException {
-        try {
-            return getSystemTicket(ticketId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getSystemTicket(ticketId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    private Optional<SystemTicket> getSystemTicket(Long id) throws SystemException {
-        try {
-            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
-            Response response = client.getById(id);
-            return Optional.of(TicketModelMapper.map((InputStream) response.getEntity()));
-        }  catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
-            throw new SystemException(es.getMessage());
-        }
-    }
-
-    private boolean createTicket(Ticket ticket) throws SystemException {
+    private boolean createRequester(Ticket ticket) throws SystemException {
         TicketResourceClient client;
         try {
             client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
@@ -147,6 +82,20 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             }
         } catch (ProcessingException pe) {
             throw new SystemException(pe.getMessage());
+        }
+    }
+
+    @Override
+    public boolean delete(long ticketId) throws SystemException {
+        try {
+            return deleteRequester(ticketId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return deleteRequester(ticketId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
         }
     }
 
@@ -170,7 +119,21 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
         }
     }
 
-    private boolean updateTicket(SystemTicket ticket) throws SystemException {
+    @Override
+    public boolean update(SystemTicket ticket) throws SystemException {
+        try {
+            return updateRequester(ticket);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return updateRequester(ticket);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    private boolean updateRequester(SystemTicket ticket) throws SystemException {
         TicketResourceClient client;
         try {
             client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
@@ -187,6 +150,54 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             }
         } catch (ProcessingException pe) {
             throw new SystemException(pe.getMessage());
+        }
+    }
+
+    @Override
+    public Page<? extends SystemTicket> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
+            return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getAllRequester(search, pageNo, pageSize, sortBy, isAscending);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    private Page<Ticket> getAllRequester(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        try {
+            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
+            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            return TicketModelMapper.mapToPage((InputStream) response.getEntity());
+        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+            throw new SystemException(e);
+        }
+    }
+
+    @Override
+    public Optional<SystemTicket> getTicketById(Long ticketId) throws SystemException {
+        try {
+            return getTicketByIdRequester(ticketId);
+        } catch (TokenExpiredException expiredException) {
+            refreshToken();
+            try{
+                return getTicketByIdRequester(ticketId);
+            } catch (TokenExpiredException expiredException1){
+                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
+            }
+        }
+    }
+
+    private Optional<SystemTicket> getTicketByIdRequester(Long id) throws SystemException {
+        try {
+            TicketResourceClient client = clientServiceUtil.getTicketResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
+            Response response = client.getById(id);
+            return Optional.of(TicketModelMapper.map((InputStream) response.getEntity()));
+        }  catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es){
+            throw new SystemException(es.getMessage());
         }
     }
 }

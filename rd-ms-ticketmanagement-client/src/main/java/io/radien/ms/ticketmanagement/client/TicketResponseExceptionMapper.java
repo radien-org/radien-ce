@@ -21,7 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 /**
- * Tenant/Contract Exception mapper
+ * Ticket Exception mapper
  *
  * @author Rui Soares
  */
