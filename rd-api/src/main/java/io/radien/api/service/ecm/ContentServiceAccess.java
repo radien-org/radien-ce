@@ -16,6 +16,7 @@
 package io.radien.api.service.ecm;
 
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
+import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.exception.SystemException;
 import java.util.List;
 import java.util.Map;
@@ -136,15 +137,6 @@ public interface ContentServiceAccess extends ServiceAccess {
 	int countByTagName(String name);
 
 	/**
-	 * By a given app and content will return the designated app info
-	 * @param content to be retrieved
-	 * @param app to be searched
-	 * @param language of the app
-	 * @return the app info id
-	 */
-	String getAppInfoId(String content, String app, String language);
-
-	/**
 	 * Tries to load the file present inside a content, if available
 	 * @param jcrPath  the {@link EnterpriseContent} from which the file will load
 	 * @return the new child {@link EnterpriseContent}
@@ -152,13 +144,6 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 * @throws ContentRepositoryNotAvailableException Exception thrown if there is an error while querying the jcr
 	 */
 	EnterpriseContent loadFile(String jcrPath) throws ElementNotFoundException, ContentRepositoryNotAvailableException;
-
-	/**
-	 * Content service app description getter
-	 * @param language of the app to be found
-	 * @return a map of app descriptions
-	 */
-	Map<String, String> getAppDescriptions(String language);
 
 	/**
 	 * Content service folder contents getter
@@ -173,17 +158,11 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 * @param path to be retrieved
 	 * @return a list of all the contents versions existent in a given path
 	 */
-	List<EnterpriseContent> getContentVersions(String path);
+	List<EnterpriseContent> getContentVersions(String path)throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+
+	void deleteVersion(String path, SystemContentVersion version) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
 	String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
-	/**
-	 * Attempts to return a content based on its identifier and active flag
-	 * @param viewId the content identifier
-	 * @param activeOnly flag that indicates if the content is active or not
-	 * @return the {@link EnterpriseContent} if it finds it, or else null
-	 */
-	EnterpriseContent getByViewId(String viewId, boolean activeOnly);
-
-	void delete(String path) throws SystemException;
+	void delete(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 }

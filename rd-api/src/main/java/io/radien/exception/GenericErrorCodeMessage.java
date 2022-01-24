@@ -174,7 +174,8 @@ public enum GenericErrorCodeMessage {
     ERROR_GET_FILE_CONTENT("CMS7", "error.cms.file.content", "Error getting file content by path %s"),
     ERROR_GET_OR_CREATE_DOCUMENTS_PATH("CMS8", "error.cms.documents.get.create.path", "Error getting or creating documents path"),
     ERROR_SAVING_CONTENT("CMS8", "error.cms.content.saving", "Error saving enterprise content"),
-    ERROR_RETRIEVING_RESULT("CMS9", "error.cms.retrieve.result", "Result not retrieved correctly from CMS System. Please check CMS logs for the error message");
+    ERROR_RETRIEVING_RESULT("CMS9", "error.cms.retrieve.result", "Result not retrieved correctly from CMS System. Please check CMS logs for the error message"),
+    ERROR_DELETING_VERSION("CMS10", "error.cms.delete.version", "Could not delete version %s of %s");
 
 
 

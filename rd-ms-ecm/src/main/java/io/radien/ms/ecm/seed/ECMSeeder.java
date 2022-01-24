@@ -210,7 +210,7 @@ public @ApplicationScoped class ECMSeeder {
         }
         else {
             if (content instanceof SystemVersionableEnterpriseContent) {
-                return false;
+                return ((SystemVersionableEnterpriseContent) content).getVersion().compareTo(((SystemVersionableEnterpriseContent) rootVersion).getVersion()) > 0;
             } else {
                 return true;
             }
@@ -219,7 +219,7 @@ public @ApplicationScoped class ECMSeeder {
 
     @Asynchronous
     public void init(@Observes ApplicationInitializedEvent event) {
-        log.info(event.getClass().getSimpleName() + " - received");
+        log.info("{} - received", event.getClass().getSimpleName());
     }
 
 }

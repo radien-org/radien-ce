@@ -20,12 +20,17 @@ import com.fasterxml.jackson.core.TreeNode;
 import io.radien.api.Appframeable;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
+import java.text.MessageFormat;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -35,7 +40,6 @@ import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -66,7 +70,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	private static final String JCR_OR = " or [";
 	private static final String JCR_AND = " and [";
-	private static final String JCR_AND_ESCAPED = "' " + JCR_AND;
 	public static final String JCR_END_OBJ = "] = '";
 	public static final String IS_TRUE = "] = true ";
 
@@ -81,10 +84,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	@Inject
 	private Repository repository;
 
-	@PostConstruct
-	private void init() {
-	}
-
 	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		String viewId = obj.getViewId();
@@ -94,7 +93,7 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		String newPath = null;
 		String nameEscaped = Text.escapeIllegalJcrChars(obj.getName());
 
-		if (StringUtils.isBlank(viewId) || StringUtils.isBlank(language)) {
+		if (StringUtils.isBlank(viewId)) {
 			//TODO: REVIEW - Sets default properties
 			contentMappingUtils.decorateNewContent(obj);
 		} else {
@@ -294,10 +293,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		}
 	}
 
-	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
-		delete(obj.getJcrPath());
-	}
-
 	private Node getNodeByViewId(String viewId, boolean activeOnly)
 			throws ContentRepositoryNotAvailableException, ElementNotFoundException {
 		Session session = createSession();
@@ -309,9 +304,9 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "" + "select * from " + "[" + CmsConstants.RADIEN_BASE_NODE_TYPE + "] as node " + "where ["
-					+ CmsConstants.RADIEN_VIEW_ID + "] = '" + viewId + "' ";
+					+ CmsConstants.RADIEN_VIEW_ID + JCR_END_OBJ + viewId + "' ";
 			if (activeOnly) {
-				expression += " and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
+				expression += JCR_AND + CmsConstants.RADIEN_ACTIVE + JCR_END_OBJ + activeOnly + "' ";
 			}
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
@@ -406,11 +401,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	public void registerCNDNodeTypes(String cndFileName) throws ContentRepositoryNotAvailableException {
 		Session session = createSession();
 		NodeType[] nodeTypes;
-		try {
-			nodeTypes = CndImporter.registerNodeTypes(
-					new InputStreamReader(getClass().getClassLoader().getResourceAsStream(cndFileName)), session);
+		try(InputStreamReader streamReader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(cndFileName))) {
+			nodeTypes = CndImporter.registerNodeTypes(streamReader, session);
 			for (NodeType nt : nodeTypes) {
-				log.info("Registered: " + nt.getName());
+				log.info("Registered: {}", nt.getName());
 			}
 		} catch (Exception e) {
 			log.error("Error registering node type", e);
@@ -427,9 +421,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			Node rootNode = session.getRootNode().getNode("radien");
 			addSupportedLocalesFolder(contentNode, rootNode, nameEscaped);
 			session.save();
-		} catch (RepositoryException e) {
-			log.error("Repository exception. Not possible to update {}", nameEscaped, e);
-			throw e;
 		} finally {
 			session.logout();
 		}
@@ -463,10 +454,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + contentType.key() + "' " + "and ["
-					+ CmsConstants.RADIEN_SYSTEM + "] = '" + includeSystemContent + "' ";
+					+ CmsConstants.RADIEN_CONTENT_TYPE + JCR_END_OBJ + contentType.key() + "' " + "and ["
+					+ CmsConstants.RADIEN_SYSTEM + JCR_END_OBJ + includeSystemContent + "' ";
 			if (activeOnly) {
-				expression += "and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
+				expression += "and [" + CmsConstants.RADIEN_ACTIVE + JCR_END_OBJ + activeOnly + "' ";
 			}
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
@@ -518,10 +509,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ CmsConstants.RADIEN_SYSTEM + "] = '" + enableSystemContent + "' " + "and (" + "["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.HTML.key() + "' " + " or ["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NEWS_FEED.key() + "' " + " or ["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NOTIFICATION.key() + "' " + ") ";
+					+ CmsConstants.RADIEN_SYSTEM + JCR_END_OBJ + enableSystemContent + "' " + "and (" + "["
+					+ CmsConstants.RADIEN_CONTENT_TYPE + JCR_END_OBJ + ContentType.HTML.key() + "' " + JCR_OR
+					+ CmsConstants.RADIEN_CONTENT_TYPE + JCR_END_OBJ + ContentType.NEWS_FEED.key() + "' " + JCR_OR
+					+ CmsConstants.RADIEN_CONTENT_TYPE + JCR_END_OBJ + ContentType.NOTIFICATION.key() + "' " + ") ";
 
 			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
 			// TODO: IMPLEMENT PAGINATING
@@ -597,32 +588,27 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		return null;
 	}
 
-	protected Node getHTMLContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
+	protected Node getHTMLContentNode() throws ContentRepositoryNotAvailableException, RepositoryException {
 		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
 				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_HTML));
 	}
 
-	protected Node getNewsFeedContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
+	protected Node getNewsFeedContentNode() throws ContentRepositoryNotAvailableException, RepositoryException {
 		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
 				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_NEWS_FEED));
 	}
 
-	protected Node getImageContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
+	protected Node getImageContentNode() throws ContentRepositoryNotAvailableException, RepositoryException {
 		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
 				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_IMAGE));
 	}
 
-	protected Node getDocumentsContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
+	protected Node getDocumentsContentNode() throws ContentRepositoryNotAvailableException, RepositoryException {
 		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
 				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_DOCS));
 	}
 
-	protected Node getNotificationContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
+	protected Node getNotificationContentNode() throws ContentRepositoryNotAvailableException, RepositoryException {
 		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
 				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION));
 	}
@@ -657,14 +643,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 		EnterpriseContent doc = contentMappingUtils.convertJCRNode(node);
 		TreeNode treeNode = null;
-		switch (doc.getContentType()) {
-			case DOCUMENT:
-				treeNode = new RestTreeNode(doc.getContentType().key(), doc, documentParent);
-				break;
-
-			default:
-				treeNode = new RestTreeNode(doc, documentParent);
-				break;
+		if (doc.getContentType() == ContentType.DOCUMENT) {
+			treeNode = new RestTreeNode(doc.getContentType().key(), doc, documentParent);
+		} else {
+			treeNode = new RestTreeNode(doc, documentParent);
 		}
 
 		NodeIterator nodes = node.getNodes();
@@ -701,6 +683,75 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		return results;
 	}
 
+	public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+		Session session = createSession();
+		List<EnterpriseContent> results = new ArrayList<>();
+		try {
+			Node resultNode = session.getNode(path);
+			loopNodes(results, resultNode, 0, 1);
+		} finally {
+			session.logout();
+		}
+		return results;
+	}
+
+	public List<EnterpriseContent> getContentVersions(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+		List<EnterpriseContent> results = new ArrayList<>();
+		Session session = createSession();
+		try {
+			VersionManager versionManager = session.getWorkspace().getVersionManager();
+			VersionHistory history = versionManager.getVersionHistory(path);
+			VersionIterator iterator = history.getAllVersions();
+			while(iterator.hasNext()) {
+				Version version = iterator.nextVersion();
+				getNodeContentVersions(results, version.getFrozenNode());
+			}
+		} finally {
+			session.logout();
+		}
+		return results;
+	}
+
+	/**
+	 * Deletes a single version from the given absolute path.
+	 * If the given version is the current baseline version (most recent) then the previous version is restored as baseline.
+	 * VersionIterator always returns the versions in order.
+	 * @param path absolute path to the node
+	 * @param version version to be deleted
+	 * @throws RepositoryException when deletion process fails
+	 * @throws ContentNotAvailableException when version cannot be found in the given path
+	 * @throws ContentRepositoryNotAvailableException when the session times-out or the repository is not available to perform the operation
+	 */
+	public void deleteVersion(String path, SystemContentVersion version) throws RepositoryException, ContentNotAvailableException, ContentRepositoryNotAvailableException {
+		Session session = createSession();
+		try {
+			VersionManager versionManager = session.getWorkspace().getVersionManager();
+			VersionHistory history = versionManager.getVersionHistory(path);
+			VersionIterator iterator = history.getAllVersions();
+			Version previousVersion = null;
+			while(iterator.hasNext()) {
+				Version nodeVersion = iterator.nextVersion();
+				Node frozenNode = nodeVersion.getFrozenNode();
+				if(frozenNode.hasProperty(CmsConstants.RADIEN_VERSION)) {
+					String versionString = frozenNode.getProperty(CmsConstants.RADIEN_VERSION).getString();
+					if(versionString.equalsIgnoreCase(version.getVersion())) {
+						if(versionManager.getBaseVersion(path).getName().equalsIgnoreCase(nodeVersion.getName())) {
+							versionManager.restore(previousVersion, false);
+						}
+						history.removeVersion(nodeVersion.getName());
+						log.info("Version {} deleted from {}", version.getVersion(), path);
+						return;
+					} else {
+						previousVersion = nodeVersion;
+					}
+				}
+			}
+		} finally {
+			session.logout();
+		}
+		throw new ContentNotAvailableException(MessageFormat.format("Version {0} not found in {1}", version.getVersion(), path));
+	}
+
 	private void loopNodes(List<EnterpriseContent> results, Node node, int cLevel, int nLevels) throws RepositoryException {
 		if (node.getName().equals(JcrConstants.JCR_SYSTEM)) {
 			return;
@@ -714,6 +765,23 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			while (nodes.hasNext()) {
 				loopNodes(results, nodes.nextNode(), cLevel + 1, nLevels);
 			}
+		}
+	}
+
+	private void getNodeContentVersions(List<EnterpriseContent> results, Node versionNode) throws RepositoryException {
+		if(versionNode.getName().equals(JcrConstants.JCR_SYSTEM)) {
+			return;
+		}
+		if(!versionNode.getName().equalsIgnoreCase(JcrConstants.JCR_CONTENT)) {
+			EnterpriseContent doc = contentMappingUtils.convertJCRNode(versionNode);
+			if(doc != null) {
+				results.add(doc);
+			}
+		}
+
+		NodeIterator nodes = versionNode.getNodes();
+		while(nodes.hasNext()) {
+			getNodeContentVersions(results, nodes.nextNode());
 		}
 	}
 
@@ -786,15 +854,4 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		return path;
 	}
 
-    public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
-        Session session = createSession();
-        List<EnterpriseContent> results = new ArrayList<>();
-        try {
-			Node resultNode = session.getNode(path);
-            loopNodes(results, resultNode, 0, 1);
-        } finally {
-            session.logout();
-        }
-        return results;
-    }
 }

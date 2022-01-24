@@ -20,6 +20,7 @@ package io.radien.api.service.ecm;
 
 import io.radien.api.Appframeable;
 import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.exception.SystemException;
 import java.util.List;
 
@@ -32,6 +33,12 @@ public interface ContentRESTServiceAccess extends Appframeable {
     List<EnterpriseContent> getFolderContents(String jcrAbsolutePath) throws SystemException;
 
     String getOrCreateDocumentsPath(String jcrRelativePath) throws SystemException;
+
+    List<EnterpriseContent> getContentVersions(String jcrAbsolutePath) throws SystemException;
+
+    boolean deleteAllVersions(String absoluteJcrPath) throws SystemException;
+
+    boolean deleteVersion(String absoluteJcrPath, SystemContentVersion contentVersion) throws SystemException;
 
     boolean saveContent(EnterpriseContent enterpriseContent) throws SystemException;
 
