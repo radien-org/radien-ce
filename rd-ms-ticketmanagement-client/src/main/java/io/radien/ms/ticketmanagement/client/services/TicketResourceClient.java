@@ -36,7 +36,6 @@ import java.util.List;
 public interface TicketResourceClient {
 
     @GET
-    @Path("getById")
     public Response getById(@NotNull @QueryParam("id") Long id);
 
     @POST
@@ -49,6 +48,7 @@ public interface TicketResourceClient {
     public Response delete(@NotNull @QueryParam("id") Long id);
 
     @GET
+    @Path("/find")
     public Response getAll(@QueryParam("search") String search,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,

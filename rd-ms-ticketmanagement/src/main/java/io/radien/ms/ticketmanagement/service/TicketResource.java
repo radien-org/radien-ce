@@ -13,6 +13,7 @@ package io.radien.ms.ticketmanagement.service;
 
 import io.radien.api.model.ticket.SystemTicket;
 import io.radien.api.service.ticket.TicketServiceAccess;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.TicketException;
 import io.radien.exception.UniquenessConstraintException;
@@ -43,7 +44,10 @@ public class TicketResource implements TicketResourceClient {
             }
             return Response.ok(ticket).build();
         }catch (Exception e){
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+            log.error(GenericErrorCodeMessage.ERROR_RETRIEVING_PROVIDED_TICKET.toString(String.valueOf(id)), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_RETRIEVING_PROVIDED_TICKET.toString(String.valueOf(id)) + e.getMessage())
+                    .build();
         }
     }
 
@@ -52,10 +56,13 @@ public class TicketResource implements TicketResourceClient {
         try {
             ticketService.create(new TicketEntity(ticket));
             return Response.ok(ticket.getId()).build();
-        } catch (TicketException u){
+        } catch (TicketException | UniquenessConstraintException u){
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
         } catch (Exception e){
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+            log.error(GenericErrorCodeMessage.ERROR_CREATING_TICKET.toString(ticket.toString()), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_CREATING_TICKET.toString(ticket.toString()) + e.getMessage())
+                    .build();
         }
     }
 
@@ -68,8 +75,11 @@ public class TicketResource implements TicketResourceClient {
             return Response.ok().build();
         }catch (TicketException | UniquenessConstraintException u){
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(u.getMessage());
-        } catch (Exception e){
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+        }catch (Exception e){
+            log.error(GenericErrorCodeMessage.ERROR_UPDATING_TICKET.toString(String.valueOf(id)), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_UPDATING_TICKET.toString(String.valueOf(id)) + e.getMessage())
+                    .build();
         }
     }
 
@@ -78,7 +88,10 @@ public class TicketResource implements TicketResourceClient {
         try {
             return Response.ok(ticketService.delete(id)).build();
         }catch (Exception e){
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+            log.error(GenericErrorCodeMessage.ERROR_DELETING_TICKET.toString(String.valueOf(id)), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_DELETING_TICKET.toString(String.valueOf(id)) + e.getMessage())
+                    .build();
         }
     }
 
@@ -88,7 +101,10 @@ public class TicketResource implements TicketResourceClient {
             log.info("Will get all the ticket information I can find!");
             return Response.ok(ticketService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
         } catch(Exception e) {
-            return GenericErrorMessagesToResponseMapper.getGenericError(e);
+            log.error(GenericErrorCodeMessage.ERROR_RETRIEVING_TICKETS.toString(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_RETRIEVING_TICKETS + e.getMessage())
+                    .build();
         }
     }
 }

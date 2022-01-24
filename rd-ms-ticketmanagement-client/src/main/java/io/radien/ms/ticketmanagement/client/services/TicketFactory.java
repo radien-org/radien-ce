@@ -81,12 +81,12 @@ public class TicketFactory {
         Long userId = FactoryUtilService.getLongFromJson(SystemVariables.USER_ID.getFieldName(), jsonTicket);
         JsonObject ticketType = convertTypeToJson(FactoryUtilService.getStringFromJson("ticketType", jsonTicket));
         Long ticketTypeId = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), ticketType);
-        String token = FactoryUtilService.getStringFromJson("token", jsonTicket);
+        String token = FactoryUtilService.getStringFromJson(SystemVariables.TOKEN.getFieldName(), jsonTicket);
         String data = FactoryUtilService.getStringFromJson("data", jsonTicket);
 
 
-        Long createUser = FactoryUtilService.getLongFromJson("createUser", jsonTicket);
-        Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", jsonTicket);
+        Long createUser = FactoryUtilService.getLongFromJson(SystemVariables.CREATE_USER.getFieldName(), jsonTicket);
+        Long lastUpdateUser = FactoryUtilService.getLongFromJson(SystemVariables.LAST_UPDATE_USER.getFieldName(), jsonTicket);
         String createDate = FactoryUtilService.getStringFromJson("createDate", jsonTicket);
         String lastUpdate = FactoryUtilService.getStringFromJson("lastUpdate", jsonTicket);
 
@@ -129,10 +129,9 @@ public class TicketFactory {
         if (ticketType == null) {
             String ticketTypeNotFound = GenericErrorCodeMessage.TICKET_TYPE_NOT_FOUND.toString();
             log.error(ticketTypeNotFound, typeId);
-        }
-        if (ticketType == null) {
             throw new IllegalStateException(GenericErrorCodeMessage.TICKET_TYPE_NOT_FOUND.toString());
         }
+
         return ticketType;
     }
 
@@ -166,8 +165,8 @@ public class TicketFactory {
 
         FactoryUtilService.addValue(builder, "ticketType", typeBuilder.build());
         FactoryUtilService.addValue(builder, "expireDate", ticket.getExpireDate());
-        FactoryUtilService.addValueLong(builder, "createUser", ticket.getCreateUser());
-        FactoryUtilService.addValueLong(builder, "lastUpdateUser", ticket.getLastUpdateUser());
+        FactoryUtilService.addValueLong(builder, SystemVariables.CREATE_USER.getFieldName(), ticket.getCreateUser());
+        FactoryUtilService.addValueLong(builder, SystemVariables.LAST_UPDATE_USER.getFieldName(), ticket.getLastUpdateUser());
         FactoryUtilService.addValue(builder, "createDate", ticket.getCreateDate());
         FactoryUtilService.addValue(builder, "lastUpdate", ticket.getLastUpdate());
 
@@ -181,10 +180,10 @@ public class TicketFactory {
      * @throws ParseException in case of any issue while parsing the JSON
      */
     public static Page<Ticket> convertJsonToPage(JsonObject page) throws ParseException {
-        int currentPage = io.radien.api.util.FactoryUtilService.getIntFromJson("currentPage", page);
-        JsonArray results = io.radien.api.util.FactoryUtilService.getArrayFromJson("results", page);
-        int totalPages = io.radien.api.util.FactoryUtilService.getIntFromJson("totalPages", page);
-        int totalResults = io.radien.api.util.FactoryUtilService.getIntFromJson("totalResults", page);
+        int currentPage = io.radien.api.util.FactoryUtilService.getIntFromJson(SystemVariables.PAGE_CURRENT.getFieldName(), page);
+        JsonArray results = io.radien.api.util.FactoryUtilService.getArrayFromJson(SystemVariables.PAGE_RESULTS.getFieldName(), page);
+        int totalPages = io.radien.api.util.FactoryUtilService.getIntFromJson(SystemVariables.PAGE_TOTALS.getFieldName(), page);
+        int totalResults = io.radien.api.util.FactoryUtilService.getIntFromJson(SystemVariables.PAGE_TOTAL_RESULTS.getFieldName(), page);
 
         ArrayList<Ticket> pageResults = new ArrayList<>();
 

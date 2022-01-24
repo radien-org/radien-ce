@@ -122,8 +122,12 @@ public enum GenericErrorCodeMessage {
      * Ticket Business Error Code Messages
      */
     TICKET_FIELD_NOT_PROVIDED("TT1", "error.ticket.field.not.provided", "Ticket %s was not provided."),
-    TICKET_TYPE_NOT_FOUND("TT2", "ticket.type.not.found", "No ticket type found"),
-
+    TICKET_TYPE_NOT_FOUND("TT2", "error.ticket.type.not.found", "No ticket type found"),
+    ERROR_RETRIEVING_TICKETS("TT3", "error.ticket.find.tickets", "There was an error while trying to retrieve the tickets list"),
+    ERROR_RETRIEVING_PROVIDED_TICKET("TT4", "error.ticket.find.ticket", "There was an error while trying to retrieve the ticket %s"),
+    ERROR_DELETING_TICKET("TT5", "error.ticket.delete.ticket", "There was an error while trying to delete the ticket %s"),
+    ERROR_UPDATING_TICKET("TT6", "error.ticket.update.ticket", "There was an error while trying to update the ticket %s"),
+    ERROR_CREATING_TICKET("TT7", "error.ticket.create.ticket", "There was an error while trying to create the ticket %s"),
     /**
      * Permission Business Error Code Messages
      */
