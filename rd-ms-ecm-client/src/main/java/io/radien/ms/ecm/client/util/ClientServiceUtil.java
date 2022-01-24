@@ -20,6 +20,7 @@ package io.radien.ms.ecm.client.util;
 
 import io.radien.ms.ecm.client.controller.ContentResource;
 import io.radien.ms.ecm.client.exception.ContentExceptionMapper;
+import io.radien.ms.ecm.client.providers.EnterpriseContentMessageBodyReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.enterprise.context.RequestScoped;
@@ -39,6 +40,7 @@ public class ClientServiceUtil {
         return RestClientBuilder
                 .newBuilder()
                 .baseUrl(url)
+                .register(EnterpriseContentMessageBodyReader.class)
                 .register(ContentExceptionMapper.class)
                 .build(ContentResource.class);
     }
