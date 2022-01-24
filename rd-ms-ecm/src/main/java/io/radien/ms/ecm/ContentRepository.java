@@ -743,23 +743,47 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	public OAFAccess getOAF() {
 		return oaf;
 	}
-	
+
+	private String generateFolderStructure(String path, Session session) throws ContentRepositoryNotAvailableException, RepositoryException {
+		String parent = path.substring(0, 1);
+		String[] folderNames = path.substring(1).split("/");
+		for(String folderName : folderNames) {
+			Node exists = null;
+			if(parent.equals("/")) {
+				exists = JcrUtils.getNodeIfExists(String.format("%s%s", parent, folderName), session);
+			} else {
+				exists = JcrUtils.getNodeIfExists(String.format("%s/%s", parent, folderName), session);
+			}
+			if(exists == null) {
+				Folder folder = new Folder(folderName);
+				folder.setParentPath(parent);
+				folder.setViewId(folder.getName());
+				save(folder);
+				parent = folder.getJcrPath();
+			} else {
+				parent = exists.getPath();
+			}
+
+		}
+		return path;
+	}
+
 	public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
-	    Session session = createSession();
-	    try {
-	        String root = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
-	        Node docsNode = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
-	        if (docsNode == null) {
-	            throw new RepositoryException(String.format("%s not found", CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS));
-	        }
-	        JcrUtils.getOrCreateByPath(String.format("/%s/%s%s", root, docsNode.getName(), path), JcrConstants.NT_FOLDER, session);
-	        session.save();
-	    } catch (Exception e) {
-	        log.error("ERROR " , e);
-	    }finally {
-	        session.logout();
-	    }
-	    return path;
+		Session session = createSession();
+		try {
+			String root = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
+			Node docsNode = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
+			if (docsNode == null) {
+				throw new RepositoryException(String.format("%s not found", CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS));
+			}
+			generateFolderStructure(String.format("/%s/%s%s", root, docsNode.getName(), path), session);
+			session.save();
+		} catch (Exception e) {
+			log.error("ERROR " , e);
+		}finally {
+			session.logout();
+		}
+		return path;
 	}
 
     public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
