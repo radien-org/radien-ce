@@ -30,6 +30,8 @@
 		<module>rd-ms-rolemanagement</module>
 		<module>rd-ms-rolemanagement-client</module>
 		<module>rd-ms-config-lib</module>
+		<module>rd-ms-ticketmanagement</module>
+		<module>rd-ms-ticketmanagement-client</module>
 	</modules>
 	<properties>
 
@@ -195,6 +197,11 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-tenantmanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-ticketmanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
