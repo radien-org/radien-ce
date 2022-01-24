@@ -16,7 +16,10 @@
 package io.radien.ms.ticketmanagement.service;
 
 import io.radien.api.service.ticket.TicketServiceAccess;
-import io.radien.exception.*;
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.SystemException;
+import io.radien.exception.TicketException;
+import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
 import io.radien.ms.ticketmanagement.entities.TicketEntity;
 import org.junit.Before;
@@ -30,7 +33,8 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 

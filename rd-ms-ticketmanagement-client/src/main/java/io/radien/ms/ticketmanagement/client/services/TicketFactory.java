@@ -78,7 +78,7 @@ public class TicketFactory {
      */
     public static Ticket convert(JsonObject jsonTicket) throws ParseException {
         Long id = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), jsonTicket);
-        Long userId = FactoryUtilService.getLongFromJson("userId", jsonTicket);
+        Long userId = FactoryUtilService.getLongFromJson(SystemVariables.USER_ID.getFieldName(), jsonTicket);
         JsonObject ticketType = convertTypeToJson(FactoryUtilService.getStringFromJson("ticketType", jsonTicket));
         Long ticketTypeId = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), ticketType);
         String token = FactoryUtilService.getStringFromJson("token", jsonTicket);
@@ -151,15 +151,15 @@ public class TicketFactory {
     public static JsonObject convertToJsonObject(Ticket ticket) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        FactoryUtilService.addValueLong(builder, "id", ticket.getId());
-        FactoryUtilService.addValueLong(builder, "userId", ticket.getUserId());
-        FactoryUtilService.addValue(builder, "token", ticket.getToken());
+        FactoryUtilService.addValueLong(builder, SystemVariables.ID.getFieldName(), ticket.getId());
+        FactoryUtilService.addValueLong(builder, SystemVariables.USER_ID.getFieldName(), ticket.getUserId());
+        FactoryUtilService.addValue(builder, SystemVariables.TOKEN.getFieldName(), ticket.getToken());
 
         TicketType ticketType = TicketType.getById(ticket.getTicketType());
         JsonObjectBuilder typeBuilder = Json.createObjectBuilder();
 
         if(ticketType!=null){
-            FactoryUtilService.addValueLong(typeBuilder, "id", ticketType.getId());
+            FactoryUtilService.addValueLong(typeBuilder, SystemVariables.ID.getFieldName(), ticketType.getId());
             FactoryUtilService.addValue(typeBuilder, "type", ticketType.getType());
 
         }

@@ -162,7 +162,7 @@ public class TicketService implements TicketServiceAccess {
         Predicate global =
                 criteriaBuilder.equal(root.get(SystemVariables.TOKEN.getFieldName()), ticket.getToken());
         if (ticket.getId() != null) {
-            global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get("id"), ticket.getId()));
+            global = criteriaBuilder.and(global, criteriaBuilder.notEqual(root.get(SystemVariables.ID.getFieldName()), ticket.getId()));
         }
         criteriaQuery.where(global);
         TypedQuery<TicketEntity> q = entityManager.createQuery(criteriaQuery);
