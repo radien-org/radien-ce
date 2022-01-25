@@ -573,6 +573,11 @@ public class ContentMappingUtilsTest {
                 .thenReturn(false);
         when(mockNode.hasProperty(CmsConstants.RADIEN_MANDATORY_VIEW))
                 .thenReturn(false);
+        Property mockNameProperty = initMockStringProperty(name);
+        when(mockNode.hasProperty(CmsConstants.RADIEN_NAME))
+                .thenReturn(true);
+        when(mockNode.getProperty(CmsConstants.RADIEN_NAME))
+                .thenReturn(mockNameProperty);
         when(mockNode.getName())
                 .thenReturn(name);
         Property mockViewIDProperty = initMockStringProperty(viewID);

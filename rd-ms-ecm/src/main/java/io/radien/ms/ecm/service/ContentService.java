@@ -16,19 +16,16 @@
  */
 package io.radien.ms.ecm.service;
 
-import com.fasterxml.jackson.core.TreeNode;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
-import io.radien.api.service.ecm.model.ContentVersion;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.api.service.mail.model.MailType;
-import io.radien.exception.SystemException;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import io.radien.ms.ecm.ContentRepository;
 import java.text.MessageFormat;
@@ -42,7 +39,6 @@ import javax.jcr.RepositoryException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Date;
@@ -202,54 +198,4 @@ class ContentService implements ContentServiceAccess {
         }
         return content;
     }
-
-    //region Methods not implemented
-    @Override
-    public String getNotificationIdByTypeAndLanguage(MailType type, String languageCode) {
-        //TODO Define Method
-        return null;
-    }
-
-    @Override
-    public String getAppDesc(String app, String language) {
-        //TODO Check if needed
-        return null;
-    }
-
-    @Override
-    public int countByTagName(String name) {
-        //TODO Check if needed
-        return 0;
-    }
-
-    public TreeNode getDocumentTreeModel() {
-        //TODO Check if needed
-        return contentRepository.getDocumentsTreeModel();
-    }
-
-    @Override
-    public List<EnterpriseContent> getByContentType(ContentType contentType, String language) {
-        //TODO Define Method
-        return null;
-    }
-
-    public List<EnterpriseContent> search(int pageSize, int pageNumber, String searchTerm) {
-        //TODO Check if needed
-        if (pageNumber == 0) {
-            pageNumber = 1;
-        }
-        if (pageSize == 0) {
-            pageSize = 10;
-        }
-
-        List<EnterpriseContent> searchContent = new ArrayList<>();
-        try {
-            searchContent = contentRepository.searchContent(pageSize, pageNumber, searchTerm, true);
-        } catch (ContentRepositoryNotAvailableException e) {
-            log.error("Error searching", e);
-        }
-
-        return searchContent;
-    }
-    //endregion
 }

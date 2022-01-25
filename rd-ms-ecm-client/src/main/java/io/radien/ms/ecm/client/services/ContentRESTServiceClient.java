@@ -125,25 +125,6 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     }
 
     @Override
-    public boolean deleteAllVersions(String absoluteJcrPath) throws SystemException {
-        return get(() -> {
-           try {
-               ContentResource client = getClient();
-               Response response = client.deleteVersionable(absoluteJcrPath, null);
-               if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                   return true;
-               } else {
-                   String entity = response.readEntity(String.class);
-                   log.error(entity);
-                   return false;
-               }
-           } catch (IOException e) {
-               throw new SystemException(GenericErrorCodeMessage.ERROR_DELETE_PATH.toString(absoluteJcrPath), e);
-           }
-        });
-    }
-
-    @Override
     public boolean deleteVersion(String absoluteJcrPath, SystemContentVersion contentVersion) throws SystemException {
         return get(() -> {
            try {

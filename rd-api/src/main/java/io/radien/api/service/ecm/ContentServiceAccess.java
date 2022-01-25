@@ -17,16 +17,12 @@ package io.radien.api.service.ecm;
 
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.model.SystemContentVersion;
-import io.radien.exception.SystemException;
 import java.util.List;
-import java.util.Map;
 
-import com.fasterxml.jackson.core.TreeNode;
 
 import io.radien.api.service.ServiceAccess;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
-import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.model.MailType;
 
@@ -93,48 +89,11 @@ public interface ContentServiceAccess extends ServiceAccess {
 	void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
 	/**
-	 * Retrieves a list of enterprise contents search by his content typ
-	 * @param contentType to be search
-	 * @param language to be search
-	 * @return a list of enterprise contents
-	 */
-	List<EnterpriseContent> getByContentType(ContentType contentType, String language);
-
-	/**
-	 * Enterprise Content document tree model getter
-	 * @return the enterprise content document tree model
-	 */
-	TreeNode getDocumentTreeModel();
-
-	/**
 	 * Gets a list of all the children files existent for a given view id
 	 * @param viewId to be searched
 	 * @return a list of enterprise contents
 	 */
 	List<EnterpriseContent> getChildrenFiles(String viewId);
-
-	/**
-	 * Retrieves the correct notification id searching for the existent given type and language code
-	 * @param type to be searched
-	 * @param languageCode of the notification
-	 * @return a notification id
-	 */
-	String getNotificationIdByTypeAndLanguage(MailType type, String languageCode);
-
-	/**
-	 * Content application description getter to be found by given parameters
-	 * @param app to be found
-	 * @param language of the app
-	 * @return the app description
-	 */
-	String getAppDesc(String app, String language);
-
-	/**
-	 * Count how many tag names do exist in a given name
-	 * @param name to be counted
-	 * @return the count of tags
-	 */
-	int countByTagName(String name);
 
 	/**
 	 * Tries to load the file present inside a content, if available

@@ -36,8 +36,6 @@ public interface ContentRESTServiceAccess extends Appframeable {
 
     List<EnterpriseContent> getContentVersions(String jcrAbsolutePath) throws SystemException;
 
-    boolean deleteAllVersions(String absoluteJcrPath) throws SystemException;
-
     boolean deleteVersion(String absoluteJcrPath, SystemContentVersion contentVersion) throws SystemException;
 
     boolean saveContent(EnterpriseContent enterpriseContent) throws SystemException;
