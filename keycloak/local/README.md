@@ -33,3 +33,5 @@ Open a terminal on the same directory of this readme.md and execute
 <pre><code>docker exec -d -it rkc /opt/jboss/keycloak/bin/standalone.sh -Djboss.socket.binding.port-offset=100 -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.realmName=master -Dkeycloak.migration.usersExportStrategy=REALM_FILE -Dkeycloak.migration.file=/tmp/master.json</code></pre>
 <pre><code>docker exec -d -it rkc /opt/jboss/keycloak/bin/standalone.sh -Djboss.socket.binding.port-offset=100 -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.realmName=radien -Dkeycloak.migration.usersExportStrategy=REALM_FILE -Dkeycloak.migration.file=/tmp/radien.json</code></pre>
 
+# Deploy Keycloak custom themes 
+<pre><code> docker cp ../rd-ms-keycloak-themes/target/keycloakservicethemes.jar [CONTAINERID]:/opt/jboss/keycloak/standalone/deployments/ </pre></code>
