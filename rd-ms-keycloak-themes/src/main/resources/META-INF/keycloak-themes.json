@@ -1,0 +1,24 @@
+{
+  "themes":[
+    {
+      "name":"rd-theme-0.0.1",
+      "types":[
+        "account",
+        "admin",
+        "email",
+        "login",
+        "welcome"
+      ]
+    },
+    {
+      "name":"rd-theme-0.0.2",
+      "types":[
+        "account",
+        "admin",
+        "login",
+        "email",
+        "welcome"
+      ]
+    }
+  ]
+}
