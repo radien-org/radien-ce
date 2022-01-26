@@ -79,8 +79,7 @@ public class TicketFactory {
     public static Ticket convert(JsonObject jsonTicket) {
         Long id = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), jsonTicket);
         Long userId = FactoryUtilService.getLongFromJson(SystemVariables.USER_ID.getFieldName(), jsonTicket);
-        JsonObject ticketType = convertTypeToJson(FactoryUtilService.getStringFromJson("ticketType", jsonTicket));
-        Long ticketTypeId = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), ticketType);
+        Long ticketTypeId = FactoryUtilService.getLongFromJson("ticketType", jsonTicket);
         String token = FactoryUtilService.getStringFromJson(SystemVariables.TOKEN.getFieldName(), jsonTicket);
         String data = FactoryUtilService.getStringFromJson("data", jsonTicket);
 
@@ -162,16 +161,7 @@ public class TicketFactory {
         FactoryUtilService.addValueLong(builder, SystemVariables.USER_ID.getFieldName(), ticket.getUserId());
         FactoryUtilService.addValue(builder, SystemVariables.TOKEN.getFieldName(), ticket.getToken());
 
-        TicketType ticketType = TicketType.getById(ticket.getTicketType());
-        JsonObjectBuilder typeBuilder = Json.createObjectBuilder();
-
-        if(ticketType!=null){
-            FactoryUtilService.addValueLong(typeBuilder, SystemVariables.ID.getFieldName(), ticketType.getId());
-            FactoryUtilService.addValue(typeBuilder, "type", ticketType.getType());
-
-        }
-
-        FactoryUtilService.addValue(builder, "ticketType", typeBuilder.build());
+        FactoryUtilService.addValueLong(builder, "ticketType", ticket.getTicketType());
         FactoryUtilService.addValue(builder, "expireDate", ticket.getExpireDate());
         FactoryUtilService.addValueLong(builder, SystemVariables.CREATE_USER.getFieldName(), ticket.getCreateUser());
         FactoryUtilService.addValueLong(builder, SystemVariables.LAST_UPDATE_USER.getFieldName(), ticket.getLastUpdateUser());

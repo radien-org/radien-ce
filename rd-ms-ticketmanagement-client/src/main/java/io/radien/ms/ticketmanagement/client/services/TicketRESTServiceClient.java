@@ -52,13 +52,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             try {
                 TicketResourceClient client = getClient();
                 Response response = client.create((Ticket) ticket);
-                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return true;
-                } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return false;
-                }
+                return checkBooleanResponse(response);
             } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString(), e);
             }
@@ -71,17 +65,21 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             try {
                 TicketResourceClient client = getClient();
                 Response response = client.delete(ticketId);
-                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return true;
-                } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return false;
-                }
+                return checkBooleanResponse(response);
             } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString(), e);
             }
         });
+    }
+
+    private Boolean checkBooleanResponse(Response response) {
+        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            return true;
+        } else {
+            String entity = response.readEntity(String.class);
+            log.error(entity);
+            return false;
+        }
     }
 
     @Override
@@ -90,13 +88,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             try {
                 TicketResourceClient client = getClient();
                 Response response = client.update(ticket.getId(), (Ticket) ticket);
-                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return true;
-                } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return false;
-                }
+                return checkBooleanResponse(response);
             } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString(), e);
             }

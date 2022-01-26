@@ -15,10 +15,7 @@
  */
 package io.radien.ms.ticketmanagement.client.services;
 
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
-import io.radien.ms.ticketmanagement.client.entities.TicketType;
-import io.radien.ms.ticketmanagement.client.services.TicketFactory;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -63,7 +60,7 @@ public class TicketFactoryTest extends TestCase {
         builder.add("userId", 1L);
         builder.add("token", "token");
         builder.add("data", "myData");
-        builder.add("ticketType", "{ \"id\": 1, \"type\": \"email_change\"} ");
+        builder.add("ticketType", 1L);
 
         json = builder.build();
         Ticket newJsonTicket = TicketFactory.convert(json);
@@ -83,7 +80,7 @@ public class TicketFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("userId", 2);
         builder.add("token", "token");
-        builder.add("ticketType","{}");
+        builder.addNull("ticketType");
         builder.addNull("expireDate");
         builder.addNull("createUser");
         builder.addNull("lastUpdateUser");
