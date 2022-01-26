@@ -76,7 +76,7 @@ public class TicketFactory {
      * @return the Ticket Object
      * @throws ParseException in case of any issue while parsing the JSON
      */
-    public static Ticket convert(JsonObject jsonTicket) throws ParseException {
+    public static Ticket convert(JsonObject jsonTicket) {
         Long id = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), jsonTicket);
         Long userId = FactoryUtilService.getLongFromJson(SystemVariables.USER_ID.getFieldName(), jsonTicket);
         JsonObject ticketType = convertTypeToJson(FactoryUtilService.getStringFromJson("ticketType", jsonTicket));
@@ -99,13 +99,21 @@ public class TicketFactory {
         ticket.setLastUpdateUser(lastUpdateUser);
 
         if(createDate != null) {
-            ticket.setCreateDate(formatter.parse(createDate));
+            try {
+                ticket.setCreateDate(formatter.parse(createDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         } else {
             ticket.setCreateDate(null);
         }
 
         if(lastUpdate != null) {
-            ticket.setLastUpdate(formatter.parse(lastUpdate));
+            try {
+                ticket.setLastUpdate(formatter.parse(lastUpdate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         } else {
             ticket.setLastUpdate(null);
         }

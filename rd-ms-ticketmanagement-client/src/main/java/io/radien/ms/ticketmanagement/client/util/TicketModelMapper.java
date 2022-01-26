@@ -54,7 +54,7 @@ public class TicketModelMapper {
      * @param is inputted information to be converted into the object
      * @return a ticket object based in the received information
      */
-    public static Ticket map(InputStream is) throws ParseException {
+    public static Ticket map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             return TicketFactory.convert(jsonReader.readObject());
         }
