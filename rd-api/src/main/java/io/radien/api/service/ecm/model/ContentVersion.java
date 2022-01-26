@@ -33,6 +33,9 @@ public class ContentVersion implements SystemContentVersion {
     private Long minorVersion;
     private Long hotfixVersion;
 
+    public ContentVersion() {
+    }
+
     /**
      * ECM Content Version constructor
      * @param version of the ecm content
@@ -40,9 +43,9 @@ public class ContentVersion implements SystemContentVersion {
     public ContentVersion(String version){
         if(version == null)
             throw new IllegalArgumentException("Version can not be null");
-        if(!version.matches("[0-9]+(\\.[0-9]+)*"))
+        if(!version.matches("[0-9]+(\\.[0-9]+){2}"))
             throw new IllegalArgumentException("Invalid version format");
-        List<String> splitVersion = new ArrayList<String>(Arrays.asList(version.split("\\.")));
+        List<String> splitVersion = new ArrayList<>(Arrays.asList(version.split("\\.")));
         while(splitVersion.size() < 3) {
             splitVersion.add("0");
         }

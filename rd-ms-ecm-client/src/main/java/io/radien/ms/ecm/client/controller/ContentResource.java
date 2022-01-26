@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.client.controller;
 
+import io.radien.api.service.ecm.model.ContentVersion;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import io.radien.ms.ecm.client.entities.GlobalHeaders;
@@ -33,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
-@Path("cms/content")
+@Path("content")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
@@ -61,5 +62,12 @@ public interface ContentResource extends Serializable {
     @Path(value = "/path")
     Response getOrCreateDocumentsPath(@QueryParam("path") String path);
 
+    @GET
+    @Path(value = "/versions")
+    Response getContentVersions(@QueryParam("path") String jcrPath);
+
+    @DELETE
+    @Path(value = "/versions")
+    Response deleteVersionable(@QueryParam("path") String jcrPath, ContentVersion version);
 
 }

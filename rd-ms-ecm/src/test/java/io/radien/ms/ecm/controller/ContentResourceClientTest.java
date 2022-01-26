@@ -24,12 +24,14 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
+import io.radien.api.service.ecm.model.ContentVersion;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -173,6 +176,59 @@ public class ContentResourceClientTest {
         when(contentServiceAccess.getOrCreateDocumentsPath(path))
                 .thenThrow(new ContentNotAvailableException());
         Response responseResult = controllerResource.getOrCreateDocumentsPath(path);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
+    }
+
+    @Test
+    public void testGetContentVersions() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, NameNotValidException {
+        List<EnterpriseContent> resultList = new ArrayList<>();
+        EnterpriseContent content = new GenericEnterpriseContent("name");
+        resultList.add(content);
+        resultList.add(content);
+        String path = "/a/path";
+        when(contentServiceAccess.getContentVersions(path))
+                .thenReturn(resultList);
+        Response responseResult = controllerResource.getContentVersions(path);
+        assertEquals(Response.Status.OK.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
+    }
+
+    @Test
+    public void testGetContentVersionsRepositoryNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        String path = "/a/path";
+        when(contentServiceAccess.getContentVersions(path))
+                .thenThrow(new ContentRepositoryNotAvailableException());
+        Response responseResult = controllerResource.getContentVersions(path);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
+    }
+
+    @Test
+    public void testGetContentVersionsContentNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        String path = "/a/path";
+        when(contentServiceAccess.getContentVersions(path))
+                .thenThrow(new ContentNotAvailableException());
+        Response responseResult = controllerResource.getContentVersions(path);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
+    }
+
+    @Test
+    public void testDeleteVersion() {
+        Response responseResult = controllerResource.deleteVersionable("", new ContentVersion("1.0.0"));
+        assertEquals(Response.Status.OK.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
+    }
+
+    @Test
+    public void testDeleteVersionRepositoryNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        doThrow(new ContentRepositoryNotAvailableException())
+                .when(contentServiceAccess).deleteVersion(anyString(), any(ContentVersion.class));
+        Response responseResult = controllerResource.deleteVersionable("", new ContentVersion("1.0.0"));
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
+    }
+
+    @Test
+    public void testDeleteVersionContentNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        doThrow(new ContentNotAvailableException())
+                .when(contentServiceAccess).deleteVersion(anyString(), any(ContentVersion.class));
+        Response responseResult = controllerResource.deleteVersionable("", new ContentVersion("1.0.0"));
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 

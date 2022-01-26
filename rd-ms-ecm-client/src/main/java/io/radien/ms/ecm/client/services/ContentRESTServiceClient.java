@@ -22,7 +22,9 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.ContentRESTServiceAccess;
 import io.radien.api.service.ecm.model.ContentType;
+import io.radien.api.service.ecm.model.ContentVersion;
 import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -106,6 +108,38 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
             } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_GET_OR_CREATE_DOCUMENTS_PATH.toString(), e);
             }
+        });
+    }
+
+    @Override
+    public List<EnterpriseContent> getContentVersions(String jcrAbsolutePath) throws SystemException {
+        return get(() -> {
+            try {
+                ContentResource client = getClient();
+                Response response = client.getContentVersions(jcrAbsolutePath);
+                return parseResponseForMultipleEnterpriseContent(response);
+            } catch (IOException | ParseException | java.text.ParseException e) {
+                throw new SystemException(MessageFormat.format("Error getting file versions list by Path {0}", jcrAbsolutePath), e);
+            }
+        });
+    }
+
+    @Override
+    public boolean deleteVersion(String absoluteJcrPath, SystemContentVersion contentVersion) throws SystemException {
+        return get(() -> {
+           try {
+               ContentResource client = getClient();
+               Response response = client.deleteVersionable(absoluteJcrPath, (ContentVersion) contentVersion);
+               if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                   return true;
+               } else {
+                   String entity = response.readEntity(String.class);
+                   log.error(entity);
+                   return false;
+               }
+           } catch (IOException e) {
+               throw new SystemException(GenericErrorCodeMessage.ERROR_DELETING_VERSION.toString(contentVersion.getVersion(), absoluteJcrPath), e);
+           }
         });
     }
 
