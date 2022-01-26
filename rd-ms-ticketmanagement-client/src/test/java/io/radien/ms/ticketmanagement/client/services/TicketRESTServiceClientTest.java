@@ -231,7 +231,7 @@ public class TicketRESTServiceClientTest {
         when(ticketResourceClient.create(any())).thenThrow(new ProcessingException("teste"));
         try {
             target.create(new Ticket());
-        }catch (ProcessingException se){
+        }catch (Exception se){
             success = true;
         }
         assertTrue(success);
@@ -302,7 +302,7 @@ public class TicketRESTServiceClientTest {
         when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenReturn(ticketResourceClient);
         try {
             target.delete(2L);
-        }catch (ProcessingException se){
+        }catch (Exception se){
             success = true;
         }
 
@@ -371,7 +371,7 @@ public class TicketRESTServiceClientTest {
         when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenReturn(ticketResourceClient);
         try {
             target.update(dummyTicket);
-        }catch (ProcessingException se){
+        }catch (Exception se){
             success = true;
         }
         assertTrue(success);
