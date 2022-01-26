@@ -36,10 +36,6 @@ public class TicketModelMapper {
 
     protected static final Logger log = LoggerFactory.getLogger(TicketModelMapper.class);
 
-    private TicketModelMapper() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
     /**
      * Maps into a Json Object a Ticket
      * @param model ticket that has the information to be converted

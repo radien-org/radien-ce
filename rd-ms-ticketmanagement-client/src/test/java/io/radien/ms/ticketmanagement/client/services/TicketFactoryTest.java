@@ -15,13 +15,17 @@
  */
 package io.radien.ms.ticketmanagement.client.services;
 
+import io.radien.api.entity.Page;
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 import javax.json.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.text.ParseException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 /**
@@ -87,11 +91,37 @@ public class TicketFactoryTest extends TestCase {
         builder.addNull("createDate");
         builder.addNull("lastUpdate");
 
-
-
         json = builder.build();
 
         assertEquals(json.toString(), constructedNewJson.toString());
+    }
+
+    @Test
+    public void testConversionToPage() {
+        String example = "{\n" +
+                "\"currentPage\": 1,\n" +
+                "\"results\": [\n" +
+                "{\n" +
+                "\"id\":1," +
+                "\"userId\": 1," +
+                "\"ticketType\": 1" +
+                "}\n" +
+                "],\n" +
+                "\"totalPages\": 1,\n" +
+                "\"totalResults\": 4\n" +
+                "}";
+
+        InputStream in = new ByteArrayInputStream(example.getBytes());
+
+        try(JsonReader reader = Json.createReader(in)) {
+            JsonObject jsonObject = reader.readObject();
+            Page<Ticket> tenant = TicketFactory.convertJsonToPage(jsonObject);
+            assertEquals(1, tenant.getCurrentPage());
+            assertEquals(1, tenant.getTotalPages());
+            assertEquals(4, tenant.getTotalResults());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
 }
