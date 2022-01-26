@@ -95,7 +95,7 @@ public class TicketFactory {
             try {
                 ticket.setCreateDate(formatter.parse(createDate));
             } catch (ParseException e) {
-                e.printStackTrace();
+                log.error("Wrong values to be parsed");
             }
         } else {
             ticket.setCreateDate(null);
@@ -105,7 +105,7 @@ public class TicketFactory {
             try {
                 ticket.setLastUpdate(formatter.parse(lastUpdate));
             } catch (ParseException e) {
-                e.printStackTrace();
+                log.error("Wrong values to be parsed");
             }
         } else {
             ticket.setLastUpdate(null);

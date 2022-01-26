@@ -24,8 +24,8 @@ import javax.json.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 /**
@@ -65,6 +65,24 @@ public class TicketFactoryTest extends TestCase {
         builder.add("token", "token");
         builder.add("data", "myData");
         builder.add("ticketType", 1L);
+
+        json = builder.build();
+        Ticket newJsonTicket = TicketFactory.convert(json);
+
+        assertEquals(ticket.getToken(), newJsonTicket.getToken());
+        assertEquals(ticket.getCreateUser(), newJsonTicket.getCreateUser());
+    }
+
+    @Test
+    public void testConvert2() throws ParseException {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("userId", 1L);
+        builder.add("token", "token");
+        builder.add("data", "myData");
+        builder.add("ticketType", 1L);
+        builder.add("createDate", LocalDate.now().toString());
+        builder.add("lastUpdate", LocalDate.now().toString());
 
         json = builder.build();
         Ticket newJsonTicket = TicketFactory.convert(json);
