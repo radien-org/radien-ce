@@ -29,11 +29,11 @@ import io.radien.api.service.mail.model.MailType;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import io.radien.ms.ecm.ContentRepository;
 import java.text.MessageFormat;
+import javax.ejb.Stateless;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 
@@ -48,8 +48,8 @@ import java.util.Date;
  *
  * @author Bruno Gama
  */
-public @RequestScoped
-class ContentService implements ContentServiceAccess {
+@Stateless
+public class ContentService implements ContentServiceAccess {
 
     private static final Logger log = LoggerFactory.getLogger(ContentService.class);
     private static final long serialVersionUID = 8354030307902734111L;

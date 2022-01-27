@@ -27,6 +27,7 @@ import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import java.text.MessageFormat;
+import javax.inject.Singleton;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
@@ -39,8 +40,6 @@ import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.jcr.*;
 import javax.jcr.nodetype.NodeType;
@@ -57,7 +56,8 @@ import java.util.*;
  *
  * @author Marco Weiland
  */
-public @RequestScoped @Default class ContentRepository implements Serializable, Appframeable {
+@Singleton
+public class ContentRepository implements Serializable, Appframeable {
 
 	private static final Logger log = LoggerFactory.getLogger(ContentRepository.class);
 	private static final long serialVersionUID = 3705349362214763287L;
