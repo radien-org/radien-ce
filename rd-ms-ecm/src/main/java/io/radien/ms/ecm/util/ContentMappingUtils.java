@@ -23,13 +23,11 @@ import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.constants.CmsConstants;
 import java.net.URLConnection;
-import java.net.URLDecoder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
-import org.apache.tika.Tika;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +40,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
 
