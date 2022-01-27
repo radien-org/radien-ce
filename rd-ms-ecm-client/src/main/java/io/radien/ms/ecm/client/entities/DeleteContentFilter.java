@@ -25,6 +25,9 @@ public class DeleteContentFilter {
     private String language;
     private String absoluteJcrPath;
 
+    public DeleteContentFilter() {
+    }
+
     public DeleteContentFilter(String viewId, String language) {
         if(StringUtils.isEmpty(viewId) || StringUtils.isEmpty(language)) {
             throw new IllegalArgumentException("Values must not be null");

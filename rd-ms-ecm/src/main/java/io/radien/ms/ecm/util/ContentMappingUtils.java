@@ -164,6 +164,8 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 					setupImageProperties(node, systemContent);
 					setupDocumentOnlyProperties(node, systemContent);
+				} else if(node.getPrimaryNodeType().getName().equals(JcrConstants.NT_FOLDER)) {
+					systemContent.setContentType(ContentType.FOLDER);
 				}
 			}
 			return systemContent;
@@ -207,7 +209,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupMandatoryEnterpriseContent(Node node) throws RepositoryException {
 		MandatoryEnterpriseContent systemContent = new MandatoryEnterpriseContent();
-		systemContent.setName(node.getName());
+		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
 		systemContent.setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
 		return systemContent;
@@ -215,7 +217,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupVersionableEnterpriseContent(Node node) throws RepositoryException {
 		VersionableEnterpriseContent systemContent = new VersionableEnterpriseContent();
-		systemContent.setName(node.getName());
+		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
 		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
 		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
@@ -225,7 +227,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupMandatoryVersionableEnterpriseContent(Node node) throws RepositoryException {
 		MandatoryVersionableEnterpriseContent systemContent = new MandatoryVersionableEnterpriseContent();
-		systemContent.setName(node.getName());
+		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
 		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
 		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
@@ -266,6 +268,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 		if (isRadienNode(node)) {
 			node.setProperty(CmsConstants.RADIEN_CONTENT_TYPE, obj.getContentType().key());
 			node.setProperty(CmsConstants.RADIEN_CONTENT_LANG, obj.getLanguage());
+			node.setProperty(CmsConstants.RADIEN_NAME, obj.getName());
 
 			syncNodeImageProperties(node, obj, session);
 

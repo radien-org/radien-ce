@@ -16,7 +16,7 @@
 	<url>http://www.radien.io</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
+		<version.tomee-maven-plugin>8.0.9</version.tomee-maven-plugin>
 	</properties>
 	<build>
 		<finalName>cms</finalName>
@@ -101,7 +101,11 @@
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-aws-utils</artifactId>
-	  <version>${project.parent.version}</version>
+	  		<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-config-lib</artifactId>
 		</dependency>
 		<!-- Microprofile -->
 		<dependency>

@@ -23,13 +23,13 @@ import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.ContentType;
+import io.radien.api.service.ecm.model.ContentVersion;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.controller.ContentResource;
 import io.radien.ms.ecm.client.entities.DeleteContentFilter;
-import java.text.MessageFormat;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +107,40 @@ public class ContentResourceClient implements ContentResource {
             log.error(e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    public Response getContentVersions(String path) {
+        try {
+            return Response.ok(contentServiceAccess.getContentVersions(path))
+                    .build();
+        } catch (ContentRepositoryNotAvailableException e) {
+            log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE + e.getMessage())
+                    .build();
+        } catch (ContentNotAvailableException e) {
+            log.error("Error retrieving content versions in path {}", path, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving content versions in path; " + e.getMessage())
+                    .build();
+        }
+    }
+
+    public Response deleteVersionable(String path, ContentVersion contentVersion) {
+        try {
+            contentServiceAccess.deleteVersion(path, contentVersion);
+            return Response.ok().build();
+        } catch (ContentRepositoryNotAvailableException e) {
+            log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE + e.getMessage())
+                    .build();
+        } catch (ContentNotAvailableException e) {
+            log.error("Error retrieving content versions in path {}", path, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving content versions in path; " + e.getMessage())
                     .build();
         }
     }

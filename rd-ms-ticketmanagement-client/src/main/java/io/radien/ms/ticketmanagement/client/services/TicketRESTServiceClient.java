@@ -29,10 +29,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,8 +58,8 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
                     log.error(entity);
                     return false;
                 }
-            } catch (IOException e) {
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString(), e);
+            } catch (Exception e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_CREATING_TICKET.toString(ticket.toString()), e);
             }
         });
     }
@@ -79,8 +77,8 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
                     log.error(entity);
                     return false;
                 }
-            } catch (IOException e) {
-                throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString(), e);
+            } catch (Exception e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_DELETING_TICKET.toString(String.valueOf(ticketId)), e);
             }
         });
     }
@@ -98,8 +96,8 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
                     log.error(entity);
                     return false;
                 }
-            } catch (IOException e) {
-                throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString(), e);
+            } catch (Exception e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_UPDATING_TICKET.toString(String.valueOf(ticket.getId())), e);
             }
         });
     }
@@ -112,8 +110,8 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
                 TicketResourceClient client = getClient();
                 Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
                 return TicketModelMapper.mapToPage((InputStream) response.getEntity());
-            } catch (IOException e) {
-                throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString(), e);
+            } catch (Exception e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_TICKETS.toString(), e);
             }
         });
     }
@@ -125,8 +123,8 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
                 TicketResourceClient client = getClient();
                 Response response = client.getById(ticketId);
                 return Optional.of(TicketModelMapper.map((InputStream) response.getEntity()));
-            } catch (IOException | ParseException e) {
-                throw new SystemException(GenericErrorCodeMessage.GENERIC_ERROR.toString(), e);
+            } catch (Exception e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_PROVIDED_TICKET.toString(String.valueOf(ticketId)), e);
             }
         });
     }

@@ -16,16 +16,20 @@
  */
 package io.radien.ms.ecm;
 
-import com.fasterxml.jackson.core.TreeNode;
 import io.radien.api.Appframeable;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
+import java.text.MessageFormat;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -35,7 +39,6 @@ import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -43,7 +46,6 @@ import javax.jcr.*;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionManager;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,7 +68,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 
 	private static final String JCR_OR = " or [";
 	private static final String JCR_AND = " and [";
-	private static final String JCR_AND_ESCAPED = "' " + JCR_AND;
 	public static final String JCR_END_OBJ = "] = '";
 	public static final String IS_TRUE = "] = true ";
 
@@ -81,10 +82,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	@Inject
 	private Repository repository;
 
-	@PostConstruct
-	private void init() {
-	}
-
 	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		String viewId = obj.getViewId();
@@ -94,13 +91,15 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		String newPath = null;
 		String nameEscaped = Text.escapeIllegalJcrChars(obj.getName());
 
-		if (StringUtils.isBlank(viewId) || StringUtils.isBlank(language)) {
+		if (StringUtils.isBlank(viewId)) {
 			//TODO: REVIEW - Sets default properties
 			contentMappingUtils.decorateNewContent(obj);
 		} else {
 			try {
 				List<Node> nodeList = getNodeByViewIdLanguage(session, viewId, false, language);
-
+				if(nodeList.isEmpty() && obj.getContentType() == ContentType.FOLDER) {
+					nodeList = getNodeByViewIdLanguage(session, viewId, false, null);
+				}
 				if (!nodeList.isEmpty()) {
 					content = nodeList.get(nodeList.size() - 1);
 				}
@@ -171,6 +170,9 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 					versionManager.checkout(content.getPath());
 				}
 				session.move(content.getPath(), newPath);
+				Node movedNode = session.getNode(newPath);
+				obj.setParentPath(movedNode.getParent().getPath());
+				obj.setJcrPath(movedNode.getPath());
 				if(isVersionable && content.isCheckedOut()) {
 					versionManager.checkin(content.getPath());
 				}
@@ -294,64 +296,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		}
 	}
 
-	public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
-		delete(obj.getJcrPath());
-	}
-
-	private Node getNodeByViewId(String viewId, boolean activeOnly)
-			throws ContentRepositoryNotAvailableException, ElementNotFoundException {
-		Session session = createSession();
-		List<Node> results = new ArrayList<>();
-
-		// Obtain the query manager for the session via the workspace ...
-		QueryManager queryManager;
-		try {
-			queryManager = session.getWorkspace().getQueryManager();
-
-			String expression = "" + "select * from " + "[" + CmsConstants.RADIEN_BASE_NODE_TYPE + "] as node " + "where ["
-					+ CmsConstants.RADIEN_VIEW_ID + "] = '" + viewId + "' ";
-			if (activeOnly) {
-				expression += " and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
-			}
-
-			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
-			// TODO: IMPLEMENT PAGINATING
-			// query.setLimit(pageSize);
-			// query.setOffset((pageNumber - 1) * pageSize);
-
-			QueryResult result = query.execute();
-
-			final NodeIterator nodes = result.getNodes();
-			while (nodes.hasNext()) {
-				results.add((Node) nodes.next());
-
-			}
-
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
-		} finally {
-			session.logout();
-		}
-		if (!results.isEmpty()) {
-			return results.get(0);
-		}
-
-		throw new ElementNotFoundException("Element [" + viewId + "] not found");
-
-	}
-
-	public EnterpriseContent getByViewId(String viewId, boolean activeOnly)
-			throws ContentRepositoryNotAvailableException, ElementNotFoundException {
-		Node node = getNodeByViewId(viewId, activeOnly);
-
-		try {
-			return contentMappingUtils.convertJCRNode(node);
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
-		}
-
-	}
-
 	public Optional<List<EnterpriseContent>> getByViewIdLanguage(String viewId, boolean activeOnly, String language)
 			throws ContentRepositoryNotAvailableException {
 		Session session = createSession();
@@ -406,11 +350,10 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 	public void registerCNDNodeTypes(String cndFileName) throws ContentRepositoryNotAvailableException {
 		Session session = createSession();
 		NodeType[] nodeTypes;
-		try {
-			nodeTypes = CndImporter.registerNodeTypes(
-					new InputStreamReader(getClass().getClassLoader().getResourceAsStream(cndFileName)), session);
+		try(InputStreamReader streamReader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(cndFileName))) {
+			nodeTypes = CndImporter.registerNodeTypes(streamReader, session);
 			for (NodeType nt : nodeTypes) {
-				log.info("Registered: " + nt.getName());
+				log.info("Registered: {}", nt.getName());
 			}
 		} catch (Exception e) {
 			log.error("Error registering node type", e);
@@ -427,9 +370,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			Node rootNode = session.getRootNode().getNode("radien");
 			addSupportedLocalesFolder(contentNode, rootNode, nameEscaped);
 			session.save();
-		} catch (RepositoryException e) {
-			log.error("Repository exception. Not possible to update {}", nameEscaped, e);
-			throw e;
 		} finally {
 			session.logout();
 		}
@@ -451,125 +391,12 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		}
 	}
 
-	public List<EnterpriseContent> getByContentType(ContentType contentType, boolean activeOnly,
-													boolean includeSystemContent) throws ContentRepositoryNotAvailableException {
-		Session session = createSession();
-
-		List<EnterpriseContent> fooList = new ArrayList<>();
-
-		// Obtain the query manager for the session via the workspace ...
-		QueryManager queryManager;
-		try {
-			queryManager = session.getWorkspace().getQueryManager();
-
-			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + contentType.key() + "' " + "and ["
-					+ CmsConstants.RADIEN_SYSTEM + "] = '" + includeSystemContent + "' ";
-			if (activeOnly) {
-				expression += "and [" + CmsConstants.RADIEN_ACTIVE + "] = '" + activeOnly + "' ";
-			}
-
-			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
-			// TODO: IMPLEMENT PAGINATING
-			// query.setLimit(pageSize);
-			// query.setOffset((pageNumber - 1) * pageSize);
-
-			QueryResult result = query.execute();
-
-			final NodeIterator nodes = result.getNodes();
-			while (nodes.hasNext()) {
-				Node contentNode = (Node) nodes.next();
-				try {
-					EnterpriseContent content = contentMappingUtils.convertJCRNode(contentNode);
-					if (content != null) {
-						fooList.add(content);
-					}
-				} catch (Exception e) {
-					log.info("Error getting content type", e);
-				}
-
-			}
-
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
-		} finally {
-			session.logout();
-		}
-
-		return fooList;
-
-	}
-
-	public List<EnterpriseContent> searchContent(int pageSize, int pageNumber, String searchTerm,
-												 boolean enableSystemContent) throws ContentRepositoryNotAvailableException {
-		Session session = createSession();
-
-		if (pageNumber == 0) {
-			pageNumber = 1;
-		}
-		if (pageSize == 0) {
-			pageSize = 5;
-		}
-		List<EnterpriseContent> fooList = new ArrayList<>();
-
-		// Obtain the query manager for the session via the workspace ...
-		QueryManager queryManager;
-		try {
-			queryManager = session.getWorkspace().getQueryManager();
-
-			String expression = "" + "select * " + "from " + "[" + JcrConstants.NT_BASE + "] as b " + "where " + "["
-					+ CmsConstants.RADIEN_SYSTEM + "] = '" + enableSystemContent + "' " + "and (" + "["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.HTML.key() + "' " + " or ["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NEWS_FEED.key() + "' " + " or ["
-					+ CmsConstants.RADIEN_CONTENT_TYPE + "] = '" + ContentType.NOTIFICATION.key() + "' " + ") ";
-
-			Query query = queryManager.createQuery(expression, Query.JCR_SQL2);
-			// TODO: IMPLEMENT PAGINATING
-			// query.setLimit(pageSize);
-			// query.setOffset((pageNumber - 1) * pageSize);
-
-			QueryResult result = query.execute();
-
-			final NodeIterator nodes = result.getNodes();
-			while (nodes.hasNext()) {
-				Node contentNode = (Node) nodes.next();
-				try {
-					EnterpriseContent content = contentMappingUtils.convertJCRNode(contentNode);
-					if (content != null) {
-						fooList.add(content);
-					}
-				} catch (Exception e) {
-					log.info("Error searching by content", e);
-				}
-
-			}
-
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
-		} finally {
-			session.logout();
-		}
-
-		return fooList;
-	}
 
 	public String getRootNodePath() throws ContentRepositoryNotAvailableException {
 		Session session = createSession();
 
 		try {
 			return session.getRootNode().getPath();
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
-		} finally {
-			session.logout();
-		}
-	}
-
-	protected Node getRootNode() throws ContentRepositoryNotAvailableException {
-		Session session = createSession();
-
-		try {
-			return session.getRootNode();
 		} catch (RepositoryException e) {
 			throw new ContentRepositoryNotAvailableException();
 		} finally {
@@ -586,91 +413,6 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			resultNode = resultNode.getNode(language);
 		}
 		return resultNode;
-	}
-
-	protected Node getNode(String nodeId) throws ContentRepositoryNotAvailableException {
-		try {
-			return getRootNode().getNode(nodeId);
-		} catch (RepositoryException e) {
-			log.error("Error getting node", e);
-		}
-		return null;
-	}
-
-	protected Node getHTMLContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
-		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_HTML));
-	}
-
-	protected Node getNewsFeedContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
-		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_NEWS_FEED));
-	}
-
-	protected Node getImageContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
-		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_IMAGE));
-	}
-
-	protected Node getDocumentsContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
-		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_DOCS));
-	}
-
-	protected Node getNotificationContentNode()
-			throws PathNotFoundException, ContentRepositoryNotAvailableException, RepositoryException {
-		return getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-				.getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION));
-	}
-
-	public TreeNode getDocumentsTreeModel() {
-		TreeNode root = null;
-		try {
-			String rootName = getDocumentsContentNode().getName();
-
-			EnterpriseContent enterpriseContent = null;
-
-			enterpriseContent = contentMappingUtils.create(rootName, rootName, ContentType.FOLDER);
-
-			root = new RestTreeNode(enterpriseContent, null);
-			for (Node node : JcrUtils.getChildNodes(getDocumentsContentNode())) {
-				loopNodes(root, node);
-			}
-
-		} catch (ContentRepositoryNotAvailableException | RepositoryException e) {
-			log.error("Error getting document tree model", e);
-		}
-
-		return root;
-	}
-
-	private void loopNodes(TreeNode documentParent, Node node) throws RepositoryException {
-		// Skip the virtual (and large!) jcr:system subtree && jcr:content child
-		// (so binaries are only loaded on demand)
-		if (node.getName().equals(JcrConstants.JCR_SYSTEM) || node.getName().equals(JcrConstants.JCR_CONTENT)) {
-			return;
-		}
-
-		EnterpriseContent doc = contentMappingUtils.convertJCRNode(node);
-		TreeNode treeNode = null;
-		switch (doc.getContentType()) {
-			case DOCUMENT:
-				treeNode = new RestTreeNode(doc.getContentType().key(), doc, documentParent);
-				break;
-
-			default:
-				treeNode = new RestTreeNode(doc, documentParent);
-				break;
-		}
-
-		NodeIterator nodes = node.getNodes();
-		while (nodes.hasNext()) {
-			loopNodes(treeNode, nodes.nextNode());
-		}
 	}
 
 	public Collection<EnterpriseContent> getChildren(String viewId)
@@ -701,6 +443,94 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		return results;
 	}
 
+	public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+		Session session = createSession();
+		List<EnterpriseContent> results = new ArrayList<>();
+		try {
+			Node resultNode = session.getNode(path);
+			loopNodes(results, resultNode, 0, 1);
+		} finally {
+			session.logout();
+		}
+		return results;
+	}
+
+	public List<EnterpriseContent> getContentVersions(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+		List<EnterpriseContent> results = new ArrayList<>();
+		Session session = createSession();
+		try {
+			VersionManager versionManager = session.getWorkspace().getVersionManager();
+			VersionHistory history = versionManager.getVersionHistory(path);
+			VersionIterator iterator = history.getAllVersions();
+			while(iterator.hasNext()) {
+				Version version = iterator.nextVersion();
+				getNodeContentVersions(results, version.getFrozenNode());
+			}
+			results.forEach(result -> result.setParentPath(path));
+		} finally {
+			session.logout();
+		}
+		return results;
+	}
+
+	/**
+	 * Deletes a single version from the given absolute path.
+	 * If the given version is the current baseline version (most recent) then the previous version is restored as baseline.
+	 * VersionIterator always returns the versions in order.
+	 * @param path absolute path to the node
+	 * @param version version to be deleted
+	 * @throws RepositoryException when deletion process fails
+	 * @throws ContentNotAvailableException when version cannot be found in the given path
+	 * @throws ContentRepositoryNotAvailableException when the session times-out or the repository is not available to perform the operation
+	 */
+	public void deleteVersion(String path, SystemContentVersion version) throws RepositoryException, ContentNotAvailableException, ContentRepositoryNotAvailableException {
+		Session session = createSession();
+		try {
+			VersionManager versionManager = session.getWorkspace().getVersionManager();
+			VersionHistory history = versionManager.getVersionHistory(path);
+			VersionIterator iterator = history.getAllVersions();
+			Version previousVersion = null;
+			while(iterator.hasNext()) {
+				Version nodeVersion = iterator.nextVersion();
+				Node frozenNode = nodeVersion.getFrozenNode();
+				if(frozenNode.hasProperty(CmsConstants.RADIEN_VERSION)) {
+					String versionString = frozenNode.getProperty(CmsConstants.RADIEN_VERSION).getString();
+					if(versionString.equalsIgnoreCase(version.getVersion())) {
+						if(versionManager.getBaseVersion(path).getName().equalsIgnoreCase(nodeVersion.getName())) {
+							versionManager.restore(previousVersion, false);
+						}
+						history.removeVersion(nodeVersion.getName());
+						log.info("Version {} deleted from {}", version.getVersion(), path);
+						return;
+					} else {
+						previousVersion = nodeVersion;
+					}
+				}
+			}
+		} finally {
+			session.logout();
+		}
+		throw new ContentNotAvailableException(MessageFormat.format("Version {0} not found in {1}", version.getVersion(), path));
+	}
+
+	public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+		Session session = createSession();
+		try {
+			String root = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
+			Node docsNode = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
+			if (docsNode == null) {
+				throw new RepositoryException(String.format("%s not found", CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS));
+			}
+			generateFolderStructure(String.format("/%s/%s%s", root, docsNode.getName(), path), session);
+			session.save();
+		} catch (Exception e) {
+			log.error("ERROR " , e);
+		}finally {
+			session.logout();
+		}
+		return path;
+	}
+
 	private void loopNodes(List<EnterpriseContent> results, Node node, int cLevel, int nLevels) throws RepositoryException {
 		if (node.getName().equals(JcrConstants.JCR_SYSTEM)) {
 			return;
@@ -714,6 +544,23 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 			while (nodes.hasNext()) {
 				loopNodes(results, nodes.nextNode(), cLevel + 1, nLevels);
 			}
+		}
+	}
+
+	private void getNodeContentVersions(List<EnterpriseContent> results, Node versionNode) throws RepositoryException {
+		if(versionNode.getName().equals(JcrConstants.JCR_SYSTEM)) {
+			return;
+		}
+		if(!versionNode.getName().equalsIgnoreCase(JcrConstants.JCR_CONTENT)) {
+			EnterpriseContent doc = contentMappingUtils.convertJCRNode(versionNode);
+			if(doc != null) {
+				results.add(doc);
+			}
+		}
+
+		NodeIterator nodes = versionNode.getNodes();
+		while(nodes.hasNext()) {
+			getNodeContentVersions(results, nodes.nextNode());
 		}
 	}
 
@@ -768,33 +615,4 @@ public @RequestScoped @Default class ContentRepository implements Serializable, 
 		return path;
 	}
 
-	public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
-		Session session = createSession();
-		try {
-			String root = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
-			Node docsNode = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
-			if (docsNode == null) {
-				throw new RepositoryException(String.format("%s not found", CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS));
-			}
-			generateFolderStructure(String.format("/%s/%s%s", root, docsNode.getName(), path), session);
-			session.save();
-		} catch (Exception e) {
-			log.error("ERROR " , e);
-		}finally {
-			session.logout();
-		}
-		return path;
-	}
-
-    public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
-        Session session = createSession();
-        List<EnterpriseContent> results = new ArrayList<>();
-        try {
-			Node resultNode = session.getNode(path);
-            loopNodes(results, resultNode, 0, 1);
-        } finally {
-            session.logout();
-        }
-        return results;
-    }
 }
