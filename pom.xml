@@ -80,7 +80,7 @@
 		<version.microprofile>3.3</version.microprofile>
 
 		<!-- CXF Core -->
-		<version.cxf-rt-rs-mp-client>3.4.3</version.cxf-rt-rs-mp-client>
+		<version.cxf-rt-rs-mp-client>3.5.0</version.cxf-rt-rs-mp-client>
 
 
 		<!-- Logging -->
@@ -111,7 +111,7 @@
 		<!-- test -->
 		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
 		<version.junit>4.13.1</version.junit>
-		<version.junit.jupiter>5.8.1</version.junit.jupiter>
+		<version.junit.jupiter>5.8.2</version.junit.jupiter>
 		<version.mock.jupiter>5.7.1</version.mock.jupiter>
 		<version.mockito.core>2.23.0</version.mockito.core>
 		<version.powermock.core>2.0.9</version.powermock.core>
