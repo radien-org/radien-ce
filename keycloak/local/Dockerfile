@@ -12,8 +12,6 @@ FROM jboss/keycloak:15.0.1
 # kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user raiden brutality
 
 # Deploy Keycloak custom themes
-# docker cp ../rd-ms-keycloak-themes/target/keycloakservicethemes.jar [CONTAINERID]:/opt/jboss/keycloak/standalone/deployments/
-
-
+# Refer the file in the microservice rd-ms-keycloak-themes/README.md
 
 
