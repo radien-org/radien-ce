@@ -32,7 +32,8 @@
 		<module>rd-ms-config-lib</module>
 		<module>rd-ms-ticketmanagement</module>
 		<module>rd-ms-ticketmanagement-client</module>
-	</modules>
+        <module>rd-ms-keycloak-themes</module>
+    </modules>
 	<properties>
 
 		<!-- SonarQube Properties -->

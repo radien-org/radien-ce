@@ -11,6 +11,7 @@ FROM jboss/keycloak:15.0.1
 
 # kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user raiden brutality
 
-
+# Deploy Keycloak custom themes
+# Refer the file in the microservice rd-ms-keycloak-themes/README.md
 
 
