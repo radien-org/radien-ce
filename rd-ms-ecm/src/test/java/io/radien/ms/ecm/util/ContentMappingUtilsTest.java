@@ -248,6 +248,8 @@ public class ContentMappingUtilsTest {
                 .thenReturn(mockFileSizeProperty);
         Node mockContentNode = initMockNode("nt:file");
         Property mockMimeTypeProperty = initMockStringProperty("application/html");
+        when(mockContentNode.hasProperty(JcrConstants.JCR_MIMETYPE))
+                .thenReturn(true);
         when(mockContentNode.getProperty(JcrConstants.JCR_MIMETYPE))
                 .thenReturn(mockMimeTypeProperty);
         when(mockNode.getNode(JcrConstants.JCR_CONTENT))

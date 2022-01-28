@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.jcr.Repository;
@@ -206,9 +205,7 @@ public @ApplicationScoped class JCRRepositoryProducer implements Serializable {
     }
 
     @Produces
-    @RequestScoped
     public Repository create() {
-
         return repository;
     }
 

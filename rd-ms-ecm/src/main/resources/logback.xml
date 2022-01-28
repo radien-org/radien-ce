@@ -56,7 +56,7 @@
     </appender>
 
 
-    <logger name="io.radien" level="error" additivity="false">
+    <logger name="io.radien" level="info" additivity="false">
         <!-- 
         <appender-ref ref="FILE-AUDIT"/>
         <appender-ref ref="FILE-APP"/>

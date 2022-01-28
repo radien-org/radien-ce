@@ -22,6 +22,7 @@ import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.constants.CmsConstants;
+import java.net.URLConnection;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -39,11 +40,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
 
@@ -74,7 +73,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 			String fileString = (String) json.get("file");
 
-			if(!fileString.isEmpty()) {
+			if(fileString != null && !fileString.isEmpty()) {
 				stream = getClass().getClassLoader().getResourceAsStream(fileString);
 
 				if (stream != null) {
@@ -82,9 +81,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 					log.trace("Read {} bytes from content file with path: {}", fileArray.length, fileString);
 					log.trace("Content Read from file {}", fileArray);
 					content.setFile(fileArray);
-
-					String filePath = getClass().getClassLoader().getResource(fileString).getPath();
-					String mimeType = Files.probeContentType(new File(filePath).toPath());
+					String mimeType = URLConnection.getFileNameMap().getContentTypeFor(getClass().getClassLoader().getResource(fileString).toURI().toString());
 					content.setMimeType(mimeType);
 
 					content.setFileSize(fileArray.length);
@@ -197,8 +194,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 		try {
 			if (systemContent.getContentType() == ContentType.DOCUMENT) {
 				systemContent.setFileSize(node.getProperty(CmsConstants.RADIEN_FILE_SIZE).getLong());
-				systemContent.setMimeType(node.getNode(JcrConstants.JCR_CONTENT)
-						.getProperty(JcrConstants.JCR_MIMETYPE).getString());
+				systemContent.setMimeType(getPropertyStringIfPresent(node.getNode(JcrConstants.JCR_CONTENT), JcrConstants.JCR_MIMETYPE));
 			}
 		} catch (PathNotFoundException e) {
 			log.info("Error converting JCR node", e);
