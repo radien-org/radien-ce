@@ -80,7 +80,7 @@
 		<version.microprofile>3.3</version.microprofile>
 
 		<!-- CXF Core -->
-		<version.cxf-rt-rs-mp-client>3.4.3</version.cxf-rt-rs-mp-client>
+		<version.cxf-rt-rs-mp-client>3.5.0</version.cxf-rt-rs-mp-client>
 
 
 		<!-- Logging -->
