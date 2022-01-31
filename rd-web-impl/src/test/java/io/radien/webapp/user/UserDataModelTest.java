@@ -775,7 +775,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         SystemUser updateEmail = new User();
         updateEmail.setUserEmail("myemail@email.com");
         userDataModel.setUpdateEmail(updateEmail);
-        when(userRESTServiceAccess.updateEmailAndExecuteActionEmailVerify(user.getId(), updateEmail)).thenReturn(true);
+        when(userRESTServiceAccess.updateEmailAndExecuteActionEmailVerify(user.getId(), updateEmail, true)).thenReturn(true);
         userDataModel.updateUserEmailAndExecuteActionEmailVerify();
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class );
@@ -816,7 +816,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         SystemUser updateEmail = new User();
         updateEmail.setUserEmail("myemail@email.com");
         userDataModel.setUpdateEmail(updateEmail);
-        when(userRESTServiceAccess.updateEmailAndExecuteActionEmailVerify(user.getId(), updateEmail)).thenThrow(new RuntimeException("error"));
+        when(userRESTServiceAccess.updateEmailAndExecuteActionEmailVerify(user.getId(), updateEmail, true)).thenThrow(new RuntimeException("error"));
         userDataModel.updateUserEmailAndExecuteActionEmailVerify();
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);

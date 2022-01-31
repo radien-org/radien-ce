@@ -892,7 +892,7 @@ public class UserRESTServiceClientTest {
 
         boolean success = false;
         try {
-            assertTrue(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser));
+            assertTrue(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser, true));
         } catch (Exception e) {
             success = true;
         }
@@ -910,7 +910,7 @@ public class UserRESTServiceClientTest {
         when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean())).thenReturn(Response.serverError().entity("test msg error").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
 
-        assertFalse(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser));
+        assertFalse(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser, true));
     }
 
 
@@ -929,7 +929,7 @@ public class UserRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser);
+        target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser, true);
     }
 
     /**
@@ -947,7 +947,7 @@ public class UserRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        assertTrue(target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser));
+        assertTrue(target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser, true));
     }
 
     /**

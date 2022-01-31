@@ -386,8 +386,8 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case of token expiration or any issue on the application
      */
     @Override
-    public boolean updateEmailAndExecuteActionEmailVerify(long userId, SystemUser user) throws SystemException {
-        return get(this::updateUserEmailAndVerify, userId, user);
+    public boolean updateEmailAndExecuteActionEmailVerify(long userId, SystemUser user, boolean emailVerify) throws SystemException {
+        return get(this::updateUserEmailAndVerify, userId, user, emailVerify);
     }
 
     /**
@@ -396,10 +396,10 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @param user having an update an email attribute
      * @return true in case of success
      */
-    private boolean updateUserEmailAndVerify(long userId, SystemUser user) {
+    private boolean updateUserEmailAndVerify(long userId, SystemUser user, boolean emailVerify) {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-            Response response = client.updateEmailAndExecuteActionEmailVerify(userId, (User) user, true);
+            Response response = client.updateEmailAndExecuteActionEmailVerify(userId, (User) user, emailVerify);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
