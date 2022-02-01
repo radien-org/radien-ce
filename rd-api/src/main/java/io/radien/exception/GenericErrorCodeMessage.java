@@ -128,6 +128,7 @@ public enum GenericErrorCodeMessage {
     ERROR_DELETING_TICKET("TT5", "error.ticket.delete.ticket", "There was an error while trying to delete the ticket %s"),
     ERROR_UPDATING_TICKET("TT6", "error.ticket.update.ticket", "There was an error while trying to update the ticket %s"),
     ERROR_CREATING_TICKET("TT7", "error.ticket.create.ticket", "There was an error while trying to create the ticket %s"),
+    ERROR_CHANGING_DATA("TT8", "error.ticket.change", "There was an error while trying to execute the ticket %s"),
     /**
      * Permission Business Error Code Messages
      */

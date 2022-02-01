@@ -83,6 +83,7 @@ public class TicketFactoryTest extends TestCase {
         builder.addNull("id");
         builder.add("userId", 2);
         builder.add("token", "token");
+        builder.add("data", "data");
         builder.add("ticketType","{}");
         builder.addNull("expireDate");
         builder.addNull("createUser");

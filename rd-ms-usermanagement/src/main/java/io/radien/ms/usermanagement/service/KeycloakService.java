@@ -101,7 +101,9 @@ public class KeycloakService {
         UserRepresentation userRepresentation = KeycloakFactory.convertUpdateEmailToUserRepresentation(email, emailVerify);
         KeycloakClient client = keycloakClientFactory.getKeycloakClient();
         client.updateEmailAndExecuteActionEmailVerify(sub, userRepresentation);
-        client.sendUpdatedEmailToVerify(sub);
+        if(emailVerify) {
+            client.sendUpdatedEmailToVerify(sub);
+        }
     }
 
     /**

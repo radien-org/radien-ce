@@ -153,6 +153,7 @@ public class TicketFactory {
         FactoryUtilService.addValueLong(builder, SystemVariables.ID.getFieldName(), ticket.getId());
         FactoryUtilService.addValueLong(builder, SystemVariables.USER_ID.getFieldName(), ticket.getUserId());
         FactoryUtilService.addValue(builder, SystemVariables.TOKEN.getFieldName(), ticket.getToken());
+        FactoryUtilService.addValue(builder, "data", ticket.getData());
 
         TicketType ticketType = TicketType.getById(ticket.getTicketType());
         JsonObjectBuilder typeBuilder = Json.createObjectBuilder();
