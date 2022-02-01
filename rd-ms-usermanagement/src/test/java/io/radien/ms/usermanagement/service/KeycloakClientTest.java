@@ -790,6 +790,7 @@ public class KeycloakClientTest {
         setInternalState(this.keycloakClient, "tokenPath", rdTokenPath);
         setInternalState(this.keycloakClient, "clientId", clientId);
         setInternalState(this.keycloakClient, "clientSecret", clientSecret);
+        setInternalState(this.keycloakClient,"environment","PROD");
 
         MultipartBody multipartBody = mock(MultipartBody.class);
         HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
@@ -827,6 +828,7 @@ public class KeycloakClientTest {
         setInternalState(this.keycloakClient, "tokenPath", rdTokenPath);
         setInternalState(this.keycloakClient, "clientId", clientId);
         setInternalState(this.keycloakClient, "clientSecret", clientSecret);
+        setInternalState(this.keycloakClient,"environment","PROD");
 
         MultipartBody multipartBody = mock(MultipartBody.class);
         HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
