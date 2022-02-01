@@ -146,7 +146,7 @@ public class AuthenticationFilter implements Filter {
 
             String issuer = ConfigProvider.getConfig().getValue("auth.issuer", String.class);
             String jwkUrl = ConfigProvider.getConfig().getValue("auth.jwkUrl", String.class);
-            String env = ConfigProvider.getConfig().getValue("RADIEN_ENV", String.class);
+            String env = ConfigProvider.getConfig().getOptionalValue("RADIEN_ENV", String.class).orElse("PROD");
             //check acr on payload when with totp
             //acr stands for Authentication Context Class
 
