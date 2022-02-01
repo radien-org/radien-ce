@@ -65,7 +65,7 @@
 		<version.jakarta.faces-api>3.0.0</version.jakarta.faces-api>
 		<version.tomee-mojarra>8.0.5</version.tomee-mojarra>
 		<version.bootsfaces>1.5.0</version.bootsfaces>
-		<version.omnifaces>3.8.1</version.omnifaces>
+		<version.omnifaces>3.13</version.omnifaces>
 
 		<!-- prettyfaces -->
 		<version.rewrite-config-prettyfaces>3.5.1.Final</version.rewrite-config-prettyfaces>
@@ -86,7 +86,7 @@
 
 		<!-- Logging -->
 		<version.slf4j-api>1.7.32</version.slf4j-api>
-		<version.jcl-over-slf4j>1.7.30</version.jcl-over-slf4j>
+		<version.jcl-over-slf4j>1.7.35</version.jcl-over-slf4j>
 		<version.logback-classic>1.2.3</version.logback-classic>
 		<version.logback-core>1.2.6</version.logback-core>
 
