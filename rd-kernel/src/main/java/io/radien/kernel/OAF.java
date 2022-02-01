@@ -181,6 +181,7 @@ public abstract class OAF implements OAFAccess {
 
         loadPropertiesFromCatalinaLocation(SYSTEM_EXT_CONFIG_FILE, SystemMessages.KERNEL_PROPERTIES_ERROR.message());
         loadSupportedLocales();
+        systemProperties.putAll(System.getProperties());
     }
 
     /**

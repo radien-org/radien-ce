@@ -19,7 +19,7 @@ Open a terminal on the same directory of this readme.md and execute
    <li>it makes available the service throw the ports 8180(http) and 8343(https)</li>
    <li>the --rm flag automatically remove the container when it exits clearing all the data in it. If you want to manage it with "docker start" and "docker stop" remove it</li>
 
-<pre><code>docker run -d --rm -p 8180:8080 -p 8343:8443 -e KEYCLOAK_USER=raiden -e KEYCLOAK_PASSWORD=brutality -e KEYCLOAK_IMPORT=/tmp/master.json -e KEYCLOAK_IMPORT=/tmp/radien.json -v $(pwd):/tmp --name rkc radien-keycloak</code></pre>
+<pre><code>docker run -d --rm -p 8180:8080 -p 8343:8443 -e KEYCLOAK_USER=raiden -e KEYCLOAK_PASSWORD=brutality -v $(pwd):/tmp --name rkc radien-keycloak</code></pre>
 
 #How to export realms
 
@@ -30,8 +30,7 @@ Open a terminal on the same directory of this readme.md and execute
 <p>The examples provided are exporting the realms master and radien from an container named "rkc"</p>
 <li>it executes the script standalone inside the container named rkc</li>
 <li>After "Admin console listening on" you need to end each command with a Ctrl+C to free the terminal</li>
-<pre><code>docker exec -d -it rkc /opt/jboss/keycloak/bin/standalone.sh -Djboss.socket.binding.port-offset=100 -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.realmName=master -Dkeycloak.migration.usersExportStrategy=REALM_FILE -Dkeycloak.migration.file=/tmp/master.json</code></pre>
-<pre><code>docker exec -d -it rkc /opt/jboss/keycloak/bin/standalone.sh -Djboss.socket.binding.port-offset=100 -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.realmName=radien -Dkeycloak.migration.usersExportStrategy=REALM_FILE -Dkeycloak.migration.file=/tmp/radien.json</code></pre>
+<pre><code>docker exec -d -it rkc /opt/jboss/keycloak/bin/standalone.sh -Djboss.socket.binding.port-offset=100 -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.usersExportStrategy=SAME_FILE -Dkeycloak.migration.file=/tmp/keycloak.json</code></pre>
 
 # Deploy Keycloak custom themes 
 Refer the file in the microservice rd-ms-keycloak-themes/README.md

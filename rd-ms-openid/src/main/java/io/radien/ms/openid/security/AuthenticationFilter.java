@@ -146,7 +146,7 @@ public class AuthenticationFilter implements Filter {
 
             String issuer = ConfigProvider.getConfig().getValue("auth.issuer", String.class);
             String jwkUrl = ConfigProvider.getConfig().getValue("auth.jwkUrl", String.class);
-
+            String env = ConfigProvider.getConfig().getValue("RADIEN_ENV", String.class);
             //check acr on payload when with totp
             //acr stands for Authentication Context Class
 
@@ -166,7 +166,8 @@ public class AuthenticationFilter implements Filter {
             try (JsonReader reader = Json.createReader(new StringReader(payload.toString()))) {
                 JsonObject jsonObject = reader.readObject();
 
-                if (!issuer.equals(jsonObject.getString("iss"))) {
+                if (!issuer.equals(jsonObject.getString("iss"))&&
+                        (!issuer.replace("localhost","host.docker.internal").equals(jsonObject.getString("iss")) || !env.equalsIgnoreCase("LOCAL"))) {
                     return false;
                 }
 

@@ -68,7 +68,6 @@ public enum OAFProperties implements SystemProperties{
     SYS_PERSISTENCE_UNIT_CUSTOM2("system.persistence.unit.custom2"),
     SYS_DATASOURCE_CUSTOM2("system.sql.datasource.custom2"),
 
-    SYS_AUTHENTICATION_ENABLED("authentication.enabled"),
     SYS_AUTHENTICATION_CHECK_TERMDATE("authentication.check.termdate.enabled"),
 
     SYS_AUTHENTICATION_OIDC_ENABLED("authentication.oidc.enabled"),
@@ -77,8 +76,6 @@ public enum OAFProperties implements SystemProperties{
     SYS_AUTHENTICATION_LOGOUT_REDIRECT_URL_ENABLED("authentication.logout.redirect.url.enabled"),
     SYS_AUTHENTICATION_LOGOUT_REDIRECT_URL("authentication.logout.redirect.url"),
 
-    SYS_USER_CONTEXT_REQUIRED("oaf.user.context.mandatory"),
-    SYS_USER_CONTEXT_DEFAULT_PUBLIC_CONTEXT("oaf.user.context.default-public-context"),
     SYSTEM_CONFIGURATION_CAPTCHA_ENABLED("system.configuration.captcha.enabled"),
     SYSTEM_CONFIGURATION_CAPTCHA("system.configuration.captcha"),
 
@@ -145,7 +142,8 @@ public enum OAFProperties implements SystemProperties{
     SYSTEM_CMS_CFG_NODE_APP_INFO("system.jcr.node.appinfo"),
     SYSTEM_CMS_CFG_NODE_STATIC_CONTENT("system.jcr.node.staticcontent"),
     SYSTEM_CMS_CFG_NODE_TAG("system.jcr.node.tag"),
-    LOGIN_HOOK_ACTIVE("login_hook_active");
+    LOGIN_HOOK_ACTIVE("login_hook_active"),
+    RADIEN_ENV("RADIEN_ENV");
 
     private String propKey;
 

@@ -27,6 +27,10 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import io.radien.exception.InvalidAccessTokenException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,6 +38,13 @@ import java.time.ZoneId;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -50,6 +61,10 @@ public class OpenIdTokenValidator implements TokenValidator {
     @Inject
     @ConfigProperty(name = "AUTH_JWKURL")
     private String jwkUrl;
+
+    @Inject
+    @ConfigProperty(name = "RADIEN_ENV",defaultValue = "PROD")
+    private String env;
 
     JwkProvider provider;
 
@@ -73,8 +88,9 @@ public class OpenIdTokenValidator implements TokenValidator {
 
             Map<String, Object> payloadMap = jwsObject.getPayload().toJSONObject();
 
-            if (!issuer.equals(payloadMap.get("iss"))) {
-                throw new InvalidAccessTokenException("Invalid iss");
+            if (!issuer.equals(payloadMap.get("iss")) &&
+                    (!issuer.replace("localhost","host.docker.internal").equals(payloadMap.get("iss")) || !env.equalsIgnoreCase("LOCAL"))){
+                    throw new InvalidAccessTokenException("Invalid iss");
             }
 
             if (!payloadMap.get("typ").equals("Bearer")) {

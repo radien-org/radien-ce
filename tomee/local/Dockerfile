@@ -1,38 +1,38 @@
-FROM tomee:8-jre-8.0.6-plus
+FROM tomee:8-jre-8.0.9-plus
 WORKDIR /
+#https://host.docker.internal:8343/auth/realms/radien/.well-known/openid-configuration
 
-ENV CATALINA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000"\
-auth_clientId=radien \
-auth_clientSecret=86c27042-b3a2-48ea-a936-025103144844 \
-#auth_accessTokenUri=https://idp-int.radien.io/auth/realms/radien/protocol/openid-connect/token \
-AUTH_ACCESS_TOKEN_URI=https://localhost:8343/auth/realms/radien/protocol/openid-connect/token \
-auth_userAuthorizationUri=https://localhost:8343/auth/realms/radien/protocol/openid-connect/auth \
+ENV CATALINA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000" \
+AUTH_ACCESS_TOKEN_URI=http://host.docker.internal:8180/auth/realms/radien/protocol/openid-connect/token \
 auth_redirectUri=https://localhost:8443/web/login \
-auth_logoutRedirectUri=https://localhost:8343/auth/realms/radien/protocol/openid-connect/logout \
+auth_logoutRedirectUri=https://host.docker.internal:8343/auth/realms/radien/protocol/openid-connect/logout \
 auth_issuer=https://localhost:8343/auth/realms/radien \
-auth_jwkUrl=https://localhost:8343/auth/realms/radien/protocol/openid-connect/certs \
-#auth_userinfo=https://idp-int.radien.io/auth/realms/radien/protocol/openid-connect/userinfo \
-AUTH_USER_AUTHORIZATION_URI=https://localhost:8343/auth/realms/radien/protocol/openid-connect/userinfo \
+auth_jwkUrl=http://host.docker.internal:8180/auth/realms/radien/protocol/openid-connect/certs \
+AUTH_USER_AUTHORIZATION_URI=https://host.docker.internal:8343/auth/realms/radien/protocol/openid-connect/auth \
 KEYCLOAK_CLIENT_ID=ServiceAccountsClient \
-KEYCLOAK_IDP_URL=https://localhost:8343 \
-KEYCLOAK_SECRET=missing \
+KEYCLOAK_IDP_URL=https://host.docker.internal:8343 \
+KEYCLOAK_SECRET=f5e92b7c-4799-4c23-b3d8-4b3a27dad009 \
 KEYCLOAK_TOKEN_PATH=/auth/realms/master/protocol/openid-connect/token \
 KEYCLOAK_USER_PATH=/auth/admin/realms/radien/users \
 SCRIPT_CLIENT_ID_VALUE=radien \
 SCRIPT_CLIENT_SECRET_VALUE=86c27042-b3a2-48ea-a936-025103144844 \
 REALMS_TOKEN_PATH=/auth/realms/radien/protocol/openid-connect/token \
-
 system_mail_host=smtp.office365.com \
 system_mail_user=openappframe@rethink.de \
 system_mail_password=missing \
 system_mail_from_system_admin=openappframe@re-think.consulting \
 system_mail_to_system_admin=openappframe@re-think.consulting \
+system_ms_endpoint_usermanagement=http://localhost:8080/usermanagementservice/v1 \
+system_ms_endpoint_tenantmanagement=http://localhost:8080/tenantmanagementservice/v1 \
+system_ms_endpoint_rolemanagement=http://localhost:8080/rolemanagementservice/v1 \
+system_ms_endpoint_permissionmanagement=http://localhost:8080/permissionmanagementservice/v1 \
+system_ms_endpoint_ecm=http://localhost:8080/ecm \
+SYSTEM_JCR_SOURCE=FILESYSTEM \
+SYSTEM_JCR_HOME=rd_cms \
+SYSTEM_JCR_NODETYPES_CND_FILE=jcr/oafnodetypes.cnd \
+RADIEN_ENV=local
 
-system_ms_endpoint_usermanagement=http://localhost:8080/usermanagementservice/v1\
-system_ms_endpoint_tenantmanagement=http://localhost:8080/tenantmanagementservice/v1\
-system_ms_endpoint_rolemanagement=http://localhost:8080/rolemanagementservice/v1\
-system_ms_endpoint_permissionmanagement=https://localhost:8080/permissionmanagementservice/v1\
-system_ms_endpoint_ecm=http://localhost:8080/ecm
+
 
 COPY tomee/local/lib/* /usr/local/tomee/lib/
 COPY tomee/local/conf/* /usr/local/tomee/conf/

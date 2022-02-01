@@ -24,6 +24,8 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.radien.api.OAFProperties.RADIEN_ENV;
+
 /**
  * Component responsible for build/create KeyCloakClient instances in a decoupled way
  * @author newton carvalho
@@ -54,7 +56,8 @@ public class KeycloakClientFactory {
                 .userPath(userPath)
                 .radienClientId(getProperty(KeycloakConfigs.RADIEN_CLIENT_ID))
                 .radienSecret(getProperty(KeycloakConfigs.RADIEN_SECRET))
-                .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH));
+                .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH))
+                .environment(getPropertyWithDefault(RADIEN_ENV,"PROD"));
         client.login();
         return client;
     }
@@ -68,5 +71,15 @@ public class KeycloakClientFactory {
     private String getProperty(SystemProperties cfg) {
         Config config = ConfigProvider.getConfig();
         return config.getValue(cfg.propKey(),String.class);
+    }
+
+    /**
+     * Method to retrieve the keycloak client configuration
+     * @param cfg to be retrieved
+     * @return a string value of the keycloak property configuration
+     */
+    private String getPropertyWithDefault(SystemProperties cfg,String defaultValue) {
+        Config config = ConfigProvider.getConfig();
+        return config.getOptionalValue(cfg.propKey(),String.class).orElse(defaultValue);
     }
 }
