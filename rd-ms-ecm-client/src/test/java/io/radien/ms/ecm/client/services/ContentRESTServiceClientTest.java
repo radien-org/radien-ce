@@ -22,8 +22,10 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.ecm.model.ContentType;
+import io.radien.api.service.ecm.model.ContentVersion;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
+import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -44,6 +46,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -226,6 +229,70 @@ public class ContentRESTServiceClientTest {
         when(clientServiceUtil.getResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.getOrCreateDocumentsPath("relative/path");
+    }
+
+    @Test
+    public void testGetContentVersionsSuccess() throws SystemException {
+        EnterpriseContent content = new GenericEnterpriseContent("name");
+        content.setViewId("viewId");
+        content.setContentType(ContentType.HTML);
+        content.setJcrPath("/absolute/path/to/file");
+        JSONArray array = new JSONArray();
+        JSONObject object = new JSONObject();
+        object.put("name", content.getName());
+        object.put("viewId", content.getViewId());
+        object.put("jcrPath", content.getJcrPath());
+        object.put("contentType", content.getContentType().key());
+        array.add(object);
+        array.add(object);
+        when(contentResource.getContentVersions("/absolute/path"))
+                .thenReturn(Response.ok(new ByteArrayInputStream(array.toJSONString().getBytes())).build());
+        List<EnterpriseContent> result = contentClient.getContentVersions("/absolute/path");
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(2, result.size());
+        assertEquals("name", result.get(0).getName());
+    }
+
+    @Test
+    public void testGetContentVersionsError() throws SystemException {
+        when(contentResource.getContentVersions("/absolute/path"))
+                .thenReturn(Response.status(Response.Status.NOT_FOUND)
+                        .entity("an error").build());
+        List<EnterpriseContent> result = contentClient.getContentVersions("/absolute/path");
+        assertTrue(result.isEmpty());
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetContentVersionsException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getResourceClient(anyString()))
+                .thenThrow(new MalformedURLException());
+        contentClient.getContentVersions("/absolute/path");
+    }
+
+    @Test
+    public void testDeleteVersion() throws SystemException {
+        when(contentResource.deleteVersionable(anyString(), any(ContentVersion.class)))
+                .thenReturn(Response.ok().build());
+        SystemContentVersion contentVersion = new ContentVersion("1.0.0");
+        assertTrue(contentClient.deleteVersion("/absolute/path", contentVersion));
+    }
+
+    @Test
+    public void testDeleteVersionError() throws SystemException {
+        when(contentResource.deleteVersionable(anyString(), any(ContentVersion.class)))
+                .thenReturn(Response.status(Response.Status.NOT_FOUND)
+                        .entity("an error").build());
+        SystemContentVersion contentVersion = new ContentVersion("1.0.0");
+        assertFalse(contentClient.deleteVersion("/absolute/path", contentVersion));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteVersionException() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getResourceClient(anyString()))
+                .thenThrow(new MalformedURLException());
+        SystemContentVersion contentVersion = new ContentVersion("1.0.0");
+        contentClient.deleteVersion("/absolute/path", contentVersion);
     }
 
     @Test

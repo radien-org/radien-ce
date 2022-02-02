@@ -77,13 +77,13 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>9.15.2</version>
+			<version>9.18</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.auth0/jwks-rsa -->
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>jwks-rsa</artifactId>
-			<version>0.19.0</version>
+			<version>0.20.1</version>
 		</dependency>
 
 		<!-- logging -->
@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>org.apache.geronimo.config</groupId>
 			<artifactId>geronimo-config-impl</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.2</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>

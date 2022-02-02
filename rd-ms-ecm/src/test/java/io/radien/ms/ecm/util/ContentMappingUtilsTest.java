@@ -248,6 +248,8 @@ public class ContentMappingUtilsTest {
                 .thenReturn(mockFileSizeProperty);
         Node mockContentNode = initMockNode("nt:file");
         Property mockMimeTypeProperty = initMockStringProperty("application/html");
+        when(mockContentNode.hasProperty(JcrConstants.JCR_MIMETYPE))
+                .thenReturn(true);
         when(mockContentNode.getProperty(JcrConstants.JCR_MIMETYPE))
                 .thenReturn(mockMimeTypeProperty);
         when(mockNode.getNode(JcrConstants.JCR_CONTENT))
@@ -573,6 +575,11 @@ public class ContentMappingUtilsTest {
                 .thenReturn(false);
         when(mockNode.hasProperty(CmsConstants.RADIEN_MANDATORY_VIEW))
                 .thenReturn(false);
+        Property mockNameProperty = initMockStringProperty(name);
+        when(mockNode.hasProperty(CmsConstants.RADIEN_NAME))
+                .thenReturn(true);
+        when(mockNode.getProperty(CmsConstants.RADIEN_NAME))
+                .thenReturn(mockNameProperty);
         when(mockNode.getName())
                 .thenReturn(name);
         Property mockViewIDProperty = initMockStringProperty(viewID);

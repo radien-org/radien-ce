@@ -183,7 +183,7 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
-			<version>14.0.0</version>
+			<version>16.1.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.resteasy</groupId>
@@ -206,7 +206,7 @@
 		<dependency>
 			<groupId>org.apache.geronimo.config</groupId>
 			<artifactId>geronimo-config-impl</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

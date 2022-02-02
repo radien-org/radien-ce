@@ -22,6 +22,8 @@ import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.constants.CmsConstants;
+import java.net.URLConnection;
+import javax.ejb.Stateless;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -39,11 +41,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
 
@@ -53,7 +53,8 @@ import java.util.*;
  * @author Marco Weiland
  * @author jrodrigues
  */
-public @RequestScoped class ContentMappingUtils implements Serializable {
+@Stateless
+public class ContentMappingUtils implements Serializable {
 
 	private static final Logger log = LoggerFactory.getLogger(ContentMappingUtils.class);
 	private static final long serialVersionUID = -5005556415803181075L;
@@ -74,7 +75,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 			String fileString = (String) json.get("file");
 
-			if(!fileString.isEmpty()) {
+			if(fileString != null && !fileString.isEmpty()) {
 				stream = getClass().getClassLoader().getResourceAsStream(fileString);
 
 				if (stream != null) {
@@ -82,9 +83,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 					log.trace("Read {} bytes from content file with path: {}", fileArray.length, fileString);
 					log.trace("Content Read from file {}", fileArray);
 					content.setFile(fileArray);
-
-					String filePath = getClass().getClassLoader().getResource(fileString).getPath();
-					String mimeType = Files.probeContentType(new File(filePath).toPath());
+					String mimeType = URLConnection.getFileNameMap().getContentTypeFor(getClass().getClassLoader().getResource(fileString).toURI().toString());
 					content.setMimeType(mimeType);
 
 					content.setFileSize(fileArray.length);
@@ -164,6 +163,8 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 					setupImageProperties(node, systemContent);
 					setupDocumentOnlyProperties(node, systemContent);
+				} else if(node.getPrimaryNodeType().getName().equals(JcrConstants.NT_FOLDER)) {
+					systemContent.setContentType(ContentType.FOLDER);
 				}
 			}
 			return systemContent;
@@ -195,8 +196,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 		try {
 			if (systemContent.getContentType() == ContentType.DOCUMENT) {
 				systemContent.setFileSize(node.getProperty(CmsConstants.RADIEN_FILE_SIZE).getLong());
-				systemContent.setMimeType(node.getNode(JcrConstants.JCR_CONTENT)
-						.getProperty(JcrConstants.JCR_MIMETYPE).getString());
+				systemContent.setMimeType(getPropertyStringIfPresent(node.getNode(JcrConstants.JCR_CONTENT), JcrConstants.JCR_MIMETYPE));
 			}
 		} catch (PathNotFoundException e) {
 			log.info("Error converting JCR node", e);
@@ -207,7 +207,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupMandatoryEnterpriseContent(Node node) throws RepositoryException {
 		MandatoryEnterpriseContent systemContent = new MandatoryEnterpriseContent();
-		systemContent.setName(node.getName());
+		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
 		systemContent.setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
 		return systemContent;
@@ -215,7 +215,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupVersionableEnterpriseContent(Node node) throws RepositoryException {
 		VersionableEnterpriseContent systemContent = new VersionableEnterpriseContent();
-		systemContent.setName(node.getName());
+		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
 		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
 		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
@@ -225,7 +225,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupMandatoryVersionableEnterpriseContent(Node node) throws RepositoryException {
 		MandatoryVersionableEnterpriseContent systemContent = new MandatoryVersionableEnterpriseContent();
-		systemContent.setName(node.getName());
+		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
 		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
 		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
@@ -266,6 +266,7 @@ public @RequestScoped class ContentMappingUtils implements Serializable {
 		if (isRadienNode(node)) {
 			node.setProperty(CmsConstants.RADIEN_CONTENT_TYPE, obj.getContentType().key());
 			node.setProperty(CmsConstants.RADIEN_CONTENT_LANG, obj.getLanguage());
+			node.setProperty(CmsConstants.RADIEN_NAME, obj.getName());
 
 			syncNodeImageProperties(node, obj, session);
 

@@ -16,7 +16,6 @@
  */
 package io.radien.ms.ecm.service;
 
-import com.fasterxml.jackson.core.TreeNode;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
@@ -25,22 +24,21 @@ import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
+import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.api.service.mail.model.MailType;
-import io.radien.exception.SystemException;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import io.radien.ms.ecm.ContentRepository;
 import java.text.MessageFormat;
+import javax.ejb.Stateless;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Date;
@@ -50,8 +48,8 @@ import java.util.Date;
  *
  * @author Bruno Gama
  */
-public @RequestScoped
-class ContentService implements ContentServiceAccess {
+@Stateless
+public class ContentService implements ContentServiceAccess {
 
     private static final Logger log = LoggerFactory.getLogger(ContentService.class);
     private static final long serialVersionUID = 8354030307902734111L;
@@ -78,33 +76,8 @@ class ContentService implements ContentServiceAccess {
     }
 
     @Override
-    public String getNotificationIdByTypeAndLanguage(MailType type, String languageCode) {
-        return null;
-    }
-
-    @Override
-    public String getAppDesc(String app, String language) {
-        return null;
-    }
-
-    @Override
-    public int countByTagName(String name) {
-        return 0;
-    }
-
-    @Override
-    public String getAppInfoId(String content, String app, String language) {
-        return null;
-    }
-
-    @Override
     public EnterpriseContent loadFile(String jcrPath) throws ContentRepositoryNotAvailableException {
         return contentRepository.loadFile(jcrPath);
-    }
-
-    @Override
-    public Map<String, String> getAppDescriptions(String language) {
-        return null;
     }
 
     @Override
@@ -117,8 +90,20 @@ class ContentService implements ContentServiceAccess {
     }
 
     @Override
-    public List<EnterpriseContent> getContentVersions(String path) {
-        return null;
+    public List<EnterpriseContent> getContentVersions(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        try {
+            return contentRepository.getContentVersions(path);
+        } catch(RepositoryException e) {
+            throw new ContentNotAvailableException("Could not retrieve content versions", e);
+        }
+    }
+
+    @Override
+    public void deleteVersion(String path, SystemContentVersion version) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        try {
+            contentRepository.deleteVersion(path, version);
+        } catch (RepositoryException e) {
+            throw new IllegalStateException(MessageFormat.format("Could not delete version {0} in path {1}", version.getVersion(), path), e);        }
     }
 
     @Override
@@ -130,17 +115,6 @@ class ContentService implements ContentServiceAccess {
         }
     }
 
-    @Override
-    public EnterpriseContent getByViewId(String viewId, boolean activeOnly) {
-        EnterpriseContent content = null;
-        try {
-            content = contentRepository.getByViewId(viewId, activeOnly);
-        } catch (ContentRepositoryNotAvailableException | ElementNotFoundException e) {
-            // log.error("Error getting view by id", e);
-        }
-        return content;
-    }
-
     public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         try {
             contentRepository.save(obj);
@@ -150,65 +124,15 @@ class ContentService implements ContentServiceAccess {
     }
 
     public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        try {
-            contentRepository.delete(obj);
-        } catch (RepositoryException e) {
-            throw new ContentNotAvailableException(MessageFormat.format("Could not delete enterprise content in path {0}", obj.getJcrPath()), e);
-        }
+       delete(obj.getJcrPath());
     }
 
-    public void delete(String path) throws SystemException {
+    public void delete(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         try {
             contentRepository.delete(path);
-        } catch (ContentRepositoryNotAvailableException | RepositoryException e) {
-            throw new SystemException(MessageFormat.format("Could not delete by path {0}", path), e);
+        } catch (RepositoryException e) {
+            throw new ContentNotAvailableException(MessageFormat.format("Could not delete enterprise content in path {0}", path), e);
         }
-    }
-
-    @Override
-    public List<EnterpriseContent> getByContentType(ContentType contentType, String language) {
-        return null;
-    }
-
-    public List<EnterpriseContent> search(int pageSize, int pageNumber, String searchTerm) {
-        if (pageNumber == 0) {
-            pageNumber = 1;
-        }
-        if (pageSize == 0) {
-            pageSize = 10;
-        }
-
-        List<EnterpriseContent> searchContent = new ArrayList<>();
-        try {
-            searchContent = contentRepository.searchContent(pageSize, pageNumber, searchTerm, true);
-        } catch (ContentRepositoryNotAvailableException e) {
-            log.error("Error searching", e);
-        }
-
-        return searchContent;
-    }
-
-    public List<EnterpriseContent> getByContentType(ContentType contentType) {
-        return getByContentType(contentType, false);
-    }
-
-    public List<EnterpriseContent> getByContentType(ContentType contentType, boolean includeSystemContent) {
-        List<EnterpriseContent> results = new ArrayList<>();
-        try {
-            results.addAll(contentRepository.getByContentType(contentType, true, includeSystemContent));
-        } catch (ContentRepositoryNotAvailableException e) {
-            log.error("Error calling getByContentType", e);
-        }
-
-        return results;
-    }
-
-    public TreeNode getDocumentTreeModel() {
-        return contentRepository.getDocumentsTreeModel();
-    }
-
-    public ContentMappingUtils getFactory() {
-        return factory;
     }
 
     public String getNotificationIdByType(MailType type) {

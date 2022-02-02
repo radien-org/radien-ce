@@ -48,6 +48,7 @@ public class TicketMessageBodyWriterTest extends TestCase {
                 "\"userId\":1," +
                 "\"token\":\"token\"," +
                 "\"ticketType\":1," +
+                "\"data\":null," +
                 "\"expireDate\":" + Json.createValue(LocalDate.now().plusDays(30).toString()) + "," +
                 "\"createUser\":1," +
                 "\"lastUpdateUser\":1}";

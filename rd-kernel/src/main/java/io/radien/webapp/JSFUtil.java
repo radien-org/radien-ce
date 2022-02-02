@@ -86,7 +86,7 @@ public class JSFUtil {
 			log.error("Null External Context");
 			return Optional.empty();
 		}
-		return Optional.of(externalContext.getRequestParameterMap()
+		return Optional.ofNullable(externalContext.getRequestParameterMap()
 				.get(attribute));
 	}
 
