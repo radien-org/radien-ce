@@ -30,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -120,6 +121,10 @@ public class AuthenticationFilterTest {
     }
 
 
+    @Test
+    public void testInvalidIssuer(){
+        assertTrue(target.invalidIssuer("a","b"));
+    }
     /**
      * Method that prepares mock objects required to perform testing of invoke method
      * @throws ServletException defines a general exception a servlet can throw when it encounters difficulty.
