@@ -76,6 +76,12 @@
 
 		<!-- DB -->
 		<version.hsqldb>2.5.2</version.hsqldb>
+		<version.mongodb-driver>3.12.10</version.mongodb-driver>
+
+		<!-- Jackrabbit -->
+		<version.jcr>2.0</version.jcr>
+		<version.oak>1.42.0</version.oak>
+		<version.jackrabbit>2.21.9</version.jackrabbit>
 
 		<!-- Microprofile -->
 		<version.microprofile>3.3</version.microprofile>
@@ -117,6 +123,7 @@
 		<version.mockito.core>2.23.0</version.mockito.core>
 		<version.powermock.core>2.0.9</version.powermock.core>
 		<version.jersey.common>2.22.2</version.jersey.common>
+		<version.openejb-mockito>8.0.7</version.openejb-mockito>
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
@@ -444,11 +451,52 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- Mongo DB -->
+			<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongo-java-driver</artifactId>
+				<version>${version.mongodb-driver}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
 				<version>${version.hsqldb}</version>
 			</dependency>
+
+			<!--Jackrabbit -->
+			<dependency>
+				<groupId>javax.jcr</groupId>
+				<artifactId>jcr</artifactId>
+				<version>${version.jcr}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-core</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-jcr</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-run</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-pojosr</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>jackrabbit-jcr-commons</artifactId>
+				<version>${version.jackrabbit}</version>
+				<scope>compile</scope>
+			</dependency>
+
 
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -489,6 +537,12 @@
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-common</artifactId>
 				<version>${version.jersey.common}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomee</groupId>
+				<artifactId>openejb-mockito</artifactId>
+				<version>${version.openejb-mockito}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
