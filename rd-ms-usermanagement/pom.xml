@@ -163,7 +163,7 @@
 		<dependency>
 			<groupId>org.apache.johnzon</groupId>
 			<artifactId>johnzon-core</artifactId>
-			<version>1.2.10</version>
+			<version>1.2.15</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
