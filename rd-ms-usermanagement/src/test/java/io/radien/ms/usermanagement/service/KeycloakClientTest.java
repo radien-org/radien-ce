@@ -28,6 +28,7 @@ import java.util.Optional;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import kong.unirest.Config;
 import kong.unirest.GetRequest;
 import kong.unirest.Headers;
 import kong.unirest.HttpRequestWithBody;
@@ -108,7 +109,8 @@ public class KeycloakClientTest {
                 .tokenPath("tokenPath")
                 .radienClientId("clientId")
                 .radienSecret("clientSecret")
-                .userPath("userPath");
+                .userPath("userPath")
+                .environment("LOCAL");
 
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("access_token", "TOKEN");
@@ -790,15 +792,16 @@ public class KeycloakClientTest {
         setInternalState(this.keycloakClient, "tokenPath", rdTokenPath);
         setInternalState(this.keycloakClient, "clientId", clientId);
         setInternalState(this.keycloakClient, "clientSecret", clientSecret);
-        setInternalState(this.keycloakClient,"environment","PROD");
 
         MultipartBody multipartBody = mock(MultipartBody.class);
         HttpRequestWithBody requestWithBody = mock(HttpRequestWithBody.class);
         HttpResponse<HashMap> response = mock(HttpResponse.class);
         HashMap<String, String> map = new HashMap<>();
+        Config config = mock(Config.class);
         when(response.getBody()).thenReturn(map);
 
         when(Unirest.post(argThat(endpointUrl::contentEquals))).thenReturn(requestWithBody);
+        when(Unirest.config()).thenReturn(config);
         when(requestWithBody.header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED)).
                 thenReturn(requestWithBody);
         when(requestWithBody.field("client_id", clientId)).thenReturn(multipartBody);
