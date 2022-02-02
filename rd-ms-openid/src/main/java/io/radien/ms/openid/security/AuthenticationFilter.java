@@ -166,7 +166,7 @@ public class AuthenticationFilter implements Filter {
                 JsonObject jsonObject = reader.readObject();
 
 
-                if (invalidIssuer(issuer,jsonObject.getString("iss"))) {return false;}
+                if (invalidIssuer(issuer,jsonObject.getString("iss"),ConfigProvider.getConfig().getOptionalValue("RADIEN_ENV", String.class).orElse("PROD"))) {return false;}
 
                 if (!jsonObject.getString("typ").equals("Bearer")) {
                     return false;
@@ -191,8 +191,7 @@ public class AuthenticationFilter implements Filter {
         return false;
     }
 
-    protected boolean invalidIssuer(String configIssuer,String issuer){
-        String env = ConfigProvider.getConfig().getOptionalValue("RADIEN_ENV", String.class).orElse("PROD");
+    protected boolean invalidIssuer(String configIssuer,String issuer,String env){
         return !configIssuer.equals(issuer) &&
                 (
                         !configIssuer.replace("localhost","host.docker.internal").equals(issuer)

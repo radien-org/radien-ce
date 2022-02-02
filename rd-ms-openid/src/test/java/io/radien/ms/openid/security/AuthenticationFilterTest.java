@@ -30,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -123,7 +124,10 @@ public class AuthenticationFilterTest {
 
     @Test
     public void testInvalidIssuer(){
-        assertTrue(target.invalidIssuer("a","b"));
+        assertTrue(target.invalidIssuer("a","b","PROD"));
+        assertFalse(target.invalidIssuer("a","a","PROD"));
+        assertTrue(target.invalidIssuer("localhost","host.docker.internal","PROD"));
+        assertFalse(target.invalidIssuer("localhost","host.docker.internal","LOCAL"));
     }
     /**
      * Method that prepares mock objects required to perform testing of invoke method
