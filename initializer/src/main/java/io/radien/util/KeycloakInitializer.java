@@ -126,7 +126,7 @@ public class KeycloakInitializer {
             String msg = Paths.get(".").toAbsolutePath().toString();
             log.error("location expected {}", msg);
             log.error("Unable to Service Client file.",e);
-            System.exit(52);
+            System.exit(53);
         }
 
         HttpResponse<HashMap<String,Object>> response = Unirest.post(idpUrl+RADIEN_USERS)
