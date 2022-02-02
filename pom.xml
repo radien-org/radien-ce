@@ -125,6 +125,7 @@
 		<version.jersey.common>2.22.2</version.jersey.common>
 		<version.johnzon.core>1.2.15</version.johnzon.core>
 		<version.openejb-mockito>8.0.7</version.openejb-mockito>
+		<version.johnzon.jsonb>1.1.4</version.johnzon.jsonb>
 
 
 		<!-- primeface -->
@@ -554,6 +555,12 @@
 				<artifactId>openejb-mockito</artifactId>
 				<version>${version.openejb-mockito}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.johnzon</groupId>
+				<artifactId>johnzon-jsonb</artifactId>
+				<scope>test</scope>
+				<version>${version.johnzon.jsonb}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
