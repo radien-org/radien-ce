@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>oauth2-oidc-sdk</artifactId>
-			<version>9.15</version>
+			<version>9.22.2</version>
 		</dependency>
         <dependency>
             <groupId>org.powermock</groupId>
