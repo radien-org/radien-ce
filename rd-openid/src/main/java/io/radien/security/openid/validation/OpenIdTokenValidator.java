@@ -34,6 +34,7 @@ import java.time.ZoneId;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -50,6 +51,10 @@ public class OpenIdTokenValidator implements TokenValidator {
     @Inject
     @ConfigProperty(name = "AUTH_JWKURL")
     private String jwkUrl;
+
+    @Inject
+    @ConfigProperty(name = "RADIEN_ENV",defaultValue = "PROD")
+    private String env;
 
     JwkProvider provider;
 
@@ -73,9 +78,8 @@ public class OpenIdTokenValidator implements TokenValidator {
 
             Map<String, Object> payloadMap = jwsObject.getPayload().toJSONObject();
 
-            if (!issuer.equals(payloadMap.get("iss"))) {
-                throw new InvalidAccessTokenException("Invalid iss");
-            }
+            if (invalidIssuer(issuer,(String)payloadMap.get("iss"),env)) {throw new InvalidAccessTokenException("Invalid iss");}
+
 
             if (!payloadMap.get("typ").equals("Bearer")) {
                 throw new InvalidAccessTokenException("Invalid type");
@@ -102,5 +106,13 @@ public class OpenIdTokenValidator implements TokenValidator {
              provider = new UrlJwkProvider(new URL(jwkUrl));
         }
         return provider;
+    }
+
+    protected boolean invalidIssuer(String configIssuer,String issuer,String env){
+        return !configIssuer.equals(issuer) &&
+                (
+                        !configIssuer.replace("localhost","host.docker.internal").equals(issuer)
+                                || !env.equalsIgnoreCase("LOCAL")
+                );
     }
 }

@@ -40,7 +40,9 @@ import org.mockito.InjectMocks;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -128,7 +130,7 @@ public class OpenIdTokenValidatorTest {
         String keyId = "11111";
 
         Map<String, Object> map = new HashMap<>();
-        map.put("iss", 1111);
+        map.put("iss", "1111");
         map.put("typ", "Bearer");
         map.put("exp", 1636738481L);
         map.put("aud", clientId);
@@ -293,5 +295,12 @@ public class OpenIdTokenValidatorTest {
 
         when(jsonToBeValidated.getHeader()).thenReturn(jwsHeader);
         openIdTokenValidator.validate(jsonToBeValidated);
+    }
+    @Test
+    public void testInvalidIssuer(){
+        assertTrue(openIdTokenValidator.invalidIssuer("a","b","PROD"));
+        assertFalse(openIdTokenValidator.invalidIssuer("a","a","PROD"));
+        assertTrue(openIdTokenValidator.invalidIssuer("localhost","host.docker.internal","PROD"));
+        assertFalse(openIdTokenValidator.invalidIssuer("localhost","host.docker.internal","LOCAL"));
     }
 }
