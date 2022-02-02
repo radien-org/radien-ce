@@ -23,6 +23,7 @@ import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.constants.CmsConstants;
 import java.net.URLConnection;
+import javax.ejb.Stateless;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -52,7 +53,8 @@ import java.util.*;
  * @author Marco Weiland
  * @author jrodrigues
  */
-public @RequestScoped class ContentMappingUtils implements Serializable {
+@Stateless
+public class ContentMappingUtils implements Serializable {
 
 	private static final Logger log = LoggerFactory.getLogger(ContentMappingUtils.class);
 	private static final long serialVersionUID = -5005556415803181075L;
