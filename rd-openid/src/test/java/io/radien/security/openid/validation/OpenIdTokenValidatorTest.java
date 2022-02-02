@@ -130,7 +130,7 @@ public class OpenIdTokenValidatorTest {
         String keyId = "11111";
 
         Map<String, Object> map = new HashMap<>();
-        map.put("iss", 1111);
+        map.put("iss", "1111");
         map.put("typ", "Bearer");
         map.put("exp", 1636738481L);
         map.put("aud", clientId);
