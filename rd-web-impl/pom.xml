@@ -177,7 +177,6 @@
 			<groupId>org.apache.johnzon</groupId>
 			<artifactId>johnzon-jsonb</artifactId>
 			<scope>test</scope>
-			<version>1.2.15</version>
 		</dependency>
 	</dependencies>
 </project>
