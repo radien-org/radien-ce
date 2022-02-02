@@ -65,6 +65,7 @@ public class KeycloakClient {
     private String radienClientId;
     private String radienSecret;
     private String radienTokenPath;
+    private String environment;
 
     /**
      * Keycloak client empty constructor
@@ -154,6 +155,16 @@ public class KeycloakClient {
     }
 
     /**
+     * Used to skip self signed certificates on LOCAL env
+     * @param environment to be set and/or updated
+     * @return the current client radien token path
+     */
+    public KeycloakClient environment(String environment) {
+        this.environment = environment;
+        return this;
+    }
+
+    /**
      * Keycloak access token getter
      * @return the current active and request access token
      */
@@ -175,6 +186,10 @@ public class KeycloakClient {
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
     public Map<String, String> login() throws RemoteResourceException {
+        if(environment.equalsIgnoreCase("LOCAL")){
+            Unirest.config().verifySsl(false);
+        }
+
         HttpResponse<?> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, clientId)

@@ -230,6 +230,7 @@ public class OpenIdConnectFilter implements Filter {
 
             URI tokenEndpoint = new URI(this.accessTokenUri);
             TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant);
+
             TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
 
             if (!response.indicatesSuccess()) {

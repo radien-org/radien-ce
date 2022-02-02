@@ -24,12 +24,16 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.radien.api.OAFProperties.RADIEN_ENV;
+
 /**
  * Component responsible for build/create KeyCloakClient instances in a decoupled way
  * @author newton carvalho
  */
 @Stateless
 public class KeycloakClientFactory {
+
+    private Config config;
 
     private static final Logger log = LoggerFactory.getLogger(KeycloakClientFactory.class);
 
@@ -41,7 +45,7 @@ public class KeycloakClientFactory {
     public KeycloakClient getKeycloakClient() throws RemoteResourceException {
 
 
-        String idpUrl =getProperty(KeycloakConfigs.IDP_URL);
+        String idpUrl = getProperty(KeycloakConfigs.IDP_URL);
         String tokenPath= getProperty(KeycloakConfigs.TOKEN_PATH);
         String userPath = getProperty(KeycloakConfigs.USER_PATH);
         String clientId = getProperty(KeycloakConfigs.ADMIN_CLIENT_ID);
@@ -54,7 +58,8 @@ public class KeycloakClientFactory {
                 .userPath(userPath)
                 .radienClientId(getProperty(KeycloakConfigs.RADIEN_CLIENT_ID))
                 .radienSecret(getProperty(KeycloakConfigs.RADIEN_SECRET))
-                .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH));
+                .radienTokenPath(getProperty(KeycloakConfigs.RADIEN_TOKEN_PATH))
+                .environment(getPropertyWithDefault(RADIEN_ENV,"PROD"));
         client.login();
         return client;
     }
@@ -66,7 +71,22 @@ public class KeycloakClientFactory {
      * @return a string value of the keycloak property configuration
      */
     private String getProperty(SystemProperties cfg) {
-        Config config = ConfigProvider.getConfig();
-        return config.getValue(cfg.propKey(),String.class);
+        return getConfig().getValue(cfg.propKey(),String.class);
+    }
+
+    /**
+     * Method to retrieve the keycloak client configuration
+     * @param cfg to be retrieved
+     * @return a string value of the keycloak property configuration
+     */
+    private String getPropertyWithDefault(SystemProperties cfg,String defaultValue) {
+        return getConfig().getOptionalValue(cfg.propKey(),String.class).orElse(defaultValue);
+    }
+
+    private Config getConfig() {
+        if(config == null){
+            config = ConfigProvider.getConfig();
+        }
+        return config;
     }
 }

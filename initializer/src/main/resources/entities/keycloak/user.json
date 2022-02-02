@@ -1,0 +1,23 @@
+{
+  "id" : "ae2a3318-d7d1-4394-a08b-6177e853a386",
+  "createdTimestamp" : 1642757240369,
+  "username" : "scorpion",
+  "firstName": "a",
+  "lastName": "b",
+  "email": "a@b.pt",
+  "enabled" : true,
+  "totp" : false,
+  "emailVerified" : true,
+  "credentials" : [ {
+    "id" : "bfe39a9b-5fe1-45d9-a773-e92cf3921aa5",
+    "type" : "password",
+    "createdDate" : 1642757240444,
+    "secretData" : "{\"value\":\"jI1GYItNi15jrBHWT0IqRFQK1NTyuWcfTbbMhiUiAn5WZLcFnXShKg/8+xio2mG/6msn4auB0BDtZMVoT5r6rQ==\",\"salt\":\"4uVxI99qtVnCUKoz4FhN6Q==\",\"additionalParameters\":{}}",
+    "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+  } ],
+  "disableableCredentialTypes" : [ ],
+  "requiredActions" : [ ],
+  "realmRoles" : [ "default-roles-radien" ],
+  "notBefore" : 0,
+  "groups" : [ ]
+}
