@@ -29,6 +29,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -51,15 +52,9 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             try {
                 TicketResourceClient client = getClient();
                 Response response = client.create((Ticket) ticket);
-                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return true;
-                } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return false;
-                }
-            } catch (Exception e) {
-                throw new SystemException(GenericErrorCodeMessage.ERROR_CREATING_TICKET.toString(ticket.toString()), e);
+                return checkBooleanResponse(response);
+            } catch (IOException e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_CREATING_TICKET.toString(), e);
             }
         });
     }
@@ -70,17 +65,21 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             try {
                 TicketResourceClient client = getClient();
                 Response response = client.delete(ticketId);
-                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return true;
-                } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return false;
-                }
-            } catch (Exception e) {
+                return checkBooleanResponse(response);
+            } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_DELETING_TICKET.toString(String.valueOf(ticketId)), e);
             }
         });
+    }
+
+    private Boolean checkBooleanResponse(Response response) {
+        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            return true;
+        } else {
+            String entity = response.readEntity(String.class);
+            log.error(entity);
+            return false;
+        }
     }
 
     @Override
@@ -89,14 +88,8 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             try {
                 TicketResourceClient client = getClient();
                 Response response = client.update(ticket.getId(), (Ticket) ticket);
-                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return true;
-                } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return false;
-                }
-            } catch (Exception e) {
+                return checkBooleanResponse(response);
+            } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_UPDATING_TICKET.toString(String.valueOf(ticket.getId())), e);
             }
         });
@@ -110,7 +103,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
                 TicketResourceClient client = getClient();
                 Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
                 return TicketModelMapper.mapToPage((InputStream) response.getEntity());
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_TICKETS.toString(), e);
             }
         });
@@ -123,8 +116,8 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
                 TicketResourceClient client = getClient();
                 Response response = client.getById(ticketId);
                 return Optional.of(TicketModelMapper.map((InputStream) response.getEntity()));
-            } catch (Exception e) {
-                throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_PROVIDED_TICKET.toString(String.valueOf(ticketId)), e);
+            } catch (IOException e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_TICKETS.toString(String.valueOf(ticketId)), e);
             }
         });
     }

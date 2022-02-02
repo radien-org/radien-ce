@@ -25,11 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.json.JsonObjectBuilder;
 import javax.json.Json;
 import javax.json.JsonArray;
-import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -46,10 +44,6 @@ public class TicketFactory {
     private static final String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     private static Logger log = LoggerFactory.getLogger(TicketFactory.class);
-
-    private TicketFactory() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
 
     public static Ticket create(Long userId, String token, Long type,
                                 String data, Long createdUser){
@@ -76,11 +70,10 @@ public class TicketFactory {
      * @return the Ticket Object
      * @throws ParseException in case of any issue while parsing the JSON
      */
-    public static Ticket convert(JsonObject jsonTicket) throws ParseException {
+    public static Ticket convert(JsonObject jsonTicket) {
         Long id = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), jsonTicket);
         Long userId = FactoryUtilService.getLongFromJson(SystemVariables.USER_ID.getFieldName(), jsonTicket);
-        JsonObject ticketType = convertTypeToJson(FactoryUtilService.getStringFromJson("ticketType", jsonTicket));
-        Long ticketTypeId = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), ticketType);
+        Long ticketTypeId = FactoryUtilService.getLongFromJson("ticketType", jsonTicket);
         String token = FactoryUtilService.getStringFromJson(SystemVariables.TOKEN.getFieldName(), jsonTicket);
         String data = FactoryUtilService.getStringFromJson("data", jsonTicket);
 
@@ -99,24 +92,26 @@ public class TicketFactory {
         ticket.setLastUpdateUser(lastUpdateUser);
 
         if(createDate != null) {
-            ticket.setCreateDate(formatter.parse(createDate));
+            try {
+                ticket.setCreateDate(formatter.parse(createDate));
+            } catch (ParseException e) {
+                log.error("Wrong values to be parsed");
+            }
         } else {
             ticket.setCreateDate(null);
         }
 
         if(lastUpdate != null) {
-            ticket.setLastUpdate(formatter.parse(lastUpdate));
+            try {
+                ticket.setLastUpdate(formatter.parse(lastUpdate));
+            } catch (ParseException e) {
+                log.error("Wrong values to be parsed");
+            }
         } else {
             ticket.setLastUpdate(null);
         }
 
         return ticket;
-    }
-
-    private static JsonObject convertTypeToJson(String ticket){
-        try(JsonReader jsonReader = Json.createReader(new StringReader(ticket))){
-            return jsonReader.readObject();
-        }
     }
 
     /**
@@ -155,16 +150,7 @@ public class TicketFactory {
         FactoryUtilService.addValue(builder, SystemVariables.TOKEN.getFieldName(), ticket.getToken());
         FactoryUtilService.addValue(builder, "data", ticket.getData());
 
-        TicketType ticketType = TicketType.getById(ticket.getTicketType());
-        JsonObjectBuilder typeBuilder = Json.createObjectBuilder();
-
-        if(ticketType!=null){
-            FactoryUtilService.addValueLong(typeBuilder, SystemVariables.ID.getFieldName(), ticketType.getId());
-            FactoryUtilService.addValue(typeBuilder, "type", ticketType.getType());
-
-        }
-
-        FactoryUtilService.addValue(builder, "ticketType", typeBuilder.build());
+        FactoryUtilService.addValueLong(builder, "ticketType", ticket.getTicketType());
         FactoryUtilService.addValue(builder, "expireDate", ticket.getExpireDate());
         FactoryUtilService.addValueLong(builder, SystemVariables.CREATE_USER.getFieldName(), ticket.getCreateUser());
         FactoryUtilService.addValueLong(builder, SystemVariables.LAST_UPDATE_USER.getFieldName(), ticket.getLastUpdateUser());

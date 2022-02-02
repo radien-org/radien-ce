@@ -15,15 +15,16 @@
  */
 package io.radien.ms.ticketmanagement.client.services;
 
-import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.api.entity.Page;
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
-import io.radien.ms.ticketmanagement.client.entities.TicketType;
-import io.radien.ms.ticketmanagement.client.services.TicketFactory;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 import javax.json.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.text.ParseException;
+import java.time.LocalDate;
 
 import static org.junit.Assert.assertThrows;
 
@@ -63,7 +64,25 @@ public class TicketFactoryTest extends TestCase {
         builder.add("userId", 1L);
         builder.add("token", "token");
         builder.add("data", "myData");
-        builder.add("ticketType", "{ \"id\": 1, \"type\": \"email_change\"} ");
+        builder.add("ticketType", 1L);
+
+        json = builder.build();
+        Ticket newJsonTicket = TicketFactory.convert(json);
+
+        assertEquals(ticket.getToken(), newJsonTicket.getToken());
+        assertEquals(ticket.getCreateUser(), newJsonTicket.getCreateUser());
+    }
+
+    @Test
+    public void testConvert2() throws ParseException {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.addNull("id");
+        builder.add("userId", 1L);
+        builder.add("token", "token");
+        builder.add("data", "myData");
+        builder.add("ticketType", 1L);
+        builder.add("createDate", LocalDate.now().toString());
+        builder.add("lastUpdate", LocalDate.now().toString());
 
         json = builder.build();
         Ticket newJsonTicket = TicketFactory.convert(json);
@@ -84,18 +103,44 @@ public class TicketFactoryTest extends TestCase {
         builder.add("userId", 2);
         builder.add("token", "token");
         builder.add("data", "data");
-        builder.add("ticketType","{}");
+        builder.addNull("ticketType");
         builder.addNull("expireDate");
         builder.addNull("createUser");
         builder.addNull("lastUpdateUser");
         builder.addNull("createDate");
         builder.addNull("lastUpdate");
 
-
-
         json = builder.build();
 
         assertEquals(json.toString(), constructedNewJson.toString());
+    }
+
+    @Test
+    public void testConversionToPage() {
+        String example = "{\n" +
+                "\"currentPage\": 1,\n" +
+                "\"results\": [\n" +
+                "{\n" +
+                "\"id\":1," +
+                "\"userId\": 1," +
+                "\"ticketType\": 1" +
+                "}\n" +
+                "],\n" +
+                "\"totalPages\": 1,\n" +
+                "\"totalResults\": 4\n" +
+                "}";
+
+        InputStream in = new ByteArrayInputStream(example.getBytes());
+
+        try(JsonReader reader = Json.createReader(in)) {
+            JsonObject jsonObject = reader.readObject();
+            Page<Ticket> tenant = TicketFactory.convertJsonToPage(jsonObject);
+            assertEquals(1, tenant.getCurrentPage());
+            assertEquals(1, tenant.getTotalPages());
+            assertEquals(4, tenant.getTotalResults());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
 }
