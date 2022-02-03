@@ -45,7 +45,7 @@
         <version.javaee-api>8.0-5</version.javaee-api>
 
         <!-- Eclipselink -->
-        <version.eclipselink>2.7.7</version.eclipselink>
+        <version.eclipselink>2.7.10</version.eclipselink>
 
         <!-- DB -->
         <version.hsqldb>2.5.1</version.hsqldb>

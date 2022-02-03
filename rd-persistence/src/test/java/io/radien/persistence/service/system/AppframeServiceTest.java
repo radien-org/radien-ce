@@ -13,44 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.test.persistence;
-
-import java.util.List;
-import java.util.Properties;
-
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-
-import org.junit.Test;
+package io.radien.persistence.service.system;
 
 import io.radien.persistence.entities.system.Appframe;
-import io.radien.persistence.service.system.AppframeService;
-import junit.framework.TestCase;
+import java.util.List;
+import java.util.Properties;
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.Context;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Marco Weiland
  *
  */
-public class AppframeServiceTest extends TestCase {
-	
+public class AppframeServiceTest {
+
 	Properties p;
-	
+
 	AppframeService appframeService;
-	
+
 	public AppframeServiceTest() throws Exception  {
 		p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
         p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:appframedb");
         p.put("appframeDatabase.userName", "sa");
-        p.put("appframeDatabase.password", "");	
-        
-        
+        p.put("appframeDatabase.password", "");
+
+
         final Context context = EJBContainer.createEJBContainer(p).getContext();
-        
+
         appframeService = (AppframeService) context.lookup("java:global/rd-persistence//AppframeService");
 	}
-	
+
 	@Test
 	public void testDeleteAppframe() {
 		appframeService.addAppframe(new Appframe(1L,"1.0"));
