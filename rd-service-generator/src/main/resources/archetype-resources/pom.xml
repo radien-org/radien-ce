@@ -93,7 +93,7 @@
         <version.jwks-rsa>0.19.0</version.jwks-rsa>
 
         <!-- test -->
-        <version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
+        <version.arquillian-openejb-embedded>8.0.9</version.arquillian-openejb-embedded>
         <version.junit>4.13.1</version.junit>
 
         <!-- Props -->
