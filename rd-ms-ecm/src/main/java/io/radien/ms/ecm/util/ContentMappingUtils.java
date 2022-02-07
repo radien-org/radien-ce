@@ -155,6 +155,7 @@ public class ContentMappingUtils implements Serializable {
 				systemContent.setJcrPath(node.getPath());
 				systemContent.setParentPath(node.getParent().getPath());
 				if(isRadienNode(node)) {
+					systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 					systemContent.setContentType(
 							ContentType.getByKey(node.getProperty(CmsConstants.RADIEN_CONTENT_TYPE).getString()));
 					systemContent.setLanguage(node.getProperty(CmsConstants.RADIEN_CONTENT_LANG).getString());
@@ -207,7 +208,6 @@ public class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupMandatoryEnterpriseContent(Node node) throws RepositoryException {
 		MandatoryEnterpriseContent systemContent = new MandatoryEnterpriseContent();
-		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setMandatoryApproval(node.getProperty(CmsConstants.RADIEN_MANDATORY_APPROVAL).getBoolean());
 		systemContent.setMandatoryView(node.getProperty(CmsConstants.RADIEN_MANDATORY_VIEW).getBoolean());
 		return systemContent;
@@ -215,7 +215,6 @@ public class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupVersionableEnterpriseContent(Node node) throws RepositoryException {
 		VersionableEnterpriseContent systemContent = new VersionableEnterpriseContent();
-		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
 		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
 		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
@@ -225,7 +224,6 @@ public class ContentMappingUtils implements Serializable {
 
 	private EnterpriseContent setupMandatoryVersionableEnterpriseContent(Node node) throws RepositoryException {
 		MandatoryVersionableEnterpriseContent systemContent = new MandatoryVersionableEnterpriseContent();
-		systemContent.setName(getPropertyStringIfPresent(node, CmsConstants.RADIEN_NAME));
 		systemContent.setVersion(new ContentVersion(node.getProperty(CmsConstants.RADIEN_VERSION).getString()));
 		systemContent.setVersionComment(node.getProperty(CmsConstants.RADIEN_VERSION_COMMENT).getString());
 		systemContent.setValidDate(node.getProperty(CmsConstants.RADIEN_VALID_DATE).getDate().getTime());
