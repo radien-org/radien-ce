@@ -178,6 +178,12 @@ public class JSFUtil {
 		return (HttpServletRequest) request;
 	}
 
+	public static HttpServletResponse getResponse(FacesContext context) {
+		Object response = context.getExternalContext().getResponse();
+		assert response instanceof HttpServletResponse;
+		return (HttpServletResponse) response;
+	}
+
 	/**
 	 * Gets the token parameter passed in the url
 	 *
