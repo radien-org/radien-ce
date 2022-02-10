@@ -26,9 +26,12 @@ import io.radien.api.service.LoginHook;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import io.radien.webapp.JSFUtil;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -40,6 +43,11 @@ import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -322,6 +330,25 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 				config.getValue(KeycloakConfigs.IDP_URL.propKey(), String.class),
 				config.getValue(KeycloakConfigs.APP_REALM.propKey(), String.class));
 		return keyCloakLogoutURL + "?redirect_uri=" + getRedirectionURL(request);
+	}
+
+	public Map<String, String> fakeAuth(String token) throws RemoteResourceException {
+		HashMap<String, String> result = null;
+		if(config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class).equals(token)) {
+			HttpResponse<?> response = Unirest.post(config.getValue(KeycloakConfigs.IDP_URL.propKey(), String.class)
+							+ config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class))
+					.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
+					.field("client_id", config.getValue(KeycloakConfigs.ADMIN_CLIENT_ID.propKey(), String.class))
+					.field("grant_type", "client_credentials")
+					.field("client_secret", config.getValue(KeycloakConfigs.ADMIN_CLIENT_SECRET.propKey(), String.class))
+					.asObject(HashMap.class);
+			if (response.isSuccess()) {
+				return (HashMap<String, String>) response.getBody();
+			} else {
+				throw new RemoteResourceException("Error on login");
+			}
+		}
+		return result;
 	}
 
 	/**
