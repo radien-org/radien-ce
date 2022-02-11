@@ -591,6 +591,9 @@ public class ContentRepository implements Serializable, Appframeable {
 		return oaf;
 	}
 
+	// protec_documents
+	// 1
+	// uploads
 	private String generateFolderStructure(String path, Session session) throws ContentRepositoryNotAvailableException, RepositoryException {
 		String parent = path.substring(0, 1);
 		String[] folderNames = path.substring(1).split("/");
@@ -604,7 +607,7 @@ public class ContentRepository implements Serializable, Appframeable {
 			if(exists == null) {
 				Folder folder = new Folder(folderName);
 				folder.setParentPath(parent);
-				folder.setViewId(folder.getName());
+				folder.setViewId(String.format("%s_%s", folder.getName(), UUID.randomUUID()));
 				save(folder);
 				parent = folder.getJcrPath();
 			} else {
