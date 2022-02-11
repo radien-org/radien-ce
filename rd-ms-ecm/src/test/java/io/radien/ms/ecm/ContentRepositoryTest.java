@@ -86,6 +86,8 @@ public class ContentRepositoryTest {
 
     private final static String fileArray = "101,120,97,109,112,108,101";
 
+    private static String nested_viewId;
+
     @Before
     public void init() throws RepositoryException, NoSuchFieldException {
         MockitoAnnotations.initMocks(this);
@@ -359,6 +361,7 @@ public class ContentRepositoryTest {
         assertFalse(folderContents.isEmpty());
         assertTrue(folderContents.size() == 1);
         assertTrue(folderContents.get(0).getContentType() == ContentType.FOLDER);
+        nested_viewId = folderContents.get(0).getViewId();
     }
 
     @Test
@@ -366,7 +369,7 @@ public class ContentRepositoryTest {
         when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS)))
                 .thenReturn("rd_documents");
 
-        Collection<EnterpriseContent> folderContents = contentRepository.getChildren("nested");
+        Collection<EnterpriseContent> folderContents = contentRepository.getChildren(nested_viewId);
         assertTrue(folderContents.isEmpty());
     }
 
