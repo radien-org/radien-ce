@@ -1,12 +1,15 @@
 package io.radien.ms.ecm.seed;
 
+import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.model.*;
+import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.ContentRepository;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
+import io.radien.ms.ecm.domain.TranslationDataProvider;
 import io.radien.ms.ecm.event.ApplicationInitializedEvent;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -33,7 +36,8 @@ public @ApplicationScoped class ECMSeeder {
     private ContentServiceAccess contentService;
     @Inject
     private ContentDataProvider contentDataProvider;
-
+    @Inject
+    private I18NServiceAccess i18NServiceAccess;
     @Inject
     private Config config;
 
@@ -44,6 +48,8 @@ public @ApplicationScoped class ECMSeeder {
     @ConfigProperty(name = "system.default.language")
     private String defaultLanguage;
 
+    private TranslationDataProvider translationDataProvider;
+
     @PostConstruct
     public void init() {
         log.info("Initializing CMS");
@@ -51,7 +57,14 @@ public @ApplicationScoped class ECMSeeder {
             boolean insertOnly = Boolean.parseBoolean(config.getValue("system.jcr.seed.insert.only", String.class));
             initStructure();
             initContent(insertOnly);
+            initI18NProperties();
         }
+    }
+
+    private void initI18NProperties() {
+        translationDataProvider = new TranslationDataProvider(supportedLanguages, defaultLanguage);
+        List<SystemI18NProperty> allProperties = translationDataProvider.getAllProperties();
+        allProperties.forEach(i18NServiceAccess::save);
     }
 
     private void initStructure() {
