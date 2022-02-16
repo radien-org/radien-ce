@@ -9,10 +9,13 @@ public interface I18NServiceAccess extends ServiceAccess {
 
     String getTranslation(String key, String language, String application);
 
-    void save(SystemI18NProperty property);
-
     SystemI18NProperty findByKeyAndApplication(String key, String application);
 
     List<SystemI18NProperty> findAllByApplication(String application);
-    
+
+    void save(SystemI18NProperty property);
+
+    void deleteProperties(List<SystemI18NProperty> properties);
+
+    void deleteApplicationProperties(String application);
 }

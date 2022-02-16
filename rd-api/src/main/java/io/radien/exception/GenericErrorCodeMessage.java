@@ -54,6 +54,7 @@ public enum GenericErrorCodeMessage {
     INIT_CONNECTION_TIME_REBOOT("G15", "init.connection.time.reboot", "Connection was opened {0} since last reboot {1}"),
     ENTITY_ID_NULL("G16", "entity.id.null", "{0} id was null. Skipped"),
     INVALID_VALUE_FOR_PARAMETER("G17", "invalid.value.for.parameter", "Invalid value for parameter %s"),
+    BAD_REQUEST("G18", "invalid.request", "Invalid Request"),
 
     /**
      * Tenant Business Error Code Messages

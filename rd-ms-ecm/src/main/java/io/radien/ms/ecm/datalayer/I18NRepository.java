@@ -31,17 +31,21 @@ public class I18NRepository {
 
     public String getTranslation(String key, String language, String application) throws IllegalStateException {
         SystemI18NProperty property = findByKeyAndApplication(key, application);
-        String finalLanguage = language;
-        Optional<SystemI18NTranslation> languageTranslation = property.getTranslations().stream().filter(obj -> obj.getLanguage().equals(finalLanguage))
-                .findFirst();
-        if(languageTranslation.isPresent()) {
-            return languageTranslation.get().getValue();
+        if (property != null) {
+            String finalLanguage = language;
+            Optional<SystemI18NTranslation> languageTranslation = property.getTranslations().stream().filter(obj -> obj.getLanguage().equals(finalLanguage))
+                    .findFirst();
+
+            if (languageTranslation.isPresent()) {
+                return languageTranslation.get().getValue();
+            }
+            language = Locale.forLanguageTag(language).getLanguage();
+            if (language.equals(finalLanguage)) {
+                return key;
+            }
+            return getTranslation(key, language, application);
         }
-        language = Locale.forLanguageTag(language).getLanguage();
-        if(language.equals(finalLanguage)) {
-            return key;
-        }
-        return getTranslation(key, language, application);
+        return key;
     }
 
     public void save(SystemI18NProperty entity) {
@@ -56,6 +60,21 @@ public class I18NRepository {
                 .update(query)
                 .with(entity);
         }
+    }
+
+    public void deleteProperty(SystemI18NProperty property) {
+        String query = new JongoQueryBuilder()
+                .addEquality("key", property.getKey())
+                .addEquality("application", property.getApplication())
+                .build();
+        collection.remove(query);
+    }
+
+    public void deleteApplication(String application) {
+        String query = new JongoQueryBuilder()
+                .addEquality("application", application)
+                .build();
+        collection.remove(query);
     }
 
     public List<SystemI18NProperty> findAllByApplication(String application) {
@@ -80,7 +99,8 @@ public class I18NRepository {
         if(entities.count() > 1) {
             throw new IllegalStateException("Multiple values found for the same key");
         }
-        return entities.next();
+
+        return entities.count() != 0 ? entities.next() : null;
     }
 
     private boolean existsKeyAndApplication(String key, String application) {
