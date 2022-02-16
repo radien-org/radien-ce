@@ -2,7 +2,6 @@ package io.radien.ms.ecm.client.controller;
 
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
-import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
 import java.io.Serializable;
 
 import javax.ws.rs.Consumes;
@@ -26,14 +25,16 @@ import io.radien.ms.ecm.client.entities.GlobalHeaders;
 public interface I18NResource extends Serializable{
 
     @GET
-    Response getProperty(@QueryParam("key") String key,
-                         @QueryParam("application") String application);
+    Response findByKeyAndApplication(@QueryParam("key") String key,
+                                     @QueryParam("application") String application);
+
+    Response findAllByApplication(String application);
 
     @DELETE
     Response deleteProperties(DeletePropertyFilter filter);
 
     @POST
-    Response saveProperty(I18NProperty property);
+    Response saveProperty(SystemI18NProperty property);
 
     @GET
     @Path("/localize")

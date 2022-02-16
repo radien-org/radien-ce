@@ -187,7 +187,11 @@ public enum GenericErrorCodeMessage {
     ERROR_GET_OR_CREATE_DOCUMENTS_PATH("CMS8", "error.cms.documents.get.create.path", "Error getting or creating documents path"),
     ERROR_SAVING_CONTENT("CMS8", "error.cms.content.saving", "Error saving enterprise content"),
     ERROR_RETRIEVING_RESULT("CMS9", "error.cms.retrieve.result", "Result not retrieved correctly from CMS System. Please check CMS logs for the error message"),
-    ERROR_DELETING_VERSION("CMS10", "error.cms.delete.version", "Could not delete version %s of %s");
+    ERROR_DELETING_VERSION("CMS10", "error.cms.delete.version", "Could not delete version %s of %s"),
+    ERROR_RETRIEVING_TRANSLATION("I18N1", "error.i18n.retrieve.translation", "Could not retrieve translation %s for %s"),
+    ERROR_SAVING_I18N_PROPERTY("I18N2", "error.i18n.save.property", "Could not save I18N Property"),
+    ERROR_RETRIEVING_I18N_PROPERTY("I18N3", "error.i18n.retrieve.property", "Could not retrieve I18N Property %s"),
+    ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES("I18N4", "error.i18n.retrieve.application.properties", "Could not retrieve I18N Properties for %s");
 
 
 
