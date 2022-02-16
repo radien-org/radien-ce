@@ -86,7 +86,7 @@ public class I18NRepository {
                     .build();
             List<SystemI18NProperty> results = new ArrayList<>();
             input.find(query)
-                    .as(SystemI18NProperty.class)
+                    .as(I18NProperty.class)
                     .forEach(results::add);
             return results;
         }, I18NProperty.class.getSimpleName());

@@ -28,7 +28,9 @@ public interface I18NResource extends Serializable{
     Response findByKeyAndApplication(@QueryParam("key") String key,
                                      @QueryParam("application") String application);
 
-    Response findAllByApplication(String application);
+    @GET
+    @Path("/application")
+    Response findAllByApplication(@QueryParam("application") String application);
 
     @DELETE
     Response deleteProperties(DeletePropertyFilter filter);
