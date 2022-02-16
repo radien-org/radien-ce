@@ -2,15 +2,15 @@ package io.radien.ms.ecm.datalayer;
 
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.model.i18n.SystemI18NTranslation;
+import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
-import io.radien.ms.ecm.producer.JongoProducer;
+import io.radien.ms.ecm.producer.JongoConnectionHandler;
 import io.radien.ms.ecm.util.i18n.JongoQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -20,16 +20,9 @@ import org.jongo.MongoCursor;
 @RequestScoped
 public class I18NRepository {
     @Inject
-    private JongoProducer jongoProducer;
+    private JongoConnectionHandler jongoConnectionHandler;
 
-    private MongoCollection collection;
-
-    @PostConstruct
-    public void init() {
-        collection = jongoProducer.getCollection(I18NProperty.class.getSimpleName());
-    }
-
-    public String getTranslation(String key, String language, String application) throws IllegalStateException {
+    public String getTranslation(String key, String language, String application) throws IllegalStateException, SystemException {
         SystemI18NProperty property = findByKeyAndApplication(key, application);
         if (property != null) {
             String finalLanguage = language;
@@ -48,66 +41,78 @@ public class I18NRepository {
         return key;
     }
 
-    public void save(SystemI18NProperty entity) {
-        if(!existsKeyAndApplication(entity.getKey(), entity.getApplication())) {
-            collection.insert(entity);
-        } else {
+    public void save(SystemI18NProperty entity) throws SystemException {
+        jongoConnectionHandler.apply(input -> {
+            if(!existsKeyAndApplication(input, entity.getKey(), entity.getApplication())) {
+                input.insert(entity);
+            } else {
+                String query = new JongoQueryBuilder()
+                    .addEquality("key", entity.getKey())
+                    .addEquality("application", entity.getApplication())
+                    .build();
+                input
+                    .update(query)
+                    .with(entity);
+            }
+            return null;
+        }, I18NProperty.class.getSimpleName());
+    }
+
+    public void deleteProperty(SystemI18NProperty property) throws SystemException {
+        jongoConnectionHandler.apply(input -> {
             String query = new JongoQueryBuilder()
-                .addEquality("key", entity.getKey())
-                .addEquality("application", entity.getApplication())
-                .build();
-            collection
-                .update(query)
-                .with(entity);
-        }
+                    .addEquality("key", property.getKey())
+                    .addEquality("application", property.getApplication())
+                    .build();
+            input.remove(query);
+            return null;
+        }, I18NProperty.class.getSimpleName());
     }
 
-    public void deleteProperty(SystemI18NProperty property) {
-        String query = new JongoQueryBuilder()
-                .addEquality("key", property.getKey())
-                .addEquality("application", property.getApplication())
-                .build();
-        collection.remove(query);
+    public void deleteApplication(String application) throws SystemException {
+        jongoConnectionHandler.apply(input -> {
+            String query = new JongoQueryBuilder()
+                            .addEquality("application", application)
+                            .build();
+            input.remove(query);
+            return null;
+        }, I18NProperty.class.getSimpleName());
     }
 
-    public void deleteApplication(String application) {
+    public List<SystemI18NProperty> findAllByApplication(String application) throws SystemException {
+        return jongoConnectionHandler.apply(input -> {
+            String query = new JongoQueryBuilder()
+                    .addEquality("application", application)
+                    .build();
+            List<SystemI18NProperty> results = new ArrayList<>();
+            input.find(query)
+                    .as(SystemI18NProperty.class)
+                    .forEach(results::add);
+            return results;
+        }, I18NProperty.class.getSimpleName());
+    }
+
+    public SystemI18NProperty findByKeyAndApplication(String key, String application) throws IllegalStateException, SystemException {
+        return jongoConnectionHandler.apply((input -> {
+            String query = new JongoQueryBuilder()
+                    .addEquality("key", key)
+                    .addEquality("application", application)
+                    .build();
+            MongoCursor<I18NProperty> entities = input
+                    .find(query).as(I18NProperty.class);
+            if(entities.count() > 1) {
+                throw new IllegalStateException("Multiple values found for the same key");
+            }
+
+            return entities.count() != 0 ? entities.next() : null;
+        }), I18NProperty.class.getSimpleName());
+    }
+
+    private boolean existsKeyAndApplication(MongoCollection collection, String key, String application) {
         String query = new JongoQueryBuilder()
+                .addEquality("key", key)
                 .addEquality("application", application)
                 .build();
-        collection.remove(query);
-    }
-
-    public List<SystemI18NProperty> findAllByApplication(String application) {
-        String query = new JongoQueryBuilder()
-            .addEquality("application", application)
-            .build();
-        List<SystemI18NProperty> results = new ArrayList<>();
-        collection.find(query)
-                .as(SystemI18NProperty.class)
-                .forEach(results::add);
-        return results;
-    }
-
-    public SystemI18NProperty findByKeyAndApplication(String key, String application) throws IllegalStateException {
-        String query = new JongoQueryBuilder()
-            .addEquality("key", key)
-            .addEquality("application", application)
-            .build();
-    
-        MongoCursor<I18NProperty> entities = collection
-                .find(query).as(I18NProperty.class);
-        if(entities.count() > 1) {
-            throw new IllegalStateException("Multiple values found for the same key");
-        }
-
-        return entities.count() != 0 ? entities.next() : null;
-    }
-
-    private boolean existsKeyAndApplication(String key, String application) {
-        String query = new JongoQueryBuilder()
-            .addEquality("key", key)
-            .addEquality("application", application)
-            .build();
         return collection.count(query) != 0;
     }
 
