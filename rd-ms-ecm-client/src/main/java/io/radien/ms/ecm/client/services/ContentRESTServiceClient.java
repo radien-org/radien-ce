@@ -202,7 +202,7 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
 
 
     private ContentResource getClient() throws MalformedURLException {
-        return clientServiceUtil.getResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ECM));
+        return clientServiceUtil.getContentResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ECM));
     }
 
     private EnterpriseContent parseResponseForEnterpriseContent(Response response) throws IOException, ParseException, java.text.ParseException {
