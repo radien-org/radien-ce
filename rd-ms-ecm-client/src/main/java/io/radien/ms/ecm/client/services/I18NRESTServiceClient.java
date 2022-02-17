@@ -53,7 +53,7 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
         return get(() -> {
             try {
                 I18NResource client = getClient();
-                Response response = client.getMessage(key, language, application);
+                Response response = client.getMessage(key, application, language);
                 String entity = response.readEntity(String.class);
                 if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return entity;
