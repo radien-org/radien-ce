@@ -11,9 +11,12 @@ import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.datalayer.I18NRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RequestScoped
 public class I18NService implements I18NServiceAccess {
+    private static final Logger log = LoggerFactory.getLogger(I18NService.class);
 
     @Inject
     private I18NRepository repository;
@@ -30,7 +33,7 @@ public class I18NService implements I18NServiceAccess {
                 result = repository.getTranslation(key, defaultLanguage, application);
             }
         } catch (SystemException e) {
-            e.printStackTrace();
+            log.error("Error retrieving translation for {} in {} for application {}", key, language, application, e);
         }
         return result;
     }
@@ -40,7 +43,7 @@ public class I18NService implements I18NServiceAccess {
         try {
             repository.save(property);
         } catch (SystemException e) {
-            e.printStackTrace();
+            log.error("Error saving property {} for {}", property.getKey(), property.getApplication(), e);
         }
 
     }
@@ -52,7 +55,7 @@ public class I18NService implements I18NServiceAccess {
             try {
                 i18NRepository.deleteProperty(property);
             } catch (SystemException e) {
-                e.printStackTrace();
+                log.error("Error deleting property {} for {}", property.getKey(), property.getApplication(), e);
             }
         }
     }
@@ -62,7 +65,8 @@ public class I18NService implements I18NServiceAccess {
         try {
             repository.deleteApplication(application);
         } catch (SystemException e) {
-            e.printStackTrace();
+            log.error("Error deleting properties for {}", application, e);
+
         }
     }
 
@@ -71,7 +75,7 @@ public class I18NService implements I18NServiceAccess {
         try {
             return repository.findByKeyAndApplication(key, application);
         } catch (SystemException e) {
-            e.printStackTrace();
+            log.error("Error retrieving property by key {} and application {}", key, application, e);
         }
         return null;
     }
@@ -81,7 +85,7 @@ public class I18NService implements I18NServiceAccess {
         try {
             return repository.findAllByApplication(application);
         } catch (SystemException e) {
-            e.printStackTrace();
+            log.error("Error retrieving all properties for {}", application, e);
         }
         return new ArrayList<>();
     }

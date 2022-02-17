@@ -19,6 +19,9 @@ import org.jongo.MongoCursor;
 
 @RequestScoped
 public class I18NRepository {
+    private static final String FIELD_KEY = "key";
+    private static final String FIELD_APPLICATION = "application";
+
     @Inject
     private JongoConnectionHandler jongoConnectionHandler;
 
@@ -33,9 +36,6 @@ public class I18NRepository {
                 return languageTranslation.get().getValue();
             }
             language = Locale.forLanguageTag(language).getLanguage();
-            if (language.equals(finalLanguage)) {
-                return key;
-            }
             return getTranslation(key, language, application);
         }
         return key;
@@ -47,8 +47,8 @@ public class I18NRepository {
                 input.insert(entity);
             } else {
                 String query = new JongoQueryBuilder()
-                    .addEquality("key", entity.getKey())
-                    .addEquality("application", entity.getApplication())
+                    .addEquality(FIELD_KEY, entity.getKey())
+                    .addEquality(FIELD_APPLICATION, entity.getApplication())
                     .build();
                 input
                     .update(query)
@@ -61,8 +61,8 @@ public class I18NRepository {
     public void deleteProperty(SystemI18NProperty property) throws SystemException {
         jongoConnectionHandler.apply(input -> {
             String query = new JongoQueryBuilder()
-                    .addEquality("key", property.getKey())
-                    .addEquality("application", property.getApplication())
+                    .addEquality(FIELD_KEY, property.getKey())
+                    .addEquality(FIELD_APPLICATION, property.getApplication())
                     .build();
             input.remove(query);
             return null;
@@ -72,7 +72,7 @@ public class I18NRepository {
     public void deleteApplication(String application) throws SystemException {
         jongoConnectionHandler.apply(input -> {
             String query = new JongoQueryBuilder()
-                            .addEquality("application", application)
+                            .addEquality(FIELD_APPLICATION, application)
                             .build();
             input.remove(query);
             return null;
@@ -82,7 +82,7 @@ public class I18NRepository {
     public List<SystemI18NProperty> findAllByApplication(String application) throws SystemException {
         return jongoConnectionHandler.apply(input -> {
             String query = new JongoQueryBuilder()
-                    .addEquality("application", application)
+                    .addEquality(FIELD_APPLICATION, application)
                     .build();
             List<SystemI18NProperty> results = new ArrayList<>();
             input.find(query)
@@ -95,8 +95,8 @@ public class I18NRepository {
     public SystemI18NProperty findByKeyAndApplication(String key, String application) throws IllegalStateException, SystemException {
         return jongoConnectionHandler.apply((input -> {
             String query = new JongoQueryBuilder()
-                    .addEquality("key", key)
-                    .addEquality("application", application)
+                    .addEquality(FIELD_KEY, key)
+                    .addEquality(FIELD_APPLICATION, application)
                     .build();
             MongoCursor<I18NProperty> entities = input
                     .find(query).as(I18NProperty.class);
@@ -110,8 +110,8 @@ public class I18NRepository {
 
     private boolean existsKeyAndApplication(MongoCollection collection, String key, String application) {
         String query = new JongoQueryBuilder()
-                .addEquality("key", key)
-                .addEquality("application", application)
+                .addEquality(FIELD_KEY, key)
+                .addEquality(FIELD_APPLICATION, application)
                 .build();
         return collection.count(query) != 0;
     }
