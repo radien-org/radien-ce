@@ -1,7 +1,6 @@
 package io.radien.ms.ecm.service;
 
 import io.radien.exception.SystemException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -11,12 +10,9 @@ import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.datalayer.I18NRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RequestScoped
 public class I18NService implements I18NServiceAccess {
-    private static final Logger log = LoggerFactory.getLogger(I18NService.class);
 
     @Inject
     private I18NRepository repository;
@@ -25,69 +21,39 @@ public class I18NService implements I18NServiceAccess {
     private String defaultLanguage;
 
     @Override
-    public String getTranslation(String key, String language, String application) {
-        String result = null;
-        try {
-            result = repository.getTranslation(key, language, application);
-            if(result.equals(key)) {
-                result = repository.getTranslation(key, defaultLanguage, application);
-            }
-        } catch (SystemException e) {
-            log.error("Error retrieving translation for {} in {} for application {}", key, language, application, e);
+    public String getTranslation(String key, String language, String application) throws SystemException {
+        String result = repository.getTranslation(key, language, application);
+        if(result.equals(key)) {
+            result = repository.getTranslation(key, defaultLanguage, application);
         }
         return result;
     }
 
     @Override
-    public void save(SystemI18NProperty property) {
-        try {
-            repository.save(property);
-        } catch (SystemException e) {
-            log.error("Error saving property {} for {}", property.getKey(), property.getApplication(), e);
-        }
-
+    public void save(SystemI18NProperty property) throws SystemException {
+        repository.save(property);
     }
 
     @Override
-    public void deleteProperties(List<SystemI18NProperty> properties) {
-        I18NRepository i18NRepository = repository;
+    public void deleteProperties(List<SystemI18NProperty> properties) throws SystemException {
         for (SystemI18NProperty property : properties) {
-            try {
-                i18NRepository.deleteProperty(property);
-            } catch (SystemException e) {
-                log.error("Error deleting property {} for {}", property.getKey(), property.getApplication(), e);
-            }
+            repository.deleteProperty(property);
         }
     }
 
     @Override
-    public void deleteApplicationProperties(String application) {
-        try {
-            repository.deleteApplication(application);
-        } catch (SystemException e) {
-            log.error("Error deleting properties for {}", application, e);
-
-        }
+    public void deleteApplicationProperties(String application) throws SystemException {
+        repository.deleteApplication(application);
     }
 
     @Override
-    public SystemI18NProperty findByKeyAndApplication(String key, String application) {
-        try {
-            return repository.findByKeyAndApplication(key, application);
-        } catch (SystemException e) {
-            log.error("Error retrieving property by key {} and application {}", key, application, e);
-        }
-        return null;
+    public SystemI18NProperty findByKeyAndApplication(String key, String application) throws SystemException {
+        return repository.findByKeyAndApplication(key, application);
     }
 
     @Override
-    public List<SystemI18NProperty> findAllByApplication(String application) {
-        try {
-            return repository.findAllByApplication(application);
-        } catch (SystemException e) {
-            log.error("Error retrieving all properties for {}", application, e);
-        }
-        return new ArrayList<>();
+    public List<SystemI18NProperty> findAllByApplication(String application) throws SystemException {
+        return repository.findAllByApplication(application);
     }
     
 }

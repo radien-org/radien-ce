@@ -6,6 +6,7 @@ import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.api.service.i18n.I18NServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.ms.ecm.ContentRepository;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
@@ -62,7 +63,14 @@ public @ApplicationScoped class ECMSeeder {
     private void initI18NProperties() {
         TranslationDataProvider translationDataProvider = new TranslationDataProvider(supportedLanguages, defaultLanguage);
         List<SystemI18NProperty> allProperties = translationDataProvider.getAllProperties();
-        allProperties.forEach(i18NServiceAccess::save);
+        I18NServiceAccess i18NServiceAccess1 = i18NServiceAccess;
+        for (SystemI18NProperty allProperty : allProperties) {
+            try {
+                i18NServiceAccess1.save(allProperty);
+            } catch (SystemException e) {
+                log.warn("Error saving {} for {}", allProperty.getKey(), allProperty.getApplication(), e);
+            }
+        }
     }
 
     private void initStructure() {

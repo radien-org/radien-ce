@@ -20,6 +20,7 @@ package io.radien.ms.ecm.controller;
 
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class I18NResourceClientTest {
     }
 
     @Test
-    public void testGetMessage() {
+    public void testGetMessage() throws SystemException {
         when(serviceAccess.getTranslation("key", "en", "app"))
                 .thenReturn("value");
         Response result = client.getMessage("key", "app", "en");
@@ -57,7 +58,7 @@ public class I18NResourceClientTest {
     }
 
     @Test
-    public void testFindByKeyAndApplication() {
+    public void testFindByKeyAndApplication() throws SystemException {
         SystemI18NProperty property = new I18NProperty();
         property.setKey("key");
         property.setApplication("app");
@@ -69,7 +70,7 @@ public class I18NResourceClientTest {
     }
 
     @Test
-    public void testAllByApplication() {
+    public void testAllByApplication() throws SystemException {
         List<SystemI18NProperty> list = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             list.add(new I18NProperty());
