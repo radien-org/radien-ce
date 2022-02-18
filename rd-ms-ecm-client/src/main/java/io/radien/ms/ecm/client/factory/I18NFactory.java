@@ -22,7 +22,6 @@ import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.model.i18n.SystemI18NTranslation;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
 import io.radien.ms.ecm.client.entities.i18n.I18NTranslation;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.JSONArray;

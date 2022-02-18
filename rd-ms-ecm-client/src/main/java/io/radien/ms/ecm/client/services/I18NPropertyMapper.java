@@ -19,8 +19,6 @@
 package io.radien.ms.ecm.client.services;
 
 import io.radien.api.model.i18n.SystemI18NProperty;
-import io.radien.api.service.ecm.model.EnterpriseContent;
-import io.radien.ms.ecm.client.factory.ContentFactory;
 import io.radien.ms.ecm.client.factory.I18NFactory;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,14 +36,14 @@ public class I18NPropertyMapper {
         throw new IllegalStateException("Utility class");
     }
 
-    public static SystemI18NProperty map(InputStream is) throws IOException, ParseException, java.text.ParseException {
+    public static SystemI18NProperty map(InputStream is) throws IOException, ParseException {
         JSONParser jsonParser = new JSONParser();
         JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(is, StandardCharsets.UTF_8));
 
         return I18NFactory.convertJSONObject(obj);
     }
 
-    public static List<SystemI18NProperty> mapArray(InputStream is) throws IOException, ParseException, java.text.ParseException {
+    public static List<SystemI18NProperty> mapArray(InputStream is) throws IOException, ParseException {
         List<SystemI18NProperty> result = new ArrayList<>();
         JSONParser jsonParser = new JSONParser();
         JSONArray array = (JSONArray) jsonParser.parse(new InputStreamReader(is, StandardCharsets.UTF_8));

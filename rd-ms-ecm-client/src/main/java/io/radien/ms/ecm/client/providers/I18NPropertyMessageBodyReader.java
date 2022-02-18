@@ -45,7 +45,7 @@ public class I18NPropertyMessageBodyReader implements MessageBodyReader<SystemI1
     public SystemI18NProperty readFrom(Class<SystemI18NProperty> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> multivaluedMap, InputStream inputStream) throws IOException, WebApplicationException {
         try {
             return I18NPropertyMapper.map(inputStream);
-        } catch (IOException | ParseException | java.text.ParseException e) {
+        } catch (IOException | ParseException e) {
             throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
     }

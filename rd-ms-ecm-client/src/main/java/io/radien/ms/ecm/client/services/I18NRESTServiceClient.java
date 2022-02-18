@@ -99,7 +99,7 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
                     log.error(entity);
                     return null;
                 }
-            } catch (IOException | ParseException | java.text.ParseException e) {
+            } catch (IOException | ParseException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_I18N_PROPERTY.toString(key), e);
             }
         });
@@ -118,7 +118,7 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
                     log.error(entity);
                     return new ArrayList<>();
                 }
-            } catch (IOException | ParseException | java.text.ParseException e) {
+            } catch (IOException | ParseException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES.toString(application), e);
             }
         });

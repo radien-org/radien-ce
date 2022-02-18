@@ -18,10 +18,8 @@
 
 package io.radien.ms.ecm.client.providers;
 
-import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
 import io.radien.ms.ecm.client.factory.I18NFactory;
-import io.radien.ms.ecm.client.services.I18NPropertyMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
