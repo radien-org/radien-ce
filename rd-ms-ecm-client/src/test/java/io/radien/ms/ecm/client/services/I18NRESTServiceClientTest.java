@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Optional;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -126,8 +127,9 @@ public class I18NRESTServiceClientTest {
         Response response = Response.ok().entity(in).build();
         when(mockResource.findByKeyAndApplication("key", "radien"))
                 .thenReturn(response);
-        SystemI18NProperty byKeyAndApplication = client.findByKeyAndApplication("key", "radien");
-        assertNotNull(byKeyAndApplication);
+        Optional<SystemI18NProperty> byKeyAndApplication = client.findByKeyAndApplication("key", "radien");
+        assertTrue(byKeyAndApplication.isPresent());
+        assertNotNull(byKeyAndApplication.get());
     }
 
     @Test
@@ -135,7 +137,7 @@ public class I18NRESTServiceClientTest {
         Response response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("value").build();
         when(mockResource.findByKeyAndApplication("key", "radien"))
                 .thenReturn(response);
-        assertNull(client.findByKeyAndApplication("key", "radien"));
+        assertFalse(client.findByKeyAndApplication("key", "radien").isPresent());
     }
 
     @Test(expected = SystemException.class)

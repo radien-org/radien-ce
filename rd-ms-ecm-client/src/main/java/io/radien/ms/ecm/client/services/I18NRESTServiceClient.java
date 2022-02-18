@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -59,7 +60,7 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
                     return entity;
                 } else {
                     log.error(entity);
-                    return null;
+                    return key;
                 }
             } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_TRANSLATION.toString(key, language), e);
@@ -87,17 +88,17 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
     }
 
     @Override
-    public SystemI18NProperty findByKeyAndApplication(String key, String application) throws SystemException{
+    public Optional<SystemI18NProperty> findByKeyAndApplication(String key, String application) throws SystemException{
         return get(() -> {
             try {
                 I18NResource client = getClient();
                 Response response = client.findByKeyAndApplication(key, application);
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                    return I18NPropertyMapper.map((InputStream) response.getEntity());
+                    return Optional.of(I18NPropertyMapper.map((InputStream) response.getEntity()));
                 } else {
                     String entity = response.readEntity(String.class);
                     log.error(entity);
-                    return null;
+                    return Optional.empty();
                 }
             } catch (IOException | ParseException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_I18N_PROPERTY.toString(key), e);

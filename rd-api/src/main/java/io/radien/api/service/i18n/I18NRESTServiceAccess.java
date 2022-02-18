@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.radien.api.Appframeable;
 import io.radien.api.model.i18n.SystemI18NProperty;
+import java.util.Optional;
 
 public interface I18NRESTServiceAccess extends Appframeable {
 
@@ -12,7 +13,7 @@ public interface I18NRESTServiceAccess extends Appframeable {
 
     boolean save(SystemI18NProperty property) throws SystemException;
 
-    SystemI18NProperty findByKeyAndApplication(String key, String application) throws SystemException;
+    Optional<SystemI18NProperty> findByKeyAndApplication(String key, String application) throws SystemException;
 
     List<SystemI18NProperty> findAllByApplication(String application) throws SystemException;
     
