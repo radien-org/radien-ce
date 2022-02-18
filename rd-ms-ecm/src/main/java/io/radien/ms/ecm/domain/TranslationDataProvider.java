@@ -43,7 +43,7 @@ public class TranslationDataProvider implements Serializable {
     public static final String DEFAULT_BUNDLE_NAME = "i18n/Language";
     private final List<Locale> locales;
 
-    private List<SystemI18NProperty> allProperties;
+    private transient final List<SystemI18NProperty> allProperties;
 
     public TranslationDataProvider(String availableLanguages, String defaultLanguage) {
         allProperties = new LinkedList<>();

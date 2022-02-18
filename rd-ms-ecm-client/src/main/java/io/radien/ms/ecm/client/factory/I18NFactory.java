@@ -26,11 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class I18NFactory {
-    private static final Logger log = LoggerFactory.getLogger(I18NFactory.class);
 
     private I18NFactory() {
         throw new IllegalStateException("Utility class");

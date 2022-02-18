@@ -48,8 +48,6 @@ public @ApplicationScoped class ECMSeeder {
     @ConfigProperty(name = "system.default.language")
     private String defaultLanguage;
 
-    private TranslationDataProvider translationDataProvider;
-
     @PostConstruct
     public void init() {
         log.info("Initializing CMS");
@@ -62,7 +60,7 @@ public @ApplicationScoped class ECMSeeder {
     }
 
     private void initI18NProperties() {
-        translationDataProvider = new TranslationDataProvider(supportedLanguages, defaultLanguage);
+        TranslationDataProvider translationDataProvider = new TranslationDataProvider(supportedLanguages, defaultLanguage);
         List<SystemI18NProperty> allProperties = translationDataProvider.getAllProperties();
         allProperties.forEach(i18NServiceAccess::save);
     }

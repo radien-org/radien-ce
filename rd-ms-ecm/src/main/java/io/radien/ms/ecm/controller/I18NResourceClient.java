@@ -24,18 +24,21 @@ public class I18NResourceClient implements I18NResource {
 
     @Override
     public Response getMessage(String key, String application, String language) {
+        log.info("Retrieving translation for {} {} {}", key, application, language);
         return Response.ok().entity(serviceAccess.getTranslation(key, language, application))
             .build();
     }
 
     @Override
     public Response findByKeyAndApplication(String key, String application) {
+        log.info("Retrieving property for {} {}", key, application);
         return Response.ok().entity(serviceAccess.findByKeyAndApplication(key, application))
                 .build();
     }
 
     @Override
     public Response findAllByApplication(String application) {
+        log.info("Retrieving all properties for {}", application);
         return Response.ok().entity(serviceAccess.findAllByApplication(application))
                 .build();
     }
@@ -43,10 +46,13 @@ public class I18NResourceClient implements I18NResource {
     @Override
     public Response deleteProperties(DeletePropertyFilter filter) {
         if(filter.getProperties() != null && !filter.getProperties().isEmpty()) {
+            log.info("Deleting {} properties", filter.getProperties().size());
             serviceAccess.deleteProperties(filter.getProperties());
         } else if(!StringUtils.isEmpty(filter.getApplication())) {
+            log.info("Deleting app properties for {}", filter.getApplication());
             serviceAccess.deleteApplicationProperties(filter.getApplication());
         } else {
+            log.info("Invalid DeletePropertyFilter received");
             return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse(GenericErrorCodeMessage.BAD_REQUEST.toString());
         }
         return Response.ok().build();
@@ -54,6 +60,7 @@ public class I18NResourceClient implements I18NResource {
 
     @Override
     public Response saveProperty(SystemI18NProperty property) {
+        log.info("Saving new property {} for {}", property.getKey(), property.getApplication());
         serviceAccess.save(property);
         return Response.ok().build();
     }
