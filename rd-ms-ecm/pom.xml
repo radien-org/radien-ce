@@ -17,6 +17,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.tomee-maven-plugin>8.0.9</version.tomee-maven-plugin>
+		<version.jackson-core>2.7.3</version.jackson-core>
 	</properties>
 	<build>
 		<finalName>cms</finalName>
@@ -162,12 +163,6 @@
 			<groupId>org.jongo</groupId>
 			<artifactId>jongo</artifactId>
 			<version>1.3.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- Commons -->
