@@ -1,7 +1,7 @@
 {
   "themes":[
     {
-      "name":"rd-theme-v-0.0.1",
+      "name":"rd-theme-v1",
       "types":[
         "account",
         "admin",
@@ -11,12 +11,12 @@
       ]
     },
     {
-      "name":"rd-theme-v-0.0.2",
+      "name":"rd-theme-v2",
       "types":[
         "account",
         "admin",
-        "login",
         "email",
+        "login",
         "welcome"
       ]
     }

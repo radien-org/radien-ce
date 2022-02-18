@@ -73,7 +73,7 @@ run the scripts on jboss cli
 /subsystem=keycloak-server/theme=defaults/:write-attribute(name=cacheThemes,value=false)
 
 <p>
-    <img src="cache-theme-customization-jboss-cli.png" width="800" height="600" />
+    <img src="docs/cache-theme-customization-jboss-cli.png" width="800" height="600" />
 </p>
 
 </pre>
