@@ -1,4 +1,4 @@
-FROM jboss/keycloak:15.0.1
+FROM quay.io/keycloak/keycloak:16.1.1
 #ENV KEYCLOAK_USER=raiden \
 #    KEYCLOAK_PASSWORD=brutality
 #    KEYCLOAK_IMPORT=/tmp/master.json
@@ -12,6 +12,6 @@ FROM jboss/keycloak:15.0.1
 # kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user raiden brutality
 
 # Deploy Keycloak custom themes
-# Refer the file in the microservice rd-ms-keycloak-themes/README.md
-
-
+COPY ../../rd-ms-keycloak-themes/target/keycloak-custom-themes.jar /opt/jboss/keycloak/standalone/deployments/
+COPY ../../rd-ms-keycloak-customization/src/main/config/standalone.xml /opt/jboss/keycloak/standalone/configuration/standalone.xml
+COPY ../../rd-ms-keycloak-customization/src/main/config/standalone-ha.xml /opt/jboss/keycloak/standalone/configuration/standalone-ha.xml
