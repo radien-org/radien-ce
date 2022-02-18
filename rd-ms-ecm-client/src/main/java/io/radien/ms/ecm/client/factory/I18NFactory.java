@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.client.factory;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.model.i18n.SystemI18NTranslation;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
@@ -34,13 +35,13 @@ public class I18NFactory {
     }
 
     public static SystemI18NProperty convertJSONObject(JSONObject json) {
-        String key = tryGetJsonProperty(json, "key");
-        String application = tryGetJsonProperty(json, "application");
+        String key = tryGetJsonProperty(json, SystemVariables.KEY.getFieldName());
+        String application = tryGetJsonProperty(json, SystemVariables.APPLICATION.getFieldName());
 
         SystemI18NProperty property = new I18NProperty();
         property.setKey(key);
         property.setApplication(application);
-        property.setTranslations(convertTranslationJSONArray((JSONArray) json.get("translations")));
+        property.setTranslations(convertTranslationJSONArray((JSONArray) json.get(SystemVariables.TRANSLATIONS.getFieldName())));
 
         return property;
     }
@@ -56,8 +57,8 @@ public class I18NFactory {
     }
 
     public static SystemI18NTranslation convertTranslationJSONObject(JSONObject json) {
-        String language = tryGetJsonProperty(json, "language");
-        String value = tryGetJsonProperty(json, "value");
+        String language = tryGetJsonProperty(json, SystemVariables.LANGUAGE.getFieldName());
+        String value = tryGetJsonProperty(json, SystemVariables.VALUE.getFieldName());
 
         SystemI18NTranslation translation = new I18NTranslation();
         translation.setLanguage(language);
