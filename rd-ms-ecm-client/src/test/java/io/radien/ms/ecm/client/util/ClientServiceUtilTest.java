@@ -39,7 +39,7 @@ public class ClientServiceUtilTest {
     public void testGetResourceClient() {
         boolean valid = true;
         try {
-            clientServiceUtil.getResourceClient("http://url.test.pt") ;
+            clientServiceUtil.getContentResourceClient("http://url.test.pt") ;
         } catch (MalformedURLException e) {
             valid = false;
         }
@@ -48,6 +48,6 @@ public class ClientServiceUtilTest {
 
     @Test(expected = MalformedURLException.class)
     public void testGetResourceClientException() throws MalformedURLException {
-        clientServiceUtil.getResourceClient("not.a.valid.url") ;
+        clientServiceUtil.getContentResourceClient("not.a.valid.url") ;
     }
 }

@@ -1,12 +1,34 @@
+/*
+ *
+ *  * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ *  * <p>
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  * <p>
+ *  * http://www.apache.org/licenses/LICENSE-2.0
+ *  * <p>
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
 package io.radien.ms.ecm.seed;
 
+import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.model.*;
+import io.radien.api.service.i18n.I18NServiceAccess;
+import io.radien.exception.SystemException;
 import io.radien.ms.ecm.ContentRepository;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
+import io.radien.ms.ecm.domain.TranslationDataProvider;
 import io.radien.ms.ecm.event.ApplicationInitializedEvent;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -33,7 +55,8 @@ public @ApplicationScoped class ECMSeeder {
     private ContentServiceAccess contentService;
     @Inject
     private ContentDataProvider contentDataProvider;
-
+    @Inject
+    private I18NServiceAccess i18NServiceAccess;
     @Inject
     private Config config;
 
@@ -51,6 +74,20 @@ public @ApplicationScoped class ECMSeeder {
             boolean insertOnly = Boolean.parseBoolean(config.getValue("system.jcr.seed.insert.only", String.class));
             initStructure();
             initContent(insertOnly);
+            initI18NProperties();
+        }
+    }
+
+    private void initI18NProperties() {
+        TranslationDataProvider translationDataProvider = new TranslationDataProvider(supportedLanguages, defaultLanguage);
+        List<SystemI18NProperty> allProperties = translationDataProvider.getAllProperties();
+        I18NServiceAccess i18NServiceAccess1 = i18NServiceAccess;
+        for (SystemI18NProperty allProperty : allProperties) {
+            try {
+                i18NServiceAccess1.save(allProperty);
+            } catch (SystemException e) {
+                log.warn("Error saving {} for {}", allProperty.getKey(), allProperty.getApplication(), e);
+            }
         }
     }
 
