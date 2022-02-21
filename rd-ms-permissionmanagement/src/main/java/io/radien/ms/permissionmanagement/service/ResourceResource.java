@@ -20,6 +20,7 @@ import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ResourceResourceClient;
 import io.radien.ms.permissionmanagement.model.ResourceEntity;
@@ -38,6 +39,7 @@ import java.util.List;
  */
 @Path("resource")
 @RequestScoped
+@Authenticated
 public class ResourceResource implements ResourceResourceClient {
 
 	@Inject
