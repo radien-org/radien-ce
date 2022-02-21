@@ -15,27 +15,33 @@
  */
 package io.radien.spi.themes;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Spy;
+import org.powermock.api.mockito.PowerMockito;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test suit
  * SPIThemesResourceProvider
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ URL.class })
 class SPIThemesResourceProviderTest {
+
     @InjectMocks
+    @Spy
     SPIThemesResourceProvider spiThemesResourceProvider;
     @Mock
     KeycloakSession keycloakSession;
@@ -43,7 +49,32 @@ class SPIThemesResourceProviderTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        new SPIThemesResourceProvider(keycloakSession);
+        spiThemesResourceProvider = new SPIThemesResourceProvider(keycloakSession);
+    }
+
+    @Test
+    void testGetMessage() throws Exception {
+        class UrlWrapper {
+
+            URL url;
+
+            public UrlWrapper(String spec) throws MalformedURLException {
+                url = new URL(spec);
+            }
+
+            public URLConnection openConnection() throws IOException {
+                return url.openConnection();
+            }
+        }
+
+        UrlWrapper url = Mockito.mock(UrlWrapper.class);
+        HttpURLConnection huc = Mockito.mock(HttpURLConnection.class);
+        PowerMockito.when(url.openConnection()).thenReturn(huc);
+        assertTrue(url.openConnection() instanceof HttpURLConnection);
+
+
+        spiThemesResourceProvider.getMessages("messages",new Locale("en") );
+
     }
 
     @Test
