@@ -23,6 +23,8 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
+import io.radien.ms.openid.entities.Authenticated;
+import io.radien.ms.openid.entities.Public;
 import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.client.controller.I18NResource;
 
+@Authenticated
 public class I18NResourceClient implements I18NResource {
     private static final Logger log = LoggerFactory.getLogger(I18NResourceClient.class);
 
@@ -43,6 +46,7 @@ public class I18NResourceClient implements I18NResource {
     private I18NServiceAccess serviceAccess;
 
     @Override
+    @Public
     public Response getMessage(String key, String application, String language) {
         log.info("Retrieving translation for {} {} {}", key, application, language);
         try {

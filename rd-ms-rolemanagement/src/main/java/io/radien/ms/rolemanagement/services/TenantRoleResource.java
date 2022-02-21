@@ -27,6 +27,7 @@ import io.radien.exception.TenantRoleIllegalArgumentException;
 import io.radien.exception.TenantRoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.authz.security.AuthorizationChecker;
+import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.services.TenantRoleResourceClient;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Newton Carvalho
  */
 @RequestScoped
+@Authenticated
 public class TenantRoleResource extends AuthorizationChecker implements TenantRoleResourceClient {
 
     private static final Logger log = LoggerFactory.getLogger(TenantRoleResource.class);

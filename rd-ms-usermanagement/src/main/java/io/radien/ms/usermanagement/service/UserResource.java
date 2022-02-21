@@ -18,6 +18,8 @@ package io.radien.ms.usermanagement.service;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.exception.UserChangeCredentialException;
+import io.radien.ms.openid.entities.Authenticated;
+import io.radien.ms.openid.entities.Public;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.entities.UserEntity;
@@ -57,6 +59,7 @@ import java.util.stream.Collectors;
  */
 @Path("user")
 @RequestScoped
+@Authenticated
 public class UserResource extends AuthorizationChecker implements UserResourceClient {
 
 	@Inject
@@ -341,6 +344,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @return Ok message if it has success. Returns error 500 Code to the user in case of any issue.
 	 */
 	@Override
+	@Public
 	public Response refreshToken(String refreshToken) {
 		if(refreshToken == null || refreshToken.trim().isEmpty()){
 			return GenericErrorMessagesToResponseMapper.getInvalidRequestResponse("refresh token null or empty");

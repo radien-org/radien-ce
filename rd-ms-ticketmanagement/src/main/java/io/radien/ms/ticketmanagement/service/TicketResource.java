@@ -17,6 +17,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.TicketException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
 import io.radien.ms.ticketmanagement.client.services.TicketResourceClient;
 import io.radien.ms.ticketmanagement.entities.TicketEntity;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@Authenticated
 public class TicketResource implements TicketResourceClient {
 
     private static final Logger log = LoggerFactory.getLogger(TicketResource.class);

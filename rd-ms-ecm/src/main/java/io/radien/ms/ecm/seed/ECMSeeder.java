@@ -81,10 +81,9 @@ public @ApplicationScoped class ECMSeeder {
     private void initI18NProperties() {
         TranslationDataProvider translationDataProvider = new TranslationDataProvider(supportedLanguages, defaultLanguage);
         List<SystemI18NProperty> allProperties = translationDataProvider.getAllProperties();
-        I18NServiceAccess i18NServiceAccess1 = i18NServiceAccess;
         for (SystemI18NProperty allProperty : allProperties) {
             try {
-                i18NServiceAccess1.save(allProperty);
+                i18NServiceAccess.save(allProperty);
             } catch (SystemException e) {
                 log.warn("Error saving {} for {}", allProperty.getKey(), allProperty.getApplication(), e);
             }

@@ -20,6 +20,7 @@ import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.ActionResourceClient;
 import io.radien.ms.permissionmanagement.model.ActionEntity;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("action")
 @RequestScoped
+@Authenticated
 public class ActionResource implements ActionResourceClient {
 
 	@Inject
