@@ -94,7 +94,7 @@
 		<!-- Logging -->
 		<version.slf4j-api>1.7.32</version.slf4j-api>
 		<version.jcl-over-slf4j>1.7.35</version.jcl-over-slf4j>
-		<version.logback-classic>1.2.3</version.logback-classic>
+		<version.logback-classic>1.2.10</version.logback-classic>
 		<version.logback-core>1.2.10</version.logback-core>
 
 		<!-- Commons -->
@@ -121,7 +121,7 @@
 		<version.junit>4.13.1</version.junit>
 		<version.junit.jupiter>5.8.2</version.junit.jupiter>
 		<version.mock.jupiter>5.7.1</version.mock.jupiter>
-		<version.mockito.core>2.23.0</version.mockito.core>
+		<version.mockito.core>4.3.1</version.mockito.core>
 		<version.powermock.core>2.0.9</version.powermock.core>
 		<version.jersey.common>2.22.2</version.jersey.common>
 		<version.johnzon.core>1.2.16</version.johnzon.core>
