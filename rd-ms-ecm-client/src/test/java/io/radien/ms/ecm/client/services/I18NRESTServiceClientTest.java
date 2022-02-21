@@ -40,7 +40,6 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -80,7 +79,9 @@ public class I18NRESTServiceClientTest {
         Response response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("value").build();
         when(mockResource.getMessage("key", "radien", "en"))
                 .thenReturn(response);
-        assertNull(client.getTranslation("key", "en", "radien"));
+        String translation = client.getTranslation("key", "en", "radien");
+        assertNotNull(translation);
+        assertEquals("key", translation);
     }
 
     @Test(expected = SystemException.class)
