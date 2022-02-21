@@ -102,7 +102,7 @@
 		<version.httpclient>4.5.13</version.httpclient>
 
 		<!-- Jackson xml -->
-		<version.jackson-core>2.12.0</version.jackson-core>
+		<version.jackson-core>2.13.1</version.jackson-core>
 
 		<!-- mail -->
 		<version.rmiio>2.1.2</version.rmiio>
@@ -124,7 +124,7 @@
 		<version.mockito.core>2.23.0</version.mockito.core>
 		<version.powermock.core>2.0.9</version.powermock.core>
 		<version.jersey.common>2.22.2</version.jersey.common>
-		<version.johnzon.core>1.2.15</version.johnzon.core>
+		<version.johnzon.core>1.2.16</version.johnzon.core>
 		<version.openejb-mockito>8.0.7</version.openejb-mockito>
 		<version.johnzon.jsonb>1.2.15</version.johnzon.jsonb>
 		<version.embeded.mongo>3.3.1</version.embeded.mongo>
