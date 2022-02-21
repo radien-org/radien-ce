@@ -1,18 +1,18 @@
 /*
  *
- *  * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
- *  * <p>
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  * <p>
- *  * http://www.apache.org/licenses/LICENSE-2.0
- *  * <p>
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ *  Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ *  <p>
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  <p>
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  <p>
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  *
  */
 package io.radien.ms.openid.security;
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A Filter that performs authentication of a particular request.
- * @author André Sousa
+ * @author Nuno Santana, André Sousa
  */
 @Provider
 @Authenticated
@@ -71,6 +71,20 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest httpRequest;
 
+    /**
+     * The filter method of the ContainerRequestFilter is called by the container each time a request is
+     * sent to any name bound artifact to the authenticated annotation.
+     *
+     * A typical implementation of this method would follow the following pattern:
+     * Examine the request
+     * Optionally wrap the request object with a custom implementation to filter content or headers for input
+     * filtering
+     * Optionally wrap the response object with a custom implementation to filter content or headers for output
+     * filtering
+     * Either return, continuing the request, or abort the request with a different response
+     * @param containerRequestContext  the ServletRequest object contains the client's request
+     * @throws IOException      if an I/O related error has occurred during the processing
+     **/
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
         Method method = resourceInfo.getResourceMethod();
@@ -90,17 +104,22 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     return;
                 }
             }
-
         }
-        if((httpRequest.getRequestURI().endsWith("service/v1/health")) ||
-                (httpRequest.getRequestURI().endsWith("service/v1/info"))){
-            return;
-        } else if (failed) {
+
+        if(!(httpRequest.getRequestURI().endsWith("service/v1/health")) &&
+            !(httpRequest.getRequestURI().endsWith("service/v1/info"))) {
             containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Failed authentication..").build());
         }
     }
 
+    /**
+     * Everytime the container receives a request/response the following method will get the authorization issuer and
+     * url to validate the request/response authentication
+     * @param session where the request/response is coming or going into
+     * @param accessToken user access token to be validated or added
+     * @return true in case the token has been validated with success
+     */
     private boolean validateToken(HttpSession session, String accessToken) {
         try {
             JWSObject jwsObject = JWSObject.parse(accessToken);
@@ -159,4 +178,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                                 || !env.equalsIgnoreCase("LOCAL")
                 );
     }
+
+
 }
