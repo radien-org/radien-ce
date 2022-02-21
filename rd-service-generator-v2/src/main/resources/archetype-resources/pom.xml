@@ -31,12 +31,12 @@
 
         <!-- Maven Plugins -->
         <version.maven-eclipse-plugin>2.10</version.maven-eclipse-plugin>
-        <version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
+        <version.maven-compiler-plugin>3.9.0</version.maven-compiler-plugin>
         <version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
-        <version.maven-war-plugin>3.3.1</version.maven-war-plugin>
-        <version.maven-surefire-plugin>2.22.0</version.maven-surefire-plugin>
+        <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
+        <version.maven-surefire-plugin>2.22.2</version.maven-surefire-plugin>
 
-        <version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
+        <version.tomee-maven-plugin>8.0.9</version.tomee-maven-plugin>
 
         <!-- Jakarta EE -->
         <version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
@@ -48,40 +48,40 @@
         <version.eclipselink>2.7.10</version.eclipselink>
 
         <!-- DB -->
-        <version.hsqldb>2.5.1</version.hsqldb>
+        <version.hsqldb>2.5.2</version.hsqldb>
 
         <!-- Microprofile -->
         <version.microprofile>3.3</version.microprofile>
 
         <!-- CXF Core -->
-        <version.cxf-rt-rs-mp-client>3.4.3</version.cxf-rt-rs-mp-client>
+        <version.cxf-rt-rs-mp-client>3.5.0</version.cxf-rt-rs-mp-client>
 
 
         <!-- Logging -->
-        <version.slf4j-api>1.7.30</version.slf4j-api>
-        <version.jcl-over-slf4j>1.7.30</version.jcl-over-slf4j>
-        <version.logback-classic>1.2.3</version.logback-classic>
-        <version.logback-core>1.2.3</version.logback-core>
+        <version.slf4j-api>1.7.32</version.slf4j-api>
+        <version.jcl-over-slf4j>1.7.35</version.jcl-over-slf4j>
+        <version.logback-classic>1.2.10</version.logback-classic>
+        <version.logback-core>1.2.10</version.logback-core>
 
         <!-- Commons -->
-        <version.commons-lang3>3.11</version.commons-lang3>
+        <version.commons-lang3>3.12.0</version.commons-lang3>
         <version.httpclient>4.5.13</version.httpclient>
 
         <!-- Jackson xml -->
-        <version.jackson-core>2.12.0</version.jackson-core>
+        <version.jackson-core>2.13.1</version.jackson-core>
 
         <!-- mail -->
         <version.rmiio>2.1.2</version.rmiio>
 
         <!-- Security -->
-        <version.jwks-rsa>0.19.0</version.jwks-rsa>
+        <version.jwks-rsa>0.20.1</version.jwks-rsa>
 
         <!-- test -->
         <version.arquillian-openejb-embedded>8.0.9</version.arquillian-openejb-embedded>
         <version.junit>4.13.1</version.junit>
-        <version.junit.jupiter>5.7.1</version.junit.jupiter>
+        <version.junit.jupiter>5.8.2</version.junit.jupiter>
         <version.mock.jupiter>5.7.1</version.mock.jupiter>
-        <version.mockito.core>2.23.0</version.mockito.core>
+        <version.mockito.core>4.3.1</version.mockito.core>
         <version.powermock.core>2.0.9</version.powermock.core>
 
         <!-- Props -->
