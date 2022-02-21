@@ -121,10 +121,10 @@
 		<version.junit>4.13.1</version.junit>
 		<version.junit.jupiter>5.8.2</version.junit.jupiter>
 		<version.mock.jupiter>5.7.1</version.mock.jupiter>
-		<version.mockito.core>2.23.0</version.mockito.core>
+		<version.mockito.core>4.3.1</version.mockito.core>
 		<version.powermock.core>2.0.9</version.powermock.core>
 		<version.jersey.common>2.22.2</version.jersey.common>
-		<version.johnzon.core>1.2.15</version.johnzon.core>
+		<version.johnzon.core>1.2.16</version.johnzon.core>
 		<version.openejb-mockito>8.0.7</version.openejb-mockito>
 		<version.johnzon.jsonb>1.2.15</version.johnzon.jsonb>
 		<version.embeded.mongo>3.3.1</version.embeded.mongo>
@@ -132,7 +132,7 @@
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
-		<version.primefaces.ext>11.0.0</version.primefaces.ext>
+		<version.primefaces.ext>11.0.1</version.primefaces.ext>
 
 		<!-- Props -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
