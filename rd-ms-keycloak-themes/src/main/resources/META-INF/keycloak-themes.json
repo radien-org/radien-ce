@@ -1,7 +1,7 @@
 {
   "themes":[
     {
-      "name":"rd-theme-v1",
+      "name":"radien",
       "types":[
         "account",
         "admin",
@@ -11,7 +11,7 @@
       ]
     },
     {
-      "name":"rd-theme-v2",
+      "name":"test",
       "types":[
         "account",
         "admin",

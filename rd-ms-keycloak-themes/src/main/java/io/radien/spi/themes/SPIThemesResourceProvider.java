@@ -56,14 +56,14 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
     @Override
     public URL getTemplate(String templateName) {
         if(log.isInfoEnabled()){
-            log.info(String.format("get template: %s", templateName));
+            log.info(String.format("get template: %s", this.themeRoot + templateName.toLowerCase()));
         }
         return this.classLoader.getResource(this.themeRoot + templateName.toLowerCase() + "/");
     }
 
     @Override
     public InputStream getResourceAsStream(String resource) {
-        String resourceName = String.format("get resource: %s", resource);
+        String resourceName = String.format("get resource: %s", resourceRoot+resource);
         log.info(resourceName);
         return classLoader.getResourceAsStream(resourceRoot + resource);
     }
@@ -83,7 +83,7 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
             String result = readFullyAsString(con.getInputStream(), "UTF-8");
             ObjectMapper mapper = new ObjectMapper();
             Map<String, String> map = mapper.readValue(result, Map.class);
-            log.info("MAP:: {} -- {} {}", map.size(), "emailTestSubject", map.get("emailTestSubject"));
+            log.info("MAP:: {} -- {} {}", map.size(), "rd_doRegister", map.get("rd_doRegister"));
             properties.putAll(map);
         } else {
             log.info("ERROR :: {}", status);

@@ -34,10 +34,12 @@ public class SPIThemesResourceProviderFactory implements ThemeResourceProviderFa
 
     @Override
     public void init(Config.Scope scope) {
+        //reads configs from the server
     }
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+        // Post factory calls
     }
 
     @Override
