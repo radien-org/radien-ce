@@ -28,6 +28,7 @@ import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.Folder;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.VersionableEnterpriseContent;
+import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.ContentRepository;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.domain.ContentDataProvider;
@@ -64,6 +65,8 @@ public class ECMSeederTest {
     private ContentDataProvider contentDataProvider;
     @Mock
     private Config config;
+    @Mock
+    private I18NServiceAccess i18NServiceAccess;
 
 
     @Before

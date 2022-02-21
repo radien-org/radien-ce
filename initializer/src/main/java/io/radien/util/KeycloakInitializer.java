@@ -41,7 +41,7 @@ import static io.radien.util.RequestUtils.logProgress;
 
 public class KeycloakInitializer {
     private static final Logger log
-            = LoggerFactory.getLogger(Initializer.class);
+            = LoggerFactory.getLogger(KeycloakInitializer.class);
 
     private final String workDir;
     private String masterRealmUser;

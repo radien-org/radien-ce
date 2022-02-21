@@ -22,6 +22,7 @@ import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TenantException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
@@ -39,6 +40,7 @@ import java.util.List;
  * @author Santana
  */
 @RequestScoped
+@Authenticated
 public class TenantResource implements TenantResourceClient {
 
 	private static final Logger log = LoggerFactory.getLogger(TenantResource.class);
