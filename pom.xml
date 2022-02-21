@@ -132,7 +132,7 @@
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
-		<version.primefaces.ext>11.0.0</version.primefaces.ext>
+		<version.primefaces.ext>11.0.1</version.primefaces.ext>
 
 		<!-- Props -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
