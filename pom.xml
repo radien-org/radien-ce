@@ -102,7 +102,7 @@
 		<version.httpclient>4.5.13</version.httpclient>
 
 		<!-- Jackson xml -->
-		<version.jackson-core>2.12.0</version.jackson-core>
+		<version.jackson-core>2.13.1</version.jackson-core>
 
 		<!-- mail -->
 		<version.rmiio>2.1.2</version.rmiio>
@@ -132,7 +132,7 @@
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
-		<version.primefaces.ext>11.0.0</version.primefaces.ext>
+		<version.primefaces.ext>11.0.1</version.primefaces.ext>
 
 		<!-- Props -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
