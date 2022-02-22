@@ -72,12 +72,12 @@ public class SPIThemesResourceProviderTest {
 
     @Test
     public void testGetTemplate(){
-        assertNull(spiThemesResourceProvider.getTemplate("theme/test/login"));
+        assertNull(spiThemesResourceProvider.getTemplate( "theme/radien/login" ));
     }
 
     @Test
     public void testGetResourceAsStream(){
-        assertNull(spiThemesResourceProvider.getResourceAsStream("theme/test/login"));
+        assertNull(spiThemesResourceProvider.getResourceAsStream( "theme/radien/login" ));
     }
 
     private int urlOpenConnection(String urlToValidate) {
