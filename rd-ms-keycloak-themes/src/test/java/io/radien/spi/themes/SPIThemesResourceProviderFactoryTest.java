@@ -15,37 +15,41 @@
  */
 package io.radien.spi.themes;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * Test suit
  * SPIThemesResourceProviderFactory
  */
-class SPIThemesResourceProviderFactoryTest {
+@RunWith(MockitoJUnitRunner.class)
+public class SPIThemesResourceProviderFactoryTest {
     SPIThemesResourceProviderFactory spiThemesResourceProviderFactory;
     @Mock
     SPIThemesResourceProvider spiThemesResourceProvider;
     @Mock
     KeycloakSession keycloakSession;
 
-    @BeforeEach
-    void setUp(){
+    @Before
+    public void setUp(){
         MockitoAnnotations.initMocks(this);
         spiThemesResourceProviderFactory = new SPIThemesResourceProviderFactory();
     }
 
     @Test
-    void testCreate() {
+    public void testCreate() {
         Assertions.assertNotEquals(spiThemesResourceProvider, spiThemesResourceProviderFactory.create(keycloakSession));
     }
 
     @Test
-    void testGetId() {
+    public void testGetId() {
         Assertions.assertEquals("", spiThemesResourceProviderFactory.getId());
     }
 }

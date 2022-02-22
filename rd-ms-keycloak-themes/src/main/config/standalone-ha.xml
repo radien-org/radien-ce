@@ -482,7 +482,7 @@
                 <staticMaxAge>-1</staticMaxAge>
                 <cacheThemes>false</cacheThemes>
                 <cacheTemplates>false</cacheTemplates>
-                <welcomeTheme>test</welcomeTheme>
+                <welcomeTheme>radien</welcomeTheme>
                 <default>${env.KEYCLOAK_DEFAULT_THEME:keycloak}</default>
                 <dir>${jboss.home.dir}/themes</dir>
             </theme>

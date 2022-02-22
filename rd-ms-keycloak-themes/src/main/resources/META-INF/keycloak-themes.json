@@ -9,16 +9,6 @@
         "login",
         "welcome"
       ]
-    },
-    {
-      "name":"test",
-      "types":[
-        "account",
-        "admin",
-        "email",
-        "login",
-        "welcome"
-      ]
     }
   ]
 }

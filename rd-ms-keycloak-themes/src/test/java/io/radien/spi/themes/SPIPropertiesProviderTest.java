@@ -25,7 +25,7 @@ import static io.radien.spi.themes.SPIPropertiesProvider.SPI_ROOT_THEME;
  * Test suit
  * SPIPropertiesProvider
  */
-class SPIPropertiesProviderTest {
+public class SPIPropertiesProviderTest {
     /**
      * Test for getter {@link SPIPropertiesProvider#getPropertyKey()}
      */

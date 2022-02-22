@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.Ku
 
-java -jar target/keycloakservicethemes-exec.jar
+java -jar target/keycloak-custom-themes-exec.jar
