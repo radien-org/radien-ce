@@ -19,8 +19,11 @@
 package io.radien.ms.ecm.client.util;
 
 import io.radien.ms.ecm.client.controller.ContentResource;
+import io.radien.ms.ecm.client.controller.I18NResource;
 import io.radien.ms.ecm.client.exception.ContentExceptionMapper;
+import io.radien.ms.ecm.client.providers.DeletePropertyFilterMessageBodyReader;
 import io.radien.ms.ecm.client.providers.EnterpriseContentMessageBodyReader;
+import io.radien.ms.ecm.client.providers.I18NPropertyMessageBodyReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.enterprise.context.RequestScoped;
@@ -34,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class ClientServiceUtil {
     private static final Logger log = LoggerFactory.getLogger(ClientServiceUtil.class);
 
-    public ContentResource getResourceClient(String urlStr) throws MalformedURLException {
+    public ContentResource getContentResourceClient(String urlStr) throws MalformedURLException {
         URL url = new URL(urlStr);
         log.info("Content Controller Resource Client Url - {}", urlStr);
         return RestClientBuilder
@@ -43,5 +46,17 @@ public class ClientServiceUtil {
                 .register(EnterpriseContentMessageBodyReader.class)
                 .register(ContentExceptionMapper.class)
                 .build(ContentResource.class);
+    }
+
+    public I18NResource getI18NResourceClient(String urlStr) throws MalformedURLException {
+        URL url = new URL(urlStr);
+        log.info("Content Controller Resource Client Url - {}", urlStr);
+        return RestClientBuilder
+                .newBuilder()
+                .baseUrl(url)
+                .register(I18NPropertyMessageBodyReader.class)
+                .register(DeletePropertyFilterMessageBodyReader.class)
+                .register(ContentExceptionMapper.class)
+                .build(I18NResource.class);
     }
 }

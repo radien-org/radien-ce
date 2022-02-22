@@ -75,7 +75,7 @@ public class ContentRESTServiceClientTest {
         MockitoAnnotations.initMocks(this);
         when(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ECM))
                 .thenReturn("http://a.url.com");
-        when(clientServiceUtil.getResourceClient(anyString())).thenReturn(contentResource);
+        when(clientServiceUtil.getContentResourceClient(anyString())).thenReturn(contentResource);
 
     }
 
@@ -99,7 +99,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testGetByViewIdAndLanguageException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
             .thenThrow(new MalformedURLException());
         contentClient.getByViewIdAndLanguage("viewId", "language");
     }
@@ -161,7 +161,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testGetFileContentException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.getFileContent("/absolute/path/to/file");
     }
@@ -202,7 +202,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testGetFolderContentsException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.getFolderContents("/absolute/path/to/file");
     }
@@ -226,7 +226,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testGetOrCreateDocumentsPathException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.getOrCreateDocumentsPath("relative/path");
     }
@@ -265,7 +265,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testGetContentVersionsException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.getContentVersions("/absolute/path");
     }
@@ -289,7 +289,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testDeleteVersionException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         SystemContentVersion contentVersion = new ContentVersion("1.0.0");
         contentClient.deleteVersion("/absolute/path", contentVersion);
@@ -314,7 +314,7 @@ public class ContentRESTServiceClientTest {
     @Test(expected = SystemException.class)
     public void testSaveContentException() throws MalformedURLException, SystemException {
         EnterpriseContent content = new GenericEnterpriseContent("name");
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.saveContent(content);
     }
@@ -335,7 +335,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testDeleteContentByPathException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.deleteContentByPath("relative/path");
     }
@@ -356,7 +356,7 @@ public class ContentRESTServiceClientTest {
 
     @Test(expected = SystemException.class)
     public void testDeleteContentByViewIDLanguageException() throws MalformedURLException, SystemException {
-        when(clientServiceUtil.getResourceClient(anyString()))
+        when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         contentClient.deleteContentByViewIDLanguage("viewId", "language");
     }

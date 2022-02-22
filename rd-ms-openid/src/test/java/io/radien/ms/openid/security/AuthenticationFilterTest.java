@@ -15,15 +15,16 @@
  */
 package io.radien.ms.openid.security;
 
+import io.radien.ms.openid.entities.Public;
 import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.FilterChain;
+import java.lang.reflect.Method;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -32,10 +33,14 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 /**
- * Class that aggregates UnitTest cases for AuthenticationFilter
+ * Class that aggregates UnitTest cases for AuthenticationRequestFilter
  */
 public class AuthenticationFilterTest {
 
@@ -65,59 +70,59 @@ public class AuthenticationFilterTest {
     }
 
     /**
-     * Test for method {@link AuthenticationFilter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+     * Test for method {@link AuthenticationFilter#filter(ContainerRequestContext)}
      * @throws ServletException defines a general exception a servlet can throw when it encounters difficulty.
      * @throws IOException if an exception occurs that interferes with the filter's normal operation
      */
     @Test
-    public void testDoFilter() throws ServletException, IOException {
-        PrintWriter printWriter = Mockito.mock(PrintWriter.class);
-        prePareMockObjectsForDoFilter(printWriter, "Bearer "+ accessToken, "a");
-        Mockito.verify(printWriter).write("Failed authentication..");
+    public void testDoFilter() throws ServletException, IOException, NoSuchMethodException {
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        prePareMockObjectsForDoFilter(requestContext, "Bearer "+ accessToken, "a");
+        Mockito.verify(requestContext).abortWith(any(Response.class));
     }
 
     /**
-     * Test for method {@link AuthenticationFilter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+     * Test for method {@link AuthenticationFilter#filter(ContainerRequestContext)}
      * @throws ServletException defines a general exception a servlet can throw when it encounters difficulty.
      * @throws IOException if an exception occurs that interferes with the filter's normal operation
      */
     @Test(expected = Test.None.class)
-    public void testDoFilterNullAuthorization() throws ServletException, IOException {
-        PrintWriter printWriter = Mockito.mock(PrintWriter.class);
-        prePareMockObjectsForDoFilter(printWriter,null, "v1/user/refresh");
+    public void testDoFilterNullAuthorization() throws ServletException, IOException, NoSuchMethodException {
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        prePareMockObjectsForDoFilter(requestContext,null, "v1/user/refresh");
     }
 
     /**
-     * Test for method {@link AuthenticationFilter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+     * Test for method {@link AuthenticationFilter#filter(ContainerRequestContext)}
      * @throws ServletException defines a general exception a servlet can throw when it encounters difficulty.
      * @throws IOException if an exception occurs that interferes with the filter's normal operation
      */
     @Test(expected = Test.None.class)
-    public void testDoFilterAccessTokenIsNotBearer() throws ServletException, IOException {
-        PrintWriter printWriter = Mockito.mock(PrintWriter.class);
-        prePareMockObjectsForDoFilter(printWriter, "asdrf17651", "service/v1/health");
+    public void testDoFilterAccessTokenIsNotBearer() throws ServletException, IOException, NoSuchMethodException {
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        prePareMockObjectsForDoFilter(requestContext, "asdrf17651", "service/v1/health");
     }
 
     /**
-     * Test for method {@link AuthenticationFilter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+     * Test for method {@link AuthenticationFilter#filter(ContainerRequestContext)}
      * @throws ServletException defines a general exception a servlet can throw when it encounters difficulty.
      * @throws IOException if an exception occurs that interferes with the filter's normal operation
      */
     @Test(expected = Test.None.class)
-    public void testDoFilterServiceInfoURI() throws ServletException, IOException {
-        PrintWriter printWriter = Mockito.mock(PrintWriter.class);
-        prePareMockObjectsForDoFilter(printWriter, "asdrf", "service/v1/info");
+    public void testDoFilterServiceInfoURI() throws ServletException, IOException, NoSuchMethodException {
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        prePareMockObjectsForDoFilter(requestContext, "asdrf", "service/v1/info");
     }
 
     /**
-     * Test for method {@link AuthenticationFilter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+     * Test for method {@link AuthenticationFilter#filter(ContainerRequestContext)}
      * @throws ServletException defines a general exception a servlet can throw when it encounters difficulty.
      * @throws IOException if an exception occurs that interferes with the filter's normal operation
      */
     @Test(expected = Test.None.class)
-    public void testDoFilterJWSVerifierFalse() throws ServletException, IOException {
-        PrintWriter printWriter = Mockito.mock(PrintWriter.class);
-        prePareMockObjectsForDoFilter(printWriter, "Bearer " + accessToken, "v1/user/refresh");
+    public void testDoFilterJWSVerifierFalse() throws ServletException, IOException, NoSuchMethodException {
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        prePareMockObjectsForDoFilter(requestContext, "Bearer " + accessToken, "v1/user/refresh");
 
     }
 
@@ -134,18 +139,18 @@ public class AuthenticationFilterTest {
      * @throws ServletException defines a general exception a servlet can throw when it encounters difficulty.
      * @throws IOException if an exception occurs that interferes with the filter's normal operation
      */
-    private void prePareMockObjectsForDoFilter(PrintWriter printWriter, String authToken, String reqURI) throws ServletException, IOException {
-        target.init(null);
+    private void prePareMockObjectsForDoFilter(ContainerRequestContext requestContext, String authToken, String reqURI) throws ServletException, IOException, NoSuchMethodException {
         ServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ResourceInfo resourceInfo = Mockito.mock(ResourceInfo.class);
+        Method mockMethod = Mockito.mock(Method.class);
+        doReturn(false).when(mockMethod).isAnnotationPresent(Public.class);
+        when(resourceInfo.getResourceMethod()).thenReturn(mockMethod);
         HttpServletRequest req = (HttpServletRequest) request;
-        ServletResponse response = Mockito.mock(HttpServletResponse.class);
-        HttpServletResponse resp = (HttpServletResponse) response;
-        FilterChain chain = Mockito.mock(FilterChain.class);
+        setInternalState(target, "resourceInfo", resourceInfo);
+        setInternalState(target, "httpRequest", req);
         when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(authToken);
         when(req.getRequestURI()).thenReturn(reqURI);
-        when(resp.getWriter()).thenReturn(printWriter);
-        target.doFilter(request,response,chain);
-        target.destroy();
+        target.filter(requestContext);
     }
 
 }

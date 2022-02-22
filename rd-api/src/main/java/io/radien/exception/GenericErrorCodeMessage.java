@@ -54,6 +54,7 @@ public enum GenericErrorCodeMessage {
     INIT_CONNECTION_TIME_REBOOT("G15", "init.connection.time.reboot", "Connection was opened {0} since last reboot {1}"),
     ENTITY_ID_NULL("G16", "entity.id.null", "{0} id was null. Skipped"),
     INVALID_VALUE_FOR_PARAMETER("G17", "invalid.value.for.parameter", "Invalid value for parameter %s"),
+    BAD_REQUEST("G18", "invalid.request", "Invalid Request"),
 
     /**
      * Tenant Business Error Code Messages
@@ -186,7 +187,11 @@ public enum GenericErrorCodeMessage {
     ERROR_GET_OR_CREATE_DOCUMENTS_PATH("CMS8", "error.cms.documents.get.create.path", "Error getting or creating documents path"),
     ERROR_SAVING_CONTENT("CMS8", "error.cms.content.saving", "Error saving enterprise content"),
     ERROR_RETRIEVING_RESULT("CMS9", "error.cms.retrieve.result", "Result not retrieved correctly from CMS System. Please check CMS logs for the error message"),
-    ERROR_DELETING_VERSION("CMS10", "error.cms.delete.version", "Could not delete version %s of %s");
+    ERROR_DELETING_VERSION("CMS10", "error.cms.delete.version", "Could not delete version %s of %s"),
+    ERROR_RETRIEVING_TRANSLATION("I18N1", "error.i18n.retrieve.translation", "Could not retrieve translation %s for %s"),
+    ERROR_SAVING_I18N_PROPERTY("I18N2", "error.i18n.save.property", "Could not save I18N Property"),
+    ERROR_RETRIEVING_I18N_PROPERTY("I18N3", "error.i18n.retrieve.property", "Could not retrieve I18N Property %s"),
+    ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES("I18N4", "error.i18n.retrieve.application.properties", "Could not retrieve I18N Properties for %s");
 
 
 

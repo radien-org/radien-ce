@@ -22,6 +22,7 @@ import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.PermissionIllegalArgumentException;
 import io.radien.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
 import io.radien.ms.permissionmanagement.client.services.PermissionResourceClient;
 import io.radien.ms.permissionmanagement.model.PermissionEntity;
@@ -39,6 +40,7 @@ import java.util.List;
  * @author Newton Carvalho
  */
 @RequestScoped
+@Authenticated
 public class PermissionResource implements PermissionResourceClient {
 
 	@Inject

@@ -30,6 +30,7 @@ import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.controller.ContentResource;
 import io.radien.ms.ecm.client.entities.DeleteContentFilter;
+import io.radien.ms.openid.entities.Authenticated;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import javax.inject.Inject;
 import java.util.List;
 import software.amazon.awssdk.utils.StringUtils;
 
+@Authenticated
 public class ContentResourceClient implements ContentResource {
 
     private static final Logger log = LoggerFactory.getLogger(ContentResourceClient.class);

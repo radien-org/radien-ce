@@ -56,6 +56,11 @@ public enum SystemVariables {
     OLD_PASSWORD("oldPassword", "Old Password"),
     NEW_PASSWORD("newPassword", "New Password"),
     CONFIRM_NEW_PASSWORD("confirmNewPassword", "Confirm New Password"),
+    KEY("key", "Key"),
+    APPLICATION("application", "Application"),
+    TRANSLATIONS("translations", "Translations"),
+    LANGUAGE("language", "Language"),
+    VALUE("value", "Value"),
     GENERIC_ERROR_MESSAGE_CODE("code", "code"),
     GENERIC_ERROR_MESSAGE_KEY("key", "key"),
     GENERIC_ERROR_MESSAGE_MESSAGE("message", "message");

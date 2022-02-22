@@ -15,6 +15,7 @@
  */
 package io.radien.ms.tenantmanagement.service;
 
+import io.radien.ms.openid.entities.Authenticated;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -37,6 +38,7 @@ import java.util.List;
  * @author Nuno Santana
  */
 @RequestScoped
+@Authenticated
 public class ContractResource implements ContractResourceClient {
 
 	private static final Logger log = LoggerFactory.getLogger(ContractResource.class);

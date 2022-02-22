@@ -20,6 +20,7 @@ import io.radien.api.model.role.SystemRoleSearchFilter;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.services.RoleResourceClient;
@@ -41,6 +42,7 @@ import java.util.List;
  */
 @Path("role")
 @RequestScoped
+@Authenticated
 public class RoleResource implements RoleResourceClient {
 
     @Inject
