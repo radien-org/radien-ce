@@ -17,13 +17,15 @@ package io.radien.spi.themes;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
 import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Test suit
@@ -45,11 +47,11 @@ public class SPIThemesResourceProviderFactoryTest {
 
     @Test
     public void testCreate() {
-        Assertions.assertNotEquals(spiThemesResourceProvider, spiThemesResourceProviderFactory.create(keycloakSession));
+        assertNotEquals(spiThemesResourceProvider, spiThemesResourceProviderFactory.create(keycloakSession));
     }
 
     @Test
     public void testGetId() {
-        Assertions.assertEquals("", spiThemesResourceProviderFactory.getId());
+        assertEquals("", spiThemesResourceProviderFactory.getId());
     }
 }

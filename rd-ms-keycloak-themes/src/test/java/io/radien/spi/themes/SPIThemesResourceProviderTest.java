@@ -16,33 +16,27 @@
 package io.radien.spi.themes;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test suit
  * SPIThemesResourceProvider
  */
-@RunWith(MockitoJUnitRunner.class)
 public class SPIThemesResourceProviderTest {
     private static final Logger log = LoggerFactory.getLogger(SPIThemesResourceProviderTest.class);
 

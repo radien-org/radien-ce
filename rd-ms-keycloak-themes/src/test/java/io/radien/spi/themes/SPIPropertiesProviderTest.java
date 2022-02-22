@@ -15,11 +15,12 @@
  */
 package io.radien.spi.themes;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import static io.radien.spi.themes.SPIPropertiesProvider.CMS_API_MESSAGES;
 import static io.radien.spi.themes.SPIPropertiesProvider.SPI_ROOT_THEME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Test suit
@@ -30,8 +31,8 @@ public class SPIPropertiesProviderTest {
      * Test for getter {@link SPIPropertiesProvider#getPropertyKey()}
      */
     @Test
-    void testGetPropertyCMS_API_MESSAGES() {
-        Assertions.assertEquals("cms.api.messages", CMS_API_MESSAGES
+    public void testGetPropertyCMS_API_MESSAGES() {
+        assertEquals("cms.api.messages", CMS_API_MESSAGES
                 .getPropertyKey());
     }
 
@@ -39,8 +40,8 @@ public class SPIPropertiesProviderTest {
      * Test for getter {@link SPIPropertiesProvider#getDefaultValue()}
      */
     @Test
-    void testGetPropertySPI_ROOT_THEME() {
-        Assertions.assertNotEquals("<theme/>", SPI_ROOT_THEME
+    public void testGetPropertySPI_ROOT_THEME() {
+        assertNotEquals("<theme/>", SPI_ROOT_THEME
                 .getDefaultValue());
     }
 }
