@@ -17,31 +17,33 @@ package io.radien.spi.themes;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Locale;
-import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Test suit
- * SPIThemesResourceProvider
- */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ URL.class })
 public class SPIThemesResourceProviderTest {
     private static final Logger log = LoggerFactory.getLogger(SPIThemesResourceProviderTest.class);
 
     @InjectMocks
-    @Spy
     SPIThemesResourceProvider spiThemesResourceProvider;
     @Mock
     KeycloakSession keycloakSession;
@@ -54,15 +56,24 @@ public class SPIThemesResourceProviderTest {
 
     @Test
     public void testGetMessage() throws Exception {
-        int responseCode = urlOpenConnection(SPIPropertiesProvider.CMS_API_MESSAGES.getDefaultValue());
-        if(responseCode != 200){
-            assertEquals(new Properties(), spiThemesResourceProvider.getMessages("", new Locale("en" )));
+        class UrlWrapper {
+
+            final URL url;
+
+            public UrlWrapper(String spec) throws MalformedURLException {
+                url = new URL(spec);
+            }
+
+            public URLConnection openConnection() throws IOException {
+                return url.openConnection();
+            }
         }
 
-        if(responseCode == 200){
-            spiThemesResourceProvider.getMessages("", new Locale("en" ));
-        }
-
+        UrlWrapper url = Mockito.mock(UrlWrapper.class);
+        HttpURLConnection huc = Mockito.mock(HttpURLConnection.class);
+        PowerMockito.when(url.openConnection()).thenReturn(huc);
+        assertTrue(url.openConnection() instanceof HttpURLConnection);
+        spiThemesResourceProvider.getMessages("",new Locale("en"));
     }
 
     @Test
@@ -74,27 +85,5 @@ public class SPIThemesResourceProviderTest {
     public void testGetResourceAsStream(){
         assertNull(spiThemesResourceProvider.getResourceAsStream( "theme/radien/login" ));
     }
-
-    private int urlOpenConnection(String urlToValidate) {
-        HttpURLConnection httpURLConnection = null;
-        int responseCode = 0;
-
-        try {
-            URL url = new URL(urlToValidate);
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.connect();
-            responseCode = httpURLConnection.getResponseCode();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        } finally {
-            if (httpURLConnection != null) {
-                httpURLConnection.disconnect();
-            }
-        }
-
-        return responseCode;
-    }
-
 
 }
