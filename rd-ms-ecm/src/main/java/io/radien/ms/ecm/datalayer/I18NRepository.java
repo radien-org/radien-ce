@@ -29,13 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import javax.enterprise.context.RequestScoped;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
 
-@RequestScoped
+@Stateless
 public class I18NRepository {
     private static final String FIELD_KEY = "key";
     private static final String FIELD_APPLICATION = "application";
