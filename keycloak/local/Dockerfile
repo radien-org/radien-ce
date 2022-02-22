@@ -13,5 +13,5 @@ FROM quay.io/keycloak/keycloak:16.1.1
 
 # Deploy Keycloak custom themes
 COPY ../../rd-ms-keycloak-themes/target/keycloak-custom-themes.jar /opt/jboss/keycloak/standalone/deployments/
-COPY ../../rd-ms-keycloak-customization/src/main/config/standalone.xml /opt/jboss/keycloak/standalone/configuration/standalone.xml
-COPY ../../rd-ms-keycloak-customization/src/main/config/standalone-ha.xml /opt/jboss/keycloak/standalone/configuration/standalone-ha.xml
+COPY ../../rd-ms-keycloak-themes/src/main/config/standalone.xml /opt/jboss/keycloak/standalone/configuration/standalone.xml
+COPY ../../rd-ms-keycloak-themes/src/main/config/standalone-ha.xml /opt/jboss/keycloak/standalone/configuration/standalone-ha.xml
