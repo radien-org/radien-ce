@@ -85,6 +85,8 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, String> map = mapper.readValue(result, Map.class);
                 properties.putAll(map);
+            }else{
+                log.info("HTTP URL Connection issue and refer Status code for more info:: {} ",status);
             }
         }catch (Exception e){
             log.error("Error in establishing HttpURLConnection:: {}", e.getMessage());
