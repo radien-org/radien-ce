@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.commons.io.IOUtils;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.theme.ThemeResourceProvider;
 import org.slf4j.Logger;
@@ -79,16 +80,19 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
         con.setRequestProperty(CONTENT_TYPE, "application/x-www-form-urlencoded");
         con.setRequestProperty(ACCEPT_LANGUAGE, locale.toLanguageTag());
         try{
-            int status = con.getResponseCode();
-            if(status == 200) {
+            int statusCode = con.getResponseCode();
+            if(statusCode == 200) {
                 String result = readFullyAsString(con.getInputStream(), "UTF-8");
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, String> map = mapper.readValue(result, Map.class);
                 properties.putAll(map);
             }else{
-                log.info("HTTP URL Connection issue and refer Status code for more info:: {} ",status);
+                InputStream inputStream = con.getErrorStream();
+                String inputStreamToString = IOUtils.toString(inputStream);
+                log.info("HTTP URL Connection issue with the status code: {} and message: {} ", statusCode,
+                        inputStreamToString);
             }
-        }catch (Exception e){
+        } catch (Exception e){
             log.error("Error in establishing HttpURLConnection:: {}", e.getMessage());
         }
         return properties;

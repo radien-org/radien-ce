@@ -16,9 +16,11 @@
 package io.radien.spi.themes;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +34,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -59,9 +62,7 @@ public class SPIThemesResourceProviderTest {
     public void testGetMessage() throws Exception {
         int responseCode = urlOpenConnection(SPIPropertiesProvider.CMS_API_MESSAGES.getDefaultValue());
         if(responseCode != 200){
-            Exception exception = assertThrows(Exception.class, () ->
-                    spiThemesResourceProvider.getMessages("", new Locale("en" )));
-            Assertions.assertEquals("Connection refused (Connection refused)", exception.getMessage());
+            assertEquals(new Properties(), spiThemesResourceProvider.getMessages("", new Locale("en" )));
         }
 
         if(responseCode == 200){
