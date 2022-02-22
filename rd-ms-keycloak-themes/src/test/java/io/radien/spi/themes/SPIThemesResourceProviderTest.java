@@ -17,28 +17,31 @@ package io.radien.spi.themes;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Locale;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.powermock.api.mockito.PowerMockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test suit
  * SPIThemesResourceProvider
  */
-class SPIThemesResourceProviderTest {
+@RunWith(MockitoJUnitRunner.class)
+public class SPIThemesResourceProviderTest {
+    private static final Logger log = LoggerFactory.getLogger(SPIThemesResourceProviderTest.class);
 
     @InjectMocks
     @Spy
@@ -46,45 +49,57 @@ class SPIThemesResourceProviderTest {
     @Mock
     KeycloakSession keycloakSession;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         spiThemesResourceProvider = new SPIThemesResourceProvider(keycloakSession);
     }
 
     @Test
-    void testGetMessage() throws Exception {
-        class UrlWrapper {
-
-            URL url;
-
-            public UrlWrapper(String spec) throws MalformedURLException {
-                url = new URL(spec);
-            }
-
-            public URLConnection openConnection() throws IOException {
-                return url.openConnection();
-            }
+    public void testGetMessage() throws Exception {
+        int responseCode = urlOpenConnection(SPIPropertiesProvider.CMS_API_MESSAGES.getDefaultValue());
+        if(responseCode != 200){
+            Exception exception = assertThrows(Exception.class, () ->
+                    spiThemesResourceProvider.getMessages("", new Locale("en" )));
+            Assertions.assertEquals("Connection refused (Connection refused)", exception.getMessage());
         }
 
-        UrlWrapper url = Mockito.mock(UrlWrapper.class);
-        HttpURLConnection huc = Mockito.mock(HttpURLConnection.class);
-        PowerMockito.when(url.openConnection()).thenReturn(huc);
-        assertTrue(url.openConnection() instanceof HttpURLConnection);
-
-
-        spiThemesResourceProvider.getMessages("messages",new Locale("en") );
+        if(responseCode == 200){
+            spiThemesResourceProvider.getMessages("", new Locale("en" ));
+        }
 
     }
 
     @Test
-    void testGetTemplate(){
+    public void testGetTemplate(){
         assertNull(spiThemesResourceProvider.getTemplate("theme/test/login"));
     }
 
     @Test
-    void testGetResourceAsStream(){
+    public void testGetResourceAsStream(){
         assertNull(spiThemesResourceProvider.getResourceAsStream("theme/test/login"));
     }
+
+    private int urlOpenConnection(String urlToValidate) {
+        HttpURLConnection httpURLConnection = null;
+        int responseCode = 0;
+
+        try {
+            URL url = new URL(urlToValidate);
+            httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setRequestMethod("GET");
+            httpURLConnection.connect();
+            responseCode = httpURLConnection.getResponseCode();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        } finally {
+            if (httpURLConnection != null) {
+                httpURLConnection.disconnect();
+            }
+        }
+
+        return responseCode;
+    }
+
 
 }
