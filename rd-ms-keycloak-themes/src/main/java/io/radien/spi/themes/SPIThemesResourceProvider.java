@@ -78,15 +78,16 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
         con.setRequestMethod("GET");
         con.setRequestProperty(CONTENT_TYPE, "application/x-www-form-urlencoded");
         con.setRequestProperty(ACCEPT_LANGUAGE, locale.toLanguageTag());
-        int status = con.getResponseCode();
-        if(status == 200) {
-            String result = readFullyAsString(con.getInputStream(), "UTF-8");
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> map = mapper.readValue(result, Map.class);
-            log.info("MAP:: {} -- {} {}", map.size(), "rd_doRegister", map.get("rd_doRegister"));
-            properties.putAll(map);
-        } else {
-            log.info("ERROR :: {}", status);
+        try{
+            int status = con.getResponseCode();
+            if(status == 200) {
+                String result = readFullyAsString(con.getInputStream(), "UTF-8");
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> map = mapper.readValue(result, Map.class);
+                properties.putAll(map);
+            }
+        }catch (Exception e){
+            log.error("Error in establishing HttpURLConnection:: {}", e.getMessage());
         }
         return properties;
     }
