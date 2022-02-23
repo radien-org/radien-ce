@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
@@ -35,17 +36,19 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ URL.class, SPIThemesResourceProviderFactory.class })
+@PrepareForTest({ URL.class, SPIThemesResourceProvider.class })
 public class SPIThemesResourceProviderTest {
-
+    @InjectMocks
     SPIThemesResourceProvider spiThemesResourceProvider;
+    @Mock
+    SPIThemesResourceProviderFactory spiThemesResourceProviderFactory;
     @Mock
     KeycloakSession keycloakSession;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        spiThemesResourceProvider = new SPIThemesResourceProvider(keycloakSession);
+        spiThemesResourceProviderFactory.create(keycloakSession);
     }
 
     @Test
@@ -63,9 +66,26 @@ public class SPIThemesResourceProviderTest {
         PowerMockito.when(urlConnection.getInputStream()).thenReturn(inputStream);
         PowerMockito.when(urlConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
 
-        assertEquals(0,spiThemesResourceProvider.getMessages("",new Locale("en")).size());
+        assertEquals(1,spiThemesResourceProvider.getMessages("",new Locale("en")).size());
     }
 
+    @Test
+    public void testGetMessageNoContent() throws Exception {
+        String content = "{\n" +
+                "  \"title\": \"Title\"\n" +
+                "}";
+        InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+        HttpURLConnection urlConnection = PowerMockito.mock(HttpURLConnection.class);
+        URL finalUrl = PowerMockito.mock(URL.class);
+
+
+        PowerMockito.whenNew(URL.class).withArguments(anyString()).thenReturn(finalUrl);
+        PowerMockito.when(finalUrl.openConnection()).thenReturn(urlConnection);
+        PowerMockito.when(urlConnection.getInputStream()).thenReturn(inputStream);
+        PowerMockito.when(urlConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NO_CONTENT);
+
+        assertEquals(0,spiThemesResourceProvider.getMessages("",new Locale("en")).size());
+    }
 
     @Test
     public void testGetTemplate(){
