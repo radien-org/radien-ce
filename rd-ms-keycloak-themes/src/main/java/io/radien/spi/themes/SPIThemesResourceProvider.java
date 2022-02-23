@@ -16,6 +16,7 @@
 package io.radien.spi.themes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.radien.spi.themes.exception.InvalidResponseException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,27 +76,32 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
         log.info(messageInfo);
         String uri = SPIPropertiesProvider.CMS_API_MESSAGES.getDefaultValue();
         URL url = new URL(uri);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        try {
+            properties.putAll(retrievePropertiesFromRemote((HttpURLConnection) url.openConnection(), locale));
+        } catch (IOException e){
+            log.error("Error in establishing HttpURLConnection:: {}", e.getMessage());
+        } catch (InvalidResponseException e) {
+            log.error("Error retrieving properties from {}", uri, e);
+        }
+        return properties;
+    }
+
+    public Map<String, String> retrievePropertiesFromRemote(HttpURLConnection con, Locale locale) throws IOException, InvalidResponseException {
         con.setRequestMethod("GET");
         con.setRequestProperty(CONTENT_TYPE, "application/x-www-form-urlencoded");
         con.setRequestProperty(ACCEPT_LANGUAGE, locale.toLanguageTag());
-        try{
-            int statusCode = con.getResponseCode();
-            if(statusCode == 200) {
-                String result = readFullyAsString(con.getInputStream(), "UTF-8");
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, String> map = mapper.readValue(result, Map.class);
-                properties.putAll(map);
-            }else{
-                InputStream inputStream = con.getErrorStream();
-                String inputStreamToString = IOUtils.toString(inputStream);
-                log.info("HTTP URL Connection issue with the status code: {} and message: {} ", statusCode,
-                        inputStreamToString);
-            }
-        } catch (Exception e){
-            log.error("Error in establishing HttpURLConnection:: {}", e.getMessage());
+
+        int statusCode = con.getResponseCode();
+        if(statusCode == 200) {
+            String result = readFullyAsString(con.getInputStream(), "UTF-8");
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(result, Map.class);
+        } else {
+            InputStream inputStream = con.getErrorStream();
+            String inputStreamToString = IOUtils.toString(inputStream);
+            throw new InvalidResponseException(
+                    String.format("HTTP URL Connection issue with the status code: %s and message: %s", statusCode, inputStreamToString));
         }
-        return properties;
     }
 
     public String readFullyAsString(InputStream inputStream, String encoding) throws IOException {

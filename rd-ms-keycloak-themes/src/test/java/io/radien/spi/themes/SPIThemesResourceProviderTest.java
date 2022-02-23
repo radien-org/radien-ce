@@ -13,88 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.radien.spi.themes;
 
+import io.radien.spi.themes.exception.InvalidResponseException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Locale;
-import org.junit.Before;
+import java.util.Map;
+import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.keycloak.models.KeycloakSession;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ URL.class, SPIThemesResourceProvider.class })
-public class SPIThemesResourceProviderTest {
-    @InjectMocks
-    SPIThemesResourceProvider spiThemesResourceProvider;
-    @Mock
-    SPIThemesResourceProviderFactory spiThemesResourceProviderFactory;
-    @Mock
-    KeycloakSession keycloakSession;
+public class SPIThemesResourceProviderTest extends TestCase {
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        spiThemesResourceProviderFactory.create(keycloakSession);
+    private SPIThemesResourceProvider target;
+
+    public void setUp() throws Exception {
+        KeycloakSession mockSession = mock(KeycloakSession.class);
+        target = new SPIThemesResourceProvider(mockSession);
     }
 
-    @Test
-    public void testGetMessage() throws Exception {
+    public void testGetTemplate() {
+        assertNull(target.getTemplate( "theme/radien/login" ));
+    }
+
+    public void testGetResourceAsStream() {
+        assertNull(target.getResourceAsStream( "theme/radien/login" ));
+    }
+
+    public void testRetrievePropertiesFromRemote() throws IOException, InvalidResponseException {
         String content = "{\n" +
                 "  \"title\": \"Title\"\n" +
                 "}";
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
-        HttpURLConnection urlConnection = PowerMockito.mock(HttpURLConnection.class);
-        URL finalUrl = PowerMockito.mock(URL.class);
+        HttpURLConnection mockConnection = mock(HttpURLConnection.class);
+        when(mockConnection.getResponseCode()).thenReturn(200);
+        when(mockConnection.getInputStream()).thenReturn(inputStream);
+        Map<String, String> resultMap = target.retrievePropertiesFromRemote(mockConnection, Locale.ENGLISH);
+        assertTrue(resultMap.containsKey("title"));
 
-
-        PowerMockito.whenNew(URL.class).withArguments(anyString()).thenReturn(finalUrl);
-        PowerMockito.when(finalUrl.openConnection()).thenReturn(urlConnection);
-        PowerMockito.when(urlConnection.getInputStream()).thenReturn(inputStream);
-        PowerMockito.when(urlConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
-
-        assertEquals(1,spiThemesResourceProvider.getMessages("",new Locale("en")).size());
     }
 
-    @Test
-    public void testGetMessageNoContent() throws Exception {
+    public void testRetrievePropertiesFromRemoteError() throws IOException, InvalidResponseException {
+        String error = "Sample error message";
+        InputStream inputStream = new ByteArrayInputStream(error.getBytes());
+        HttpURLConnection mockConnection = mock(HttpURLConnection.class);
+        when(mockConnection.getResponseCode()).thenReturn(500);
+        when(mockConnection.getErrorStream()).thenReturn(inputStream);
+        assertThrows(InvalidResponseException.class,
+                () -> target.retrievePropertiesFromRemote(mockConnection, Locale.ENGLISH));
+    }
+
+    public void testReadFullyAsString() throws IOException {
         String content = "{\n" +
                 "  \"title\": \"Title\"\n" +
                 "}";
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
-        HttpURLConnection urlConnection = PowerMockito.mock(HttpURLConnection.class);
-        URL finalUrl = PowerMockito.mock(URL.class);
-
-
-        PowerMockito.whenNew(URL.class).withArguments(anyString()).thenReturn(finalUrl);
-        PowerMockito.when(finalUrl.openConnection()).thenReturn(urlConnection);
-        PowerMockito.when(urlConnection.getInputStream()).thenReturn(inputStream);
-        PowerMockito.when(urlConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NO_CONTENT);
-
-        assertEquals(0,spiThemesResourceProvider.getMessages("",new Locale("en")).size());
+        String result = target.readFullyAsString(inputStream, "UTF-8");
+        assertTrue(result.contains("Title"));
     }
-
-    @Test
-    public void testGetTemplate(){
-        assertNull(spiThemesResourceProvider.getTemplate( "theme/radien/login" ));
-    }
-
-    @Test
-    public void testGetResourceAsStream(){
-        assertNull(spiThemesResourceProvider.getResourceAsStream( "theme/radien/login" ));
-    }
-
 }
