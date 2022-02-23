@@ -12,4 +12,4 @@ REM WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 REM See the License for the specific language governing permissions and
 REM limitations under the License.Ku
 
-java -jar target\keycloakservicethemes-exec.jar
+java -jar target/keycloak-custom-themes-exec.jar

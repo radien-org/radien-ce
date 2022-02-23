@@ -1,22 +1,12 @@
 {
   "themes":[
     {
-      "name":"rd-theme-v-0.0.1",
+      "name":"radien",
       "types":[
         "account",
         "admin",
         "email",
         "login",
-        "welcome"
-      ]
-    },
-    {
-      "name":"rd-theme-v-0.0.2",
-      "types":[
-        "account",
-        "admin",
-        "login",
-        "email",
         "welcome"
       ]
     }
