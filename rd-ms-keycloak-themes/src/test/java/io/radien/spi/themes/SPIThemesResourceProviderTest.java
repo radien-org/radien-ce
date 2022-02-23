@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.keycloak.models.KeycloakSession;
@@ -46,6 +47,11 @@ public class SPIThemesResourceProviderTest extends TestCase {
 
     public void testGetResourceAsStream() {
         assertNull(target.getResourceAsStream( "theme/radien/login" ));
+    }
+
+    public void testGetMessageIOException() throws IOException {
+        Properties result = target.getMessages("", Locale.ENGLISH);
+        assertEquals(0, result.size());
     }
 
     public void testRetrievePropertiesFromRemote() throws IOException, InvalidResponseException {
