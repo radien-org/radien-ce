@@ -34,6 +34,10 @@ public interface I18NRESTServiceAccess extends Appframeable {
 
     boolean save(SystemI18NProperty property) throws SystemException;
 
+    boolean deleteProperties(List<SystemI18NProperty> propertyList) throws SystemException;
+
+    boolean deleteAllByApplication(String application) throws SystemException;
+
     Optional<SystemI18NProperty> findByKeyAndApplication(String key, String application) throws SystemException;
 
     List<SystemI18NProperty> findAllByApplication(String application) throws SystemException;
