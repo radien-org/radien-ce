@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/tpl_oaf.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{i18NPropertyManager.init}"/>
+    </f:metadata>
+
+    <ui:define name="content" bootsFacesDecorator="true">
+        <link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+        <h:form id="propertyManagementTable" styleClass="tableContainer">
+            <b:row>
+                <h:panelGroup layout="block" styleClass="headerInformation">
+                    <h1><h:outputText value="#{msg.rd_propertyManagement} "/></h1>
+                    <hr />
+                </h:panelGroup>
+            </b:row>
+
+            <p:dataTable id="dataTable" value="#{i18NPropertyManager.dataModel}"
+                         var="property"
+                         paginator="true" rows="10"
+                         lazy="true"
+                         rowExpandMode="single"
+                         paginatorPosition="bottom"
+                         paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                         rowsPerPageTemplate="5,10,20,50"
+                         styleClass = "tableDesign">
+                <p:column headerText="#{msg.rd_i18n_key}" sortBy="#{property.key}">
+                    <h:outputText value="#{property.key}"/>
+                </p:column>
+
+                <p:column headerText="#{msg.rd_i18n_application}" sortBy="#{property.application}">
+                    <h:outputText value="#{property.application}"/>
+                </p:column>
+
+                <p:column headerText="#{msg.rd_i18n_translations}">
+                    <p:rowToggler/>
+                </p:column>
+                <p:ajax event="rowToggle" listener="#{i18NPropertyManager.onRowExpand}"/>
+
+                <p:rowExpansion>
+                    <ui:include src="translationManagement.xhtml">
+                        <ui:param name="property" value="#{i18NPropertyManager.selectedProperty}"/>
+                        <ui:param name="deleteRendered" value="#{true}"></ui:param>
+                    </ui:include>
+                </p:rowExpansion>
+            </p:dataTable>
+            <b:buttonGroup>
+                <b:commandButton id="refresh" value="#{msg.refreshValues}"
+                                 ajax="false"
+                                 iconAwesome="fa-refresh"
+                                 icon-spin="true"
+                                 tooltip="#{msg.refreshTooltip}"
+                                 actionListener="#{i18NPropertyManager.init}"
+                                 immediate="true" update="propertyManagementTable"
+                                 auto-update="true"/>
+                <b:commandButton value="#{msg.rd_add_i18nproperty}"
+                                 action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}"
+                                 iconAwesome="fa-cube"
+                                 immediate="true"
+                                 tooltip="#{msg.create_new_record}"
+                                 iconAlign="center">
+                    <f:param name="navigationNode" value="newProperty" />
+                    <f:attribute name="navigationNode" value="newProperty" />
+                </b:commandButton>
+            </b:buttonGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>

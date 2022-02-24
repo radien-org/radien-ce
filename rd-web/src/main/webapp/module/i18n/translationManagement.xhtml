@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <b:container>
+        <p:dataTable id="dataTableTranslation"
+                     value="#{property.translations}"
+                     var="translation"
+                     rows="5"
+                     emptyMessage="#{msg.rd_translations_not_found}"
+                     paginator="true"
+                     selectionPageOnly="false"
+                     paginatorPosition="bottom"
+                     paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+                     currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                     rowsPerPageTemplate="5,10,20"
+                     widgetVar="translationVar"
+                     editable="true"
+                     styleClass = "tableDesign">
+            <p:ajax event="rowEdit" listener="#{i18NPropertyManager.onRowEdit}" update="sys-messages"/>
+            <p:ajax event="rowEditCancel" listener="#{i18NPropertyManager.onRowCancel}" update="sys-messages"/>
+            <p:column headerText="#{msg.rd_translation_language}" styleClass="no-visible-header-checkbox">
+                <p:cellEditor>
+                    <f:facet name="output"><h:outputText value="#{translation.language}"/></f:facet>
+                    <f:facet name="input"><p:inputText value="#{translation.language}" style="width:100%"/></f:facet>
+                </p:cellEditor>
+            </p:column>
+
+            <p:column headerText="#{msg.rd_translation_value}">
+                <p:cellEditor>
+                    <f:facet name="output"><h:outputText value="#{translation.value}"/></f:facet>
+                    <f:facet name="input"><p:inputText value="#{translation.value}" style="width:100%"/></f:facet>
+                </p:cellEditor>
+            </p:column>
+            <p:column style="width:35px">
+                <p:rowEditor/>
+            </p:column>
+            <p:column style="width:150px">
+                <b:commandButton icon="trash"
+                                 action="#{i18NPropertyManager.removeTranslation(property, translation)}"
+                                 update="dataTableTranslation sys-messages"/>
+            </p:column>
+        </p:dataTable>
+        <b:buttonGroup>
+            <b:commandButton value="#{msg.save}"
+                             tooltip="#{msg.saveChanges}"
+                             iconAwesome="fa-save"
+                             action="#{i18NPropertyManager.updateProperty(property)}"
+                             update="dataTableTranslation sys-messages"/>
+            <b:commandButton value="#{msg.add_new_row}"
+                             iconAwesome="fa-plus"
+                             immediate="true"
+                             action="#{i18NPropertyManager.addNewTranslationRow(property)}"
+                             update="dataTableTranslation sys-messages"/>
+            <b:commandButton value="#{msg.delete}"
+                             tooltip="#{msg.rd_delete_property}"
+                             iconAwesome="fa-trash"
+                             action="#{i18NPropertyManager.deleteProperty(property)}"
+                             update="dataTableTranslation sys-messages"
+                             rendered="#{deleteRendered}"/>
+        </b:buttonGroup>
+    </b:container>
+</ui:composition>

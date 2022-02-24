@@ -26,6 +26,12 @@
 			});
 		</script>
 		<b:container>
+			<h:panelGroup layout="block" id="sys-messages">
+				<b:growl showDetail="true" globalOnly="true" placementFrom="top" placementAlign="right"
+						 timer="2000" allowDismiss="true" severity="info,fatal"/>
+				<b:growl showDetail="true" globalOnly="true" placementFrom="top"
+						 placementAlign="right" timer="" allowDismiss="true" severity="warn,error"/>
+			</h:panelGroup>
 			<h:form>
 				<b:navBar brand-img="#{resource['gfx:logos/trademark.svg']}" brandHref="#" position="top" sticky="true">
 					<b:navbarLinks>
@@ -71,6 +77,11 @@
 											  rendered="#{authzChecker.hasPermissionAccess('Tenant','Update',null)}">
 								<f:param name="navigationNode" value="tenants" />
 								<f:attribute name="navigationNode" value="tenants" />
+							</b:navCommandLink>
+							<b:navCommandLink value="#{msg.rd_properties_menu}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}"
+											  rendered="#{authzChecker.hasPermissionAccess('I18N','Update',null)}">
+								<f:param name="navigationNode" value="properties" />
+								<f:attribute name="navigationNode" value="properties" />
 							</b:navCommandLink>
 						</b:dropMenu>
 
