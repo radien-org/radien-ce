@@ -20,6 +20,7 @@ package io.radien.ms.ecm.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
@@ -48,6 +49,25 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
     private ClientServiceUtil clientServiceUtil;
     @Inject
     private OAFAccess oaf;
+
+    @Override
+    public Page<? extends SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        return get(() -> {
+            try {
+                I18NResource client = getClient();
+                Response response = client.getAll(application, pageNo, pageSize, sortBy, isAscending);
+                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    return I18NPropertyMapper.mapToPage((InputStream) response.getEntity());
+                } else {
+                    String entity = response.readEntity(String.class);
+                    log.error(entity);
+                    return new Page<>();
+                }
+            } catch (IOException | ParseException e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES.toString(application), e);
+            }
+        });
+    }
 
     @Override
     public String getTranslation(String key, String language, String application) throws SystemException {

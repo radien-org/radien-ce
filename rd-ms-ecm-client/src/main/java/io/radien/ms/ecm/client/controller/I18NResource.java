@@ -22,8 +22,10 @@ import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
 import java.io.Serializable;
 
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,11 +45,19 @@ import io.radien.ms.ecm.client.entities.GlobalHeaders;
 public interface I18NResource extends Serializable{
 
     @GET
+    Response getAll(@QueryParam("application") String application,
+                    @DefaultValue("1") @QueryParam("pageNo") int pageNo,
+                    @DefaultValue("10") @QueryParam("pageSize") int pageSize,
+                    @QueryParam("sortBy") List<String> sortBy,
+                    @DefaultValue("true") @QueryParam("asc") boolean isAscending);
+
+    @GET
+    @Path("/property")
     Response findByKeyAndApplication(@QueryParam("key") String key,
                                      @QueryParam("application") String application);
 
     @GET
-    @Path("/application")
+    @Path("/properties")
     Response findAllByApplication(@QueryParam("application") String application);
 
     @DELETE
@@ -57,7 +67,7 @@ public interface I18NResource extends Serializable{
     Response saveProperty(SystemI18NProperty property);
 
     @GET
-    @Path("/localize")
+    @Path("/translation")
     Response getMessage(@QueryParam("key") String key,
              @QueryParam("application") String application,
              @QueryParam("language") String language);

@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.client.services;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.ms.ecm.client.factory.I18NFactory;
 import java.io.IOException;
@@ -41,6 +42,13 @@ public class I18NPropertyMapper {
         JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(is, StandardCharsets.UTF_8));
 
         return I18NFactory.convertJSONObject(obj);
+    }
+
+    public static Page<? extends SystemI18NProperty> mapToPage(InputStream is) throws IOException, ParseException {
+        JSONParser jsonParser = new JSONParser();
+        JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+        return I18NFactory.convertJsonToPage(obj);
     }
 
     public static List<SystemI18NProperty> mapArray(InputStream is) throws IOException, ParseException {

@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.datalayer;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.model.i18n.SystemI18NTranslation;
 import io.radien.exception.SystemException;
@@ -134,4 +135,31 @@ public class I18NRepository {
         return collection.count(query) != 0;
     }
 
+    public Page<SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        return jongoConnectionHandler.apply((input -> {
+            String query = "{}";
+            if(application != null) {
+                query = new JongoQueryBuilder()
+                        .addEquality(FIELD_APPLICATION, application)
+                        .build();
+            }
+            List<SystemI18NProperty> results = new ArrayList<>();
+            MongoCursor<I18NProperty> entities = input
+                    .find(query)
+                    .skip((pageNo > 0 ? ( ( pageNo - 1 ) * pageSize ) : 0))
+                    .limit(pageSize)
+                    //.sort()
+                    .as(I18NProperty.class);
+            entities.forEach(results::add);
+
+            Page<SystemI18NProperty> pageResult = new Page<>();
+            pageResult.setResults(results);
+            pageResult.setTotalResults(Math.toIntExact(input.count(query)));
+            pageResult.setTotalPages(pageResult.getTotalResults() % pageSize==0 ?
+                    pageResult.getTotalResults()/pageSize : pageResult.getTotalResults()/pageSize+1);
+            pageResult.setCurrentPage(pageNo);
+
+            return pageResult;
+        }), I18NProperty.class.getSimpleName());
+    }
 }

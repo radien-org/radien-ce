@@ -19,12 +19,14 @@
 package io.radien.ms.ecm.client.factory;
 
 import io.radien.api.SystemVariables;
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.model.i18n.SystemI18NTranslation;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
 import io.radien.ms.ecm.client.entities.i18n.I18NTranslation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -54,6 +56,23 @@ public class I18NFactory {
         }
 
         return result;
+    }
+
+    public static Page<SystemI18NProperty> convertJsonToPage(JSONObject page) {
+        int currentPage = Integer.parseInt(Objects.requireNonNull(
+                        tryGetJsonProperty(page, SystemVariables.PAGE_CURRENT.getFieldName())));
+        JSONArray results = (JSONArray) page.get("results");
+        int totalPages = Integer.parseInt(Objects.requireNonNull(
+                tryGetJsonProperty(page, SystemVariables.PAGE_TOTALS.getFieldName())));
+        int totalResults = Integer.parseInt(Objects.requireNonNull(
+                tryGetJsonProperty(page, SystemVariables.PAGE_TOTAL_RESULTS.getFieldName())));
+
+        ArrayList<SystemI18NProperty> pageResults = new ArrayList<>();
+
+        if(results != null) {
+            results.forEach(obj -> pageResults.add(convertJSONObject((JSONObject) obj)));
+        }
+        return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 
     public static SystemI18NTranslation convertTranslationJSONObject(JSONObject json) {
