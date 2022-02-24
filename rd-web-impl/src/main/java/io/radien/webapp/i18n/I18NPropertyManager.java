@@ -25,6 +25,7 @@ import io.radien.ms.ecm.client.entities.i18n.I18NTranslation;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
@@ -73,7 +74,16 @@ public class I18NPropertyManager extends AbstractManager {
     }
 
     public void deleteProperty(SystemI18NProperty property) {
-        JSFUtil.addErrorMessage("NOT YET IMPLEMENTED");
+        try {
+            if(i18nService.deleteProperties(Collections.singletonList(property))) {
+                JSFUtil.addSuccessMessage(null, "rd_delete_success", property.getKey());
+            } else {
+                JSFUtil.addErrorMessage(null, "rd_delete_error", property.getKey());
+            }
+        } catch (SystemException e) {
+            log.error("Error deleting I18NProperty", e);
+            JSFUtil.addErrorMessage(null, "rd_delete_error", property.getKey());
+        }
     }
 
     public void removeTranslation(SystemI18NProperty property, SystemI18NTranslation translation) {
@@ -82,10 +92,6 @@ public class I18NPropertyManager extends AbstractManager {
         } else {
             JSFUtil.addErrorMessage("rd_property_not_found");
         }
-    }
-
-    public String goToCreatePage() {
-        return "newProperty";
     }
 
     public void onRowCancel(RowEditEvent<SystemI18NProperty> event) {
