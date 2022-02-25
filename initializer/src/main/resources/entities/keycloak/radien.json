@@ -1070,14 +1070,9 @@
     "strictTransportSecurity" : "max-age=31536000; includeSubDomains"
   },
   "smtpServer" : {
-    "password" : "invalidEmailAndPass",
-    "starttls" : "true",
-    "auth" : "true",
-    "port" : "587",
-    "host" : "smtp.office365.com",
-    "from" : "a@b.de",
-    "ssl" : "",
-    "user" : "a@b.de"
+    "port" : "1025",
+    "host" : "host.docker.internal",
+    "from" : "admin@dev-mailhog.com"
   },
   "loginTheme" : "keycloak",
   "adminTheme" : "keycloak",
@@ -1795,7 +1790,7 @@
     "clientOfflineSessionIdleTimeout" : "0",
     "cibaInterval" : "5"
   },
-  "keycloakVersion" : "15.0.1",
+  "keycloakVersion" : "16.1.1",
   "userManagedAccessAllowed" : false,
   "clientProfiles" : {
     "profiles" : [ ]

@@ -128,7 +128,6 @@ public class OpenIdConnectFilter implements Filter {
                 }
             }
             onAuthSuccess(request, response);
-            chain.doFilter(request, response);
         }
         catch (URISyntaxException | AuthorizationCodeRequestException | TokenRequestException | InvalidAccessTokenException e) {
             log.error("An internal error occurred while trying to authenticate the user.", e);

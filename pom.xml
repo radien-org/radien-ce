@@ -153,6 +153,11 @@
 			<!-- radien modules -->
 			<dependency>
 				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-keycloak-themes</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
 				<artifactId>rd-api</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>

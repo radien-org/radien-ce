@@ -1,4 +1,4 @@
-FROM jboss/keycloak:15.0.1
+FROM quay.io/keycloak/keycloak:16.1.1
 #ENV KEYCLOAK_USER=raiden \
 #    KEYCLOAK_PASSWORD=brutality
 #    KEYCLOAK_IMPORT=/tmp/master.json
@@ -12,6 +12,11 @@ FROM jboss/keycloak:15.0.1
 # kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user raiden brutality
 
 # Deploy Keycloak custom themes
-# Refer the file in the microservice rd-ms-keycloak-themes/README.md
-
-
+## Configure Custom Welcome theme
+ENV KEYCLOAK_WELCOME_THEME=radien
+## Disable Theme Chacing
+RUN sed -i -E "s/(<staticMaxAge>)2592000(<\/staticMaxAge>)/\1\-1\2/" /opt/jboss/keycloak/standalone/configuration/standalone.xml
+RUN sed -i -E "s/(<cacheThemes>)true(<\/cacheThemes>)/\1false\2/" /opt/jboss/keycloak/standalone/configuration/standalone.xml
+RUN sed -i -E "s/(<cacheTemplates>)true(<\/cacheTemplates>)/\1false\2/" /opt/jboss/keycloak/standalone/configuration/standalone.xml
+## Copy Built custom theme
+COPY ../../rd-ms-keycloak-themes/target/keycloak-custom-themes.jar /opt/jboss/keycloak/standalone/deployments/
