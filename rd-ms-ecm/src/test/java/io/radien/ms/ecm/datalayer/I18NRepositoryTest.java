@@ -87,7 +87,7 @@ public class I18NRepositoryTest {
     @Before
     public void initMocks() throws SystemException {
         setInternalState(jongoConnectionHandler, "mongoDB", "testMongoDB");
-        setInternalState(jongoConnectionHandler, "mongoUri", "localhost:27018");
+        setInternalState(jongoConnectionHandler, "mongoUri", "mongodb://localhost:27018");
         when(jongoConnectionHandler.apply(any(), anyString())).thenCallRealMethod();
     }
 

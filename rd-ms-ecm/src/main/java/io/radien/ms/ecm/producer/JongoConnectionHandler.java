@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.producer;
 
+import com.mongodb.MongoClientURI;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.util.Function;
 import javax.enterprise.context.ApplicationScoped;
@@ -37,11 +38,12 @@ public class JongoConnectionHandler {
     @ConfigProperty(name = "oak.mongo.db")
     private String mongoDB;
     @Inject
-    @ConfigProperty(name = "mongo.uri")
+    @ConfigProperty(name = "oak.mongo.uri")
     private String mongoUri;
     
     public <R> R apply(Function<MongoCollection, R> function, String collectionName) throws SystemException {
-        try (MongoClient client = new MongoClient(mongoUri)) {
+        MongoClientURI mongoClientURI = new MongoClientURI(mongoUri);
+        try (MongoClient client = new MongoClient(mongoClientURI)) {
             DB db = client.getDB(mongoDB);
             Jongo jongo = new Jongo(db);
             
