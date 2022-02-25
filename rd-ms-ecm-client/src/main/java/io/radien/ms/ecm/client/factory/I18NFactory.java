@@ -61,7 +61,7 @@ public class I18NFactory {
     public static Page<SystemI18NProperty> convertJsonToPage(JSONObject page) {
         int currentPage = Integer.parseInt(Objects.requireNonNull(
                         tryGetJsonProperty(page, SystemVariables.PAGE_CURRENT.getFieldName())));
-        JSONArray results = (JSONArray) page.get("results");
+        JSONArray results = (JSONArray) page.get(SystemVariables.PAGE_RESULTS.getFieldName());
         int totalPages = Integer.parseInt(Objects.requireNonNull(
                 tryGetJsonProperty(page, SystemVariables.PAGE_TOTALS.getFieldName())));
         int totalResults = Integer.parseInt(Objects.requireNonNull(
