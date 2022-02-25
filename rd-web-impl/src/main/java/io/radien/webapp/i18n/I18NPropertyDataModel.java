@@ -40,6 +40,7 @@ public class I18NPropertyDataModel extends LazyDataModel<SystemI18NProperty> {
 
     public I18NPropertyDataModel(I18NRESTServiceAccess service) {
         this.service = service;
+        datasource = new ArrayList<>();
     }
 
     @Override
@@ -57,7 +58,7 @@ public class I18NPropertyDataModel extends LazyDataModel<SystemI18NProperty> {
         return String.format("%s%s", obj.getKey(), obj.getApplication());
     }
 
-    public Page<? extends SystemI18NProperty> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
+    private Page<SystemI18NProperty> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
         return service.getAll(null, (offset/pageSize) + 1, pageSize, null, true);
     }
 
@@ -65,16 +66,16 @@ public class I18NPropertyDataModel extends LazyDataModel<SystemI18NProperty> {
     public List<SystemI18NProperty> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
         long rowCount = 0L;
         try {
-            Page<? extends SystemI18NProperty> pagedInformation = getData(offset,pageSize,sortBy,filterBy);
+            Page<SystemI18NProperty> pagedInformation = getData(offset,pageSize,sortBy,filterBy);
 
             datasource = pagedInformation.getResults();
 
             rowCount = pagedInformation.getTotalResults();
+            setRowCount(Math.toIntExact(rowCount));
         } catch (SystemException e) {
             log.error(e.getMessage(),e);
         }
 
-        setRowCount(Math.toIntExact(rowCount));
 
         return datasource != null ? new ArrayList<>(datasource) : new ArrayList<>();
     }

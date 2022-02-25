@@ -52,7 +52,7 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
     private OAFAccess oaf;
 
     @Override
-    public Page<? extends SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    public Page<SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         return get(() -> {
             try {
                 I18NResource client = getClient();

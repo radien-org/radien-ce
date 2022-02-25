@@ -44,7 +44,7 @@ public class I18NPropertyMapper {
         return I18NFactory.convertJSONObject(obj);
     }
 
-    public static Page<? extends SystemI18NProperty> mapToPage(InputStream is) throws IOException, ParseException {
+    public static Page<SystemI18NProperty> mapToPage(InputStream is) throws IOException, ParseException {
         JSONParser jsonParser = new JSONParser();
         JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(is, StandardCharsets.UTF_8));
 

@@ -69,6 +69,9 @@ public class I18NPropertyManager extends AbstractManager {
     }
 
     public void addNewTranslationRow(SystemI18NProperty property) {
+        if(property.getTranslations() == null) {
+            property.setTranslations(new ArrayList<>());
+        }
         property.getTranslations().add(new I18NTranslation());
         JSFUtil.addSuccessMessage("rd_new_row_added");
     }

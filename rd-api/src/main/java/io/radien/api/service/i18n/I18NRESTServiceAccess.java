@@ -28,7 +28,7 @@ import java.util.Optional;
 
 public interface I18NRESTServiceAccess extends Appframeable {
 
-    Page<? extends SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
+    Page<SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 
     String getTranslation(String key, String language, String application) throws SystemException;
 
