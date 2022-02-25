@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.controller;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.exception.SystemException;
@@ -34,6 +35,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class I18NResourceClientTest {
@@ -55,6 +58,27 @@ public class I18NResourceClientTest {
         Response result = client.getMessage("key", "app", "en");
         assertEquals(Response.Status.OK.getStatusCode(), result.getStatusInfo().getStatusCode());
         assertEquals("value", result.readEntity(String.class));
+    }
+
+    @Test
+    public void testGetAll() throws SystemException {
+        List<SystemI18NProperty> propertyList = new ArrayList<>();
+        for(int i = 0; i < 2; i++) {
+            SystemI18NProperty property = new I18NProperty();
+            property.setKey("key" + i);
+            property.setApplication("application");
+            propertyList.add(property);
+        }
+        Page<SystemI18NProperty> resultPage = new Page<>();
+        resultPage.setTotalResults(2);
+        resultPage.setCurrentPage(1);
+        resultPage.setTotalPages(1);
+        resultPage.setResults(propertyList);
+        when(serviceAccess.getAll(eq("radien"), eq(1), eq(1), anyList(), eq(true)))
+                .thenReturn(resultPage);
+
+        Response result = client.getAll("radien", 1, 1, new ArrayList<>(), true);
+        assertEquals(Response.Status.OK.getStatusCode(), result.getStatusInfo().getStatusCode());
     }
 
     @Test

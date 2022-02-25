@@ -25,6 +25,7 @@
 //import de.flapdoodle.embed.mongo.config.Net;
 //import de.flapdoodle.embed.mongo.distribution.Version;
 //import de.flapdoodle.embed.process.runtime.Network;
+//import io.radien.api.entity.Page;
 //import io.radien.api.model.i18n.SystemI18NProperty;
 //import io.radien.api.model.i18n.SystemI18NTranslation;
 //import io.radien.exception.SystemException;
@@ -171,7 +172,34 @@
 //    }
 //
 //    @Test
-//    public void test008DeleteApplication() throws SystemException {
+//    public void test008GetAllFirstPage() throws SystemException {
+//        Page<SystemI18NProperty> results = repository.getAll("testApp", 1, 1, null, true);
+//        assertEquals(1, results.getCurrentPage());
+//        assertEquals(1, results.getResults().size());
+//        assertEquals(3, results.getTotalPages());
+//        assertEquals(3, results.getTotalResults());
+//    }
+//
+//    @Test
+//    public void test009GetAllLastPage() throws SystemException {
+//        Page<SystemI18NProperty> results = repository.getAll("testApp", 3, 1, null, true);
+//        assertEquals(3, results.getCurrentPage());
+//        assertEquals(1, results.getResults().size());
+//        assertEquals(3, results.getTotalPages());
+//        assertEquals(3, results.getTotalResults());
+//    }
+//
+//    @Test
+//    public void test010GetAllSingle() throws SystemException {
+//        Page<SystemI18NProperty> results = repository.getAll("testApp", 1, 100, null, true);
+//        assertEquals(1, results.getCurrentPage());
+//        assertEquals(3, results.getResults().size());
+//        assertEquals(1, results.getTotalPages());
+//        assertEquals(3, results.getTotalResults());
+//    }
+//
+//    @Test
+//    public void test011DeleteApplication() throws SystemException {
 //        repository.deleteApplication("testApp");
 //        List<SystemI18NProperty> propertyList = repository.findAllByApplication("testApp");
 //        assertTrue(propertyList.isEmpty());

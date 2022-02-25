@@ -30,7 +30,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
-import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -40,7 +39,7 @@ public class I18NPropertyManager extends AbstractManager {
     @Inject
     private I18NRESTServiceAccess i18nService;
 
-    private LazyDataModel<? extends SystemI18NProperty> dataModel;
+    private LazyDataModel<SystemI18NProperty> dataModel;
     private SystemI18NProperty selectedProperty;
     private SystemI18NProperty newProperty;
 
@@ -97,11 +96,11 @@ public class I18NPropertyManager extends AbstractManager {
         }
     }
 
-    public void onRowCancel(RowEditEvent<SystemI18NProperty> event) {
+    public void onRowCancel() {
         JSFUtil.addSuccessMessage("i18n_canceled_edit");
     }
 
-    public void onRowEdit(RowEditEvent<SystemI18NProperty> event) {
+    public void onRowEdit() {
         JSFUtil.addSuccessMessage("i18n_row_edited");
     }
 
@@ -109,11 +108,11 @@ public class I18NPropertyManager extends AbstractManager {
         selectedProperty = (SystemI18NProperty) rowToggleSystemProperty.getData();
     }
 
-    public LazyDataModel<? extends SystemI18NProperty> getDataModel() {
+    public LazyDataModel<SystemI18NProperty> getDataModel() {
         return dataModel;
     }
 
-    public void setDataModel(LazyDataModel<? extends SystemI18NProperty> dataModel) {
+    public void setDataModel(LazyDataModel<SystemI18NProperty> dataModel) {
         this.dataModel = dataModel;
     }
 

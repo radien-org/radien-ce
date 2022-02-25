@@ -35,8 +35,8 @@ public class I18NPropertyDataModel extends LazyDataModel<SystemI18NProperty> {
 
     private static final long serialVersionUID = -8872194189478081408L;
 
-    protected List<? extends SystemI18NProperty> datasource;
-    private I18NRESTServiceAccess service;
+    private List<? extends SystemI18NProperty> datasource;
+    private final I18NRESTServiceAccess service;
 
     public I18NPropertyDataModel(I18NRESTServiceAccess service) {
         this.service = service;
