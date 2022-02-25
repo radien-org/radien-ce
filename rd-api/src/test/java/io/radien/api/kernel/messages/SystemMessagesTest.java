@@ -18,13 +18,12 @@ package io.radien.api.kernel.messages;
 import org.junit.Assert;
 import org.junit.Test;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
+
 /**
  * Class that aggregates UnitTest cases for SystemMessages
  *
  * @author Rajesh Gavvala
  */
-@PrepareForTest(SystemMessages.class)
 public class SystemMessagesTest {
 
     /**

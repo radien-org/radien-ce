@@ -18,13 +18,11 @@ package io.radien.api;
 import org.junit.Assert;
 import org.junit.Test;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
 /**
  * Class that aggregates UnitTest cases for OAFProperties
  *
  * @author Rajesh Gavvala
  */
-@PrepareForTest(OAFProperties.class)
 public class OAFPropertiesTest {
     /**
      * Test enum values

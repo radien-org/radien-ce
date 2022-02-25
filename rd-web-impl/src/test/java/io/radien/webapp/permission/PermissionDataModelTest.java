@@ -22,7 +22,7 @@ import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.webapp.AbstractBaseJsfTester;
 import io.radien.webapp.DataModelEnum;
-import io.radien.webapp.JSFUtil;
+
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import javax.faces.application.FacesMessage;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.nullable;

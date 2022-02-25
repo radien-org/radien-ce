@@ -15,6 +15,7 @@
  */
 package io.radien.security.openid.filter;
 
+import io.radien.security.openid.config.OpenIdConfig;
 import io.radien.security.openid.context.SecurityContext;
 import io.radien.security.openid.utils.URLUtils;
 import java.io.IOException;
@@ -51,8 +52,7 @@ public class OpenIdURLChecker implements Filter {
     private SecurityContext securityContext;
 
     @Inject
-    @ConfigProperty(name="auth.privateContexts", defaultValue = "/module")
-    private String privateContexts;
+    private OpenIdConfig openIdConfig;
 
     /**
      * Where the interception takes place. The request will be checked,
@@ -113,7 +113,7 @@ public class OpenIdURLChecker implements Filter {
     protected List<String> getPrivateContextList() {
         List<String> privateContextList = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
-        for (String ctx:privateContexts.split(",")) {
+        for (String ctx:openIdConfig.getAuthPrivateContexts().split(",")) {
             if (ctx.trim().length() > 0) {
                 if (!ctx.startsWith("/")) {
                     sb.append("/");

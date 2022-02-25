@@ -26,7 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -36,7 +35,6 @@ import static org.mockito.Mockito.when;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
 public class BatchSummaryTest {
     @InjectMocks
     private BatchSummary batchSummary;

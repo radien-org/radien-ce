@@ -21,15 +21,18 @@ import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 import java.util.Optional;
-import junit.framework.TestCase;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -37,8 +40,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-public class KeycloakServiceTest extends TestCase {
+public class KeycloakServiceTest {
 
     @InjectMocks
     KeycloakService target;
@@ -49,11 +51,13 @@ public class KeycloakServiceTest extends TestCase {
     @Mock
     KeycloakClientFactory keycloakClientFactory;
 
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
     static String EMPTY_MOCK_RESPONSE = "";
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         when(keycloakClientFactory.getKeycloakClient()).thenReturn(client);
     }
 

@@ -24,7 +24,6 @@ import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.openid.entities.Principal;
 import java.util.Optional;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -32,15 +31,19 @@ import javax.ws.rs.core.Response;
 
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE;
 import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
@@ -55,8 +58,6 @@ import static org.mockito.Mockito.when;
 /**
  * @author Newton Carvalho
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
@@ -80,10 +81,17 @@ public class WebAuthorizationCheckerTest extends JSFUtilAndFaceContextMessagesTe
     @Mock
     PermissionRESTServiceAccess permissionRESTServiceAccess;
 
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
         handleJSFUtilAndFaceContextMessages();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+       destroy();
     }
 
     /**

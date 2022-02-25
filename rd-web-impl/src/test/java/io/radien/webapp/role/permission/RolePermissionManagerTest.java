@@ -43,14 +43,18 @@ import java.util.stream.Collectors;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.primefaces.event.ToggleEvent;
 
 import static org.junit.Assert.assertEquals;
@@ -72,9 +76,11 @@ import static org.mockito.Mockito.when;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+
 public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @InjectMocks
     private RolePermissionManager rolePermissionManager;
@@ -107,14 +113,21 @@ public class RolePermissionManagerTest extends JSFUtilAndFaceContextMessagesTest
 
     private static final int TOTAL_PERMISSION_RESULTS = 5;
 
+
+    @BeforeClass
+    public static void beforeClass(){
+        handleJSFUtilAndFaceContextMessages();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        destroy();
+    }
     /**
      * Prepares require objects when requires to invoke
      */
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
-
-        handleJSFUtilAndFaceContextMessages();
 
         systemRole = new Role();
         systemRole.setId(1L);

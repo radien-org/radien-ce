@@ -112,6 +112,16 @@ public class MSOAF implements OAFAccess {
     }
 
     /**
+     * OAF Configuration controller property getter
+     * @param cfg system properties configuration
+     * @return the system properties property key value as a string or the default value if property not present
+     */
+    @Override
+    public String getProperty(SystemProperties cfg, String defaultValue) {
+        return config.getOptionalValue(cfg.propKey(),String.class).orElse(defaultValue);
+    }
+
+    /**
      * Returns this application {@link ResourceBundle} object based on its name
      *
      * @param bundleName the name of the resourceBundle to return

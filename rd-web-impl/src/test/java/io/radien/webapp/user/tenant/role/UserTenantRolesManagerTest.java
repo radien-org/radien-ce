@@ -38,17 +38,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+
 import javax.faces.event.ValueChangeEvent;
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -67,8 +70,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+
 public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
@@ -96,14 +98,24 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
     Set<Long> assignableUserTenantRoles = new HashSet<>();
     Set<Long> unassignedUserTenantRoles = new HashSet<>();
 
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        handleJSFUtilAndFaceContextMessages();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        destroy();
+    }
+
     /**
      * Prepares require objects when requires to invoke
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        handleJSFUtilAndFaceContextMessages();
         initUserTenants();
 
         systemRoles = initSystemRole();

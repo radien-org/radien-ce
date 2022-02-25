@@ -29,16 +29,18 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.security.UserSession;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.primefaces.model.LazyDataModel;
 
 import javax.faces.application.FacesMessage;
@@ -60,8 +62,6 @@ import static org.mockito.Mockito.*;
  *
  * @author Bruno Gama
  **/
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class TenantDataModelTest {
 
     @InjectMocks
@@ -83,12 +83,29 @@ public class TenantDataModelTest {
 
     Tenant tenant;
 
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
+    }
+    @AfterClass
+    public static final void destroy(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
+    }
+
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);

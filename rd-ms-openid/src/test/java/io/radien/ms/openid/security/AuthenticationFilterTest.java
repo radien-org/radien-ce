@@ -19,25 +19,26 @@ import io.radien.ms.openid.entities.Public;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
-import static org.powermock.reflect.Whitebox.setInternalState;
+
 
 /**
  * Class that aggregates UnitTest cases for AuthenticationRequestFilter
@@ -61,12 +62,19 @@ public class AuthenticationFilterTest {
     @InjectMocks
     AuthenticationFilter target;
 
+    @Mock
+    private ResourceInfo resourceInfo;
+    @Mock
+    private HttpServletRequest httpRequest;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
     /**
      * Prepares required mock objects
      */
     @Before
     public void setUp(){
-        MockitoAnnotations.initMocks(this);
     }
 
     /**
@@ -140,16 +148,12 @@ public class AuthenticationFilterTest {
      * @throws IOException if an exception occurs that interferes with the filter's normal operation
      */
     private void prePareMockObjectsForDoFilter(ContainerRequestContext requestContext, String authToken, String reqURI) throws ServletException, IOException, NoSuchMethodException {
-        ServletRequest request = Mockito.mock(HttpServletRequest.class);
-        ResourceInfo resourceInfo = Mockito.mock(ResourceInfo.class);
         Method mockMethod = Mockito.mock(Method.class);
         doReturn(false).when(mockMethod).isAnnotationPresent(Public.class);
         when(resourceInfo.getResourceMethod()).thenReturn(mockMethod);
-        HttpServletRequest req = (HttpServletRequest) request;
-        setInternalState(target, "resourceInfo", resourceInfo);
-        setInternalState(target, "httpRequest", req);
-        when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(authToken);
-        when(req.getRequestURI()).thenReturn(reqURI);
+
+        when(httpRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(authToken);
+        when(httpRequest.getRequestURI()).thenReturn(reqURI);
         target.filter(requestContext);
     }
 

@@ -15,10 +15,12 @@
  */
 package io.radien.security.openid.filter;
 
+import io.radien.security.openid.config.OpenIdConfig;
 import io.radien.security.openid.context.OpenIdSecurityContext;
 import io.radien.security.openid.context.SecurityContext;
 import io.radien.security.openid.model.UserDetails;
 import java.io.IOException;
+import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -27,8 +29,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -36,25 +43,27 @@ import static org.mockito.Mockito.mock;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.reflect.Whitebox.setInternalState;
 
 /**
  * Test class for {@link OpenIdURLCheckerTest}
  */
 public class OpenIdURLCheckerTest {
 
-    OpenIdURLChecker openIdURLChecker;
-    SecurityContext securityContext;
+    @InjectMocks
+    private OpenIdURLChecker openIdURLChecker;
+    @Mock
+    private SecurityContext securityContext;
+    @Mock
+    private OpenIdConfig openIdConfig;
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     final String privateContexts = "/module,/user,/test";
     final String authTriggerURI = "https://localhost:8443/web/login";
 
     @Before
     public void setUp() {
-        openIdURLChecker = new OpenIdURLChecker();
-        securityContext = new OpenIdSecurityContext();
-        setInternalState(openIdURLChecker, "securityContext", securityContext);
-        setInternalState(openIdURLChecker, "privateContexts", privateContexts);
+        when(openIdConfig.getAuthPrivateContexts()).thenReturn(privateContexts);
     }
 
     /**
@@ -121,7 +130,7 @@ public class OpenIdURLCheckerTest {
         FilterChain filterChain = mock(FilterChain.class);
 
         UserDetails userDetails = mock(UserDetails.class);
-        this.securityContext.setUserDetails(userDetails);
+        when(securityContext.getUserDetails()).thenReturn(userDetails);
 
         when(request.getServletPath()).thenReturn("/module/tenants");
 

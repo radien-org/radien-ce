@@ -17,7 +17,6 @@ package io.radien.exception;
 
 import javax.ws.rs.core.Response;
 import org.junit.Test;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,7 +25,6 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Rajesh Gavvala
  */
-@PrepareForTest(GenericErrorMessagesToResponseMapper.class)
 public class GenericErrorMessagesToResponseMapperTest {
 
     /**

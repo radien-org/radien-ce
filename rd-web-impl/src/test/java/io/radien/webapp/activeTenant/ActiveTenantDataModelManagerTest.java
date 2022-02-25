@@ -21,6 +21,7 @@ import com.ocpsoft.pretty.faces.config.mapping.UrlMapping;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
+
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
@@ -35,17 +36,23 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 import java.io.IOException;
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -73,8 +80,6 @@ import static org.mockito.Mockito.doThrow;
  *
  * @author Bruno Gama
  **/
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class, PrettyContext.class})
 public class ActiveTenantDataModelManagerTest {
 
     @InjectMocks
@@ -94,12 +99,34 @@ public class ActiveTenantDataModelManagerTest {
 
     private FacesContext facesContext;
 
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
+    private static MockedStatic<PrettyContext> prettyContextMockedStatic;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
+        prettyContextMockedStatic = Mockito.mockStatic(PrettyContext.class);
+    }
+    @AfterClass
+    public static final void destroy(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
+        if(prettyContextMockedStatic!=null) {
+            prettyContextMockedStatic.close();
+        }
+    }
+
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
@@ -174,7 +201,6 @@ public class ActiveTenantDataModelManagerTest {
      */
     @Test
     public void testIsOnUsersListingScreenOK() {
-        PowerMockito.mockStatic(PrettyContext.class);
         PrettyContext prettyContext = mock(PrettyContext.class);
         UrlMapping urlMapping = mock(UrlMapping.class);
 
@@ -192,7 +218,6 @@ public class ActiveTenantDataModelManagerTest {
      */
     @Test
     public void testIsOnUsersListingScreenNOK() {
-        PowerMockito.mockStatic(PrettyContext.class);
         PrettyContext prettyContext = mock(PrettyContext.class);
         UrlMapping urlMapping = mock(UrlMapping.class);
 
@@ -210,7 +235,7 @@ public class ActiveTenantDataModelManagerTest {
      */
     @Test
     public void testingFlowWhenComingFromUsersScreen() throws IOException, SystemException {
-        PowerMockito.mockStatic(PrettyContext.class);
+
         PrettyContext prettyContext = mock(PrettyContext.class);
         UrlMapping urlMapping = mock(UrlMapping.class);
 
@@ -223,7 +248,6 @@ public class ActiveTenantDataModelManagerTest {
         String expectedRedirectionPath = mockedContextPath + DataModelEnum.USERS_DISPATCH_PATH.getValue();
         final List<?> urlRedirection = new ArrayList();
 
-        PowerMockito.mockStatic(FacesContext.class);
         FacesContext fc = mock(FacesContext.class);
         ExternalContext ec = mock(ExternalContext.class);
         Flash flash = mock(Flash.class);

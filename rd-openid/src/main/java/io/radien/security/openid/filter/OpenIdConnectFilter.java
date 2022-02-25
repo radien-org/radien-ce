@@ -39,6 +39,7 @@ import com.nimbusds.oauth2.sdk.token.Tokens;
 import io.radien.exception.AuthorizationCodeRequestException;
 import io.radien.exception.InvalidAccessTokenException;
 import io.radien.exception.TokenRequestException;
+import io.radien.security.openid.config.OpenIdConfig;
 import io.radien.security.openid.context.SecurityContext;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
 import io.radien.security.openid.model.UserDetails;
@@ -79,24 +80,7 @@ public class OpenIdConnectFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(OpenIdConnectFilter.class);
 
     @Inject
-    @ConfigProperty(name="SCRIPT_CLIENT_ID_VALUE")
-    private String clientId;
-
-    @Inject
-    @ConfigProperty(name="SCRIPT_CLIENT_SECRET_VALUE")
-    private String clientSecret;
-
-    @Inject
-    @ConfigProperty(name="AUTH_ACCESS_TOKEN_URI")
-    private String accessTokenUri;
-
-    @Inject
-    @ConfigProperty(name="AUTH_USER_AUTHORIZATION_URI")
-    private String userAuthorizationUri;
-
-    @Inject
-    @ConfigProperty(name="auth.redirectUri")
-    private String redirectUri;
+    private OpenIdConfig openIdConfig;
 
     @Inject
     private SecurityContext securityContext;
@@ -160,8 +144,8 @@ public class OpenIdConnectFilter implements Filter {
      * @throws IOException in case of error during redirection to the Identity Id server
      */
     protected void requestAuthzCode(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws URISyntaxException, IOException {
-        URI authEndpoint = new URI(this.userAuthorizationUri);
-        ClientID clientID = new ClientID(this.clientId);
+        URI authEndpoint = new URI(openIdConfig.getUserAuthorizationUri());
+        ClientID clientID = new ClientID(openIdConfig.getClientId());
         Scope scope = new Scope("openid", "email", "profile");
 
         URI callback = new URI(getCallbackURI());
@@ -224,11 +208,11 @@ public class OpenIdConnectFilter implements Filter {
             URI callback = new URI(this.getCallbackURI());
             AuthorizationGrant codeGrant = new AuthorizationCodeGrant(code, callback);
 
-            ClientID clientID = new ClientID(this.clientId);
-            Secret clientSecretObj = new Secret(this.clientSecret);
+            ClientID clientID = new ClientID(openIdConfig.getClientId());
+            Secret clientSecretObj = new Secret(openIdConfig.getClientSecret());
             ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecretObj);
 
-            URI tokenEndpoint = new URI(this.accessTokenUri);
+            URI tokenEndpoint = new URI(openIdConfig.getAccessTokenUri());
             TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant);
 
             TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
@@ -302,7 +286,7 @@ public class OpenIdConnectFilter implements Filter {
      * @return String that corresponds to Authorization Code Callback
      */
     protected String getCallbackURI() {
-        return this.redirectUri + AUTH_CALLBACK_URI;
+        return openIdConfig.getRedirectUri() + AUTH_CALLBACK_URI;
     }
 
     /**

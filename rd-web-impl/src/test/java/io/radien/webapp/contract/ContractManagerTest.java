@@ -33,16 +33,21 @@ import java.util.Date;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
@@ -52,8 +57,6 @@ import static org.mockito.Mockito.doReturn;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class ContractManagerTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
@@ -69,14 +72,22 @@ public class ContractManagerTest extends JSFUtilAndFaceContextMessagesTest {
     Date ct_date_start;
     Date ct_date_end;
 
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        handleJSFUtilAndFaceContextMessages();
+    }
+    @AfterClass
+    public static final void afterClass(){
+        destroy();
+    }
     /**
      * Constructs mock object
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-        handleJSFUtilAndFaceContextMessages();
-
         systemContract = new Contract();
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime nowEnd = LocalDateTime.of(2100, 10, 10, 00, 00,00);

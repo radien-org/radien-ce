@@ -20,17 +20,14 @@ import com.nimbusds.jose.Payload;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationErrorResponse;
-import com.nimbusds.oauth2.sdk.AuthorizationRequest;
 import com.nimbusds.oauth2.sdk.AuthorizationResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationSuccessResponse;
 import com.nimbusds.oauth2.sdk.ErrorObject;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.ResponseMode;
-import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenResponse;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
-import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
@@ -39,6 +36,7 @@ import com.nimbusds.oauth2.sdk.token.Tokens;
 import io.radien.exception.AuthorizationCodeRequestException;
 import io.radien.exception.InvalidAccessTokenException;
 import io.radien.exception.TokenRequestException;
+import io.radien.security.openid.config.OpenIdConfig;
 import io.radien.security.openid.context.OpenIdSecurityContext;
 import io.radien.security.openid.context.SecurityContext;
 import io.radien.security.openid.model.OpenIdConnectUserDetails;
@@ -57,14 +55,18 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static io.radien.api.SystemVariables.ACCESS_TOKEN;
 import static io.radien.api.SystemVariables.REFRESH_TOKEN;
@@ -81,27 +83,52 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.reflect.Whitebox.setInternalState;
 
 /**
  * Test class for {@link OpenIdConnectFilter}
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ ClientID.class, Scope.class, State.class, AuthorizationRequest.class,
-        TokenResponse.class, AuthorizationResponse.class, JWSObject.class})
 public class OpenIdConnectFilterTest {
 
     @InjectMocks
-    OpenIdConnectFilter openIdConnectFilter;
+    private OpenIdConnectFilter openIdConnectFilter;
+    @Mock
+    private OpenIdConfig openIdConfig;
+    @Mock
     private SecurityContext securityContext;
+    @Mock
+    private TokenValidator tokenValidator;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    private static MockedStatic<TokenResponse> tokenResponseMockedStatic;
+    private static MockedStatic<AuthorizationResponse> authorizationResponseMockedStatic;
+    private static MockedStatic<JWSObject> jwsObjectMockedStatic;
+    @BeforeClass
+    public static void setUpClass(){
+        tokenResponseMockedStatic = Mockito.mockStatic(TokenResponse.class);
+        authorizationResponseMockedStatic = Mockito.mockStatic(AuthorizationResponse.class);
+        jwsObjectMockedStatic = Mockito.mockStatic(JWSObject.class);
+    }
+    @AfterClass
+    public static void destroy(){
+        tokenResponseMockedStatic.close();
+        authorizationResponseMockedStatic.close();
+        jwsObjectMockedStatic.close();
+    }
 
     @Before
     public void setUp() {
-        openIdConnectFilter = new OpenIdConnectFilter();
-        setInternalState(openIdConnectFilter, "userAuthorizationUri", "http://test.net/auth");
-        setInternalState(openIdConnectFilter, "clientId", "1234");
-        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+
+        when(openIdConfig.getUserAuthorizationUri()).thenReturn("http://test.net/auth");
+        when(openIdConfig.getClientId()).thenReturn("1234");
+        String tokenEndPoint = "http://opendid.net/token";
+        String callbackUri = "http://radien.net/web/auth";
+        when(openIdConfig.getAccessTokenUri()).thenReturn(tokenEndPoint);
+        when(openIdConfig.getRedirectUri()).thenReturn(callbackUri);
+        when(openIdConfig.getClientSecret()).thenReturn("1d2e3f4g5h");
+
+
     }
 
     /**
@@ -118,14 +145,8 @@ public class OpenIdConnectFilterTest {
         HttpSession session = mock(HttpSession.class);
 
         when(request.getSession()).thenReturn(session);
-
-//        securityContext = mock(SecurityContext.class);
-
-        String authEndPoint = "http://opendid.net/auth";
+        String authEndPoint = "http://test.net/auth";
         String callbackUri = "http://radien.net/web/auth";
-        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
-        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
-//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -156,13 +177,11 @@ public class OpenIdConnectFilterTest {
 
         String tokenEndPoint = "http://opendid.net/token";
         String callbackUri = "http://radien.net/web/auth";
-        setInternalState(openIdConnectFilter, "accessTokenUri", tokenEndPoint);
-        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
-        setInternalState(openIdConnectFilter, "clientId", "1234");
-        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
-
-        PowerMockito.mockStatic(TokenResponse.class);
+//        setInternalState(openIdConnectFilter, "accessTokenUri", tokenEndPoint);
+//        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
+//        setInternalState(openIdConnectFilter, "clientId", "1234");
+//        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         AccessToken accessToken = new BearerAccessToken("1111111");
         RefreshToken refreshToken = new RefreshToken("22222222");
@@ -191,13 +210,12 @@ public class OpenIdConnectFilterTest {
 
         String tokenEndPoint = "http://opendid.net/token";
         String callbackUri = "http://radien.net/web/auth";
-        setInternalState(openIdConnectFilter, "accessTokenUri", tokenEndPoint);
-        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
-        setInternalState(openIdConnectFilter, "clientId", "1234");
-        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "accessTokenUri", tokenEndPoint);
+//        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
+//        setInternalState(openIdConnectFilter, "clientId", "1234");
+//        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
-        PowerMockito.mockStatic(TokenResponse.class);
 
         ErrorObject error = new ErrorObject("ATR1", "Error processing request", 400);
         TokenResponse tokenResponse = new TokenErrorResponse(error);
@@ -224,15 +242,11 @@ public class OpenIdConnectFilterTest {
         String authCodeValue = "49321ddf-4fd5-456b-b06f-40a9b77059dd.e1557f6f-992a-47ad-b119-c2601cf1abec.0716628c-5101-4e80-b302-f0ee69a06532";
         AuthorizationCode authorizationCode = new AuthorizationCode(authCodeValue);
 
-        String tokenEndPoint = "http://opendid.net/token";
-        String callbackUri = "http://radien.net/web/auth";
-        setInternalState(openIdConnectFilter, "accessTokenUri", tokenEndPoint);
-        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
-        setInternalState(openIdConnectFilter, "clientId", "1234");
-        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
-        PowerMockito.mockStatic(TokenResponse.class);
+//        setInternalState(openIdConnectFilter, "clientId", "1234");
+//        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+
 
         String msg = "Parsing error";
         when(TokenResponse.parse(any(HTTPResponse.class))).
@@ -279,8 +293,6 @@ public class OpenIdConnectFilterTest {
      */
     @Test
     public void testSaveInformation() {
-        SecurityContext securityContext = new OpenIdSecurityContext();
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         HttpSession session = mock(HttpSession.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -292,7 +304,7 @@ public class OpenIdConnectFilterTest {
         Tokens tokens = new Tokens(accessToken, refreshToken);
 
         openIdConnectFilter.saveInformation(userDetails, tokens, request);
-        assertEquals(userDetails, securityContext.getUserDetails());
+        verify(securityContext).setUserDetails(userDetails);
 
         ArgumentCaptor<String> sessionAttr = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> objectValue = ArgumentCaptor.forClass(String.class);
@@ -348,13 +360,12 @@ public class OpenIdConnectFilterTest {
         TokenValidator tokenValidator = mock(TokenValidator.class);
         doNothing().when(tokenValidator).validate(any(JWSObject.class));
 
-        setInternalState(openIdConnectFilter, "tokenValidator", tokenValidator);
+//        setInternalState(openIdConnectFilter, "tokenValidator", tokenValidator);
 
         HashMap<String, Object> map = new HashMap<>();
 
         JWSObject jwsObject = mock(JWSObject.class);
         Payload payload = new Payload(map);
-        PowerMockito.mockStatic(JWSObject.class);
         when(JWSObject.parse(anyString())).thenReturn(jwsObject);
         when(jwsObject.getPayload()).thenReturn(payload);
 
@@ -373,7 +384,6 @@ public class OpenIdConnectFilterTest {
 
         String msg = "Error parsing token String chain ";
 
-        PowerMockito.mockStatic(JWSObject.class);
         when(JWSObject.parse(anyString())).thenThrow(new java.text.ParseException(msg, 0));
 
         AccessToken accessToken = new BearerAccessToken(accessTokenRawValue);
@@ -397,9 +407,8 @@ public class OpenIdConnectFilterTest {
 
         SecurityContext securityContext = mock(SecurityContext.class);
         when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
-        PowerMockito.mockStatic(AuthorizationResponse.class);
 
         AuthorizationResponse authorizationResponse = new AuthorizationSuccessResponse(
                 new URI("test"), authorizationCode, accessToken, state, responseMode);
@@ -429,9 +438,8 @@ public class OpenIdConnectFilterTest {
 
         SecurityContext securityContext = mock(SecurityContext.class);
         when(session.getAttribute(OIDC_STATE)).thenReturn("222");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
-        PowerMockito.mockStatic(AuthorizationResponse.class);
 
         AuthorizationResponse authorizationResponse = new AuthorizationSuccessResponse(
                 new URI("test"), authorizationCode, accessToken, state, responseMode);
@@ -450,7 +458,6 @@ public class OpenIdConnectFilterTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("test"));
 
-        PowerMockito.mockStatic(AuthorizationResponse.class);
 
         when(AuthorizationResponse.parse(any(URI.class))).thenThrow(new ParseException("error parsing"));
         openIdConnectFilter.processAuthCodeCallback(request);
@@ -471,9 +478,8 @@ public class OpenIdConnectFilterTest {
 
         SecurityContext securityContext = mock(SecurityContext.class);
         when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
-        PowerMockito.mockStatic(AuthorizationResponse.class);
 
         ErrorObject errorObject = new ErrorObject("ERR1", "Error processing callback", 400);
         AuthorizationResponse authorizationResponse = new AuthorizationErrorResponse(
@@ -522,13 +528,13 @@ public class OpenIdConnectFilterTest {
         when(request.getSession()).thenReturn(session);
         when(request.getRequestURI()).thenReturn("/login");
 
-        String authEndPoint = "http://opendid.net/auth";
+        String authEndPoint = "http://test.net/auth";
         String callbackUri = "http://radien.net/web/auth";
         securityContext = mock(SecurityContext.class);
 
-        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
-        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
+//        setInternalState(openIdConnectFilter, "redirectUri", callbackUri);
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -564,10 +570,10 @@ public class OpenIdConnectFilterTest {
         when(request.getServerName()).thenReturn("int.radien.io");
 
         String authEndPoint = "http://opendid.net/auth";
-        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
+//        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
 
         when(session.getAttribute(ACCESS_TOKEN.getFieldName())).thenReturn("11111");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
 
         ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -607,13 +613,13 @@ public class OpenIdConnectFilterTest {
         String redirectUri = "https://int.radien.io/web/login";
         String authCallbackUri = redirectUri + "/auth";
 
-        setInternalState(openIdConnectFilter, "tokenValidator", tokenValidator);
-        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
-        setInternalState(openIdConnectFilter, "accessTokenUri", tokenEndPoint);
-        setInternalState(openIdConnectFilter, "redirectUri", redirectUri);
-        setInternalState(openIdConnectFilter, "clientId", "1234");
-        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "tokenValidator", tokenValidator);
+//        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
+//        setInternalState(openIdConnectFilter, "accessTokenUri", tokenEndPoint);
+//        setInternalState(openIdConnectFilter, "redirectUri", redirectUri);
+//        setInternalState(openIdConnectFilter, "clientId", "1234");
+//        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
         when(request.getContextPath()).thenReturn("/web");
         ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -621,9 +627,7 @@ public class OpenIdConnectFilterTest {
         State state = new State("1");
         when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
 
-        PowerMockito.mockStatic(TokenResponse.class);
-        PowerMockito.mockStatic(AuthorizationResponse.class);
-        PowerMockito.mockStatic(JWSObject.class);
+
 
         AuthorizationCode authorizationCode = new AuthorizationCode("1111111");
         AccessToken accessToken = new BearerAccessToken("1111111");
@@ -681,18 +685,17 @@ public class OpenIdConnectFilterTest {
         String redirectUri = "https://int.radien.io/web/login";
         String authCallbackUri = redirectUri + "/auth";
 
-        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
-        setInternalState(openIdConnectFilter, "redirectUri", redirectUri);
-        setInternalState(openIdConnectFilter, "clientId", "1234");
-        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
-        setInternalState(openIdConnectFilter, "securityContext", securityContext);
+//        setInternalState(openIdConnectFilter, "userAuthorizationUri", authEndPoint);
+//        setInternalState(openIdConnectFilter, "redirectUri", redirectUri);
+//        setInternalState(openIdConnectFilter, "clientId", "1234");
+//        setInternalState(openIdConnectFilter, "clientSecret", "1d2e3f4g5h");
+//        setInternalState(openIdConnectFilter, "securityContext", securityContext);
         when(request.getContextPath()).thenReturn("/web");
 
         // Parameters to retrieve authorization code and callback processing
         State state = new State("1");
         when(session.getAttribute(OIDC_STATE)).thenReturn(state.getValue());
 
-        PowerMockito.mockStatic(AuthorizationResponse.class);
 
         ErrorObject errorObject = new ErrorObject("invalid_grant", "Invalid Grant",
                 400, new URI(authCallbackUri));

@@ -23,24 +23,23 @@ import io.radien.api.service.permission.ResourceRESTServiceAccess;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 
 import io.radien.webapp.DataModelEnum;
-import io.radien.webapp.JSFUtil;
+
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.primefaces.event.SelectEvent;
 
 import static org.junit.Assert.assertEquals;
@@ -55,9 +54,10 @@ import static org.mockito.Mockito.when;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+
 public class ResourceDataModelTest extends JSFUtilAndFaceContextMessagesTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
     @InjectMocks
     private ResourceDataModel resourceDataModel;
 
@@ -68,15 +68,21 @@ public class ResourceDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
     SystemResource systemResource;
+    @BeforeClass
+    public static void beforeClass(){
+        handleJSFUtilAndFaceContextMessages();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        destroy();
+    }
 
     /**
      * Constructs mock object
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-        handleJSFUtilAndFaceContextMessages();
-
         systemResource = new Resource();
         systemResource.setId(1L);
         systemResource.setName("testResource");
