@@ -3,7 +3,6 @@ package io.radien.security.openid.config;
 import io.radien.api.KeycloakConfigs;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
