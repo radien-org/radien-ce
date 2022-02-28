@@ -32,6 +32,11 @@
 				<version>${version.maven-war-plugin}</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<archive>
+						<manifestEntries>
+							<distname>${project.build.finalName}</distname>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 			
@@ -89,6 +94,11 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-openid</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-config-lib</artifactId>
+		</dependency>
+
 		<!-- Microprofile -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>

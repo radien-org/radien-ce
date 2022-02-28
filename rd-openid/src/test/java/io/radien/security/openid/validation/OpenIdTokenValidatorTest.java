@@ -33,12 +33,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
+import io.radien.security.openid.config.OpenIdConfig;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -47,13 +51,10 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.reflect.Whitebox.setInternalState;
 
 /**
  * Test for class {@link OpenIdTokenValidator}
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({UrlJwkProvider.class, RSASSAVerifier.class})
 public class OpenIdTokenValidatorTest {
     private String issuer;
     private String jwkUrl;
@@ -63,17 +64,22 @@ public class OpenIdTokenValidatorTest {
     @InjectMocks
     private OpenIdTokenValidator openIdTokenValidator;
 
+    @Mock
+    private OpenIdConfig openIdConfig;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        openIdTokenValidator = new OpenIdTokenValidator();
         issuer = "test123";
         clientId = "12334-2223-2222";
         jwkUrl = "http://radien.io/";
 
         provider = mock(JwkProvider.class);
-        setInternalState(openIdTokenValidator, "provider", provider);
-        setInternalState(openIdTokenValidator, "issuer", issuer);
-        setInternalState(openIdTokenValidator, "jwkUrl", jwkUrl);
+        when(openIdConfig.getIssuer()).thenReturn(issuer);
+        when(openIdConfig.getJwkUrl()).thenReturn(jwkUrl);
+        openIdTokenValidator.setProvider(provider);
     }
 
 
@@ -263,9 +269,8 @@ public class OpenIdTokenValidatorTest {
      */
     @Test
     public void testGetProvider() throws MalformedURLException {
-        JwkProvider prov = null;
-        setInternalState(openIdTokenValidator, "provider", prov);
-        setInternalState(openIdTokenValidator, "jwkUrl", "http://test.io.net");
+        openIdTokenValidator.setProvider(null);
+        when(openIdConfig.getJwkUrl()).thenReturn("http://test.io.net");
         assertNotNull(openIdTokenValidator.getProvider());
     }
 
@@ -276,9 +281,8 @@ public class OpenIdTokenValidatorTest {
      */
     @Test(expected = InvalidAccessTokenException.class)
     public void testValidateUsingInvalidProvider() throws Exception {
-        JwkProvider prov = null;
-        setInternalState(openIdTokenValidator, "provider", prov);
-        setInternalState(openIdTokenValidator, "jwkUrl", "test");
+        openIdTokenValidator.setProvider(null);
+        when(openIdConfig.getJwkUrl()).thenReturn("test");
 
         String keyId = "11111";
         JWSObject jsonToBeValidated = mock(JWSObject.class);

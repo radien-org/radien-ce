@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.when;
  *
  * @author Rajesh Gavvala
  */
-@PrepareForTest(ModelServiceUtil.class)
 public class ModelServiceUtilTest {
     @Mock
     CriteriaBuilder criteriaBuilder;

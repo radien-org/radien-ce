@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import io.radien.security.openid.config.OpenIdConfig;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -44,19 +45,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class OpenIdTokenValidator implements TokenValidator {
 
-    @Inject
-    @ConfigProperty(name = "AUTH_ISSUER")
-    private String issuer;
-
-    @Inject
-    @ConfigProperty(name = "AUTH_JWKURL")
-    private String jwkUrl;
-
-    @Inject
-    @ConfigProperty(name = "RADIEN_ENV",defaultValue = "PROD")
-    private String env;
-
     JwkProvider provider;
+
+    @Inject
+    private OpenIdConfig openIdConfig;
 
     /**
      * Validates a token
@@ -78,7 +70,7 @@ public class OpenIdTokenValidator implements TokenValidator {
 
             Map<String, Object> payloadMap = jwsObject.getPayload().toJSONObject();
 
-            if (invalidIssuer(issuer,(String)payloadMap.get("iss"),env)) {throw new InvalidAccessTokenException("Invalid iss");}
+            if (invalidIssuer(openIdConfig.getIssuer(),(String)payloadMap.get("iss"),openIdConfig.getEnv())) {throw new InvalidAccessTokenException("Invalid iss");}
 
 
             if (!payloadMap.get("typ").equals("Bearer")) {
@@ -103,12 +95,16 @@ public class OpenIdTokenValidator implements TokenValidator {
      */
     protected JwkProvider getProvider() throws MalformedURLException {
         if (provider == null) {
-             provider = new UrlJwkProvider(new URL(jwkUrl));
+             provider = new UrlJwkProvider(new URL(openIdConfig.getJwkUrl()));
         }
         return provider;
     }
 
-    protected boolean invalidIssuer(String configIssuer,String issuer,String env){
+    public void setProvider(JwkProvider provider) {
+        this.provider = provider;
+    }
+
+    protected boolean invalidIssuer(String configIssuer, String issuer, String env){
         return !configIssuer.equals(issuer) &&
                 (
                         !configIssuer.replace("localhost","host.docker.internal").equals(issuer)

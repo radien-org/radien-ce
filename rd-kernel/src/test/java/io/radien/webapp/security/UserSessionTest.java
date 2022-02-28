@@ -46,16 +46,16 @@ import javax.servlet.http.HttpSession;
 import org.eclipse.microprofile.config.Config;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -74,9 +74,12 @@ import static org.mockito.Mockito.when;
  * Class that aggregates UnitTest cases for UserSession
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class, UserFactory.class})
+
+
 public class UserSessionTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @InjectMocks
     private UserSession userSession;
@@ -90,33 +93,37 @@ public class UserSessionTest {
     @Mock
     private Config config;
 
-    private FacesContext facesContext;
+    private static FacesContext facesContext;
 
     SystemUser user;
 
     /**
      * Prepares mock objects
      */
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    @BeforeClass
+    public static void setUp() {
 
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
-
+        Mockito.mockStatic(FacesContext.class);
+        Mockito.mockStatic(JSFUtil.class);
+        Mockito.mockStatic(UserFactory.class);
         facesContext = mock(FacesContext.class);
-        when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
 
+        initialize();
+    }
+
+    private static void initialize() {
         ExternalContext externalContext = mock(ExternalContext.class);
-        when(facesContext.getExternalContext()).thenReturn(externalContext);
-
         Flash flash = mock(Flash.class);
+        when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
+        when(facesContext.getExternalContext()).thenReturn(externalContext);
         when(externalContext.getFlash()).thenReturn(flash);
-
         when(JSFUtil.getFacesContext()).thenReturn(facesContext);
         when(JSFUtil.getExternalContext()).thenReturn(externalContext);
         when(JSFUtil.getMessage(anyString())).thenAnswer(i -> i.getArguments()[0]);
+    }
 
+    @Before
+    public void setUpEach(){
         user = new User();
         user.setId(1L);
         user.setUserEmail("myemail@email.com");
@@ -151,7 +158,6 @@ public class UserSessionTest {
      */
     @Test
     public void testLoginNotExistedAnUser() throws Exception {
-        PowerMockito.mockStatic(UserFactory.class);
         when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn((User) user );
         userSession.login("sub", "myemail@email.com", "myname", "name",
                 "my", "acc-token","re-token" );
@@ -166,7 +172,6 @@ public class UserSessionTest {
      */
     @Test
     public void testLoginNullUser() throws Exception {
-        PowerMockito.mockStatic(UserFactory.class);
         when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn(null);
         userSession.login("sub", "myemail@email.com", "myname", "name",
                 "my", "acc-token","re-token" );
@@ -352,6 +357,8 @@ public class UserSessionTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
+
+        initialize();
         when(Objects.requireNonNull(JSFUtil.getExternalContext()).getRequest()).thenReturn(request);
         when(JSFUtil.getExternalContext().getResponse()).thenReturn(response);
         doNothing().when(request).logout();

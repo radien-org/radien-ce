@@ -78,4 +78,11 @@ public interface OAFAccess extends Serializable {
 	 */
 	public String getProperty(SystemProperties cfg);
 
+	/**
+	 * OAF Access property endpoint getter
+	 * @param cfg system properties configuration
+	 * @return the system properties property key value as a string if present otherwise returns defaultValue
+	 */
+	public String getProperty(SystemProperties cfg,String defaultValue);
+
 }

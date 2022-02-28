@@ -90,7 +90,6 @@
 		<!-- CXF Core -->
 		<version.cxf-rt-rs-mp-client>3.5.0</version.cxf-rt-rs-mp-client>
 
-
 		<!-- Logging -->
 		<version.slf4j-api>1.7.32</version.slf4j-api>
 		<version.jcl-over-slf4j>1.7.35</version.jcl-over-slf4j>
@@ -121,14 +120,12 @@
 		<version.junit>4.13.1</version.junit>
 		<version.junit.jupiter>5.8.2</version.junit.jupiter>
 		<version.mock.jupiter>5.7.1</version.mock.jupiter>
-		<version.mockito.core>2.23.0</version.mockito.core>
-		<version.powermock.core>2.0.9</version.powermock.core>
+		<version.mockito.inline>4.3.1</version.mockito.inline>
 		<version.jersey.common>2.22.2</version.jersey.common>
 		<version.johnzon.core>1.2.16</version.johnzon.core>
 		<version.openejb-mockito>8.0.9</version.openejb-mockito>
 		<version.johnzon.jsonb>1.2.16</version.johnzon.jsonb>
 		<version.embeded.mongo>3.3.1</version.embeded.mongo>
-
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
@@ -148,6 +145,8 @@
 		<!-- PlantUML -->
 		<version.com.github.jeluard>7940</version.com.github.jeluard>
 		<version.net.sourceforge.plantuml>7976</version.net.sourceforge.plantuml>
+
+		<version.unirest>3.13.6</version.unirest>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -545,20 +544,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${version.mockito.core}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>${version.powermock.core}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito2</artifactId>
-				<version>${version.powermock.core}</version>
+				<artifactId>mockito-inline</artifactId>
+				<version>${version.mockito.inline}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -578,6 +565,12 @@
 				<artifactId>johnzon-jsonb</artifactId>
 				<scope>test</scope>
 				<version>${version.johnzon.jsonb}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.konghq</groupId>
+				<artifactId>unirest-java</artifactId>
+				<version>${version.unirest}</version>
+				<classifier>standalone</classifier>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -52,9 +52,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
 
 /**
  * Class that aggregates UnitTest cases for UserBusinessService
@@ -520,7 +520,7 @@ public class UserBusinessServiceTest {
     public void testSendUpdatePasswordEmail() throws Exception {
         User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", 1L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
-        doNothing().when(keycloakService,"sendUpdatePasswordEmail", ArgumentMatchers.any());
+        doNothing().when(keycloakService).sendUpdatePasswordEmail(any());
         boolean success = true;
         try {
             userBusinessService.sendUpdatePasswordEmail(user);

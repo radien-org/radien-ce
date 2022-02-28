@@ -29,24 +29,21 @@ import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 
 import io.radien.webapp.DataModelEnum;
-import io.radien.webapp.JSFUtil;
+
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 
 import java.util.Optional;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
@@ -59,8 +56,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+
 public class PermissionManagerTest extends JSFUtilAndFaceContextMessagesTest {
     @InjectMocks
     private PermissionManager permissionManager;
@@ -81,13 +77,22 @@ public class PermissionManagerTest extends JSFUtilAndFaceContextMessagesTest {
     Optional<SystemAction> optionalSystemAction;
     Optional<SystemResource> optionalSystemResource;
 
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        handleJSFUtilAndFaceContextMessages();
+    }
+    @AfterClass
+    public static final void afterClass(){
+        destroy();
+    }
     /**
      * Constructs mock object
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-        handleJSFUtilAndFaceContextMessages();
 
         permission = new Permission();
         selectedAction = new Action();
