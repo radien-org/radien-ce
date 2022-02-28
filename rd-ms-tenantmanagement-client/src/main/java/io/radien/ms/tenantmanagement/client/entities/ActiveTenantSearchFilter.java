@@ -31,8 +31,6 @@ public class ActiveTenantSearchFilter extends SearchFilterCriteria implements Sy
      * Active Tenant search filter constructor
      * @param userId of the active tenant to be found
      * @param tenantId of the active tenant to be found
-     * @param tenantName of the active tenant to be found
-     * @param isTenantActive true if the user has the following tenant has active
      * @param isLogicalConjunction true in case search option is and conjunction
      */
     public ActiveTenantSearchFilter(Long userId, Long tenantId, boolean isLogicalConjunction) {

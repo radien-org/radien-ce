@@ -18,11 +18,13 @@ package io.radien.ms.ticketmanagement.service;
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.ticket.SystemTicket;
+import io.radien.api.model.ticket.SystemTicketSearchFilter;
 import io.radien.api.service.ticket.TicketServiceAccess;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TicketException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.ms.ticketmanagement.client.entities.TicketSearchFilter;
 import io.radien.ms.ticketmanagement.entities.TicketEntity;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -30,7 +32,11 @@ import org.junit.Test;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -195,7 +201,7 @@ public class TicketServiceTest {
         c.setData(data);
         c.setToken(RandomStringUtils.random(12, true, true));
         ticketServiceAccess.create(c);
-        Page<SystemTicket> result = ticketServiceAccess.getAll(null,1,10,Collections.singletonList("data"),true);
+        Page<SystemTicket> result = ticketServiceAccess.getAll(null,1,10, Collections.singletonList("data"),true);
         assertNotNull(result);
     }
 
@@ -213,10 +219,12 @@ public class TicketServiceTest {
         List<String> sortBy = new ArrayList<>();
         sortBy.add("data");
 
-        Page<SystemTicket> result = ticketServiceAccess.getAll("testGetAll2",1,10,sortBy,false);
+        SystemTicketSearchFilter filter = new TicketSearchFilter();
+        filter.setIsLogicalConjunction(false);
+        Page<SystemTicket> result = ticketServiceAccess.getAll(filter,1,10,sortBy,false);
         assertNotNull(result);
 
-        Page<SystemTicket> result2 = ticketServiceAccess.getAll("testGetAll2",1,10,sortBy,true);
+        Page<SystemTicket> result2 = ticketServiceAccess.getAll(filter,1,10,sortBy,true);
         assertNotNull(result2);
     }
 

@@ -60,7 +60,7 @@ public class TicketResourceTest {
      */
     @Test
     public void testGet() {
-        Response response = ticketResource.getAll(null, 1, 10,new ArrayList<>(), true);
+        Response response = ticketResource.getAll(null, null, null, null, null, false, 1, 10,new ArrayList<>(), true);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
@@ -70,19 +70,8 @@ public class TicketResourceTest {
      */
     @Test
     public void testGetAll() {
-        Response response = ticketResource.getAll(null, 1, 10, null, false);
+        Response response = ticketResource.getAll(null, null, null, null, null, false, 1, 10, null, false);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
-    }
-
-    /**
-     * Test the Get All request Exception which will return a generic error message code 500.
-     */
-    @Test
-    public void testGetAllGenericException() {
-        when(ticketResource.getAll(null,1, 10, null, false))
-                .thenThrow(new RuntimeException());
-        Response response = ticketResource.getAll(null,1, 10, null, false);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
     }
 
     /**
@@ -119,7 +108,7 @@ public class TicketResourceTest {
      */
     @Test
     public void testGetContractByName() {
-        Response response = ticketResource.getAll("data", 1, 10,new ArrayList<>(), true);
+        Response response = ticketResource.getAll(null, null, null, null, null, false, 1, 10,new ArrayList<>(), true);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 

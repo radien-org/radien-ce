@@ -19,6 +19,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.ticket.SystemTicket;
+import io.radien.api.model.ticket.SystemTicketSearchFilter;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.SystemException;
@@ -26,6 +27,7 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
+import io.radien.ms.ticketmanagement.client.entities.TicketSearchFilter;
 import io.radien.ms.ticketmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.ticketmanagement.client.util.TicketModelMapper;
 import org.junit.Before;
@@ -161,13 +163,15 @@ public class TicketRESTServiceClientTest {
 
         TicketResourceClient ticketResourceClient = Mockito.mock(TicketResourceClient.class);
 
-        when(ticketResourceClient.getAll(null,1, 10, null, false)).thenReturn(response);
+        when(ticketResourceClient.getAll(null, null, null, null, null, false,1, 10, null, false)).thenReturn(response);
 
         when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenReturn(ticketResourceClient);
 
         List<? extends SystemTicket> list = new ArrayList<>();
 
-        List<? extends SystemTicket> returnedList = target.getAll(null,1, 10, null, false).getResults();
+        SystemTicketSearchFilter filter = new TicketSearchFilter();
+        filter.setIsLogicalConjunction(false);
+        List<? extends SystemTicket> returnedList = target.getAll(filter,1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);
     }
@@ -196,14 +200,15 @@ public class TicketRESTServiceClientTest {
     public void testGetAllWithTokenException() throws MalformedURLException, SystemException {
         TicketResourceClient resourceClient = Mockito.mock(TicketResourceClient.class);
         when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenReturn(resourceClient);
-        when(resourceClient.getAll(anyString(), anyInt(),anyInt(),anyList(), anyBoolean())).
+        when(resourceClient.getAll(any(), any(), any(), any(), any(), anyBoolean(), anyInt(),anyInt(),anyList(), anyBoolean())).
                 thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getAll("toyota", 1, 10, new ArrayList<>(), true);
+        SystemTicketSearchFilter filter = new TicketSearchFilter();
+        target.getAll(filter, 1, 10, new ArrayList<>(), true);
     }
 
     @Test
@@ -431,13 +436,14 @@ public class TicketRESTServiceClientTest {
         TicketResourceClient ticketResourceClient = Mockito.mock(TicketResourceClient.class);
 
         when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenReturn(ticketResourceClient);
-        when(ticketResourceClient.getAll(anyString(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(ticketResourceClient.getAll(any(), any(), any(), any(), any(), anyBoolean(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getAll("name", 1, 10, null, false);
+        SystemTicketSearchFilter filter = new TicketSearchFilter();
+        target.getAll(filter, 1, 10, null, false);
     }
 
     @Test(expected = SystemException.class)
