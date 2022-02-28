@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.junit.JUnitRule;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -19,7 +18,7 @@ public class OpenIdConfigTest {
     @InjectMocks
     OpenIdConfig openIdConfig;
     @Rule
-    MockitoRule rule = MockitoJUnit.rule();
+    public MockitoRule rule = MockitoJUnit.rule();
     @Mock
     OAFAccess oafAccess;
 
