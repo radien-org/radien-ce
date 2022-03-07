@@ -193,7 +193,7 @@ public @ApplicationScoped class ECMSeeder {
 
     private void initPropertiesContent(EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         List<EnterpriseContent> tmpContent = contentService
-                .getByViewIdLanguage("rd_properties", false, "");
+                .getByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_PROPERTIES, String.class), false, "");
 
         if (tmpContent != null && !tmpContent.isEmpty()) {
             oafPropertiesContent = tmpContent.get(0);
@@ -202,14 +202,14 @@ public @ApplicationScoped class ECMSeeder {
         if (oafPropertiesContent == null || oafPropertiesContent.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository Properties Node initialization");
 
-            oafPropertiesContent = new Folder("rd_properties");
+            oafPropertiesContent = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_PROPERTIES, String.class));
             oafPropertiesContent.setParentPath(rootNode.getJcrPath());
             oafPropertiesContent.setViewId(oafPropertiesContent.getName());
 
             contentService.save(oafPropertiesContent);
-            log.info("[CMS] : HTML NODE : INITIALIZED {}", oafPropertiesContent);
+            log.info("[CMS] : PROPERTIES NODE : INITIALIZED {}", oafPropertiesContent);
         } else {
-            log.info("[CMS] : ENABLED : Content Repository HTML Node already initialized;.");
+            log.info("[CMS] : ENABLED : Content Repository PROPERTIES Node already initialized;.");
         }
     }
 
