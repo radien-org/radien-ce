@@ -18,6 +18,7 @@
 
 package io.radien.api.service.i18n;
 
+import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import java.util.List;
 
@@ -27,9 +28,15 @@ import java.util.Optional;
 
 public interface I18NRESTServiceAccess extends Appframeable {
 
+    Page<SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
+
     String getTranslation(String key, String language, String application) throws SystemException;
 
     boolean save(SystemI18NProperty property) throws SystemException;
+
+    boolean deleteProperties(List<SystemI18NProperty> propertyList) throws SystemException;
+
+    boolean deleteAllByApplication(String application) throws SystemException;
 
     Optional<SystemI18NProperty> findByKeyAndApplication(String key, String application) throws SystemException;
 

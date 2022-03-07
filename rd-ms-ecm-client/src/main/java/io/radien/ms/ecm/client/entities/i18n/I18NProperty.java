@@ -23,6 +23,8 @@ import io.radien.api.model.i18n.SystemI18NTranslation;
 import java.util.List;
 
 public class I18NProperty implements SystemI18NProperty {
+	private static final long serialVersionUID = 1959722886820231862L;
+
     private String key;
     private String application;
     private List<SystemI18NTranslation> translations;

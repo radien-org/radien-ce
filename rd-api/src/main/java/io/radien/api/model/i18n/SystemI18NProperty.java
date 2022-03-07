@@ -18,9 +18,10 @@
 
 package io.radien.api.model.i18n;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface SystemI18NProperty {
+public interface SystemI18NProperty extends Serializable {
     String getKey();
 
     void setKey(String key);

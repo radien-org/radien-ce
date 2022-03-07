@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.controller;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.GenericErrorMessagesToResponseMapper;
@@ -52,6 +53,20 @@ public class I18NResourceClient implements I18NResource {
         try {
             String result = serviceAccess.getTranslation(key, language, application);
             return Response.ok().entity(result)
+                    .build();
+        } catch (SystemException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+
+    }
+
+    @Override
+    public Response getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+        log.info("Retrieving paginated properties for {} and page {}", application, pageNo);
+        try {
+            Page<SystemI18NProperty> results = serviceAccess.getAll(application, pageNo, pageSize, sortBy, isAscending);
+            return Response.ok()
+                    .entity(results)
                     .build();
         } catch (SystemException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

@@ -20,12 +20,14 @@ package io.radien.ms.ecm.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.ecm.client.controller.I18NResource;
+import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
 import io.radien.ms.ecm.client.util.ClientServiceUtil;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +50,25 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
     private ClientServiceUtil clientServiceUtil;
     @Inject
     private OAFAccess oaf;
+
+    @Override
+    public Page<SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        return get(() -> {
+            try {
+                I18NResource client = getClient();
+                Response response = client.getAll(application, pageNo, pageSize, sortBy, isAscending);
+                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    return I18NPropertyMapper.mapToPage((InputStream) response.getEntity());
+                } else {
+                    String entity = response.readEntity(String.class);
+                    log.error(entity);
+                    return new Page<>();
+                }
+            } catch (IOException | ParseException e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES.toString(application), e);
+            }
+        });
+    }
 
     @Override
     public String getTranslation(String key, String language, String application) throws SystemException {
@@ -83,6 +104,28 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
                 }
             } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_SAVING_I18N_PROPERTY.toString(), e);
+            }
+        });
+    }
+
+    @Override
+    public boolean deleteProperties(List<SystemI18NProperty> propertyList) throws SystemException {
+        return get(() -> {
+            try {
+                return handleDeleteRequest(new DeletePropertyFilter(propertyList));
+            } catch (MalformedURLException e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_DELETING_I18N_PROPERTIES.toString(), e);
+            }
+        });
+    }
+
+    @Override
+    public boolean deleteAllByApplication(String application) throws SystemException {
+        return get(() -> {
+            try {
+                return handleDeleteRequest(new DeletePropertyFilter(application));
+            } catch (MalformedURLException e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_DELETING_I18N_APPLICATION_PROPERTIES.toString(application), e);
             }
         });
     }
@@ -127,6 +170,20 @@ public class I18NRESTServiceClient extends AuthorizationChecker implements I18NR
 
     private I18NResource getClient() throws MalformedURLException {
         return clientServiceUtil.getI18NResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ECM));
+    }
+
+
+
+    private boolean handleDeleteRequest(DeletePropertyFilter filter) throws MalformedURLException {
+        I18NResource client = getClient();
+        Response response = client.deleteProperties(filter);
+        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            return true;
+        } else {
+            String entity = response.readEntity(String.class);
+            log.error(entity);
+            return false;
+        }
     }
 
     @Override

@@ -20,6 +20,7 @@ package io.radien.ms.ecm.client.services;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.controller.I18NResource;
@@ -28,6 +29,9 @@ import io.radien.ms.ecm.client.util.ClientServiceUtil;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.ws.rs.core.Response;
@@ -42,7 +46,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,6 +70,52 @@ public class I18NRESTServiceClientTest {
         mockResource = mock(I18NResource.class);
         when(clientServiceUtil.getI18NResourceClient(anyString()))
                 .thenReturn(mockResource);
+    }
+
+    @Test
+    public void testGetAll() throws SystemException {
+        String page = "{\n" +
+                "  \"results\": \n" +
+                "  [\n" +
+                "    {\n" +
+                "      \"key\": \"key\",\n" +
+                "      \"application\": \"radien\",\n" +
+                "      \"translations\": \n" +
+                "      [\n" +
+                "        {\n" +
+                "          \"value\": \"value\",\n" +
+                "          \"language\": \"en\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"currentPage\": 1,\n" +
+                "  \"totalResults\": 1,\n" +
+                "  \"totalPages\": 1\n" +
+                "}";
+        InputStream stream = new ByteArrayInputStream(page.getBytes(StandardCharsets.UTF_8));
+        Response response = Response.ok().entity(stream).build();
+        when(mockResource.getAll(eq("radien"), eq(1), eq(10), anyList(), eq(true)))
+                .thenReturn(response);
+        Page<SystemI18NProperty> result = client.getAll("radien", 1, 10, new ArrayList<>(), true);
+        assertEquals(1, result.getTotalResults());
+        assertFalse(result.getResults().isEmpty());
+    }
+
+    @Test
+    public void testGetAllInvalid() throws SystemException {
+        Response response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("value").build();
+        when(mockResource.getAll(eq("radien"), eq(1), eq(10), anyList(), eq(true)))
+                .thenReturn(response);
+        Page<SystemI18NProperty> result = client.getAll("radien", 1, 10, new ArrayList<>(), true);
+        assertTrue(result.getResults().isEmpty());
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetAllException() throws SystemException, MalformedURLException {
+        when(clientServiceUtil.getI18NResourceClient(anyString()))
+                .thenThrow(new MalformedURLException());
+        client.getAll("radien", 1, 10, new ArrayList<>(), true);
     }
 
     @Test
@@ -112,6 +164,42 @@ public class I18NRESTServiceClientTest {
         when(clientServiceUtil.getI18NResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         client.save(new I18NProperty());
+    }
+
+    @Test
+    public void testDeleteProperties() throws SystemException {
+        when(mockResource.deleteProperties(any()))
+                .thenReturn(Response.ok().build());
+        assertTrue(client.deleteProperties(Collections.singletonList(new I18NProperty())));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeletePropertiesException() throws SystemException, MalformedURLException {
+        when(clientServiceUtil.getI18NResourceClient(anyString()))
+                .thenThrow(new MalformedURLException());
+        client.deleteProperties(Collections.singletonList(new I18NProperty()));
+    }
+
+    @Test
+    public void testDeleteAllByApplicationProperties() throws SystemException {
+        when(mockResource.deleteProperties(any()))
+                .thenReturn(Response.ok().build());
+        assertTrue(client.deleteAllByApplication("radien"));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testDeleteAllByApplicationPropertiesException() throws SystemException, MalformedURLException {
+        when(clientServiceUtil.getI18NResourceClient(anyString()))
+                .thenThrow(new MalformedURLException());
+        client.deleteAllByApplication("radien");
+    }
+
+    @Test
+    public void testdeleteError() throws SystemException {
+        when(mockResource.deleteProperties(any()))
+                .thenReturn(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("error").build());
+        assertFalse(client.deleteAllByApplication("radien"));
     }
 
     @Test

@@ -123,6 +123,16 @@
 		<view-id value="/module/tenant/tenantDetails.oaf" />
 	</url-mapping>
 
+	<!-- Property Management -->
+	<url-mapping id="properties">
+		<pattern value="/module/properties" />
+		<view-id value="/module/i18n/propertyList.oaf" />
+	</url-mapping>
+	<url-mapping id="newProperty">
+		<pattern value="/module/property" />
+		<view-id value="/module/i18n/property.oaf" />
+	</url-mapping>
+
 	<url-mapping id="content_public">
 		<pattern
 			value="/public/content/display/#{contentViewManager.viewId}" />

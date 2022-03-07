@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.service;
 
+import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import java.util.List;
 
@@ -62,6 +63,11 @@ public class I18NService implements I18NServiceAccess {
     @Override
     public void deleteApplicationProperties(String application) throws SystemException {
         repository.deleteApplication(application);
+    }
+
+    @Override
+    public Page<SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+        return repository.getAll(application, pageNo, pageSize, sortBy, isAscending);
     }
 
     @Override

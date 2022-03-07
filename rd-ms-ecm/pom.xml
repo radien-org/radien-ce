@@ -159,11 +159,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.jongo</groupId>
-			<artifactId>jongo</artifactId>
-		</dependency>
-
 		<!-- Commons -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>

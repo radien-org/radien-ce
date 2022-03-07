@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.client.factory;
 
+import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import java.util.List;
 import org.json.simple.JSONArray;
@@ -85,5 +86,31 @@ public class I18NFactoryTest {
         assertEquals("radienTest", property.get(0).getApplication());
         assertEquals("en", property.get(0).getTranslations().get(0).getLanguage());
         assertEquals("value", property.get(0).getTranslations().get(0).getValue());
+    }
+
+    @Test
+    public void testConvertJsonToPage() {
+        JSONObject object = new JSONObject();
+        object.put("currentPage", "1");
+        object.put("totalPages", "1");
+        object.put("totalResults", "1");
+        JSONArray resultArray = new JSONArray();
+        JSONObject obj = new JSONObject();
+        obj.put("key", "keyVal");
+        obj.put("application", "radienTest");
+        JSONObject translation = new JSONObject();
+        translation.put("language", "en");
+        translation.put("value", "value");
+        JSONArray translationArray = new JSONArray();
+        translationArray.add(translation);
+        obj.put("translations", translationArray);
+        resultArray.add(obj);
+        object.put("results", resultArray);
+
+        Page<SystemI18NProperty> page = I18NFactory.convertJsonToPage(object);
+        assertEquals(1, page.getCurrentPage());
+        assertEquals(1, page.getTotalResults());
+        assertEquals(1, page.getTotalPages());
+        assertEquals(1, page.getResults().size());
     }
 }

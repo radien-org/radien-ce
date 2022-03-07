@@ -94,6 +94,10 @@ public class CmsConstants {
      */
     public static final String RADIEN_BASE_NODE_TYPE = NAMESPACE + ":NodeType";
 
+    public static final String RADIEN_PROPERTY_NODE_TYPE = NAMESPACE + ":PropertyType";
+
+    public static final String RADIEN_TRANSLATION_NODE_TYPE = NAMESPACE + ":TranslationType";
+
     public static final String RADIEN_GENERIC_CONTENT_MIXIN = NAMESPACE + ":genericContent";
 
     public static final String RADIEN_HTML_CONTENT_MIXIN = NAMESPACE + ":htmlContent";
@@ -200,6 +204,14 @@ public class CmsConstants {
      */
     public static final String RADIEN_CONTENT_AUTHOR = NAMESPACE + ":author";
 
+    public static final String PROPERTY_KEY = NAMESPACE + ":key";
+
+    public static final String PROPERTY_APPLICATION = NAMESPACE + ":application";
+
+    public static final String PROPERTY_LANGUAGE = NAMESPACE + ":language";
+
+    public static final String PROPERTY_VALUE = NAMESPACE + ":value";
+
     /**
      * The resource types which can be published
      */
@@ -218,6 +230,7 @@ public class CmsConstants {
         public static final String OAF_NODE_TYPES = "jcr/oafnodetypes.cnd";
         public static final String SYSTEM_CMS_CFG_NODE_ROOT = "system.jcr.node.root";
         public static final String SYSTEM_CMS_CFG_NODE_HTML = "system.jcr.node.html";
+        public static final String SYSTEM_CMS_CFG_NODE_PROPERTIES = "system.jcr.node.properties";
         public static final String SYSTEM_CMS_CFG_NODE_NEWS_FEED = "system.jcr.node.newsfeed";
         public static final String SYSTEM_CMS_CFG_NODE_NOTIFICATION = "system.jcr.node.notifications";
         public static final String SYSTEM_CMS_CFG_NODE_DOCS = "system.jcr.node.documents";

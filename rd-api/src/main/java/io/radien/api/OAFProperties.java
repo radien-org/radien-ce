@@ -133,6 +133,7 @@ public enum OAFProperties implements SystemProperties{
     OAF_NODE_TYPES("jcr/oafnodetypes.cnd"),
     SYSTEM_CMS_CFG_NODE_ROOT("system.jcr.node.root"),
     SYSTEM_CMS_CFG_NODE_HTML("system.jcr.node.html"),
+    SYSTEM_CMS_CFG_NODE_PROPERTIES("system.jcr.node.properties"),
     SYSTEM_CMS_CFG_NODE_NEWS_FEED("system.jcr.node.newsfeed"),
     SYSTEM_CMS_CFG_NODE_NOTIFICATION("system.jcr.node.notifications"),
     SYSTEM_CMS_CFG_NODE_DOCS("system.jcr.node.documents"),

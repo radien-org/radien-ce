@@ -18,6 +18,7 @@
 
 package io.radien.api.service.i18n;
 
+import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import java.util.List;
 
@@ -37,4 +38,6 @@ public interface I18NServiceAccess extends ServiceAccess {
     void deleteProperties(List<SystemI18NProperty> properties) throws SystemException;
 
     void deleteApplicationProperties(String application) throws SystemException;
+
+    Page<SystemI18NProperty> getAll(String application, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException;
 }

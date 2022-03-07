@@ -191,7 +191,9 @@ public enum GenericErrorCodeMessage {
     ERROR_RETRIEVING_TRANSLATION("I18N1", "error.i18n.retrieve.translation", "Could not retrieve translation %s for %s"),
     ERROR_SAVING_I18N_PROPERTY("I18N2", "error.i18n.save.property", "Could not save I18N Property"),
     ERROR_RETRIEVING_I18N_PROPERTY("I18N3", "error.i18n.retrieve.property", "Could not retrieve I18N Property %s"),
-    ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES("I18N4", "error.i18n.retrieve.application.properties", "Could not retrieve I18N Properties for %s");
+    ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES("I18N4", "error.i18n.retrieve.application.properties", "Could not retrieve I18N Properties for %s"),
+    ERROR_DELETING_I18N_PROPERTIES("I18N5", "error.i18n.delete.properties", "Could not delete I18N Properties"),
+    ERROR_DELETING_I18N_APPLICATION_PROPERTIES("I18N6", "error.i18n.delete.application.properties", "Could not delete I18N Properties for application %s");
 
 
 

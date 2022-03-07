@@ -48,7 +48,7 @@ public class DeletePropertyFilter {
     }
 
     public void setProperties(List<SystemI18NProperty> properties) {
-        if(!StringUtils.isEmpty(application)) {
+        if(!StringUtils.isEmpty(application) && properties != null &&  !properties.isEmpty()) {
             throw new IllegalStateException("Application must be null or empty");
         }
         this.properties = properties;
@@ -59,7 +59,7 @@ public class DeletePropertyFilter {
     }
 
     public void setApplication(String application) {
-        if(properties != null && !properties.isEmpty()) {
+        if(properties != null && !properties.isEmpty() && !StringUtils.isEmpty(application)) {
             throw new IllegalStateException("Properties must be null or empty");
         }
         this.application = application;
