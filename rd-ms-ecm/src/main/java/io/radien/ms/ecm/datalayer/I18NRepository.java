@@ -217,7 +217,7 @@ public class I18NRepository extends JCRRepository {
             long totalCount = nodes.size();
             int offset = (pageNo > 0 ? ((pageNo - 1) * pageSize ) : 0);
 
-            List<Node> pageList = nodes.subList(offset, Math.toIntExact(Math.min(offset + pageSize, totalCount)));
+            List<Node> pageList = nodes.subList(offset, Math.min(offset + pageSize, Math.toIntExact(totalCount)));
             List<SystemI18NProperty> results = new ArrayList<>();
 
             for(Node nextNode : pageList) {

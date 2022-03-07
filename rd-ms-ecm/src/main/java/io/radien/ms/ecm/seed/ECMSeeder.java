@@ -191,7 +191,7 @@ public @ApplicationScoped class ECMSeeder {
         }
     }
 
-    private void initPropertiesContent(EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    private void initPropertiesContent(EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         List<EnterpriseContent> tmpContent = contentService
                 .getByViewIdLanguage("rd_properties", false, "");
 
