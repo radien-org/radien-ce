@@ -1,0 +1,6 @@
+[
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Create" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Read" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Update" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Delete" }
+]

@@ -2,6 +2,6 @@
   { "name": "Third Party Email Management - Create", "resourceName": "Third Party Email", "actionName": "Create" },
   { "name": "Third Party Email Management - Read", "resourceName": "Third Party Email", "actionName": "Read" },
   { "name": "Third Party Email - Update", "resourceName": "Third Party Email", "actionName": "Update" },
-  { "name": "Third Party Email - Delete", "resourceName": "Third Party Email", "actionName": "Delete" },
+  { "name": "Third Party Email - Delete", "resourceName": "Third Party Email", "actionName": "Delete" }
 ]
 

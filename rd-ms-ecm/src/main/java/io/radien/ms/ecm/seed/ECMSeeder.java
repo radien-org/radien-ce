@@ -95,6 +95,7 @@ public @ApplicationScoped class ECMSeeder {
             repository.registerCNDNodeTypes(CmsConstants.PropertyKeys.OAF_NODE_TYPES);
 
             EnterpriseContent rootNode;
+            EnterpriseContent oafPropertiesContent = null;
             EnterpriseContent oafHTMLContent = null;
             EnterpriseContent oafNewsContent = null;
             EnterpriseContent oafAppInfoContent = null;
@@ -104,6 +105,7 @@ public @ApplicationScoped class ECMSeeder {
             EnterpriseContent oafIFrameContent = null;
 
             rootNode = initRootNode();
+            initPropertiesContent(rootNode, oafPropertiesContent);
             initHTMLContentNode(rootNode, oafHTMLContent);
 /*
             initAppInfoNode(rootNode, oafAppInfoContent);
@@ -186,6 +188,28 @@ public @ApplicationScoped class ECMSeeder {
                 contentService.save(folder);
                 log.info("[CMS] folder created: {}", folder);
             }
+        }
+    }
+
+    private void initPropertiesContent(EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
+        List<EnterpriseContent> tmpContent = contentService
+                .getByViewIdLanguage("rd_properties", false, "");
+
+        if (tmpContent != null && !tmpContent.isEmpty()) {
+            oafPropertiesContent = tmpContent.get(0);
+        }
+
+        if (oafPropertiesContent == null || oafPropertiesContent.getContentType().equals(ContentType.ERROR)) {
+            log.info("[CMS] : ENABLED : Content Repository Properties Node initialization");
+
+            oafPropertiesContent = new Folder("rd_properties");
+            oafPropertiesContent.setParentPath(rootNode.getJcrPath());
+            oafPropertiesContent.setViewId(oafPropertiesContent.getName());
+
+            contentService.save(oafPropertiesContent);
+            log.info("[CMS] : HTML NODE : INITIALIZED {}", oafPropertiesContent);
+        } else {
+            log.info("[CMS] : ENABLED : Content Repository HTML Node already initialized;.");
         }
     }
 

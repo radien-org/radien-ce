@@ -24,6 +24,7 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.constants.CmsConstants;
+import io.radien.ms.ecm.datalayer.JCRRepository;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import java.text.MessageFormat;
@@ -57,12 +58,10 @@ import java.util.*;
  * @author Marco Weiland
  */
 @Singleton
-public class ContentRepository implements Serializable, Appframeable {
+public class ContentRepository extends JCRRepository {
 
 	private static final Logger log = LoggerFactory.getLogger(ContentRepository.class);
 	private static final long serialVersionUID = 3705349362214763287L;
-
-	private long initCount = 0;
 
 	private static final String FILE_SEPARATOR = "/";
 
@@ -72,15 +71,11 @@ public class ContentRepository implements Serializable, Appframeable {
 	public static final String IS_TRUE = "] = true ";
 
 	@Inject
-	private OAFAccess oaf;
-	@Inject
 	private Config properties;
 	@Inject
 	private ContentMappingUtils contentMappingUtils;
 	@Inject
 	private ContentDataProvider dataProvider;
-	@Inject
-	private Repository repository;
 
 	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
@@ -562,33 +557,6 @@ public class ContentRepository implements Serializable, Appframeable {
 		while(nodes.hasNext()) {
 			getNodeContentVersions(results, nodes.nextNode());
 		}
-	}
-
-	private Session createSession() throws ContentRepositoryNotAvailableException {
-		boolean error = false;
-		try {
-			return repository.login(getAdminCredentials());
-		} catch (Exception e) {
-			log.error("Error creating new JCR session", e);
-			error = true;
-			throw new ContentRepositoryNotAvailableException();
-		} finally {
-			if (!error) {
-				initCount++;
-				log.info("{} |ACTION: -createJCRSession | INIT COUNT: {}", this, initCount);
-			} else {
-				log.error("{} | ACTION: -createJCRSession FAILED!", this.getClass());
-			}
-		}
-	}
-
-	private static SimpleCredentials getAdminCredentials() {
-		return new SimpleCredentials(CmsConstants.USER_ADMIN, "admin".toCharArray());
-	}
-
-	@Override
-	public OAFAccess getOAF() {
-		return oaf;
 	}
 
 	// protec_documents

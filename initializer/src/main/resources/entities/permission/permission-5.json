@@ -1,0 +1,8 @@
+[
+  { "name": "I18N Properties - Create", "resourceName": "I18N", "actionName": "Create" },
+  { "name": "I18N Properties - Read", "resourceName": "I18N", "actionName": "Read" },
+  { "name": "I18N Properties - Update", "resourceName": "I18N", "actionName": "Update" },
+  { "name": "I18N Properties - Delete", "resourceName": "I18N", "actionName": "Delete" },
+  { "name": "I18N Properties - All", "resourceName": "I18N", "actionName": "All" }
+]
+
