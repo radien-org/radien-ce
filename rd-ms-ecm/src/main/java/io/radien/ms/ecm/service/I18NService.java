@@ -22,22 +22,30 @@ import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.datalayer.I18NRepository;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.config.Config;
 
 @Stateless
 public class I18NService implements I18NServiceAccess {
 
     @Inject
     private I18NRepository repository;
+
     @Inject
-    @ConfigProperty(name = "system.default.language")
+    private Config config;
+
     private String defaultLanguage;
+
+    @PostConstruct
+    public void init() {
+        defaultLanguage = config.getValue("system.default.language", String.class);
+    }
 
     @Override
     public String getTranslation(String key, String language, String application) throws SystemException {

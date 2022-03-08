@@ -21,6 +21,7 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 import io.radien.ms.ecm.constants.CmsConstants;
 import java.io.Serializable;
 import javax.inject.Inject;
+import javax.jcr.Credentials;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
@@ -45,10 +46,10 @@ public abstract class JCRRepository implements Serializable {
         return repository;
     }
 
-    protected Session createSession() throws ContentRepositoryNotAvailableException {
+    protected Session createSession(Credentials credentials) throws ContentRepositoryNotAvailableException{
         boolean error = false;
         try {
-            return repository.login(getAdminCredentials());
+            return repository.login(credentials);
         } catch (Exception e) {
             log.error("Error creating new JCR session", e);
             error = true;
@@ -61,6 +62,10 @@ public abstract class JCRRepository implements Serializable {
                 log.error("{} | ACTION: -createJCRSession FAILED!", this.getClass());
             }
         }
+    }
+
+    protected Session createSession() throws ContentRepositoryNotAvailableException {
+        return createSession(getAdminCredentials());
     }
 
     private static SimpleCredentials getAdminCredentials() {

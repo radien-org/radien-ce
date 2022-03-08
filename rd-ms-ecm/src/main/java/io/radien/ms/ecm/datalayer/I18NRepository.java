@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
+import io.radien.api.model.i18n.SystemI18NTranslation;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.constants.CmsConstants;
 
@@ -31,6 +32,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Locale;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.jcr.Node;
@@ -58,37 +61,19 @@ public class I18NRepository extends JCRRepository {
     private PropertyMappingUtils mappingUtils;
 
     public String getTranslation(String key, String language, String application) throws IllegalStateException, SystemException {
-        Session session = createSession();
-        QueryManager queryManager;
-        String result = key;
-        try {
-            queryManager = session.getWorkspace().getQueryManager();
-            String queryExpression = new JCRQueryBuilder()
-                    .addFrom(CmsConstants.RADIEN_PROPERTY_NODE_TYPE, QUERY_FROM_ALIAS)
-                    .addInnerJoin(CmsConstants.RADIEN_TRANSLATION_NODE_TYPE, QUERY_JOIN_ALIAS)
-                    .addWhere(MessageFormat.format(FROM_QUERY_EQUALITY, CmsConstants.PROPERTY_KEY, key))
-                    .addWhere(MessageFormat.format(FROM_QUERY_EQUALITY, CmsConstants.PROPERTY_APPLICATION, application))
-                    .addWhere(MessageFormat.format(JOIN_QUERY_EQUALITY, CmsConstants.PROPERTY_LANGUAGE, language))
-                    .build();
-            Query query = queryManager.createQuery(queryExpression, Query.JCR_SQL2);
-            NodeIterator nodes = query.execute().getNodes();
-            while(nodes.hasNext()) {
-                if(result.equals(key)) {
-                    result = nodes.nextNode()
-                            .getNode(language)
-                            .getProperty(CmsConstants.PROPERTY_VALUE)
-                            .getString();
-                } else {
-                    log.warn("Multiple nodes found for {} {} {}", key, language, application);
-                }
+        SystemI18NProperty property = findByKeyAndApplication(key, application);
+        if (property != null) {
+            String finalLanguage = language;
+            Optional<SystemI18NTranslation> languageTranslation = property.getTranslations().stream().filter(obj -> obj.getLanguage().equals(finalLanguage))
+                    .findFirst();
+
+            if (languageTranslation.isPresent()) {
+                return languageTranslation.get().getValue();
             }
-            return result;
-        } catch (RepositoryException e) {
-            throw new SystemException(MessageFormat.format("Error retrieving translation for {0}-{1} in {2}", application, key, language),
-                    e);
-        } finally {
-            session.logout();
+            language = Locale.forLanguageTag(language).getLanguage();
+            return getTranslation(key, language, application);
         }
+        return key;
     }
 
     public void save(SystemI18NProperty entity) throws SystemException {
@@ -237,6 +222,6 @@ public class I18NRepository extends JCRRepository {
         String rootPath = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
         String propertiesPath = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_PROPERTIES);
 
-        return MessageFormat.format("/{0}/{1}/{2}", rootPath, propertiesPath, property.getKey());
+        return MessageFormat.format("/{0}/{1}/{2}/{3}", rootPath, propertiesPath, property.getApplication(), property.getKey());
     }
 }

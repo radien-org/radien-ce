@@ -29,7 +29,9 @@ import io.radien.api.service.mail.model.MailType;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import io.radien.ms.ecm.ContentRepository;
 import java.text.MessageFormat;
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,14 +57,17 @@ public class ContentService implements ContentServiceAccess {
     private static final long serialVersionUID = 8354030307902734111L;
 
     @Inject
-    private ContentMappingUtils factory;
-
-    @Inject
     private ContentRepository contentRepository;
 
     @Inject
-    @ConfigProperty(name = "system.default.language")
+    private Config config;
+
     private String defaultLanguage;
+
+    @PostConstruct
+    public void init() {
+        defaultLanguage = config.getValue("system.default.language", String.class);
+    }
 
     public List<EnterpriseContent> getChildrenFiles(String viewId) {
         List<EnterpriseContent> results = new ArrayList<>();

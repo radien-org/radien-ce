@@ -60,17 +60,15 @@ public @ApplicationScoped class ECMSeeder {
     @Inject
     private Config config;
 
-    @Inject
-    @ConfigProperty(name = "system.supported.languages")
     private String supportedLanguages;
-    @Inject
-    @ConfigProperty(name = "system.default.language")
     private String defaultLanguage;
 
     @PostConstruct
     public void init() {
         log.info("Initializing CMS");
         if (Boolean.parseBoolean(config.getValue("system.jcr.seed.content", String.class))) {
+            supportedLanguages = config.getValue("system.supported.languages", String.class);
+            defaultLanguage = config.getValue("system.default.language", String.class);
             boolean insertOnly = Boolean.parseBoolean(config.getValue("system.jcr.seed.insert.only", String.class));
             initStructure();
             initContent(insertOnly);

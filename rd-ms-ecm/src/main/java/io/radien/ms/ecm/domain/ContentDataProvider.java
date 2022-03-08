@@ -17,6 +17,9 @@
 
 package io.radien.ms.ecm.domain;
 
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
+import io.radien.api.SystemProperties;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -44,13 +47,15 @@ public class ContentDataProvider {
     @Inject
     private ContentMappingUtils contentMappingUtils;
     @Inject
-    @ConfigProperty(name = "system.supported.languages")
+    private OAFAccess oafAccess;
+
     private String supportedLanguages;
 
     private static List<EnterpriseContent> contents = new ArrayList<>();
 
     @PostConstruct
     private void init() {
+        supportedLanguages = oafAccess.getProperty(OAFProperties.SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM);
         log.info("Reading init file: {}", INIT_FILE);
         try {
             for (Object o : getJSONDataSourceArray()) {
