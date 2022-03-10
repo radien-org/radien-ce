@@ -51,6 +51,6 @@ public class SPIThemesResourceProviderFactoryTest {
 
     @Test
     public void testGetId() {
-        assertEquals("", spiThemesResourceProviderFactory.getId());
+        assertEquals("custom-theme-resource-provider", spiThemesResourceProviderFactory.getId());
     }
 }
