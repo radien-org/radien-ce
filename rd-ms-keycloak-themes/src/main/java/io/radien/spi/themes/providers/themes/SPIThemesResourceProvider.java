@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.spi.themes;
+package io.radien.spi.themes.providers.themes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.radien.spi.themes.exception.InvalidResponseException;
+import io.radien.spi.themes.providers.properties.SPIPropertiesProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +45,6 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
     private final Properties properties;
 
     public SPIThemesResourceProvider(KeycloakSession keycloakSession) {
-        log.info("Starts: Theme Resource initialization");
         this.keycloakSession = keycloakSession;
         this.classLoader = getClass().getClassLoader();
         this.properties = new Properties();
@@ -65,15 +65,11 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
 
     @Override
     public InputStream getResourceAsStream(String resource) {
-        String resourceName = String.format("get resource: %s", resourceRoot+resource);
-        log.info(resourceName);
         return classLoader.getResourceAsStream(resourceRoot + resource);
     }
 
     @Override
     public Properties getMessages(String baseBundleName, Locale locale) throws IOException {
-        String messageInfo = String.format("Get Messages for %s and %s!", baseBundleName, locale.toLanguageTag());
-        log.info(messageInfo);
         String uri = SPIPropertiesProvider.CMS_API_MESSAGES.getDefaultValue();
         URL url = new URL(uri);
         try {

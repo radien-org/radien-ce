@@ -17,6 +17,7 @@
 package io.radien.spi.themes;
 
 import io.radien.spi.themes.exception.InvalidResponseException;
+import io.radien.spi.themes.providers.themes.SPIThemesResourceProvider;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import junit.framework.TestCase;
-import org.junit.Test;
 import org.keycloak.models.KeycloakSession;
 
 import static org.junit.Assert.assertThrows;

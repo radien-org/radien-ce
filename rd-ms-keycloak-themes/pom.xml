@@ -19,6 +19,7 @@
     <properties>
         <keycloak.version>16.1.1</keycloak.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <aws.version>2.17.136</aws.version>
     </properties>
 
     <dependencies>
@@ -40,6 +41,19 @@
             <version>${keycloak.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sns</artifactId>
+            <version>${aws.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>software.amazon.awssdk</groupId>
+                    <artifactId>netty-nio-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <dependency>
             <groupId>com.konghq</groupId>
             <artifactId>unirest-java</artifactId>

@@ -15,10 +15,11 @@
  */
 package io.radien.spi.themes;
 
+import io.radien.spi.themes.providers.properties.SPIPropertiesProvider;
 import org.junit.Test;
 
-import static io.radien.spi.themes.SPIPropertiesProvider.CMS_API_MESSAGES;
-import static io.radien.spi.themes.SPIPropertiesProvider.SPI_ROOT_THEME;
+import static io.radien.spi.themes.providers.properties.SPIPropertiesProvider.CMS_API_MESSAGES;
+import static io.radien.spi.themes.providers.properties.SPIPropertiesProvider.SPI_ROOT_THEME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
