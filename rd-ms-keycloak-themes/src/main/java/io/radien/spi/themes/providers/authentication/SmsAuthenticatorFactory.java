@@ -27,10 +27,10 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
 public class SmsAuthenticatorFactory implements AuthenticatorFactory {
-	protected static String LENGTH_CONFIG = "length";
-	protected static String TTL_CONFIG = "ttl";
-	protected static String SENDER_ID_CONFIG = "senderId";
-	protected static String SIMULATION_CONFIG = "simulation";
+	protected static final String LENGTH_CONFIG = "length";
+	protected static final String TTL_CONFIG = "ttl";
+	protected static final String SENDER_ID_CONFIG = "senderId";
+	protected static final String SIMULATION_CONFIG = "simulation";
 
 	@Override
 	public String getId() {
