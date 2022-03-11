@@ -27,6 +27,10 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
 public class SmsAuthenticatorFactory implements AuthenticatorFactory {
+	protected static String LENGTH_CONFIG = "length";
+	protected static String TTL_CONFIG = "ttl";
+	protected static String SENDER_ID_CONFIG = "senderId";
+	protected static String SIMULATION_CONFIG = "simulation";
 
 	@Override
 	public String getId() {
@@ -70,10 +74,10 @@ public class SmsAuthenticatorFactory implements AuthenticatorFactory {
 	@Override
 	public List<ProviderConfigProperty> getConfigProperties() {
 		return Arrays.asList(
-			new ProviderConfigProperty("length", "Code length", "The number of digits of the generated code.", ProviderConfigProperty.STRING_TYPE, 6),
-			new ProviderConfigProperty("ttl", "Time-to-live", "The time to live in seconds for the code to be valid.", ProviderConfigProperty.STRING_TYPE, "300"),
-			new ProviderConfigProperty("senderId", "SenderId", "The sender ID is displayed as the message sender on the receiving device.", ProviderConfigProperty.STRING_TYPE, "Keycloak"),
-			new ProviderConfigProperty("simulation", "Simulation mode", "In simulation mode, the SMS won't be sent, but printed to the server logs", ProviderConfigProperty.BOOLEAN_TYPE, true)
+			new ProviderConfigProperty(LENGTH_CONFIG, "Code length", "The number of digits of the generated code.", ProviderConfigProperty.STRING_TYPE, 6),
+			new ProviderConfigProperty(TTL_CONFIG, "Time-to-live", "The time to live in seconds for the code to be valid.", ProviderConfigProperty.STRING_TYPE, "300"),
+			new ProviderConfigProperty(SENDER_ID_CONFIG, "SenderId", "The sender ID is displayed as the message sender on the receiving device.", ProviderConfigProperty.STRING_TYPE, "Keycloak"),
+			new ProviderConfigProperty(SIMULATION_CONFIG, "Simulation mode", "In simulation mode, the SMS won't be sent, but printed to the server logs", ProviderConfigProperty.BOOLEAN_TYPE, true)
 		);
 	}
 

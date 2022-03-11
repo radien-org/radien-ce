@@ -34,6 +34,9 @@ import org.keycloak.theme.Theme;
 public class SmsAuthenticator implements Authenticator {
 
 	private static final String TPL_CODE = "login-sms.ftl";
+	private static final String CODE_PARAMTER = "code";
+	private static final String MOBILE_NUMBER_PARAMETER = "mobile_number";
+
 
 	@Override
 	public void authenticate(AuthenticationFlowContext context) {
@@ -41,16 +44,16 @@ public class SmsAuthenticator implements Authenticator {
 		KeycloakSession session = context.getSession();
 		UserModel user = context.getUser();
 
-		String mobileNumber = user.getFirstAttribute("mobile_number");
+		String mobileNumber = user.getFirstAttribute(MOBILE_NUMBER_PARAMETER);
 		// mobileNumber of course has to be further validated on proper format, country code, ...
 
-		int length = Integer.parseInt(config.getConfig().get("length"));
-		int ttl = Integer.parseInt(config.getConfig().get("ttl"));
+		int length = Integer.parseInt(config.getConfig().get(SmsAuthenticatorFactory.LENGTH_CONFIG));
+		int ttl = Integer.parseInt(config.getConfig().get(SmsAuthenticatorFactory.TTL_CONFIG));
 
 		String code = SecretGenerator.getInstance().randomString(length, SecretGenerator.DIGITS);
 		AuthenticationSessionModel authSession = context.getAuthenticationSession();
-		authSession.setAuthNote("code", code);
-		authSession.setAuthNote("ttl", Long.toString(System.currentTimeMillis() + (ttl * 1000L)));
+		authSession.setAuthNote(CODE_PARAMTER, code);
+		authSession.setAuthNote(SmsAuthenticatorFactory.TTL_CONFIG, Long.toString(System.currentTimeMillis() + (ttl * 1000L)));
 
 		try {
 			Theme theme = session.theme().getTheme(Theme.Type.LOGIN);
@@ -70,11 +73,11 @@ public class SmsAuthenticator implements Authenticator {
 
 	@Override
 	public void action(AuthenticationFlowContext context) {
-		String enteredCode = context.getHttpRequest().getDecodedFormParameters().getFirst("code");
+		String enteredCode = context.getHttpRequest().getDecodedFormParameters().getFirst(CODE_PARAMTER);
 
 		AuthenticationSessionModel authSession = context.getAuthenticationSession();
-		String code = authSession.getAuthNote("code");
-		String ttl = authSession.getAuthNote("ttl");
+		String code = authSession.getAuthNote(CODE_PARAMTER);
+		String ttl = authSession.getAuthNote(SmsAuthenticatorFactory.TTL_CONFIG);
 
 		if (code == null || ttl == null) {
 			context.failureChallenge(AuthenticationFlowError.INTERNAL_ERROR,
@@ -112,7 +115,7 @@ public class SmsAuthenticator implements Authenticator {
 
 	@Override
 	public boolean configuredFor(KeycloakSession session, RealmModel realm, UserModel user) {
-		return user.getFirstAttribute("mobile_number") != null;
+		return user.getFirstAttribute(MOBILE_NUMBER_PARAMETER) != null;
 	}
 
 	@Override
