@@ -75,42 +75,27 @@
   {
     "active": true,
     "contentType": "FOLDER",
-    "externalPublic": true,
-    "fileSize": 0,
-    "htmlContent": "",
     "jcrPath": "/radien/rd_documents/protec_documents/protec_legal_documents",
-    "language": "pt",
     "name": "protec_legal_documents",
     "parentPath": "/radien/rd_documents/protec_documents",
-    "permissions": "",
     "system": true,
     "viewId": "protec_legal_documents"
   },
   {
     "active": true,
     "contentType": "FOLDER",
-    "externalPublic": true,
-    "fileSize": 0,
-    "htmlContent": "",
     "jcrPath": "/radien/rd_documents/protec_documents/protec_legal_documents/protec_termsAndConditions",
-    "language": "pt",
     "name": "protec_termsAndConditions",
     "parentPath": "/radien/rd_documents/protec_documents/protec_legal_documents",
-    "permissions": "",
     "system": true,
     "viewId": "protec_termsAndConditions"
   },
   {
     "active": true,
     "contentType": "FOLDER",
-    "externalPublic": true,
-    "fileSize": 0,
-    "htmlContent": "",
     "jcrPath": "/radien/rd_documents/protec_documents/protec_legal_documents/protec_legalDataPolicy",
-    "language": "pt",
     "name": "protec_legalDataPolicy",
     "parentPath": "/radien/rd_documents/protec_documents/protec_legal_documents",
-    "permissions": "",
     "system": true,
     "viewId": "protec_legalDataPolicy"
   },
@@ -131,7 +116,7 @@
     "externalPublic": "true",
     "version": "1.0.0",
     "tags": [
-      "Cloud radien"
+      "protec terms"
     ]
   },
   {
@@ -151,7 +136,7 @@
     "externalPublic": "true",
     "version": "1.0.0",
     "tags": [
-      "Cloud radien"
+      "protec legal data"
     ]
   }
 ]
