@@ -15,6 +15,8 @@
  */
 package io.radien.spi.themes;
 
+import io.radien.spi.themes.providers.themes.SPIThemesResourceProvider;
+import io.radien.spi.themes.providers.themes.SPIThemesResourceProviderFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +51,6 @@ public class SPIThemesResourceProviderFactoryTest {
 
     @Test
     public void testGetId() {
-        assertEquals("", spiThemesResourceProviderFactory.getId());
+        assertEquals("custom-theme-resource-provider", spiThemesResourceProviderFactory.getId());
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.spi.themes;
+package io.radien.spi.themes.providers.themes;
 
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 public class SPIThemesResourceProviderFactory implements ThemeResourceProviderFactory {
     private static final Logger log = LoggerFactory.getLogger(SPIThemesResourceProviderFactory.class);
+
+    private static final String PROVIDER_ID = "custom-theme-resource-provider";
 
     @Override
     public ThemeResourceProvider create(KeycloakSession keycloakSession) {
@@ -49,7 +51,6 @@ public class SPIThemesResourceProviderFactory implements ThemeResourceProviderFa
 
     @Override
     public String getId() {
-        log.info("GetId called");
-        return "";
+        return PROVIDER_ID;
     }
 }
