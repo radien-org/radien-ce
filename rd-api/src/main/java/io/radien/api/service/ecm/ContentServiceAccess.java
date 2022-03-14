@@ -16,6 +16,7 @@
 package io.radien.api.service.ecm;
 
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.model.SystemContentVersion;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 *
 	 * @param obj the {@link EnterpriseContent} to be persisted
 	 */
-	void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+	void save(String client, EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException;
 
 	/**
 	 * Deletes the target enterprise content
@@ -121,7 +122,7 @@ public interface ContentServiceAccess extends ServiceAccess {
 
 	void deleteVersion(String path, SystemContentVersion version) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 
-	String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+	String getOrCreateDocumentsPath(String client, String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException;
 
 	void delete(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
 }

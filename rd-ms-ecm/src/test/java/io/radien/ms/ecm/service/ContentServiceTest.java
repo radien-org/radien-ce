@@ -20,6 +20,7 @@ package io.radien.ms.ecm.service;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.ContentVersion;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import org.eclipse.microprofile.config.Config;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,6 +72,7 @@ public class ContentServiceTest {
     @Before
     public void init() throws NoSuchFieldException {
         when(configHandler.getDefaultLanguage()).thenReturn("en");
+        when(configHandler.getSupportedClients()).thenReturn("radien");
     }
 
     @Test
@@ -165,35 +166,43 @@ public class ContentServiceTest {
     }
 
     @Test
-    public void testGetOrCreateDocumentsPath() throws ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
-        when(contentRepository.getOrCreateDocumentsPath("a/path"))
+    public void testGetOrCreateDocumentsPath() throws ContentRepositoryNotAvailableException, RepositoryException,
+            ContentNotAvailableException, InvalidClientException {
+        contentServiceAccess.init();
+        when(contentRepository.getOrCreateDocumentsPath("radien", "a/path"))
                 .thenReturn("a/path");
-        String result = contentServiceAccess.getOrCreateDocumentsPath("a/path");
+        String result = contentServiceAccess.getOrCreateDocumentsPath("radien", "a/path");
         assertEquals("a/path", result);
     }
 
     @Test(expected = ContentNotAvailableException.class)
-    public void testGetOrCreateDocumentsPathException() throws ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
-        when(contentRepository.getOrCreateDocumentsPath("a/path"))
+    public void testGetOrCreateDocumentsPathException() throws ContentRepositoryNotAvailableException, RepositoryException,
+            ContentNotAvailableException, InvalidClientException {
+        contentServiceAccess.init();
+        when(contentRepository.getOrCreateDocumentsPath("radien", "a/path"))
                 .thenThrow(new PathNotFoundException());
-        contentServiceAccess.getOrCreateDocumentsPath("a/path");
+        contentServiceAccess.getOrCreateDocumentsPath("radien", "a/path");
     }
 
     @Test
-    public void testSave() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    public void testSave() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException,
+            RepositoryException, InvalidClientException {
+        contentServiceAccess.init();
         EnterpriseContent content = createGenericEnterpriseContent("name", ContentType.HTML,
                 null, null);
-        contentServiceAccess.save(content);
-        verify(contentRepository).save(content);
+        contentServiceAccess.save("radien", content);
+        verify(contentRepository).save("radien", content);
     }
 
     @Test(expected = ContentNotAvailableException.class)
-    public void testSaveException() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    public void testSaveException() throws NameNotValidException, ContentRepositoryNotAvailableException,
+            ContentNotAvailableException, RepositoryException, InvalidClientException {
+        contentServiceAccess.init();
         EnterpriseContent content = createGenericEnterpriseContent("name", ContentType.HTML,
                 null, null);
         doThrow(new PathNotFoundException())
-                .when(contentRepository).save(content);
-        contentServiceAccess.save(content);
+                .when(contentRepository).save("radien", content);
+        contentServiceAccess.save("radien", content);
     }
 
     @Test

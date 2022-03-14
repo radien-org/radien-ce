@@ -209,18 +209,18 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testGetOrCreateDocumentsPathSuccess() throws SystemException {
-        when(contentResource.getOrCreateDocumentsPath("relative/path"))
+        when(contentResource.getOrCreateDocumentsPath("radien", "relative/path"))
                 .thenReturn(Response.ok("/abolute/path/relative/path").build());
-        String result = contentClient.getOrCreateDocumentsPath("relative/path");
+        String result = contentClient.getOrCreateDocumentsPath("radien", "relative/path");
         assertEquals("/abolute/path/relative/path", result);
     }
 
     @Test
     public void testGetOrCreateDocumentsPathError() throws SystemException {
-        when(contentResource.getOrCreateDocumentsPath("relative/path"))
+        when(contentResource.getOrCreateDocumentsPath("radien", "relative/path"))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND)
                         .entity("an error").build());
-        String result = contentClient.getOrCreateDocumentsPath("relative/path");
+        String result = contentClient.getOrCreateDocumentsPath("radien", "relative/path");
         assertNull(result);
     }
 
@@ -228,7 +228,7 @@ public class ContentRESTServiceClientTest {
     public void testGetOrCreateDocumentsPathException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.getOrCreateDocumentsPath("relative/path");
+        contentClient.getOrCreateDocumentsPath("radien", "relative/path");
     }
 
     @Test
@@ -298,17 +298,17 @@ public class ContentRESTServiceClientTest {
     @Test
     public void testSaveContentSuccess() throws SystemException {
         EnterpriseContent content = new GenericEnterpriseContent("name");
-        when(contentResource.saveContent(any(EnterpriseContent.class)))
+        when(contentResource.saveContent(anyString(), any(EnterpriseContent.class)))
                 .thenReturn(Response.ok().build());
-        assertTrue(contentClient.saveContent(content));
+        assertTrue(contentClient.saveContent("radien", content));
     }
 
     @Test
     public void testSaveContentFail() throws SystemException {
         EnterpriseContent content = new GenericEnterpriseContent("name");
-        when(contentResource.saveContent(any(EnterpriseContent.class)))
+        when(contentResource.saveContent(anyString(), any(EnterpriseContent.class)))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("Error saving").build());
-        assertFalse(contentClient.saveContent(content));
+        assertFalse(contentClient.saveContent("radien", content));
     }
 
     @Test(expected = SystemException.class)
@@ -316,7 +316,7 @@ public class ContentRESTServiceClientTest {
         EnterpriseContent content = new GenericEnterpriseContent("name");
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.saveContent(content);
+        contentClient.saveContent("radien", content);
     }
 
     @Test

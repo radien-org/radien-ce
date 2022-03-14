@@ -19,18 +19,26 @@ package io.radien.ms.ecm.config;
 import io.radien.api.OAFAccess;
 import io.radien.api.SystemProperties;
 import io.radien.ms.ecm.constants.CmsProperties;
+import java.text.MessageFormat;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateful
 public class ConfigHandler {
+    protected static final Logger log = LoggerFactory.getLogger(ConfigHandler.class);
+
     @Inject
     private OAFAccess oafAccess;
 
     //CmsConfig
     private String seedContent;
     private String seedInsertOnly;
+    private String supportedClients;
+    private String defaultClient;
     //JcrConfig
     private String repoHome;
     private String repoSource;
@@ -52,6 +60,8 @@ public class ConfigHandler {
     public void init() {
         this.seedContent = oafAccess.getProperty(CmsProperties.SYSTEM_MS_SEED_CONTENT);
         this.seedInsertOnly = oafAccess.getProperty(CmsProperties.SYSTEM_MS_SEED_CONTENT_INSERT_ONLY);
+        this.supportedClients = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_SUPPORTED_CLIENTS);
+        this.defaultClient = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_DEFAULT_CLIENT);
         this.repoHome = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_REPO_HOME_DIR);
         this.repoSource = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_REPO_SOURCE);
         this.mongoDbName = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_REPO_MONGO_DB_NAME);
@@ -74,6 +84,14 @@ public class ConfigHandler {
         return seedInsertOnly;
     }
 
+    public String getSupportedClients() {
+        return supportedClients;
+    }
+
+    public String getDefaultClient() {
+        return defaultClient;
+    }
+
     public String getRepoHome() {
         return repoHome;
     }
@@ -94,24 +112,32 @@ public class ConfigHandler {
         return autoCreateNodes;
     }
 
+    public String getRootNode(String client) {
+        return MessageFormat.format(rootNode, client);
+    }
+
     public String getRootNode() {
-        return rootNode;
+        return MessageFormat.format(rootNode, defaultClient);
     }
 
-    public String getHtmlNode() {
-        return htmlNode;
+    public String getHtmlNode(String client) {
+        return MessageFormat.format(htmlNode, client);
     }
 
-    public String getNotificationNode() {
-        return notificationNode;
+    public String getNotificationNode(String client) {
+        return MessageFormat.format(notificationNode, client);
     }
 
-    public String getDocumentsNode() {
-        return documentsNode;
+    public String getDocumentsNode(String client) {
+        return MessageFormat.format(documentsNode, client);
+    }
+
+    public String getPropertiesNode(String client) {
+        return MessageFormat.format(propertiesNode, client);
     }
 
     public String getPropertiesNode() {
-        return propertiesNode;
+        return MessageFormat.format(propertiesNode, defaultClient);
     }
 
     public String getSupportedLanguages() {
@@ -122,7 +148,14 @@ public class ConfigHandler {
         return defaultLanguage;
     }
 
-    public String getProperty(SystemProperties property) {
-        return oafAccess.getProperty(property);
+    public String getProperty(SystemProperties property, Optional<String> client) {
+        String value = oafAccess.getProperty(property);
+        if(value.contains("{0}")) {
+            if(!client.isPresent()) {
+                log.warn("Client value not provided, using default value {}", defaultClient);
+            }
+            value = MessageFormat.format(value, client.orElse(defaultClient));
+        }
+        return value;
     }
 }

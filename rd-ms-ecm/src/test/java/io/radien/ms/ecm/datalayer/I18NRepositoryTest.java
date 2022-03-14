@@ -57,6 +57,7 @@ import org.mockito.junit.MockitoRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -85,10 +86,8 @@ public class I18NRepositoryTest {
         repositoryField.setAccessible(true);
         repositoryField.set(repository, transientRepository);
 
-        when(configHandler.getRootNode())
-                .thenReturn("radien");
-        when(configHandler.getPropertiesNode())
-                .thenReturn("rd_properties");
+        when(configHandler.getRootNode()).thenReturn("radien");
+        when(configHandler.getPropertiesNode()).thenReturn("rd_properties");
     }
 
     @Test

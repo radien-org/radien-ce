@@ -74,7 +74,7 @@ public class ContentRepository extends JCRRepository {
 	@Inject
 	private ContentDataProvider dataProvider;
 
-	public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
+	public void save(String client, EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		String viewId = obj.getViewId();
 		String language = obj.getLanguage();
@@ -109,32 +109,32 @@ public class ContentRepository extends JCRRepository {
 		content = getContentIfPathExists(session, obj, content);
 		Node parent = getParentIfParentPathExists(session, obj);
 
-		process(session, obj, language, content, parent, isMoveCommand, nameEscaped, newPath);
+		process(session, client, obj, language, content, parent, isMoveCommand, nameEscaped, newPath);
 	}
 
-	private void process(Session session, EnterpriseContent obj, String language, Node content,
+	private void process(Session session, String client, EnterpriseContent obj, String language, Node content,
 						 Node parent, boolean isMoveCommand, String nameEscaped, String newPath) throws RepositoryException {
 		try {
 			boolean isVersionable = obj instanceof SystemVersionableEnterpriseContent && ((SystemVersionableEnterpriseContent)obj).isVersionable();
 			if (content == null) {
 				switch (obj.getContentType()) {
 					case DOCUMENT:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false);
+						content = addNodeToParent(session, client, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false);
 						break;
 					case HTML:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_HTML, true);
+						content = addNodeToParent(session, client, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_HTML, true);
 						break;
 					case IMAGE:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_IMAGE, false);
+						content = addNodeToParent(session, client, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_IMAGE, false);
 						break;
 					case FOLDER:
-						content = prepareFolderNode(session, language, parent, nameEscaped);
+						content = prepareFolderNode(session, client, language, parent, nameEscaped);
 						break;
 					case NOTIFICATION:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION, true);
+						content = addNodeToParent(session, client, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION, true);
 						break;
 					case TAG:
-						content = prepareTagNode(session, language, parent, nameEscaped);
+						content = prepareTagNode(session, client, language, parent, nameEscaped);
 						break;
 					default:
 						log.error("Unknown doc type {}", obj.getContentType());
@@ -220,11 +220,11 @@ public class ContentRepository extends JCRRepository {
 		return parent;
 	}
 
-	private Node addNodeToParent(Session session, String language, Node parent, String viewID, CmsProperties systemCmsCfgNodeDocs,
+	private Node addNodeToParent(Session session, String client, String language, Node parent, String viewID, CmsProperties systemCmsCfgNodeDocs,
 								 boolean b) throws RepositoryException {
 		Node content = null;
 		if(parent == null) {
-			parent = getNode(session, systemCmsCfgNodeDocs, b, language);
+			parent = getNode(session, client, systemCmsCfgNodeDocs, b, language);
 		}
 		if(parent != null) {
 			content = parent.addNode(viewID, CmsConstants.RADIEN_BASE_NODE_TYPE);
@@ -232,10 +232,10 @@ public class ContentRepository extends JCRRepository {
 		return content;
 	}
 
-	private Node prepareTagNode(Session session, String language, Node parent, String nameEscaped) throws RepositoryException {
+	private Node prepareTagNode(Session session, String client, String language, Node parent, String nameEscaped) throws RepositoryException {
 		Node content = null;
 		if(parent == null) {
-			parent = getNode(session, CmsProperties.SYSTEM_CMS_CFG_NODE_TAG, false, language);
+			parent = getNode(session, client, CmsProperties.SYSTEM_CMS_CFG_NODE_TAG, false, language);
 		}
 		if(parent != null) {
 			content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
@@ -243,15 +243,15 @@ public class ContentRepository extends JCRRepository {
 		return content;
 	}
 
-	private Node prepareFolderNode(Session session, String language, Node parent, String nameEscaped) throws RepositoryException {
+	private Node prepareFolderNode(Session session, String client, String language, Node parent, String nameEscaped) throws RepositoryException {
 		Node content = null;
 		if(parent == null) {
-			parent = getNode(session, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false, language);
+			parent = getNode(session, client, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false, language);
 		}
 		if(parent != null) {
 			content = parent.addNode(nameEscaped, JcrConstants.NT_FOLDER);
 		}
-		addSupportedLocalesFolder(content, parent, nameEscaped);
+		addSupportedLocalesFolder(client, content, parent, nameEscaped);
 		return content;
 	}
 
@@ -354,22 +354,22 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	public void updateFolderSupportedLanguages(String contentPath, String nameEscaped) throws RepositoryException, ContentRepositoryNotAvailableException {
+	public void updateFolderSupportedLanguages(String client, String contentPath, String nameEscaped) throws RepositoryException, ContentRepositoryNotAvailableException {
 		Session session = createSession();
 
 		try {
 			Node contentNode = session.getNode(contentPath);
 			Node rootNode = session.getRootNode().getNode("radien");
-			addSupportedLocalesFolder(contentNode, rootNode, nameEscaped);
+			addSupportedLocalesFolder(client, contentNode, rootNode, nameEscaped);
 			session.save();
 		} finally {
 			session.logout();
 		}
 	}
 
-	private void addSupportedLocalesFolder(Node content, Node parent, String nameEscaped) throws RepositoryException {
-		if (nameEscaped.equals(configHandler.getHtmlNode()) ||
-				nameEscaped.equals(configHandler.getNotificationNode())) {
+	private void addSupportedLocalesFolder(String client, Node content, Node parent, String nameEscaped) throws RepositoryException {
+		if (nameEscaped.equals(configHandler.getHtmlNode(client)) ||
+				nameEscaped.equals(configHandler.getNotificationNode(client))) {
 
 			for (String lang : dataProvider.getSupportedLanguages()) {
 				try {
@@ -396,10 +396,10 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	private Node getNode(Session session, CmsProperties nodeType, boolean findLanguage, String language) throws RepositoryException {
-		Node resultNode = session.getRootNode().getNode(configHandler.getRootNode());
+	private Node getNode(Session session, String client, CmsProperties nodeType, boolean findLanguage, String language) throws RepositoryException {
+		Node resultNode = session.getRootNode().getNode(configHandler.getRootNode(client));
 		if (resultNode != null) {
-			resultNode = resultNode.getNode(configHandler.getProperty(nodeType));
+			resultNode = resultNode.getNode(configHandler.getProperty(nodeType, Optional.ofNullable(client)));
 		}
 		if (findLanguage && resultNode != null) {
 			resultNode = resultNode.getNode(language);
@@ -505,15 +505,15 @@ public class ContentRepository extends JCRRepository {
 		throw new ContentNotAvailableException(MessageFormat.format("Version {0} not found in {1}", version.getVersion(), path));
 	}
 
-	public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+	public String getOrCreateDocumentsPath(String client, String path) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		try {
-			String root = configHandler.getRootNode();
-			Node docsNode = getNode(session, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
+			String root = configHandler.getRootNode(client);
+			Node docsNode = getNode(session, client, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
 			if (docsNode == null) {
 				throw new RepositoryException(String.format("%s not found", CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS.propKey()));
 			}
-			generateFolderStructure(String.format("/%s/%s%s", root, docsNode.getName(), path), session);
+			generateFolderStructure(client, String.format("/%s/%s%s", root, docsNode.getName(), path), session);
 			session.save();
 		} catch (Exception e) {
 			log.error("ERROR " , e);
@@ -556,7 +556,7 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	private String generateFolderStructure(String path, Session session) throws ContentRepositoryNotAvailableException, RepositoryException {
+	private String generateFolderStructure(String client, String path, Session session) throws ContentRepositoryNotAvailableException, RepositoryException {
 		String parent = path.substring(0, 1);
 		String[] folderNames = path.substring(1).split("/");
 		for(String folderName : folderNames) {
@@ -570,7 +570,7 @@ public class ContentRepository extends JCRRepository {
 				Folder folder = new Folder(folderName);
 				folder.setParentPath(parent);
 				folder.setViewId(String.format("%s_%s", folder.getName(), UUID.randomUUID()));
-				save(folder);
+				save(client, folder);
 				parent = folder.getJcrPath();
 			} else {
 				parent = exists.getPath();

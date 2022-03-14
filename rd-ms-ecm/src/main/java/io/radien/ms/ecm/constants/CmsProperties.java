@@ -22,6 +22,8 @@ public enum CmsProperties implements SystemProperties {
     //CmsConfig
     SYSTEM_MS_SEED_CONTENT("system.jcr.seed.content"),
     SYSTEM_MS_SEED_CONTENT_INSERT_ONLY("system.jcr.seed.insert.only"),
+    SYSTEM_CMS_SUPPORTED_CLIENTS("system.jcr.supported.clients"),
+    SYSTEM_CMS_DEFAULT_CLIENT("system.jcr.default.client"),
     //JcrConfig
     SYSTEM_CMS_REPO_HOME_DIR("system.jcr.home"),
     SYSTEM_CMS_REPO_SOURCE("system.jcr.source"),

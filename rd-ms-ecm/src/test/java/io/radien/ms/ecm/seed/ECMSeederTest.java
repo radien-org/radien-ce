@@ -20,6 +20,7 @@ package io.radien.ms.ecm.seed;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.ContentVersion;
@@ -74,6 +75,8 @@ public class ECMSeederTest {
     @Before
     public void init() throws NoSuchFieldException {
         when(configHandler.getSupportedLanguages()).thenReturn("en");
+        when(configHandler.getSupportedClients()).thenReturn("radien");
+        when(configHandler.getDefaultClient()).thenReturn("radien");
         when(configHandler.getDefaultLanguage()).thenReturn("en");
     }
 
@@ -85,22 +88,23 @@ public class ECMSeederTest {
     }
 
     @Test
-    public void testInitNewInitNoContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void testInitNewInitNoContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException {
         when(configHandler.getSeedContent()).thenReturn("true");
         when(configHandler.getSeedInsertOnly()).thenReturn("true");
 
         //Root Node
-        when(configHandler.getRootNode()).thenReturn("rootNode");
+        when(configHandler.getRootNode(anyString())).thenReturn("rootNode");
         when(contentServiceAccess.getByViewIdLanguage("rootNode", false, ""))
                 .thenReturn(new ArrayList<>());
         when(contentRepository.getRootNodePath())
                 .thenReturn("/");
         doAnswer(invocation -> {
-            Object arg0 = invocation.getArgument(0);
+            Object arg1 = invocation.getArgument(1);
 
-            ((EnterpriseContent) arg0).setJcrPath("/rootNode");
+            ((EnterpriseContent) arg1).setJcrPath("/rootNode");
             return null;
-        }).when(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("rootNode")));
+        }).when(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("rootNode")));
 
         //PROPERTIES Node
         when(configHandler.getPropertiesNode()).thenReturn("propertiesNode");
@@ -108,20 +112,21 @@ public class ECMSeederTest {
                 .thenReturn(new ArrayList<>());
 
         //HTMLContent Node
-        when(configHandler.getHtmlNode()).thenReturn("htmlNode");
+        when(configHandler.getHtmlNode(anyString())).thenReturn("htmlNode");
         when(contentServiceAccess.getByViewIdLanguage("htmlNode", false, null))
                 .thenReturn(new ArrayList<>());
 
         //Documents Node
-        when(configHandler.getDocumentsNode()).thenReturn("docsNode");
+        when(configHandler.getDocumentsNode(anyString())).thenReturn("docsNode");
         when(contentServiceAccess.getByViewIdLanguage("docsNode", false, null))
                 .thenReturn(new ArrayList<>());
         doAnswer(invocation -> {
-            Object arg0 = invocation.getArgument(0);
+            Object arg0 = invocation.getArgument(1);
 
             ((EnterpriseContent) arg0).setJcrPath("/rootNode/docsNode");
             return null;
-        }).when(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("docsNode")));
+        }).when(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien"))
+                ,argThat((EnterpriseContent arg) -> arg.getName().equals("docsNode")));
         //// Auto Create Folders
         when(configHandler.getAutoCreateNodes()).thenReturn("documents,reports");
         when(contentServiceAccess.getChildrenFiles("docsNode"))
@@ -132,21 +137,27 @@ public class ECMSeederTest {
 
         //Init
         ecmSeeder.init();
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("rootNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("propertiesNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("htmlNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("docsNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("documents")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("reports")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("rootNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("propertiesNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("htmlNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("docsNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("documents")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("reports")));
     }
 
     @Test
-    public void testInitSecondInitNoContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    public void testInitSecondInitNoContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException, InvalidClientException {
         when(configHandler.getSeedContent()).thenReturn("true");
         when(configHandler.getSeedInsertOnly()).thenReturn("true");
 
         //Root Node
-        when(configHandler.getRootNode()).thenReturn("rootNode");
+        when(configHandler.getRootNode(anyString())).thenReturn("rootNode");
         Folder rootNode = new Folder("rootNode");
         rootNode.setParentPath("/");
         rootNode.setViewId("rootNode");
@@ -162,7 +173,7 @@ public class ECMSeederTest {
                 .thenReturn(Collections.singletonList(propertiesNode));
 
         //HTMLContent Node
-        when(configHandler.getHtmlNode()).thenReturn("htmlNode");
+        when(configHandler.getHtmlNode(anyString())).thenReturn("htmlNode");
         Folder htmlNode = new Folder("htmlNode");
         htmlNode.setParentPath("/");
         htmlNode.setViewId("htmlNode");
@@ -170,7 +181,7 @@ public class ECMSeederTest {
                 .thenReturn(Collections.singletonList(htmlNode));
 
         //Documents Node
-        when(configHandler.getDocumentsNode()).thenReturn("docsNode");
+        when(configHandler.getDocumentsNode(anyString())).thenReturn("docsNode");
         Folder docsNode = new Folder("docsNode");
         docsNode.setParentPath("/");
         docsNode.setViewId("docsNode");
@@ -187,34 +198,40 @@ public class ECMSeederTest {
 
         //Init
         ecmSeeder.init();
-        verify(contentServiceAccess, never()).save(argThat((arg) -> arg.getName().equals("rootNode")));
-        verify(contentServiceAccess, never()).save(argThat((arg) -> arg.getName().equals("propertiesNode")));
-        verify(contentServiceAccess, never()).save(argThat((arg) -> arg.getName().equals("htmlNode")));
-        verify(contentRepository).updateFolderSupportedLanguages("/", "htmlNode");
-        verify(contentServiceAccess, never()).save(argThat((arg) -> arg.getName().equals("docsNode")));
-        verify(contentRepository).updateFolderSupportedLanguages("/", "docsNode");
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("documents")));
+        verify(contentServiceAccess, never()).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("rootNode")));
+        verify(contentServiceAccess, never()).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("propertiesNode")));
+        verify(contentServiceAccess, never()).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("htmlNode")));
+        verify(contentRepository).updateFolderSupportedLanguages("radien", "/", "htmlNode");
+        verify(contentServiceAccess, never()).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("docsNode")));
+        verify(contentRepository).updateFolderSupportedLanguages("radien", "/", "docsNode");
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("documents")));
     }
 
 
 
     @Test
-    public void testInitContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, NameNotValidException {
+    public void testInitContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, NameNotValidException, InvalidClientException {
         when(configHandler.getSeedContent()).thenReturn("true");
         when(configHandler.getSeedInsertOnly()).thenReturn("true");
 
         //Root Node
-        when(configHandler.getRootNode()).thenReturn("rootNode");
+        when(configHandler.getRootNode(anyString())).thenReturn("rootNode");
         when(contentServiceAccess.getByViewIdLanguage("rootNode", false, ""))
                 .thenReturn(new ArrayList<>());
         when(contentRepository.getRootNodePath())
                 .thenReturn("/");
         doAnswer(invocation -> {
-            Object arg0 = invocation.getArgument(0);
+            Object arg0 = invocation.getArgument(1);
 
             ((EnterpriseContent) arg0).setJcrPath("/rootNode");
             return null;
-        }).when(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("rootNode")));
+        }).when(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("rootNode")));
 
         //Properties Node
         when(configHandler.getPropertiesNode()).thenReturn("propertiesNode");
@@ -222,20 +239,21 @@ public class ECMSeederTest {
                 .thenReturn(new ArrayList<>());
 
         //HTMLContent Node
-        when(configHandler.getHtmlNode()).thenReturn("htmlNode");
+        when(configHandler.getHtmlNode(anyString())).thenReturn("htmlNode");
         when(contentServiceAccess.getByViewIdLanguage("htmlNode", false, null))
                 .thenReturn(new ArrayList<>());
 
         //Documents Node
-        when(configHandler.getDocumentsNode()).thenReturn("docsNode");
+        when(configHandler.getDocumentsNode(anyString())).thenReturn("docsNode");
         when(contentServiceAccess.getByViewIdLanguage("docsNode", false, null))
                 .thenReturn(new ArrayList<>());
         doAnswer(invocation -> {
-            Object arg0 = invocation.getArgument(0);
+            Object arg0 = invocation.getArgument(1);
 
             ((EnterpriseContent) arg0).setJcrPath("/rootNode/docsNode");
             return null;
-        }).when(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("docsNode")));
+        }).when(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("docsNode")));
         //// Auto Create Folders
         when(configHandler.getAutoCreateNodes()).thenReturn("documents,reports");
         when(contentServiceAccess.getChildrenFiles("docsNode"))
@@ -255,7 +273,7 @@ public class ECMSeederTest {
         versionableUptoDate.setViewId("versionableSameVersionViewId");
         versionableUptoDate.setLanguage("en");
         versionableUptoDate.setContentType(ContentType.DOCUMENT);
-        versionableUptoDate.setParentPath("/parent/path");
+        versionableUptoDate.setParentPath("/radien/path");
         ((VersionableEnterpriseContent)versionableUptoDate).setVersionable(true);
         ((VersionableEnterpriseContent)versionableUptoDate).setVersion(new ContentVersion("1.0.0"));
         when(contentServiceAccess.getByViewIdLanguage("versionableSameVersionViewId", false, "en"))
@@ -266,7 +284,7 @@ public class ECMSeederTest {
         versionableNew.setViewId("versionableNew");
         versionableNew.setLanguage("en");
         versionableNew.setContentType(ContentType.DOCUMENT);
-        versionableNew.setParentPath("/parent/path");
+        versionableNew.setParentPath("/radien/path");
         ((VersionableEnterpriseContent)versionableNew).setVersionable(true);
         ((VersionableEnterpriseContent)versionableNew).setVersion(new ContentVersion("1.1.0"));
         when(contentServiceAccess.getByViewIdLanguage("versionableNew", false, "en"))
@@ -276,15 +294,21 @@ public class ECMSeederTest {
                 .thenReturn(Arrays.asList(generic, versionableUptoDate, versionableNew));
         //Init
         ecmSeeder.init();
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("rootNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("propertiesNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("htmlNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("docsNode")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("documents")));
-        verify(contentServiceAccess).save(argThat((arg) -> arg.getName().equals("reports")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("rootNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("propertiesNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("htmlNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("docsNode")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("documents")));
+        verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
+                argThat((EnterpriseContent arg) -> arg.getName().equals("reports")));
 
-        verify(contentServiceAccess).save(generic);
-        verify(contentServiceAccess, never()).save(versionableUptoDate);
-        verify(contentServiceAccess).save(versionableNew);
+        verify(contentServiceAccess).save("radien", generic);
+        verify(contentServiceAccess, never()).save("radien", versionableUptoDate);
+        verify(contentServiceAccess).save("radien", versionableNew);
     }
 }

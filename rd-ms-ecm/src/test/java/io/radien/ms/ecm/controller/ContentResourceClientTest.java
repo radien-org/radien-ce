@@ -22,6 +22,7 @@ import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.ContentVersion;
@@ -31,13 +32,18 @@ import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.DeleteContentFilter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,16 +52,14 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public class ContentResourceClientTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
     @InjectMocks
     private ContentResourceClient controllerResource;
 
     @Mock
     private ContentServiceAccess contentServiceAccess;
-
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testGetContentFile() throws NameNotValidException, ContentRepositoryNotAvailableException, ElementNotFoundException {
@@ -153,29 +157,29 @@ public class ContentResourceClientTest {
     }
 
     @Test
-    public void testGetOrCreateDocumentsPath() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void testGetOrCreateDocumentsPath() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException {
         String path = "/a/path";
-        when(contentServiceAccess.getOrCreateDocumentsPath(path))
+        when(contentServiceAccess.getOrCreateDocumentsPath("radien", path))
                 .thenReturn(path);
-        Response responseResult = controllerResource.getOrCreateDocumentsPath(path);
+        Response responseResult = controllerResource.getOrCreateDocumentsPath("radien", path);
         assertEquals(Response.Status.OK.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
     @Test
-    public void testGetOrCreateDocumentsPathRepositoryNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void testGetOrCreateDocumentsPathRepositoryNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException {
         String path = "/a/path";
-        when(contentServiceAccess.getOrCreateDocumentsPath(path))
+        when(contentServiceAccess.getOrCreateDocumentsPath("radien", path))
                 .thenThrow(new ContentRepositoryNotAvailableException());
-        Response responseResult = controllerResource.getOrCreateDocumentsPath(path);
+        Response responseResult = controllerResource.getOrCreateDocumentsPath("radien", path);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
     @Test
-    public void testGetOrCreateDocumentsPathContentNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void testGetOrCreateDocumentsPathContentNotAvailable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException {
         String path = "/a/path";
-        when(contentServiceAccess.getOrCreateDocumentsPath(path))
+        when(contentServiceAccess.getOrCreateDocumentsPath("radien", path))
                 .thenThrow(new ContentNotAvailableException());
-        Response responseResult = controllerResource.getOrCreateDocumentsPath(path);
+        Response responseResult = controllerResource.getOrCreateDocumentsPath("radien", path);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
@@ -238,7 +242,7 @@ public class ContentResourceClientTest {
         content.setContentType(ContentType.HTML);
         content.setViewId("viewId");
         content.setLanguage("en");
-        Response responseResult = controllerResource.saveContent(content);
+        Response responseResult = controllerResource.saveContent("radien", content);
         assertEquals(Response.Status.OK.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
@@ -248,8 +252,8 @@ public class ContentResourceClientTest {
         content.setContentType(ContentType.HTML);
         content.setViewId("viewId");
         content.setLanguage("en");
-        doThrow(new ContentRepositoryNotAvailableException()).when(contentServiceAccess).save(content);
-        Response responseResult = controllerResource.saveContent(content);
+        doThrow(new ContentRepositoryNotAvailableException()).when(contentServiceAccess).save("radien", content);
+        Response responseResult = controllerResource.saveContent("radien", content);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 
@@ -259,8 +263,8 @@ public class ContentResourceClientTest {
         content.setContentType(ContentType.HTML);
         content.setViewId("viewId");
         content.setLanguage("en");
-        doThrow(new ContentNotAvailableException()).when(contentServiceAccess).save(content);
-        Response responseResult = controllerResource.saveContent(content);
+        doThrow(new ContentNotAvailableException()).when(contentServiceAccess).save("radien", content);
+        Response responseResult = controllerResource.saveContent("radien", content);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), responseResult.getStatusInfo().getStatusCode());
     }
 

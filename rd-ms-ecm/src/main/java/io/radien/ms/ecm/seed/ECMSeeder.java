@@ -22,6 +22,7 @@ import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.exception.SystemException;
@@ -32,6 +33,8 @@ import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.domain.TranslationDataProvider;
 import io.radien.ms.ecm.event.ApplicationInitializedEvent;
+import java.util.Arrays;
+import java.util.UUID;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -62,6 +65,7 @@ public @ApplicationScoped class ECMSeeder {
     @Inject
     private I18NServiceAccess i18NServiceAccess;
 
+    private String[] supportedClients;
     private String supportedLanguages;
     private String defaultLanguage;
 
@@ -69,10 +73,11 @@ public @ApplicationScoped class ECMSeeder {
     public void init() {
         log.info("Initializing CMS");
         if (Boolean.parseBoolean(configHandler.getSeedContent())) {
+            supportedClients = configHandler.getSupportedClients().split(",");
             supportedLanguages = configHandler.getSupportedLanguages();
             defaultLanguage = configHandler.getDefaultLanguage();
             boolean insertOnly = Boolean.parseBoolean(configHandler.getSeedInsertOnly());
-            initStructure();
+            initStructure(supportedClients);
             initContent(insertOnly);
             initI18NProperties();
         }
@@ -90,37 +95,39 @@ public @ApplicationScoped class ECMSeeder {
         }
     }
 
-    private void initStructure() {
+    private void initStructure(String[] supportedClients) {
         try {
             repository.registerCNDNodeTypes(CmsProperties.OAF_NODE_TYPES.propKey());
 
-            EnterpriseContent rootNode;
-            EnterpriseContent oafPropertiesContent = null;
-            EnterpriseContent oafHTMLContent = null;
-            EnterpriseContent oafNewsContent = null;
-            EnterpriseContent oafAppInfoContent = null;
-            EnterpriseContent oafStaticContentContent = null;
-            EnterpriseContent oafImagesContent = null;
-            EnterpriseContent oafNotificationsContent = null;
-            EnterpriseContent oafIFrameContent = null;
+            for(String client : supportedClients) {
+                EnterpriseContent rootNode;
+                EnterpriseContent oafPropertiesContent = null;
+                EnterpriseContent oafHTMLContent = null;
+                EnterpriseContent oafNewsContent = null;
+                EnterpriseContent oafAppInfoContent = null;
+                EnterpriseContent oafStaticContentContent = null;
+                EnterpriseContent oafImagesContent = null;
+                EnterpriseContent oafNotificationsContent = null;
+                EnterpriseContent oafIFrameContent = null;
 
-            rootNode = initRootNode();
-            initPropertiesContent(rootNode, oafPropertiesContent);
-            initHTMLContentNode(rootNode, oafHTMLContent);
+                rootNode = initRootNode(client);
+                initPropertiesContent(client, rootNode, oafPropertiesContent);
+                initHTMLContentNode(client, rootNode, oafHTMLContent);
 /*
-            initAppInfoNode(rootNode, oafAppInfoContent);
+                initAppInfoNode(client, rootNode, oafAppInfoContent);
 
-            initStaticContentNode(rootNode, oafStaticContentContent);
+                initStaticContentNode(client, rootNode, oafStaticContentContent);
 
-            initNotificationsNode(rootNode, oafNotificationsContent);
+                initNotificationsNode(client, rootNode, oafNotificationsContent);
 
-            initImagesNode(rootNode, oafImagesContent);
+                initImagesNode(client, rootNode, oafImagesContent);
 
-            initIFrameContentNode(rootNode, oafIFrameContent);
+                initIFrameContentNode(client, rootNode, oafIFrameContent);
 
-            initTagsNode(rootNode);
+                initTagsNode(client, rootNode);
  */
-            initDocumentsNode(rootNode);
+                initDocumentsNode(client, rootNode);
+            }
 
         } catch (Exception e) {
             log.error("Error processing new content", e);
@@ -128,11 +135,10 @@ public @ApplicationScoped class ECMSeeder {
     }
 
     @NotNull
-    private EnterpriseContent initRootNode() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    private EnterpriseContent initRootNode(String client) throws ContentRepositoryNotAvailableException, ContentNotAvailableException,
+            InvalidClientException {
         EnterpriseContent rootNode = null;
-        List<EnterpriseContent> byViewIdLanguage = contentService.getByViewIdLanguage(
-                configHandler.getRootNode(),
-                false, null);
+        List<EnterpriseContent> byViewIdLanguage = contentService.getByViewIdLanguage(configHandler.getRootNode(client), false, null);
 
         if (byViewIdLanguage != null && !byViewIdLanguage.isEmpty()) {
             rootNode = byViewIdLanguage.get(0);
@@ -140,11 +146,11 @@ public @ApplicationScoped class ECMSeeder {
         if (rootNode == null || rootNode.getContentType().equals(ContentType.ERROR)) {
 
             log.info("[CMS] : ENABLED : Content Repository Root Node initialization");
-            rootNode = new Folder(configHandler.getRootNode());
+            rootNode = new Folder(configHandler.getRootNode(client));
             rootNode.setParentPath(repository.getRootNodePath());
             rootNode.setViewId(rootNode.getName());
 
-            contentService.save(rootNode);
+            contentService.save(client, rootNode);
 
             log.info("[CMS] : ROOT NODE : INITIALIZED {}", rootNode);
 
@@ -155,26 +161,28 @@ public @ApplicationScoped class ECMSeeder {
         return rootNode;
     }
 
-    private void initDocumentsNode(EnterpriseContent rootNode) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        EnterpriseContent documentsNode = contentService.getFirstByViewIdLanguage(configHandler.getDocumentsNode(), false, null);
+    private void initDocumentsNode(String client, EnterpriseContent rootNode) throws RepositoryException, ContentRepositoryNotAvailableException,
+            ContentNotAvailableException, InvalidClientException {
+        EnterpriseContent documentsNode = contentService.getFirstByViewIdLanguage(configHandler.getDocumentsNode(client), false, null);
         if (documentsNode == null || documentsNode.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository Documents Node initialization");
 
-            documentsNode = new Folder(configHandler.getDocumentsNode());
+            documentsNode = new Folder(configHandler.getDocumentsNode(client));
             documentsNode.setParentPath(rootNode.getJcrPath());
             documentsNode.setViewId(documentsNode.getName());
 
-            contentService.save(documentsNode);
+            contentService.save(client, documentsNode);
 
             log.info("[CMS] : DOCUMENTS NODE : INITIALIZED {}", documentsNode);
         } else {
             log.info("[CMS] : ENABLED : Content Repository Documents Node already initialized; Checking for updated locales.");
-            repository.updateFolderSupportedLanguages(documentsNode.getParentPath(), configHandler.getDocumentsNode());
+            repository.updateFolderSupportedLanguages(client, documentsNode.getParentPath(), configHandler.getDocumentsNode(client));
         }
-        autoCreateDocumentFolders(documentsNode);
+        autoCreateDocumentFolders(client, documentsNode);
     }
 
-    private void autoCreateDocumentFolders(EnterpriseContent documentsNode) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    private void autoCreateDocumentFolders(String client, EnterpriseContent documentsNode) throws ContentRepositoryNotAvailableException,
+            ContentNotAvailableException, InvalidClientException {
         String[] folderNames = configHandler.getAutoCreateNodes().split(",");
         List<String> children = contentService.getChildrenFiles(documentsNode.getViewId())
                 .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER).map(EnterpriseContent::getName).collect(Collectors.toList());
@@ -182,14 +190,15 @@ public @ApplicationScoped class ECMSeeder {
             if (!children.contains(folderName)) {
                 EnterpriseContent folder = new Folder(folderName);
                 folder.setParentPath(documentsNode.getJcrPath());
-                folder.setViewId(folderName);
-                contentService.save(folder);
+                folder.setViewId(folderName + UUID.randomUUID());
+                contentService.save(client, folder);
                 log.info("[CMS] folder created: {}", folder);
             }
         }
     }
 
-    private void initPropertiesContent(EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    private void initPropertiesContent(String client, EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws ContentRepositoryNotAvailableException,
+            ContentNotAvailableException, InvalidClientException {
         List<EnterpriseContent> tmpContent = contentService.getByViewIdLanguage(configHandler.getPropertiesNode(), false, "");
 
         if (tmpContent != null && !tmpContent.isEmpty()) {
@@ -203,15 +212,16 @@ public @ApplicationScoped class ECMSeeder {
             oafPropertiesContent.setParentPath(rootNode.getJcrPath());
             oafPropertiesContent.setViewId(oafPropertiesContent.getName());
 
-            contentService.save(oafPropertiesContent);
+            contentService.save(client, oafPropertiesContent);
             log.info("[CMS] : PROPERTIES NODE : INITIALIZED {}", oafPropertiesContent);
         } else {
             log.info("[CMS] : ENABLED : Content Repository PROPERTIES Node already initialized;.");
         }
     }
 
-    private void initHTMLContentNode(EnterpriseContent rootNode, EnterpriseContent oafHTMLContent) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        List<EnterpriseContent> tmpContent = contentService.getByViewIdLanguage(configHandler.getHtmlNode(), false, "");
+    private void initHTMLContentNode(String client, EnterpriseContent rootNode, EnterpriseContent oafHTMLContent) throws RepositoryException,
+            ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException {
+        List<EnterpriseContent> tmpContent = contentService.getByViewIdLanguage(configHandler.getHtmlNode(client), false, "");
 
         if (tmpContent != null && !tmpContent.isEmpty()) {
             oafHTMLContent = tmpContent.get(0);
@@ -220,15 +230,15 @@ public @ApplicationScoped class ECMSeeder {
         if (oafHTMLContent == null || oafHTMLContent.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository HTML Node initialization");
 
-            oafHTMLContent = new Folder(configHandler.getHtmlNode());
+            oafHTMLContent = new Folder(configHandler.getHtmlNode(client));
             oafHTMLContent.setParentPath(rootNode.getJcrPath());
             oafHTMLContent.setViewId(oafHTMLContent.getName());
 
-            contentService.save(oafHTMLContent);
+            contentService.save(client, oafHTMLContent);
             log.info("[CMS] : HTML NODE : INITIALIZED {}", oafHTMLContent);
         } else {
             log.info("[CMS] : ENABLED : Content Repository HTML Node already initialized; Checking for updated locales.");
-            repository.updateFolderSupportedLanguages(oafHTMLContent.getParentPath(), configHandler.getHtmlNode());
+            repository.updateFolderSupportedLanguages(client, oafHTMLContent.getParentPath(), configHandler.getHtmlNode(client));
         }
     }
 
@@ -239,6 +249,11 @@ public @ApplicationScoped class ECMSeeder {
         for (EnterpriseContent content : contentDataProvider.getContents()) {
             String viewId = content.getViewId();
             String language = content.getLanguage();
+            String client = content.getParentPath() != null ? content.getParentPath().split("/")[1] : configHandler.getDefaultClient();
+            if(Arrays.stream(supportedClients).noneMatch(c -> c.equals(client))) {
+                log.warn("Skipped content for client {}, not supported", client);
+                continue;
+            }
             try {
                 content.setLastEditDate(new Date());
                 content.setAuthor("System");
@@ -246,11 +261,11 @@ public @ApplicationScoped class ECMSeeder {
                 if (exists != null && !exists.isEmpty() && content.getLanguage().equals(exists.get(exists.size() - 1).getLanguage())) {
                     EnterpriseContent rootVersion = exists.get(exists.size() - 1);
                     if (shouldUpdateContent(content, rootVersion)) {
-                        contentService.save(content);
+                        contentService.save(client, content);
                         log.info("Updated content with viewID {}", content.getViewId());
                     }
                 } else {
-                    contentService.save(content);
+                    contentService.save(client, content);
                     log.info("Saved new content with viewID {}", content.getViewId());
                 }
             } catch (Exception e) {

@@ -18,6 +18,7 @@ package io.radien.ms.ecm.config;
 
 import io.radien.api.OAFAccess;
 import io.radien.ms.ecm.constants.CmsProperties;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,22 +69,22 @@ public class ConfigHandlerTest {
 
     @Test
     public void testGetRootNode() {
-        assertEquals("root", configHandler.getRootNode());
+        assertEquals("root", configHandler.getRootNode("root"));
     }
 
     @Test
     public void testGetHtmlNode() {
-        assertEquals("html", configHandler.getHtmlNode());
+        assertEquals("html", configHandler.getHtmlNode("radien"));
     }
 
     @Test
     public void testGetNotificationNode() {
-        assertEquals("notification", configHandler.getNotificationNode());
+        assertEquals("notification", configHandler.getNotificationNode("radien"));
     }
 
     @Test
     public void testGetPropertiesNode() {
-        assertEquals("properties", configHandler.getPropertiesNode());
+        assertEquals("properties", configHandler.getPropertiesNode("radien"));
     }
 
     @Test
@@ -110,6 +111,6 @@ public class ConfigHandlerTest {
     public void testGetProperty() {
         when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
                 .thenReturn("rd_documents");
-        assertEquals("rd_documents", configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS));
+        assertEquals("rd_documents", configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, Optional.empty()));
     }
 }

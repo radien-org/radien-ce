@@ -64,6 +64,9 @@ import static com.mongodb.internal.connection.tlschannel.util.Util.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -99,9 +102,9 @@ public class ContentRepositoryTest {
         repositoryField.setAccessible(true);
         repositoryField.set(contentRepository, transientRepository);
 
-        when(configHandler.getRootNode()).thenReturn("radien");
-        when(configHandler.getHtmlNode()).thenReturn("rd_html");
-        when(configHandler.getNotificationNode()).thenReturn("rd_notifications");
+        when(configHandler.getRootNode(anyString())).thenReturn("radien");
+        when(configHandler.getHtmlNode(anyString())).thenReturn("rd_html");
+        when(configHandler.getNotificationNode(anyString())).thenReturn("rd_notifications");
 
     }
 
@@ -117,7 +120,7 @@ public class ContentRepositoryTest {
         rootFolder.setParentPath(contentRepository.getRootNodePath());
         rootFolder.setViewId(rootFolder.getName());
 
-        contentRepository.save(rootFolder);
+        contentRepository.save("radien", rootFolder);
         assertEquals("/radien", rootFolder.getJcrPath());
         assertEquals("/", rootFolder.getParentPath());
     }
@@ -128,7 +131,7 @@ public class ContentRepositoryTest {
         documentsFolder.setParentPath(contentRepository.getRootNodePath());
         documentsFolder.setViewId(documentsFolder.getName());
 
-        contentRepository.save(documentsFolder);
+        contentRepository.save("radien", documentsFolder);
         assertEquals("/rd_documents", documentsFolder.getJcrPath());
         assertEquals("/", documentsFolder.getParentPath());
     }
@@ -139,7 +142,7 @@ public class ContentRepositoryTest {
         documentsFolder.setParentPath(contentRepository.getRootNodePath() + "radien");
         documentsFolder.setViewId(documentsFolder.getName());
 
-        contentRepository.save(documentsFolder);
+        contentRepository.save("radien", documentsFolder);
         assertEquals("/radien/rd_documents", documentsFolder.getJcrPath());
         assertEquals("/radien", documentsFolder.getParentPath());
     }
@@ -160,7 +163,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test006SaveDocumentVersionable1() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
         VersionableEnterpriseContent versionableEnterpriseContent = new VersionableEnterpriseContent();
@@ -177,14 +180,14 @@ public class ContentRepositoryTest {
         versionableEnterpriseContent.setFile(ArrayUtils.toPrimitive(Arrays.stream(fileArray.split(","))
                 .map(Byte::valueOf).collect(Collectors.toList()).toArray(new Byte[0])));
 
-        contentRepository.save(versionableEnterpriseContent);
+        contentRepository.save("radien", versionableEnterpriseContent);
         assertEquals("/radien/rd_documents", versionableEnterpriseContent.getParentPath());
         assertEquals("/radien/rd_documents/name", versionableEnterpriseContent.getJcrPath());
     }
 
     @Test
     public void test006SaveDocumentVersionable2() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
         VersionableEnterpriseContent versionableEnterpriseContent = new VersionableEnterpriseContent();
@@ -202,14 +205,14 @@ public class ContentRepositoryTest {
                 .map(Byte::valueOf).collect(Collectors.toList()).toArray(new Byte[0])));
         versionableEnterpriseContent.setVersion(new ContentVersion("1.2.0"));
 
-        contentRepository.save(versionableEnterpriseContent);
+        contentRepository.save("radien", versionableEnterpriseContent);
         assertEquals("/radien/rd_documents", versionableEnterpriseContent.getParentPath());
         assertEquals("/radien/rd_documents/name", versionableEnterpriseContent.getJcrPath());
     }
 
     @Test
     public void test006SaveDocumentVersionable3() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
         VersionableEnterpriseContent versionableEnterpriseContent = new VersionableEnterpriseContent();
@@ -227,7 +230,7 @@ public class ContentRepositoryTest {
                 .map(Byte::valueOf).collect(Collectors.toList()).toArray(new Byte[0])));
         versionableEnterpriseContent.setVersion(new ContentVersion("1.3.0"));
 
-        contentRepository.save(versionableEnterpriseContent);
+        contentRepository.save("radien", versionableEnterpriseContent);
         assertEquals("/radien/rd_documents", versionableEnterpriseContent.getParentPath());
         assertEquals("/radien/rd_documents/name", versionableEnterpriseContent.getJcrPath());
     }
@@ -270,18 +273,18 @@ public class ContentRepositoryTest {
 
     @Test
     public void test011SaveHTMLMandatory1() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(configHandler.getHtmlNode()).thenReturn("rd_html");
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML)).thenReturn("rd_html");
+        when(configHandler.getHtmlNode(anyString())).thenReturn("rd_html");
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML), any())).thenReturn("rd_html");
         when(dataProvider.getSupportedLanguages())
                 .thenReturn(Collections.singletonList("en"));
         Folder htmlFolder = new Folder("rd_html");
         htmlFolder.setParentPath(contentRepository.getRootNodePath() + "radien");
         htmlFolder.setViewId(htmlFolder.getName());
 
-        contentRepository.save(htmlFolder);
+        contentRepository.save("radien", htmlFolder);
         assertEquals("/radien/rd_html", htmlFolder.getJcrPath());
         assertEquals("/radien", htmlFolder.getParentPath());
-        contentRepository.updateFolderSupportedLanguages("/radien/rd_html", "rd_html");
+        contentRepository.updateFolderSupportedLanguages("radien", "/radien/rd_html", "rd_html");
 
         MandatoryEnterpriseContent mandatoryEnterpriseContent = new MandatoryEnterpriseContent();
         mandatoryEnterpriseContent.setName("nameHtml");
@@ -293,14 +296,14 @@ public class ContentRepositoryTest {
         mandatoryEnterpriseContent.setHtmlContent("v1");
         mandatoryEnterpriseContent.setMandatoryApproval(true);
         mandatoryEnterpriseContent.setMandatoryView(true);
-        contentRepository.save(mandatoryEnterpriseContent);
+        contentRepository.save("radien", mandatoryEnterpriseContent);
         assertEquals("/radien/rd_html/en", mandatoryEnterpriseContent.getParentPath());
         assertEquals("/radien/rd_html/en/nameHtml", mandatoryEnterpriseContent.getJcrPath());
     }
 
     @Test
     public void test011SaveHTMLMandatory2() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML)).thenReturn("rd_html");
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML), any())).thenReturn("rd_html");
         MandatoryEnterpriseContent mandatoryEnterpriseContent = new MandatoryEnterpriseContent();
         mandatoryEnterpriseContent.setName("nameHtml");
         mandatoryEnterpriseContent.setViewId("nameHtml-viewId-updated");
@@ -312,14 +315,14 @@ public class ContentRepositoryTest {
         mandatoryEnterpriseContent.setMandatoryApproval(true);
         mandatoryEnterpriseContent.setMandatoryView(true);
         mandatoryEnterpriseContent.setJcrPath("/radien/rd_html/en/nameHtml");
-        contentRepository.save(mandatoryEnterpriseContent);
+        contentRepository.save("radien", mandatoryEnterpriseContent);
         assertEquals("/radien/rd_html/en", mandatoryEnterpriseContent.getParentPath());
         assertEquals("/radien/rd_html/en/nameHtml", mandatoryEnterpriseContent.getJcrPath());
     }
 
     @Test
     public void test012SaveDocumentMandatory() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
         MandatoryEnterpriseContent mandatoryEnterpriseContent = new MandatoryEnterpriseContent();
@@ -334,7 +337,7 @@ public class ContentRepositoryTest {
         mandatoryEnterpriseContent.setMandatoryApproval(true);
         mandatoryEnterpriseContent.setFile(ArrayUtils.toPrimitive(Arrays.stream(fileArray.split(","))
                .map(Byte::valueOf).collect(Collectors.toList()).toArray(new Byte[0])));
-        contentRepository.save(mandatoryEnterpriseContent);
+        contentRepository.save("radien", mandatoryEnterpriseContent);
         assertEquals("/radien/rd_documents", mandatoryEnterpriseContent.getParentPath());
         assertEquals("/radien/rd_documents/nameDoc", mandatoryEnterpriseContent.getJcrPath());
     }
@@ -350,11 +353,11 @@ public class ContentRepositoryTest {
 
     @Test
     public void test014GetOrCreateDocumentsPathAndContents() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
         String newPath = "/random_path/with_Folders/nested";
-        contentRepository.getOrCreateDocumentsPath(newPath);
+        contentRepository.getOrCreateDocumentsPath("radien", newPath);
         List<EnterpriseContent> folderContents = contentRepository.getFolderContents("/radien/rd_documents" + newPath);
         assertFalse(folderContents.isEmpty());
         assertTrue(folderContents.size() == 1);
@@ -364,7 +367,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test015GetChildrenTest() throws ContentRepositoryNotAvailableException, RepositoryException, ElementNotFoundException {
-        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+        when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
         Collection<EnterpriseContent> folderContents = contentRepository.getChildren(nested_viewId);

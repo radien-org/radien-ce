@@ -22,6 +22,7 @@ import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.ContentVersion;
 import io.radien.api.service.ecm.model.EnterpriseContent;
@@ -30,6 +31,7 @@ import io.radien.exception.GenericErrorMessagesToResponseMapper;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.controller.ContentResource;
 import io.radien.ms.ecm.client.entities.DeleteContentFilter;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.openid.entities.Authenticated;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
@@ -47,7 +49,9 @@ public class ContentResourceClient implements ContentResource {
     private static final long serialVersionUID = -8196891572077112658L;
 
     @Inject
-    public ContentServiceAccess contentServiceAccess;
+    private ContentServiceAccess contentServiceAccess;
+    @Inject
+    private ConfigHandler configHandler;
 
     public Response getContentFile(String jcrPath) {
         try {
@@ -96,9 +100,12 @@ public class ContentResourceClient implements ContentResource {
         }
     }
 
-    public Response getOrCreateDocumentsPath(String path) {
+    public Response getOrCreateDocumentsPath(String client, String path) {
         try {
-            return Response.ok(contentServiceAccess.getOrCreateDocumentsPath(path))
+            if(StringUtils.isEmpty(client)) {
+                client = configHandler.getDefaultClient();
+            }
+            return Response.ok(contentServiceAccess.getOrCreateDocumentsPath(client, path))
                     .build();
         } catch (ContentRepositoryNotAvailableException e) {
             log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
@@ -108,6 +115,11 @@ public class ContentResourceClient implements ContentResource {
         } catch (ContentNotAvailableException e) {
             log.error(e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (InvalidClientException e) {
+            log.error(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
         }
@@ -147,9 +159,12 @@ public class ContentResourceClient implements ContentResource {
         }
     }
 
-    public Response saveContent(EnterpriseContent content) {
+    public Response saveContent(String client, EnterpriseContent content) {
         try {
-            contentServiceAccess.save(content);
+            if(StringUtils.isEmpty(client)) {
+                client = configHandler.getDefaultClient();
+            }
+            contentServiceAccess.save(client, content);
             return Response.ok().build();
         } catch (ContentRepositoryNotAvailableException e) {
             log.error(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(), e);
@@ -159,6 +174,11 @@ public class ContentResourceClient implements ContentResource {
         } catch (ContentNotAvailableException e) {
             log.error(e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (InvalidClientException e) {
+            log.error(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
         }

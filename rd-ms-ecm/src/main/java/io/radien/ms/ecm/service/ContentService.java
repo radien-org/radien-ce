@@ -20,6 +20,7 @@ import io.radien.api.service.ecm.ContentServiceAccess;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
@@ -29,6 +30,7 @@ import io.radien.api.service.mail.model.MailType;
 import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.ContentRepository;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import org.slf4j.Logger;
@@ -61,10 +63,12 @@ public class ContentService implements ContentServiceAccess {
     private ConfigHandler configHandler;
 
     private String defaultLanguage;
+    private String[] availableClients;
 
     @PostConstruct
     public void init() {
         defaultLanguage = configHandler.getDefaultLanguage();
+        availableClients = configHandler.getSupportedClients().split(",");
     }
 
     public List<EnterpriseContent> getChildrenFiles(String viewId) {
@@ -110,19 +114,29 @@ public class ContentService implements ContentServiceAccess {
     }
 
     @Override
-    public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException{
-        try {
-            return contentRepository.getOrCreateDocumentsPath(path);
-        } catch (RepositoryException e) {
-            throw new ContentNotAvailableException("Error on getOrCreateDocumentsPath", e);
+    public String getOrCreateDocumentsPath(String client, String path) throws ContentRepositoryNotAvailableException,
+            ContentNotAvailableException, InvalidClientException {
+        if(validateClient(client)) {
+            try {
+                return contentRepository.getOrCreateDocumentsPath(client, path);
+            } catch (RepositoryException e) {
+                throw new ContentNotAvailableException("Error on getOrCreateDocumentsPath", e);
+            }
+        } else {
+            throw new InvalidClientException("Provided Client " + client + " is not valid.");
         }
     }
 
-    public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        try {
-            contentRepository.save(obj);
-        } catch (RepositoryException e) {
-            throw new ContentNotAvailableException("Error saving object", e);
+    public void save(String client, EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException,
+            InvalidClientException {
+        if(validateClient(client)) {
+            try {
+                contentRepository.save(client, obj);
+            } catch (RepositoryException e) {
+                throw new ContentNotAvailableException("Error saving object", e);
+            }
+        } else {
+            throw new InvalidClientException("Provided Client " + client + " is not valid.");
         }
     }
 
@@ -184,6 +198,10 @@ public class ContentService implements ContentServiceAccess {
         List<EnterpriseContent> list = new ArrayList<>();
         list.add(createErrorContent(viewId, language));
         return list;
+    }
+
+    private boolean validateClient(String client) {
+        return Arrays.asList(availableClients).contains(client);
     }
 
     private EnterpriseContent createErrorContent(String viewId, String language) {
