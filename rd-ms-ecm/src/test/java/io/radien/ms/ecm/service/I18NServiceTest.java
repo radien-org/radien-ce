@@ -20,6 +20,7 @@ package io.radien.ms.ecm.service;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.datalayer.I18NRepository;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,12 +52,11 @@ public class I18NServiceTest {
     @Mock
     private I18NRepository repository;
     @Mock
-    private Config config;
+    private ConfigHandler configHandler;
 
     @Before
     public void init() {
-        when(config.getValue("system.default.language", String.class))
-                .thenReturn("en");
+        when(configHandler.getDefaultLanguage()).thenReturn("en");
     }
 
     @Test

@@ -26,7 +26,9 @@ import io.radien.api.service.ecm.model.*;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.ContentRepository;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.constants.CmsConstants;
+import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.domain.TranslationDataProvider;
 import io.radien.ms.ecm.event.ApplicationInitializedEvent;
@@ -50,6 +52,8 @@ public @ApplicationScoped class ECMSeeder {
     private static final Logger log = LoggerFactory.getLogger(ECMSeeder.class);
 
     @Inject
+    private ConfigHandler configHandler;
+    @Inject
     private ContentRepository repository;
     @Inject
     private ContentServiceAccess contentService;
@@ -57,8 +61,6 @@ public @ApplicationScoped class ECMSeeder {
     private ContentDataProvider contentDataProvider;
     @Inject
     private I18NServiceAccess i18NServiceAccess;
-    @Inject
-    private Config config;
 
     private String supportedLanguages;
     private String defaultLanguage;
@@ -66,10 +68,10 @@ public @ApplicationScoped class ECMSeeder {
     @PostConstruct
     public void init() {
         log.info("Initializing CMS");
-        if (Boolean.parseBoolean(config.getValue("system.jcr.seed.content", String.class))) {
-            supportedLanguages = config.getValue("system.supported.languages", String.class);
-            defaultLanguage = config.getValue("system.default.language", String.class);
-            boolean insertOnly = Boolean.parseBoolean(config.getValue("system.jcr.seed.insert.only", String.class));
+        if (Boolean.parseBoolean(configHandler.getSeedContent())) {
+            supportedLanguages = configHandler.getSupportedLanguages();
+            defaultLanguage = configHandler.getDefaultLanguage();
+            boolean insertOnly = Boolean.parseBoolean(configHandler.getSeedInsertOnly());
             initStructure();
             initContent(insertOnly);
             initI18NProperties();
@@ -90,7 +92,7 @@ public @ApplicationScoped class ECMSeeder {
 
     private void initStructure() {
         try {
-            repository.registerCNDNodeTypes(CmsConstants.PropertyKeys.OAF_NODE_TYPES);
+            repository.registerCNDNodeTypes(CmsProperties.OAF_NODE_TYPES.propKey());
 
             EnterpriseContent rootNode;
             EnterpriseContent oafPropertiesContent = null;
@@ -129,7 +131,7 @@ public @ApplicationScoped class ECMSeeder {
     private EnterpriseContent initRootNode() throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
         EnterpriseContent rootNode = null;
         List<EnterpriseContent> byViewIdLanguage = contentService.getByViewIdLanguage(
-                config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_ROOT, String.class),
+                configHandler.getRootNode(),
                 false, null);
 
         if (byViewIdLanguage != null && !byViewIdLanguage.isEmpty()) {
@@ -138,7 +140,7 @@ public @ApplicationScoped class ECMSeeder {
         if (rootNode == null || rootNode.getContentType().equals(ContentType.ERROR)) {
 
             log.info("[CMS] : ENABLED : Content Repository Root Node initialization");
-            rootNode = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_ROOT, String.class));
+            rootNode = new Folder(configHandler.getRootNode());
             rootNode.setParentPath(repository.getRootNodePath());
             rootNode.setViewId(rootNode.getName());
 
@@ -154,12 +156,11 @@ public @ApplicationScoped class ECMSeeder {
     }
 
     private void initDocumentsNode(EnterpriseContent rootNode) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        EnterpriseContent documentsNode = contentService
-                .getFirstByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class), false, null);
+        EnterpriseContent documentsNode = contentService.getFirstByViewIdLanguage(configHandler.getDocumentsNode(), false, null);
         if (documentsNode == null || documentsNode.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository Documents Node initialization");
 
-            documentsNode = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class));
+            documentsNode = new Folder(configHandler.getDocumentsNode());
             documentsNode.setParentPath(rootNode.getJcrPath());
             documentsNode.setViewId(documentsNode.getName());
 
@@ -168,14 +169,13 @@ public @ApplicationScoped class ECMSeeder {
             log.info("[CMS] : DOCUMENTS NODE : INITIALIZED {}", documentsNode);
         } else {
             log.info("[CMS] : ENABLED : Content Repository Documents Node already initialized; Checking for updated locales.");
-            repository.updateFolderSupportedLanguages(documentsNode.getParentPath(), config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, String.class));
+            repository.updateFolderSupportedLanguages(documentsNode.getParentPath(), configHandler.getDocumentsNode());
         }
         autoCreateDocumentFolders(documentsNode);
     }
 
     private void autoCreateDocumentFolders(EnterpriseContent documentsNode) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        String[] folderNames = config.getValue(CmsConstants.PropertyKeys.SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS, String.class)
-                .split(",");
+        String[] folderNames = configHandler.getAutoCreateNodes().split(",");
         List<String> children = contentService.getChildrenFiles(documentsNode.getViewId())
                 .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER).map(EnterpriseContent::getName).collect(Collectors.toList());
         for (String folderName : folderNames) {
@@ -190,8 +190,7 @@ public @ApplicationScoped class ECMSeeder {
     }
 
     private void initPropertiesContent(EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        List<EnterpriseContent> tmpContent = contentService
-                .getByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_PROPERTIES, String.class), false, "");
+        List<EnterpriseContent> tmpContent = contentService.getByViewIdLanguage(configHandler.getPropertiesNode(), false, "");
 
         if (tmpContent != null && !tmpContent.isEmpty()) {
             oafPropertiesContent = tmpContent.get(0);
@@ -200,7 +199,7 @@ public @ApplicationScoped class ECMSeeder {
         if (oafPropertiesContent == null || oafPropertiesContent.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository Properties Node initialization");
 
-            oafPropertiesContent = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_PROPERTIES, String.class));
+            oafPropertiesContent = new Folder(configHandler.getPropertiesNode());
             oafPropertiesContent.setParentPath(rootNode.getJcrPath());
             oafPropertiesContent.setViewId(oafPropertiesContent.getName());
 
@@ -212,8 +211,7 @@ public @ApplicationScoped class ECMSeeder {
     }
 
     private void initHTMLContentNode(EnterpriseContent rootNode, EnterpriseContent oafHTMLContent) throws RepositoryException, ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        List<EnterpriseContent> tmpContent = contentService
-                .getByViewIdLanguage(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class), false, "");
+        List<EnterpriseContent> tmpContent = contentService.getByViewIdLanguage(configHandler.getHtmlNode(), false, "");
 
         if (tmpContent != null && !tmpContent.isEmpty()) {
             oafHTMLContent = tmpContent.get(0);
@@ -222,7 +220,7 @@ public @ApplicationScoped class ECMSeeder {
         if (oafHTMLContent == null || oafHTMLContent.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository HTML Node initialization");
 
-            oafHTMLContent = new Folder(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class));
+            oafHTMLContent = new Folder(configHandler.getHtmlNode());
             oafHTMLContent.setParentPath(rootNode.getJcrPath());
             oafHTMLContent.setViewId(oafHTMLContent.getName());
 
@@ -230,7 +228,7 @@ public @ApplicationScoped class ECMSeeder {
             log.info("[CMS] : HTML NODE : INITIALIZED {}", oafHTMLContent);
         } else {
             log.info("[CMS] : ENABLED : Content Repository HTML Node already initialized; Checking for updated locales.");
-            repository.updateFolderSupportedLanguages(oafHTMLContent.getParentPath(), config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class));
+            repository.updateFolderSupportedLanguages(oafHTMLContent.getParentPath(), configHandler.getHtmlNode());
         }
     }
 

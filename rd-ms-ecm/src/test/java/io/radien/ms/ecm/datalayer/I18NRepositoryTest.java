@@ -18,8 +18,6 @@
 
 package io.radien.ms.ecm.datalayer;
 
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.model.i18n.SystemI18NTranslation;
@@ -27,6 +25,7 @@ import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableExceptio
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
 import io.radien.ms.ecm.client.entities.i18n.I18NTranslation;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.util.i18n.PropertyMappingUtils;
 import java.io.IOException;
@@ -34,15 +33,12 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
-import javax.jcr.Credentials;
 import javax.jcr.GuestCredentials;
-import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-import javax.jcr.nodetype.NodeType;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
@@ -61,8 +57,6 @@ import org.mockito.junit.MockitoRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -72,7 +66,7 @@ public class I18NRepositoryTest {
     @InjectMocks
     private I18NRepository repository;
     @Mock
-    private OAFAccess oaf;
+    private ConfigHandler configHandler;
     @Spy
     private PropertyMappingUtils utils;
 
@@ -91,9 +85,9 @@ public class I18NRepositoryTest {
         repositoryField.setAccessible(true);
         repositoryField.set(repository, transientRepository);
 
-        when(oaf.getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
+        when(configHandler.getRootNode())
                 .thenReturn("radien");
-        when(oaf.getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_PROPERTIES))
+        when(configHandler.getPropertiesNode())
                 .thenReturn("rd_properties");
     }
 

@@ -17,8 +17,6 @@
  */
 package io.radien.ms.ecm;
 
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
@@ -29,7 +27,9 @@ import io.radien.api.service.ecm.model.Folder;
 import io.radien.api.service.ecm.model.MandatoryEnterpriseContent;
 import io.radien.api.service.ecm.model.SystemVersionableEnterpriseContent;
 import io.radien.api.service.ecm.model.VersionableEnterpriseContent;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.constants.CmsConstants;
+import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import java.io.IOException;
@@ -49,7 +49,6 @@ import javax.jcr.Session;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.eclipse.microprofile.config.Config;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -75,9 +74,7 @@ public class ContentRepositoryTest {
     @InjectMocks
     private ContentRepository contentRepository;
     @Mock
-    private Config config;
-    @Mock
-    private OAFAccess oaf;
+    private ConfigHandler configHandler;
     @Spy
     private ContentMappingUtils contentMappingUtils;
     @Mock
@@ -102,12 +99,9 @@ public class ContentRepositoryTest {
         repositoryField.setAccessible(true);
         repositoryField.set(contentRepository, transientRepository);
 
-        when(oaf.getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-                .thenReturn("radien");
-        when(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class))
-                .thenReturn("rd_html");
-        when(config.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, String.class))
-                .thenReturn("rd_notifications");
+        when(configHandler.getRootNode()).thenReturn("radien");
+        when(configHandler.getHtmlNode()).thenReturn("rd_html");
+        when(configHandler.getNotificationNode()).thenReturn("rd_notifications");
 
     }
 
@@ -166,7 +160,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test006SaveDocumentVersionable1() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS)))
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
                 .thenReturn("rd_documents");
 
         VersionableEnterpriseContent versionableEnterpriseContent = new VersionableEnterpriseContent();
@@ -190,7 +184,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test006SaveDocumentVersionable2() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS)))
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
                 .thenReturn("rd_documents");
 
         VersionableEnterpriseContent versionableEnterpriseContent = new VersionableEnterpriseContent();
@@ -215,7 +209,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test006SaveDocumentVersionable3() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS)))
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
                 .thenReturn("rd_documents");
 
         VersionableEnterpriseContent versionableEnterpriseContent = new VersionableEnterpriseContent();
@@ -276,8 +270,8 @@ public class ContentRepositoryTest {
 
     @Test
     public void test011SaveHTMLMandatory1() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML)))
-                .thenReturn("rd_html");
+        when(configHandler.getHtmlNode()).thenReturn("rd_html");
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML)).thenReturn("rd_html");
         when(dataProvider.getSupportedLanguages())
                 .thenReturn(Collections.singletonList("en"));
         Folder htmlFolder = new Folder("rd_html");
@@ -306,6 +300,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test011SaveHTMLMandatory2() throws ContentRepositoryNotAvailableException, RepositoryException {
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML)).thenReturn("rd_html");
         MandatoryEnterpriseContent mandatoryEnterpriseContent = new MandatoryEnterpriseContent();
         mandatoryEnterpriseContent.setName("nameHtml");
         mandatoryEnterpriseContent.setViewId("nameHtml-viewId-updated");
@@ -324,7 +319,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test012SaveDocumentMandatory() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS)))
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
                 .thenReturn("rd_documents");
 
         MandatoryEnterpriseContent mandatoryEnterpriseContent = new MandatoryEnterpriseContent();
@@ -355,7 +350,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test014GetOrCreateDocumentsPathAndContents() throws ContentRepositoryNotAvailableException, RepositoryException {
-        when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS)))
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
                 .thenReturn("rd_documents");
 
         String newPath = "/random_path/with_Folders/nested";
@@ -369,7 +364,7 @@ public class ContentRepositoryTest {
 
     @Test
     public void test015GetChildrenTest() throws ContentRepositoryNotAvailableException, RepositoryException, ElementNotFoundException {
-        when(oaf.getProperty(OAFProperties.valueOfKey(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS)))
+        when(configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
                 .thenReturn("rd_documents");
 
         Collection<EnterpriseContent> folderContents = contentRepository.getChildren(nested_viewId);
@@ -382,7 +377,7 @@ public class ContentRepositoryTest {
     }
 
     private void registerNodeTypes() throws ContentRepositoryNotAvailableException, RepositoryException {
-        contentRepository.registerCNDNodeTypes(CmsConstants.PropertyKeys.OAF_NODE_TYPES);
+        contentRepository.registerCNDNodeTypes(CmsProperties.OAF_NODE_TYPES.propKey());
         restartSession();
     }
 

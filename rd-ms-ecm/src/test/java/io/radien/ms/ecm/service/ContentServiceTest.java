@@ -28,6 +28,7 @@ import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.api.service.mail.model.MailType;
 import io.radien.ms.ecm.ContentRepository;
+import io.radien.ms.ecm.config.ConfigHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -66,12 +67,11 @@ public class ContentServiceTest {
     private ContentRepository contentRepository;
 
     @Mock
-    private Config config;
+    private ConfigHandler configHandler;
 
     @Before
     public void init() throws NoSuchFieldException {
-        when(config.getValue("system.default.language", String.class))
-                .thenReturn("en");
+        when(configHandler.getDefaultLanguage()).thenReturn("en");
     }
 
     @Test

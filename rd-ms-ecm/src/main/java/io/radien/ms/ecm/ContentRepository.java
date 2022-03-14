@@ -16,14 +16,13 @@
  */
 package io.radien.ms.ecm;
 
-import io.radien.api.Appframeable;
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.constants.CmsConstants;
+import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.datalayer.JCRRepository;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
@@ -37,7 +36,6 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.util.Text;
-import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +47,6 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.version.VersionManager;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -71,7 +68,7 @@ public class ContentRepository extends JCRRepository {
 	public static final String IS_TRUE = "] = true ";
 
 	@Inject
-	private Config properties;
+	private ConfigHandler configHandler;
 	@Inject
 	private ContentMappingUtils contentMappingUtils;
 	@Inject
@@ -122,19 +119,19 @@ public class ContentRepository extends JCRRepository {
 			if (content == null) {
 				switch (obj.getContentType()) {
 					case DOCUMENT:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false);
 						break;
 					case HTML:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, true);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_HTML, true);
 						break;
 					case IMAGE:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_IMAGE, false);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_IMAGE, false);
 						break;
 					case FOLDER:
 						content = prepareFolderNode(session, language, parent, nameEscaped);
 						break;
 					case NOTIFICATION:
-						content = addNodeToParent(session, language, parent, nameEscaped, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, true);
+						content = addNodeToParent(session, language, parent, nameEscaped, CmsProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION, true);
 						break;
 					case TAG:
 						content = prepareTagNode(session, language, parent, nameEscaped);
@@ -223,7 +220,7 @@ public class ContentRepository extends JCRRepository {
 		return parent;
 	}
 
-	private Node addNodeToParent(Session session, String language, Node parent, String viewID, String systemCmsCfgNodeDocs,
+	private Node addNodeToParent(Session session, String language, Node parent, String viewID, CmsProperties systemCmsCfgNodeDocs,
 								 boolean b) throws RepositoryException {
 		Node content = null;
 		if(parent == null) {
@@ -238,7 +235,7 @@ public class ContentRepository extends JCRRepository {
 	private Node prepareTagNode(Session session, String language, Node parent, String nameEscaped) throws RepositoryException {
 		Node content = null;
 		if(parent == null) {
-			parent = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_TAG, false, language);
+			parent = getNode(session, CmsProperties.SYSTEM_CMS_CFG_NODE_TAG, false, language);
 		}
 		if(parent != null) {
 			content = parent.addNode(nameEscaped, JcrConstants.NT_FILE);
@@ -249,7 +246,7 @@ public class ContentRepository extends JCRRepository {
 	private Node prepareFolderNode(Session session, String language, Node parent, String nameEscaped) throws RepositoryException {
 		Node content = null;
 		if(parent == null) {
-			parent = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, language);
+			parent = getNode(session, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false, language);
 		}
 		if(parent != null) {
 			content = parent.addNode(nameEscaped, JcrConstants.NT_FOLDER);
@@ -371,8 +368,8 @@ public class ContentRepository extends JCRRepository {
 	}
 
 	private void addSupportedLocalesFolder(Node content, Node parent, String nameEscaped) throws RepositoryException {
-		if (nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_HTML, String.class)) ||
-				nameEscaped.equals(properties.getValue(CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_NOTIFICATION, String.class))) {
+		if (nameEscaped.equals(configHandler.getHtmlNode()) ||
+				nameEscaped.equals(configHandler.getNotificationNode())) {
 
 			for (String lang : dataProvider.getSupportedLanguages()) {
 				try {
@@ -399,10 +396,10 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	private Node getNode(Session session, String nodeType, boolean findLanguage, String language) throws RepositoryException {
-		Node resultNode = session.getRootNode().getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT));
+	private Node getNode(Session session, CmsProperties nodeType, boolean findLanguage, String language) throws RepositoryException {
+		Node resultNode = session.getRootNode().getNode(configHandler.getRootNode());
 		if (resultNode != null) {
-			resultNode = resultNode.getNode(getOAF().getProperty(OAFProperties.valueOfKey(nodeType)));
+			resultNode = resultNode.getNode(configHandler.getProperty(nodeType));
 		}
 		if (findLanguage && resultNode != null) {
 			resultNode = resultNode.getNode(language);
@@ -511,10 +508,10 @@ public class ContentRepository extends JCRRepository {
 	public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
 		Session session = createSession();
 		try {
-			String root = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
-			Node docsNode = getNode(session, CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
+			String root = configHandler.getRootNode();
+			Node docsNode = getNode(session, CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, false, null);
 			if (docsNode == null) {
-				throw new RepositoryException(String.format("%s not found", CmsConstants.PropertyKeys.SYSTEM_CMS_CFG_NODE_DOCS));
+				throw new RepositoryException(String.format("%s not found", CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS.propKey()));
 			}
 			generateFolderStructure(String.format("/%s/%s%s", root, docsNode.getName(), path), session);
 			session.save();
@@ -559,9 +556,6 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	// protec_documents
-	// 1
-	// uploads
 	private String generateFolderStructure(String path, Session session) throws ContentRepositoryNotAvailableException, RepositoryException {
 		String parent = path.substring(0, 1);
 		String[] folderNames = path.substring(1).split("/");

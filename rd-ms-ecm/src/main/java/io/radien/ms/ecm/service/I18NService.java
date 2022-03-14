@@ -20,6 +20,7 @@ package io.radien.ms.ecm.service;
 
 import io.radien.api.entity.Page;
 import io.radien.exception.SystemException;
+import io.radien.ms.ecm.config.ConfigHandler;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -29,7 +30,6 @@ import javax.inject.Inject;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.datalayer.I18NRepository;
-import org.eclipse.microprofile.config.Config;
 
 @Stateless
 public class I18NService implements I18NServiceAccess {
@@ -38,13 +38,13 @@ public class I18NService implements I18NServiceAccess {
     private I18NRepository repository;
 
     @Inject
-    private Config config;
+    private ConfigHandler configHandler;
 
     private String defaultLanguage;
 
     @PostConstruct
     public void init() {
-        defaultLanguage = config.getValue("system.default.language", String.class);
+        defaultLanguage = configHandler.getDefaultLanguage();
     }
 
     @Override

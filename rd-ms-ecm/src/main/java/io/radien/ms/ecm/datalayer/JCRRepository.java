@@ -16,7 +16,6 @@
 
 package io.radien.ms.ecm.datalayer;
 
-import io.radien.api.OAFAccess;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.ms.ecm.constants.CmsConstants;
 import java.io.Serializable;
@@ -34,13 +33,7 @@ public abstract class JCRRepository implements Serializable {
     private long initCount = 0;
 
     @Inject
-    private OAFAccess oaf;
-    @Inject
     private Repository repository;
-
-    public OAFAccess getOAF() {
-        return oaf;
-    }
 
     public Repository getRepository() {
         return repository;

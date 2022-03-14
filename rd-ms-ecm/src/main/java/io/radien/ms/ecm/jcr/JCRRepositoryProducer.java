@@ -18,8 +18,8 @@ package io.radien.ms.ecm.jcr;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
+import io.radien.ms.ecm.config.ConfigHandler;
+import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.constants.JcrSourceEnum;
 import javax.annotation.PreDestroy;
 import org.apache.commons.io.FileUtils;
@@ -52,11 +52,11 @@ public @ApplicationScoped class JCRRepositoryProducer implements Serializable {
     private static final Logger log = LoggerFactory.getLogger(JCRRepositoryProducer.class);
     private static final long serialVersionUID = 2126413751365548137L;
     @Inject
-    private OAFAccess oaf;
+    private ConfigHandler configHandler;
     @Inject
     private ServletContext servletContext;
 
-    private Repository repository = null;
+    private transient Repository repository = null;
     private String repoHome;
     private String repoSource;
     private String mongoDbName;
@@ -66,10 +66,10 @@ public @ApplicationScoped class JCRRepositoryProducer implements Serializable {
     @PostConstruct
     private void init() {
         log.info("[CMS] setting system properties for CMS System");
-        repoHome = oaf.getProperty(OAFProperties.SYSTEM_CMS_REPO_HOME_DIR);
-        repoSource = oaf.getProperty(OAFProperties.SYSTEM_CMS_REPO_SOURCE);
-        mongoDbName = oaf.getProperty(OAFProperties.SYSTEM_CMS_REPO_MONGO_DB_NAME);
-        mongoDbUri = oaf.getProperty(OAFProperties.SYSTEM_CMS_REPO_MONGO_DB_URI);
+        repoHome = configHandler.getRepoHome();
+        repoSource = configHandler.getRepoSource();
+        mongoDbName = configHandler.getMongoDbName();
+        mongoDbUri = configHandler.getMongoDbUri();
         try {
             initRepository();
         } catch (IOException e) {
@@ -132,7 +132,6 @@ public @ApplicationScoped class JCRRepositoryProducer implements Serializable {
     }
 
     /**
-     * Similar to {@link RepositoryConfiguration#copyConfigs} method
      * @param repoConfig the repository configuration file
      * @param defaultRepoConfig the Resource with the default repository configuration
      * @throws IOException Exception thrown if an IO error occurs while operating on those files
@@ -165,7 +164,7 @@ public @ApplicationScoped class JCRRepositoryProducer implements Serializable {
 
         //Set of properties used to perform property substitution in
         //OSGi configs
-        config.put(OAFProperties.SYSTEM_CMS_REPO_HOME_DIR.propKey(), repoHomeDir.getAbsolutePath());
+        config.put(CmsProperties.SYSTEM_CMS_REPO_HOME_DIR.propKey(), repoHomeDir.getAbsolutePath());
         config.put("oak.mongo.db", mongoDbName);
         config.put("oak.mongo.uri", mongoDbUri);
 

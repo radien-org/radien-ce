@@ -26,13 +26,11 @@ import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.api.service.mail.model.MailType;
-import io.radien.ms.ecm.util.ContentMappingUtils;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.ContentRepository;
 import java.text.MessageFormat;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +58,13 @@ public class ContentService implements ContentServiceAccess {
     private ContentRepository contentRepository;
 
     @Inject
-    private Config config;
+    private ConfigHandler configHandler;
 
     private String defaultLanguage;
 
     @PostConstruct
     public void init() {
-        defaultLanguage = config.getValue("system.default.language", String.class);
+        defaultLanguage = configHandler.getDefaultLanguage();
     }
 
     public List<EnterpriseContent> getChildrenFiles(String viewId) {
