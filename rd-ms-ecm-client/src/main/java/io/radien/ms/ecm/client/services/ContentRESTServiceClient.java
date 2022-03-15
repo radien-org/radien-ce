@@ -55,15 +55,6 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     @Inject
     private OAFAccess oaf;
 
-    public void test(Map<? extends Map<String, String>, String> map) {
-        return;
-    }
-
-    public void test1() {
-        Map<? extends Map<String, String>, String> foo = new HashMap<HashMap<String, String>, String>();
-        test(foo);
-    }
-
     @Override
     public EnterpriseContent getByViewIdAndLanguage(String viewId, String language) throws SystemException {
         return get(() -> {

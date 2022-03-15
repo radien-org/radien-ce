@@ -46,7 +46,6 @@ public abstract class JCRRepository implements Serializable {
         try {
             return repository.login(credentials);
         } catch (Exception e) {
-            log.error("Error creating new JCR session", e);
             error = true;
             throw new ContentRepositoryNotAvailableException(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(),
                     e, Response.Status.INTERNAL_SERVER_ERROR);

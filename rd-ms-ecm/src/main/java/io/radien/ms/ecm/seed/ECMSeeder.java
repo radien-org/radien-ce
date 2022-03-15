@@ -97,29 +97,10 @@ public @ApplicationScoped class ECMSeeder {
                 EnterpriseContent rootNode;
                 EnterpriseContent oafPropertiesContent = null;
                 EnterpriseContent oafHTMLContent = null;
-                EnterpriseContent oafNewsContent = null;
-                EnterpriseContent oafAppInfoContent = null;
-                EnterpriseContent oafStaticContentContent = null;
-                EnterpriseContent oafImagesContent = null;
-                EnterpriseContent oafNotificationsContent = null;
-                EnterpriseContent oafIFrameContent = null;
 
                 rootNode = initRootNode(client);
                 initPropertiesContent(client, rootNode, oafPropertiesContent);
                 initHTMLContentNode(client, rootNode, oafHTMLContent);
-/*
-                initAppInfoNode(client, rootNode, oafAppInfoContent);
-
-                initStaticContentNode(client, rootNode, oafStaticContentContent);
-
-                initNotificationsNode(client, rootNode, oafNotificationsContent);
-
-                initImagesNode(client, rootNode, oafImagesContent);
-
-                initIFrameContentNode(client, rootNode, oafIFrameContent);
-
-                initTagsNode(client, rootNode);
- */
                 initDocumentsNode(client, rootNode);
             }
 
