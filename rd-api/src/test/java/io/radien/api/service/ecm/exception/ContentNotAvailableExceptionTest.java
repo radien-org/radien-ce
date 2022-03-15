@@ -34,6 +34,6 @@ public class ContentNotAvailableExceptionTest {
         assertNotNull(exception);
 
         ContentNotAvailableException exception2 = new ContentNotAvailableException("contentNotAvailable_expired");
-        assertEquals("Message(s): contentNotAvailable_expired", exception2.getMessage());
+        assertEquals("contentNotAvailable_expired", exception2.getMessage());
     }
 }
