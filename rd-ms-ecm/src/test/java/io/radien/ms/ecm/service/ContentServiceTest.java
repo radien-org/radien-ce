@@ -19,8 +19,8 @@ package io.radien.ms.ecm.service;
 
 import io.radien.api.service.ecm.exception.ContentException;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
-import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.ContentVersion;
@@ -87,11 +87,11 @@ public class ContentServiceTest {
         assertEquals(result2, resultList.get(1));
     }
 
-    @Test(expected = ContentRepositoryNotAvailableException.class)
+    @Test(expected = ContentException.class)
     public void testGetChildrenFilesException() throws ElementNotFoundException, RepositoryException {
         when(contentRepository.getChildren(anyString()))
-                .thenThrow(new ContentRepositoryNotAvailableException());
-        List<EnterpriseContent> resultList = contentServiceAccess.getChildrenFiles("viewId");
+                .thenThrow(new RepositoryException());
+        contentServiceAccess.getChildrenFiles("viewId");
     }
 
     @Test
@@ -103,10 +103,17 @@ public class ContentServiceTest {
         assertEquals(result1, returned);
     }
 
-    @Test(expected = ContentRepositoryNotAvailableException.class)
-    public void loadFileException() throws RepositoryException, IOException {
+    @Test(expected = ContentNotAvailableException.class)
+    public void loadFileNotAvailableException() throws RepositoryException, IOException {
         when(contentRepository.loadFile(anyString()))
-                .thenThrow(new ContentRepositoryNotAvailableException());
+                .thenThrow(new RepositoryException());
+        contentServiceAccess.loadFile("path");
+    }
+
+    @Test(expected = ContentException.class)
+    public void loadFileContentException() throws RepositoryException, IOException {
+        when(contentRepository.loadFile(anyString()))
+                .thenThrow(new IOException());
         contentServiceAccess.loadFile("path");
     }
 
@@ -141,11 +148,11 @@ public class ContentServiceTest {
         assertEquals(result2, resultList.get(1));
     }
 
-    @Test(expected = ContentNotAvailableException.class)
+    @Test(expected = ContentException.class)
     public void testGetContentVersionsError() throws RepositoryException {
-        when(contentRepository.getFolderContents(anyString()))
+        when(contentRepository.getContentVersions(anyString()))
                 .thenThrow(new PathNotFoundException());
-        contentServiceAccess.getFolderContents("viewId");
+        contentServiceAccess.getContentVersions("viewId");
     }
 
     @Test
@@ -155,6 +162,14 @@ public class ContentServiceTest {
                 .thenReturn(1);
         contentServiceAccess.deleteVersion("a/path", version);
         verify(contentRepository).deleteVersion("a/path", version);
+    }
+
+    @Test(expected = ContentNotAvailableException.class)
+    public void testDeleteVersionNotFound() throws RepositoryException {
+        SystemContentVersion version = new ContentVersion("1.0.0");
+        when(contentRepository.deleteVersion("a/path", version))
+                .thenReturn(0);
+        contentServiceAccess.deleteVersion("a/path", version);
     }
 
     @Test(expected = ContentException.class)
@@ -182,6 +197,13 @@ public class ContentServiceTest {
         contentServiceAccess.getOrCreateDocumentsPath("radien", "a/path");
     }
 
+
+    @Test(expected = InvalidClientException.class)
+    public void testGetOrCreateDocumentsPathInvalidClient() throws RepositoryException {
+        contentServiceAccess.init();
+        contentServiceAccess.getOrCreateDocumentsPath("invalidClient", "a/path");
+    }
+
     @Test
     public void testSave() throws NameNotValidException, RepositoryException {
         contentServiceAccess.init();
@@ -199,6 +221,14 @@ public class ContentServiceTest {
         doThrow(new PathNotFoundException())
                 .when(contentRepository).save("radien", content);
         contentServiceAccess.save("radien", content);
+    }
+
+    @Test(expected = InvalidClientException.class)
+    public void testSaveInvalidClient() throws NameNotValidException, RepositoryException {
+        contentServiceAccess.init();
+        EnterpriseContent content = createGenericEnterpriseContent("name", ContentType.HTML,
+                null, null);
+        contentServiceAccess.save("invalidClient", content);
     }
 
     @Test
@@ -265,11 +295,11 @@ public class ContentServiceTest {
         assertEquals(ContentType.ERROR, resultList.get(0).getContentType());
     }
 
-    @Test(expected = ContentRepositoryNotAvailableException.class)
+    @Test(expected = ContentNotAvailableException.class)
     public void testGetByViewIdLanguageException() throws RepositoryException {
         when(contentRepository.getByViewIdLanguage("result1", true, "de"))
-                .thenThrow(new ContentRepositoryNotAvailableException());
-        List<EnterpriseContent> resultList = contentServiceAccess.getByViewIdLanguage("result1", true, "de");
+                .thenThrow(new RepositoryException());
+        contentServiceAccess.getByViewIdLanguage("result1", true, "de");
     }
 
     private EnterpriseContent createGenericEnterpriseContent(String name, ContentType contentType,

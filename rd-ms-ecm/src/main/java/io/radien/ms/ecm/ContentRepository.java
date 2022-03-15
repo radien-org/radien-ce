@@ -248,7 +248,7 @@ public class ContentRepository extends JCRRepository {
 		if(parent != null) {
 			content = parent.addNode(nameEscaped, JcrConstants.NT_FOLDER);
 		}
-		addSupportedLocalesFolder(client, content, parent, nameEscaped);
+		addSupportedLocalesFolder(client, parent, nameEscaped);
 		return content;
 	}
 
@@ -337,20 +337,19 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	public void updateFolderSupportedLanguages(String client, String contentPath, String nameEscaped) throws RepositoryException {
+	public void updateFolderSupportedLanguages(String client, String nameEscaped) throws RepositoryException {
 		Session session = createSession();
 
 		try {
-			Node contentNode = session.getNode(contentPath);
 			Node rootNode = session.getRootNode().getNode("radien");
-			addSupportedLocalesFolder(client, contentNode, rootNode, nameEscaped);
+			addSupportedLocalesFolder(client, rootNode, nameEscaped);
 			session.save();
 		} finally {
 			session.logout();
 		}
 	}
 
-	private void addSupportedLocalesFolder(String client, Node content, Node parent, String nameEscaped) throws RepositoryException {
+	private void addSupportedLocalesFolder(String client, Node parent, String nameEscaped) throws RepositoryException {
 		if (nameEscaped.equals(configHandler.getHtmlNode(client)) ||
 				nameEscaped.equals(configHandler.getNotificationNode(client))) {
 

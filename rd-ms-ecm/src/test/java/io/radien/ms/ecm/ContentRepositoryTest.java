@@ -281,7 +281,7 @@ public class ContentRepositoryTest {
         contentRepository.save("radien", htmlFolder);
         assertEquals("/radien/rd_html", htmlFolder.getJcrPath());
         assertEquals("/radien", htmlFolder.getParentPath());
-        contentRepository.updateFolderSupportedLanguages("radien", "/radien/rd_html", "rd_html");
+        contentRepository.updateFolderSupportedLanguages("radien", "rd_html");
 
         MandatoryEnterpriseContent mandatoryEnterpriseContent = new MandatoryEnterpriseContent();
         mandatoryEnterpriseContent.setName("nameHtml");

@@ -32,8 +32,4 @@ public class ContentRepositoryNotAvailableException extends ContentException {
 	public ContentRepositoryNotAvailableException(String message, Exception e, Response.Status responseStatus) {
 		super(message, e, responseStatus);
 	}
-
-	public ContentRepositoryNotAvailableException(Response.Status responseStatus) {
-		super(responseStatus);
-	}
 }

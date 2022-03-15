@@ -149,7 +149,7 @@ public @ApplicationScoped class ECMSeeder {
             log.info("[CMS] : DOCUMENTS NODE : INITIALIZED {}", documentsNode);
         } else {
             log.info("[CMS] : ENABLED : Content Repository Documents Node already initialized; Checking for updated locales.");
-            repository.updateFolderSupportedLanguages(client, documentsNode.getParentPath(), configHandler.getDocumentsNode(client));
+            repository.updateFolderSupportedLanguages(client, configHandler.getDocumentsNode(client));
         }
         autoCreateDocumentFolders(client, documentsNode);
     }
@@ -208,7 +208,7 @@ public @ApplicationScoped class ECMSeeder {
             log.info("[CMS] : HTML NODE : INITIALIZED {}", oafHTMLContent);
         } else {
             log.info("[CMS] : ENABLED : Content Repository HTML Node already initialized; Checking for updated locales.");
-            repository.updateFolderSupportedLanguages(client, oafHTMLContent.getParentPath(), configHandler.getHtmlNode(client));
+            repository.updateFolderSupportedLanguages(client, configHandler.getHtmlNode(client));
         }
     }
 

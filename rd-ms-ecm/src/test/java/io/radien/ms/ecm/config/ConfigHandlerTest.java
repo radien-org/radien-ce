@@ -41,76 +41,123 @@ public class ConfigHandlerTest {
 
     @Before
     public void init() {
-        when(oaf.getProperty(CmsProperties.SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM))
-                .thenReturn("en");
-        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-                .thenReturn("root");
-        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML))
-                .thenReturn("html");
-        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION))
-                .thenReturn("notification");
-        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_PROPERTIES))
-                .thenReturn("properties");
+        when(oaf.getProperty(CmsProperties.SYSTEM_MS_SEED_CONTENT))
+                .thenReturn("true");
+        when(oaf.getProperty(CmsProperties.SYSTEM_MS_SEED_CONTENT_INSERT_ONLY))
+                .thenReturn("true");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_SUPPORTED_CLIENTS))
+                .thenReturn("radien");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_DEFAULT_CLIENT))
+                .thenReturn("radien");
         when(oaf.getProperty(CmsProperties.SYSTEM_CMS_REPO_HOME_DIR))
-                .thenReturn("home");
+                .thenReturn("homeDir");
         when(oaf.getProperty(CmsProperties.SYSTEM_CMS_REPO_SOURCE))
-                .thenReturn("source");
+                .thenReturn("repoSource");
         when(oaf.getProperty(CmsProperties.SYSTEM_CMS_REPO_MONGO_DB_NAME))
                 .thenReturn("dbName");
         when(oaf.getProperty(CmsProperties.SYSTEM_CMS_REPO_MONGO_DB_URI))
                 .thenReturn("dbUri");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_AUTO_CREATE_FOLDERS))
+                .thenReturn("legalDocuments");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_ROOT))
+                .thenReturn("{0}");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML))
+                .thenReturn("{0}_html");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION))
+                .thenReturn("{0}_notification");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+                .thenReturn("{0}_documents");
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_PROPERTIES))
+                .thenReturn("{0}_properties");
+        when(oaf.getProperty(CmsProperties.SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM))
+                .thenReturn("en");
+        when(oaf.getProperty(CmsProperties.SYSTEM_MS_CONFIG_DEFAULT_LANG_ECM))
+                .thenReturn("en");
         configHandler.init();
     }
 
     @Test
-    public void testGetSupportedLanguages() {
-        assertEquals("en", configHandler.getSupportedLanguages());
+    public void testGetSeedContent() {
+        assertEquals("true", configHandler.getSeedContent());
     }
-
     @Test
-    public void testGetRootNode() {
-        assertEquals("root", configHandler.getRootNode("root"));
+    public void testGetSeedInsertOnly() {
+        assertEquals("true", configHandler.getSeedInsertOnly());
     }
-
     @Test
-    public void testGetHtmlNode() {
-        assertEquals("html", configHandler.getHtmlNode("radien"));
+    public void testGetSupportedClients() {
+        assertEquals("radien", configHandler.getSupportedClients());
     }
-
     @Test
-    public void testGetNotificationNode() {
-        assertEquals("notification", configHandler.getNotificationNode("radien"));
+    public void testGetDefaultClient() {
+        assertEquals("radien", configHandler.getDefaultClient());
     }
-
-    @Test
-    public void testGetPropertiesNode() {
-        assertEquals("properties", configHandler.getPropertiesNode("radien"));
-    }
-
     @Test
     public void testGetRepoHome() {
-        assertEquals("home", configHandler.getRepoHome());
+        assertEquals("homeDir", configHandler.getRepoHome());
     }
-
     @Test
     public void testGetRepoSource() {
-        assertEquals("source", configHandler.getRepoSource());
+        assertEquals("repoSource", configHandler.getRepoSource());
     }
-
     @Test
     public void testGetMongoDbName() {
         assertEquals("dbName", configHandler.getMongoDbName());
     }
-
     @Test
     public void testGetMongoDbUri() {
         assertEquals("dbUri", configHandler.getMongoDbUri());
     }
-
     @Test
-    public void testGetProperty() {
+    public void testGetAutoCreateNodes() {
+        assertEquals("legalDocuments", configHandler.getAutoCreateNodes());
+    }
+    @Test
+    public void testGetRootNodeClient() {
+        assertEquals("radien", configHandler.getRootNode("radien"));
+    }
+    @Test
+    public void testGetRootNode() {
+        assertEquals("radien", configHandler.getRootNode());
+    }
+    @Test
+    public void testGetHtmlNode() {
+        assertEquals("radien_html", configHandler.getHtmlNode("radien"));
+    }
+    @Test
+    public void testGetNotificationNode() {
+        assertEquals("radien_notification", configHandler.getNotificationNode("radien"));
+    }
+    @Test
+    public void testGetDocumentsNode() {
+        assertEquals("radien_documents", configHandler.getDocumentsNode("radien"));
+    }
+    @Test
+    public void testGetPropertiesNodeClient() {
+        assertEquals("radien_properties", configHandler.getPropertiesNode("radien"));
+    }
+    @Test
+    public void testGetPropertiesNode() {
+        assertEquals("radien_properties", configHandler.getPropertiesNode());
+    }
+    @Test
+    public void testGetSupportedLanguages() {
+        assertEquals("en", configHandler.getSupportedLanguages());
+    }
+    @Test
+    public void testGetDefaultLanguage() {
+        assertEquals("en", configHandler.getDefaultLanguage());
+    }
+    @Test
+    public void testGetPropertyClientDefaultClient() {
         when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
-                .thenReturn("rd_documents");
-        assertEquals("rd_documents", configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, Optional.empty()));
+                .thenReturn("{0}_documents");
+        assertEquals("radien_documents", configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, Optional.empty()));
+    }
+    @Test
+    public void testGetPropertyClientClient() {
+        when(oaf.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS))
+                .thenReturn("{0}_documents");
+        assertEquals("client_documents", configHandler.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS, Optional.of("client")));
     }
 }

@@ -204,10 +204,10 @@ public class ECMSeederTest {
                 argThat((EnterpriseContent arg) -> arg.getName().equals("propertiesNode")));
         verify(contentServiceAccess, never()).save(argThat((String arg) -> arg.equals("radien")),
                 argThat((EnterpriseContent arg) -> arg.getName().equals("htmlNode")));
-        verify(contentRepository).updateFolderSupportedLanguages("radien", "/", "htmlNode");
+        verify(contentRepository).updateFolderSupportedLanguages("radien", "htmlNode");
         verify(contentServiceAccess, never()).save(argThat((String arg) -> arg.equals("radien")),
                 argThat((EnterpriseContent arg) -> arg.getName().equals("docsNode")));
-        verify(contentRepository).updateFolderSupportedLanguages("radien", "/", "docsNode");
+        verify(contentRepository).updateFolderSupportedLanguages("radien", "docsNode");
         verify(contentServiceAccess).save(argThat((String arg) -> arg.equals("radien")),
                 argThat((EnterpriseContent arg) -> arg.getName().equals("documents")));
     }

@@ -15,6 +15,8 @@
  */
 package io.radien.api.service.ecm;
 
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
+import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.model.SystemContentVersion;
 import java.util.List;
 
@@ -102,6 +104,8 @@ public interface ContentServiceAccess extends ServiceAccess {
 	/**
 	 * Content service folder contents getter
 	 * @param path to be retrieved
+	 * @throws ContentNotAvailableException given path was not found
+	 * @throws ContentRepositoryNotAvailableException in case JCR Repository is not available or login was not possible
 	 * @return a list of all the contents existent in a given path
 	 */
 	List<EnterpriseContent> getFolderContents(String path);
