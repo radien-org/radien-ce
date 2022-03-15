@@ -17,10 +17,10 @@
  */
 package io.radien.ms.ecm.service;
 
+import io.radien.api.service.ecm.exception.ContentException;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
-import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.ContentVersion;
@@ -30,6 +30,7 @@ import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.api.service.mail.model.MailType;
 import io.radien.ms.ecm.ContentRepository;
 import io.radien.ms.ecm.config.ConfigHandler;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -50,7 +51,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -70,13 +70,13 @@ public class ContentServiceTest {
     private ConfigHandler configHandler;
 
     @Before
-    public void init() throws NoSuchFieldException {
+    public void init() {
         when(configHandler.getDefaultLanguage()).thenReturn("en");
         when(configHandler.getSupportedClients()).thenReturn("radien");
     }
 
     @Test
-    public void testGetChildrenFiles() throws NameNotValidException, ContentRepositoryNotAvailableException, ElementNotFoundException {
+    public void testGetChildrenFiles() throws NameNotValidException, ElementNotFoundException, RepositoryException {
         EnterpriseContent result1 = createGenericEnterpriseContent("result1", ContentType.HTML, null, null);
         EnterpriseContent result2 = createGenericEnterpriseContent("result2", ContentType.HTML, null, null);
         when(contentRepository.getChildren(anyString()))
@@ -87,17 +87,15 @@ public class ContentServiceTest {
         assertEquals(result2, resultList.get(1));
     }
 
-    @Test
-    public void testGetChildrenFilesException() throws NameNotValidException, ContentRepositoryNotAvailableException, ElementNotFoundException {
+    @Test(expected = ContentRepositoryNotAvailableException.class)
+    public void testGetChildrenFilesException() throws ElementNotFoundException, RepositoryException {
         when(contentRepository.getChildren(anyString()))
                 .thenThrow(new ContentRepositoryNotAvailableException());
         List<EnterpriseContent> resultList = contentServiceAccess.getChildrenFiles("viewId");
-        assertNotNull(resultList);
-        assertTrue(resultList.isEmpty());
     }
 
     @Test
-    public void loadFile() throws NameNotValidException, ContentRepositoryNotAvailableException {
+    public void loadFile() throws NameNotValidException, RepositoryException, IOException {
         EnterpriseContent result1 = createGenericEnterpriseContent("result1", ContentType.HTML, null, null);
         when(contentRepository.loadFile(anyString()))
                 .thenReturn(result1);
@@ -106,14 +104,14 @@ public class ContentServiceTest {
     }
 
     @Test(expected = ContentRepositoryNotAvailableException.class)
-    public void loadFileException() throws NameNotValidException, ContentRepositoryNotAvailableException {
+    public void loadFileException() throws RepositoryException, IOException {
         when(contentRepository.loadFile(anyString()))
                 .thenThrow(new ContentRepositoryNotAvailableException());
         contentServiceAccess.loadFile("path");
     }
 
     @Test
-    public void testGetFolderContents() throws NameNotValidException, ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
+    public void testGetFolderContents() throws NameNotValidException, RepositoryException {
         EnterpriseContent result1 = createGenericEnterpriseContent("result1", ContentType.HTML, null, null);
         EnterpriseContent result2 = createGenericEnterpriseContent("result2", ContentType.HTML, null, null);
         when(contentRepository.getFolderContents(anyString()))
@@ -125,14 +123,14 @@ public class ContentServiceTest {
     }
 
     @Test(expected = ContentNotAvailableException.class)
-    public void testGetFolderContentsError() throws ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
+    public void testGetFolderContentsError() throws RepositoryException {
         when(contentRepository.getFolderContents(anyString()))
                 .thenThrow(new PathNotFoundException());
         contentServiceAccess.getFolderContents("viewId");
     }
 
     @Test
-    public void testGetContentVersions() throws NameNotValidException, ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
+    public void testGetContentVersions() throws NameNotValidException, RepositoryException {
         EnterpriseContent result1 = createGenericEnterpriseContent("result1", ContentType.HTML, null, null);
         EnterpriseContent result2 = createGenericEnterpriseContent("result2", ContentType.HTML, null, null);
         when(contentRepository.getContentVersions(anyString()))
@@ -144,21 +142,23 @@ public class ContentServiceTest {
     }
 
     @Test(expected = ContentNotAvailableException.class)
-    public void testGetContentVersionsError() throws ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
+    public void testGetContentVersionsError() throws RepositoryException {
         when(contentRepository.getFolderContents(anyString()))
                 .thenThrow(new PathNotFoundException());
         contentServiceAccess.getFolderContents("viewId");
     }
 
     @Test
-    public void testDeleteVersion() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    public void testDeleteVersion() throws RepositoryException {
         SystemContentVersion version = new ContentVersion("1.0.0");
+        when(contentRepository.deleteVersion("a/path", version))
+                .thenReturn(1);
         contentServiceAccess.deleteVersion("a/path", version);
         verify(contentRepository).deleteVersion("a/path", version);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testDeleteVersionException() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    @Test(expected = ContentException.class)
+    public void testDeleteVersionException() throws RepositoryException {
         SystemContentVersion version = new ContentVersion("1.0.0");
         doThrow(new PathNotFoundException())
                 .when(contentRepository).deleteVersion("a/path", version);
@@ -166,8 +166,7 @@ public class ContentServiceTest {
     }
 
     @Test
-    public void testGetOrCreateDocumentsPath() throws ContentRepositoryNotAvailableException, RepositoryException,
-            ContentNotAvailableException, InvalidClientException {
+    public void testGetOrCreateDocumentsPath() throws RepositoryException {
         contentServiceAccess.init();
         when(contentRepository.getOrCreateDocumentsPath("radien", "a/path"))
                 .thenReturn("a/path");
@@ -175,9 +174,8 @@ public class ContentServiceTest {
         assertEquals("a/path", result);
     }
 
-    @Test(expected = ContentNotAvailableException.class)
-    public void testGetOrCreateDocumentsPathException() throws ContentRepositoryNotAvailableException, RepositoryException,
-            ContentNotAvailableException, InvalidClientException {
+    @Test(expected = ContentException.class)
+    public void testGetOrCreateDocumentsPathException() throws RepositoryException {
         contentServiceAccess.init();
         when(contentRepository.getOrCreateDocumentsPath("radien", "a/path"))
                 .thenThrow(new PathNotFoundException());
@@ -185,8 +183,7 @@ public class ContentServiceTest {
     }
 
     @Test
-    public void testSave() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException,
-            RepositoryException, InvalidClientException {
+    public void testSave() throws NameNotValidException, RepositoryException {
         contentServiceAccess.init();
         EnterpriseContent content = createGenericEnterpriseContent("name", ContentType.HTML,
                 null, null);
@@ -195,8 +192,7 @@ public class ContentServiceTest {
     }
 
     @Test(expected = ContentNotAvailableException.class)
-    public void testSaveException() throws NameNotValidException, ContentRepositoryNotAvailableException,
-            ContentNotAvailableException, RepositoryException, InvalidClientException {
+    public void testSaveException() throws NameNotValidException, RepositoryException {
         contentServiceAccess.init();
         EnterpriseContent content = createGenericEnterpriseContent("name", ContentType.HTML,
                 null, null);
@@ -206,7 +202,7 @@ public class ContentServiceTest {
     }
 
     @Test
-    public void testDelete() throws NameNotValidException, ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    public void testDelete() throws NameNotValidException, RepositoryException {
         EnterpriseContent content = createGenericEnterpriseContent("name", ContentType.HTML,
                 "jcr/Path", "jcr/");
         contentServiceAccess.delete(content);
@@ -214,7 +210,7 @@ public class ContentServiceTest {
     }
 
     @Test(expected = ContentNotAvailableException.class)
-    public void testDeleteException() throws ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
+    public void testDeleteException() throws RepositoryException {
         doThrow(new PathNotFoundException())
                 .when(contentRepository).delete(anyString());
         contentServiceAccess.delete("a/path");
@@ -236,7 +232,7 @@ public class ContentServiceTest {
     }
 
     @Test
-    public void testGetByViewIdLanguageAvailable() throws NameNotValidException, ContentRepositoryNotAvailableException {
+    public void testGetByViewIdLanguageAvailable() throws NameNotValidException, RepositoryException {
         EnterpriseContent result1 = createGenericEnterpriseContent("result1", ContentType.HTML, null, null);
         when(contentRepository.getByViewIdLanguage("result1", true, "de"))
                 .thenReturn(Optional.of(Collections.singletonList(result1)));
@@ -246,7 +242,7 @@ public class ContentServiceTest {
     }
 
     @Test
-    public void testGetByViewIdLanguageFallback() throws NameNotValidException, ContentRepositoryNotAvailableException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testGetByViewIdLanguageFallback() throws NameNotValidException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, RepositoryException {
         getInitMethod().invoke(contentServiceAccess);
         EnterpriseContent result1 = createGenericEnterpriseContent("result1", ContentType.HTML, null, null);
         when(contentRepository.getByViewIdLanguage("result1", true, "de"))
@@ -259,7 +255,7 @@ public class ContentServiceTest {
     }
 
     @Test
-    public void testGetByViewIdLanguageNoFallbackAvailable() throws NameNotValidException, ContentRepositoryNotAvailableException {
+    public void testGetByViewIdLanguageNoFallbackAvailable() throws RepositoryException {
         when(contentRepository.getByViewIdLanguage("result1", true, "de"))
                 .thenReturn(Optional.empty());
         when(contentRepository.getByViewIdLanguage("result1", true, "en"))
@@ -269,13 +265,11 @@ public class ContentServiceTest {
         assertEquals(ContentType.ERROR, resultList.get(0).getContentType());
     }
 
-    @Test
-    public void testGetByViewIdLanguageException() throws NameNotValidException, ContentRepositoryNotAvailableException {
+    @Test(expected = ContentRepositoryNotAvailableException.class)
+    public void testGetByViewIdLanguageException() throws RepositoryException {
         when(contentRepository.getByViewIdLanguage("result1", true, "de"))
                 .thenThrow(new ContentRepositoryNotAvailableException());
         List<EnterpriseContent> resultList = contentServiceAccess.getByViewIdLanguage("result1", true, "de");
-        assertFalse(resultList.isEmpty());
-        assertEquals(ContentType.ERROR, resultList.get(0).getContentType());
     }
 
     private EnterpriseContent createGenericEnterpriseContent(String name, ContentType contentType,

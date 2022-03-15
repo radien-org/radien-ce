@@ -18,16 +18,23 @@
 
 package io.radien.ms.ecm.client.exception;
 
-import io.radien.exception.ModelResponseExceptionMapper;
-import javax.ws.rs.core.MultivaluedMap;
+import io.radien.api.service.ecm.exception.ContentException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ContentExceptionMapper extends ModelResponseExceptionMapper {
-    public boolean legalDocTypeHandles(int statusCode, MultivaluedMap<String, Object> headers) {
-        return handles(statusCode, headers);
-    }
+@Provider
+public class ContentExceptionMapper implements ExceptionMapper<ContentException> {
+    private static final Logger log = LoggerFactory.getLogger(ContentExceptionMapper.class);
 
-    public Exception legalDocTypeToThrowable(Response response) {
-        return toThrowable(response);
+
+    @Override
+    public Response toResponse(ContentException exception) {
+        log.error("[ContentException] - {} - {}", exception.getStatus().getStatusCode(), exception.getMessage());
+        return Response.status(exception.getStatus())
+                .entity(exception.getMessage())
+                .build();
     }
 }

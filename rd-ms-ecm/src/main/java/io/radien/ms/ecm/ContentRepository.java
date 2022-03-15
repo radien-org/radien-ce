@@ -16,8 +16,6 @@
  */
 package io.radien.ms.ecm;
 
-import io.radien.api.service.ecm.exception.ContentNotAvailableException;
-import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.ms.ecm.config.ConfigHandler;
@@ -26,7 +24,6 @@ import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.datalayer.JCRRepository;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
-import java.text.MessageFormat;
 import javax.inject.Singleton;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
@@ -74,7 +71,7 @@ public class ContentRepository extends JCRRepository {
 	@Inject
 	private ContentDataProvider dataProvider;
 
-	public void save(String client, EnterpriseContent obj) throws ContentRepositoryNotAvailableException, RepositoryException {
+	public void save(String client, EnterpriseContent obj) throws RepositoryException {
 		Session session = createSession();
 		String viewId = obj.getViewId();
 		String language = obj.getLanguage();
@@ -102,7 +99,7 @@ public class ContentRepository extends JCRRepository {
 				if (content != null && !newPath.equals(content.getPath())) {
 					isMoveCommand = true;
 				}
-			} catch (RepositoryException | ContentRepositoryNotAvailableException e) {
+			} catch (RepositoryException e) {
 				log.error("Error accessing the JCR repository while trying to find content", e);
 			}
 		}
@@ -255,22 +252,15 @@ public class ContentRepository extends JCRRepository {
 		return content;
 	}
 
-	public EnterpriseContent loadFile(String jcrPath)
-			throws ContentRepositoryNotAvailableException {
-		EnterpriseContent content = null;
-			Session session = createSession();
+	public EnterpriseContent loadFile(String jcrPath) throws RepositoryException, IOException {
+		Session session = createSession();
 		try {
-			content = getContentByPath(jcrPath, session);
+			EnterpriseContent content = getContentByPath(jcrPath, session);
 			content.setFile(contentMappingUtils.getFile(session, jcrPath));
-		} catch (PathNotFoundException e) {
-			log.error("Error loading EnterpriseContent File", e);
-		} catch (RepositoryException | IOException e) {
-			log.error("Error loading file", e);
-			throw new ContentRepositoryNotAvailableException();
+			return content;
 		} finally {
 			session.logout();
 		}
-		return content;
 	}
 
 	private EnterpriseContent getContentByPath(String jcrPath, Session session) throws RepositoryException {
@@ -278,7 +268,7 @@ public class ContentRepository extends JCRRepository {
 		return contentMappingUtils.convertJCRNode(result);
 	}
 
-	public void delete(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+	public void delete(String path) throws RepositoryException {
 		Session session = createSession();
 		try {
 			session.removeItem(path);
@@ -289,7 +279,7 @@ public class ContentRepository extends JCRRepository {
 	}
 
 	public Optional<List<EnterpriseContent>> getByViewIdLanguage(String viewId, boolean activeOnly, String language)
-			throws ContentRepositoryNotAvailableException {
+			throws RepositoryException {
 		Session session = createSession();
 		List<Node> nodeList = getNodeByViewIdLanguage(session, viewId, activeOnly, language);
 		if (nodeList.isEmpty()) {
@@ -301,20 +291,17 @@ public class ContentRepository extends JCRRepository {
 			for (Node node : nodeList) {
 				ecList.add(contentMappingUtils.convertJCRNode(node));
 			}
-			return Optional.ofNullable(ecList);
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
+			return Optional.of(ecList);
 		} finally {
 			session.logout();
 		}
 	}
 
 	private List<Node> getNodeByViewIdLanguage(Session session, String viewId, boolean activeOnly, String language)
-			throws ContentRepositoryNotAvailableException {
+			throws RepositoryException {
 
 		List<Node> results = new ArrayList<>();
 		QueryManager queryManager;
-		try {
 			queryManager = session.getWorkspace().getQueryManager();
 
 			String expression = "select * from " + "[" + CmsConstants.RADIEN_GENERIC_CONTENT_MIXIN + "] as node " + "where ["
@@ -332,14 +319,10 @@ public class ContentRepository extends JCRRepository {
 			while (nodes.hasNext()) {
 				results.add((Node) nodes.next());
 			}
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
-		}
-
 		return results;
 	}
 
-	public void registerCNDNodeTypes(String cndFileName) throws ContentRepositoryNotAvailableException {
+	public void registerCNDNodeTypes(String cndFileName) {
 		Session session = createSession();
 		NodeType[] nodeTypes;
 		try(InputStreamReader streamReader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(cndFileName))) {
@@ -354,7 +337,7 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	public void updateFolderSupportedLanguages(String client, String contentPath, String nameEscaped) throws RepositoryException, ContentRepositoryNotAvailableException {
+	public void updateFolderSupportedLanguages(String client, String contentPath, String nameEscaped) throws RepositoryException {
 		Session session = createSession();
 
 		try {
@@ -384,13 +367,10 @@ public class ContentRepository extends JCRRepository {
 	}
 
 
-	public String getRootNodePath() throws ContentRepositoryNotAvailableException {
+	public String getRootNodePath() throws RepositoryException{
 		Session session = createSession();
-
 		try {
 			return session.getRootNode().getPath();
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
 		} finally {
 			session.logout();
 		}
@@ -407,8 +387,7 @@ public class ContentRepository extends JCRRepository {
 		return resultNode;
 	}
 
-	public Collection<EnterpriseContent> getChildren(String viewId)
-			throws ContentRepositoryNotAvailableException, ElementNotFoundException {
+	public Collection<EnterpriseContent> getChildren(String viewId) throws ElementNotFoundException, RepositoryException {
 
 		Session session = createSession();
 		List<Node> nodes = getNodeByViewIdLanguage(session, viewId, true, null);
@@ -424,10 +403,6 @@ public class ContentRepository extends JCRRepository {
 			for (Node node : JcrUtils.getChildNodes(parent)) {
 				loopNodes(results, node, -1, -1);
 			}
-		} catch (PathNotFoundException e) {
-			throw new ElementNotFoundException(e.getMessage());
-		} catch (RepositoryException e) {
-			throw new ContentRepositoryNotAvailableException();
 		} finally {
 			session.logout();
 		}
@@ -435,7 +410,7 @@ public class ContentRepository extends JCRRepository {
 		return results;
 	}
 
-	public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+	public List<EnterpriseContent> getFolderContents(String path) throws RepositoryException {
 		Session session = createSession();
 		List<EnterpriseContent> results = new ArrayList<>();
 		try {
@@ -447,7 +422,7 @@ public class ContentRepository extends JCRRepository {
 		return results;
 	}
 
-	public List<EnterpriseContent> getContentVersions(String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+	public List<EnterpriseContent> getContentVersions(String path) throws RepositoryException {
 		List<EnterpriseContent> results = new ArrayList<>();
 		Session session = createSession();
 		try {
@@ -472,11 +447,10 @@ public class ContentRepository extends JCRRepository {
 	 * @param path absolute path to the node
 	 * @param version version to be deleted
 	 * @throws RepositoryException when deletion process fails
-	 * @throws ContentNotAvailableException when version cannot be found in the given path
-	 * @throws ContentRepositoryNotAvailableException when the session times-out or the repository is not available to perform the operation
 	 */
-	public void deleteVersion(String path, SystemContentVersion version) throws RepositoryException, ContentNotAvailableException, ContentRepositoryNotAvailableException {
+	public int deleteVersion(String path, SystemContentVersion version) throws RepositoryException {
 		Session session = createSession();
+		int affectedRecords = 0;
 		try {
 			VersionManager versionManager = session.getWorkspace().getVersionManager();
 			VersionHistory history = versionManager.getVersionHistory(path);
@@ -492,8 +466,9 @@ public class ContentRepository extends JCRRepository {
 							versionManager.restore(previousVersion, false);
 						}
 						history.removeVersion(nodeVersion.getName());
+						affectedRecords++;
 						log.info("Version {} deleted from {}", version.getVersion(), path);
-						return;
+						return affectedRecords;
 					} else {
 						previousVersion = nodeVersion;
 					}
@@ -502,10 +477,10 @@ public class ContentRepository extends JCRRepository {
 		} finally {
 			session.logout();
 		}
-		throw new ContentNotAvailableException(MessageFormat.format("Version {0} not found in {1}", version.getVersion(), path));
+		return affectedRecords;
 	}
 
-	public String getOrCreateDocumentsPath(String client, String path) throws ContentRepositoryNotAvailableException, RepositoryException {
+	public String getOrCreateDocumentsPath(String client, String path) throws RepositoryException {
 		Session session = createSession();
 		try {
 			String root = configHandler.getRootNode(client);
@@ -515,9 +490,7 @@ public class ContentRepository extends JCRRepository {
 			}
 			generateFolderStructure(client, String.format("/%s/%s%s", root, docsNode.getName(), path), session);
 			session.save();
-		} catch (Exception e) {
-			log.error("ERROR " , e);
-		}finally {
+		} finally {
 			session.logout();
 		}
 		return path;
@@ -556,7 +529,7 @@ public class ContentRepository extends JCRRepository {
 		}
 	}
 
-	private String generateFolderStructure(String client, String path, Session session) throws ContentRepositoryNotAvailableException, RepositoryException {
+	private String generateFolderStructure(String client, String path, Session session) throws RepositoryException {
 		String parent = path.substring(0, 1);
 		String[] folderNames = path.substring(1).split("/");
 		for(String folderName : folderNames) {

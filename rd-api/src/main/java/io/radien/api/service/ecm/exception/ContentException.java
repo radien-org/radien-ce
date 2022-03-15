@@ -18,29 +18,41 @@ package io.radien.api.service.ecm.exception;
 
 import javax.ws.rs.core.Response;
 
-public class InvalidClientException extends ContentException {
+public class ContentException extends RuntimeException {
     private static final long serialVersionUID = -1568199281340528650L;
+    private final Response.Status status;
 
-    /**
-     * Content Not Available exception empty constructor
-     */
-    public InvalidClientException() {
+    public ContentException() {
         super();
+        status = Response.Status.INTERNAL_SERVER_ERROR;
     }
 
-    /**
-     * Content Not Available exception message constructor
-     * @param message to be added
-     */
-    public InvalidClientException(String message) {
+    public ContentException(Response.Status status) {
+        super();
+        this.status = status;
+    }
+
+    public ContentException(String message) {
         super(message);
+        status = Response.Status.INTERNAL_SERVER_ERROR;
     }
 
-    public InvalidClientException(String message, Exception e) {
+    public ContentException(String message, Response.Status status) {
+        super(message);
+        this.status = status;
+    }
+
+    public ContentException(String message, Exception e) {
         super(message, e);
+        status = Response.Status.INTERNAL_SERVER_ERROR;
     }
 
-    public InvalidClientException(String message, Response.Status status) {
-        super(message, status);
+    public ContentException(String message, Exception e, Response.Status status) {
+        super(message, e);
+        this.status = status;
+    }
+
+    public Response.Status getStatus() {
+        return status;
     }
 }

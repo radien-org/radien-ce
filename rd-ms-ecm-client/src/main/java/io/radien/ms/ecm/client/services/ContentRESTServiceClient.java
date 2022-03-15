@@ -36,7 +36,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -52,6 +54,15 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     private ClientServiceUtil clientServiceUtil;
     @Inject
     private OAFAccess oaf;
+
+    public void test(Map<? extends Map<String, String>, String> map) {
+        return;
+    }
+
+    public void test1() {
+        Map<? extends Map<String, String>, String> foo = new HashMap<HashMap<String, String>, String>();
+        test(foo);
+    }
 
     @Override
     public EnterpriseContent getByViewIdAndLanguage(String viewId, String language) throws SystemException {

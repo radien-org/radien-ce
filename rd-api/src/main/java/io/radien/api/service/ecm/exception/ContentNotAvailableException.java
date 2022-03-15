@@ -15,14 +15,14 @@
  */
 package io.radien.api.service.ecm.exception;
 
-import io.radien.exception.SystemException;
+import javax.ws.rs.core.Response;
 
 /**
- * Exception extending the base SystemException, to be thrown when error occurs in the CMS
+ * Exception extending the base ContentException, to be thrown when error occurs in the CMS
  *
  * @author Marco Weiland
  */
-public class ContentNotAvailableException extends SystemException {
+public class ContentNotAvailableException extends ContentException {
 	private static final long serialVersionUID = -1568199281340528650L;
 
 	/**
@@ -40,7 +40,17 @@ public class ContentNotAvailableException extends SystemException {
 		super(message);
 	}
 
+	public ContentNotAvailableException(String message, Response.Status status) {
+		super(message, status);
+	}
+
 	public ContentNotAvailableException(String message, Exception e) {
 		super(message, e);
 	}
+
+	public ContentNotAvailableException(String message, Exception e, Response.Status status) {
+		super(message, e, status);
+	}
+
+
 }

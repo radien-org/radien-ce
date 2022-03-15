@@ -15,15 +15,11 @@
  */
 package io.radien.api.service.ecm;
 
-import io.radien.api.service.ecm.exception.ContentNotAvailableException;
-import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.model.SystemContentVersion;
 import java.util.List;
 
 
 import io.radien.api.service.ServiceAccess;
-import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
-import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.model.MailType;
 
@@ -80,14 +76,14 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 *
 	 * @param obj the {@link EnterpriseContent} to be persisted
 	 */
-	void save(String client, EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException;
+	void save(String client, EnterpriseContent obj);
 
 	/**
 	 * Deletes the target enterprise content
 	 *
 	 * @param obj the {@link EnterpriseContent} to be deleted
 	 */
-	void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+	void delete(EnterpriseContent obj);
 
 	/**
 	 * Gets a list of all the children files existent for a given view id
@@ -100,29 +96,26 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 * Tries to load the file present inside a content, if available
 	 * @param jcrPath  the {@link EnterpriseContent} from which the file will load
 	 * @return the new child {@link EnterpriseContent}
-	 * @throws ElementNotFoundException Exception thrown if the element is not found
-	 * @throws ContentRepositoryNotAvailableException Exception thrown if there is an error while querying the jcr
 	 */
-	EnterpriseContent loadFile(String jcrPath) throws ElementNotFoundException, ContentRepositoryNotAvailableException;
+	EnterpriseContent loadFile(String jcrPath);
 
 	/**
 	 * Content service folder contents getter
 	 * @param path to be retrieved
 	 * @return a list of all the contents existent in a given path
-	 * @throws Exception 
 	 */
-	List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+	List<EnterpriseContent> getFolderContents(String path);
 
 	/**
 	 * Content service content versions getter
 	 * @param path to be retrieved
 	 * @return a list of all the contents versions existent in a given path
 	 */
-	List<EnterpriseContent> getContentVersions(String path)throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+	List<EnterpriseContent> getContentVersions(String path);
 
-	void deleteVersion(String path, SystemContentVersion version) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+	void deleteVersion(String path, SystemContentVersion version);
 
-	String getOrCreateDocumentsPath(String client, String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException;
+	String getOrCreateDocumentsPath(String client, String path);
 
-	void delete(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException;
+	void delete(String path);
 }

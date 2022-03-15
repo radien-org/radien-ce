@@ -17,6 +17,7 @@
 package io.radien.ms.ecm.datalayer;
 
 import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.ecm.constants.CmsConstants;
 import java.io.Serializable;
 import javax.inject.Inject;
@@ -24,6 +25,7 @@ import javax.jcr.Credentials;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,14 +41,15 @@ public abstract class JCRRepository implements Serializable {
         return repository;
     }
 
-    protected Session createSession(Credentials credentials) throws ContentRepositoryNotAvailableException{
+    protected Session createSession(Credentials credentials) {
         boolean error = false;
         try {
             return repository.login(credentials);
         } catch (Exception e) {
             log.error("Error creating new JCR session", e);
             error = true;
-            throw new ContentRepositoryNotAvailableException();
+            throw new ContentRepositoryNotAvailableException(GenericErrorCodeMessage.REPOSITORY_NOT_AVAILABLE.toString(),
+                    e, Response.Status.INTERNAL_SERVER_ERROR);
         } finally {
             if (!error) {
                 initCount++;
@@ -57,7 +60,7 @@ public abstract class JCRRepository implements Serializable {
         }
     }
 
-    protected Session createSession() throws ContentRepositoryNotAvailableException {
+    protected Session createSession() {
         return createSession(getAdminCredentials());
     }
 

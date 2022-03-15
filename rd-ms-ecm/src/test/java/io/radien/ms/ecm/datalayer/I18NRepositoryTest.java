@@ -220,7 +220,7 @@ public class I18NRepositoryTest {
     }
 
     @Test(expected = ContentRepositoryNotAvailableException.class)
-    public void test013CreateSessionError() throws RepositoryException, ContentRepositoryNotAvailableException {
+    public void test013CreateSessionError() {
         repository.createSession(new SimpleCredentials("bananas", "bananas".toCharArray()));
     }
 

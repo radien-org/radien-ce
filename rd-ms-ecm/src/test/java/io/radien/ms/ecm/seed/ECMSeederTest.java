@@ -81,14 +81,14 @@ public class ECMSeederTest {
     }
 
     @Test
-    public void testInitNoRun() throws ContentRepositoryNotAvailableException {
+    public void testInitNoRun() {
         when(configHandler.getSeedContent()).thenReturn("false");
         ecmSeeder.init();
         verify(contentRepository, never()).registerCNDNodeTypes(anyString());
     }
 
     @Test
-    public void testInitNewInitNoContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException {
+    public void testInitNewInitNoContent() throws RepositoryException {
         when(configHandler.getSeedContent()).thenReturn("true");
         when(configHandler.getSeedInsertOnly()).thenReturn("true");
 
@@ -152,7 +152,7 @@ public class ECMSeederTest {
     }
 
     @Test
-    public void testInitSecondInitNoContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException, InvalidClientException {
+    public void testInitSecondInitNoContent() throws RepositoryException {
         when(configHandler.getSeedContent()).thenReturn("true");
         when(configHandler.getSeedInsertOnly()).thenReturn("true");
 
@@ -215,7 +215,7 @@ public class ECMSeederTest {
 
 
     @Test
-    public void testInitContent() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, NameNotValidException, InvalidClientException {
+    public void testInitContent() throws NameNotValidException, RepositoryException {
         when(configHandler.getSeedContent()).thenReturn("true");
         when(configHandler.getSeedInsertOnly()).thenReturn("true");
 

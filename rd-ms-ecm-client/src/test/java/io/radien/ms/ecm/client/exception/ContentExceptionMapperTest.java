@@ -18,46 +18,17 @@
 
 package io.radien.ms.ecm.client.exception;
 
-import io.radien.exception.NotFoundException;
-import io.radien.exception.TokenExpiredException;
+import io.radien.api.service.ecm.exception.ContentException;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class ContentExceptionMapperTest {
     @Test
     public void handles() {
         ContentExceptionMapper uRexceptionMapper = new ContentExceptionMapper();
-        boolean handlesException401 = uRexceptionMapper.handles(401, null);
-        assertTrue(handlesException401);
-
-        boolean handlesException404 = uRexceptionMapper.handles(404, null);
-        assertTrue(handlesException404);
-    }
-
-    @Test
-    public void toThrowable() {
-        String msg = "messageException";
-        ContentExceptionMapper target = new ContentExceptionMapper();
-
-        Response responseUnauthorized = Response.status(Response.Status.UNAUTHORIZED).entity(msg).build();
-        Exception exceptionUnauthorized = target.toThrowable(responseUnauthorized);
-
-        assertTrue(exceptionUnauthorized instanceof TokenExpiredException);
-        assertEquals(msg,exceptionUnauthorized.getMessage());
-
-        Response responseNotFound = Response.status(Response.Status.NOT_FOUND).entity(msg).build();
-        Exception exceptionNotFound = target.toThrowable(responseNotFound);
-
-        assertTrue(exceptionNotFound instanceof NotFoundException);
-        assertEquals(msg,exceptionNotFound.getMessage());
-
-        Response responseOk = Response.status(Response.Status.OK).entity(msg).build();
-        Exception exceptionOk = target.toThrowable(responseOk);
-
-        assertNull(exceptionOk);
+        Response response = uRexceptionMapper.toResponse(new ContentException("error", Response.Status.INTERNAL_SERVER_ERROR));
+        assertEquals(500, response.getStatus());
     }
 }

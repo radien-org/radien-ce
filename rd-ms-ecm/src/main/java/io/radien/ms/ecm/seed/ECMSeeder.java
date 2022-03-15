@@ -20,23 +20,17 @@ package io.radien.ms.ecm.seed;
 
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.ecm.ContentServiceAccess;
-import io.radien.api.service.ecm.exception.ContentNotAvailableException;
-import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
-import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.model.*;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.ContentRepository;
 import io.radien.ms.ecm.config.ConfigHandler;
-import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.domain.TranslationDataProvider;
 import io.radien.ms.ecm.event.ApplicationInitializedEvent;
 import java.util.Arrays;
 import java.util.UUID;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,8 +129,7 @@ public @ApplicationScoped class ECMSeeder {
     }
 
     @NotNull
-    private EnterpriseContent initRootNode(String client) throws ContentRepositoryNotAvailableException, ContentNotAvailableException,
-            InvalidClientException {
+    private EnterpriseContent initRootNode(String client) throws RepositoryException {
         EnterpriseContent rootNode = null;
         List<EnterpriseContent> byViewIdLanguage = contentService.getByViewIdLanguage(configHandler.getRootNode(client), false, null);
 
@@ -161,8 +154,7 @@ public @ApplicationScoped class ECMSeeder {
         return rootNode;
     }
 
-    private void initDocumentsNode(String client, EnterpriseContent rootNode) throws RepositoryException, ContentRepositoryNotAvailableException,
-            ContentNotAvailableException, InvalidClientException {
+    private void initDocumentsNode(String client, EnterpriseContent rootNode) throws RepositoryException {
         EnterpriseContent documentsNode = contentService.getFirstByViewIdLanguage(configHandler.getDocumentsNode(client), false, null);
         if (documentsNode == null || documentsNode.getContentType().equals(ContentType.ERROR)) {
             log.info("[CMS] : ENABLED : Content Repository Documents Node initialization");
@@ -181,8 +173,7 @@ public @ApplicationScoped class ECMSeeder {
         autoCreateDocumentFolders(client, documentsNode);
     }
 
-    private void autoCreateDocumentFolders(String client, EnterpriseContent documentsNode) throws ContentRepositoryNotAvailableException,
-            ContentNotAvailableException, InvalidClientException {
+    private void autoCreateDocumentFolders(String client, EnterpriseContent documentsNode) {
         String[] folderNames = configHandler.getAutoCreateNodes().split(",");
         List<String> children = contentService.getChildrenFiles(documentsNode.getViewId())
                 .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER).map(EnterpriseContent::getName).collect(Collectors.toList());
@@ -197,8 +188,7 @@ public @ApplicationScoped class ECMSeeder {
         }
     }
 
-    private void initPropertiesContent(String client, EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) throws ContentRepositoryNotAvailableException,
-            ContentNotAvailableException, InvalidClientException {
+    private void initPropertiesContent(String client, EnterpriseContent rootNode, EnterpriseContent oafPropertiesContent) {
         List<EnterpriseContent> tmpContent = contentService.getByViewIdLanguage(configHandler.getPropertiesNode(), false, "");
 
         if (tmpContent != null && !tmpContent.isEmpty()) {
@@ -219,8 +209,7 @@ public @ApplicationScoped class ECMSeeder {
         }
     }
 
-    private void initHTMLContentNode(String client, EnterpriseContent rootNode, EnterpriseContent oafHTMLContent) throws RepositoryException,
-            ContentRepositoryNotAvailableException, ContentNotAvailableException, InvalidClientException {
+    private void initHTMLContentNode(String client, EnterpriseContent rootNode, EnterpriseContent oafHTMLContent) throws RepositoryException {
         List<EnterpriseContent> tmpContent = contentService.getByViewIdLanguage(configHandler.getHtmlNode(client), false, "");
 
         if (tmpContent != null && !tmpContent.isEmpty()) {

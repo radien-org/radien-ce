@@ -18,7 +18,6 @@
 package io.radien.ms.ecm;
 
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
-import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.ContentVersion;
@@ -28,7 +27,6 @@ import io.radien.api.service.ecm.model.MandatoryEnterpriseContent;
 import io.radien.api.service.ecm.model.SystemVersionableEnterpriseContent;
 import io.radien.api.service.ecm.model.VersionableEnterpriseContent;
 import io.radien.ms.ecm.config.ConfigHandler;
-import io.radien.ms.ecm.constants.CmsConstants;
 import io.radien.ms.ecm.constants.CmsProperties;
 import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.util.ContentMappingUtils;
@@ -48,7 +46,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -109,13 +106,13 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test001RegisterNodeTypes() throws ContentRepositoryNotAvailableException, RepositoryException, ParseException, IOException {
+    public void test001RegisterNodeTypes() throws RepositoryException {
         registerNodeTypes();
         assertNotNull(session.getWorkspace().getNodeTypeManager().getNodeType("rd:NodeType"));
     }
 
     @Test
-    public void test002SaveRootNode() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test002SaveRootNode() throws RepositoryException {
         Folder rootFolder = new Folder("radien");
         rootFolder.setParentPath(contentRepository.getRootNodePath());
         rootFolder.setViewId(rootFolder.getName());
@@ -126,7 +123,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test003SaveChildNode() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test003SaveChildNode() throws RepositoryException {
         Folder documentsFolder = new Folder("rd_documents");
         documentsFolder.setParentPath(contentRepository.getRootNodePath());
         documentsFolder.setViewId(documentsFolder.getName());
@@ -137,7 +134,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test004SaveMoveNode() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test004SaveMoveNode() throws RepositoryException {
         Folder documentsFolder = new Folder("rd_documents");
         documentsFolder.setParentPath(contentRepository.getRootNodePath() + "radien");
         documentsFolder.setViewId(documentsFolder.getName());
@@ -148,7 +145,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test005GetViewIdLanguage() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test005GetViewIdLanguage() throws RepositoryException {
         Optional<List<EnterpriseContent>> optFoundNodes = contentRepository.getByViewIdLanguage("rd_documents", false, null);
         assertTrue(optFoundNodes.isPresent());
         List<EnterpriseContent> foundNodes = optFoundNodes.get();
@@ -162,7 +159,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test006SaveDocumentVersionable1() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test006SaveDocumentVersionable1() throws RepositoryException {
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
@@ -186,7 +183,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test006SaveDocumentVersionable2() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test006SaveDocumentVersionable2() throws RepositoryException {
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
@@ -211,7 +208,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test006SaveDocumentVersionable3() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test006SaveDocumentVersionable3() throws RepositoryException {
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
@@ -236,7 +233,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test007GetContentVersions() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test007GetContentVersions() throws RepositoryException {
         List<EnterpriseContent> contentVersions = contentRepository
                 .getContentVersions("/radien/rd_documents/name");
         assertNotNull(contentVersions);
@@ -247,7 +244,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test008DeleteContentVersion1() throws ContentRepositoryNotAvailableException, RepositoryException, ContentNotAvailableException {
+    public void test008DeleteContentVersion1() throws RepositoryException, ContentNotAvailableException {
         contentRepository.deleteVersion("/radien/rd_documents/name", new ContentVersion("1.2.0"));
         List<EnterpriseContent> contentVersions = contentRepository.getContentVersions("/radien/rd_documents/name");
         assertNotNull(contentVersions);
@@ -257,7 +254,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test009DeleteContentVersion2() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    public void test009DeleteContentVersion2() throws ContentNotAvailableException, RepositoryException {
         contentRepository.deleteVersion("/radien/rd_documents/name", new ContentVersion("1.3.0"));
         List<EnterpriseContent> contentVersions = contentRepository.getContentVersions("/radien/rd_documents/name");
         assertNotNull(contentVersions);
@@ -266,13 +263,13 @@ public class ContentRepositoryTest {
     }
 
     @Test(expected = PathNotFoundException.class)
-    public void test010DeleteContentVersionable() throws ContentRepositoryNotAvailableException, ContentNotAvailableException, RepositoryException {
+    public void test010DeleteContentVersionable() throws ContentNotAvailableException, RepositoryException {
         contentRepository.delete("/radien/rd_documents/name");
         List<EnterpriseContent> contentVersions = contentRepository.getContentVersions("/radien/rd_documents/name");
     }
 
     @Test
-    public void test011SaveHTMLMandatory1() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test011SaveHTMLMandatory1() throws RepositoryException {
         when(configHandler.getHtmlNode(anyString())).thenReturn("rd_html");
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML), any())).thenReturn("rd_html");
         when(dataProvider.getSupportedLanguages())
@@ -302,7 +299,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test011SaveHTMLMandatory2() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test011SaveHTMLMandatory2() throws RepositoryException {
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML), any())).thenReturn("rd_html");
         MandatoryEnterpriseContent mandatoryEnterpriseContent = new MandatoryEnterpriseContent();
         mandatoryEnterpriseContent.setName("nameHtml");
@@ -321,7 +318,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test012SaveDocumentMandatory() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test012SaveDocumentMandatory() throws RepositoryException {
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
@@ -343,7 +340,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test013LoadFile() throws ContentRepositoryNotAvailableException {
+    public void test013LoadFile() throws RepositoryException, IOException {
         MandatoryEnterpriseContent content = (MandatoryEnterpriseContent) contentRepository.loadFile("/radien/rd_documents/nameDoc");
         assertEquals("/radien/rd_documents", content.getParentPath());
         assertEquals("/radien/rd_documents/nameDoc", content.getJcrPath());
@@ -352,7 +349,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test014GetOrCreateDocumentsPathAndContents() throws ContentRepositoryNotAvailableException, RepositoryException {
+    public void test014GetOrCreateDocumentsPathAndContents() throws RepositoryException {
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
@@ -366,7 +363,7 @@ public class ContentRepositoryTest {
     }
 
     @Test
-    public void test015GetChildrenTest() throws ContentRepositoryNotAvailableException, RepositoryException, ElementNotFoundException {
+    public void test015GetChildrenTest() throws RepositoryException, ElementNotFoundException {
         when(configHandler.getProperty(eq(CmsProperties.SYSTEM_CMS_CFG_NODE_DOCS), any()))
                 .thenReturn("rd_documents");
 
@@ -379,7 +376,7 @@ public class ContentRepositoryTest {
         session = transientRepository.login(new GuestCredentials());;
     }
 
-    private void registerNodeTypes() throws ContentRepositoryNotAvailableException, RepositoryException {
+    private void registerNodeTypes() throws RepositoryException {
         contentRepository.registerCNDNodeTypes(CmsProperties.OAF_NODE_TYPES.propKey());
         restartSession();
     }
