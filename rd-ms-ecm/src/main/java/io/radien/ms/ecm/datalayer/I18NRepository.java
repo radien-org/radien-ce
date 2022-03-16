@@ -19,11 +19,11 @@
 package io.radien.ms.ecm.datalayer;
 
 import com.google.common.collect.Lists;
-import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.model.i18n.SystemI18NTranslation;
 import io.radien.exception.SystemException;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.constants.CmsConstants;
 
 import io.radien.ms.ecm.util.i18n.JCRQueryBuilder;
@@ -59,6 +59,8 @@ public class I18NRepository extends JCRRepository {
 
     @Inject
     private PropertyMappingUtils mappingUtils;
+    @Inject
+    private ConfigHandler configHandler;
 
     public String getTranslation(String key, String language, String application) throws IllegalStateException, SystemException {
         SystemI18NProperty property = findByKeyAndApplication(key, application);
@@ -79,8 +81,8 @@ public class I18NRepository extends JCRRepository {
     public void save(SystemI18NProperty entity) throws SystemException {
         Session session = createSession();
         try {
-            Node rootNode = session.getRootNode().getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT))
-                    .getNode(getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_PROPERTIES));
+            Node rootNode = session.getRootNode().getNode(configHandler.getRootNode())
+                    .getNode(configHandler.getPropertiesNode());
             if(JcrUtils.getNodeIfExists(rootNode, entity.getApplication()) == null) {
                 rootNode = rootNode.addNode(entity.getApplication(), JcrConstants.NT_FOLDER);
             } else {
@@ -219,8 +221,8 @@ public class I18NRepository extends JCRRepository {
     }
 
     private String calculatePath(SystemI18NProperty property) {
-        String rootPath = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_ROOT);
-        String propertiesPath = getOAF().getProperty(OAFProperties.SYSTEM_CMS_CFG_NODE_PROPERTIES);
+        String rootPath = configHandler.getRootNode();
+        String propertiesPath = configHandler.getPropertiesNode();
 
         return MessageFormat.format("/{0}/{1}/{2}/{3}", rootPath, propertiesPath, property.getApplication(), property.getKey());
     }

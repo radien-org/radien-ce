@@ -13,57 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.radien.api.service.ecm.exception;
 
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-/**
- * Class that aggregates UnitTest ContentNotAvailableException
- *
- * @author Rajesh Gavvala
- */
-public class ContentNotAvailableExceptionTest {
-    /**
-     * Asserts ContentNotAvailable exception
-     */
+
+public class InvalidClientExceptionTest {
     @Test
-    public void testDefaultConstructor(){
-        ContentNotAvailableException exception = new ContentNotAvailableException();
+    public void testDefaultConstructor() {
+        InvalidClientException exception = new InvalidClientException();
         assertEquals(500, exception.getStatus().getStatusCode());
     }
 
     @Test
     public void testConstructorMessage() {
-        ContentNotAvailableException exception = new ContentNotAvailableException("errorMessage");
+        InvalidClientException exception = new InvalidClientException("errorMessage");
         assertEquals(500, exception.getStatus().getStatusCode());
-        assertEquals("errorMessage", exception.getMessage());
-    }
-
-    @Test
-    public void testConstructorMessageAndStatus() {
-        ContentNotAvailableException exception = new ContentNotAvailableException("errorMessage", Response.Status.NOT_FOUND);
-        assertEquals(404, exception.getStatus().getStatusCode());
         assertEquals("errorMessage", exception.getMessage());
     }
 
     @Test
     public void testConstructorMessageAndException() {
         IllegalStateException stateException = new IllegalStateException();
-        ContentNotAvailableException exception = new ContentNotAvailableException("errorMessage", stateException);
+        InvalidClientException exception = new InvalidClientException("errorMessage", stateException);
         assertEquals(500, exception.getStatus().getStatusCode());
         assertEquals("errorMessage", exception.getMessage());
         assertEquals(stateException, exception.getCause());
     }
 
     @Test
-    public void testConstructorMessageAndExceptionAndStatus() {
-        IllegalStateException stateException = new IllegalStateException();
-        ContentNotAvailableException exception = new ContentNotAvailableException("errorMessage",
-                stateException, Response.Status.NOT_FOUND);
+    public void testConstructorMessageAndStatus() {
+        InvalidClientException exception = new InvalidClientException("errorMessage", Response.Status.NOT_FOUND);
         assertEquals(404, exception.getStatus().getStatusCode());
         assertEquals("errorMessage", exception.getMessage());
-        assertEquals(stateException, exception.getCause());
     }
 }

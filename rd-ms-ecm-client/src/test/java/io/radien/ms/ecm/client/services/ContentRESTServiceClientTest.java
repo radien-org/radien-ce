@@ -70,6 +70,15 @@ public class ContentRESTServiceClientTest {
     @Mock
     private OAFAccess oaf;
 
+    private static final String NAME_PARAM = "name";
+    private static final String VIEWID_PARAM = "viewId";
+    private static final String LANGUAGE_PARAM = "language";
+    private static final String CONTENT_TYPE_PARAM = "contentType";
+    private static final String JCR_PATH_PARAM = "jcrPath";
+    private static final String ABSOLUTE_PATH_PARAM = "/absolute/path/to/file";
+    private static final String RELATIVE_PATH_PARAM = "relative/path";
+    private static final String CLIENT_PARAM = "radien";
+
     @Before
     public void init() throws MalformedURLException {
         MockitoAnnotations.initMocks(this);
@@ -81,17 +90,17 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testGetByViewIdAndLanguage() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        content.setViewId("viewId");
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        content.setViewId(VIEWID_PARAM);
         content.setContentType(ContentType.HTML);
         JSONObject object = new JSONObject();
-        object.put("name", content.getName());
-        object.put("viewId", content.getViewId());
-        object.put("contentType", content.getContentType().key());
+        object.put(NAME_PARAM, content.getName());
+        object.put(VIEWID_PARAM, content.getViewId());
+        object.put(CONTENT_TYPE_PARAM, content.getContentType().key());
 
-        when(contentResource.getContentByViewIdLanguage("viewId", "language"))
+        when(contentResource.getContentByViewIdLanguage(VIEWID_PARAM, LANGUAGE_PARAM))
                 .thenReturn(Response.ok(new ByteArrayInputStream(object.toJSONString().getBytes())).build());
-        EnterpriseContent result = contentClient.getByViewIdAndLanguage("viewId", "language");
+        EnterpriseContent result = contentClient.getByViewIdAndLanguage(VIEWID_PARAM, LANGUAGE_PARAM);
         assertEquals(content.getName(), result.getName());
         assertEquals(content.getViewId(), result.getViewId());
         assertEquals(content.getContentType().key(), result.getContentType().key());
@@ -101,22 +110,22 @@ public class ContentRESTServiceClientTest {
     public void testGetByViewIdAndLanguageException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
             .thenThrow(new MalformedURLException());
-        contentClient.getByViewIdAndLanguage("viewId", "language");
+        contentClient.getByViewIdAndLanguage(VIEWID_PARAM, LANGUAGE_PARAM);
     }
 
     @Test
     public void testGetByViewIdAndLanguageContentTypeError() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        content.setViewId("viewId");
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        content.setViewId(VIEWID_PARAM);
         content.setContentType(ContentType.ERROR);
         JSONObject object = new JSONObject();
-        object.put("name", content.getName());
-        object.put("viewId", content.getViewId());
-        object.put("contentType", content.getContentType().key());
+        object.put(NAME_PARAM, content.getName());
+        object.put(VIEWID_PARAM, content.getViewId());
+        object.put(CONTENT_TYPE_PARAM, content.getContentType().key());
 
-        when(contentResource.getContentByViewIdLanguage("viewId", "language"))
+        when(contentResource.getContentByViewIdLanguage(VIEWID_PARAM, LANGUAGE_PARAM))
                 .thenReturn(Response.ok(new ByteArrayInputStream(object.toJSONString().getBytes())).build());
-        EnterpriseContent result = contentClient.getByViewIdAndLanguage("viewId", "language");
+        EnterpriseContent result = contentClient.getByViewIdAndLanguage(VIEWID_PARAM, LANGUAGE_PARAM);
         assertEquals(content.getName(), result.getName());
         assertEquals(content.getViewId(), result.getViewId());
         assertEquals(content.getContentType().key(), result.getContentType().key());
@@ -124,35 +133,35 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testGetByViewIdAndLanguageContentTypeErrorResponse() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        content.setViewId("viewId");
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        content.setViewId(VIEWID_PARAM);
         content.setContentType(ContentType.ERROR);
         JSONObject object = new JSONObject();
-        object.put("name", content.getName());
-        object.put("viewId", content.getViewId());
-        object.put("contentType", content.getContentType().key());
+        object.put(NAME_PARAM, content.getName());
+        object.put(VIEWID_PARAM, content.getViewId());
+        object.put(CONTENT_TYPE_PARAM, content.getContentType().key());
 
-        when(contentResource.getContentByViewIdLanguage("viewId", "language"))
+        when(contentResource.getContentByViewIdLanguage(VIEWID_PARAM, LANGUAGE_PARAM))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
-        EnterpriseContent result = contentClient.getByViewIdAndLanguage("viewId", "language");
+        EnterpriseContent result = contentClient.getByViewIdAndLanguage(VIEWID_PARAM, LANGUAGE_PARAM);
         assertNull(result);
     }
 
     @Test
     public void testGetFileContent() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        content.setViewId("viewId");
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        content.setViewId(VIEWID_PARAM);
         content.setContentType(ContentType.HTML);
-        content.setJcrPath("/absolute/path/to/file");
+        content.setJcrPath(ABSOLUTE_PATH_PARAM);
         JSONObject object = new JSONObject();
-        object.put("name", content.getName());
-        object.put("viewId", content.getViewId());
-        object.put("jcrPath", content.getJcrPath());
-        object.put("contentType", content.getContentType().key());
+        object.put(NAME_PARAM, content.getName());
+        object.put(VIEWID_PARAM, content.getViewId());
+        object.put(JCR_PATH_PARAM, content.getJcrPath());
+        object.put(CONTENT_TYPE_PARAM, content.getContentType().key());
 
-        when(contentResource.getContentFile("/absolute/path/to/file"))
+        when(contentResource.getContentFile(ABSOLUTE_PATH_PARAM))
                 .thenReturn(Response.ok(new ByteArrayInputStream(object.toJSONString().getBytes())).build());
-        EnterpriseContent result = contentClient.getFileContent("/absolute/path/to/file");
+        EnterpriseContent result = contentClient.getFileContent(ABSOLUTE_PATH_PARAM);
         assertEquals(content.getName(), result.getName());
         assertEquals(content.getViewId(), result.getViewId());
         assertEquals(content.getJcrPath(), result.getJcrPath());
@@ -163,27 +172,27 @@ public class ContentRESTServiceClientTest {
     public void testGetFileContentException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.getFileContent("/absolute/path/to/file");
+        contentClient.getFileContent(ABSOLUTE_PATH_PARAM);
     }
 
     @Test
     public void testGetFolderContents() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        content.setViewId("viewId");
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        content.setViewId(VIEWID_PARAM);
         content.setContentType(ContentType.HTML);
-        content.setJcrPath("/absolute/path/to/file");
+        content.setJcrPath(ABSOLUTE_PATH_PARAM);
         JSONArray array = new JSONArray();
         JSONObject object = new JSONObject();
-        object.put("name", content.getName());
-        object.put("viewId", content.getViewId());
-        object.put("jcrPath", content.getJcrPath());
-        object.put("contentType", content.getContentType().key());
+        object.put(NAME_PARAM, content.getName());
+        object.put(VIEWID_PARAM, content.getViewId());
+        object.put(JCR_PATH_PARAM, content.getJcrPath());
+        object.put(CONTENT_TYPE_PARAM, content.getContentType().key());
         array.add(object);
         array.add(object);
 
-        when(contentResource.getFolderContents("/absolute/path/to/file"))
+        when(contentResource.getFolderContents(ABSOLUTE_PATH_PARAM))
                 .thenReturn(Response.ok(new ByteArrayInputStream(array.toJSONString().getBytes())).build());
-        List<EnterpriseContent> resultList = contentClient.getFolderContents("/absolute/path/to/file");
+        List<EnterpriseContent> resultList = contentClient.getFolderContents(ABSOLUTE_PATH_PARAM);
         for(EnterpriseContent result : resultList) {
             assertEquals(content.getName(), result.getName());
             assertEquals(content.getViewId(), result.getViewId());
@@ -194,9 +203,9 @@ public class ContentRESTServiceClientTest {
 
     @Test
     public void testGetFolderContentsError() throws SystemException {
-        when(contentResource.getFolderContents("/absolute/path/to/file"))
+        when(contentResource.getFolderContents(ABSOLUTE_PATH_PARAM))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("NOT FOUND").build());
-        List<EnterpriseContent> resultList = contentClient.getFolderContents("/absolute/path/to/file");
+        List<EnterpriseContent> resultList = contentClient.getFolderContents(ABSOLUTE_PATH_PARAM);
         assertEquals(0, resultList.size());
     }
 
@@ -204,23 +213,23 @@ public class ContentRESTServiceClientTest {
     public void testGetFolderContentsException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.getFolderContents("/absolute/path/to/file");
+        contentClient.getFolderContents(ABSOLUTE_PATH_PARAM);
     }
 
     @Test
     public void testGetOrCreateDocumentsPathSuccess() throws SystemException {
-        when(contentResource.getOrCreateDocumentsPath("relative/path"))
-                .thenReturn(Response.ok("/abolute/path/relative/path").build());
-        String result = contentClient.getOrCreateDocumentsPath("relative/path");
-        assertEquals("/abolute/path/relative/path", result);
+        when(contentResource.getOrCreateDocumentsPath(CLIENT_PARAM, RELATIVE_PATH_PARAM))
+                .thenReturn(Response.ok(ABSOLUTE_PATH_PARAM).build());
+        String result = contentClient.getOrCreateDocumentsPath(CLIENT_PARAM, RELATIVE_PATH_PARAM);
+        assertEquals(ABSOLUTE_PATH_PARAM, result);
     }
 
     @Test
     public void testGetOrCreateDocumentsPathError() throws SystemException {
-        when(contentResource.getOrCreateDocumentsPath("relative/path"))
+        when(contentResource.getOrCreateDocumentsPath(CLIENT_PARAM, RELATIVE_PATH_PARAM))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND)
                         .entity("an error").build());
-        String result = contentClient.getOrCreateDocumentsPath("relative/path");
+        String result = contentClient.getOrCreateDocumentsPath(CLIENT_PARAM, RELATIVE_PATH_PARAM);
         assertNull(result);
     }
 
@@ -228,38 +237,38 @@ public class ContentRESTServiceClientTest {
     public void testGetOrCreateDocumentsPathException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.getOrCreateDocumentsPath("relative/path");
+        contentClient.getOrCreateDocumentsPath(CLIENT_PARAM, RELATIVE_PATH_PARAM);
     }
 
     @Test
     public void testGetContentVersionsSuccess() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        content.setViewId("viewId");
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        content.setViewId(VIEWID_PARAM);
         content.setContentType(ContentType.HTML);
-        content.setJcrPath("/absolute/path/to/file");
+        content.setJcrPath(ABSOLUTE_PATH_PARAM);
         JSONArray array = new JSONArray();
         JSONObject object = new JSONObject();
-        object.put("name", content.getName());
-        object.put("viewId", content.getViewId());
-        object.put("jcrPath", content.getJcrPath());
-        object.put("contentType", content.getContentType().key());
+        object.put(NAME_PARAM, content.getName());
+        object.put(VIEWID_PARAM, content.getViewId());
+        object.put(JCR_PATH_PARAM, content.getJcrPath());
+        object.put(CONTENT_TYPE_PARAM, content.getContentType().key());
         array.add(object);
         array.add(object);
-        when(contentResource.getContentVersions("/absolute/path"))
+        when(contentResource.getContentVersions(ABSOLUTE_PATH_PARAM))
                 .thenReturn(Response.ok(new ByteArrayInputStream(array.toJSONString().getBytes())).build());
-        List<EnterpriseContent> result = contentClient.getContentVersions("/absolute/path");
+        List<EnterpriseContent> result = contentClient.getContentVersions(ABSOLUTE_PATH_PARAM);
         assertNotNull(result);
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
-        assertEquals("name", result.get(0).getName());
+        assertEquals(NAME_PARAM, result.get(0).getName());
     }
 
     @Test
     public void testGetContentVersionsError() throws SystemException {
-        when(contentResource.getContentVersions("/absolute/path"))
+        when(contentResource.getContentVersions(ABSOLUTE_PATH_PARAM))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND)
                         .entity("an error").build());
-        List<EnterpriseContent> result = contentClient.getContentVersions("/absolute/path");
+        List<EnterpriseContent> result = contentClient.getContentVersions(ABSOLUTE_PATH_PARAM);
         assertTrue(result.isEmpty());
     }
 
@@ -267,7 +276,7 @@ public class ContentRESTServiceClientTest {
     public void testGetContentVersionsException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.getContentVersions("/absolute/path");
+        contentClient.getContentVersions(ABSOLUTE_PATH_PARAM);
     }
 
     @Test
@@ -275,7 +284,7 @@ public class ContentRESTServiceClientTest {
         when(contentResource.deleteVersionable(anyString(), any(ContentVersion.class)))
                 .thenReturn(Response.ok().build());
         SystemContentVersion contentVersion = new ContentVersion("1.0.0");
-        assertTrue(contentClient.deleteVersion("/absolute/path", contentVersion));
+        assertTrue(contentClient.deleteVersion(ABSOLUTE_PATH_PARAM, contentVersion));
     }
 
     @Test
@@ -284,7 +293,7 @@ public class ContentRESTServiceClientTest {
                 .thenReturn(Response.status(Response.Status.NOT_FOUND)
                         .entity("an error").build());
         SystemContentVersion contentVersion = new ContentVersion("1.0.0");
-        assertFalse(contentClient.deleteVersion("/absolute/path", contentVersion));
+        assertFalse(contentClient.deleteVersion(ABSOLUTE_PATH_PARAM, contentVersion));
     }
 
     @Test(expected = SystemException.class)
@@ -292,72 +301,72 @@ public class ContentRESTServiceClientTest {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
         SystemContentVersion contentVersion = new ContentVersion("1.0.0");
-        contentClient.deleteVersion("/absolute/path", contentVersion);
+        contentClient.deleteVersion(ABSOLUTE_PATH_PARAM, contentVersion);
     }
 
     @Test
     public void testSaveContentSuccess() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        when(contentResource.saveContent(any(EnterpriseContent.class)))
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        when(contentResource.saveContent(anyString(), any(EnterpriseContent.class)))
                 .thenReturn(Response.ok().build());
-        assertTrue(contentClient.saveContent(content));
+        assertTrue(contentClient.saveContent(CLIENT_PARAM, content));
     }
 
     @Test
     public void testSaveContentFail() throws SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
-        when(contentResource.saveContent(any(EnterpriseContent.class)))
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
+        when(contentResource.saveContent(anyString(), any(EnterpriseContent.class)))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("Error saving").build());
-        assertFalse(contentClient.saveContent(content));
+        assertFalse(contentClient.saveContent(CLIENT_PARAM, content));
     }
 
     @Test(expected = SystemException.class)
     public void testSaveContentException() throws MalformedURLException, SystemException {
-        EnterpriseContent content = new GenericEnterpriseContent("name");
+        EnterpriseContent content = new GenericEnterpriseContent(NAME_PARAM);
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.saveContent(content);
+        contentClient.saveContent(CLIENT_PARAM, content);
     }
 
     @Test
     public void testDeleteContentByPathSuccess() throws SystemException {
         when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.ok().build());
-        assertTrue(contentClient.deleteContentByPath("/abolute/path/relative/path"));
+        assertTrue(contentClient.deleteContentByPath(ABSOLUTE_PATH_PARAM));
     }
 
     @Test
     public void testDeleteContentByPathError() throws SystemException {
         when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("NOT FOUND").build());
-        assertFalse(contentClient.deleteContentByPath("/abolute/path/relative/path"));
+        assertFalse(contentClient.deleteContentByPath(ABSOLUTE_PATH_PARAM));
     }
 
     @Test(expected = SystemException.class)
     public void testDeleteContentByPathException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.deleteContentByPath("relative/path");
+        contentClient.deleteContentByPath(RELATIVE_PATH_PARAM);
     }
 
     @Test
     public void testDeleteContentByViewIDLanguageSuccess() throws SystemException {
         when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.ok().build());
-        assertTrue(contentClient.deleteContentByViewIDLanguage("viewId", "language"));
+        assertTrue(contentClient.deleteContentByViewIDLanguage(VIEWID_PARAM, LANGUAGE_PARAM));
     }
 
     @Test
     public void testDeleteContentByViewIDLanguageError() throws SystemException {
         when(contentResource.deleteContent(any(DeleteContentFilter.class)))
                 .thenReturn(Response.status(Response.Status.NOT_FOUND).entity("NOT FOUND").build());
-        assertFalse(contentClient.deleteContentByViewIDLanguage("viewId", "language"));
+        assertFalse(contentClient.deleteContentByViewIDLanguage(VIEWID_PARAM, LANGUAGE_PARAM));
     }
 
     @Test(expected = SystemException.class)
     public void testDeleteContentByViewIDLanguageException() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getContentResourceClient(anyString()))
                 .thenThrow(new MalformedURLException());
-        contentClient.deleteContentByViewIDLanguage("viewId", "language");
+        contentClient.deleteContentByViewIDLanguage(VIEWID_PARAM, LANGUAGE_PARAM);
     }
 }

@@ -222,27 +222,4 @@ public class CmsConstants {
      */
     public static final String USER_ADMIN = "admin";
 
-    /**
-     *
-     */
-    public static class PropertyKeys {
-
-        public static final String OAF_NODE_TYPES = "jcr/oafnodetypes.cnd";
-        public static final String SYSTEM_CMS_CFG_NODE_ROOT = "system.jcr.node.root";
-        public static final String SYSTEM_CMS_CFG_NODE_HTML = "system.jcr.node.html";
-        public static final String SYSTEM_CMS_CFG_NODE_PROPERTIES = "system.jcr.node.properties";
-        public static final String SYSTEM_CMS_CFG_NODE_NEWS_FEED = "system.jcr.node.newsfeed";
-        public static final String SYSTEM_CMS_CFG_NODE_NOTIFICATION = "system.jcr.node.notifications";
-        public static final String SYSTEM_CMS_CFG_NODE_DOCS = "system.jcr.node.documents";
-        public static final String SYSTEM_CMS_CFG_NODE_IMAGE = "system.jcr.node.images";
-        public static final String SYSTEM_CMS_CFG_NODE_IFRAME = "system.jcr.node.iframe";
-        public static final String SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS = "system.jcr.document.autocreate.folder.names";
-        public static final String SYSTEM_CMS_CFG_NODE_APP_INFO = "system.jcr.node.appinfo";
-        public static final String SYSTEM_CMS_CFG_NODE_STATIC_CONTENT = "system.jcr.node.staticcontent";
-        public static final String SYSTEM_CMS_CFG_NODE_TAG = "system.jcr.node.tag";
-
-        private PropertyKeys() {}
-    }
-
-
 }

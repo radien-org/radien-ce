@@ -25,6 +25,7 @@ import io.radien.ms.ecm.client.entities.GlobalHeaders;
 import java.io.Serializable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -44,7 +45,8 @@ public interface ContentResource extends Serializable {
     Response getContentFile(@QueryParam("path") String jcrPath);
 
     @POST
-    Response saveContent(EnterpriseContent content);
+    Response saveContent(@QueryParam("client") @DefaultValue("radien") String client,
+                         EnterpriseContent content);
 
     @DELETE
     Response deleteContent(DeleteContentFilter deleteContentFilter);
@@ -60,7 +62,8 @@ public interface ContentResource extends Serializable {
 
     @GET
     @Path(value = "/path")
-    Response getOrCreateDocumentsPath(@QueryParam("path") String path);
+    Response getOrCreateDocumentsPath(@QueryParam("client") String client,
+                                      @QueryParam("path") String path);
 
     @GET
     @Path(value = "/versions")

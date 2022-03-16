@@ -93,11 +93,11 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     }
 
     @Override
-    public String getOrCreateDocumentsPath(String jcrRelativePath) throws SystemException {
+    public String getOrCreateDocumentsPath(String client, String jcrRelativePath) throws SystemException {
         return get(() -> {
             try {
-                ContentResource client = getClient();
-                Response response = client.getOrCreateDocumentsPath(jcrRelativePath);
+                ContentResource contentClient = getClient();
+                Response response = contentClient.getOrCreateDocumentsPath(client, jcrRelativePath);
                 String entity = response.readEntity(String.class);
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return entity;
@@ -144,11 +144,11 @@ public class ContentRESTServiceClient extends AuthorizationChecker implements Co
     }
 
     @Override
-    public boolean saveContent(EnterpriseContent enterpriseContent) throws SystemException {
+    public boolean saveContent(String client, EnterpriseContent enterpriseContent) throws SystemException {
         return get(() -> {
             try {
-                ContentResource client = getClient();
-                Response response = client.saveContent(enterpriseContent);
+                ContentResource contentClient = getClient();
+                Response response = contentClient.saveContent(client, enterpriseContent);
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return true;
                 } else {

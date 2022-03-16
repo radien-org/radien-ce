@@ -20,7 +20,7 @@
     "system": "true",
     "name": "Test Document for Terms and Conditions New",
     "image": "logo.png",
-    "parentPath": "/radien/rd_documents/legal_documents",
+    "parentPath": "/protec/protec_documents/legal_documents",
     "file": "legal_documents/protec_tOc_de.html",
     "versionable": "true",
     "updateOnLaunch": "false",
@@ -33,73 +33,6 @@
     ]
   },
   {
-    "viewId": "termsAndConditions.pdf;123",
-    "contentType": "document",
-    "language": "de",
-    "active": "true",
-    "system": "true",
-    "name": "TermsAndConditions",
-    "image": "logo.png",
-    "parentPath": "/radien/rd_documents/legal_documents",
-    "file": "legal_documents/DS-Hinweise Pro-Tec.pdf",
-    "versionable": "true",
-    "updateOnLaunch": "false",
-    "versionComment": "Initial EN Version",
-    "validDate": "2020-07-28",
-    "externalPublic": "true",
-    "version": "1.0.0",
-    "tags": [
-      "Cloud radien"
-    ]
-  },
-  {
-    "viewId": "legalData.pdf;123",
-    "contentType": "document",
-    "language": "de",
-    "active": "true",
-    "system": "true",
-    "name": "LegalData",
-    "image": "logo.png",
-    "parentPath": "/radien/rd_documents/legal_documents",
-    "file": "legal_documents/Nutzungsbedingungen.pdf",
-    "versionable": "true",
-    "updateOnLaunch": "false",
-    "versionComment": "Initial EN Version",
-    "validDate": "2020-07-28",
-    "externalPublic": "true",
-    "version": "1.0.0",
-    "tags": [
-      "Cloud radien"
-    ]
-  },
-  {
-    "active": true,
-    "contentType": "FOLDER",
-    "jcrPath": "/radien/rd_documents/protec_documents/protec_legal_documents",
-    "name": "protec_legal_documents",
-    "parentPath": "/radien/rd_documents/protec_documents",
-    "system": true,
-    "viewId": "protec_legal_documents"
-  },
-  {
-    "active": true,
-    "contentType": "FOLDER",
-    "jcrPath": "/radien/rd_documents/protec_documents/protec_legal_documents/protec_termsAndConditions",
-    "name": "protec_termsAndConditions",
-    "parentPath": "/radien/rd_documents/protec_documents/protec_legal_documents",
-    "system": true,
-    "viewId": "protec_termsAndConditions"
-  },
-  {
-    "active": true,
-    "contentType": "FOLDER",
-    "jcrPath": "/radien/rd_documents/protec_documents/protec_legal_documents/protec_legalDataPolicy",
-    "name": "protec_legalDataPolicy",
-    "parentPath": "/radien/rd_documents/protec_documents/protec_legal_documents",
-    "system": true,
-    "viewId": "protec_legalDataPolicy"
-  },
-  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",
@@ -107,7 +40,7 @@
     "system": "true",
     "name": "TermsAndConditions",
     "image": "logo.png",
-    "parentPath": "/radien/rd_documents/protec_documents/protec_legal_documents/protec_termsAndConditions",
+    "parentPath": "/protec/protec_documents/legal_documents",
     "file": "legal_documents/DS-Hinweise Pro-Tec.pdf",
     "versionable": "true",
     "updateOnLaunch": "false",
@@ -127,7 +60,7 @@
     "system": "true",
     "name": "LegalDataPolicy",
     "image": "logo.png",
-    "parentPath": "/radien/rd_documents/protec_documents/protec_legal_documents/protec_legalDataPolicy",
+    "parentPath": "/protec/protec_documents/legal_documents",
     "file": "legal_documents/Nutzungsbedingungen.pdf",
     "versionable": "true",
     "updateOnLaunch": "false",

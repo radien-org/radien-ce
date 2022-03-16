@@ -17,11 +17,10 @@
  */
 package io.radien.ms.ecm.domain;
 
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.util.ContentMappingUtils;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -55,11 +54,11 @@ public class ContentDataProviderTest {
     private ContentMappingUtils contentMappingUtils;
 
     @Mock
-    private OAFAccess oaf;
+    private ConfigHandler configHandler;
 
     @Before
     public void init() {
-        when(oaf.getProperty(OAFProperties.SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM))
+        when(configHandler.getSupportedLanguages())
                 .thenReturn("en");
     }
 

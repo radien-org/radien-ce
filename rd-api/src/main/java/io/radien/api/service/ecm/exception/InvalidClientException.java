@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.radien.api.service.ecm.exception;
 
 import javax.ws.rs.core.Response;
 
-/**
- * Exception extending the base SystemException, to be thrown when error occurs in the CMS
- *
- * @author Marco Weiland
- */
-public class ContentRepositoryNotAvailableException extends ContentException {
-	private static final long serialVersionUID = -4346627471389807097L;
+public class InvalidClientException extends ContentException {
+    private static final long serialVersionUID = -1568199281340528650L;
 
-	public ContentRepositoryNotAvailableException() {
-		super();
-	}
+    /**
+     * Content Not Available exception empty constructor
+     */
+    public InvalidClientException() {
+        super();
+    }
 
-	public ContentRepositoryNotAvailableException(String message, Exception e, Response.Status responseStatus) {
-		super(message, e, responseStatus);
-	}
+    /**
+     * Content Not Available exception message constructor
+     * @param message to be added
+     */
+    public InvalidClientException(String message) {
+        super(message);
+    }
+
+    public InvalidClientException(String message, Exception e) {
+        super(message, e);
+    }
+
+    public InvalidClientException(String message, Response.Status status) {
+        super(message, status);
+    }
 }

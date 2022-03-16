@@ -17,22 +17,25 @@
 package io.radien.ms.ecm.service;
 
 import io.radien.api.service.ecm.ContentServiceAccess;
+import io.radien.api.service.ecm.exception.ContentException;
 import io.radien.api.service.ecm.exception.ContentNotAvailableException;
-import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
 import io.radien.api.service.ecm.exception.ElementNotFoundException;
+import io.radien.api.service.ecm.exception.InvalidClientException;
 import io.radien.api.service.ecm.exception.NameNotValidException;
 import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.ecm.model.GenericEnterpriseContent;
 import io.radien.api.service.ecm.model.SystemContentVersion;
 import io.radien.api.service.mail.model.MailType;
-import io.radien.ms.ecm.util.ContentMappingUtils;
+import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.ContentRepository;
+import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,83 +63,107 @@ public class ContentService implements ContentServiceAccess {
     private ContentRepository contentRepository;
 
     @Inject
-    private Config config;
+    private ConfigHandler configHandler;
 
     private String defaultLanguage;
+    private String[] availableClients;
 
     @PostConstruct
     public void init() {
-        defaultLanguage = config.getValue("system.default.language", String.class);
+        defaultLanguage = configHandler.getDefaultLanguage();
+        availableClients = configHandler.getSupportedClients().split(",");
     }
 
     public List<EnterpriseContent> getChildrenFiles(String viewId) {
-        List<EnterpriseContent> results = new ArrayList<>();
         try {
-            results.addAll(contentRepository.getChildren(viewId));
-        } catch (ContentRepositoryNotAvailableException | ElementNotFoundException e) {
-            log.error("Error getting children files", e);
+            return new ArrayList<>(contentRepository.getChildren(viewId));
+        } catch (RepositoryException | ElementNotFoundException e) {
+            throw new ContentException("Error getting children files", e);
         }
-
-        return results;
     }
 
     @Override
-    public EnterpriseContent loadFile(String jcrPath) throws ContentRepositoryNotAvailableException {
-        return contentRepository.loadFile(jcrPath);
+    public EnterpriseContent loadFile(String jcrPath) {
+        try {
+            return contentRepository.loadFile(jcrPath);
+        } catch (RepositoryException e) {
+            throw new ContentNotAvailableException("Error loading EnterpriseContent File", e,
+                    Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            throw new ContentException("Error loading file", e,
+                    Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
-    public List<EnterpriseContent> getFolderContents(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public List<EnterpriseContent> getFolderContents(String path) {
         try {
             return contentRepository.getFolderContents(path);
         } catch(RepositoryException e) {
-            throw new ContentNotAvailableException("Could not retriede folder contents", e);
+            throw new ContentNotAvailableException("Could not retrieve folder contents for " + path, e);
         }
     }
 
     @Override
-    public List<EnterpriseContent> getContentVersions(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public List<EnterpriseContent> getContentVersions(String path) {
         try {
             return contentRepository.getContentVersions(path);
         } catch(RepositoryException e) {
-            throw new ContentNotAvailableException("Could not retrieve content versions", e);
+            throw new ContentException("Could not retrieve content versions", e,
+                    Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public void deleteVersion(String path, SystemContentVersion version) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void deleteVersion(String path, SystemContentVersion version) {
         try {
-            contentRepository.deleteVersion(path, version);
+            int records = contentRepository.deleteVersion(path, version);
+            if(records == 0) {
+                throw new ContentNotAvailableException(MessageFormat.format("Version {0} not found in {1}", version.getVersion(), path),
+                        Response.Status.NOT_FOUND);
+            }
         } catch (RepositoryException e) {
-            throw new IllegalStateException(MessageFormat.format("Could not delete version {0} in path {1}", version.getVersion(), path), e);        }
+            throw new ContentException(MessageFormat.format("Could not delete version {0} in path {1}", version.getVersion(), path), e);        }
     }
 
     @Override
-    public String getOrCreateDocumentsPath(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException{
-        try {
-            return contentRepository.getOrCreateDocumentsPath(path);
-        } catch (RepositoryException e) {
-            throw new ContentNotAvailableException("Error on getOrCreateDocumentsPath", e);
+    public String getOrCreateDocumentsPath(String client, String path) {
+        if(validateClient(client)) {
+            try {
+                return contentRepository.getOrCreateDocumentsPath(client, path);
+            } catch (RepositoryException e) {
+                throw new ContentException("Could not generate path provided", e,
+                        Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            throw new InvalidClientException("Provided Client " + client + " is not valid.",
+                    Response.Status.BAD_REQUEST);
         }
     }
 
-    public void save(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
-        try {
-            contentRepository.save(obj);
-        } catch (RepositoryException e) {
-            throw new ContentNotAvailableException("Error saving object", e);
+    public void save(String client, EnterpriseContent obj) {
+        if(validateClient(client)) {
+            try {
+                contentRepository.save(client, obj);
+            } catch (RepositoryException e) {
+                throw new ContentNotAvailableException("Error saving object", e, Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            throw new InvalidClientException("Provided Client " + client + " is not valid.",
+                    Response.Status.BAD_REQUEST);
         }
     }
 
-    public void delete(EnterpriseContent obj) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void delete(EnterpriseContent obj) {
        delete(obj.getJcrPath());
     }
 
-    public void delete(String path) throws ContentRepositoryNotAvailableException, ContentNotAvailableException {
+    public void delete(String path) {
         try {
             contentRepository.delete(path);
         } catch (RepositoryException e) {
-            throw new ContentNotAvailableException(MessageFormat.format("Could not delete enterprise content in path {0}", path), e);
+            throw new ContentNotAvailableException(MessageFormat.format("Could not delete enterprise content in path {0}", path), e,
+                    Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -179,13 +206,16 @@ public class ContentService implements ContentServiceAccess {
                     return list;
                 }
             }
-        } catch (ContentRepositoryNotAvailableException e) {
-            log.error("CMS not available!", e);
+        } catch (RepositoryException e) {
+            throw new ContentNotAvailableException(
+                    GenericErrorCodeMessage.NOT_FOUND_VIEWID_LANGUAGE.toString(viewId, language),
+                    e,
+                    Response.Status.INTERNAL_SERVER_ERROR);
         }
+    }
 
-        List<EnterpriseContent> list = new ArrayList<>();
-        list.add(createErrorContent(viewId, language));
-        return list;
+    private boolean validateClient(String client) {
+        return Arrays.asList(availableClients).contains(client);
     }
 
     private EnterpriseContent createErrorContent(String viewId, String language) {

@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.service.ecm.exception;
 
+package io.radien.ms.ecm.exception;
+
+import io.radien.api.service.ecm.exception.ContentException;
 import javax.ws.rs.core.Response;
+import org.junit.Test;
 
-/**
- * Exception extending the base SystemException, to be thrown when error occurs in the CMS
- *
- * @author Marco Weiland
- */
-public class ContentRepositoryNotAvailableException extends ContentException {
-	private static final long serialVersionUID = -4346627471389807097L;
+import static org.junit.Assert.assertEquals;
 
-	public ContentRepositoryNotAvailableException() {
-		super();
-	}
-
-	public ContentRepositoryNotAvailableException(String message, Exception e, Response.Status responseStatus) {
-		super(message, e, responseStatus);
-	}
+public class ContentExceptionMapperTest {
+    @Test
+    public void handles() {
+        ContentExceptionMapper uRexceptionMapper = new ContentExceptionMapper();
+        Response response = uRexceptionMapper.toResponse(new ContentException("error", Response.Status.INTERNAL_SERVER_ERROR));
+        assertEquals(500, response.getStatus());
+    }
 }

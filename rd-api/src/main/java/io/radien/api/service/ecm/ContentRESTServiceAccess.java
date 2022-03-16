@@ -32,13 +32,13 @@ public interface ContentRESTServiceAccess extends Appframeable {
 
     List<EnterpriseContent> getFolderContents(String jcrAbsolutePath) throws SystemException;
 
-    String getOrCreateDocumentsPath(String jcrRelativePath) throws SystemException;
+    String getOrCreateDocumentsPath(String client, String jcrRelativePath) throws SystemException;
 
     List<EnterpriseContent> getContentVersions(String jcrAbsolutePath) throws SystemException;
 
     boolean deleteVersion(String absoluteJcrPath, SystemContentVersion contentVersion) throws SystemException;
 
-    boolean saveContent(EnterpriseContent enterpriseContent) throws SystemException;
+    boolean saveContent(String client, EnterpriseContent enterpriseContent) throws SystemException;
 
     boolean deleteContentByPath(String absolutePath) throws SystemException;
 
