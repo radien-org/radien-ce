@@ -23,10 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.commons.io.IOUtils;
+import org.keycloak.common.util.StreamUtil;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.theme.ThemeResourceProvider;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
             return mapper.readValue(result, Map.class);
         } else {
             InputStream inputStream = con.getErrorStream();
-            String inputStreamToString = IOUtils.toString(inputStream);
+            String inputStreamToString = StreamUtil.readString(inputStream, Charset.defaultCharset());
             throw new InvalidResponseException(
                     String.format("HTTP URL Connection issue with the status code: %s and message: %s", statusCode, inputStreamToString));
         }
