@@ -30,6 +30,7 @@ import io.radien.ms.ecm.domain.ContentDataProvider;
 import io.radien.ms.ecm.domain.TranslationDataProvider;
 import io.radien.ms.ecm.event.ApplicationInitializedEvent;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,6 +153,7 @@ public @ApplicationScoped class ECMSeeder {
             repository.updateFolderSupportedLanguages(client, configHandler.getDocumentsNode(client));
         }
         autoCreateDocumentFolders(client, documentsNode);
+        autoCreateLegalDocumentFolders(client, documentsNode);
     }
 
     private void autoCreateDocumentFolders(String client, EnterpriseContent documentsNode) {
@@ -166,6 +168,27 @@ public @ApplicationScoped class ECMSeeder {
                 contentService.save(client, folder);
                 log.info("[CMS] folder created: {}", folder);
             }
+        }
+    }
+
+    private void autoCreateLegalDocumentFolders(String client, EnterpriseContent documentsNode) {
+        String[] folderNames = configHandler.getAutoCreateLegalDocNodes().split(",");
+        Optional<EnterpriseContent> legalDocuments = contentService.getChildrenFiles(documentsNode.getViewId())
+                .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER && ec.getName().contains("legal_documents")).findFirst();
+        if(legalDocuments.isPresent()) {
+            List<String> children = contentService.getChildrenFiles(legalDocuments.get().getViewId())
+                    .stream().filter(ec -> ec.getContentType() == ContentType.FOLDER).map(EnterpriseContent::getName).collect(Collectors.toList());
+            for (String folderName : folderNames) {
+                if (!children.contains(folderName)) {
+                    EnterpriseContent folder = new Folder(folderName);
+                    folder.setParentPath(legalDocuments.get().getJcrPath());
+                    folder.setViewId(folderName + UUID.randomUUID());
+                    contentService.save(client, folder);
+                    log.info("[CMS] folder created: {}", folder);
+                }
+            }
+        } else {
+            log.info("Legal Documents not configured.");
         }
     }
 

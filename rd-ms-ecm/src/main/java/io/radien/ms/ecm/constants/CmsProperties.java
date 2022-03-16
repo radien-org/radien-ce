@@ -30,6 +30,7 @@ public enum CmsProperties implements SystemProperties {
     SYSTEM_CMS_REPO_MONGO_DB_NAME("oak.mongo.db"),
     SYSTEM_CMS_REPO_MONGO_DB_URI("oak.mongo.uri"),
     SYSTEM_CMS_CFG_AUTO_CREATE_FOLDERS("system.jcr.document.autocreate.folder.names"),
+    SYSTEM_CMS_CFG_AUTO_CREATE_LEGAL_DOCUMETNS_FOLDERS("system.jcr.document.autocreate.legal_documents.folder.names"),
     OAF_NODE_TYPES("jcr/oafnodetypes.cnd"),
     //JcrNodes
     SYSTEM_CMS_CFG_NODE_ROOT("system.jcr.node.root"),

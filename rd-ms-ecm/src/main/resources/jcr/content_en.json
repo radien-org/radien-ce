@@ -33,24 +33,6 @@
     ]
   },
   {
-    "active": true,
-    "contentType": "FOLDER",
-    "jcrPath": "/protec/protec_documents/legal_documents/termsAndConditions",
-    "name": "protec_termsAndConditions",
-    "parentPath": "/proted/protec_documents/legal_documents",
-    "system": true,
-    "viewId": "protec_termsAndConditions"
-  },
-  {
-    "active": true,
-    "contentType": "FOLDER",
-    "jcrPath": "/protec/protec_documents/legal_documents/legalDataPolicy",
-    "name": "protec_legalDataPolicy",
-    "parentPath": "/protec/protec_documents/legal_documents",
-    "system": true,
-    "viewId": "protec_legalDataPolicy"
-  },
-  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",
@@ -58,7 +40,7 @@
     "system": "true",
     "name": "TermsAndConditions",
     "image": "logo.png",
-    "parentPath": "/protec/protec_documents/legal_documents",
+    "parentPath": "/protec/protec_documents/legal_documents/termsAndConditions",
     "file": "legal_documents/DS-Hinweise Pro-Tec.pdf",
     "versionable": "true",
     "updateOnLaunch": "false",
@@ -78,7 +60,7 @@
     "system": "true",
     "name": "LegalDataPolicy",
     "image": "logo.png",
-    "parentPath": "/protec/protec_documents/legal_documents",
+    "parentPath": "/protec/protec_documents/legal_documents/legalData",
     "file": "legal_documents/Nutzungsbedingungen.pdf",
     "versionable": "true",
     "updateOnLaunch": "false",

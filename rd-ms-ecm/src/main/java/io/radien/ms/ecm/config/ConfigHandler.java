@@ -45,6 +45,7 @@ public class ConfigHandler {
     private String mongoDbName;
     private String mongoDbUri;
     private String autoCreateNodes;
+    private String autoCreateLegalDocNodes;
     //JcrNodes
     private String rootNode;
     private String htmlNode;
@@ -67,6 +68,7 @@ public class ConfigHandler {
         this.mongoDbName = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_REPO_MONGO_DB_NAME);
         this.mongoDbUri = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_REPO_MONGO_DB_URI);
         this.autoCreateNodes = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_CFG_AUTO_CREATE_FOLDERS);
+        this.autoCreateLegalDocNodes = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_CFG_AUTO_CREATE_LEGAL_DOCUMETNS_FOLDERS);
         this.rootNode = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_ROOT);
         this.htmlNode = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_HTML);
         this.notificationNode = oafAccess.getProperty(CmsProperties.SYSTEM_CMS_CFG_NODE_NOTIFICATION);
@@ -110,6 +112,10 @@ public class ConfigHandler {
 
     public String getAutoCreateNodes() {
         return autoCreateNodes;
+    }
+
+    public String getAutoCreateLegalDocNodes() {
+        return autoCreateLegalDocNodes;
     }
 
     public String getRootNode(String client) {
