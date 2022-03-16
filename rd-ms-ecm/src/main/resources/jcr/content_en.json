@@ -33,6 +33,24 @@
     ]
   },
   {
+    "active": true,
+    "contentType": "FOLDER",
+    "jcrPath": "/protec/protec_documents/legal_documents/termsAndConditions",
+    "name": "protec_termsAndConditions",
+    "parentPath": "/proted/protec_documents/legal_documents",
+    "system": true,
+    "viewId": "protec_termsAndConditions"
+  },
+  {
+    "active": true,
+    "contentType": "FOLDER",
+    "jcrPath": "/protec/protec_documents/legal_documents/legalDataPolicy",
+    "name": "protec_legalDataPolicy",
+    "parentPath": "/protec/protec_documents/legal_documents",
+    "system": true,
+    "viewId": "protec_legalDataPolicy"
+  },
+  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",
