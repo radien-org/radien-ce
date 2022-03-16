@@ -18,6 +18,7 @@
 
 package io.radien.ms.ecm.client.util;
 
+import io.radien.exception.ModelResponseExceptionMapper;
 import io.radien.ms.ecm.client.controller.ContentResource;
 import io.radien.ms.ecm.client.controller.I18NResource;
 import io.radien.ms.ecm.client.providers.DeletePropertyFilterMessageBodyReader;
@@ -43,6 +44,7 @@ public class ClientServiceUtil {
                 .newBuilder()
                 .baseUrl(url)
                 .register(EnterpriseContentMessageBodyReader.class)
+                .register(ModelResponseExceptionMapper.class)
                 .build(ContentResource.class);
     }
 
@@ -54,6 +56,7 @@ public class ClientServiceUtil {
                 .baseUrl(url)
                 .register(I18NPropertyMessageBodyReader.class)
                 .register(DeletePropertyFilterMessageBodyReader.class)
+                .register(ModelResponseExceptionMapper.class)
                 .build(I18NResource.class);
     }
 }
