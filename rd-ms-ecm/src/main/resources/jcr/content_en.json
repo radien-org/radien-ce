@@ -13,26 +13,6 @@
     ]
   },
   {
-    "viewId": "testDocNew",
-    "contentType": "document",
-    "language": "de",
-    "active": "true",
-    "system": "true",
-    "name": "Test Document for Terms and Conditions New",
-    "image": "logo.png",
-    "parentPath": "/protec/protec_documents/legal_documents",
-    "file": "legal_documents/protec_tOc_de.html",
-    "versionable": "true",
-    "updateOnLaunch": "false",
-    "versionComment": "Initial EN Version",
-    "validDate": "2020-07-28",
-    "externalPublic": "true",
-    "version": "2.1.0",
-    "tags": [
-      "Cloud radien"
-    ]
-  },
-  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",

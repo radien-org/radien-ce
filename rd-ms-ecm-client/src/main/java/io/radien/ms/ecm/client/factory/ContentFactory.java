@@ -58,6 +58,7 @@ public class ContentFactory {
         String system = tryGetJsonProperty(json, "system");
         String parentPath = tryGetJsonProperty(json, "parentPath");
 
+        String mimeType = tryGetJsonProperty(json, "mimeType");
         String jcrPath = tryGetJsonProperty(json, "jcrPath");
         String createDate = tryGetJsonProperty(json, "createDate");
         String externalPublic =  tryGetJsonProperty(json, "externalPublic");
@@ -101,6 +102,7 @@ public class ContentFactory {
         content.setSystem(Boolean.parseBoolean(system));
         content.setLanguage(language);
         content.setTags(tags);
+        content.setMimeType(mimeType);
         content.setParentPath(parentPath);
         content.setExternalPublic(Boolean.parseBoolean(externalPublic));
         content.setPermissions(permissions);
