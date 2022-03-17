@@ -47,7 +47,8 @@ public interface PropertyTypeResourceClient {
                            @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
 
-    @GET
+    @GET()
+    @Path("/property")
     public Response getById(@QueryParam("id") Long id);
 
     @DELETE

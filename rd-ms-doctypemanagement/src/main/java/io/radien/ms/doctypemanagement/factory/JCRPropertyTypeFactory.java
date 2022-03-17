@@ -18,7 +18,7 @@ package io.radien.ms.doctypemanagement.factory;
 import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
 import io.radien.api.util.FactoryUtilService;
 
-import io.radien.ms.doctypemanagement.entities.JCRPropertyTypeEntity;
+import io.radien.ms.doctypemanagement.entities.PropertyTypeEntity;
 import javax.enterprise.context.RequestScoped;
 
 import java.io.Serializable;
@@ -41,8 +41,8 @@ public class JCRPropertyTypeFactory implements Serializable {
 
 	 * @return a JCRPropertyTypeEntity object to be used
 	 */
-	public static JCRPropertyTypeEntity create(String name) {
-		JCRPropertyTypeEntity u = new JCRPropertyTypeEntity();
+	public static PropertyTypeEntity create(String name) {
+		PropertyTypeEntity u = new PropertyTypeEntity();
 		u.setName(name);
 
 		return u;
@@ -56,11 +56,11 @@ public class JCRPropertyTypeFactory implements Serializable {
 	 * @return the SystemDemoObject
 	 */
 	//TODO: Complete the object conversion fields missing
-	public static JCRPropertyTypeEntity convert(JsonObject jsonObjectJCRPropertyType) {
+	public static PropertyTypeEntity convert(JsonObject jsonObjectJCRPropertyType) {
 		Long id = FactoryUtilService.getLongFromJson("id", jsonObjectJCRPropertyType);
 		String name = FactoryUtilService.getStringFromJson("name", jsonObjectJCRPropertyType);
 
-		JCRPropertyTypeEntity jcrpropertytype = new JCRPropertyTypeEntity();
+		PropertyTypeEntity jcrpropertytype = new PropertyTypeEntity();
 		jcrpropertytype.setId(id);
 		jcrpropertytype.setName(name);
 

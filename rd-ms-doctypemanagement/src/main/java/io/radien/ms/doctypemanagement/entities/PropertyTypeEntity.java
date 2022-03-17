@@ -15,6 +15,7 @@
  */
 package io.radien.ms.doctypemanagement.entities;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,22 +31,22 @@ import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
  */
 
 @Entity
-@Table(name = "JCRPropertyType01")
-public class JCRPropertyTypeEntity extends JCRPropertyType {
+@Table(name = "PROP_TYP01")
+public class PropertyTypeEntity extends JCRPropertyType {
 
-	public JCRPropertyTypeEntity(){ }
+	public PropertyTypeEntity(){ }
 
-	public JCRPropertyTypeEntity(JCRPropertyType jcrpropertytype){
-		super(jcrpropertytype);
+	public PropertyTypeEntity(JCRPropertyType propertyType){
+		super(propertyType);
 	}
+
 	@Id
-	@TableGenerator(name = "GEN_SEQ_JCRPropertyType01", allocationSize = 2000)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_JCRPropertyType01")
+	@TableGenerator(name = "GEN_SEQ_PROP_TYP01", allocationSize = 2000)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "GEN_SEQ_PROP_TYP01")
 	@Override
 	public Long getId() {
 		return super.getId();
 	}
-
 
 	@Column
 	@Override
@@ -53,4 +54,43 @@ public class JCRPropertyTypeEntity extends JCRPropertyType {
 		return super.getName();
 	}
 
+	@Column
+	@Override
+	public boolean isMandatory() { return super.isMandatory(); }
+
+	@Column
+	@Override
+	public boolean isProtected() { return super.isProtected(); }
+
+	@Column
+	@Override
+	public int getRequiredType() { return super.getRequiredType(); }
+
+	@Column
+	@Override
+	public boolean isMultiple() { return super.isMultiple(); }
+
+	@Column
+	@Override
+	public Date getCreateDate() {
+		return super.getCreateDate();
+	}
+
+	@Column
+	@Override
+	public Date getLastUpdate() {
+		return super.getLastUpdate();
+	}
+
+	@Column
+	@Override
+	public Long getCreateUser() {
+		return super.getCreateUser();
+	}
+
+	@Column
+	@Override
+	public Long getLastUpdateUser() {
+		return super.getLastUpdateUser();
+	}
 }

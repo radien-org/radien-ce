@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.doctypemanagement.services;
+package io.radien.ms.doctypemanagement.resource;
 
 import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
 
 
 import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
 import io.radien.ms.doctypemanagement.client.services.PropertyTypeResourceClient;
+import io.radien.ms.doctypemanagement.service.PropertyTypeBusinessService;
 import io.radien.ms.openid.entities.Authenticated;
-import io.radien.ms.doctypemanagement.entities.JCRPropertyTypeEntity;
+import io.radien.ms.doctypemanagement.entities.PropertyTypeEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -30,24 +31,16 @@ import javax.ws.rs.core.Response;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Path("propertyType")
 @RequestScoped
 @Authenticated
 public class PropertyTypeResource implements PropertyTypeResourceClient {
-	private static final Logger log = LoggerFactory.getLogger(PropertyTypeResource.class);
-
 	@Inject
 	private PropertyTypeBusinessService propertyTypeService;
 
 	@Override
-	public Response getAll(String search,
-						   int pageNo,
-						   int pageSize,
-						   List<String> sortBy,
-						   boolean isAscending) {
+	public Response getAll(String search, int pageNo, int pageSize,
+						   List<String> sortBy, boolean isAscending) {
 		return Response.ok(propertyTypeService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 	}
 
@@ -65,7 +58,7 @@ public class PropertyTypeResource implements PropertyTypeResourceClient {
 
 	@Override
 	public Response save(JCRPropertyType propertyType) {
-		propertyTypeService.save(new JCRPropertyTypeEntity(propertyType));
+		propertyTypeService.save(new PropertyTypeEntity(propertyType));
 		return Response.ok().build();
 	}
 	@Override

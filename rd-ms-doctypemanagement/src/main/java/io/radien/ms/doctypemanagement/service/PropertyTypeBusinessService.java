@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.doctypemanagement.services;
+package io.radien.ms.doctypemanagement.service;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
-import io.radien.api.service.docmanagement.propertytype.PropertyTypeServiceAccess;
+import io.radien.api.service.docmanagement.exception.DocumentTypeException;
+import io.radien.api.service.docmanagement.exception.PropertyTypeNotFoundException;
+import io.radien.api.service.docmanagement.propertytype.PropertyTypeDataAccessLayer;
 
-import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.ws.rs.core.Response;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -36,25 +36,38 @@ import java.util.List;
 
 @Stateless
 public class PropertyTypeBusinessService implements Serializable {
-	private static final Logger log = LoggerFactory.getLogger(PropertyTypeBusinessService.class);
-
 	@Inject
-	private PropertyTypeServiceAccess propertyTypeService;
+	private PropertyTypeDataAccessLayer propertyTypeService;
 
 	public Page<? extends SystemJCRPropertyType> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		return propertyTypeService.getAll(search, pageNo, pageSize, sortBy, isAscending);
 	}
 
-	public SystemJCRPropertyType getById(Long id) throws NotFoundException {
-		return propertyTypeService.get(id);
+	/**
+	 * @throws PropertyTypeNotFoundException if property for given ID is not available
+	 */
+	public SystemJCRPropertyType getById(Long id) {
+		SystemJCRPropertyType property = propertyTypeService.get(id);
+		if(property == null) {
+			throw new PropertyTypeNotFoundException("Property type for id " + id + " not available",
+					Response.Status.NOT_FOUND);
+		}
+		return property;
 	}
 
-	public void delete(long id) throws NotFoundException {
+	public void delete(long id) {
 		propertyTypeService.delete(id);
 	}
 
-	public void save(JCRPropertyType jcrpropertytype) throws UniquenessConstraintException, NotFoundException {
-		propertyTypeService.save(jcrpropertytype);
+	/**
+	 * @throws DocumentTypeException if not unique name is provided
+	 */
+	public void save(JCRPropertyType jcrpropertytype) {
+		try {
+			propertyTypeService.save(jcrpropertytype);
+		} catch (UniquenessConstraintException e) {
+			throw new DocumentTypeException(e, Response.Status.BAD_REQUEST);
+		}
 	}
 
 	public long getTotalRecordsCount() {
