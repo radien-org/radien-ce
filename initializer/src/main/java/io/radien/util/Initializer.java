@@ -163,8 +163,8 @@ public class Initializer {
      * @return String that corresponds to the access token
      */
     public static List<String> getTokens() {
-        String url = getIdpUrl() + getConfigProperty("REALMS_TOKEN_PATH");
-        String userInfoUrl =  getIdpUrl() + getConfigProperty("AUTH_USER_INFO");
+        String url = getIdpUrl() + getConfigProperty(KeycloakConfigs.RADIEN_TOKEN_PATH.propKey());
+        String userInfoUrl = getIdpUrl() + getConfigProperty(KeycloakConfigs.RADIEN_USER_INFO_PATH.propKey());
 
         String clientId = getConfigProperty(KeycloakConfigs.RADIEN_CLIENT_ID.propKey());
         String clientSecret = getConfigProperty(KeycloakConfigs.RADIEN_SECRET.propKey());
