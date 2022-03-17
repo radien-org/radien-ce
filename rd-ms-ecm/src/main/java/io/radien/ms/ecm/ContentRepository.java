@@ -341,7 +341,7 @@ public class ContentRepository extends JCRRepository {
 		Session session = createSession();
 
 		try {
-			Node rootNode = session.getRootNode().getNode("radien");
+			Node rootNode = session.getRootNode().getNode(client);
 			addSupportedLocalesFolder(client, rootNode, nameEscaped);
 			session.save();
 		} finally {
