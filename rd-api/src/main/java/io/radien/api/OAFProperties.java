@@ -109,17 +109,14 @@ public enum OAFProperties implements SystemProperties{
     PLUGIN_INITIALIZER_READ_TIMEOUT("plugin.initializer.read.timeout"),
 
     SYSTEM_MS_ENDPOINT_USERMANAGEMENT("system.ms.endpoint.usermanagement"),
-
     SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT("system.ms.endpoint.tenantmanagement"),
-
     SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT("system.ms.endpoint.ticketmanagement"),
-
     SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT("system.ms.endpoint.permissionmanagement"),
-
     SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT("system.ms.endpoint.rolemanagement"),
     SYSTEM_MS_ENDPOINT_ECM("system.ms.endpoint.ecm"),
+    SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT("system.ms.endpoint.doctypemanagement"),
 
-	SYSTEM_MS_SECRET_ECM("system.ms.secret.ecm"),
+    SYSTEM_MS_SECRET_ECM("system.ms.secret.ecm"),
 
     AUTH_LOGOUT_URI("auth.logoutUri"),
 
