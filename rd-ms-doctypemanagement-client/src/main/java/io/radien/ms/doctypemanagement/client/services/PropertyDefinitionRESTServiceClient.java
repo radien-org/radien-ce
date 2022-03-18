@@ -50,17 +50,22 @@ public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker im
     @Inject
     private ClientServiceUtil clientService;
 
-
     @Override
     public Page<? extends SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy,
-                                                           boolean isAscending) throws MalformedURLException, SystemException {
+                                                           boolean isAscending) throws SystemException {
         return get(() -> {
             try {
                 PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
                         .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
                 Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
-                return PropertyDefinitionModelMapper.mapToPage((InputStream) response.getEntity());
-            } catch (ExtensionException | ProcessingException | MalformedURLException e){
+                if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    return PropertyDefinitionModelMapper.mapToPage((InputStream) response.getEntity());
+                } else {
+                    String entity = response.readEntity(String.class);
+                    log.error(entity);
+                    return null;
+                }
+            } catch (MalformedURLException e){
                 throw new SystemException(e);
             }
         });
@@ -73,7 +78,13 @@ public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker im
                 PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
                         .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
                 Response response = client.getById(id);
-                return Optional.of(PropertyDefinitionModelMapper.map((InputStream) response.getEntity()));
+                if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    return Optional.of(PropertyDefinitionModelMapper.map((InputStream) response.getEntity()));
+                } else {
+                    String entity = response.readEntity(String.class);
+                    log.error(entity);
+                    return Optional.empty();
+                }
             } catch (ExtensionException|ProcessingException | MalformedURLException e){
                 throw new SystemException(e);
             }
@@ -127,8 +138,13 @@ public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker im
                         .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
 
                 Response response = client.getTotalRecordsCount();
-                return Long.parseLong(response.readEntity(String.class));
-
+                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    return Long.parseLong(response.readEntity(String.class));
+                } else {
+                    String entity = response.readEntity(String.class);
+                    log.error(entity);
+                    return null;
+                }
             } catch (ExtensionException | ProcessingException | MalformedURLException e){
                 throw new SystemException(e);
             }
