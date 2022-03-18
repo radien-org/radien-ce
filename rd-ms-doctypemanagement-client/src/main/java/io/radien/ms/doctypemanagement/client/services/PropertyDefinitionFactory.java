@@ -42,7 +42,7 @@ public class PropertyDefinitionFactory {
         Long id = FactoryUtilService.getLongFromJson("id", jsonPropertyType);
         String name = FactoryUtilService.getStringFromJson("name", jsonPropertyType);
         boolean mandatory = FactoryUtilService.getBooleanFromJson("mandatory", jsonPropertyType);
-        boolean protekted = FactoryUtilService.getBooleanFromJson("protekted", jsonPropertyType);
+        boolean protekted = FactoryUtilService.getBooleanFromJson("protected", jsonPropertyType);
         int requiredType = FactoryUtilService.getIntFromJson("requiredType", jsonPropertyType);
         boolean multiple = FactoryUtilService.getBooleanFromJson("multiple", jsonPropertyType);
 
@@ -70,16 +70,16 @@ public class PropertyDefinitionFactory {
     public static JsonObject convertToJsonObject(PropertyDefinition propertyType) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        FactoryUtilService.addValue(builder, "id", propertyType.getId());
+        FactoryUtilService.addValueLong(builder, "id", propertyType.getId());
         FactoryUtilService.addValue(builder, "name", propertyType.getName());
         FactoryUtilService.addValueBoolean(builder, "mandatory", propertyType.isMandatory());
-        FactoryUtilService.addValueBoolean(builder, "protekted", propertyType.isProtected());
+        FactoryUtilService.addValueBoolean(builder, "protected", propertyType.isProtected());
         FactoryUtilService.addValueInt(builder, "requiredType", propertyType.getRequiredType());
         FactoryUtilService.addValueBoolean(builder, "multiple", propertyType.isMultiple());
         FactoryUtilService.addValue(builder, "createDate", propertyType.getCreateDate());
         FactoryUtilService.addValue(builder, "lastUpdate", propertyType.getLastUpdate());
-        FactoryUtilService.addValue(builder, "createUser", propertyType.getCreateUser());
-        FactoryUtilService.addValue(builder, "lastUpdateUser", propertyType.getLastUpdateUser());
+        FactoryUtilService.addValueLong(builder, "createUser", propertyType.getCreateUser());
+        FactoryUtilService.addValueLong(builder, "lastUpdateUser", propertyType.getLastUpdateUser());
 
         return builder.build();
     }
