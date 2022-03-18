@@ -18,12 +18,12 @@ package io.radien.api.service.docmanagement.exception;
 
 import javax.ws.rs.core.Response;
 
-public class PropertyTypeNotFoundException extends DocumentTypeException {
-    public PropertyTypeNotFoundException(String message) {
+public class PropertyDefinitionNotFoundException extends DocumentTypeException {
+    public PropertyDefinitionNotFoundException(String message) {
         super(message);
     }
 
-    public PropertyTypeNotFoundException(String message, Response.Status status) {
+    public PropertyDefinitionNotFoundException(String message, Response.Status status) {
         super(message, status);
     }
 }

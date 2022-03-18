@@ -23,20 +23,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
-/**
- * JPA entity representing a jcrpropertytype in the openappframe system
- *
- * @author Marco Weiland
- */
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 
 @Entity
 @Table(name = "PROP_TYP01")
-public class PropertyTypeEntity extends JCRPropertyType {
+public class PropertyDefinitionEntity extends PropertyDefinition {
 
-	public PropertyTypeEntity(){ }
+	public PropertyDefinitionEntity(){ }
 
-	public PropertyTypeEntity(JCRPropertyType propertyType){
+	public PropertyDefinitionEntity(PropertyDefinition propertyType){
 		super(propertyType);
 	}
 

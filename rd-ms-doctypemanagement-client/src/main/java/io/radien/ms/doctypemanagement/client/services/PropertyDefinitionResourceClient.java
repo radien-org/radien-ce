@@ -16,7 +16,7 @@
 package io.radien.ms.doctypemanagement.client.services;
 
 import io.radien.ms.doctypemanagement.client.entities.GlobalHeaders;
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
-public interface PropertyTypeResourceClient {
+public interface PropertyDefinitionResourceClient {
 
     @GET
     public Response getAll(@QueryParam("search") String search,
@@ -55,7 +55,7 @@ public interface PropertyTypeResourceClient {
     public Response delete(@NotNull @QueryParam("id") long id);
 
     @POST
-    public Response save(JCRPropertyType propertyType);
+    public Response save(PropertyDefinition propertyType);
 
     @GET
     @Path("/count")

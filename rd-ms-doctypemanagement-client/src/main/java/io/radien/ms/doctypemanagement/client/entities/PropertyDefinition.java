@@ -16,13 +16,13 @@
 package io.radien.ms.doctypemanagement.client.entities;
 
 import io.radien.api.model.AbstractModel;
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.qom.QueryObjectModelConstants;
 import javax.jcr.version.OnParentVersionAction;
 
-public class JCRPropertyType extends AbstractModel implements SystemJCRPropertyType {
+public class PropertyDefinition extends AbstractModel implements SystemPropertyDefinition {
 
 	private Long id;
 	private String name;
@@ -31,15 +31,15 @@ public class JCRPropertyType extends AbstractModel implements SystemJCRPropertyT
 	private int propertyType;
 	private boolean multiple;
 
-	public JCRPropertyType(){}
+	public PropertyDefinition(){}
 
-	public JCRPropertyType(JCRPropertyType jcrpropertytype) {
-		this.id = jcrpropertytype.getId();
-		this.name = jcrpropertytype.getName();
-		this.mandatory = jcrpropertytype.isMandatory();
-		this.protekted = jcrpropertytype.isProtected();
-		this.propertyType = jcrpropertytype.getRequiredType();
-		this.multiple = jcrpropertytype.isMultiple();
+	public PropertyDefinition(PropertyDefinition property) {
+		this.id = property.getId();
+		this.name = property.getName();
+		this.mandatory = property.isMandatory();
+		this.protekted = property.isProtected();
+		this.propertyType = property.getRequiredType();
+		this.multiple = property.isMultiple();
 	}
 
 	@Override

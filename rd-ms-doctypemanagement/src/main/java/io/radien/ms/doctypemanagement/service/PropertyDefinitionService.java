@@ -16,14 +16,14 @@
 package io.radien.ms.doctypemanagement.service;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import io.radien.api.service.docmanagement.exception.DocumentTypeException;
-import io.radien.api.service.docmanagement.exception.PropertyTypeNotFoundException;
-import io.radien.api.service.docmanagement.propertytype.PropertyTypeDataAccessLayer;
+import io.radien.api.service.docmanagement.exception.PropertyDefinitionNotFoundException;
+import io.radien.api.service.docmanagement.propertydefinition.PropertyDefinitionDataAccessLayer;
 
 import io.radien.exception.UniquenessConstraintException;
 
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 
 import javax.ws.rs.core.Response;
 
@@ -35,21 +35,21 @@ import java.io.Serializable;
 import java.util.List;
 
 @Stateless
-public class PropertyTypeBusinessService implements Serializable {
+public class PropertyDefinitionService implements Serializable {
 	@Inject
-	private PropertyTypeDataAccessLayer propertyTypeService;
+	private PropertyDefinitionDataAccessLayer propertyTypeService;
 
-	public Page<? extends SystemJCRPropertyType> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<? extends SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		return propertyTypeService.getAll(search, pageNo, pageSize, sortBy, isAscending);
 	}
 
 	/**
-	 * @throws PropertyTypeNotFoundException if property for given ID is not available
+	 * @throws PropertyDefinitionNotFoundException if property for given ID is not available
 	 */
-	public SystemJCRPropertyType getById(Long id) {
-		SystemJCRPropertyType property = propertyTypeService.get(id);
+	public SystemPropertyDefinition getById(Long id) {
+		SystemPropertyDefinition property = propertyTypeService.get(id);
 		if(property == null) {
-			throw new PropertyTypeNotFoundException("Property type for id " + id + " not available",
+			throw new PropertyDefinitionNotFoundException("Property type for id " + id + " not available",
 					Response.Status.NOT_FOUND);
 		}
 		return property;
@@ -62,9 +62,9 @@ public class PropertyTypeBusinessService implements Serializable {
 	/**
 	 * @throws DocumentTypeException if not unique name is provided
 	 */
-	public void save(JCRPropertyType jcrpropertytype) {
+	public void save(PropertyDefinition property) {
 		try {
-			propertyTypeService.save(jcrpropertytype);
+			propertyTypeService.save(property);
 		} catch (UniquenessConstraintException e) {
 			throw new DocumentTypeException(e, Response.Status.BAD_REQUEST);
 		}

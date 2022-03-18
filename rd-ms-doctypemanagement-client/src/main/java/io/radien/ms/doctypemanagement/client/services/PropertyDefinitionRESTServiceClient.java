@@ -18,14 +18,14 @@ package io.radien.ms.doctypemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
-import io.radien.api.service.docmanagement.propertytype.JCRPropertyTypeRESTServiceAccess;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
+import io.radien.api.service.docmanagement.propertydefinition.PropertyDefinitionRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
-import io.radien.ms.doctypemanagement.client.JCRPropertyTypeResponseExceptionMapper;
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
-import io.radien.ms.doctypemanagement.client.util.JCRPropertyTypeClientServiceUtil;
-import io.radien.ms.doctypemanagement.client.util.JCRPropertyTypeModelMapper;
+import io.radien.ms.doctypemanagement.client.PropertyDefinitionResponseExceptionMapper;
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
+import io.radien.ms.doctypemanagement.client.util.ClientServiceUtil;
+import io.radien.ms.doctypemanagement.client.util.PropertyDefinitionModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -40,26 +40,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RequestScoped
-@RegisterProvider(JCRPropertyTypeResponseExceptionMapper.class)
-public class JCRPropertyTypeRESTServiceClient extends AuthorizationChecker implements JCRPropertyTypeRESTServiceAccess {
-    private static final Logger log = LoggerFactory.getLogger(JCRPropertyTypeRESTServiceClient.class);
+@RegisterProvider(PropertyDefinitionResponseExceptionMapper.class)
+public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker implements PropertyDefinitionRESTServiceAccess {
+    private static final Logger log = LoggerFactory.getLogger(PropertyDefinitionRESTServiceClient.class);
 
     @Inject
     private OAFAccess oaf;
 
     @Inject
-    private JCRPropertyTypeClientServiceUtil clientService;
+    private ClientServiceUtil clientService;
 
 
     @Override
-    public Page<? extends SystemJCRPropertyType> getAll(String search, int pageNo, int pageSize, List<String> sortBy,
-                                                 boolean isAscending) throws MalformedURLException, SystemException {
+    public Page<? extends SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy,
+                                                           boolean isAscending) throws MalformedURLException, SystemException {
         return get(() -> {
             try {
-                PropertyTypeResourceClient client = clientService.getJCRPropertyTypeResourceClient(getOAF()
+                PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
                         .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
                 Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
-                return JCRPropertyTypeModelMapper.mapToPage((InputStream) response.getEntity());
+                return PropertyDefinitionModelMapper.mapToPage((InputStream) response.getEntity());
             } catch (ExtensionException | ProcessingException | MalformedURLException e){
                 throw new SystemException(e);
             }
@@ -67,13 +67,13 @@ public class JCRPropertyTypeRESTServiceClient extends AuthorizationChecker imple
     }
 
     @Override
-    public Optional<SystemJCRPropertyType> getJCRPropertyTypeById(Long id) throws SystemException {
+    public Optional<SystemPropertyDefinition> getPropertyDefinitionById(Long id) throws SystemException {
         return get(() -> {
             try {
-                PropertyTypeResourceClient client = clientService.getJCRPropertyTypeResourceClient(getOAF()
+                PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
                         .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
                 Response response = client.getById(id);
-                return Optional.of(JCRPropertyTypeModelMapper.map((InputStream) response.getEntity()));
+                return Optional.of(PropertyDefinitionModelMapper.map((InputStream) response.getEntity()));
             } catch (ExtensionException|ProcessingException | MalformedURLException e){
                 throw new SystemException(e);
             }
@@ -81,12 +81,12 @@ public class JCRPropertyTypeRESTServiceClient extends AuthorizationChecker imple
     }
 
     @Override
-    public boolean save(SystemJCRPropertyType propertyType) throws SystemException {
+    public boolean save(SystemPropertyDefinition propertyType) throws SystemException {
         return get(() -> {
             try {
-            PropertyTypeResourceClient client = clientService.getJCRPropertyTypeResourceClient(getOAF()
+            PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
                         .getProperty( OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
-                Response response = client.save((JCRPropertyType) propertyType);
+                Response response = client.save((PropertyDefinition) propertyType);
                 if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return true;
                 } else {
@@ -101,10 +101,10 @@ public class JCRPropertyTypeRESTServiceClient extends AuthorizationChecker imple
     }
 
     @Override
-    public boolean deleteJCRPropertyType(long id) throws SystemException {
+    public boolean deletePropertyDefinition(long id) throws SystemException {
         return get(() -> {
             try {
-            PropertyTypeResourceClient client = clientService.getJCRPropertyTypeResourceClient(getOAF()
+            PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
                         .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
                 Response response = client.delete(id);
                 if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
@@ -123,7 +123,7 @@ public class JCRPropertyTypeRESTServiceClient extends AuthorizationChecker imple
     public Long getTotalRecordsCount() throws SystemException {
         return get(() -> {
             try {
-                PropertyTypeResourceClient client = clientService.getJCRPropertyTypeResourceClient(getOAF()
+                PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
                         .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
 
                 Response response = client.getTotalRecordsCount();
@@ -135,10 +135,6 @@ public class JCRPropertyTypeRESTServiceClient extends AuthorizationChecker imple
         });
     }
 
-    /**
-     * OAF jcrpropertytype getter
-     * @return the active jcrpropertytype oaf
-     */
     @Override
     public OAFAccess getOAF() {
         return oaf;

@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.service.docmanagement.propertytype;
+package io.radien.api.service.docmanagement.propertydefinition;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import io.radien.api.service.ServiceAccess;
 
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import java.util.List;
 
-public interface PropertyTypeDataAccessLayer extends ServiceAccess {
+public interface PropertyDefinitionDataAccessLayer extends ServiceAccess {
 
-    Page<SystemJCRPropertyType> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    Page<SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
-    SystemJCRPropertyType get(Long id) throws NotFoundException;
+    SystemPropertyDefinition get(Long id) throws NotFoundException;
 
-    void save(SystemJCRPropertyType propertyType) throws UniquenessConstraintException;
+    void save(SystemPropertyDefinition propertyType) throws UniquenessConstraintException;
 
     void delete(Long id);
 

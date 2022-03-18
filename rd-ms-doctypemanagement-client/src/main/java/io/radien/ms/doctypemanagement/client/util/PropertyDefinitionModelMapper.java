@@ -17,30 +17,29 @@ package io.radien.ms.doctypemanagement.client.util;
 
 import io.radien.api.entity.Page;
 
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
-import io.radien.ms.doctypemanagement.client.services.JCRPropertyTypeFactory;
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
+import io.radien.ms.doctypemanagement.client.services.PropertyDefinitionFactory;
 
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-public class JCRPropertyTypeModelMapper {
+public class PropertyDefinitionModelMapper {
 
-    private JCRPropertyTypeModelMapper() {
+    private PropertyDefinitionModelMapper() {
         // empty constructor
     }
 
-    public static JsonObject map(JCRPropertyType model) {
-        return JCRPropertyTypeFactory.convertToJsonObject(model);
+    public static JsonObject map(PropertyDefinition model) {
+        return PropertyDefinitionFactory.convertToJsonObject(model);
     }
 
-    public static JsonArray map(List<JCRPropertyType> models) {
+    public static JsonArray map(List<PropertyDefinition> models) {
         final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         models.forEach(model -> {
             JsonObject jsonObject = map(model);
@@ -49,25 +48,25 @@ public class JCRPropertyTypeModelMapper {
         return arrayBuilder.build();
     }
 
-    public static JCRPropertyType map(InputStream is) {
+    public static PropertyDefinition map(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
-            return JCRPropertyTypeFactory.convert(jsonObject);
+            return PropertyDefinitionFactory.convert(jsonObject);
         }
     }
 
-    public static Page<JCRPropertyType> mapToPage(InputStream is) {
+    public static Page<PropertyDefinition> mapToPage(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
 
-            return JCRPropertyTypeFactory.convertJsonToPage(jsonObject);
+            return PropertyDefinitionFactory.convertJsonToPage(jsonObject);
         }
     }
 
-    public static List<? extends SystemJCRPropertyType> mapList(InputStream is) throws ParseException {
+    public static List<? extends SystemPropertyDefinition> mapList(InputStream is) {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
-            return JCRPropertyTypeFactory.convert(jsonArray);
+            return PropertyDefinitionFactory.convert(jsonArray);
         }
     }
 }

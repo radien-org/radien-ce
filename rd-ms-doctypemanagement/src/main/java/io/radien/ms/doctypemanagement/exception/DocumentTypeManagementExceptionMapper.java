@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Provider
-public class DocTypeManagementExceptionMapper implements ExceptionMapper<DocumentTypeException> {
-    private static final Logger log = LoggerFactory.getLogger(DocTypeManagementExceptionMapper.class);
+public class DocumentTypeManagementExceptionMapper implements ExceptionMapper<DocumentTypeException> {
+    private static final Logger log = LoggerFactory.getLogger(DocumentTypeManagementExceptionMapper.class);
 
     @Override
     public Response toResponse(DocumentTypeException exception) {

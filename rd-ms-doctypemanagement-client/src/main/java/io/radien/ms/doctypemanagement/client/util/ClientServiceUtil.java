@@ -17,9 +17,9 @@ package io.radien.ms.doctypemanagement.client.util;
 
 import io.radien.exception.TokenExpiredException;
 
-import io.radien.ms.doctypemanagement.client.JCRPropertyTypeResponseExceptionMapper;
-import io.radien.ms.doctypemanagement.client.providers.JCRPropertyTypeMessageBodyWriter;
-import io.radien.ms.doctypemanagement.client.services.PropertyTypeResourceClient;
+import io.radien.ms.doctypemanagement.client.PropertyDefinitionResponseExceptionMapper;
+import io.radien.ms.doctypemanagement.client.providers.PropertyDefinitionMessageBodyWriter;
+import io.radien.ms.doctypemanagement.client.services.PropertyDefinitionResourceClient;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,14 +28,14 @@ import javax.enterprise.context.RequestScoped;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 @RequestScoped
-public class JCRPropertyTypeClientServiceUtil {
-    public PropertyTypeResourceClient getJCRPropertyTypeResourceClient(String urlStr) throws MalformedURLException , TokenExpiredException {
+public class ClientServiceUtil {
+    public PropertyDefinitionResourceClient getPropertyDefinitionClient(String urlStr) throws MalformedURLException , TokenExpiredException {
         URL url = new URL(urlStr);
         return RestClientBuilder.
                  newBuilder()
                 .baseUrl(url)
-                .register(JCRPropertyTypeResponseExceptionMapper.class)
-                .register(JCRPropertyTypeMessageBodyWriter.class)
-                .build(PropertyTypeResourceClient.class);
+                .register(PropertyDefinitionResponseExceptionMapper.class)
+                .register(PropertyDefinitionMessageBodyWriter.class)
+                .build(PropertyDefinitionResourceClient.class);
     }
 }

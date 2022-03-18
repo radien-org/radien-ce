@@ -17,13 +17,13 @@ package io.radien.ms.doctypemanagement.datalayer;
 
 import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
-import io.radien.api.service.docmanagement.propertytype.PropertyTypeDataAccessLayer;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
+import io.radien.api.service.docmanagement.propertydefinition.PropertyDefinitionDataAccessLayer;
 
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 
-import io.radien.ms.doctypemanagement.entities.PropertyTypeEntity;
+import io.radien.ms.doctypemanagement.entities.PropertyDefinitionEntity;
 
 import java.util.List;
 
@@ -40,31 +40,22 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-/**
- * JCRPropertyType Service class that will access and request
- * all the information and logics from the db
- *
- * @author Rajesh Gavvala
- */
 @Stateful
-public class PropertyTypeDataLayerLayer implements PropertyTypeDataAccessLayer {
-	private static final Logger log = LoggerFactory.getLogger( PropertyTypeDataLayerLayer.class);
+public class PropertyDefinitionDataLayer implements PropertyDefinitionDataAccessLayer {
 
 	@PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
-	private EntityManager em;
+	private transient EntityManager em;
 
 	@Override
-	public SystemJCRPropertyType get(Long id) {
-		return em.find(PropertyTypeEntity.class, id);
+	public SystemPropertyDefinition get(Long id) {
+		return em.find(PropertyDefinitionEntity.class, id);
 	}
 
 	@Override
-	public Page<SystemJCRPropertyType> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<PropertyTypeEntity> criteriaQuery = criteriaBuilder.createQuery(PropertyTypeEntity.class);
-		Root<PropertyTypeEntity> propertyTypeEntityRoot = criteriaQuery.from(PropertyTypeEntity.class);
+		CriteriaQuery<PropertyDefinitionEntity> criteriaQuery = criteriaBuilder.createQuery(PropertyDefinitionEntity.class);
+		Root<PropertyDefinitionEntity> propertyTypeEntityRoot = criteriaQuery.from(PropertyDefinitionEntity.class);
 
 		criteriaQuery.select(propertyTypeEntityRoot);
 		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
@@ -84,11 +75,11 @@ public class PropertyTypeDataLayerLayer implements PropertyTypeDataAccessLayer {
 			criteriaQuery.orderBy(orders);
 		}
 
-		TypedQuery<PropertyTypeEntity> query = em.createQuery(criteriaQuery);
+		TypedQuery<PropertyDefinitionEntity> query = em.createQuery(criteriaQuery);
 		query.setFirstResult((pageNo-1) * pageSize);
 		query.setMaxResults(pageSize);
 
-		List<? extends SystemJCRPropertyType> systemRoles = query.getResultList();
+		List<? extends SystemPropertyDefinition> systemRoles = query.getResultList();
 		int totalRecords = Math.toIntExact(getCount(global, propertyTypeEntityRoot));
 		int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
@@ -96,8 +87,8 @@ public class PropertyTypeDataLayerLayer implements PropertyTypeDataAccessLayer {
 	}
 
 	@Override
-	public void save(SystemJCRPropertyType propertyType) throws UniquenessConstraintException {
-		List<PropertyTypeEntity> alreadyExistentRecords = searchDuplicatedName(propertyType);
+	public void save(SystemPropertyDefinition propertyType) throws UniquenessConstraintException {
+		List<PropertyDefinitionEntity> alreadyExistentRecords = searchDuplicatedName(propertyType);
 		validateUniquenessRecords(alreadyExistentRecords, propertyType);
 
 		if(propertyType.getId() == null) {
@@ -107,11 +98,11 @@ public class PropertyTypeDataLayerLayer implements PropertyTypeDataAccessLayer {
 		}
 	}
 
-	private void validateUniquenessRecords(List<PropertyTypeEntity> alreadyExistentRecords, SystemJCRPropertyType newUserInformation) throws UniquenessConstraintException {
+	private void validateUniquenessRecords(List<PropertyDefinitionEntity> alreadyExistentRecords, SystemPropertyDefinition newUserInformation) throws UniquenessConstraintException {
 		if (alreadyExistentRecords.size() == 2) {
 			throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name"));
 		} else if(!alreadyExistentRecords.isEmpty()) {
-			SystemJCRPropertyType alreadyExistentRecord = alreadyExistentRecords.get(0);
+			SystemPropertyDefinition alreadyExistentRecord = alreadyExistentRecords.get(0);
 			boolean isSameName = alreadyExistentRecord.getName().equals(newUserInformation.getName());
 
 			if(isSameName) {
@@ -123,14 +114,14 @@ public class PropertyTypeDataLayerLayer implements PropertyTypeDataAccessLayer {
 	@Override
 	public void delete(Long id) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<PropertyTypeEntity> criteriaDelete = cb.createCriteriaDelete(PropertyTypeEntity.class);
-		Root<PropertyTypeEntity> jcrpropertytypeRoot = criteriaDelete.from(PropertyTypeEntity.class);
+		CriteriaDelete<PropertyDefinitionEntity> criteriaDelete = cb.createCriteriaDelete(PropertyDefinitionEntity.class);
+		Root<PropertyDefinitionEntity> entityRoot = criteriaDelete.from(PropertyDefinitionEntity.class);
 
-		criteriaDelete.where(cb.equal(jcrpropertytypeRoot.get("id"), id));
+		criteriaDelete.where(cb.equal(entityRoot.get("id"), id));
 		em.createQuery(criteriaDelete).executeUpdate();
 	}
 
-	private long getCount(Predicate global, Root<PropertyTypeEntity> entityRoot) {
+	private long getCount(Predicate global, Root<PropertyDefinitionEntity> entityRoot) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 		criteriaQuery.where(global);
@@ -143,14 +134,14 @@ public class PropertyTypeDataLayerLayer implements PropertyTypeDataAccessLayer {
 	@Override
 	public long getTotalRecordsCount() {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(PropertyTypeEntity.class));
+		return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(PropertyDefinitionEntity.class));
 	}
 
-	private List<PropertyTypeEntity> searchDuplicatedName(SystemJCRPropertyType propertyType) {
-		List<PropertyTypeEntity> alreadyExistentRecords;
+	private List<PropertyDefinitionEntity> searchDuplicatedName(SystemPropertyDefinition propertyType) {
+		List<PropertyDefinitionEntity> alreadyExistentRecords;
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<PropertyTypeEntity> criteriaQuery = criteriaBuilder.createQuery(PropertyTypeEntity.class);
-		Root<PropertyTypeEntity> entityRoot = criteriaQuery.from(PropertyTypeEntity.class);
+		CriteriaQuery<PropertyDefinitionEntity> criteriaQuery = criteriaBuilder.createQuery(PropertyDefinitionEntity.class);
+		Root<PropertyDefinitionEntity> entityRoot = criteriaQuery.from(PropertyDefinitionEntity.class);
 		criteriaQuery.select(entityRoot);
 		Predicate global = criteriaBuilder.equal(entityRoot.get(SystemVariables.NAME.getFieldName()), propertyType.getName());
 		if(propertyType.getId()!= null) {
@@ -160,7 +151,7 @@ public class PropertyTypeDataLayerLayer implements PropertyTypeDataAccessLayer {
 			);
 		}
 		criteriaQuery.where(global);
-		TypedQuery<PropertyTypeEntity> query = em.createQuery(criteriaQuery);
+		TypedQuery<PropertyDefinitionEntity> query = em.createQuery(criteriaQuery);
 		alreadyExistentRecords = query.getResultList();
 		return alreadyExistentRecords;
 	}

@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class JCRPropertyTypeResponseExceptionMapper extends ModelResponseExceptionMapper {
+public class PropertyDefinitionResponseExceptionMapper extends ModelResponseExceptionMapper {
 
     /**
      * Validates if by a given status code the error message can be handle by the following mapper
@@ -30,7 +30,7 @@ public class JCRPropertyTypeResponseExceptionMapper extends ModelResponseExcepti
      * @param headers to be passed
      * @return true in case handler can handle exception
      */
-    public boolean jcrpropertytypeHandles(int statusCode, MultivaluedMap<String, Object> headers) {
+    public boolean propertyDefinitionHandles(int statusCode, MultivaluedMap<String, Object> headers) {
         return handles(statusCode, headers);
     }
 
@@ -39,7 +39,7 @@ public class JCRPropertyTypeResponseExceptionMapper extends ModelResponseExcepti
      * @param response message to be validated
      * @return a exception
      */
-    public Exception jcrpropertytypeToThrowable(Response response) {
+    public Exception propertyDefinitionToThrowable(Response response) {
         return toThrowable(response);
     }
 

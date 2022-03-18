@@ -18,7 +18,7 @@ package io.radien.ms.doctypemanagement.client.services;
 import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
 
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -32,9 +32,13 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
-public class JCRPropertyTypeFactory {
+public class PropertyDefinitionFactory {
 
-    public static JCRPropertyType convert(JsonObject jsonPropertyType) {
+    private PropertyDefinitionFactory() {
+        throw new IllegalStateException("Invalid usage");
+    }
+
+    public static PropertyDefinition convert(JsonObject jsonPropertyType) {
         Long id = FactoryUtilService.getLongFromJson("id", jsonPropertyType);
         String name = FactoryUtilService.getStringFromJson("name", jsonPropertyType);
         boolean mandatory = FactoryUtilService.getBooleanFromJson("mandatory", jsonPropertyType);
@@ -47,7 +51,7 @@ public class JCRPropertyTypeFactory {
         Long createUser = FactoryUtilService.getLongFromJson("createUser", jsonPropertyType);
         Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", jsonPropertyType);
 
-        JCRPropertyType propertyType = new JCRPropertyType();
+        PropertyDefinition propertyType = new PropertyDefinition();
         propertyType.setId(id);
         propertyType.setName(name);
         propertyType.setMandatory(mandatory);
@@ -63,7 +67,7 @@ public class JCRPropertyTypeFactory {
         return propertyType;
     }
 
-    public static JsonObject convertToJsonObject(JCRPropertyType propertyType) {
+    public static JsonObject convertToJsonObject(PropertyDefinition propertyType) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
         FactoryUtilService.addValue(builder, "id", propertyType.getId());
@@ -80,13 +84,13 @@ public class JCRPropertyTypeFactory {
         return builder.build();
     }
 
-    public static Page<JCRPropertyType> convertJsonToPage(JsonObject jsonObject) {
+    public static Page<PropertyDefinition> convertJsonToPage(JsonObject jsonObject) {
         int currentPage = FactoryUtilService.getIntFromJson("currentPage", jsonObject);
         JsonArray results = FactoryUtilService.getArrayFromJson("results", jsonObject);
         int totalPages = FactoryUtilService.getIntFromJson("totalPages", jsonObject);
         int totalResults = FactoryUtilService.getIntFromJson("totalResults", jsonObject);
 
-        ArrayList<JCRPropertyType> pageResults = new ArrayList<>();
+        ArrayList<PropertyDefinition> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){
@@ -96,7 +100,7 @@ public class JCRPropertyTypeFactory {
         return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 
-    public static List<JCRPropertyType> convert(JsonArray jsonArray) {
+    public static List<PropertyDefinition> convert(JsonArray jsonArray) {
         return jsonArray.stream().map(i->convert(i.asJsonObject())).collect(Collectors.toList());
     }
 }

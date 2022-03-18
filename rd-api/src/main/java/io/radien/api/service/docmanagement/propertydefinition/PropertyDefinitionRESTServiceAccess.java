@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.service.docmanagement.propertytype;
+package io.radien.api.service.docmanagement.propertydefinition;
 
 import io.radien.api.Appframeable;
 import io.radien.api.entity.Page;
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 
 import io.radien.exception.SystemException;
 
@@ -25,20 +25,17 @@ import java.net.MalformedURLException;
 
 import java.util.List;
 import java.util.Optional;
-/**
- * JCRPropertyType REST Service Access interface for future requests
- *
- * @author Marco Weiland
- */
-public interface JCRPropertyTypeRESTServiceAccess extends Appframeable{
 
-    Page<? extends SystemJCRPropertyType> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException, SystemException;
+public interface PropertyDefinitionRESTServiceAccess extends Appframeable{
 
-	Optional<SystemJCRPropertyType> getJCRPropertyTypeById(Long id) throws SystemException;
+    Page<? extends SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending)
+            throws MalformedURLException, SystemException;
 
-    boolean save(SystemJCRPropertyType propertyType) throws SystemException;
+	Optional<SystemPropertyDefinition> getPropertyDefinitionById(Long id) throws SystemException;
 
-    boolean deleteJCRPropertyType(long id) throws SystemException;
+    boolean save(SystemPropertyDefinition propertyType) throws SystemException;
+
+    boolean deletePropertyDefinition(long id) throws SystemException;
 
     Long getTotalRecordsCount() throws SystemException;
 }

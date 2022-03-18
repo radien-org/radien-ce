@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.model.docmanagement.propertytype;
+package io.radien.api.model.docmanagement.propertydefinition;
 
 import io.radien.api.Model;
 import javax.jcr.nodetype.PropertyDefinition;
 
-/**
- * Class that represents an application
- * jcrpropertytype
- *
- * @author Rajesh Gavvala
- */
-public interface SystemJCRPropertyType extends Model, PropertyDefinition {
-    public String getName();
-    public void setName(String name);
+public interface SystemPropertyDefinition extends Model, PropertyDefinition {
+    String getName();
+
+    void setName(String name);
 
     void setMandatory(boolean mandatory);
 

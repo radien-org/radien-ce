@@ -15,8 +15,8 @@
  */
 package io.radien.ms.doctypemanagement.client.providers;
 
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
-import io.radien.ms.doctypemanagement.client.util.JCRPropertyTypeModelMapper;
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
+import io.radien.ms.doctypemanagement.client.util.PropertyDefinitionModelMapper;
 
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -34,25 +34,25 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class JCRPropertyTypeMessageBodyWriter implements MessageBodyWriter<JCRPropertyType>{
+public class PropertyDefinitionMessageBodyWriter implements MessageBodyWriter<PropertyDefinition>{
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(JCRPropertyType.class);
+        return type.equals(PropertyDefinition.class);
     }
 
     @Override
-    public long getSize(JCRPropertyType model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(PropertyDefinition model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return 0;
     }
 
     @Override
-    public void writeTo(JCRPropertyType model, Class<?> type, Type genericType, Annotation[] annotations,
-        MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+    public void writeTo(PropertyDefinition model, Class<?> type, Type genericType, Annotation[] annotations,
+                        MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
         throws WebApplicationException {
 
         JsonWriter jsonWriter = Json.createWriter(entityStream);
-        JsonObject jsonObject = JCRPropertyTypeModelMapper.map(model);
+        JsonObject jsonObject = PropertyDefinitionModelMapper.map(model);
         jsonWriter.writeObject(jsonObject);
         jsonWriter.close();
     }

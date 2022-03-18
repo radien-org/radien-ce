@@ -15,14 +15,14 @@
  */
 package io.radien.ms.doctypemanagement.resource;
 
-import io.radien.api.model.docmanagement.propertytype.SystemJCRPropertyType;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 
 
-import io.radien.ms.doctypemanagement.client.entities.JCRPropertyType;
-import io.radien.ms.doctypemanagement.client.services.PropertyTypeResourceClient;
-import io.radien.ms.doctypemanagement.service.PropertyTypeBusinessService;
+import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
+import io.radien.ms.doctypemanagement.client.services.PropertyDefinitionResourceClient;
+import io.radien.ms.doctypemanagement.service.PropertyDefinitionService;
 import io.radien.ms.openid.entities.Authenticated;
-import io.radien.ms.doctypemanagement.entities.PropertyTypeEntity;
+import io.radien.ms.doctypemanagement.entities.PropertyDefinitionEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -34,9 +34,9 @@ import java.util.List;
 @Path("propertyType")
 @RequestScoped
 @Authenticated
-public class PropertyTypeResource implements PropertyTypeResourceClient {
+public class PropertyDefinitionResource implements PropertyDefinitionResourceClient {
 	@Inject
-	private PropertyTypeBusinessService propertyTypeService;
+	private PropertyDefinitionService propertyTypeService;
 
 	@Override
 	public Response getAll(String search, int pageNo, int pageSize,
@@ -46,8 +46,8 @@ public class PropertyTypeResource implements PropertyTypeResourceClient {
 
 	@Override
 	public Response getById(Long id) {
-		SystemJCRPropertyType systemJCRPropertyType = propertyTypeService.getById(id);
-		return Response.ok(systemJCRPropertyType).build();
+		SystemPropertyDefinition systemPropertyDefinition = propertyTypeService.getById(id);
+		return Response.ok(systemPropertyDefinition).build();
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class PropertyTypeResource implements PropertyTypeResourceClient {
 	}
 
 	@Override
-	public Response save(JCRPropertyType propertyType) {
-		propertyTypeService.save(new PropertyTypeEntity(propertyType));
+	public Response save(PropertyDefinition propertyType) {
+		propertyTypeService.save(new PropertyDefinitionEntity(propertyType));
 		return Response.ok().build();
 	}
 	@Override
