@@ -22,6 +22,7 @@ import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
+import io.radien.exception.RestResponseException;
 import io.radien.exception.SystemException;
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import io.radien.ms.doctypemanagement.client.util.ClientServiceUtil;
@@ -91,13 +92,12 @@ public class PropertyDefinitionRESTServiceClientTest {
         assertEquals(1, result.getCurrentPage());
     }
 
-    @Test
+    @Test(expected = RestResponseException.class)
     public void testGetAllError() throws SystemException {
         Response response = Response.status(Response.Status.BAD_REQUEST).entity("error").build();
         when(client.getAll(anyString(), anyInt(), anyInt(), anyList(), anyBoolean()))
                 .thenReturn(response);
         Page<? extends SystemPropertyDefinition> result = serviceClient.getAll("", 1, 1, new ArrayList<>(), false);
-        assertNull(result);
     }
 
     @Test(expected = SystemException.class)
@@ -200,12 +200,12 @@ public class PropertyDefinitionRESTServiceClientTest {
         assertEquals(Long.valueOf("10"), serviceClient.getTotalRecordsCount());
     }
 
-    @Test
+    @Test(expected = RestResponseException.class)
     public void testGetTotalRecordsCountError() throws SystemException {
         Response response = Response.status(Response.Status.NOT_FOUND).entity("not found").build();
         when(client.getTotalRecordsCount())
                 .thenReturn(response);
-        assertNull(serviceClient.getTotalRecordsCount());
+        serviceClient.getTotalRecordsCount();
     }
 
     @Test(expected = SystemException.class)

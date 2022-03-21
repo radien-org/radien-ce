@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import io.radien.api.service.docmanagement.propertydefinition.PropertyDefinitionRESTServiceAccess;
+import io.radien.exception.RestResponseException;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.doctypemanagement.client.PropertyDefinitionResponseExceptionMapper;
@@ -55,15 +56,12 @@ public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker im
                                                            boolean isAscending) throws SystemException {
         return get(() -> {
             try {
-                PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
-                        .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
+                PropertyDefinitionResourceClient client = getClient();
                 Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return PropertyDefinitionModelMapper.mapToPage((InputStream) response.getEntity());
                 } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return null;
+                    throw new RestResponseException(response.readEntity(String.class), response.getStatusInfo().getStatusCode());
                 }
             } catch (MalformedURLException e){
                 throw new SystemException(e);
@@ -141,14 +139,18 @@ public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker im
                 if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                     return Long.parseLong(response.readEntity(String.class));
                 } else {
-                    String entity = response.readEntity(String.class);
-                    log.error(entity);
-                    return null;
+                    throw new RestResponseException(response.readEntity(String.class), response.getStatusInfo().getStatusCode());
                 }
             } catch (ExtensionException | ProcessingException | MalformedURLException e){
                 throw new SystemException(e);
             }
         });
+    }
+
+    private PropertyDefinitionResourceClient getClient() throws MalformedURLException {
+        return clientService.getPropertyDefinitionClient(
+                getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT)
+        );
     }
 
     @Override
