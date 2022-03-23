@@ -32,8 +32,10 @@
 		<module>rd-ms-config-lib</module>
 		<module>rd-ms-ticketmanagement</module>
 		<module>rd-ms-ticketmanagement-client</module>
+        <module>rd-ms-doctypemanagement</module>
+        <module>rd-ms-doctypemanagement-client</module>
         <module>rd-ms-keycloak-themes</module>
-    </modules>
+  </modules>
 	<properties>
 
 		<!-- SonarQube Properties -->
@@ -149,6 +151,11 @@
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+            <dependency>
+                <groupId>io.radien</groupId>
+                <artifactId>rd-ms-doctypemanagement-client</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
 			<!-- radien modules -->
 			<dependency>
 				<groupId>io.radien</groupId>

@@ -105,5 +105,9 @@
 			<artifactId>jersey-common</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+        </dependency>
+    </dependencies>
 </project>
