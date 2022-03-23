@@ -334,6 +334,8 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 
 	public Map<String, String> fakeAuth(String token) throws RemoteResourceException {
 		HashMap<String, String> result = null;
+		log.info("Config Token: {}", config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class));
+		log.info("Token: {}", token);
 		if(config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class).equals(token)) {
 			HttpResponse<?> response = Unirest.post(config.getValue(KeycloakConfigs.IDP_URL.propKey(), String.class)
 							+ config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class))
