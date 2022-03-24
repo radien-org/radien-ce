@@ -83,6 +83,13 @@
 								<f:param name="navigationNode" value="properties" />
 								<f:attribute name="navigationNode" value="properties" />
 							</b:navCommandLink>
+							<b:dropMenu value="#{msg.rd_docTypeManagement_menu}" rendered="#{userSession.active and (authzChecker.hasPermissionAccess('DocumentTypeManagement','Update',null))}">
+							<b:navCommandLink value="#{msg.rd_propertyDefinition}" action="#{navigation.navigate}" actionListener="#{navigation.navigationAction}"
+											  rendered="#{authzChecker.hasPermissionAccess('PropertyDefinitionManagement','Update',null)}">
+									<f:param name="navigationNode" value="propertyDefinitions" />
+									<f:attribute name="navigationNode" value="propertyDefinitions" />
+								</b:navCommandLink>
+							</b:dropMenu>
 						</b:dropMenu>
 
 						<b:selectOneMenu id="activeTenantCombobox" value="#{activeTenantDataModelManager.activeTenantValue}"

@@ -29,6 +29,7 @@ import io.radien.ms.doctypemanagement.client.util.ClientServiceUtil;
 import io.radien.ms.doctypemanagement.client.util.PropertyDefinitionModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
@@ -83,7 +84,7 @@ public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker im
                     log.error(entity);
                     return Optional.empty();
                 }
-            } catch (ExtensionException|ProcessingException | MalformedURLException e){
+            } catch (ExtensionException | ProcessingException | MalformedURLException | ParseException e){
                 throw new SystemException(e);
             }
         });

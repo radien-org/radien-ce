@@ -119,6 +119,10 @@
 			<artifactId>rd-ms-ecm-client</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-doctypemanagement-client</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
 		</dependency>

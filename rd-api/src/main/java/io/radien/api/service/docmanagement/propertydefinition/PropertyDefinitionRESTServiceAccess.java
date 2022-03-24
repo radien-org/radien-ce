@@ -21,15 +21,13 @@ import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefini
 
 import io.radien.exception.SystemException;
 
-import java.net.MalformedURLException;
-
 import java.util.List;
 import java.util.Optional;
 
 public interface PropertyDefinitionRESTServiceAccess extends Appframeable{
 
     Page<? extends SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending)
-            throws MalformedURLException, SystemException;
+            throws SystemException;
 
 	Optional<SystemPropertyDefinition> getPropertyDefinitionById(Long id) throws SystemException;
 

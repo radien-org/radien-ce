@@ -19,6 +19,7 @@ package io.radien.ms.doctypemanagement.client.services;
 import io.radien.api.entity.Page;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
+import java.text.ParseException;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -42,7 +43,7 @@ public class PropertyDefinitionFactoryTest {
 
 
     @Test
-    public void testConvert() {
+    public void testConvert() throws ParseException {
         PropertyDefinition result = PropertyDefinitionFactory.convert(createObject());
         assertEquals(ID, result.getId());
         assertEquals(NAME, result.getName());
@@ -59,7 +60,7 @@ public class PropertyDefinitionFactoryTest {
         object.setId(ID);
         object.setName(NAME);
         object.setMandatory(MANDATORY);
-        object.setProtected(PROTEKTED);
+        object.setProtekted(PROTEKTED);
         object.setRequiredType(REQUIREDTYPE);
         object.setMultiple(MULTIPLE);
         object.setCreateUser(CREATEUSER);
@@ -76,7 +77,7 @@ public class PropertyDefinitionFactoryTest {
     }
 
     @Test
-    public void testConvertJsonToPage() {
+    public void testConvertJsonToPage() throws ParseException {
         JsonObject propertyObj = createObject();
         JsonObjectBuilder pageObj = Json.createObjectBuilder();
         pageObj.add("currentPage", 1);
@@ -93,7 +94,7 @@ public class PropertyDefinitionFactoryTest {
     }
 
     @Test
-    public void testConvertArray() {
+    public void testConvertArray() throws ParseException {
         JsonObject propertyObj = createObject();
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         arrayBuilder.add(propertyObj);

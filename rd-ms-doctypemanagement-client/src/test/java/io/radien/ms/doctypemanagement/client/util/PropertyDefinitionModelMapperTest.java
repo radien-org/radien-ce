@@ -19,10 +19,10 @@ package io.radien.ms.doctypemanagement.client.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.radien.api.entity.Page;
-import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.JsonArray;
@@ -40,7 +40,7 @@ public class PropertyDefinitionModelMapperTest {
         object.setName("name");
         object.setMultiple(true);
         object.setMandatory(true);
-        object.setProtected(true);
+        object.setProtekted(true);
         object.setRequiredType(1);
 
         JsonObject result = PropertyDefinitionModelMapper.map(object);
@@ -60,7 +60,7 @@ public class PropertyDefinitionModelMapperTest {
             object.setName("name");
             object.setMultiple(true);
             object.setMandatory(true);
-            object.setProtected(true);
+            object.setProtekted(true);
             object.setRequiredType(1);
             list.add(object);
         }
@@ -70,13 +70,13 @@ public class PropertyDefinitionModelMapperTest {
     }
 
     @Test
-    public void testMapStream() throws JsonProcessingException {
+    public void testMapStream() throws JsonProcessingException, ParseException {
         PropertyDefinition object = new PropertyDefinition();
         object.setId(1L);
         object.setName("name");
         object.setMultiple(true);
         object.setMandatory(true);
-        object.setProtected(true);
+        object.setProtekted(true);
         object.setRequiredType(1);
         ObjectMapper mapper = new ObjectMapper();
         InputStream is = new ByteArrayInputStream(mapper.writeValueAsBytes(object));
@@ -100,25 +100,5 @@ public class PropertyDefinitionModelMapperTest {
         assertEquals(page.getTotalPages(), result.getTotalPages());
         assertEquals(page.getTotalResults(), result.getTotalResults());
         assertEquals(page.getCurrentPage(), result.getCurrentPage());
-    }
-
-    @Test
-    public void testMapStreamList() throws JsonProcessingException {
-        List<PropertyDefinition> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            PropertyDefinition object = new PropertyDefinition();
-            object.setId((long) i);
-            object.setName("name");
-            object.setMultiple(true);
-            object.setMandatory(true);
-            object.setProtected(true);
-            object.setRequiredType(1);
-            list.add(object);
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        InputStream is = new ByteArrayInputStream(mapper.writeValueAsBytes(list));
-
-        List<? extends SystemPropertyDefinition> result = PropertyDefinitionModelMapper.mapList(is);
-        assertEquals(list.size(), result.size());
     }
 }

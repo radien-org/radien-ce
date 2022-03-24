@@ -1,3 +1,5 @@
 [
-  { "name":  "I18N"}
+  { "name":  "I18N"},
+  { "name":  "DocumentTypeManagement"},
+  { "name":  "PropertyDefinitionManagement"}
 ]

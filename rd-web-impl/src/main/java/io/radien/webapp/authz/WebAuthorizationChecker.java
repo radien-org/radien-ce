@@ -117,13 +117,17 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
                 log.error("Checking if has permission without being logged in");
                 return false;
             }
-            Optional<Long> optional = permissionRESTServiceAccess.
-                    getIdByResourceAndAction(resource, action);
-            if (optional.isPresent()) {
-                return hasGrant(optional.get(), tenant);
+            boolean result = false;
+            Optional<Long> idForAction = permissionRESTServiceAccess.getIdByResourceAndAction(resource, action);
+            Optional<Long> idForAll = permissionRESTServiceAccess.getIdByResourceAndAction(resource, "ALL");
+
+            if (idForAction.isPresent()) {
+                 result = hasGrant(idForAction.get(), tenant);
+            } if(!result && idForAll.isPresent()) {
+                result = hasGrant(idForAll.get(), tenant);
             }
-            log.info("Permission not found for resource {} and action {}", resource, action);
-            return false;
+            log.info("Permission {} for resource {} and action {}", result ? "found" : "not found", resource, action);
+            return result;
         }
         catch (Exception e) {
             log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
@@ -168,6 +172,7 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
         }
         if(!hasPermissionAccess(resource, action, tenant)){
             log.error("Missing Permission Resource:{} Action:{} Tenant:{}",resource,action,tenant);
+            JSFUtil.addErrorMessage("You dont have permission to access the requested page.");
             JSFUtil.redirect(prettyDestination);
             return true;
         }
