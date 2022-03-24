@@ -51,7 +51,7 @@
 						 rowsPerPageTemplate="5,10,20,50"
 						 styleClass = "tableDesign"
 						 selectionMode="single"
-						 selection="#{propertyDefinitionManager.selectedPropertyType}">
+						 selection="#{propertyDefinitionManager.selectedPropertyDefinition}">
 
 				<p:ajax event="rowSelect"
 						listener="#{propertyDefinitionManager.onRowSelect}"
@@ -123,7 +123,7 @@
 					 close-on-escape="false"
 					 backdrop="false">
 				<c:choose>
-					<c:when test="#{propertyDefinitionManager.selectedPropertyType != null}">
+					<c:when test="#{propertyDefinitionManager.selectedPropertyDefinition != null}">
 						<p>#{msg.rd_propertyDefinition_delete_record_info}</p>
 					</c:when>
 					<c:otherwise>
@@ -131,14 +131,14 @@
 					</c:otherwise>
 				</c:choose>
 				<f:facet name="footer">
-					<b:commandButton value="#{propertyDefinitionManager.selectedPropertyType != null ?
+					<b:commandButton value="#{propertyDefinitionManager.selectedPropertyDefinition != null ?
 												msg.no : msg.cancel}"
 									 onclick="{ $('.formValidationModalPropertyDefinitionDelete').modal('hide') } "/>
 					<b:commandButton value="#{msg.yes}" look="warning"
 									 actionListener="#{propertyDefinitionManager.deletePropertyDefinition}"
 									 action="#{propertyDefinitionManager.returnToPropertyDefinitionsRedirectURL}"
 									 oncomplete="{ $('.formValidationModalPropertyDefinitionDelete').modal('hide') } "
-									 rendered="#{propertyDefinitionManager.selectedPropertyType != null}"/>
+									 rendered="#{propertyDefinitionManager.selectedPropertyDefinition != null}"/>
 				</f:facet>
 			</b:modal>
 

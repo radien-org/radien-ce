@@ -39,36 +39,36 @@
 				<b:panelGrid colSpans="2,10">
 					<h:outputLabel value="#{msg.id}"/>
 					<b:inputText id="propertyDefinitionId" span="6"
-								 value="#{propertyDefinitionManager.selectedPropertyType.id}"
+								 value="#{propertyDefinitionManager.selectedPropertyDefinition.id}"
 								 disabled="true"/>
 
 					<h:outputLabel value="#{msg.name}"/>
 					<b:inputText id="propertyDefinitionName" span="6"
-								 value="#{propertyDefinitionManager.selectedPropertyType.name}"
+								 value="#{propertyDefinitionManager.selectedPropertyDefinition.name}"
 								 required="true"
 								 requiredMessage="#{msg.rd_entity_name_is_mandatory}"/>
 
 					<h:outputLabel value="#{msg.rd_propertyDefinition_mandatory}"/>
-					<h:selectOneRadio value="#{propertyDefinitionManager.selectedPropertyType.mandatory}" layout="lineDirection">
+					<h:selectOneRadio value="#{propertyDefinitionManager.selectedPropertyDefinition.mandatory}" layout="lineDirection">
 						<f:selectItem itemValue="true" itemLabel="#{msg.yes}"/>
 						<f:selectItem itemValue="false" itemLabel="#{msg.no}"/>
 					</h:selectOneRadio>
 
 					<h:outputLabel value="#{msg.rd_propertyDefinition_protected}"/>
-					<h:selectOneRadio value="#{propertyDefinitionManager.selectedPropertyType.protekted}" layout="lineDirection">
+					<h:selectOneRadio value="#{propertyDefinitionManager.selectedPropertyDefinition.protekted}" layout="lineDirection">
 						<f:selectItem itemValue="true" itemLabel="#{msg.yes}"/>
 						<f:selectItem itemValue="false" itemLabel="#{msg.no}"/>
 					</h:selectOneRadio>
 
 					<h:outputLabel value="#{msg.rd_propertyDefinition_multiple}"/>
-					<h:selectOneRadio value="#{propertyDefinitionManager.selectedPropertyType.multiple}" layout="lineDirection">
+					<h:selectOneRadio value="#{propertyDefinitionManager.selectedPropertyDefinition.multiple}" layout="lineDirection">
 						<f:selectItem itemValue="true" itemLabel="#{msg.yes}"/>
 						<f:selectItem itemValue="false" itemLabel="#{msg.no}"/>
 					</h:selectOneRadio>
 
 					<h:outputLabel value="#{msg.rd_propertyDefinition_requiredType}"/>
-					<b:selectOneMenu value="#{propertyDefinitionManager.selectedPropertyType.requiredType}" required="true"
-									 requiredMessage="#{msg.rd_propertyDefinition_requiredType_mandatory}" select2="true">
+					<b:selectOneMenu value="#{propertyDefinitionManager.selectedPropertyDefinition.requiredType}" required="true"
+                                     requiredMessage="#{msg.rd_propertyDefinition_requiredType_mandatory}" select2="true">
 						<f:selectItem itemLabel="#{msg.rd_propertyDefinition_requiredType}" itemValue="#{null}" />
 						<f:selectItems value="#{propertyDefinitionManager.propertyTypes}" var="t" itemValue="#{t.typeValue}"
 									   itemLabel="#{t.typeName}" styleClass="form-select"/>
@@ -78,7 +78,7 @@
 				<b:commandButton value="#{msg.save}"
 								 tooltip="#{msg.rd_propertyDefinition_save}"
 								 iconAwesome="fa-save"
-								 action="#{propertyDefinitionManager.save(propertyDefinitionManager.selectedPropertyType)}"/>
+								 action="#{propertyDefinitionManager.save(propertyDefinitionManager.selectedPropertyDefinition)}"/>
 
 				<b:commandButton value="#{msg.rd_propertyDefinition}"
 								 tooltip="#{msg.rd_propertyDefinition_return}"

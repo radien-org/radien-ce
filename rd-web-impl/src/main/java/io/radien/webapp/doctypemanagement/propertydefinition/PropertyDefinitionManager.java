@@ -44,13 +44,13 @@ public class PropertyDefinitionManager extends AbstractManager implements Serial
     private PropertyDefinitionRESTServiceAccess service;
 
     private LazyDataModel<SystemPropertyDefinition> dataModel;
-    private SystemPropertyDefinition selectedPropertyType;
+    private SystemPropertyDefinition selectedPropertyDefinition;
     private SystemPropertyDefinition newPropertyType = new PropertyDefinition();
 
     @PostConstruct
     public void init() {
         dataModel = new PropertyDefinitionDataModel(service);
-        selectedPropertyType = null;
+        selectedPropertyDefinition = null;
     }
 
     public void onload() {
@@ -60,8 +60,11 @@ public class PropertyDefinitionManager extends AbstractManager implements Serial
     public void save(SystemPropertyDefinition propertyDefinition){
         try {
             if(propertyDefinition != null) {
-                service.save(propertyDefinition);
-                JSFUtil.addSuccessMessage(null, "rd_save_success", propertyDefinition.getName());
+                if(service.save(propertyDefinition)) {
+                    JSFUtil.addSuccessMessage(null, "rd_save_success", propertyDefinition.getName());
+                } else {
+                    JSFUtil.addErrorMessage(null, "rd_save_error", propertyDefinition.getName());
+                }
             }
         } catch (Exception e) {
             log.error("Error saving PropertyDefinition {}", propertyDefinition.getName(), e);
@@ -71,8 +74,12 @@ public class PropertyDefinitionManager extends AbstractManager implements Serial
 
     public void deletePropertyDefinition(SystemPropertyDefinition propertyDefinition) {
         try {
-            if(propertyDefinition != null && service.deletePropertyDefinition(propertyDefinition.getId())) {
-                JSFUtil.addSuccessMessage(null, "rd_delete_success", propertyDefinition.getName());
+            if(propertyDefinition != null) {
+                if(service.deletePropertyDefinition(propertyDefinition.getId())) {
+                    JSFUtil.addSuccessMessage(null, "rd_delete_success", propertyDefinition.getName());
+                } else {
+                    JSFUtil.addErrorMessage(null, "rd_delete_error", propertyDefinition.getName());
+                }
             }
         } catch (Exception e) {
             log.error("Error deleting Property Definition", e);
@@ -85,14 +92,14 @@ public class PropertyDefinitionManager extends AbstractManager implements Serial
     }
 
     public String editPropertyDefinitionRedirectURL() {
-        if(selectedPropertyType != null) {
+        if(selectedPropertyDefinition != null) {
             return URL_EDIT_ENTITY;
         }
         return URL_ENTITY;
     }
 
     public String deletePropertyDefinitionRedirectURL() {
-        if(selectedPropertyType != null) {
+        if(selectedPropertyDefinition != null) {
             return URL_DELETE_ENTITY;
         }
         return URL_ENTITY;
@@ -100,7 +107,7 @@ public class PropertyDefinitionManager extends AbstractManager implements Serial
 
     public String returnToPropertyDefinitionsRedirectURL() {
         newPropertyType = new PropertyDefinition();
-        selectedPropertyType = null;
+        selectedPropertyDefinition = null;
         return URL_ENTITY;
     }
 
@@ -112,12 +119,12 @@ public class PropertyDefinitionManager extends AbstractManager implements Serial
         this.dataModel = dataModel;
     }
 
-    public SystemPropertyDefinition getSelectedPropertyType() {
-        return selectedPropertyType;
+    public SystemPropertyDefinition getSelectedPropertyDefinition() {
+        return selectedPropertyDefinition;
     }
 
-    public void setSelectedPropertyType(SystemPropertyDefinition selectedPropertyType) {
-        this.selectedPropertyType = selectedPropertyType;
+    public void setSelectedPropertyDefinition(SystemPropertyDefinition selectedPropertyDefinition) {
+        this.selectedPropertyDefinition = selectedPropertyDefinition;
     }
 
     public SystemPropertyDefinition getNewPropertyType() {
@@ -133,7 +140,7 @@ public class PropertyDefinitionManager extends AbstractManager implements Serial
     }
 
     public void onRowSelect(SelectEvent<SystemPropertyDefinition> event) {
-        this.selectedPropertyType =event.getObject();
+        this.selectedPropertyDefinition =event.getObject();
         FacesMessage msg = new FacesMessage("rd_entity_selected", String.valueOf(event.getObject()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
