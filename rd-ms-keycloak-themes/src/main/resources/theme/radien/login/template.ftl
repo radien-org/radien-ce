@@ -12,7 +12,7 @@
             <meta name="${meta?split('==')[0]}" content="${meta?split('==')[1]}"/>
         </#list>
     </#if>
-    <title>${msg("rd_loginTitle","Radien")}</title>
+    <title>${msg("loginTitle","Radien")}</title>
     <link rel="icon" href="${url.resourcesPath}/img/favicon.ico" />
     <#if properties.stylesCommon?has_content>
         <#list properties.stylesCommon?split(' ') as style>
@@ -40,7 +40,7 @@
 <div class="${properties.kcLoginClass!}">
     <div id="kc-header" class="${properties.kcHeaderClass!}">
         <div id="kc-header-wrapper"
-             class="${properties.kcHeaderWrapperClass!}">${kcSanitize(msg("rd_loginTitle","Radien"))?no_esc}</div>
+             class="${properties.kcHeaderWrapperClass!}">${kcSanitize(msg("loginTitle","Radien"))?no_esc}</div>
     </div>
     <div class="${properties.kcFormCardClass!}">
         <header class="${properties.kcFormHeaderClass!}">
@@ -64,7 +64,7 @@
             <#if displayRequiredFields>
                 <div class="${properties.kcContentWrapperClass!}">
                     <div class="${properties.kcLabelWrapperClass!} subtitle">
-                        <span class="subtitle"><span class="required">*</span> ${msg("rd_requiredFields")}</span>
+                        <span class="subtitle"><span class="required">*</span> ${msg("requiredFields")}</span>
                     </div>
                     <div class="col-md-10">
                         <h1 id="kc-page-title"><#nested "header"></h1>
@@ -77,7 +77,7 @@
             <#if displayRequiredFields>
                 <div class="${properties.kcContentWrapperClass!}">
                     <div class="${properties.kcLabelWrapperClass!} subtitle">
-                        <span class="subtitle"><span class="required">*</span> ${msg("rd_requiredFields")}</span>
+                        <span class="subtitle"><span class="required">*</span> ${msg("requiredFields")}</span>
                     </div>
                     <div class="col-md-10">
                         <#nested "show-username">
@@ -86,7 +86,7 @@
                             <a id="reset-login" href="${url.loginRestartFlowUrl}">
                                 <div class="kc-login-tooltip">
                                     <i class="${properties.kcResetFlowIcon!}"></i>
-                                    <span class="kc-tooltip-text">${msg("rd_restartLoginTooltip")}</span>
+                                    <span class="kc-tooltip-text">${msg("restartLoginTooltip")}</span>
                                 </div>
                             </a>
                         </div>
@@ -99,7 +99,7 @@
                     <a id="reset-login" href="${url.loginRestartFlowUrl}">
                         <div class="kc-login-tooltip">
                             <i class="${properties.kcResetFlowIcon!}"></i>
-                            <span class="kc-tooltip-text">${msg("rd_restartLoginTooltip")}</span>
+                            <span class="kc-tooltip-text">${msg("restartLoginTooltip")}</span>
                         </div>
                     </a>
                 </div>
@@ -130,7 +130,7 @@
                     <div class="${properties.kcFormGroupClass!}">
                         <input type="hidden" name="tryAnotherWay" value="on"/>
                         <a href="#" id="try-another-way"
-                           onclick="document.forms['kc-select-try-another-way-form'].submit();return false;">${msg("rd_doTryAnotherWay")}</a>
+                           onclick="document.forms['kc-select-try-another-way-form'].submit();return false;">${msg("doTryAnotherWay")}</a>
                     </div>
                 </form>
             </#if>
