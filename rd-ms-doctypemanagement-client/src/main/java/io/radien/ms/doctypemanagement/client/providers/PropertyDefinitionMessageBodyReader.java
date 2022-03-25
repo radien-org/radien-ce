@@ -29,39 +29,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
-/**
- * Active Tenant JSON reader into object
- * Reads the given JSON object and converts it into a active tenant
- * @author Bruno Gama
- */
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
 public class PropertyDefinitionMessageBodyReader implements MessageBodyReader<PropertyDefinition> {
 
-	/**
-	 * Checks if the given JSON object can be read into a active tenant one
-	 * @param type of the received object
-	 * @param genericType for multiple conversion purposes
-	 * @param annotations annotation
-	 * @param mediaType type of the given readable field
-	 * @return true in case received JSON can be read into a active tenant
-	 */
 	@Override
 	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return type.equals(PropertyDefinition.class);
 	}
 
-	/**
-	 * Converts the given JSON object into a contract one
-	 * @param type for the final object (active tenant)
-	 * @param genericType for multiple conversion purposes
-	 * @param annotations annotation
-	 * @param mediaType type of the given readable field
-	 * @param httpHeaders header of the http received
-	 * @param entityStream received object
-	 * @return a System Active Tenant that has been gather the information from the given JSON
-	 * @throws WebApplicationException in case of any issue while parsing the JSON fields into system active tenant ones
-	 */
 	@Override
 	public PropertyDefinition readFrom(Class<PropertyDefinition> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
 		try {

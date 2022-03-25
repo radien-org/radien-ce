@@ -123,7 +123,8 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
 
             if (idForAction.isPresent()) {
                  result = hasGrant(idForAction.get(), tenant);
-            } if(!result && idForAll.isPresent()) {
+            }
+            if(!result && idForAll.isPresent()) {
                 result = hasGrant(idForAll.get(), tenant);
             }
             log.info("Permission {} for resource {} and action {}", result ? "found" : "not found", resource, action);
