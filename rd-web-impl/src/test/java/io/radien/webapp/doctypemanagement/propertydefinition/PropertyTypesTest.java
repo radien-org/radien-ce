@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.model.docmanagement.propertydefinition;
 
-import io.radien.api.Model;
-import javax.jcr.nodetype.PropertyDefinition;
+package io.radien.webapp.doctypemanagement.propertydefinition;
 
-public interface SystemPropertyDefinition extends Model, PropertyDefinition {
-    String getName();
 
-    void setName(String name);
+import org.junit.Test;
 
-    void setMandatory(boolean mandatory);
+import static org.junit.Assert.assertEquals;
 
-    // necessary to avoid java reserved keyword
-    void setProtekted(boolean protekted);
-    // necessary to avoid java reserved keyword
-    boolean isProtekted();
+public class PropertyTypesTest {
 
-    void setProtected(boolean protekted);
+    @Test
+    public void testGetTypeName() {
+        assertEquals("Binary", PropertyTypes.BINARY.getTypeName());
+    }
 
-    void setRequiredType(int propertyType);
-
-    void setMultiple(boolean multiple);
+    @Test
+    public void testGetTypeValue() {
+        assertEquals(2, PropertyTypes.BINARY.getTypeValue());
+    }
 }

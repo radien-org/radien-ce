@@ -153,4 +153,17 @@
 		<view-id value="/module/content.oaf" />
 	</url-mapping>
 
+<!-- DocTypeManagement service -->
+    <url-mapping id="propertyDefinitions">
+        <pattern value="/module/propertyDefinition" />
+        <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitions.oaf" />
+    </url-mapping>
+    <url-mapping id="propertyDefinitionCreate">
+        <pattern value="/module/propertyDefinition/create" />
+        <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitionCreate.oaf" />
+    </url-mapping>
+    <url-mapping id="propertyDefinitionEdit">
+        <pattern value="/module/propertyDefinition/edit" />
+        <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitionEdit.oaf" />
+    </url-mapping>
 </pretty-config>

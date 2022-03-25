@@ -13,26 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.api.model.docmanagement.propertydefinition;
 
-import io.radien.api.Model;
-import javax.jcr.nodetype.PropertyDefinition;
+package io.radien.webapp.doctypemanagement.propertydefinition;
 
-public interface SystemPropertyDefinition extends Model, PropertyDefinition {
-    String getName();
+public enum PropertyTypes {
+    STRING("String", 1),
+    BINARY("Binary", 2),
+    LONG("Long", 3),
+    DOUBLE("Double", 4),
+    DATE("Date", 5),
+    BOOLEAN("Boolean", 6),
+    DECIMAL("Decimal", 12);
 
-    void setName(String name);
+    private String typeName;
+    private int typeValue;
 
-    void setMandatory(boolean mandatory);
+    PropertyTypes(String typeName, int typeValue) {
+        this.typeName = typeName;
+        this.typeValue = typeValue;
+    }
 
-    // necessary to avoid java reserved keyword
-    void setProtekted(boolean protekted);
-    // necessary to avoid java reserved keyword
-    boolean isProtekted();
+    public String getTypeName() {
+        return typeName;
+    }
 
-    void setProtected(boolean protekted);
-
-    void setRequiredType(int propertyType);
-
-    void setMultiple(boolean multiple);
+    public int getTypeValue() {
+        return typeValue;
+    }
 }

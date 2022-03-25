@@ -55,6 +55,10 @@
 		</plugins>
 	</build>
 	<dependencies>
+            <dependency>
+                <groupId>io.radien</groupId>
+                <artifactId>rd-ms-doctypemanagement-client</artifactId>
+            </dependency>
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-web-api</artifactId>

@@ -17,19 +17,23 @@ package io.radien.ms.doctypemanagement.client.util;
 
 import io.radien.api.entity.Page;
 
-import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
-
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import io.radien.ms.doctypemanagement.client.services.PropertyDefinitionFactory;
 
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PropertyDefinitionModelMapper {
+    protected static final Logger log = LoggerFactory.getLogger(PropertyDefinitionModelMapper.class);
+
 
     private PropertyDefinitionModelMapper() {
         // empty constructor
@@ -48,7 +52,7 @@ public class PropertyDefinitionModelMapper {
         return arrayBuilder.build();
     }
 
-    public static PropertyDefinition map(InputStream is) {
+    public static PropertyDefinition map(InputStream is) throws ParseException {
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
             return PropertyDefinitionFactory.convert(jsonObject);
@@ -56,17 +60,16 @@ public class PropertyDefinitionModelMapper {
     }
 
     public static Page<PropertyDefinition> mapToPage(InputStream is) {
+        Page<PropertyDefinition> page = null;
         try(JsonReader jsonReader = Json.createReader(is)) {
             JsonObject jsonObject = jsonReader.readObject();
 
-            return PropertyDefinitionFactory.convertJsonToPage(jsonObject);
+            try {
+                page = PropertyDefinitionFactory.convertJsonToPage(jsonObject);
+            } catch (ParseException e) {
+                log.error(e.getMessage(),e);
+            }
         }
-    }
-
-    public static List<? extends SystemPropertyDefinition> mapList(InputStream is) {
-        try(JsonReader jsonReader = Json.createReader(is)) {
-            JsonArray jsonArray = jsonReader.readArray();
-            return PropertyDefinitionFactory.convert(jsonArray);
-        }
+        return page;
     }
 }

@@ -98,6 +98,16 @@ public class PropertyDefinition extends AbstractModel implements SystemPropertyD
 	}
 
 	@Override
+	public boolean isProtekted() {
+		return isProtected();
+	}
+
+	@Override
+	public void setProtekted(boolean protekted) {
+		setProtected(protekted);
+	}
+
+	@Override
 	public int getRequiredType() {
 		return propertyType;
 	}
