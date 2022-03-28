@@ -3,6 +3,10 @@
     <#if section = "header">
         ${msg("emailForgotTitle")}
     <#elseif section = "form">
+    <div id="loginbox" align="center" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div align="center">
+            <img src="${url.resourcesPath}/img/bg.png" class="login-logo-form"/>
+        </div>
         <form id="kc-reset-password-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
@@ -29,6 +33,7 @@
                 </div>
             </div>
         </form>
+    </div>
     <#elseif section = "info" >
         <#if realm.duplicateEmailsAllowed>
             ${msg("emailInstructionUsername")}
