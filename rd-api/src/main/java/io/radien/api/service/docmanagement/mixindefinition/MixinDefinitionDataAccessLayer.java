@@ -17,7 +17,6 @@ package io.radien.api.service.docmanagement.mixindefinition;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.docmanagement.mixindefinition.SystemMixinDefinition;
-import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.UniquenessConstraintException;
@@ -25,11 +24,11 @@ import java.util.List;
 
 public interface MixinDefinitionDataAccessLayer extends ServiceAccess {
 
-    Page<SystemMixinDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    Page<SystemMixinDefinition<Long>> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
-    SystemMixinDefinition get(Long id) throws NotFoundException;
+    SystemMixinDefinition<Long> get(Long id) throws NotFoundException;
 
-    void save(SystemMixinDefinition mixinDefinition) throws UniquenessConstraintException;
+    void save(SystemMixinDefinition<Long> mixinDefinition) throws UniquenessConstraintException;
 
     void delete(Long id);
 

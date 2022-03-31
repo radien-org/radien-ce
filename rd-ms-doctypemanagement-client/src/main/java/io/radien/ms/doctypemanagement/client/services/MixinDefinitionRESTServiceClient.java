@@ -53,7 +53,7 @@ public class MixinDefinitionRESTServiceClient extends AuthorizationChecker imple
     private ClientServiceUtil clientService;
 
     @Override
-    public Page<? extends SystemMixinDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy,
+    public Page<? extends SystemMixinDefinition<Long>> getAll(String search, int pageNo, int pageSize, List<String> sortBy,
                                                            boolean isAscending) throws SystemException {
         return get(() -> {
             try {
@@ -71,7 +71,7 @@ public class MixinDefinitionRESTServiceClient extends AuthorizationChecker imple
     }
 
     @Override
-    public Optional<SystemMixinDefinition> getMixinDefinitionById(Long id) throws SystemException {
+    public Optional<SystemMixinDefinition<Long>> getMixinDefinitionById(Long id) throws SystemException {
         return get(() -> {
             try {
                 MixinDefinitionResourceClient client = clientService.getMixinDefinitionClient(getOAF()

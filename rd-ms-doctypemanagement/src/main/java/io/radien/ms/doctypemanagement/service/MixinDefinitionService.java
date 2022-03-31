@@ -33,15 +33,15 @@ public class MixinDefinitionService implements Serializable {
 	@Inject
 	private MixinDefinitionDataAccessLayer mixinTypeService;
 
-	public Page<? extends SystemMixinDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<? extends SystemMixinDefinition<Long>> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		return mixinTypeService.getAll(search, pageNo, pageSize, sortBy, isAscending);
 	}
 
 	/**
 	 * @throws MixinDefinitionNotFoundException if mixin for given ID is not available
 	 */
-	public SystemMixinDefinition getById(Long id) {
-		SystemMixinDefinition mixin = mixinTypeService.get(id);
+	public SystemMixinDefinition<Long> getById(Long id) {
+		SystemMixinDefinition<Long> mixin = mixinTypeService.get(id);
 		if(mixin == null) {
 			throw new MixinDefinitionNotFoundException("Mixin type for id " + id + " not available",
 					Response.Status.NOT_FOUND);

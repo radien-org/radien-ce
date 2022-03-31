@@ -43,12 +43,12 @@ public class MixinDefinitionDataLayer implements MixinDefinitionDataAccessLayer 
 	private transient EntityManager em;
 
 	@Override
-	public SystemMixinDefinition get(Long id) {
+	public SystemMixinDefinition<Long> get(Long id) {
 		return em.find(MixinDefinitionEntity.class, id);
 	}
 
 	@Override
-	public Page<SystemMixinDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<SystemMixinDefinition<Long>> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<MixinDefinitionEntity> criteriaQuery = criteriaBuilder.createQuery(MixinDefinitionEntity.class);
 		Root<MixinDefinitionEntity> mixinDefinitionEntityRoot = criteriaQuery.from(MixinDefinitionEntity.class);
@@ -75,7 +75,7 @@ public class MixinDefinitionDataLayer implements MixinDefinitionDataAccessLayer 
 		query.setFirstResult((pageNo-1) * pageSize);
 		query.setMaxResults(pageSize);
 
-		List<? extends SystemMixinDefinition> systemRoles = query.getResultList();
+		List<? extends SystemMixinDefinition<Long>> systemRoles = query.getResultList();
 		int totalRecords = Math.toIntExact(getCount(global, mixinDefinitionEntityRoot));
 		int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
@@ -83,7 +83,7 @@ public class MixinDefinitionDataLayer implements MixinDefinitionDataAccessLayer 
 	}
 
 	@Override
-	public void save(SystemMixinDefinition mixinDefinition) throws UniquenessConstraintException {
+	public void save(SystemMixinDefinition<Long> mixinDefinition) throws UniquenessConstraintException {
 		List<MixinDefinitionEntity> alreadyExistentRecords = searchDuplicatedName(mixinDefinition);
 		validateUniquenessRecords(alreadyExistentRecords, "Name");
 		alreadyExistentRecords = searchDuplicatedAssociations(mixinDefinition);
@@ -128,7 +128,7 @@ public class MixinDefinitionDataLayer implements MixinDefinitionDataAccessLayer 
 		return getCount(criteriaBuilder.isTrue(criteriaBuilder.literal(true)), criteriaBuilder.createQuery(Long.class).from(MixinDefinitionEntity.class));
 	}
 
-	private List<MixinDefinitionEntity> searchDuplicatedName(SystemMixinDefinition mixinDefinition) {
+	private List<MixinDefinitionEntity> searchDuplicatedName(SystemMixinDefinition<Long> mixinDefinition) {
 		List<MixinDefinitionEntity> alreadyExistentRecords;
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<MixinDefinitionEntity> criteriaQuery = criteriaBuilder.createQuery(MixinDefinitionEntity.class);
@@ -147,7 +147,7 @@ public class MixinDefinitionDataLayer implements MixinDefinitionDataAccessLayer 
 		return alreadyExistentRecords;
 	}
 
-	private List<MixinDefinitionEntity> searchDuplicatedAssociations(SystemMixinDefinition mixinDefinition) {
+	private List<MixinDefinitionEntity> searchDuplicatedAssociations(SystemMixinDefinition<Long> mixinDefinition) {
 		List<MixinDefinitionEntity> alreadyExistentRecords;
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<MixinDefinitionEntity> criteriaQuery = criteriaBuilder.createQuery(MixinDefinitionEntity.class);

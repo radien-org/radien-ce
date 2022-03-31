@@ -42,7 +42,7 @@ public class MixinDefinitionResource implements MixinDefinitionResourceClient {
 
 	@Override
 	public Response getById(Long id) {
-		SystemMixinDefinition systemMixinDefinition = mixinTypeService.getById(id);
+		SystemMixinDefinition<Long> systemMixinDefinition = mixinTypeService.getById(id);
 		return Response.ok(systemMixinDefinition).build();
 	}
 

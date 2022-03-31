@@ -24,12 +24,12 @@ import java.util.Optional;
 
 public interface MixinDefinitionRESTServiceAccess extends Appframeable {
 
-    Page<? extends SystemMixinDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending)
+    Page<? extends SystemMixinDefinition<Long>> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending)
             throws SystemException;
 
-	Optional<SystemMixinDefinition> getMixinDefinitionById(Long id) throws SystemException;
+	Optional<SystemMixinDefinition<Long>> getMixinDefinitionById(Long id) throws SystemException;
 
-    boolean save(SystemMixinDefinition mixinDefinition) throws SystemException;
+    boolean save(SystemMixinDefinition<Long> mixinDefinition) throws SystemException;
 
     boolean deleteMixinDefinition(long id) throws SystemException;
 

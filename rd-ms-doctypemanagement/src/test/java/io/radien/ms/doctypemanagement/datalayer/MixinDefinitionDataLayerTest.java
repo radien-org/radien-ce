@@ -75,7 +75,7 @@ public class MixinDefinitionDataLayerTest {
     private static MixinDefinitionDTO createMixinDefinition() throws UniquenessConstraintException {
         SystemPropertyDefinition result = new PropertyDefinitionEntity();
         if(propertyDefinitionDAL.getTotalRecordsCount() == 0) {
-            result.setName("test");
+            result.setName("mixinTest");
             result.setMandatory(false);
             result.setProtected(false);
             result.setRequiredType(1);
@@ -111,6 +111,8 @@ public class MixinDefinitionDataLayerTest {
 
     @AfterClass
     public static void stop() {
+        propertyDefinitionDAL.delete(1L);
+        mixinDefinitionDAL.delete(1L);
         if (container != null) {
             container.close();
         }
@@ -200,6 +202,13 @@ public class MixinDefinitionDataLayerTest {
         assertEquals(1, actionPageWhere.getTotalResults());
 
         assertEquals("a",actionPageWhere.getResults().get(0).getName());
+
+        propertyDefinitionDAL.delete(2L);
+        propertyDefinitionDAL.delete(3L);
+        propertyDefinitionDAL.delete(4L);
+        mixinDefinitionDAL.delete(2L);
+        mixinDefinitionDAL.delete(3L);
+        mixinDefinitionDAL.delete(4L);
     }
 
 }
