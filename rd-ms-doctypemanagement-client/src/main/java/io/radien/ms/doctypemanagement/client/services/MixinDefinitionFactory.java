@@ -83,7 +83,7 @@ public class MixinDefinitionFactory {
         FactoryUtilService.addValueLong(builder, "id", propertyType.getId());
         FactoryUtilService.addValue(builder, "name", propertyType.getName());
         FactoryUtilService.addValue(builder, "namespace", propertyType.getNamespace());
-        FactoryUtilService.addValue(builder, "propertyDefinitions", arrayBuilder.build());
+        builder.add("propertyDefinitions", arrayBuilder.build());
         FactoryUtilService.addValueBoolean(builder, "abstract", propertyType.isAbstract());
         FactoryUtilService.addValueBoolean(builder, "queryable", propertyType.isQueryable());
         FactoryUtilService.addValueBoolean(builder, "mixin", propertyType.isMixin());

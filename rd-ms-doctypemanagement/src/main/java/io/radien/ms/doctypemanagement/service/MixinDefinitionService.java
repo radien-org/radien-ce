@@ -31,17 +31,17 @@ import javax.ws.rs.core.Response;
 @Stateless
 public class MixinDefinitionService implements Serializable {
 	@Inject
-	private MixinDefinitionDataAccessLayer mixinTypeService;
+	private MixinDefinitionDataAccessLayer mixinDataLayer;
 
 	public Page<? extends SystemMixinDefinition<Long>> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
-		return mixinTypeService.getAll(search, pageNo, pageSize, sortBy, isAscending);
+		return mixinDataLayer.getAll(search, pageNo, pageSize, sortBy, isAscending);
 	}
 
 	/**
 	 * @throws MixinDefinitionNotFoundException if mixin for given ID is not available
 	 */
 	public SystemMixinDefinition<Long> getById(Long id) {
-		SystemMixinDefinition<Long> mixin = mixinTypeService.get(id);
+		SystemMixinDefinition<Long> mixin = mixinDataLayer.get(id);
 		if(mixin == null) {
 			throw new MixinDefinitionNotFoundException("Mixin type for id " + id + " not available",
 					Response.Status.NOT_FOUND);
@@ -50,7 +50,7 @@ public class MixinDefinitionService implements Serializable {
 	}
 
 	public void delete(long id) {
-		mixinTypeService.delete(id);
+		mixinDataLayer.delete(id);
 	}
 
 	/**
@@ -58,14 +58,14 @@ public class MixinDefinitionService implements Serializable {
 	 */
 	public void save(MixinDefinitionDTO mixin) {
 		try {
-			mixinTypeService.save(mixin);
+			mixinDataLayer.save(mixin);
 		} catch (UniquenessConstraintException e) {
 			throw new DocumentTypeException(e, Response.Status.BAD_REQUEST);
 		}
 	}
 
 	public long getTotalRecordsCount() {
-		return mixinTypeService.getTotalRecordsCount();
+		return mixinDataLayer.getTotalRecordsCount();
 	}
 
 }
