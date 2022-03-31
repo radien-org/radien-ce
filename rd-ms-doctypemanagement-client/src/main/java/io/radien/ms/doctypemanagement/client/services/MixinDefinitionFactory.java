@@ -16,51 +16,56 @@
 package io.radien.ms.doctypemanagement.client.services;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import io.radien.api.util.FactoryUtilService;
-
-import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
-
+import io.radien.ms.doctypemanagement.client.entities.MixinDefinitionDTO;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-public class PropertyDefinitionFactory {
+public class MixinDefinitionFactory {
     private static final String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
-    private PropertyDefinitionFactory() {
+    private MixinDefinitionFactory() {
         throw new IllegalStateException("Invalid usage");
     }
 
-    public static PropertyDefinition convert(JsonObject jsonPropertyType) throws ParseException {
-        Long id = FactoryUtilService.getLongFromJson("id", jsonPropertyType);
-        String name = FactoryUtilService.getStringFromJson("name", jsonPropertyType);
-        boolean mandatory = FactoryUtilService.getBooleanFromJson("mandatory", jsonPropertyType);
-        boolean protekted = FactoryUtilService.getBooleanFromJson("protected", jsonPropertyType);
-        int requiredType = FactoryUtilService.getIntFromJson("requiredType", jsonPropertyType);
-        boolean multiple = FactoryUtilService.getBooleanFromJson("multiple", jsonPropertyType);
+    public static MixinDefinitionDTO convert(JsonObject jsonMixinType) throws ParseException {
+        Long id = FactoryUtilService.getLongFromJson("id", jsonMixinType);
+        String name = FactoryUtilService.getStringFromJson("name", jsonMixinType);
+        String namespace = FactoryUtilService.getStringFromJson("namespace", jsonMixinType);
+        JsonArray jsonPropertyDefinitions = FactoryUtilService.getArrayFromJson("propertyDefinitions", jsonMixinType);
+        List<Long> definitions = jsonPropertyDefinitions.getValuesAs(JsonNumber.class)
+                .stream()
+                .map(JsonNumber::longValue)
+                .collect(Collectors.toList());
+        boolean abstrakt = FactoryUtilService.getBooleanFromJson("abstract", jsonMixinType);
+        boolean queryable = FactoryUtilService.getBooleanFromJson("queryable", jsonMixinType);
+        boolean mixin = FactoryUtilService.getBooleanFromJson("mixin", jsonMixinType);
 
-        String createDate = FactoryUtilService.getStringFromJson("createDate", jsonPropertyType);
-        String lastUpdate = FactoryUtilService.getStringFromJson("lastUpdate", jsonPropertyType);
-        Long createUser = FactoryUtilService.getLongFromJson("createUser", jsonPropertyType);
-        Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", jsonPropertyType);
+        String createDate = FactoryUtilService.getStringFromJson("createDate", jsonMixinType);
+        String lastUpdate = FactoryUtilService.getStringFromJson("lastUpdate", jsonMixinType);
+        Long createUser = FactoryUtilService.getLongFromJson("createUser", jsonMixinType);
+        Long lastUpdateUser = FactoryUtilService.getLongFromJson("lastUpdateUser", jsonMixinType);
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
-        PropertyDefinition propertyType = new PropertyDefinition();
+        MixinDefinitionDTO propertyType = new MixinDefinitionDTO();
         propertyType.setId(id);
         propertyType.setName(name);
-        propertyType.setMandatory(mandatory);
-        propertyType.setProtekted(protekted);
-        propertyType.setRequiredType(requiredType);
-        propertyType.setMultiple(multiple);
+        propertyType.setNamespace(namespace);
+        propertyType.setPropertyDefinitions(definitions);
+        propertyType.setAbstract(abstrakt);
+        propertyType.setQueryable(queryable);
+        propertyType.setMixin(mixin);
 
         propertyType.setCreateDate(createDate != null ? formatter.parse(createDate) : new Date());
         propertyType.setLastUpdate(lastUpdate != null ? formatter.parse(lastUpdate) : new Date());
@@ -70,15 +75,18 @@ public class PropertyDefinitionFactory {
         return propertyType;
     }
 
-    public static JsonObject convertToJsonObject(PropertyDefinition propertyType) {
+    public static JsonObject convertToJsonObject(MixinDefinitionDTO propertyType) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        propertyType.getPropertyDefinitions().forEach(arrayBuilder::add);
 
         FactoryUtilService.addValueLong(builder, "id", propertyType.getId());
         FactoryUtilService.addValue(builder, "name", propertyType.getName());
-        FactoryUtilService.addValueBoolean(builder, "mandatory", propertyType.isMandatory());
-        FactoryUtilService.addValueBoolean(builder, "protected", propertyType.isProtected());
-        FactoryUtilService.addValueInt(builder, "requiredType", propertyType.getRequiredType());
-        FactoryUtilService.addValueBoolean(builder, "multiple", propertyType.isMultiple());
+        FactoryUtilService.addValue(builder, "namespace", propertyType.getNamespace());
+        FactoryUtilService.addValue(builder, "propertyDefinitions", arrayBuilder.build());
+        FactoryUtilService.addValueBoolean(builder, "abstract", propertyType.isAbstract());
+        FactoryUtilService.addValueBoolean(builder, "queryable", propertyType.isQueryable());
+        FactoryUtilService.addValueBoolean(builder, "mixin", propertyType.isMixin());
         FactoryUtilService.addValue(builder, "createDate", propertyType.getCreateDate());
         FactoryUtilService.addValue(builder, "lastUpdate", propertyType.getLastUpdate());
         FactoryUtilService.addValueLong(builder, "createUser", propertyType.getCreateUser());
@@ -87,13 +95,13 @@ public class PropertyDefinitionFactory {
         return builder.build();
     }
 
-    public static Page<PropertyDefinition> convertJsonToPage(JsonObject jsonObject) throws ParseException {
+    public static Page<MixinDefinitionDTO> convertJsonToPage(JsonObject jsonObject) throws ParseException {
         int currentPage = FactoryUtilService.getIntFromJson("currentPage", jsonObject);
         JsonArray results = FactoryUtilService.getArrayFromJson("results", jsonObject);
         int totalPages = FactoryUtilService.getIntFromJson("totalPages", jsonObject);
         int totalResults = FactoryUtilService.getIntFromJson("totalResults", jsonObject);
 
-        ArrayList<PropertyDefinition> pageResults = new ArrayList<>();
+        ArrayList<MixinDefinitionDTO> pageResults = new ArrayList<>();
 
         if(results != null){
             for(int i = 0;i<results.size();i++){
@@ -103,10 +111,10 @@ public class PropertyDefinitionFactory {
         return new Page<>(pageResults,currentPage,totalResults,totalPages);
     }
 
-    public static List<SystemPropertyDefinition> convert(JsonArray jsonArray) throws ParseException {
-        List<SystemPropertyDefinition> list = new ArrayList<>();
+    public static List<MixinDefinitionDTO> convert(JsonArray jsonArray) throws ParseException {
+        List<MixinDefinitionDTO> list = new ArrayList<>();
         for (JsonValue i : jsonArray) {
-            PropertyDefinition convert = convert(i.asJsonObject());
+            MixinDefinitionDTO convert = convert(i.asJsonObject());
             list.add(convert);
         }
         return list;

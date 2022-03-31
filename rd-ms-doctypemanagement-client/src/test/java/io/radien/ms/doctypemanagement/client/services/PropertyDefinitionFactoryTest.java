@@ -17,6 +17,7 @@
 package io.radien.ms.doctypemanagement.client.services;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
 import io.radien.api.util.FactoryUtilService;
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import java.text.ParseException;
@@ -100,7 +101,7 @@ public class PropertyDefinitionFactoryTest {
         arrayBuilder.add(propertyObj);
         arrayBuilder.add(propertyObj);
 
-        List<PropertyDefinition> resultList = PropertyDefinitionFactory.convert(arrayBuilder.build());
+        List<SystemPropertyDefinition> resultList = PropertyDefinitionFactory.convert(arrayBuilder.build());
         assertEquals(2, resultList.size());
     }
 

@@ -20,6 +20,7 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.ms.doctypemanagement.client.PropertyDefinitionResponseExceptionMapper;
 import io.radien.ms.doctypemanagement.client.providers.PropertyDefinitionMessageBodyReader;
 import io.radien.ms.doctypemanagement.client.providers.PropertyDefinitionMessageBodyWriter;
+import io.radien.ms.doctypemanagement.client.services.MixinDefinitionResourceClient;
 import io.radien.ms.doctypemanagement.client.services.PropertyDefinitionResourceClient;
 
 import java.net.MalformedURLException;
@@ -39,5 +40,16 @@ public class ClientServiceUtil {
                 .register(PropertyDefinitionMessageBodyWriter.class)
                 .register(PropertyDefinitionMessageBodyReader.class)
                 .build(PropertyDefinitionResourceClient.class);
+    }
+
+    public MixinDefinitionResourceClient getMixinDefinitionClient(String urlStr) throws MalformedURLException , TokenExpiredException {
+        URL url = new URL(urlStr);
+        return RestClientBuilder.
+                 newBuilder()
+                .baseUrl(url)
+                .register(PropertyDefinitionResponseExceptionMapper.class)
+                .register(PropertyDefinitionMessageBodyWriter.class)
+                .register(PropertyDefinitionMessageBodyReader.class)
+                .build(MixinDefinitionResourceClient.class);
     }
 }
