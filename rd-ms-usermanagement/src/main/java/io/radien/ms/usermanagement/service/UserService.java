@@ -154,8 +154,10 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 		if(search!= null) {
 			global = criteriaBuilder.and(criteriaBuilder.or(criteriaBuilder.like(
-					userRoot.get(SystemVariables.LOGON.getFieldName()), search),
-					criteriaBuilder.like(userRoot.get(SystemVariables.USER_EMAIL.getFieldName()), search)));
+							userRoot.get(SystemVariables.LOGON.getFieldName()), search),
+					criteriaBuilder.like(userRoot.get(SystemVariables.USER_EMAIL.getFieldName()), search),
+					criteriaBuilder.like(userRoot.get(SystemVariables.FIRST_NAME.getFieldName()), search),
+					criteriaBuilder.like(userRoot.get(SystemVariables.LAST_NAME.getFieldName()), search)));
 			criteriaQuery.where(global);
 		}
 
