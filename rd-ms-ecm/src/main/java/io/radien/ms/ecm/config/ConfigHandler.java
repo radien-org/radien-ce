@@ -22,12 +22,12 @@ import io.radien.ms.ecm.constants.CmsProperties;
 import java.text.MessageFormat;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
-import javax.ejb.Stateful;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Stateful
+@ApplicationScoped
 public class ConfigHandler {
     protected static final Logger log = LoggerFactory.getLogger(ConfigHandler.class);
 
