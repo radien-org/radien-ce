@@ -43,7 +43,7 @@
                             name="lastName"
                             value="${(register.formData.lastName!'')}"
                             aria-invalid="<#if messagesPerField.existsError('lastName')>true</#if>" 
-                            placeholder="${msg("lasttName")}"
+                            placeholder="${msg("lastName")}"
                         />
 
                         <#if messagesPerField.existsError('lastName')>

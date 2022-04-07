@@ -1,7 +1,7 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=false displayMessage=false; section>
     <#if section = "title">
-        <div style="display: none;">${msg("rd_loginTitle","Radien")}</div>
+        <div style="display: none;">${msg("loginTitle", "Pro:Tec")}</div>
     <#elseif section = "form">
         <#if realm.password>
             <div class="container">
@@ -15,15 +15,15 @@
                                 <div class="panel-title">
                                     Admin Access
                                 </div>
-                            <#elseif realm.displayName?lower_case?contains("radien")>
+                            <#else>
                                 <div class="panel-title">
-                                    Radien Client Login Test
+                                    Welcome
                                 </div>
                             </#if>
                             <#if realm.resetPasswordAllowed>
                                 <div class="link-reset-password">
                                     <a href="${url.loginResetCredentialsUrl}">
-                                        ${msg("rd_doForgotPassword")}
+                                        ${msg("doForgotPassword")}
                                     </a>
                                 </div>
                             </#if>
@@ -48,15 +48,15 @@
                                 <div class="${properties.kcInputWrapperClass!}">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                                     <#if usernameEditDisabled??>
-                                        <input tabindex="1" id="username" class="${properties.kcInputClass!}" name="username" value="${(login.username!'')}" type="text" disabled placeholder="<#if !realm.loginWithEmailAllowed>${msg("rd_username")}<#elseif !realm.registrationEmailAsUsername>${msg("rd_usernameOrEmail")}<#else>${msg("rd_email")}</#if>"/>
+                                        <input tabindex="1" id="username" class="${properties.kcInputClass!}" name="username" value="${(login.username!'')}" type="text" disabled placeholder="<#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>"/>
                                     <#else>
-                                        <input tabindex="1" id="username" class="${properties.kcInputClass!}" name="username" value="${(login.username!'')}" type="text" autofocus autocomplete="off" placeholder="<#if !realm.loginWithEmailAllowed>${msg("rd_username")}<#elseif !realm.registrationEmailAsUsername>${msg("rd_usernameOrEmail")}<#else>${msg("rd_email")}</#if>" />
+                                        <input tabindex="1" id="username" class="${properties.kcInputClass!}" name="username" value="${(login.username!'')}" type="text" autofocus autocomplete="off" placeholder="<#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>" />
                                     </#if>
                                 </div>
 
                                 <div class="${properties.kcInputWrapperClass!}">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                    <input tabindex="2" id="password" class="${properties.kcInputClass!}" name="password" type="password" autocomplete="off" placeholder="${msg("rd_password")}"/>
+                                    <input tabindex="2" id="password" class="${properties.kcInputClass!}" name="password" type="password" autocomplete="off" placeholder="${msg("password")}"/>
                                 </div>
 
                                 <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
@@ -64,9 +64,9 @@
                                         <div class="checkbox">
                                             <label>
                                                 <#if login.rememberMe??>
-                                                    <input tabindex="3" id="rememberMe" name="rememberMe" type="checkbox" tabindex="3" checked> ${msg("rd_rememberMe")}
+                                                    <input tabindex="3" id="rememberMe" name="rememberMe" type="checkbox" tabindex="3" checked> ${msg("rememberMe")}
                                                 <#else>
-                                                    <input tabindex="3" id="rememberMe" name="rememberMe" type="checkbox" tabindex="3"> ${msg("rd_rememberMe")}
+                                                    <input tabindex="3" id="rememberMe" name="rememberMe" type="checkbox" tabindex="3"> ${msg("rememberMe")}
                                                 </#if>
                                             </label>
                                         </div>
@@ -75,10 +75,10 @@
 
                                 <div id="kc-form-buttons" style="margin-top:10px" class="${properties.kcFormButtonsClass!}">
                                     <div class="${properties.kcFormButtonsWrapperClass!}">
-                                        <input tabindex="4" class="${properties.kcButtonClass!}" name="login" id="kc-login" type="submit" value="${msg("rd_doLogIn")}"/>
+                                        <input tabindex="4" class="${properties.kcButtonClass!}" name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
                                         <#if realm.password && social.providers??>
                                             <#list social.providers as p>
-                                                <a href="${p.loginUrl}" id="zocial-${p.alias}" class="btn btn-primary">${msg("rd_doLogIn")} With ${p.displayName}</a>
+                                                <a href="${p.loginUrl}" id="zocial-${p.alias}" class="btn btn-primary">${msg("doLogIn")} With ${p.displayName}</a>
                                             </#list>
                                         </#if>
                                     </div>
@@ -90,7 +90,7 @@
                                             <div style="padding-top:15px;" >
                                                 ${msg("noAccount")}
                                                 <a tabindex="6" href="${url.registrationUrl}">
-                                                    ${msg("rd_signup")}
+                                                    ${msg("doRegister")}
                                                 </a>
                                             </div>
                                         </div>

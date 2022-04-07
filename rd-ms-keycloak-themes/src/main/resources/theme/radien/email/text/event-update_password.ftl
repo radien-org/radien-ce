@@ -1,2 +1,2 @@
 <#ftl output_format="plainText">
-${msg("rd_eventUpdatePasswordBody",event.date, event.ipAddress)}
+${msg("eventUpdatePasswordBody",event.date, event.ipAddress)}

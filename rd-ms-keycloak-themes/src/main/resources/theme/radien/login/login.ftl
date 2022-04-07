@@ -90,7 +90,7 @@
                                             <div style="padding-top:15px;" >
                                                 ${msg("noAccount")}
                                                 <a tabindex="6" href="${url.registrationUrl}">
-                                                    ${msg("signup")}
+                                                    ${msg("doRegister")}
                                                 </a>
                                             </div>
                                         </div>

@@ -97,7 +97,7 @@
                                     <#if bootstrap && localUser>
                                         <form method="post" class="welcome-form">
                                             <p>
-                                                <label for="username">Radien Username</label>
+                                                <label for="username">Username</label>
                                                 <input id="username" name="username" />
                                             </p>
                         

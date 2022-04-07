@@ -4,6 +4,6 @@
 
 <html>
 <body>
-${kcSanitize(msg("rd_executeActionsBodyHtml",link, linkExpiration, realmName, requiredActionsText, linkExpirationFormatter(linkExpiration), user.getFirstName()))?no_esc}
+${kcSanitize(msg("executeActionsBodyHtml",link, linkExpiration, realmName, requiredActionsText, linkExpirationFormatter(linkExpiration), user.getFirstName()))?no_esc}
 </body>
 </html>
