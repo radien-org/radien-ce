@@ -9,6 +9,16 @@
         "login",
         "welcome"
       ]
+    },
+    {
+      "name":"protec",
+      "types":[
+        "account",
+        "admin",
+        "email",
+        "login",
+        "welcome"
+      ]
     }
   ]
 }

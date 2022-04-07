@@ -1,7 +1,7 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=false displayMessage=false; section>
     <#if section = "title">
-        <div style="display: none;">${msg("loginTitle","Radien")}</div>
+        <div style="display: none;">${msg("loginTitle", "Pro:Tec")}</div>
     <#elseif section = "form">
         <#if realm.password>
             <div class="container">
@@ -9,15 +9,15 @@
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <div align="center">
-                                <img src="${url.resourcesPath}/img/bg.png" class="login-logo-form"/>
+                                <img src="${url.resourcesPath}/img/ProTecSports_Logo_Wortmarke.png" class="login-logo-form"/>
                             </div>
                             <#if realm.displayName=='Keycloak'>
                                 <div class="panel-title">
                                     Admin Access
                                 </div>
-                            <#elseif realm.displayName?lower_case?contains("radien")>
+                            <#else>
                                 <div class="panel-title">
-                                    Radien Client Login Test
+                                    Welcome
                                 </div>
                             </#if>
                             <#if realm.resetPasswordAllowed>
