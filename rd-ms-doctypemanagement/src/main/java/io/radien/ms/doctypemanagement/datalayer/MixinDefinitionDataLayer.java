@@ -28,6 +28,7 @@ import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -86,8 +87,9 @@ public class MixinDefinitionDataLayer implements MixinDefinitionDataAccessLayer 
 	public void save(SystemMixinDefinition<Long> mixinDefinition) throws UniquenessConstraintException {
 		List<MixinDefinitionEntity> alreadyExistentRecords = searchDuplicatedName(mixinDefinition);
 		validateUniquenessRecords(alreadyExistentRecords, "Name");
-		alreadyExistentRecords = searchDuplicatedAssociations(mixinDefinition);
-		validateUniquenessRecords(alreadyExistentRecords, "Property Definitions");
+		if(existsDuplicateAssociations(mixinDefinition)) {
+			throw new UniquenessConstraintException(GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Property Definitions"));
+		}
 
 		if(mixinDefinition.getId() == null) {
 			em.persist(mixinDefinition);
@@ -147,22 +149,27 @@ public class MixinDefinitionDataLayer implements MixinDefinitionDataAccessLayer 
 		return alreadyExistentRecords;
 	}
 
-	private List<MixinDefinitionEntity> searchDuplicatedAssociations(SystemMixinDefinition<Long> mixinDefinition) {
-		List<MixinDefinitionEntity> alreadyExistentRecords;
+	private boolean existsDuplicateAssociations(SystemMixinDefinition<Long> mixinDefinition) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<MixinDefinitionEntity> criteriaQuery = criteriaBuilder.createQuery(MixinDefinitionEntity.class);
+		CriteriaQuery<Tuple> criteriaQuery = criteriaBuilder.createTupleQuery();
 		Root<MixinDefinitionEntity> entityRoot = criteriaQuery.from(MixinDefinitionEntity.class);
-		criteriaQuery.select(entityRoot);
-		Predicate global = criteriaBuilder.equal(entityRoot.get("propertyDefinitions"), mixinDefinition.getPropertyDefinitions());
+		criteriaQuery.select(criteriaBuilder.construct(
+				Tuple.class,
+				entityRoot.get("id"),
+				criteriaBuilder.function("group_concat", String.class, entityRoot.get("propertyDefinitions"))
+		));
+		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 		if(mixinDefinition.getId() != null) {
 			global = criteriaBuilder.and(
 					global,
 					criteriaBuilder.notEqual(entityRoot.get(SystemVariables.ID.getFieldName()), mixinDefinition.getId())
 			);
 		}
-		criteriaQuery.where(global);
-		TypedQuery<MixinDefinitionEntity> query = em.createQuery(criteriaQuery);
-		alreadyExistentRecords = query.getResultList();
-		return alreadyExistentRecords;
+		criteriaQuery.where(global)
+				.groupBy(entityRoot.get("id"));
+		TypedQuery<Tuple> query = em.createQuery(criteriaQuery);
+		List<Tuple> resultList = query.getResultList();
+		return resultList.stream().anyMatch(r -> r.get(1, String.class)
+				.equals(mixinDefinition.getPropertyDefinitions().stream().map(String::valueOf).collect(Collectors.joining(","))));
 	}
 }

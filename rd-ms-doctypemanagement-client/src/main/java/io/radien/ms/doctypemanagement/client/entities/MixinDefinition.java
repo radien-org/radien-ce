@@ -84,6 +84,16 @@ public class MixinDefinition extends AbstractModel implements SystemMixinDefinit
     }
 
     @Override
+    public void setAbstrakt(boolean abstrakt) {
+        setAbstract(abstrakt);
+    }
+
+    @Override
+    public boolean isAbstrakt() {
+        return isAbstract();
+    }
+
+    @Override
     public boolean isQueryable() {
         return queryable;
     }

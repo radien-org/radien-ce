@@ -37,6 +37,11 @@ public interface SystemMixinDefinition<T> extends Model {
 
     void setAbstract(boolean abstrakt);
 
+    // necessary to avoid java reserved keyword
+    void setAbstrakt(boolean abstrakt);
+    // necessary to avoid java reserved keyword
+    boolean isAbstrakt();
+
     boolean isQueryable();
 
     void setQueryable(boolean queryable);
