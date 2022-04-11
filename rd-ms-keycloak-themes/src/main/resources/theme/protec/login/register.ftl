@@ -190,6 +190,21 @@
                 </#if>
 
                 <div class="${properties.kcFormGroupClass!}">
+                    <div class="${properties.kcInputWrapperClass!}">
+                        <input 
+                            type="checkbox" 
+                            id="term" 
+                            class="${properties.kcInputClass!}" 
+                            name="term"
+                            value=""
+                            aria-invalid="" 
+                        />
+                        <label>Please accept the following <a href="http://google.com" target="_blank">legal data</a>.</label>
+                        <br/><br/>
+                    </div>
+                </div>
+
+                <div class="${properties.kcFormGroupClass!}">
                     <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
                         <div class="${properties.kcFormOptionsWrapperClass!}">
                             <span><a href="${url.loginUrl}">< ${kcSanitize(msg("backToLogin"))?no_esc}</a></span>
