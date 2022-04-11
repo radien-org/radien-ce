@@ -37,17 +37,17 @@ import java.util.List;
 @Stateless
 public class PropertyDefinitionService implements Serializable {
 	@Inject
-	private PropertyDefinitionDataAccessLayer propertyTypeService;
+	private PropertyDefinitionDataAccessLayer propertyDataLayer;
 
 	public Page<? extends SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
-		return propertyTypeService.getAll(search, pageNo, pageSize, sortBy, isAscending);
+		return propertyDataLayer.getAll(search, pageNo, pageSize, sortBy, isAscending);
 	}
 
 	/**
 	 * @throws PropertyDefinitionNotFoundException if property for given ID is not available
 	 */
 	public SystemPropertyDefinition getById(Long id) {
-		SystemPropertyDefinition property = propertyTypeService.get(id);
+		SystemPropertyDefinition property = propertyDataLayer.get(id);
 		if(property == null) {
 			throw new PropertyDefinitionNotFoundException("Property type for id " + id + " not available",
 					Response.Status.NOT_FOUND);
@@ -55,8 +55,19 @@ public class PropertyDefinitionService implements Serializable {
 		return property;
 	}
 
+	/**
+	 * @throws DocumentTypeException if none of given ids is available
+	 */
+	public String getNames(List<Long> idList) {
+		List<String> nameList = propertyDataLayer.getNames(idList);
+		if(nameList.isEmpty()) {
+			throw new DocumentTypeException("No properties found for list of IDs provided", Response.Status.BAD_REQUEST);
+		}
+		return String.join(", ", nameList);
+	}
+
 	public void delete(long id) {
-		propertyTypeService.delete(id);
+		propertyDataLayer.delete(id);
 	}
 
 	/**
@@ -64,14 +75,14 @@ public class PropertyDefinitionService implements Serializable {
 	 */
 	public void save(PropertyDefinition property) {
 		try {
-			propertyTypeService.save(property);
+			propertyDataLayer.save(property);
 		} catch (UniquenessConstraintException e) {
 			throw new DocumentTypeException(e, Response.Status.BAD_REQUEST);
 		}
 	}
 
 	public long getTotalRecordsCount() {
-		return propertyTypeService.getTotalRecordsCount();
+		return propertyDataLayer.getTotalRecordsCount();
 	}
 
 }

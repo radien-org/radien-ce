@@ -9,7 +9,6 @@
     <ui:define name="content">
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
 		<h:form id="userProfileManager" styleClass="tableContainer">
-			<b:growl id="message" showDetail="true" allowDismiss="true" delay="0"/>
 			<b:container>
 				<b:row>
 					<h:panelGroup layout="block" styleClass="headerInformation">
@@ -17,7 +16,6 @@
 						<hr />
 					</h:panelGroup>
 				</b:row>
-
 				<b:tabView activeIndex="#{userProfileManager.tabIndex}">
 					<b:tab title="#{msg.basicInformation}">
 						<b:container>
@@ -163,7 +161,6 @@
 								 actionListener="#{userProfileManager.changePasswordListener}"
 								 oncomplete="if(!validationFailed &amp;&amp; !bfHasError &amp;&amp; !bfHasInfo) { $('.changePwdDialog').modal('hide') } "/>
 				<b:fetchBeanInfos />
-				<b:messages />
 			</b:form>
 		</b:modal>
 	</ui:define>

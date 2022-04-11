@@ -40,25 +40,29 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 public interface PropertyDefinitionResourceClient {
 
     @GET
-    public Response getAll(@QueryParam("search") String search,
+    Response getAll(@QueryParam("search") String search,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,
                            @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
 
-    @GET()
+    @GET
     @Path("/property")
-    public Response getById(@QueryParam("id") Long id);
+    Response getById(@QueryParam("id") Long id);
+
+    @GET
+    @Path("/nameList")
+    Response getNameListByIds(@QueryParam("ids") List<Long> idList);
 
     @DELETE
-    public Response delete(@NotNull @QueryParam("id") long id);
+    Response delete(@NotNull @QueryParam("id") long id);
 
     @POST
-    public Response save(PropertyDefinition propertyType);
+    Response save(PropertyDefinition propertyType);
 
     @GET
     @Path("/count")
-    public Response getTotalRecordsCount();
+    Response getTotalRecordsCount();
 
 }

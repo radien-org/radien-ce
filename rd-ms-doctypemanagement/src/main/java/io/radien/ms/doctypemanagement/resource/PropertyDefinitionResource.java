@@ -51,6 +51,12 @@ public class PropertyDefinitionResource implements PropertyDefinitionResourceCli
 	}
 
 	@Override
+	public Response getNameListByIds(List<Long> idList) {
+		String result = propertyTypeService.getNames(idList);
+		return Response.ok(result).build();
+	}
+
+	@Override
 	public Response delete(long id) {
 		propertyTypeService.delete(id);
 		return Response.ok().build();

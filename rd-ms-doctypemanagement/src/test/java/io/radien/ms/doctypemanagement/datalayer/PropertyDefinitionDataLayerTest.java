@@ -23,6 +23,7 @@ import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import io.radien.ms.doctypemanagement.entities.PropertyDefinitionEntity;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import javax.ejb.embeddable.EJBContainer;
@@ -123,6 +124,14 @@ public class PropertyDefinitionDataLayerTest {
         result = propertyDefinitionDAL.get(propertyTest.getId());
         assertNull(result);
     }
+
+    @Test
+    public void testGetNames() {
+        List<String> result = propertyDefinitionDAL.getNames(Collections.singletonList(1L));
+        assertEquals(1, result.size());
+        assertEquals("test", result.get(0));
+    }
+
     @Test
     public void testGetAllSort() throws UniquenessConstraintException {
         PropertyDefinitionEntity p1 = new PropertyDefinitionEntity(createPropertyDefinition());

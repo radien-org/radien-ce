@@ -13,6 +13,11 @@
   { "name": "Property Definition Management - Read", "resourceName": "PropertyDefinitionManagement", "actionName": "Read" },
   { "name": "Property Definition Management - Update", "resourceName": "PropertyDefinitionManagement", "actionName": "Update" },
   { "name": "Property Definition Management - Delete", "resourceName": "PropertyDefinitionManagement", "actionName": "Delete" },
-  { "name": "Property Definition Management - All", "resourceName": "PropertyDefinitionManagement", "actionName": "All" }
+  { "name": "Property Definition Management - All", "resourceName": "PropertyDefinitionManagement", "actionName": "All" },
+  { "name": "Mixin Definition Management - Create", "resourceName": "MixinDefinitionManagement", "actionName": "Create" },
+  { "name": "Mixin Definition Management - Read", "resourceName": "MixinDefinitionManagement", "actionName": "Read" },
+  { "name": "Mixin Definition Management - Update", "resourceName": "MixinDefinitionManagement", "actionName": "Update" },
+  { "name": "Mixin Definition Management - Delete", "resourceName": "MixinDefinitionManagement", "actionName": "Delete" },
+  { "name": "Mixin Definition Management - All", "resourceName": "MixinDefinitionManagement", "actionName": "All" }
 ]
 

@@ -91,6 +91,24 @@ public class PropertyDefinitionRESTServiceClient extends AuthorizationChecker im
     }
 
     @Override
+    public String getPropertyDefinitionNamesByIds(List<Long> idList) throws SystemException {
+        return get(() -> {
+            try {
+                PropertyDefinitionResourceClient client = clientService.getPropertyDefinitionClient(getOAF()
+                        .getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT));
+                Response response = client.getNameListByIds(idList);
+                if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    return response.readEntity(String.class);
+                } else {
+                    throw new RestResponseException(response.readEntity(String.class), response.getStatusInfo().getStatusCode());
+                }
+            } catch (MalformedURLException e) {
+                throw new SystemException(e);
+            }
+        });
+    }
+
+    @Override
     public boolean save(SystemPropertyDefinition propertyType) throws SystemException {
         return get(() -> {
             try {
