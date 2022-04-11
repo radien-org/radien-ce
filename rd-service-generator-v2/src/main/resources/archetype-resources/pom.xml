@@ -68,7 +68,7 @@
         <version.httpclient>4.5.13</version.httpclient>
 
         <!-- Jackson xml -->
-        <version.jackson-core>2.13.2.1</version.jackson-core>
+        <version.jackson-core>2.13.1</version.jackson-core>
 
         <!-- mail -->
         <version.rmiio>2.1.2</version.rmiio>
