@@ -22,13 +22,10 @@ import io.radien.api.service.docmanagement.mixindefinition.MixinDefinitionRESTSe
 import io.radien.api.service.docmanagement.propertydefinition.PropertyDefinitionRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.doctypemanagement.client.entities.MixinDefinitionDTO;
-import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.JSFUtil;
-import io.radien.webapp.doctypemanagement.propertydefinition.PropertyTypes;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
