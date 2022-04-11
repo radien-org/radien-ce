@@ -127,7 +127,7 @@ public class PropertyDefinitionDataLayerTest {
 
     @Test
     public void testGetNames() {
-        List<String> result = propertyDefinitionDAL.getNames(Collections.singletonList(1L));
+        List<String> result = propertyDefinitionDAL.getNames(Collections.singletonList(propertyTest.getId()));
         assertEquals(1, result.size());
         assertEquals("test", result.get(0));
     }
