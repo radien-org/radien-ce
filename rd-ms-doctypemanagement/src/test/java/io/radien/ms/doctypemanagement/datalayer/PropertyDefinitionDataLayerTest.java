@@ -155,7 +155,7 @@ public class PropertyDefinitionDataLayerTest {
 
         assertTrue(propertyPage.getTotalResults()>=3);
 
-        assertEquals("a",propertyPage.getResults().get(0).getName());
+        assertEquals("a", propertyPage.getResults().get(0).getName());
 
         propertyPage = propertyDefinitionDAL.getAll(null, 1, 10, orderby, false);
         assertTrue(propertyPage.getTotalResults()>=3);
