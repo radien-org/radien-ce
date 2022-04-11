@@ -28,7 +28,7 @@
 
     <artifactId>rd-ms-doctypemanagement</artifactId>
     <packaging>war</packaging>
-    <name>Module - Document Type Management Service - ${project.version}</name>
+    <name>Document Type Management Service - ${project.version}</name>
     <url>http://www.radien.io</url>
 
     <build>
