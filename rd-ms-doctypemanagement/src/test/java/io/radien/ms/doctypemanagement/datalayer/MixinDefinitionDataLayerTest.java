@@ -164,11 +164,11 @@ public class MixinDefinitionDataLayerTest {
     public void testGetAllSort() throws UniquenessConstraintException {
         PropertyDefinitionEntity p1 = new PropertyDefinitionEntity((createPropertyDefinition()));
         p1.setId(null);
-        p1.setName("a");
+        p1.setName("a1");
         propertyDefinitionDAL.save(p1);
         MixinDefinitionEntity m1 = new MixinDefinitionEntity(createMixinDefinition());
         m1.setId(null);
-        m1.setName("a1");
+        m1.setName("a");
         m1.setPropertyDefinitions(Collections.singletonList(2L));
         mixinDefinitionDAL.save(m1);
         PropertyDefinitionEntity p2 = new PropertyDefinitionEntity((createPropertyDefinition()));
@@ -198,16 +198,16 @@ public class MixinDefinitionDataLayerTest {
 
         assertTrue(mixinPage.getTotalResults()>=3);
 
-        assertEquals("a1",mixinPage.getResults().get(0).getName());
+        assertEquals("a",mixinPage.getResults().get(0).getName());
 
         mixinPage = mixinDefinitionDAL.getAll(null, 1, 10, orderby, false);
         assertTrue(mixinPage.getTotalResults()>=3);
-        assertEquals("name",mixinPage.getResults().get(0).getName());
+        assertEquals("name", mixinPage.getResults().get(0).getName());
 
-        Page<? extends SystemMixinDefinition> actionPageWhere = mixinDefinitionDAL.getAll("a1", 1, 10, null, true);
+        Page<? extends SystemMixinDefinition> actionPageWhere = mixinDefinitionDAL.getAll("a", 1, 10, null, true);
         assertEquals(1, actionPageWhere.getTotalResults());
 
-        assertEquals("a1",actionPageWhere.getResults().get(0).getName());
+        assertEquals("a",actionPageWhere.getResults().get(0).getName());
 
         propertyDefinitionDAL.getAll(null, 1, 10000, null, true).getResults().forEach(obj -> propertyDefinitionDAL.delete(obj.getId()));
         mixinDefinitionDAL.delete(2L);
