@@ -36,6 +36,7 @@ textarea.pf-c-form-control {
     border-bottom-color: var(--pf-global--primary-color--100);
     border-bottom-width: 2px;
     border-bottom-width: var(--pf-global--BorderWidth--md);
+    color: RGBA(255,255,255,0.9) !important;
 }
 
 .pf-c-form-control[aria-invalid="true"] {
