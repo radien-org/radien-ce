@@ -661,6 +661,10 @@ input[type="password"] {
     width: 100%;
 }
 
+input[type="password"]:hover {
+    color: RGBA(255,255,255,0.9) !important;
+}
+
 input[type="tel"] {
     padding: 5px;
     border: none;
@@ -672,6 +676,10 @@ input[type="tel"] {
     width: 310px !important;
     min-width: 213px;
     height: 30px;
+}
+
+input[type="tel"]:hover {
+    color: RGBA(255,255,255,0.9) !important;
 }
 
 .login-logo-form {
@@ -710,6 +718,18 @@ a {
 
 ::-ms-input-placeholder { /* Microsoft Edge */
     color: #ffffff;
+}
+
+p.instruction {
+    background-color: #F0F0F0;
+    padding: 20px;
+    text-align: center;
+}
+
+.alert-warning {
+    background-color: #F0F0F0;
+    padding: 20px !important;
+    text-align: center;
 }
 
 @media screen and (max-width: 540px) {
