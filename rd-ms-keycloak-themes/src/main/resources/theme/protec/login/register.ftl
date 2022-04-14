@@ -199,7 +199,7 @@
                             value=""
                             aria-invalid="" 
                         />
-                        <label>Please accept the following <a href="http://google.com" target="_blank">legal data</a>.</label>
+                        <label>Please accept the following <a href='/web/public/termsConditions' target="_blank">legal data</a>.</label>
                         <br/><br/>
                     </div>
                 </div>
