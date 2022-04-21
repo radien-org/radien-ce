@@ -1,6 +1,6 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('firstName','lastName','email','username','password',
-                                            'user.attributes.mobile_number','password-confirm'); section>
+                                            'user.attributes.mobile_number','password-confirm', 'terms'); section>
     <link href="${url.resourcesPath}/css/intlTelInput.css" rel="stylesheet" />
     <script src="${url.resourcesPath}/js/intlTelInput.js" type="text/javascript"></script>
     <script src="${url.resourcesPath}/js/utils.js" type="text/javascript"></script>
@@ -131,7 +131,7 @@
                         </script>
 
                         <#if messagesPerField.existsError('user.attributes.mobile_number')>
-                            <span id="input-error-email" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            <span id="input-error-mobile_number" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                 ${kcSanitize(messagesPerField.get('user.attributes.mobile_number'))?no_esc}
                             </span>
                         </#if>
@@ -193,14 +193,19 @@
                     <div class="${properties.kcInputWrapperClass!}">
                         <input 
                             type="checkbox" 
-                            id="term" 
+                            id="terms"
                             class="${properties.kcInputClass!}" 
-                            name="term"
+                            name="terms"
                             value=""
-                            aria-invalid="" 
+                            aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
                         />
                         <label>Please accept the following <a href='/web/public/termsConditions' target="_blank">legal data</a>.</label>
-                        <br/><br/>
+
+                        <#if messagesPerField.existsError('terms')>
+                            <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                    ${kcSanitize(messagesPerField.get('terms'))?no_esc}
+                                </span>
+                        </#if>
                     </div>
                 </div>
 
