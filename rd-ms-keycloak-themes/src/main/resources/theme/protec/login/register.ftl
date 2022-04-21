@@ -199,7 +199,7 @@
                             value=""
                             aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
                         />
-                        <label>Please accept the following <a href='/web/public/termsConditions' target="_blank">legal data</a>.</label>
+                        <label>Please accept the following <a href='${properties.terms_URL}' target="_blank">legal data</a>.</label>
 
                         <#if messagesPerField.existsError('terms')>
                             <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
