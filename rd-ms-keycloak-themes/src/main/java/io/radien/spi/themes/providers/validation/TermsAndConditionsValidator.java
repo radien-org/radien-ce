@@ -39,16 +39,14 @@ import org.keycloak.services.validation.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MobileNumberValidator implements FormAction, FormActionFactory {
-    private static final Logger log = LoggerFactory.getLogger(MobileNumberValidator.class);
+public class TermsAndConditionsValidator implements FormAction, FormActionFactory {
+    private static final Logger log = LoggerFactory.getLogger(TermsAndConditionsValidator.class);
 
-    private static final String PROVIDER_ID = "organization-field-validation-action";
+    private static final String PROVIDER_ID = "terms-field-validation-action";
     private static AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = { AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED };
 
-    public static final String FIELD_PHONE_NUMBER = "user.attributes.mobile_number";
-    public static final String MISSING_PHONE_NUMBER = "missing_mobile_number";
-    public static final String INVALID_PHONE_NUMBER = "invalid_mobile_number";
-
+    public static final String FIELD_ACCEPTED_TERMS = "terms";
+    public static final String MISSING_ACCEPTANCE = "terms_not_accepted";
     @Override
     public void close() {
     }
@@ -73,7 +71,7 @@ public class MobileNumberValidator implements FormAction, FormActionFactory {
 
     @Override
     public String getDisplayType() {
-        return "Mobile Number Profile Validation";
+        return "Terms Acceptance Validation";
     }
 
     @Override
@@ -98,14 +96,12 @@ public class MobileNumberValidator implements FormAction, FormActionFactory {
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return Collections.singletonList(
-                new ProviderConfigProperty("regex", "Regular Expression", "Regular Expression to Match a Valid Mobile Number.", ProviderConfigProperty.STRING_TYPE, "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s\\./0-9]*$")
-        );
+        return Collections.emptyList();
     }
 
     @Override
     public String getHelpText() {
-        return "Validates mobile number field.";
+        return "Asserts that user accepted the terms and conditions before proceeding.";
     }
 
     @Override
@@ -132,24 +128,15 @@ public class MobileNumberValidator implements FormAction, FormActionFactory {
 
     @Override
     public void validate(ValidationContext validationContext) {
-        AuthenticatorConfigModel config = validationContext.getAuthenticatorConfig();
-        String regex = config.getConfig().getOrDefault("regex", "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s\\./0-9]*$");
         MultivaluedMap<String, String> formData = validationContext.getHttpRequest().getDecodedFormParameters();
         List<FormMessage> errors = new ArrayList<>();
 
-        String phoneNumber = formData.getFirst(FIELD_PHONE_NUMBER);
-        boolean success = true;
-        if (Validation.isBlank(phoneNumber)) {
-            errors.add(new FormMessage(FIELD_PHONE_NUMBER, MISSING_PHONE_NUMBER));
-            success = false;
-        }
-        if(!Pattern.compile(regex).matcher(phoneNumber).matches()) {
-            errors.add(new FormMessage(FIELD_PHONE_NUMBER, INVALID_PHONE_NUMBER));
-            success = false;
-        }
-        if(success) {
+        String accepted = formData.getFirst(FIELD_ACCEPTED_TERMS);
+        log.info("ACCEPTED VALUE {}", accepted);
+        if(accepted != null) {
             validationContext.success();
         } else {
+            errors.add(new FormMessage(FIELD_ACCEPTED_TERMS, MISSING_ACCEPTANCE));
             validationContext.validationError(formData, errors);
         }
     }
