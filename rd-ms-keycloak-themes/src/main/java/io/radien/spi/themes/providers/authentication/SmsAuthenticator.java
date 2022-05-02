@@ -23,6 +23,7 @@ import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.common.util.SecretGenerator;
+import org.keycloak.email.DefaultEmailSenderProvider;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
@@ -61,8 +62,18 @@ public class SmsAuthenticator implements Authenticator {
 			String smsAuthText = theme.getMessages(locale).getProperty("smsAuthText");
 			String smsText = String.format(smsAuthText, code, Math.floorDiv(ttl, 60));
 
-			SmsServiceFactory.get(config.getConfig()).send(mobileNumber, smsText);
-
+			if(mobileNumber == null) {
+				DefaultEmailSenderProvider senderProvider = new DefaultEmailSenderProvider(session);
+				senderProvider.send(
+						session.getContext().getRealm().getSmtpConfig(),
+						user,
+						theme.getMessages(locale).getProperty("emailAuthSubject"),
+						smsAuthText,
+						smsAuthText
+				);
+			} else {
+				SmsServiceFactory.get(config.getConfig()).send(mobileNumber, smsText);
+			}
 			context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 		} catch (Exception e) {
 			context.failureChallenge(AuthenticationFlowError.INTERNAL_ERROR,
@@ -115,7 +126,7 @@ public class SmsAuthenticator implements Authenticator {
 
 	@Override
 	public boolean configuredFor(KeycloakSession session, RealmModel realm, UserModel user) {
-		return user.getFirstAttribute(MOBILE_NUMBER_PARAMETER) != null;
+		return user.getFirstAttribute(MOBILE_NUMBER_PARAMETER) != null || user.getEmail() != null;
 	}
 
 	@Override
