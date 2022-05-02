@@ -62,14 +62,14 @@ public class SmsAuthenticator implements Authenticator {
 			String smsAuthText = theme.getMessages(locale).getProperty("smsAuthText");
 			String smsText = String.format(smsAuthText, code, Math.floorDiv(ttl, 60));
 
-			if(mobileNumber == null) {
+			if (mobileNumber == null) {
 				DefaultEmailSenderProvider senderProvider = new DefaultEmailSenderProvider(session);
 				senderProvider.send(
 						session.getContext().getRealm().getSmtpConfig(),
 						user,
 						theme.getMessages(locale).getProperty("emailAuthSubject"),
-						smsAuthText,
-						smsAuthText
+						smsText,
+						smsText
 				);
 			} else {
 				SmsServiceFactory.get(config.getConfig()).send(mobileNumber, smsText);
@@ -77,8 +77,8 @@ public class SmsAuthenticator implements Authenticator {
 			context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 		} catch (Exception e) {
 			context.failureChallenge(AuthenticationFlowError.INTERNAL_ERROR,
-				context.form().setError("smsAuthSmsNotSent", e.getMessage())
-					.createErrorPage(Response.Status.INTERNAL_SERVER_ERROR));
+					context.form().setError("smsAuthSmsNotSent", e.getMessage())
+							.createErrorPage(Response.Status.INTERNAL_SERVER_ERROR));
 		}
 	}
 
