@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -52,7 +53,7 @@ public class UserModelListMessageBodyWriter implements MessageBodyWriter<List<Us
 	 */
 	@Override
 	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-		return true;
+		return type.equals(User.class);
 	}
 
 	/**

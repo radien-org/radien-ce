@@ -166,4 +166,14 @@
         <pattern value="/module/propertyDefinition/edit" />
         <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitionEdit.oaf" />
     </url-mapping>
+
+	<!-- Gamification Jobshop 2022-->
+	<url-mapping id="wheel">
+		<pattern value="/module/jobshop/wheel" />
+		<view-id value="/module/jobshop/wheel.oaf" />
+	</url-mapping>
+	<url-mapping id="wheel">
+		<pattern value="/module/jobshop/studentForm" />
+		<view-id value="/module/jobshop/studentForm.oaf" />
+	</url-mapping>
 </pretty-config>
