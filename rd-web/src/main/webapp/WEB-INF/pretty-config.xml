@@ -166,7 +166,18 @@
         <pattern value="/module/propertyDefinition/edit" />
         <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitionEdit.oaf" />
     </url-mapping>
-
+    <url-mapping id="mixinDefinitions">
+        <pattern value="/module/mixinDefinition" />
+        <view-id value="/module/doctypemanagement/mixindefinition/mixinDefinitions.oaf" />
+    </url-mapping>
+    <url-mapping id="mixinDefinitionCreate">
+        <pattern value="/module/mixinDefinition/create" />
+        <view-id value="/module/doctypemanagement/mixindefinition/mixinDefinitionCreate.oaf" />
+    </url-mapping>
+    <url-mapping id="mixinDefinitionEdit">
+        <pattern value="/module/mixinDefinition/edit" />
+        <view-id value="/module/doctypemanagement/mixindefinition/mixinDefinitionEdit.oaf" />
+    </url-mapping>
 	<!-- Gamification Jobshop 2022-->
 	<url-mapping id="wheel">
 		<pattern value="/module/jobshop/wheel" />

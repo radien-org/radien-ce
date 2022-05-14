@@ -24,6 +24,9 @@ import io.radien.api.service.docmanagement.propertydefinition.PropertyDefinition
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -78,6 +81,22 @@ public class PropertyDefinitionServiceTest {
         when(definitionDataAccessLayer.get(anyLong()))
                 .thenReturn(null);
         service.getById(1L);
+    }
+
+    @Test
+    public void testGetNames() {
+        List<String> resultList = Arrays.asList("Property Name", "Property Name 2");
+        when(definitionDataAccessLayer.getNames(anyList()))
+                .thenReturn(resultList);
+        String result = service.getNames(Collections.singletonList(1L));
+        assertEquals(String.join(", ", resultList), result);
+    }
+
+    @Test(expected =  DocumentTypeException.class)
+    public void testGetNamesNotFound() {
+        when(definitionDataAccessLayer.getNames(anyList()))
+                .thenReturn(new ArrayList<>());
+        service.getNames(Collections.singletonList(1L));
     }
 
     @Test

@@ -33,6 +33,7 @@ import java.util.Properties;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -70,6 +71,11 @@ public class MixinDefinitionDataLayerTest {
             mixinTest = new MixinDefinitionEntity(createMixinDefinition());
             mixinDefinitionDAL.save(mixinTest);
         }
+    }
+
+    @After
+    public void cleanUp() {
+        propertyDefinitionDAL.getAll(null, 1, 10000, null, true).getResults().forEach(obj -> propertyDefinitionDAL.delete(obj.getId()));
     }
 
     private static MixinDefinitionDTO createMixinDefinition() throws UniquenessConstraintException {
@@ -158,7 +164,7 @@ public class MixinDefinitionDataLayerTest {
     public void testGetAllSort() throws UniquenessConstraintException {
         PropertyDefinitionEntity p1 = new PropertyDefinitionEntity((createPropertyDefinition()));
         p1.setId(null);
-        p1.setName("a");
+        p1.setName("a1");
         propertyDefinitionDAL.save(p1);
         MixinDefinitionEntity m1 = new MixinDefinitionEntity(createMixinDefinition());
         m1.setId(null);
@@ -167,7 +173,7 @@ public class MixinDefinitionDataLayerTest {
         mixinDefinitionDAL.save(m1);
         PropertyDefinitionEntity p2 = new PropertyDefinitionEntity((createPropertyDefinition()));
         p2.setId(null);
-        p2.setName("b");
+        p2.setName("b1");
         propertyDefinitionDAL.save(p2);
         MixinDefinitionEntity m2 = new MixinDefinitionEntity(createMixinDefinition());
         m2.setId(null);
@@ -176,7 +182,7 @@ public class MixinDefinitionDataLayerTest {
         mixinDefinitionDAL.save(m2);
         PropertyDefinitionEntity p3 = new PropertyDefinitionEntity((createPropertyDefinition()));
         p3.setId(null);
-        p3.setName("c");
+        p3.setName("c1");
         propertyDefinitionDAL.save(p3);
         MixinDefinitionEntity m3 = new MixinDefinitionEntity(createMixinDefinition());
         m3.setId(null);
@@ -196,16 +202,14 @@ public class MixinDefinitionDataLayerTest {
 
         mixinPage = mixinDefinitionDAL.getAll(null, 1, 10, orderby, false);
         assertTrue(mixinPage.getTotalResults()>=3);
-        assertEquals("name",mixinPage.getResults().get(0).getName());
+        assertEquals("name", mixinPage.getResults().get(0).getName());
 
         Page<? extends SystemMixinDefinition> actionPageWhere = mixinDefinitionDAL.getAll("a", 1, 10, null, true);
         assertEquals(1, actionPageWhere.getTotalResults());
 
         assertEquals("a",actionPageWhere.getResults().get(0).getName());
 
-        propertyDefinitionDAL.delete(2L);
-        propertyDefinitionDAL.delete(3L);
-        propertyDefinitionDAL.delete(4L);
+        propertyDefinitionDAL.getAll(null, 1, 10000, null, true).getResults().forEach(obj -> propertyDefinitionDAL.delete(obj.getId()));
         mixinDefinitionDAL.delete(2L);
         mixinDefinitionDAL.delete(3L);
         mixinDefinitionDAL.delete(4L);

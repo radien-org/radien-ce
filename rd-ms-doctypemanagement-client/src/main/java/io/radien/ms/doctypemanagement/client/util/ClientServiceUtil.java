@@ -18,6 +18,8 @@ package io.radien.ms.doctypemanagement.client.util;
 import io.radien.exception.TokenExpiredException;
 
 import io.radien.ms.doctypemanagement.client.PropertyDefinitionResponseExceptionMapper;
+import io.radien.ms.doctypemanagement.client.providers.MixinDefinitionMessageBodyReader;
+import io.radien.ms.doctypemanagement.client.providers.MixinDefinitionMessageBodyWriter;
 import io.radien.ms.doctypemanagement.client.providers.PropertyDefinitionMessageBodyReader;
 import io.radien.ms.doctypemanagement.client.providers.PropertyDefinitionMessageBodyWriter;
 import io.radien.ms.doctypemanagement.client.services.MixinDefinitionResourceClient;
@@ -48,8 +50,8 @@ public class ClientServiceUtil {
                  newBuilder()
                 .baseUrl(url)
                 .register(PropertyDefinitionResponseExceptionMapper.class)
-                .register(PropertyDefinitionMessageBodyWriter.class)
-                .register(PropertyDefinitionMessageBodyReader.class)
+                .register(MixinDefinitionMessageBodyWriter.class)
+                .register(MixinDefinitionMessageBodyReader.class)
                 .build(MixinDefinitionResourceClient.class);
     }
 }

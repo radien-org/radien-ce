@@ -31,6 +31,8 @@ public interface PropertyDefinitionRESTServiceAccess extends Appframeable{
 
 	Optional<SystemPropertyDefinition> getPropertyDefinitionById(Long id) throws SystemException;
 
+    String getPropertyDefinitionNamesByIds(List<Long> idList) throws SystemException;
+
     boolean save(SystemPropertyDefinition propertyType) throws SystemException;
 
     boolean deletePropertyDefinition(long id) throws SystemException;

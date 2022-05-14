@@ -10,5 +10,9 @@
   {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Create" },
   {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Read" },
   {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Update" },
-  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Delete" }
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Delete" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Create" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Read" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Update" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Delete" }
 ]

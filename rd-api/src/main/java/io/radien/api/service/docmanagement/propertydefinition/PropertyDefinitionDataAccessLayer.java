@@ -29,6 +29,8 @@ public interface PropertyDefinitionDataAccessLayer extends ServiceAccess {
 
     SystemPropertyDefinition get(Long id) throws NotFoundException;
 
+    List<String> getNames(List<Long> idList);
+
     void save(SystemPropertyDefinition propertyType) throws UniquenessConstraintException;
 
     void delete(Long id);

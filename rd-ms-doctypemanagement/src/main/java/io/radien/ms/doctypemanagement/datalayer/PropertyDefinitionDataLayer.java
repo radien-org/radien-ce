@@ -52,6 +52,17 @@ public class PropertyDefinitionDataLayer implements PropertyDefinitionDataAccess
 	}
 
 	@Override
+	public List<String> getNames(List<Long> idList) {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
+		Root<PropertyDefinitionEntity> propertyDefinitionEntityRoot = criteriaQuery.from(PropertyDefinitionEntity.class);
+		criteriaQuery.select(propertyDefinitionEntityRoot.get("name"))
+				.where(propertyDefinitionEntityRoot.get("id").in(idList));
+
+		return em.createQuery(criteriaQuery).getResultList();
+	}
+
+	@Override
 	public Page<SystemPropertyDefinition> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<PropertyDefinitionEntity> criteriaQuery = criteriaBuilder.createQuery(PropertyDefinitionEntity.class);
@@ -144,7 +155,7 @@ public class PropertyDefinitionDataLayer implements PropertyDefinitionDataAccess
 		Root<PropertyDefinitionEntity> entityRoot = criteriaQuery.from(PropertyDefinitionEntity.class);
 		criteriaQuery.select(entityRoot);
 		Predicate global = criteriaBuilder.equal(entityRoot.get(SystemVariables.NAME.getFieldName()), propertyType.getName());
-		if(propertyType.getId()!= null) {
+		if(propertyType.getId() != null) {
 			global = criteriaBuilder.and(
 					global,
 					criteriaBuilder.notEqual(entityRoot.get(SystemVariables.ID.getFieldName()), propertyType.getId())

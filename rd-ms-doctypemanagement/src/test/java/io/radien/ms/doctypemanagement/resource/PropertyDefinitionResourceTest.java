@@ -20,6 +20,7 @@ import io.radien.api.entity.Page;
 import io.radien.ms.doctypemanagement.client.entities.PropertyDefinition;
 import io.radien.ms.doctypemanagement.service.PropertyDefinitionService;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.ws.rs.core.Response;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,6 +64,16 @@ public class PropertyDefinitionResourceTest {
         Response result = resource.getById(1L);
         assertEquals(200, result.getStatusInfo().getStatusCode());
         assertNotNull(result.getEntity());
+    }
+
+    @Test
+    public void testGetNameListByIds() {
+        String resultString = "Property Name 1, Property Name 2";
+        when(service.getNames(anyList()))
+                .thenReturn(resultString);
+        Response result = resource.getNameListByIds(Collections.singletonList(1L));
+        assertEquals(200, result.getStatusInfo().getStatusCode());
+        assertEquals(resultString, result.readEntity(String.class));
     }
 
     @Test

@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
@@ -141,6 +142,37 @@ public class PropertyDefinitionRESTServiceClientTest {
         when(client.getById(anyLong()))
                 .thenReturn(response);
         serviceClient.getPropertyDefinitionById(1L);
+    }
+
+    @Test
+    public void testGetPropertyDefinitionNamesByIds() throws SystemException {
+        Response response = Response.status(200)
+                        .entity("Property Name, Property Name 2").build();
+        when(client.getNameListByIds(anyList()))
+                .thenReturn(response);
+
+        String result = serviceClient.getPropertyDefinitionNamesByIds(Collections.singletonList(1L));
+        assertEquals("Property Name, Property Name 2", result);
+    }
+
+    @Test(expected = RestResponseException.class)
+    public void testGetPropertyDefinitionNamesByIdsNotFound() throws SystemException {
+        Response response = Response.status(Response.Status.NOT_FOUND)
+                        .entity("ID not found").build();
+        when(client.getNameListByIds(anyList()))
+                .thenReturn(response);
+
+        serviceClient.getPropertyDefinitionNamesByIds(Collections.singletonList(1L));
+    }
+
+    @Test(expected = SystemException.class)
+    public void testGetPropertyDefinitionNamesByIdsException() throws SystemException, MalformedURLException {
+        when(clientServiceUtil.getPropertyDefinitionClient(anyString()))
+                .thenThrow(new MalformedURLException());
+        Response response = Response.status(Response.Status.BAD_REQUEST).entity("error").build();
+        when(client.getNameListByIds(anyList()))
+                .thenReturn(response);
+        serviceClient.getPropertyDefinitionNamesByIds(Collections.singletonList(1L));
     }
 
     @Test
