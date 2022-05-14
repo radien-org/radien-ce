@@ -103,6 +103,7 @@
 
 		<!-- Jackson xml -->
 		<version.jackson-core>2.13.1</version.jackson-core>
+		<version.jackson-databind>2.13.2.1</version.jackson-databind>
 
 		<!-- mail -->
 		<version.rmiio>2.1.2</version.rmiio>
@@ -371,7 +372,7 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>${version.jackson-core}</version>
+				<version>${version.jackson-databind}</version>
 			</dependency>
 
 			<!-- Mail -->

@@ -178,4 +178,13 @@
         <pattern value="/module/mixinDefinition/edit" />
         <view-id value="/module/doctypemanagement/mixindefinition/mixinDefinitionEdit.oaf" />
     </url-mapping>
+	<!-- Gamification Jobshop 2022-->
+	<url-mapping id="wheel">
+		<pattern value="/module/jobshop/wheel" />
+		<view-id value="/module/jobshop/wheel.oaf" />
+	</url-mapping>
+	<url-mapping id="wheel">
+		<pattern value="/module/jobshop/studentForm" />
+		<view-id value="/module/jobshop/studentForm.oaf" />
+	</url-mapping>
 </pretty-config>

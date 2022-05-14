@@ -36,6 +36,7 @@ textarea.pf-c-form-control {
     border-bottom-color: var(--pf-global--primary-color--100);
     border-bottom-width: 2px;
     border-bottom-width: var(--pf-global--BorderWidth--md);
+    color: RGBA(255,255,255,0.9) !important;
 }
 
 .pf-c-form-control[aria-invalid="true"] {
@@ -155,8 +156,9 @@ textarea.pf-c-form-control {
 
 /* default - IE compatibility */
 .pf-m-primary:hover {
-    background-color: #004080;
-    background-color: var(--pf-global--primary-color--200);
+    /*background-color: #004080;
+    background-color: var(--pf-global--primary-color--200);*/
+    background-color: #223C51 !important;
 }
 
 /* default - IE compatibility */
@@ -625,6 +627,7 @@ input[type="text"] {
     margin-top: 5px;
     background: RGBA(34,60,88,1);
     width: 100%;
+    color: RGBA(255,255,255,0.9);
 }
 
 input[type="button"] {
@@ -658,6 +661,10 @@ input[type="password"] {
     width: 100%;
 }
 
+input[type="password"]:hover {
+    color: RGBA(255,255,255,0.9) !important;
+}
+
 input[type="tel"] {
     padding: 5px;
     border: none;
@@ -669,6 +676,10 @@ input[type="tel"] {
     width: 310px !important;
     min-width: 213px;
     height: 30px;
+}
+
+input[type="tel"]:hover {
+    color: RGBA(255,255,255,0.9) !important;
 }
 
 .login-logo-form {
@@ -707,6 +718,18 @@ a {
 
 ::-ms-input-placeholder { /* Microsoft Edge */
     color: #ffffff;
+}
+
+p.instruction {
+    background-color: #F0F0F0;
+    padding: 20px;
+    text-align: center;
+}
+
+.alert-warning {
+    background-color: #F0F0F0;
+    padding: 20px !important;
+    text-align: center;
 }
 
 @media screen and (max-width: 540px) {
