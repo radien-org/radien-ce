@@ -1,0 +1,67 @@
+<div class="row mt-4 mb-4 zero-margin">
+    <div class="col-lg-9 col-md-12 col-sm-12">
+        <div class="row">
+            <div class="col-lg-3 col-md-12 col-sm-12 zero-padding" *ngFor="let step of steps">
+                <app-g-button [data]="step"></app-g-button>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-12 col-sm-12">
+        <div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 zero-padding">
+                    <app-g-button [data]="lastStep"></app-g-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<mat-stepper [linear]="false" #stepper *ngIf="false">
+    
+    <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>DAS SCHADENSEREIGNIS</ng-template>
+            <mat-form-field appearance="fill">
+                <mat-label>Name</mat-label>
+                <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+            </mat-form-field>
+            <div>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    
+    <mat-step [stepControl]="secondFormGroup" label="DIE DETAILS">
+        <form [formGroup]="secondFormGroup">
+            <mat-form-field appearance="fill">
+                <mat-label>Address</mat-label>
+                <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
+                required>
+            </mat-form-field>
+            <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    
+    <mat-step>
+        <ng-template matStepLabel>ERFOLGSAUSSICHTEN</ng-template>
+        <p>Step.</p>
+        <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+        </div>
+    </mat-step>
+    
+    <mat-step>
+        <ng-template matStepLabel>DEINE DATEN</ng-template>
+        <p>You are now done.</p>
+        <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+        </div>
+    </mat-step>
+
+</mat-stepper>

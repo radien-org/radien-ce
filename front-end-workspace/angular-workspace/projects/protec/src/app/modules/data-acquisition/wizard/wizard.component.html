@@ -1,0 +1,35 @@
+<div class="base-content">
+    <div>
+        <div>
+            <app-stepper></app-stepper>
+        </div>
+        <div>
+            <div class="generic-box-content">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 col-sm-12">
+                        <h2>
+                            {{ 'OH WOW' | translate }}
+                        </h2>
+                        <h1 class="mt-0 mb-4">
+                            {{ 'TOLLE ÜBERSCHRIFT' | translate }}
+                        </h1>
+                        <p>
+                            <b>
+                                {{ 'Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!' | translate }}
+                            </b>
+                        </p>
+                        <p>
+                            {{ 'Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.' | translate }}
+                        </p>
+                        <div class="mt-4 pt-4">
+                            <app-g-button [data]="dataButton"></app-g-button>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <img src="../../../../assets/images/human.png" class="wizard-img"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

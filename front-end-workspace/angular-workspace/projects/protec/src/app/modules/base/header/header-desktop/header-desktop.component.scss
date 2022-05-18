@@ -1,0 +1,28 @@
+.header-logo {
+    width: 150px;
+    padding-top: 10px;
+    margin-left: 20px;
+}
+
+.header-title {
+    color: var(--light-taupe);
+    text-align: left;
+    font-weight: bold;
+    font-size: 16px;
+    letter-spacing: 6.6px;
+    text-transform: uppercase;
+    opacity: 1;
+    padding-top: 35px;
+}
+
+.header-title-menu {
+    color: var(--light-taupe);
+    text-align: left;
+    font-weight: bold;
+    font-size: 10px;
+    letter-spacing: 6.6px;
+    text-transform: uppercase;
+    opacity: 1;
+    padding-top: 32px;
+    cursor: pointer;
+}

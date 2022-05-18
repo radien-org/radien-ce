@@ -1,0 +1,39 @@
+.bt-action {
+    cursor: pointer;
+}
+
+
+.btn-version {
+    width: 99%;
+    height: 39px;
+    background: var(--45-chalk-mint) 0% 0% no-repeat padding-box;
+    opacity: 1;
+    padding: 11px;
+    text-align: center;
+}
+
+.btn-version span {
+    color: var(--deep-forest);
+    font-weight: bold;
+    font-size: 14px;
+    position: relative;
+    bottom: 2px;
+}
+
+.btn-default {
+    background: var(--muted-forest) 0% 0% no-repeat padding-box;
+}
+
+.btn-default span {
+    color: #ffffff;
+}
+
+.btn-outline {
+    border: 1px solid var(--muted-forest);
+    border-radius: 2px;
+    opacity: 1;
+    width: 211px;
+    height: 40px;
+    padding: 10px;
+    text-align: center;
+}
