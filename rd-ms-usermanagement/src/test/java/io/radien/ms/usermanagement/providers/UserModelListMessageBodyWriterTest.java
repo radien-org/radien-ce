@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.providers;
 
+import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.legacy.UserFactory;
 import junit.framework.TestCase;
@@ -32,7 +33,8 @@ public class UserModelListMessageBodyWriterTest extends TestCase {
     @Test
     public void testIsWriteable() {
         UserModelListMessageBodyWriter target = new UserModelListMessageBodyWriter();
-        assertTrue(target.isWriteable(null,null,null,null));
+        User user = new User();
+        assertTrue(target.isWriteable(user.getClass(), null,null,null));
     }
 
     @Test
