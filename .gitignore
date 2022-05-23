@@ -35,3 +35,6 @@ mvnvm.properties
 
 # PlantUML Artifacts
 plantuml/
+
+# front-end workspace
+front-end-workspace/angular-workspace/node_modules
