@@ -9,7 +9,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: NotFoundComponent
+    pathMatch: 'full',
+    redirectTo: 'data-acquisition',
   },
   {
     path: '**',

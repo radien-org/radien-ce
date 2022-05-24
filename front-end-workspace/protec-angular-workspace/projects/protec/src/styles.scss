@@ -51,6 +51,8 @@ warn: $protec-warn,
   --deep-forest: #2B4645;
 
   --light-taupe-rgba: RGBA(236,233,235,0.25);
+
+  --close-icon-color: #314545;
   
   /* Font/text values */
   --unnamed-font-family-dosis: Dosis;
@@ -99,6 +101,14 @@ warn: $protec-warn,
   letter-spacing: var(--unnamed-character-spacing-4-2);
   color: var(--muted-forest);
   text-transform: var(--unnamed-text-transform-uppercase);
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle, .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple), .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple, .mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
+  background-color: var(--off-black);
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: var(--off-black);
 }
 
 html, body { height: 100%; }
@@ -188,6 +198,72 @@ b {
   font: normal normal 600 18px Open Sans;
   letter-spacing: 0px;
   color: var(--off-black);
+}
+
+.side-window-content {
+    padding: 30px;
+    background-color: var(--45-chalk-mint);
+    height: 60em;
+    width: 400px;
+}
+
+.side-window-title {
+    font-weight: bold;
+    font-size: 25px;
+    letter-spacing: 10.5px;
+    color: var(--deep-forest);
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+.side-window-sub-title {
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: bold;
+  font-size: 13px;
+  letter-spacing: 0px;
+}
+
+.side-window-text {
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: normal;
+  font-size: 12px;
+  letter-spacing: 0px;
+}
+
+.side-window-close-content {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.side-window-close-icon {
+    color: var(--close-icon-color);
+}
+
+.side-window-link {
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--muted-forest);
+  text-align: left;
+  text-decoration: underline;
+  letter-spacing: 0px;
+  opacity: 1;
+  font-weight: normal;
+  font-size: 12px;
+}
+
+.side-window-checkbox-label {
+  color: var(--off-black);
+  font-weight: normal;
+  font-size: 10px;
+  padding-right: 10px;
+}
+
+.side-window-checks-content {
+  margin-bottom: 100px;
 }
 
 @media (max-width: 767px) {

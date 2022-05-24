@@ -12,4 +12,8 @@ export class HeaderDesktopComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  backToBegin() {
+    window.location.href='/';
+  }
+
 }

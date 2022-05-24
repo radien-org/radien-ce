@@ -7,11 +7,13 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { StepperComponent } from './components/stepper/stepper.component';
 import { GButtonComponent } from './components/g-button/g-button.component';
+import { SidenavBackdropComponent } from './components/sidenav-backdrop/sidenav-backdrop.component';
 
 @NgModule({
   declarations: [
     StepperComponent,
-    GButtonComponent
+    GButtonComponent,
+    SidenavBackdropComponent
     //FieldFormatterPipe,
   ],
   imports: [
@@ -28,7 +30,8 @@ import { GButtonComponent } from './components/g-button/g-button.component';
     MaterialModule,
     StepperComponent,
     GButtonComponent,
-    TranslateModule
+    TranslateModule,
+    SidenavBackdropComponent
   ],
 })
 export class SharedModule {}

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { WizardComponent } from './wizard/wizard.component';
+import { CookieGuideLineComponent } from './cookie-guide-line/cookie-guide-line.component';
 
 const routes: Routes = [
   {
@@ -11,6 +12,10 @@ const routes: Routes = [
     path: 'wizard',
     component: WizardComponent
   },
+  {
+    path: 'cookie-guide-line',
+    component: CookieGuideLineComponent
+  }
 ];
 
 @NgModule({
