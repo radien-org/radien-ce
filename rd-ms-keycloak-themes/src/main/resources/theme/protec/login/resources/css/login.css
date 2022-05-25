@@ -693,7 +693,7 @@ input[type="tel"]:hover {
 }
 
 .login-pf-header {
-    display: none;
+    /* display: none; */
 }
 
 a {
