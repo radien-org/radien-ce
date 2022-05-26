@@ -56,4 +56,10 @@ public class I18NProperty implements SystemI18NProperty {
     public void setTranslations(List<SystemI18NTranslation> translations) {
         this.translations = translations;
     }
+
+    public String getTranslation(String language) {
+        return getTranslations().stream()
+                .filter(t -> t.getLanguage().equals(language))
+                .findAny().map(SystemI18NTranslation::getValue).orElse(getKey());
+    }
 }

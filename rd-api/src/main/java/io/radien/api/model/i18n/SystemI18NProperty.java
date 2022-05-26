@@ -34,4 +34,6 @@ public interface SystemI18NProperty extends Serializable {
 
     void setTranslations(List<SystemI18NTranslation> translations);
 
+    String getTranslation(String language);
+
 }
