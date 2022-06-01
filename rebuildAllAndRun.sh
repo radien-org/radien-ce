@@ -7,3 +7,4 @@ mvn -f initializer/pom.xml package
 sleep 60
 java -jar initializer/target/initializer-jar-with-dependencies.jar &
 cd ../..
+
