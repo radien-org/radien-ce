@@ -13,27 +13,6 @@ export class WizardComponent implements OnInit {
     type: 'outline'
   }
 
-  checks = {
-    color: 'primary'
-  }
-
-  cookieWindowButton = {
-    dataButtonOptionOne: {
-      label: this.translationService.instant('ALLE COOKIES AKZEPTIEREN'),
-      type: 'outline'
-    },
-    dataButtonOptionTwo: {
-      label: this.translationService.instant('OPTIONALE COOKIES ABLEHNEN'),
-      type: 'outline'
-    },
-    dataButtonOptionThree: {
-      label: this.translationService.instant('MEINE AUSWAHL BESTÄTIGEN'),
-      type: 'outline'
-    }
-  }
-
-  cookieGuideLink = 'cookie-guide-line';
-
   constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
