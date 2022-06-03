@@ -26,7 +26,9 @@ import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,6 +106,19 @@ public class I18NResourceClientTest {
         Response result = client.findAllByApplication("app");
         assertEquals(Response.Status.OK.getStatusCode(), result.getStatusInfo().getStatusCode());
         assertEquals(list, result.readEntity(List.class));
+    }
+
+    @Test
+    public void testAllByApplicationAndLanguage() throws SystemException {
+        Map<String, String> resultMap = new HashMap<>();
+        for(int i = 0; i < 10; i++) {
+            resultMap.put("key " + i, "value " + i);
+        }
+        when(serviceAccess.findAllByApplicationAndLanguage("app", "en"))
+                .thenReturn(resultMap);
+        Response result = client.findAllByApplicationAndLanguage("app", "en");
+        assertEquals(Response.Status.OK.getStatusCode(), result.getStatusInfo().getStatusCode());
+        assertEquals(resultMap, result.readEntity(Map.class));
     }
 
     @Test
