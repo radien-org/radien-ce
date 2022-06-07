@@ -6,7 +6,8 @@ import { Injectable } from '@angular/core';
 export class StorageService {
   public getItem(key: string): any {
     try {
-      return JSON.parse(localStorage.getItem(key));
+      const str = localStorage.getItem(key) ? localStorage.getItem(key) : 'de';
+      return JSON.parse(String(str));
     } catch {
       this.removeItem(key);
 

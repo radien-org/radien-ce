@@ -1,13 +1,26 @@
+const env = {
+  online: 'https://test.protec.help',
+  local: 'http://localhost:8090'
+};
 const proxy = [
     {
-      context: "/api/cookie",
-      "target": "http://localhost:8090/nwprotecservice/v1/cookie",  
-      "secure": false,
+      context: "/api", 
+      "target": env.online + "/nwprotecservice/v1/", 
+      "secure": false, 
       "pathRewrite": {
-      "^/api/cookie": ""
+      "^/api": ""
       },
       "logLevel": "debug"
-      }
+    },
+    {
+      context: "/cms", 
+      "target": env.online + "/cms/v1/ ", 
+      "secure": false, 
+      "pathRewrite": {
+      "^/cms": ""
+      },
+      "logLevel": "debug"
+    }
   ];
   module.exports = proxy;
   

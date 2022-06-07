@@ -19,7 +19,9 @@
     </div>
     <div class="col-lg-1">
         <h6 class="header-title-menu">
-            {{ 'DE | EN' | translate }}
+            <ng-container *ngFor="let locale of availableTranslationLocales">
+                <span (click)="onClickTranslationLocale(locale)">{{ locale.key }}</span> | 
+            </ng-container>
         </h6>
     </div>
 </div>
