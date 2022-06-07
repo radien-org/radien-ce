@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { CookieService } from '../../services/cookie/cookie.service';
 
 @Component({
   selector: 'app-sidenav-backdrop',
@@ -32,13 +33,19 @@ export class SidenavBackdropComponent implements OnInit {
 
   cookieGuideLink = '/data-acquisition/cookie-guide-line';
 
-  constructor(private readonly translationService: TranslateService, private readonly router: Router) { }
+  constructor(private readonly translationService: TranslateService, private readonly router: Router, private readonly cookieService : CookieService) { }
 
   ngOnInit(): void {
   }
 
   goTo(url:string) {
     this.router.navigate([url]);
+  }
+
+  getAcceptedCookie(cookies: string) {
+    let x = this.cookieService.getAcceptedCookie(cookies);
+    console.log(x);
+    return x;
   }
 
 }
