@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class CookieService {
 
-  private serviceUrl: string = "/api/cookie/permittedCookies";
+  private serviceUrl: string = "/nwprotecservice/cookie/permittedCookies";
 
   constructor() { }
 
