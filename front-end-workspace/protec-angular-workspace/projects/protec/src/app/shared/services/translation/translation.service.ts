@@ -23,7 +23,7 @@ export class TranslationService implements OnDestroy {
   constructor(private readonly translate: TranslateService, private readonly storageService: StorageService) {
     this.translate.addLangs(Object.values(SUPPORTED_LANGUAGES).map(lang => lang.locale));
 
-    this.translate.setDefaultLang(SUPPORTED_LANGUAGES.EN.locale);
+    this.translate.setDefaultLang(SUPPORTED_LANGUAGES.PT.locale);
 
     const storedLocale = this.storageService.getItem(LOCAL.LOCALE);
 
@@ -59,7 +59,7 @@ export class TranslationService implements OnDestroy {
   }
 
   public ngOnDestroy() {
-    this.complete$.next();
+    this.complete$.next(true);
 
     this.complete$.complete();
   }
