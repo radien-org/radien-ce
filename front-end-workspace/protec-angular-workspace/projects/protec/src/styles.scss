@@ -21,11 +21,11 @@ $protec-warn: mat.define-palette(mat.$red-palette);
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
 $protec-theme: mat.define-light-theme((
-color: (
-primary: $protec-primary,
-accent: $protec-accent,
-warn: $protec-warn,
-)
+        color: (
+                primary: $protec-primary,
+                accent: $protec-accent,
+                warn: $protec-warn,
+        )
 ));
 
 // Include theme styles for core and each component used in your app.
@@ -36,7 +36,7 @@ warn: $protec-warn,
 /* You can add global styles to this file, and also import other style files */
 
 :root {
-  
+
   /* Colors: */
   --light-grey: #DADADA;
   --light-mint: #AAC0BF;
@@ -53,7 +53,7 @@ warn: $protec-warn,
   --light-taupe-rgba: RGBA(236,233,235,0.25);
 
   --close-icon-color: #314545;
-  
+
   /* Font/text values */
   --unnamed-font-family-dosis: Dosis;
   --unnamed-font-family-open-sans: Open Sans;
@@ -112,9 +112,9 @@ warn: $protec-warn,
 }
 
 html, body { height: 100%; }
-body { 
-  margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   background: var(--light-taupe-rgba) 0% 0% no-repeat padding-box;
 }
 
@@ -201,19 +201,19 @@ b {
 }
 
 .side-window-content {
-    padding: 30px;
-    background-color: var(--45-chalk-mint);
-    height: 60em;
-    width: 400px;
+  padding: 30px;
+  background-color: var(--45-chalk-mint);
+  height: 100%;
+  width: 35em;
 }
 
 .side-window-title {
-    font-weight: bold;
-    font-size: 25px;
-    letter-spacing: 10.5px;
-    color: var(--deep-forest);
-    text-transform: uppercase;
-    opacity: 1;
+  font-weight: bold;
+  font-size: 25px;
+  letter-spacing: 10.5px !important;
+  color: var(--deep-forest);
+  text-transform: uppercase;
+  opacity: 1;
 }
 
 .side-window-sub-title {
@@ -221,7 +221,8 @@ b {
   color: var(--off-black);
   text-align: left;
   font-weight: bold;
-  font-size: 13px;
+  font-family: "Open sans", sans-serif;
+  font-size: 1.1em  !important;
   letter-spacing: 0px;
 }
 
@@ -229,8 +230,52 @@ b {
   letter-spacing: var(--unnamed-character-spacing-0);
   color: var(--off-black);
   text-align: left;
-  font-weight: normal;
-  font-size: 12px;
+  font-weight: lighter;
+  font-family: "Open sans", sans-serif;
+  font-size: 1em;
+  letter-spacing: 0px;
+}
+
+.title-text{
+  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 35px/44px var(--unnamed-font-family-dosis);
+  color: var(--deep-forest);
+  text-align: left;
+  font-weight: bold !important;
+  font-family: var(--unnamed-font-family-dosis);
+  letter-spacing: 10.5px !important;
+  color: #2B4645;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.h2-title{
+  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 25px/32px var(--unnamed-font-family-dosis);
+  color: var(--chalk-mint);
+  text-align: left;
+  font-family: var(--unnamed-font-family-dosis);
+  letter-spacing: 7.5px !important;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+
+.para-text{
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: lighter;
+  font-family: "Open sans", sans-serif;
+  font-size: 1em;
+  letter-spacing: 0px;
+}
+
+.para-title{
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: bold;
+  font-family: "Open sans", sans-serif !important;
+  font-size: 1em;
   letter-spacing: 0px;
 }
 
@@ -241,7 +286,7 @@ b {
 }
 
 .side-window-close-icon {
-    color: var(--close-icon-color);
+  color: var(--close-icon-color);
 }
 
 .side-window-link {
@@ -271,4 +316,32 @@ b {
     margin-left: 0px;
     margin-right: 0px;
   }
+}
+
+.mat-drawer-container {
+  position: fixed !important;
+}
+
+.spacer-bottom-medium {
+  margin-bottom: 1em;
+}
+
+.text-spacer p{
+  margin-bottom: 30px;
+}
+
+.vertical-space-reducer-top{
+  margin-top: -0.5em !important;
+}
+
+.vertical-space-increase-bottom{
+  margin-bottom: 1em !important;
+}
+
+.vertical-space-increase-top{
+  margin-top: 1em !important;
+}
+
+.bold-text{
+  font-weight: bold;
 }
