@@ -37,3 +37,23 @@
     padding: 10px;
     text-align: center;
 }
+
+.link-button{
+    color: var(--deep-forest);
+    font-size: 1em;
+    letter-spacing: 2px !important;
+
+}
+
+.arrow {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    border-top: 1px solid var(--deep-forest);
+    border-right: 1px solid var(--deep-forest);
+    margin-bottom: 2px;
+}
+
+.arrow-right {
+    transform: rotate(45deg);
+}
