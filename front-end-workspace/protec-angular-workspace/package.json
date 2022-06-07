@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "protec": "ng serve protec --port 4100 --proxy-config proxy.config.js --verbose",
-    "build-protec": "ng build protec --base-href /protec/",
+    "build-protec": "ng build protec",
+    "build-protec-based-url": "ng build protec --base-href /protec/",
     "build-protec-prod": "ng build protec --prod --base-href /protec/",
     "build-local-protec": "ng build protec --base-href /protec/ && rm -rf ../../../plugin-environment/front-end/build && cp -r dist/protec ../../../plugin-environment/front-end/build",
     "protec-library": "ng serve protec-library --port 4200",
