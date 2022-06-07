@@ -9,6 +9,7 @@
     <#if section = "header">
         ${msg("registerTitle")}
     <#elseif section = "form">
+        
         <div id="loginbox" align="center" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div align="center">
                 <img src="${url.resourcesPath}/img/ProTecSports_Logo_Wortmarke.png" class="login-logo-form"/>
@@ -190,31 +191,6 @@
                 </#if>
 
                 <div class="${properties.kcFormGroupClass!}">
-                    <div class="${properties.kcInputWrapperClass!}">
-                        <input 
-                            type="checkbox" 
-                            id="terms"
-                            class="${properties.kcInputClass!}" 
-                            name="terms"
-                            value=""
-                            aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
-                        />
-                        <label>Please accept the following <a href='${properties.terms_URL}' target="_blank">legal data</a>.</label>
-
-                        <#if messagesPerField.existsError('terms')>
-                            <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                    ${kcSanitize(messagesPerField.get('terms'))?no_esc}
-                                </span>
-                        </#if>
-                    </div>
-                </div>
-
-                <div class="${properties.kcFormGroupClass!}">
-                    <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
-                        <div class="${properties.kcFormOptionsWrapperClass!}">
-                            <span><a href="${url.loginUrl}">< ${kcSanitize(msg("backToLogin"))?no_esc}</a></span>
-                        </div>
-                    </div>
 
                     <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
                         <input 
@@ -223,8 +199,37 @@
                             value="${msg("doRegister")}"
                         />
                     </div>
+
+                    <div class="${properties.kcFormGroupClass!}">
+                        <div class="${properties.kcInputWrapperClass!} register-terms-link-content">
+                            <input 
+                                type="checkbox" 
+                                id="terms"
+                                class="${properties.kcInputClass!}" 
+                                name="terms"
+                                value=""
+                                aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
+                            />
+                            <label>Please accept the following <a href='${properties.terms_URL}' target="_blank">legal data</a>.</label>
+
+                            <#if messagesPerField.existsError('terms')>
+                                <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                        ${kcSanitize(messagesPerField.get('terms'))?no_esc}
+                                    </span>
+                            </#if>
+                        </div>
+                    </div>
+
                 </div>
+
             </form>
         </div>
+        
+        <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line">
+            <div class="${properties.kcFormOptionsWrapperClass!}">
+                <span><a href="${url.loginUrl}">${kcSanitize(msg("backToLogin"))?no_esc}</a></span>
+            </div>
+        </div>
+
     </#if>
 </@layout.registrationLayout>

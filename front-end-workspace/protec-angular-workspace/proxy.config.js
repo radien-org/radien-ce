@@ -4,11 +4,11 @@ const env = {
 };
 const proxy = [
     {
-      context: "/api", 
+      context: "/nwprotecservice", 
       "target": env.online + "/nwprotecservice/v1/", 
       "secure": false, 
       "pathRewrite": {
-      "^/api": ""
+      "^/nwprotecservice": ""
       },
       "logLevel": "debug"
     },
