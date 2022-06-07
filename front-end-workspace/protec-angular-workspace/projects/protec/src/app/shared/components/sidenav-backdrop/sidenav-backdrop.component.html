@@ -27,7 +27,7 @@
     </div>
     <div class="mt-4">
         <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButton.dataButtonOptionOne"></app-g-button>
+            <app-g-button [data]="cookieWindowButton.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
             <app-g-button [data]="cookieWindowButton.dataButtonOptionTwo"></app-g-button>
