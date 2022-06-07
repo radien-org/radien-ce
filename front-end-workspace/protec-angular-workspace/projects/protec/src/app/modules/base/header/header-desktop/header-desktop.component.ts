@@ -22,6 +22,7 @@ export class HeaderDesktopComponent implements OnInit {
   }
 
   public onClickTranslationLocale(locale: { key: string; locale: string }): void {
+    this.translationService.getTranslates(locale.locale);
     this.translationService.setLocale(locale.locale);
   }
 

@@ -11,7 +11,16 @@ const proxy = [
       "^/api": ""
       },
       "logLevel": "debug"
-      }
+    },
+    {
+      context: "/cms", 
+      "target": env.online + "/cms/v1/ ", 
+      "secure": false, 
+      "pathRewrite": {
+      "^/cms": ""
+      },
+      "logLevel": "debug"
+    }
   ];
   module.exports = proxy;
   
