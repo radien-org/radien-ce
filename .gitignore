@@ -35,3 +35,11 @@ mvnvm.properties
 
 # PlantUML Artifacts
 plantuml/
+
+# front-end workspace
+front-end-workspace/protec-angular-workspace/node_modules
+front-end-workspace/radien-generic-workspace/node_modules
+front-end-workspace/protec-angular-workspace/dist
+front-end-workspace/radien-generic-workspace/dist
+front-end-workspace/protec-angular-workspace/.angular
+front-end-workspace/radien-generic-workspace/.angular

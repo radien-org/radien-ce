@@ -1,0 +1,4 @@
+<div class="info-box d-flex flex-column">
+  <p class="title success-text" [ngClass]="cardInfo.success ? 'success-text' : 'danger-text'">{{cardInfo.title | async}}</p>
+  <p class="value mt-auto m-0">{{cardInfo.value}}</p>
+</div>

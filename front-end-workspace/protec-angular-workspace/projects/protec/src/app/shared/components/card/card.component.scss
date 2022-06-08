@@ -1,0 +1,28 @@
+@import './../../../../assets/scss/variables.scss';
+
+.info-box {
+  border: 2px solid var(--primary-color);
+  border-radius: 5px;
+  height: 80px;
+  width: 100px;
+  padding: 5px;
+
+  p {
+    font-size: 10px;
+    text-align: center;
+    &.title {
+      margin-bottom: 5px;
+    }
+    &.value{
+      font-size: 22px;
+    }
+    &.success-text {
+      color: $green-secondary;
+    }
+
+    &.danger-text {
+      color: $red-danger;
+    }
+  }
+  margin-left: 10px;
+}

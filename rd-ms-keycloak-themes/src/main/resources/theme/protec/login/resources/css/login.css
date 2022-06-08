@@ -313,7 +313,7 @@ div.kc-logo-text span {
 
 #kc-form-options .checkbox {
     margin-top: 0;
-    color: #72767b;
+    color: #dadada;
 }
 
 #kc-terms-text {
@@ -595,8 +595,8 @@ ul#kc-totp-supported-apps {
 }
 
 #loginbox {
-    background-color: #ffffff;
-    box-shadow: 0 3px 9px #c1c1c1;
+    background-color: #224745;
+    box-shadow: 0 3px 9px #224745;
     border-radius: 10px;
     padding: 20%;
     margin-top: 10%;
@@ -622,12 +622,17 @@ ul#kc-totp-supported-apps {
 input[type="text"] {
     padding: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 0px;
     margin-bottom: 20px;
     margin-top: 5px;
-    background: RGBA(34,60,88,1);
+    background: #224745;
     width: 100%;
-    color: RGBA(255,255,255,0.9);
+    color: #dadada;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #dadada;
+    text-align: center;
+    opacity: 0.7;
 }
 
 input[type="button"] {
@@ -637,28 +642,37 @@ input[type="button"] {
     border-radius: 5px;
     background-color: #223C58;
     color: #ffffff;
-    opacity: 0.7;
+    opacity: 1;
     max-width: 180px;
 }
 
 input[type="submit"] {
     width: 100%;
-    height: 30px;
+    height: 35px;
     border: none;
-    border-radius: 5px;
-    background-color: #223C58;
-    color: #ffffff;
-    opacity: 0.7;
+    border-radius: 0px;
+    background-color: #dadada;
+    color: #223C58;
+    opacity: 1;
     max-width: 180px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 input[type="password"] {
     padding: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 0px;
     margin-bottom: 20px;
-    background: RGBA(34,60,88,1);
+    background: #224745;
     width: 100%;
+    color: #dadada;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #dadada;
+    text-align: center;
+    opacity: 0.7;
 }
 
 input[type="password"]:hover {
@@ -668,18 +682,46 @@ input[type="password"]:hover {
 input[type="tel"] {
     padding: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 0px;
     margin-bottom: 20px;
     margin-top: 5px;
-    background: RGBA(34,60,88,1);
+    background: #224745;
     max-width: 310px;
     width: 310px !important;
     min-width: 213px;
     height: 30px;
+    color: #dadada;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #dadada;
+    text-align: center;
+    opacity: 0.7;
 }
 
 input[type="tel"]:hover {
     color: RGBA(255,255,255,0.9) !important;
+}
+
+.register-terms-link-content {
+    color: #dadada;
+    margin-top: 20px;
+    font-weight: 100;
+}
+
+.register-terms-link-content label {
+    color: #dadada;
+    font-weight: 100;
+}
+
+.register-terms-link-content label a {
+    color: #dadada;
+    font-weight: 100;
+    text-decoration: underline;
+}
+
+.login-form-option-content {
+    margin-top: 10px;
+    margin-bottom: 50px;
 }
 
 .login-logo-form {
@@ -698,7 +740,7 @@ input[type="tel"]:hover {
 
 a {
     font-weight: bold;
-    color: #223C58;
+    color: #ffffff;
     text-decoration: none;
 }
 
@@ -730,6 +772,27 @@ p.instruction {
     background-color: #F0F0F0;
     padding: 20px !important;
     text-align: center;
+}
+
+.login-registration-link {
+    color: #dadada;
+    position: relative;
+    bottom: 50px;
+    text-align: center;
+    padding-top: 15px;
+    font-weight: 100;
+}
+
+.login-registration-link a {
+    color: #dadada;
+    font-weight: 100;
+    text-decoration: underline;
+}
+
+.up-division-line {
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-color: #dadada;
 }
 
 @media screen and (max-width: 540px) {

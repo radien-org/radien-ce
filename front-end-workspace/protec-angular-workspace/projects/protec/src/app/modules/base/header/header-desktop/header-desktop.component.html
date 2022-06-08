@@ -1,0 +1,27 @@
+<div class="row zero-margin zero-padding">
+    <div class="col-lg-2">
+        <img src="../../../../assets/images/protec_logo.png" class="header-logo" (click)="backToBegin()">
+    </div>
+    <div class="col-lg-5">
+        <h6 class="header-title">
+            {{ 'UNFALLRENTEN-CHECKER' | translate }}
+        </h6>
+    </div>
+    <div class="col-lg-2">
+        <h6 class="header-title-menu">
+            {{ 'HILFE & KONTAKT' | translate }}
+        </h6>
+    </div>
+    <div class="col-lg-2">
+        <h6 class="header-title-menu">
+            {{ 'MEIN KONTO' | translate }}
+        </h6>
+    </div>
+    <div class="col-lg-1">
+        <h6 class="header-title-menu">
+            <ng-container *ngFor="let locale of availableTranslationLocales">
+                <span (click)="onClickTranslationLocale(locale)">{{ locale.key }}</span> | 
+            </ng-container>
+        </h6>
+    </div>
+</div>

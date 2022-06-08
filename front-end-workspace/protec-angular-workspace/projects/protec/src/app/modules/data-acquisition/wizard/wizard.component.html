@@ -1,0 +1,53 @@
+<mat-drawer-container class="side-window-container" hasBackdrop="true">
+
+    <mat-drawer #drawer mode="over" position="end" opened>
+        <div class="side-window-content">
+            <div class="side-window-close-content mb-3">
+                <span mat-raised-button (click)="drawer.toggle()" class="side-window-close-icon">X</span>
+            </div>
+            <app-sidenav-backdrop></app-sidenav-backdrop>
+        </div>
+    </mat-drawer>
+    
+    <mat-drawer-content>
+
+        <div class="base-content">
+            <div>
+                <div>
+                    <app-stepper></app-stepper>
+                </div>
+                <div>
+                    <div class="generic-box-content">
+                        <div class="row">
+                            <div class="col-lg-8 col-md-6 col-sm-12">
+                                <h2>
+                                    {{ 'OH WOW' | translate }}
+                                </h2>
+                                <h1 class="mt-0 mb-4">
+                                    {{ 'TOLLE ÜBERSCHRIFT' | translate }}
+                                </h1>
+                                <p>
+                                    <b>
+                                        {{ 'Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!' | translate }}
+                                    </b>
+                                </p>
+                                <p>
+                                    {{ 'Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.' | translate }}
+                                </p>
+                                <div class="step-one-btn-content">
+                                    <app-g-button [data]="dataButton"></app-g-button>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <img src="../../../../assets/images/human.png" class="generic-img"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </mat-drawer-content>
+
+
+</mat-drawer-container>
