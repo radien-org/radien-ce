@@ -19,7 +19,8 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.role.SystemRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.RoleNotFoundException;
+import io.radien.exception.InvalidArgumentException;
+import io.radien.api.service.role.exception.RoleNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public interface RoleServiceAccess extends ServiceAccess {
      * @return the requested system role
      * @throws RoleNotFoundException in case the requested id does not exist
      */
-    public SystemRole get(Long roleId) throws RoleNotFoundException;
+    SystemRole get(Long roleId);
 
     /**
      * Gets all the role into a pagination mode.
@@ -47,14 +48,14 @@ public interface RoleServiceAccess extends ServiceAccess {
      * @param isAscending ascending filter criteria.
      * @return a page of system roles.
      */
-    public Page<SystemRole> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    Page<SystemRole> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
      * By a given filter object will try to find all the system roles that match that requested filter
      * @param filter with fields to be found
      * @return a list of all the system oles that match
      */
-    public List<? extends SystemRole> getSpecificRoles(SystemRoleSearchFilter filter);
+    List<? extends SystemRole> getSpecificRoles(SystemRoleSearchFilter filter);
 
     /**
      * Creates the requested given role into the db
@@ -62,7 +63,7 @@ public interface RoleServiceAccess extends ServiceAccess {
      * @throws UniquenessConstraintException in case of saving and the record already exists or has duplicated
      * information
      */
-    public void create(SystemRole role) throws UniquenessConstraintException;
+    void create(SystemRole role) throws UniquenessConstraintException, InvalidArgumentException;
 
     /**
      * Updates the requested given role into the db
@@ -70,14 +71,16 @@ public interface RoleServiceAccess extends ServiceAccess {
      * @throws RoleNotFoundException in case of update and the requested role does not exist
      * @throws UniquenessConstraintException in case of information duplicated (already existent in other records)
      */
-    public void update(SystemRole role) throws RoleNotFoundException, UniquenessConstraintException;
+    void update(SystemRole role) throws UniquenessConstraintException, InvalidArgumentException;
 
     /**
      * Deletes from the db the requested role
+     *
      * @param roleId to be deleted
+     * @return
      * @throws RoleNotFoundException in case the role could not be found
      */
-    public void delete(Long roleId) throws RoleNotFoundException;
+    boolean delete(Long roleId);
 
     /**
      * Validates if a certain specified role is existent
@@ -85,11 +88,11 @@ public interface RoleServiceAccess extends ServiceAccess {
      * @param name to be searched
      * @return true if it exists.
      */
-    public boolean checkIfRolesExist(Long roleId, String name);
+    boolean checkIfRolesExist(Long roleId, String name);
 
     /**
      * Count the number of all the roles existent in the DB.
      * @return the count of roles
      */
-    public long getTotalRecordsCount();
+    long getTotalRecordsCount();
 }

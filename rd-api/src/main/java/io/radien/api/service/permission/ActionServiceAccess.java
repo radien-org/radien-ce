@@ -19,7 +19,6 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemActionSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -37,14 +36,14 @@ public interface ActionServiceAccess extends ServiceAccess {
      * @param actionId action identifier
      * @return the requested system action
      */
-    public SystemAction get(Long actionId);
+    SystemAction get(Long actionId);
 
     /**
      * Retrieves a collection of Actions by its identifiers
      * @param actionId list of identifiers
      * @return a list of system actions
      */
-    public List<SystemAction> get(List<Long> actionId);
+    List<SystemAction> get(List<Long> actionId);
 
     /**
      * Retrieves actions using pagination approach
@@ -55,7 +54,7 @@ public interface ActionServiceAccess extends ServiceAccess {
      * @param isAscending Defines if ascending or descending in relation of sorting fields
      * @return a pagination of system actions
      */
-    public Page<SystemAction> getAll(String search, int pageNo, int pageSize,
+    Page<SystemAction> getAll(String search, int pageNo, int pageSize,
                               List<String> sortBy, boolean isAscending);
 
     /**
@@ -63,32 +62,32 @@ public interface ActionServiceAccess extends ServiceAccess {
      * @param action to be stored/saved
      * @throws UniquenessConstraintException in case the required action already exists or has duplicated information
      */
-    public void create(SystemAction action) throws UniquenessConstraintException;
+    void create(SystemAction action) throws UniquenessConstraintException;
 
     /**
      * Update an action (Create or Update)
      * @param action to be stored/saved
      * @throws UniquenessConstraintException in case the required action already exists or has duplicated information
      */
-    public void update(SystemAction action) throws ActionNotFoundException, UniquenessConstraintException;
+    void update(SystemAction action) throws UniquenessConstraintException;
 
     /**
      * Delete an action
      * @param actionId action identifier
      */
-    public void delete(Long actionId);
+    boolean delete(Long actionId);
 
     /**
      * Deletes a set of actions
      * @param actionIds action identifiers
      */
-    public void delete(Collection<Long> actionIds);
+    boolean delete(Collection<Long> actionIds);
 
     /**
      * Retrieve Actions using a search filter
      * @param filter with specific fields to find the correct action
      * @return a list of system actions
      */
-    public List<? extends SystemAction> getActions(SystemActionSearchFilter filter);
+    List<SystemAction> getActions(SystemActionSearchFilter filter);
 
 }

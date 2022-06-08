@@ -15,10 +15,10 @@
  */
 package io.radien.webapp.resource;
 
+import io.radien.api.model.permission.SystemResource;
 import io.radien.exception.SystemException;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.tenant.SystemContract;
 import io.radien.api.service.permission.ResourceRESTServiceAccess;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class LazyResourcesDataModelTest {
 
     Map<String, SortMeta> sortBy;
     Map<String, FilterMeta> filterBy;
-    List<? extends SystemContract> systemActions;
+    List<? extends SystemResource> systemActions;
 
     /**
      * Constructs mock object
@@ -69,7 +69,7 @@ public class LazyResourcesDataModelTest {
      */
     @Test
     public void testGetData() throws SystemException {
-        doReturn(new Page<SystemContract>(systemActions, 1, 1, 1))
+        doReturn(new Page<SystemResource>(systemActions, 1, 1, 1))
                 .when(service).getAll(null, 1, 1, null, true);
 
         assertNotNull(lazyResourcesDataModel.getData(0, 1, sortBy, filterBy));

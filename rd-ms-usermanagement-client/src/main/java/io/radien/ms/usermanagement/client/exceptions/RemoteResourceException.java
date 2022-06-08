@@ -15,25 +15,24 @@
  */
 package io.radien.ms.usermanagement.client.exceptions;
 
+import io.radien.exception.generic.AbstractRestException;
+import javax.ws.rs.core.Response;
+
 /**
  * Exceptions that may occur during the execution of a remote method call.
  *
  * @author Nuno Santana
  */
-public class RemoteResourceException extends Exception{
+public class RemoteResourceException extends AbstractRestException {
 
-    /**
-     * Remote resource exception empty constructor
-     */
     public RemoteResourceException() {
         super();
     }
 
-    /**
-     * Remote resource exception message constructor
-     * @param message specific message to be added into the exception when being throw
-     */
     public RemoteResourceException(String message) {
         super(message);
+    }
+    public RemoteResourceException(String message, Response.Status status) {
+        super(message, status);
     }
 }

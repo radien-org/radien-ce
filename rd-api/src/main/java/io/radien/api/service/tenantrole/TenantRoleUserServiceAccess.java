@@ -20,8 +20,8 @@ import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.tenantrole.SystemTenantRoleUserSearchFilter;
 import io.radien.api.service.ServiceAccess;
 
-import io.radien.exception.TenantRoleUserException;
-import io.radien.exception.TenantRoleUserNotFoundException;
+import io.radien.exception.InvalidArgumentException;
+import io.radien.api.service.role.exception.TenantRoleUserNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -77,7 +77,7 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param tenantRolePermission role association information to be created
      * @throws UniquenessConstraintException in case of duplicates
      */
-    void create(SystemTenantRoleUser tenantRolePermission) throws UniquenessConstraintException;
+    void create(SystemTenantRoleUser tenantRolePermission) throws UniquenessConstraintException, InvalidArgumentException;
 
     /**
      * UPDATE a Tenant Role User association
@@ -86,7 +86,7 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @throws TenantRoleUserNotFoundException in case of not existing a TenantRoleUser for an id
      */
     void update(SystemTenantRoleUser tenantRoleUser)
-            throws UniquenessConstraintException, TenantRoleUserNotFoundException;
+            throws UniquenessConstraintException, TenantRoleUserNotFoundException, InvalidArgumentException;
 
     /**
      * Deletes a requested tenant role user association
@@ -102,14 +102,16 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param user user identifier (mandatory)
      * @return list containing ids
      */
-    Collection<Long> getTenantRoleUserIds(Long tenant, Collection<Long> roles, Long user);
+    Collection<Long> getTenantRoleUserIds(Long tenant, Collection<Long> roles, Long user) throws InvalidArgumentException;
+
+    List<Long> getTenants(Long userId, Long roleId) throws InvalidArgumentException;
 
     /**
      * Delete tenant role user associations for given parameters
      * @param ids list containing tenant role user identifiers (mandatory)
      * @return true in case of success, false if no registers could be fetch the informed ids
      */
-    boolean delete(Collection<Long> ids);
+    boolean delete(Collection<Long> ids) throws InvalidArgumentException;
 
     /**
      * Check if an user is already assigned/associated with a tenant role
@@ -117,7 +119,7 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param tenantRoleId TenantRole Identifier
      * @return true if already exists, otherwise returns false
      */
-    boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId);
+    boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId) throws InvalidArgumentException;
 
     /**
      * Check if a user is already assigned/associated with a tenant role
@@ -126,7 +128,7 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param id Tenant
      * @return true if already exists, otherwise returns false
      */
-    boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, Long id);
+    boolean isAssociationAlreadyExistent(Long userId, Long tenantRoleId, Long id) throws InvalidArgumentException;
 
     /**
      * Retrieves strictly the TenantRoleUser id basing on tenantRole and user
@@ -134,7 +136,7 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param user identifier
      * @return TenantRoleUser id
      */
-    Optional<Long> getTenantRoleUserId(Long tenantRole, Long user);
+    Optional<Long> getTenantRoleUserId(Long tenantRole, Long user) throws InvalidArgumentException;
 
     /**
      * Check if a user is associated with a tenant
@@ -142,16 +144,15 @@ public interface TenantRoleUserServiceAccess extends ServiceAccess {
      * @param tenantId Tenant Identifier
      * @return true if already exists, otherwise returns false
      */
-    boolean isAssociatedWithTenant(Long userId, Long tenantId);
+    boolean isAssociatedWithTenant(Long userId, Long tenantId) throws InvalidArgumentException;
 
     /**
      * Retrieves strictly the TenantRoleUser ids based on tenantRoleIds and user
      * @param tenantRoleIds TenantRoleIds
      * @param userId User id
      * @return List of TenantRoleUserIds
-     * @throws TenantRoleUserException if any exception
      */
-    Collection<Long> getTenantRoleUserIds(List<Long> tenantRoleIds, Long userId) throws TenantRoleUserException;
+    Collection<Long> getTenantRoleUserIds(List<Long> tenantRoleIds, Long userId);
 
     long count();
 }

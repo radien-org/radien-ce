@@ -20,11 +20,9 @@ import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleSearchFilter;
 import io.radien.api.service.ServiceAccess;
 
-import io.radien.exception.TenantRoleException;
-import io.radien.exception.TenantRoleNotFoundException;
+import io.radien.exception.InvalidArgumentException;
 import io.radien.exception.UniquenessConstraintException;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +43,7 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param isAscending ascending filter criteria.
      * @return a page of system tenant role associations.
      */
-    public Page<SystemTenantRole> getAll(Long tenantId, Long roleId,
+    Page<SystemTenantRole> getAll(Long tenantId, Long roleId,
                                   int pageNo, int pageSize, List<String> sortBy,
                                   boolean isAscending);
 
@@ -68,15 +66,14 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param tenantRole role association information to be created
      * @throws UniquenessConstraintException in case of duplicated combination of tenant and role
      */
-    void create(SystemTenantRole tenantRole) throws UniquenessConstraintException;
+    void create(SystemTenantRole tenantRole) throws UniquenessConstraintException, InvalidArgumentException;
 
     /**
      * Updates a Tenant Role association
      * @param tenantRole role association information to be updated
      * @throws UniquenessConstraintException in case of duplicated combination of tenant and role
-     * @throws TenantRoleNotFoundException in case of not existent tenantRole for the give id
      */
-    void update(SystemTenantRole tenantRole) throws UniquenessConstraintException, TenantRoleNotFoundException;
+    void update(SystemTenantRole tenantRole) throws UniquenessConstraintException, InvalidArgumentException;
 
     /**
      * Check if a role is already assigned/associated with a tenant
@@ -84,32 +81,15 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param tenantId Tenant Identifier
      * @return true if already exists, otherwise returns false
      */
-    boolean isAssociationAlreadyExistent(Long roleId, Long tenantId);
+    boolean isAssociationAlreadyExistent(Long roleId, Long tenantId) throws InvalidArgumentException;
 
     /**
      * Deletes a requested tenant role association
      * @param tenantRoleId tenant role to be deleted
      * @return true in case of success, false otherwise
-     * @throws TenantRoleException in case of any inconsistency found
+     * @throws InvalidArgumentException in case of any inconsistency found
      */
-    boolean delete(Long tenantRoleId) throws TenantRoleException;
-
-    /**
-     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return permission ids
-     */
-    List<Long> getPermissions(Long tenantId, Long roleId, Long userId);
-
-    /**
-     * Retrieves the existent Tenants for a User (Optionally for a specific role)
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return List containing tenant ids
-     */
-    List<Long> getTenants(Long userId, Long roleId);
+    boolean delete(Long tenantRoleId) throws InvalidArgumentException;
 
     /**
      * Retrieves the existent Roles for a User of a specific Tenant
@@ -117,7 +97,7 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param tenantId Tenant identifier
      * @return List containing role ids
      */
-    List<Long> getRoleIdsForUserTenant(Long userId, Long tenantId);
+    List<Long> getRoleIdsForUserTenant(Long userId, Long tenantId) throws InvalidArgumentException;
 
     /**
      * Check if a User has some Role (Optionally for a specific Tenant)
@@ -126,7 +106,7 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param tenantId Tenant identifier
      * @return true if has some of the informed roles, otherwise fase
      */
-    boolean hasAnyRole(Long userId, List<String> roleNames, Long tenantId);
+    boolean hasAnyRole(Long userId, List<String> roleNames, Long tenantId) throws InvalidArgumentException;
 
     /**
      * Check if a User has a Permission (Optionally for a specific Tenant)
@@ -135,7 +115,7 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param tenantId Tenant identifier (Optional)
      * @return true if has some of the informed roles, otherwise fase
      */
-    boolean hasPermission(Long userId, Long permissionId, Long tenantId);
+    boolean hasPermission(Long userId, Long permissionId, Long tenantId) throws InvalidArgumentException;
 
     /**
      * Retrieves strictly the TenantRole id basing on tenant and role
@@ -143,16 +123,7 @@ public interface TenantRoleServiceAccess extends ServiceAccess {
      * @param  role role identifier
      * @return TenantRole id
      */
-    Optional<Long> getTenantRoleId(Long tenant, Long role);
-
-    /**
-     * Retrieves strictly the TenantRole ids based on tenant and role(s)
-     * @param tenantId Tenant id
-     * @param roleIds Collection Role ids
-     * @return List of TenantRole ids
-     * @throws TenantRoleException in case of any inconsistency found
-     */
-    List<Long> getTenantRoleIds(Long tenantId, Collection<Long> roleIds) throws TenantRoleException;
+    Optional<Long> getTenantRoleId(Long tenant, Long role) throws InvalidArgumentException;
 
     long count();
 }

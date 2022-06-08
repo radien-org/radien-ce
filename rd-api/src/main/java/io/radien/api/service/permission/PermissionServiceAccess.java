@@ -19,9 +19,9 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.PermissionIllegalArgumentException;
+import io.radien.api.service.permission.exception.PermissionIllegalArgumentException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.PermissionNotFoundException;
+import io.radien.api.service.permission.exception.PermissionNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,14 +40,14 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * @return the system Permission requested to be found.
      * @throws PermissionNotFoundException in case the requested permission could not be found
      */
-    public SystemPermission get(Long permissionId) throws PermissionNotFoundException;
+    SystemPermission get(Long permissionId) throws PermissionNotFoundException;
 
     /**
      * Gets a list of System Permissions searching by multiple PK's (id) requested in a list.
      * @param permissionId to be searched.
      * @return the list of system Permissions requested to be found.
      */
-    public List<SystemPermission> get(List<Long> permissionId);
+    List<SystemPermission> get(List<Long> permissionId);
 
     /**
      * Gets all the Permissions into a pagination mode.
@@ -59,14 +59,14 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * @param isAscending ascending filter criteria.
      * @return a page of system Permissions.
      */
-    public Page<SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    Page<SystemPermission> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
      * Creates the requested Permission information into the DB.
      * @param permission to be added/inserted
      * @throws UniquenessConstraintException in case of duplicated name (or combination of action and resource)
      */
-    public void create(SystemPermission permission) throws UniquenessConstraintException;
+    void create(SystemPermission permission) throws UniquenessConstraintException;
 
     /**
      * Updates the requested Permission information into the DB.
@@ -74,19 +74,19 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * @throws UniquenessConstraintException in case of duplicated name (or combination of action and resource)
      * @throws PermissionNotFoundException in case of not existent permission for the give id
      */
-    public void update(SystemPermission permission) throws UniquenessConstraintException, PermissionNotFoundException;
+    void update(SystemPermission permission) throws UniquenessConstraintException;
 
     /**
      * Deletes a unique Permission selected by his id.
      * @param permissionId to be deleted.
      */
-    public void delete(Long permissionId);
+    boolean delete(Long permissionId);
 
     /**
      * Deletes a list of Permissions selected by his id.
      * @param permissionIds to be deleted.
      */
-    public void delete(Collection<Long> permissionIds);
+    boolean delete(Collection<Long> permissionIds);
 
     /**
      * Retrieve the permission Id using the combination of resource and action as parameters
@@ -96,7 +96,7 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * otherwise a empty one
      * @throws PermissionIllegalArgumentException in case of parameters not correctly informed
      */
-    public Optional<Long> getIdByActionAndResource(String resource, String action)
+    Optional<Long> getIdByActionAndResource(String resource, String action)
             throws PermissionIllegalArgumentException;
 
     /**
@@ -104,7 +104,7 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * @param filter entity with available filters to search Permission
      * @return a list of found permissions that match the given search filter
      */
-    public List<? extends SystemPermission> getPermissions(SystemPermissionSearchFilter filter);
+    List<SystemPermission> getPermissions(SystemPermissionSearchFilter filter);
 
     /**
      * Verifies if some Permission exists for a referred Id (or alternatively for a name)
@@ -113,7 +113,7 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * if Id is omitted
      * @return response true if it exists
      */
-    public boolean exists(Long permissionId, String permissionName);
+    boolean exists(Long permissionId, String permissionName);
 
     /**
      * Retrieves a SystemPermission taking in account Resource and Action
@@ -127,5 +127,5 @@ public interface PermissionServiceAccess extends ServiceAccess {
      * Count the number of all the permissions existent in the DB.
      * @return the count of permissions
      */
-    public long getTotalRecordsCount();
+    long getTotalRecordsCount();
 }

@@ -15,11 +15,10 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
-import io.radien.api.service.permission.PermissionServiceAccess;
-import io.radien.exception.PermissionIllegalArgumentException;
-import io.radien.exception.PermissionNotFoundException;
-import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.model.PermissionEntity;
+import io.radien.api.service.permission.exception.PermissionIllegalArgumentException;
+import io.radien.api.service.permission.exception.PermissionNotFoundException;
+import io.radien.ms.permissionmanagement.entities.PermissionEntity;
+import io.radien.ms.permissionmanagement.resource.PermissionResource;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Permission Resource Test for future requests and responses validation
- * {@link io.radien.ms.permissionmanagement.service.PermissionResource}
+ * {@link PermissionResource}
  *
  * @author Nuno Santana
  * @author Bruno Gama
@@ -51,7 +50,7 @@ public class PermissionResourceTest {
     @InjectMocks
     PermissionResource permissionResource;
     @Mock
-    PermissionServiceAccess permissionServiceAccess;
+    PermissionBusinessService permissionBusinessService;
 
     /**
      * Method for test preparation
@@ -71,17 +70,6 @@ public class PermissionResourceTest {
     }
 
     /**
-     * Test the Get All request Exception which will return a generic error message code 500.
-     */
-    @Test
-    public void testGetAllGenericException() {
-        when(permissionResource.getAll(null,1,10,null,true))
-                .thenThrow(new RuntimeException());
-        Response response = permissionResource.getAll(null,1,10,null,true);
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Test the Get total records count request which will return a success message code 200.
      */
     @Test
@@ -91,45 +79,14 @@ public class PermissionResourceTest {
     }
 
     /**
-     * Test the Get total records count request Exception which will return a generic error message code 500.
-     */
-    @Test
-    public void testGetTotalRecordsCountGenericException() {
-        when(permissionResource.getTotalRecordsCount())
-                .thenThrow(new RuntimeException());
-        Response response = permissionResource.getTotalRecordsCount();
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
-     * Test that will test the error message 404 permission Not Found
-     */
-    @Test
-    public void testGetById404() {
-        Response response = permissionResource.getById(1L);
-        assertEquals(404,response.getStatus());
-    }
-
-    /**
      * Get by ID with success should return a 200 code message
      * @throws PermissionNotFoundException in case of permission not found
      */
     @Test
     public void testGetById() throws PermissionNotFoundException {
-        when(permissionServiceAccess.get(1L)).thenReturn(new PermissionEntity());
+        when(permissionBusinessService.get(1L)).thenReturn(new PermissionEntity());
         Response response = permissionResource.getById(1L);
         assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Test Get by ID exception which will return a 500 error code message
-     * @throws PermissionNotFoundException in case of permission not found
-     */
-    @Test
-    public void testGetByIdGenericException() throws PermissionNotFoundException {
-        when(permissionServiceAccess.get(1L)).thenThrow(new RuntimeException());
-        Response response = permissionResource.getById(1L);
-        assertEquals(500,response.getStatus());
     }
 
     /**
@@ -142,32 +99,12 @@ public class PermissionResourceTest {
     }
 
     /**
-     * Test Get permissions by should return error with a 500 error code message
-     */
-    @Test
-    public void testGetPermissionsByException() {
-        doThrow(new RuntimeException()).when(permissionServiceAccess).getPermissions(any());
-        Response response = permissionResource.getPermissions("perm", 1L, 2L,null,true,true);
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Deletion of the record with success, should return a 200 code message
      */
     @Test
     public void testDelete() {
         Response response = permissionResource.delete(1L);
         assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Deletion of the record with error, should return a generic 500 error code message
-     */
-    @Test
-    public void testDeleteGenericError() {
-        doThrow(new RuntimeException()).when(permissionServiceAccess).delete(1L);
-        Response response = permissionResource.delete(1L);
-        assertEquals(500,response.getStatus());
     }
 
     /**
@@ -180,30 +117,6 @@ public class PermissionResourceTest {
     }
 
     /**
-     * Creation with error of a record. Should return a 400 code message Invalid Requested Exception
-     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
-     * message reason
-     */
-    @Test
-    public void testCreateInvalid() throws UniquenessConstraintException {
-        doThrow(new UniquenessConstraintException()).when(permissionServiceAccess).create(any());
-        Response response = permissionResource.create(new PermissionEntity());
-        assertEquals(400,response.getStatus());
-    }
-
-    /**
-     * Creation of a record with error. Should return a generic error message 500
-     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
-     * message reason
-     */
-    @Test
-    public void testCreateGenericError() throws UniquenessConstraintException {
-        doThrow(new RuntimeException()).when(permissionServiceAccess).create(any());
-        Response response = permissionResource.create(new PermissionEntity());
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Update with success of a record. Should return a 200 code message
      */
     @Test
@@ -213,48 +126,11 @@ public class PermissionResourceTest {
     }
 
     /**
-     * Simulates a scenario in which is tried to update a permission containing repeated information.
-     * @throws UniquenessConstraintException in case of repeated information (name or combination of action and resource)
-     * @throws PermissionNotFoundException in case of Permission not found for a given id
-     */
-    @Test
-    public void testUpdateInvalid() throws UniquenessConstraintException, PermissionNotFoundException {
-        doThrow(new UniquenessConstraintException()).when(permissionServiceAccess).update(any());
-        Response response = permissionResource.update(1L, new PermissionEntity());
-        assertEquals(400,response.getStatus());
-    }
-
-    /**
-     * Simulates a scenario in which is tried to update a permission that does not exists (taking in consideration
-     * the informed id)
-     * @throws UniquenessConstraintException in case of repeated information (name or combination of action and resource)
-     * @throws PermissionNotFoundException in case of Permission not found for a given id
-     */
-    @Test
-    public void testUpdateWhenPermissionNotFound() throws UniquenessConstraintException, PermissionNotFoundException {
-        doThrow(new PermissionNotFoundException("not found")).when(permissionServiceAccess).update(any());
-        Response response = permissionResource.update(1L, new PermissionEntity());
-        assertEquals(404,response.getStatus());
-    }
-
-    /**
-     * Update of a record with error. Should return a generic error message 500
-     * @throws UniquenessConstraintException in case of repeated information (name or combination of action and resource)
-     * @throws PermissionNotFoundException in case of Permission not found for a given id
-     */
-    @Test
-    public void testUpdateGenericError() throws UniquenessConstraintException, PermissionNotFoundException {
-        doThrow(new RuntimeException()).when(permissionServiceAccess).update(any());
-        Response response = permissionResource.update(1L, new PermissionEntity());
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Test the  endpoint ("exists") using just Id parameter
      */
     @Test
     public void testExistsUsingPermissionId() {
-        when(permissionServiceAccess.exists(anyLong(), nullable(String.class))).thenReturn(true);
+        when(permissionBusinessService.exists(anyLong(), nullable(String.class))).thenReturn(true);
         Response response = permissionResource.exists(2L, null);
         assertEquals(204,response.getStatus());
     }
@@ -264,7 +140,7 @@ public class PermissionResourceTest {
      */
     @Test
     public void testExistsUsingPermissionName() {
-        when(permissionServiceAccess.exists(nullable(Long.class), anyString())).thenReturn(true);
+        when(permissionBusinessService.exists(nullable(Long.class), anyString())).thenReturn(true);
         Response response = permissionResource.exists(null, "add-user");
         assertEquals(204,response.getStatus());
     }
@@ -276,23 +152,14 @@ public class PermissionResourceTest {
     @Test
     public void testExistsUsingPermissionIdAndName()  {
         // case 1: Returning true
-        when(permissionServiceAccess.exists(anyLong(), anyString())).thenReturn(true);
+        when(permissionBusinessService.exists(anyLong(), anyString())).thenReturn(true);
         Response response = permissionResource.exists(2L, "add-user");
         assertEquals(204, response.getStatus());
 
         // case 2: Returning false
-        when(permissionServiceAccess.exists(anyLong(), anyString())).thenReturn(false);
+        when(permissionBusinessService.exists(anyLong(), anyString())).thenReturn(false);
         response = permissionResource.exists(2L, "add-user");
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-    }
-
-    /**
-     * Test the  endpoint ("exists") omitting all required parameters
-     */
-    @Test
-    public void testExistsWithNoParameters() {
-        Response response = permissionResource.exists(null, null);
-        assertEquals(400,response.getStatus());
     }
 
     /**
@@ -304,54 +171,9 @@ public class PermissionResourceTest {
     public void testGetIdSuccessCase() throws PermissionIllegalArgumentException {
         String action = "Create", resource = "User";
         Long id = 111L;
-        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
-                thenReturn(Optional.of(id));
+        when(permissionBusinessService.getIdByActionAndResource(resource, action)).
+                thenReturn(id);
         Response response = permissionResource.getIdByResourceAndAction(resource, action);
         assertEquals(Response.Status.OK, response.getStatusInfo().toEnum());
     }
-
-    /**
-     * Test the endpoint {@link PermissionResource#getIdByResourceAndAction(String, String)}
-     * for a unsuccessful situation where the Permission Id cannot be retrieved by an Action and Resource (Names)
-     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
-     */
-    @Test
-    public void testGetIdUnSuccessCase() throws PermissionIllegalArgumentException {
-        String action = "Create", resource = "User";
-        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
-                thenReturn(Optional.empty());
-        Response response = permissionResource.getIdByResourceAndAction(resource, action);
-        assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo().toEnum());
-    }
-
-    /**
-     * Test the endpoint {@link PermissionResource#getIdByResourceAndAction(String, String)}
-     * for a unsuccessful situation where Action or Resource were not informed
-     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
-     */
-    @Test
-    public void testGetIdInsufficientParametersCase() throws PermissionIllegalArgumentException {
-        String action = "", resource = "User";
-        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
-                thenThrow(new PermissionIllegalArgumentException("invalid"));
-        Response response = permissionResource.getIdByResourceAndAction(resource, action);
-        assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo().toEnum());
-    }
-
-
-    /**
-     * Test the endpoint {@link PermissionResource#getIdByResourceAndAction(String, String)}
-     * for a unsuccessful situation where an internal server error is triggered by an exception
-     * @throws PermissionIllegalArgumentException thrown when mandatory parameters are not informed
-     */
-    @Test
-    public void testGetIdWhenInternalServerErrorCase() throws PermissionIllegalArgumentException {
-        String action = "Create", resource = "User";
-        when(permissionServiceAccess.getIdByActionAndResource(resource, action)).
-                thenThrow(new RuntimeException("error"));
-        Response response = permissionResource.getIdByResourceAndAction(resource, action);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
-    }
-
-
 }

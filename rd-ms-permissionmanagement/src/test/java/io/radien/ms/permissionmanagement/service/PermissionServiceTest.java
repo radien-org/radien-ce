@@ -25,18 +25,18 @@ import io.radien.api.service.permission.ActionServiceAccess;
 import io.radien.api.service.permission.PermissionServiceAccess;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.PermissionIllegalArgumentException;
-import io.radien.exception.PermissionNotFoundException;
-import io.radien.exception.ResourceNotFoundException;
+import io.radien.api.service.permission.exception.PermissionIllegalArgumentException;
+import io.radien.api.service.permission.exception.PermissionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
+import io.radien.ms.permissionmanagement.datalayer.PermissionService;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
 
-import io.radien.ms.permissionmanagement.model.ActionEntity;
-import io.radien.ms.permissionmanagement.model.PermissionEntity;
-import io.radien.ms.permissionmanagement.model.ResourceEntity;
+import io.radien.ms.permissionmanagement.entities.ActionEntity;
+import io.radien.ms.permissionmanagement.entities.PermissionEntity;
+import io.radien.ms.permissionmanagement.entities.ResourceEntity;
 import java.util.Optional;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -62,7 +62,7 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Permission Service test, to test the crud requests and responses
- * {@link io.radien.ms.permissionmanagement.service.PermissionService}
+ * {@link PermissionService}
  *
  * @author Nuno Santana
  * @author Bruno Gama
@@ -351,21 +351,6 @@ public class PermissionServiceTest {
         exceptionForRepeatedNameMessage = exceptionForRepeatedActionResource.getMessage();
         expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Action and Resource");
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
-    }
-
-    /**
-     * Trying to update a permission that does not exist.
-     * Expected behaviour: Raise ResourceNotFound exception
-     */
-    @Test
-    public void testUpdateFailurePermissionNotFound() {
-        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
-        PermissionEntity p = PermissionFactory.create("unknown", 2L, 2L);
-        p.setId(100000L);
-        PermissionNotFoundException pnf = assertThrows(PermissionNotFoundException.class,
-                () -> permissionServiceAccess.update(p));
-        String messageFromException = pnf.getMessage();
-        assertTrue(messageFromException.contains(expectedMessage));
     }
 
     /**

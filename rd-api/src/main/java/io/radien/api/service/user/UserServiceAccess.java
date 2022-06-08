@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.user;
 
+import io.radien.exception.SystemException;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public interface UserServiceAccess extends ServiceAccess {
      * @return the user object
      * @throws UserNotFoundException in case no user is found with the given id
      */
-    public SystemUser get(Long userId) throws UserNotFoundException;
+    public SystemUser get(Long userId);
 
     /**
      * Requests a list of users based on a list of user id's
@@ -79,7 +80,7 @@ public interface UserServiceAccess extends ServiceAccess {
      * @throws UniquenessConstraintException in case of duplicated fields or records
      * @throws UserNotFoundException in case of not existing a User for an id
      */
-    void update(SystemUser user) throws UniquenessConstraintException, UserNotFoundException;
+    void update(SystemUser user) throws UniquenessConstraintException, SystemException;
 
     /**
      * Deletes a requested user based on the received id
