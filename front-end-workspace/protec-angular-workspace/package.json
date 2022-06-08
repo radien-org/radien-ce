@@ -4,9 +4,9 @@
   "scripts": {
     "protec": "ng serve protec --port 4100 --proxy-config proxy.config.js --verbose",
     "build-protec": "ng build protec",
-    "build-protec-based-url": "ng build protec --base-href /protec/",
-    "build-protec-prod": "ng build protec --prod --base-href /protec/",
-    "build-local-protec": "ng build protec --base-href /protec/ && rm -rf ../../../plugin-environment/front-end/build && cp -r dist/protec ../../../plugin-environment/front-end/build",
+    "build-protec-based-url": "ng build protec",
+    "build-protec-prod": "ng build protec --prod",
+    "build-local-protec": "ng build protec && rm -rf ../../../plugin-environment/front-end/build && cp -r dist/protec ../../../plugin-environment/front-end/build",
     "protec-library": "ng serve protec-library --port 4200",
     "build-protec-library-library": "ng build --watch protec-library",
     "build-protec-library-prod": "ng build protec-library --prod",

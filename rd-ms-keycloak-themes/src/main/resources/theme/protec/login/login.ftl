@@ -16,7 +16,7 @@
                             <#else>
                             </#if>
                             <#if realm.resetPasswordAllowed>
-                                <div class="link-reset-password" style="display: none">
+                                <div class="link-reset-password">
                                     <a href="${url.loginResetCredentialsUrl}">
                                         ${msg("doForgotPassword")}
                                     </a>
