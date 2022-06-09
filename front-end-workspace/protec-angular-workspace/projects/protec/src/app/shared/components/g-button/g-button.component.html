@@ -7,8 +7,16 @@
 </div>
 
 <div *ngIf="data.type === 'arrow-right'">
-    <div class="bt-action btn-version">
+    <div class="bt-action btn-version btn-arrow-right">
         <span>
+            {{data.label}}
+        </span>
+    </div>
+</div>
+
+<div *ngIf="data.type === 'arrow-right-first'">
+    <div class="bt-action btn-version btn-arrow-right-first">
+        <span class="no-overflow-text">
             {{data.label}}
         </span>
     </div>
