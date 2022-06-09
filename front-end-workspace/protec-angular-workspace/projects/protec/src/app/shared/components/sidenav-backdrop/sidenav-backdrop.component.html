@@ -1,22 +1,39 @@
-<mat-drawer-container class="example-container" [hasBackdrop]="hasBackdrop.value">
-    <mat-drawer #drawer [mode]="mode.value">I'm a drawer</mat-drawer>
-    <mat-drawer-content>
-      <mat-form-field appearance="fill">
-        <mat-label>Sidenav mode</mat-label>
-        <mat-select #mode value="side">
-          <mat-option value="side">Side</mat-option>
-          <mat-option value="over">Over</mat-option>
-          <mat-option value="push">Push</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Has backdrop</mat-label>
-        <mat-select #hasBackdrop>
-          <mat-option>Unset</mat-option>
-          <mat-option [value]="true">True</mat-option>
-          <mat-option [value]="false">False</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <button mat-raised-button (click)="drawer.toggle()">Toggle drawer</button>
-    </mat-drawer-content>
-  </mat-drawer-container>
+<div>
+    <h1 class="mt-0 mb-4 side-window-title">
+        {{ 'DATENSCHUTZ' | translate }}
+    </h1>
+    <h6 class="mt-0 mb-2 side-window-sub-title">
+        {{ 'Cookie-Einstellungen' | translate }}
+    </h6>
+    <p class="mt-2 mb-2 side-window-text">
+        {{ 'Deine Daten gehören Dir. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet. Lorem Ipsum dolor sit amet.' | translate }}
+    </p>
+    <a class="side-window-link" (click)="goTo(cookieGuideLink)">
+        {{ 'Weitere Informationen' | translate }}
+    </a>
+    <div class="mt-4 side-window-checks-content">
+        <mat-radio-button class="side-window-checkbox-label">
+            {{ 'Essenziell' | translate }}
+        </mat-radio-button>
+        <mat-radio-button class="side-window-checkbox-label">
+            {{ 'Statistiken' | translate }}
+        </mat-radio-button>
+        <mat-radio-button class="side-window-checkbox-label">
+            {{ 'Funktional' | translate }}
+        </mat-radio-button>
+        <mat-radio-button class="side-window-checkbox-label">
+            {{ 'Marketing' | translate }}
+        </mat-radio-button>
+    </div>
+    <div class="mt-4">
+        <div class="mt-2 mb-2">
+            <app-g-button [data]="cookieWindowButton.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
+        </div>
+        <div class="mt-2 mb-2">
+            <app-g-button [data]="cookieWindowButton.dataButtonOptionTwo"></app-g-button>
+        </div>
+        <div class="mt-2 mb-2">
+            <app-g-button [data]="cookieWindowButton.dataButtonOptionThree"></app-g-button>
+        </div>
+    </div>
+</div>

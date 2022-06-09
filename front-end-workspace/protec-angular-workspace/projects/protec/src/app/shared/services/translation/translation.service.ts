@@ -6,6 +6,9 @@ import { takeUntil } from 'rxjs/operators';
 import { LOCAL } from '../storage/local.enum';
 import { StorageService } from '../storage/storage.service';
 import { SUPPORTED_LANGUAGES } from './supported-languages';
+import { Observable } from 'rxjs';
+import { pluck } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -20,10 +23,10 @@ export class TranslationService implements OnDestroy {
 
   private readonly complete$ = new Subject();
 
-  constructor(private readonly translate: TranslateService, private readonly storageService: StorageService) {
+  constructor(private readonly translate: TranslateService, private readonly storageService: StorageService, private readonly http: HttpClient) {
     this.translate.addLangs(Object.values(SUPPORTED_LANGUAGES).map(lang => lang.locale));
 
-    this.translate.setDefaultLang(SUPPORTED_LANGUAGES.EN.locale);
+    this.translate.setDefaultLang(SUPPORTED_LANGUAGES.PT.locale);
 
     const storedLocale = this.storageService.getItem(LOCAL.LOCALE);
 
@@ -59,7 +62,7 @@ export class TranslationService implements OnDestroy {
   }
 
   public ngOnDestroy() {
-    this.complete$.next();
+    this.complete$.next(true);
 
     this.complete$.complete();
   }
@@ -68,5 +71,17 @@ export class TranslationService implements OnDestroy {
     this.translate.use(locale);
 
     this.storageService.setItem(LOCAL.LOCALE, locale);
+  }
+
+  public getTranslates(lang: string) {
+    this.getApiTranslatefile(lang).subscribe(data => {
+      this.storageService.setItem(LOCAL.TRANSLATE_FILE, data);
+    });
+  }
+
+  private getApiTranslatefile(lang: string): Observable<any> {
+    const url = `/cms/i18n/properties/${lang}`;
+
+    return this.http.get<any>(url).pipe(pluck('responseData'));
   }
 }

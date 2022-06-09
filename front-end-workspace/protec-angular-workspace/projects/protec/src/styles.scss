@@ -236,6 +236,49 @@ b {
   letter-spacing: 0px;
 }
 
+.title-text{
+  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 35px/44px var(--unnamed-font-family-dosis);
+  color: var(--deep-forest);
+  text-align: left;
+  font-weight: bold !important;
+  font-family: var(--unnamed-font-family-dosis);
+  letter-spacing: 10.5px !important;
+  color: #2B4645;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.h2-title{
+  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 25px/32px var(--unnamed-font-family-dosis);
+  color: var(--chalk-mint);
+  text-align: left;
+  font-family: var(--unnamed-font-family-dosis);
+  letter-spacing: 7.5px !important;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+
+.para-text{
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: lighter;
+  font-family: "Open sans", sans-serif;
+  font-size: 1em;
+  letter-spacing: 0px;
+}
+
+.para-title{
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: bold;
+  font-family: "Open sans", sans-serif !important;
+  font-size: 1em;
+  letter-spacing: 0px;
+}
+
 .side-window-close-content {
   width: 20px;
   height: 20px;
@@ -268,6 +311,10 @@ b {
   margin-bottom: 20px;
 }
 
+.generic-img {
+  width: 100%;
+}
+
 @media (max-width: 767px) {
   .base-content {
     margin-left: 0px;
@@ -281,4 +328,24 @@ b {
 
 .spacer-bottom-medium {
   margin-bottom: 1.2em;
+}
+
+.text-spacer p{
+  margin-bottom: 30px;
+}
+
+.vertical-space-reducer-top{
+  margin-top: -0.5em !important;
+}
+
+.vertical-space-increase-bottom{
+  margin-bottom: 1em !important;
+}
+
+.vertical-space-increase-top{
+  margin-top: 1em !important;
+}
+
+.bold-text{
+  font-weight: bold;
 }

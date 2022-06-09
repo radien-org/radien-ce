@@ -1,6 +1,0 @@
-﻿{
-  "hello": "Olá! {{value}}",
-  "generic": {
-    "test": "Teste"
-  }
-}

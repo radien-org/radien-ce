@@ -2,9 +2,11 @@
   "name": "protec-workspace",
   "version": "0.0.0",
   "scripts": {
-    "protec": "ng serve protec --port 4100 --proxy-config proxy.config.js",
+    "protec": "ng serve protec --port 4100 --proxy-config proxy.config.js --verbose",
     "build-protec": "ng build protec",
+    "build-protec-based-url": "ng build protec",
     "build-protec-prod": "ng build protec --prod",
+    "build-local-protec": "ng build protec && rm -rf ../../../plugin-environment/front-end/build && cp -r dist/protec ../../../plugin-environment/front-end/build",
     "protec-library": "ng serve protec-library --port 4200",
     "build-protec-library-library": "ng build --watch protec-library",
     "build-protec-library-prod": "ng build protec-library --prod",
@@ -26,14 +28,15 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
+    "@ngx-translate/core": "^11.0.1",
+    "@ngx-translate/http-loader": "^4.0.0",
+    "bootstrap": "^4.5.2",
     "primeicons": "^5.0.0",
     "primeng": "^13.4.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4",
-    "bootstrap": "^4.5.2",
-    "@ngx-translate/core": "^11.0.1",
-    "@ngx-translate/http-loader": "^4.0.0"
+    "moment": "^2.27.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.3.5",

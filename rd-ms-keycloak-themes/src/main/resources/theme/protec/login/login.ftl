@@ -7,18 +7,13 @@
             <div class="container">
                 <div id="loginbox" align="center" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-info">
+                        
                         <div class="panel-heading">
                             <div align="center">
                                 <img src="${url.resourcesPath}/img/ProTecSports_Logo_Wortmarke.png" class="login-logo-form"/>
                             </div>
                             <#if realm.displayName=='Keycloak'>
-                                <div class="panel-title">
-                                    Admin Access
-                                </div>
                             <#else>
-                                <div class="panel-title">
-                                    Welcome
-                                </div>
                             </#if>
                             <#if realm.resetPasswordAllowed>
                                 <div class="link-reset-password">
@@ -29,7 +24,8 @@
                             </#if>
                         </div>
 
-                        <div class="panel-body" >
+                        <div class="panel-body">
+
                             <#if message?has_content>
                                 <div id="login-alert" class="alert alert-danger col-sm-12">
                                     <span class="kc-feedback-text">
@@ -59,7 +55,7 @@
                                     <input tabindex="2" id="password" class="${properties.kcInputClass!}" name="password" type="password" autocomplete="off" placeholder="${msg("password")}"/>
                                 </div>
 
-                                <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
+                                <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-form-option-content">
                                     <#if realm.rememberMe && !usernameEditDisabled??>
                                         <div class="checkbox">
                                             <label>
@@ -84,22 +80,22 @@
                                     </div>
                                 </div>
 
-                                <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
-                                    <div class="form-group">
-                                        <div class="col-md-12 control">
-                                            <div style="padding-top:15px;" >
-                                                ${msg("noAccount")}
-                                                <a tabindex="6" href="${url.registrationUrl}">
-                                                    ${msg("doRegister")}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </#if>
                             </form>
                         </div>
                     </div>
                 </div>
+                <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
+                    <div class="form-group">
+                        <div class="col-md-12 control">
+                            <div class="login-registration-link up-division-line" >
+                                ${msg("noAccount")}
+                                <a tabindex="6" href="${url.registrationUrl}">
+                                    ${msg("doRegister")}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </#if>
             </div>
         </#if>
     </#if>
