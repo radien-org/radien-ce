@@ -13,7 +13,7 @@ export class StepperComponent implements OnInit {
   steps = [
     {
       label: 'DAS SCHADENSEREIGNIS',
-      type: 'arrow-right'
+      type: 'arrow-right-first'
     },
     {
       label: 'DIE DETAILS',
