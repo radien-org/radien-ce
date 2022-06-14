@@ -33,6 +33,17 @@ export class WizardComponent implements OnInit {
 
   }
 
+  pageNav = {
+    home: {
+      label: this.translationService.instant('HOME'),
+      type: 'anchor-button-home'
+    },
+    back: {
+      label: this.translationService.instant('BACK'),
+      type: 'footer-nav'
+    }
+  }
+
   footerNav = {
     dataButtonOptionOne: {
       label: this.translationService.instant('EINSTELLUNGEN'),

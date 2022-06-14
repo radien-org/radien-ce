@@ -47,6 +47,7 @@
 
 .btn-arrow-right {
     clip-path: polygon(96% 0%, 100% 50%, 96% 100%, 0% 100%, 4% 50%, 0% 0%);
+    margin-left: -5px;
 }
 
 .btn-arrow-right-first {
@@ -93,4 +94,14 @@
 
 .footer-nav-link:hover{
     color: var(--deep-mint);
+}
+
+.button-arrow{
+    display: inline;
+    color: var(--muted-forest);
+    font-family: var(--unnamed-font-family-dosis);
+}
+
+.button-arrow:hover{
+    color: var(--deep-forest);
 }
