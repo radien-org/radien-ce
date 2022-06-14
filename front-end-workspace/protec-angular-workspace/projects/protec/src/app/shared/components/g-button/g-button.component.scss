@@ -43,6 +43,12 @@
     height: 40px;
     padding: 10px;
     text-align: center;
+    letter-spacing: 4.5px;
+}
+
+.btn-outline:hover{
+    background: var(--deep-forest);
+    color: #FFFFFF;
 }
 
 .btn-arrow-right {
