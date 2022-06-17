@@ -21,6 +21,17 @@ export class AccidentTypeComponent implements OnInit {
     type: 'outline'
   }]
 
+  pageNav = {
+    home: {
+      label: this.translationService.instant('HOME'),
+      type: 'anchor-button-home'
+    },
+    back: {
+      label: this.translationService.instant('BACK'),
+      type: 'footer-nav'
+    }
+  }
+
   constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
