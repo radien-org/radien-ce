@@ -10,11 +10,8 @@ export class CookieGuideLineComponent implements OnInit {
   pageNav = {
     home: {
       label: this.translationService.instant('HOME'),
-      type: 'anchor-button-home'
-    },
-    back: {
-      label: this.translationService.instant('BACK'),
-      type: 'footer-nav'
+      type: 'anchor-button-home',
+      link: '/data-acquisition'
     }
   }
 

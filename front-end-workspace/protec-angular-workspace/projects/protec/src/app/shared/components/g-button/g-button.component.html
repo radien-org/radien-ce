@@ -15,7 +15,7 @@
 </div>
 
 <div *ngIf="data.type === 'arrow-right-first'">
-    <div class="bt-action btn-version btn-arrow-right-first">
+    <div class="bt-action btn-version btn-arrow-right-first" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
         <span class="no-overflow-text">
             {{data.label}}
         </span>
@@ -23,15 +23,23 @@
 </div>
 
 <div *ngIf="data.type === 'outline'">
-    <div class="bt-action btn-outline">
+    <div class="bt-action btn-outline" (click)="goToLink(data.link)">
         <span>
             {{data.label}}
         </span>
     </div>
 </div>
 
-<div *ngIf="data.type === 'anchor-button-home'">
-    <div class="home-button-link bt-action link-button">
+<div *ngIf="data.type === 'footer-nav'">
+    <div class="footer-nav-link bt-action" (click)="goToLink(data.link)">
+        <span class="no-overflow-text">
+            {{data.label}}
+        </span>
+    </div>
+</div>
+
+<div *ngIf="data.type === 'anchor-button-home'" class="d-flex" style="align-items: flex-end;">
+    <div class="home-button-link bt-action link-button ml-auto" (click)="goToLink(data.link)">
         <span class="no-overflow-text button-arrow">
             {{data.label}}
         </span>
@@ -39,10 +47,22 @@
     </div>
 </div>
 
-<div *ngIf="data.type === 'footer-nav'">
-    <div class="footer-nav-link bt-action">
-        <span class="no-overflow-text">
-            {{data.label}}
-        </span>
+<div *ngIf="data.type === 'navegation-buttons'">
+    <div class="row " [ngClass]="{'d-flex': data.navegations.length > 0}" style="align-items: flex-end;">
+        <div 
+            *ngFor="let navegation of data.navegations;let i = index;" 
+            class="col-lg-6 text-dark vertical-space-reducer-bottom-4 bold-text" 
+            [ngClass]="{'ml-auto': i > 0}">
+            <div 
+                class="home-button-link bt-action link-button" 
+                (click)="goToLink(navegation.link)" 
+                [ngClass]="{'text-right': i > 0}">
+                <span *ngIf="i == 0" class="arrow arrow-left"></span>
+                <span class="no-overflow-text button-arrow">
+                    {{navegation.label}}
+                </span>
+                <span *ngIf="i > 0" class="arrow arrow-right"></span>
+            </div>
+        </div>
     </div>
 </div>

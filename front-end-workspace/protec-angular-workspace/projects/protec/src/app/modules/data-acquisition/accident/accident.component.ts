@@ -9,13 +9,18 @@ import { TranslateService } from '@ngx-translate/core';
 export class AccidentComponent implements OnInit {
 
   pageNav = {
-    home: {
-      label: this.translationService.instant('HOME'),
-      type: 'anchor-button-home'
-    },
-    back: {
-      label: this.translationService.instant('BACK'),
-      type: 'footer-nav'
+    navegation: {
+      type: 'navegation-buttons',
+      navegations: [
+        {
+          label: this.translationService.instant('BACK'),
+          link: '/data-acquisition'
+        },
+        {
+          label: this.translationService.instant('NEXT'),
+          link: '/data-acquisition/accident-type'
+        }
+      ]
     }
   }
 
