@@ -13,25 +13,30 @@ export class StepperComponent implements OnInit {
   steps = [
     {
       label: 'DAS SCHADENSEREIGNIS',
-      type: 'arrow-right-first'
+      type: 'arrow-right-first',
+      link: '/data-acquisition/accident-intro'
     },
     {
       label: 'DIE DETAILS',
-      type: 'arrow-right'
+      type: 'arrow-right',
+      link: '/'
     },
     {
       label: 'ERFOLGSAUSSICHTEN',
-      type: 'arrow-right'
+      type: 'arrow-right',
+      link: '/'
     },
     {
       label: 'DEINE DATEN',
-      type: 'arrow-right'
+      type: 'arrow-right',
+      link: '/'
     }
   ]
 
   lastStep = {
     label: 'ANGEBOT ANFORDERN',
-    type: 'default'
+    type: 'default',
+    link: '/'
   }
 
   constructor(private _formBuilder: FormBuilder) {}

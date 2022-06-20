@@ -29,7 +29,7 @@ const routes: Routes = [
     component: ImpressumComponent
   },
   {
-    path: 'accident',
+    path: 'accident-intro',
     component: AccidentComponent
   },
   {

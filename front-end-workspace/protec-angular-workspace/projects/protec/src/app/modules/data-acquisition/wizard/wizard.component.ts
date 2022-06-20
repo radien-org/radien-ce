@@ -10,7 +10,8 @@ export class WizardComponent implements OnInit {
 
   dataButton = {
     label: this.translationService.instant('JETZT STARTEN'),
-    type: 'outline'
+    type: 'outline',
+    link: '/data-acquisition/accident-intro'
   }
 
   checks = {
@@ -40,25 +41,6 @@ export class WizardComponent implements OnInit {
     },
     back: {
       label: this.translationService.instant('BACK'),
-      type: 'footer-nav'
-    }
-  }
-
-  footerNav = {
-    dataButtonOptionOne: {
-      label: this.translationService.instant('EINSTELLUNGEN'),
-      type: 'footer-nav'
-    },
-    dataButtonOptionTwo: {
-      label: this.translationService.instant('COOKIES'),
-      type: 'footer-nav'
-    },
-    dataButtonOptionThree: {
-      label: this.translationService.instant('DATENSCHUTZ'),
-      type: 'footer-nav'
-    },
-    dataButtonOptionFour: {
-      label: this.translationService.instant('IMPRESSUM'),
       type: 'footer-nav'
     }
   }

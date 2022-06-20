@@ -22,13 +22,14 @@ export class AccidentTypeComponent implements OnInit {
   }]
 
   pageNav = {
-    home: {
-      label: this.translationService.instant('HOME'),
-      type: 'anchor-button-home'
-    },
-    back: {
-      label: this.translationService.instant('BACK'),
-      type: 'footer-nav'
+    navegation: {
+      type: 'navegation-buttons',
+      navegations: [
+        {
+          label: this.translationService.instant('BACK'),
+          link: '/data-acquisition/accident-intro'
+        }
+      ]
     }
   }
 

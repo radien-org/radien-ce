@@ -128,6 +128,11 @@ body {
   height: 85px;
 }
 
+.base-footer {
+  margin-top: 0vh;
+  height: 100px;
+}
+
 .base-content {
   margin-left: 193px;
   margin-right: 193px;
@@ -135,6 +140,14 @@ body {
 
 .base-img {
   width: 100%;
+}
+
+.base-min-height-30 {
+  min-height: 30vh;
+}
+
+.base-min-height-45 {
+  min-height: 45vh;
 }
 
 .generic-box-content {
@@ -380,4 +393,8 @@ b {
   display: inline;
   float: left;
   margin-right: 4em;
+}
+
+.btn-generic-focus-color {
+  background-color: var(--chalk-mint) !important;
 }
