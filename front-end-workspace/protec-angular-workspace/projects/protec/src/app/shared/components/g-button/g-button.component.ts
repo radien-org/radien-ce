@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-g-button',
@@ -7,14 +8,25 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class GButtonComponent implements OnInit {
 
-  @Input() public data = {
+  @Input() public data: any = {
     label: 'no-data',
-    type: 'default'
+    type: 'default',
+    link: '/',
+    active: false,
+    navegations: []
   };
 
-  constructor() { }
+  constructor(private readonly router: Router) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  goToLink(link:string) {
+    link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
+  }
+
+  checkCurrentRoute(link:string) {
+    const currentRouter  = this.router.url;
+    return link === currentRouter ? true : false;
   }
 
 }

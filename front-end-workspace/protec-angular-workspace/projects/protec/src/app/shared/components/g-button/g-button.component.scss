@@ -1,23 +1,30 @@
+
 .bt-action {
     cursor: pointer;
 }
 
 
 .btn-version {
-    width: 99%;
+    width: 100%;
     height: 39px;
     background: var(--45-chalk-mint) 0% 0% no-repeat padding-box;
     opacity: 1;
-    padding: 11px;
+    padding: 0 11px;
     text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: center;
 }
 
 .btn-version span {
     color: var(--deep-forest);
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     position: relative;
     bottom: 2px;
+    letter-spacing: 3px;
 }
 
 .btn-default {
@@ -36,4 +43,75 @@
     height: 40px;
     padding: 10px;
     text-align: center;
+    letter-spacing: 4.5px;
+}
+
+.btn-outline:hover{
+    background: var(--deep-forest);
+    color: #FFFFFF;
+}
+
+.btn-arrow-right {
+    clip-path: polygon(96% 0%, 100% 50%, 96% 100%, 0% 100%, 4% 50%, 0% 0%);
+    margin-left: -5px;
+}
+
+.btn-arrow-right-first {
+    clip-path: polygon(96% 0%, 100% 50%, 96% 100%, 0% 100%, 0% 50%, 0% 0%);
+}
+
+.no-overflow-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: lighter;
+    text-transform: uppercase;
+}
+
+.link-button{
+    color: var(--deep-forest);
+    font-size: 1em;
+    letter-spacing: 2px !important;
+}
+
+.arrow {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    border-top: 1px solid var(--deep-forest);
+    border-right: 1px solid var(--deep-forest);
+    margin-bottom: 2px;
+}
+
+.arrow-right {
+    transform: rotate(45deg);
+}
+
+.arrow-left {
+    transform: rotate(225deg);
+}
+
+.footer-nav-link {
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 12px/15px var(--unnamed-font-family-dosis);
+    color: var(--light-mint);
+    text-align: center;
+    font: normal normal bold 12px/15px Dosis;
+    letter-spacing: 3.6px;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+.footer-nav-link:hover{
+    color: var(--deep-mint);
+}
+
+.button-arrow{
+    display: inline;
+    color: var(--muted-forest);
+    font-family: var(--unnamed-font-family-dosis);
+}
+
+.button-arrow:hover{
+    color: var(--deep-forest);
 }

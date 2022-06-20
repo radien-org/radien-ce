@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-accident',
@@ -7,7 +8,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AccidentComponent implements OnInit {
 
-  constructor() { }
+  pageNav = {
+    navegation: {
+      type: 'navegation-buttons',
+      navegations: [
+        {
+          label: this.translationService.instant('BACK'),
+          link: '/data-acquisition'
+        },
+        {
+          label: this.translationService.instant('NEXT'),
+          link: '/data-acquisition/accident-type'
+        }
+      ]
+    }
+  }
+
+  constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
   }

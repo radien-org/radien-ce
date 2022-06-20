@@ -21,6 +21,18 @@ export class AccidentTypeComponent implements OnInit {
     type: 'outline'
   }]
 
+  pageNav = {
+    navegation: {
+      type: 'navegation-buttons',
+      navegations: [
+        {
+          label: this.translationService.instant('BACK'),
+          link: '/data-acquisition/accident-intro'
+        }
+      ]
+    }
+  }
+
   constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {

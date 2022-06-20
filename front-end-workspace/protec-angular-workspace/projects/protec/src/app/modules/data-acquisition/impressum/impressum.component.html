@@ -7,27 +7,77 @@
             <div class="generic-box-content">
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <h2>
-                            {{ 'OH WOW' | translate }}
+                        <h2 class="h2-title">
+                            <div>{{ 'OH WOW' | translate }}</div>
                         </h2>
-                        <h1 class="mt-0 mb-4">
-                            {{ 'IMPRESSUM' | translate }}
+                        <h1 class="mt-0 mb-4 title-text">
+                            <div>{{ 'IMPRESSUM' | translate }}</div>
                         </h1>
                         <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <p>
-                                    {{ 'Angaben gemäß § 5 TMG: Pro:Tec Solutions GmbH Sophienstraße 40 38118 Braunschweig Vertreten durch: Geschäftsführer: Alexander Naumann Kontakt: Telefon: +49 (0)531 618 990 18 E-Mail: info@protec-solutions.de Registereintrag: Eintragung im Handelsregister. Registergericht: Amtsgericht Braunschweig Registernummer: HRB 209067' | translate }}
-                                </p>
+                            <div class="col-lg-6 col-md-6 col-sm-12 content-text">
+                                <div>
+                                    <div>{{ 'Angaben gemäß § 5 TMG' | translate}}</div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
+                                <div>
+                                    <div>{{ 'Pro:Tec Solutions GmbH' | translate}}</div>
+                                    <div>{{'Sophienstraße 40' | translate}}</div>
+                                    <div>{{'38118 Braunschweig' | translate}}</div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
+                                <div>
+                                    <div>{{'Vertreten durch:' | translate}}<br></div>
+                                    <div>{{'Geschäftsführer: Alexander Naumann' | translate}}</div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
+                                <div>
+                                    <div>{{'Kontakt:' | translate}}</div>
+                                    <div>{{'Telefon: ' | translate}}<a class="no-anchor" href="tel:{{'+49 (0)531 618 990 18' | translate}}">{{'+49 (0)531 618 990 18' | translate}}</a></div>
+                                    <div>{{'E-Mail: ' | translate}}<a class="no-anchor" href="mailto:{{'info@protec-solutions.de'}}">{{'info@protec-solutions.de' | translate}}</a></div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
+                                <div>
+                                    <div>{{'Registereintrag:' | translate }}</div>
+                                    <div>{{'Eintragung im Handelsregister.' | translate }}</div>
+                                    <div>{{'Registergericht: Amtsgericht Braunschweig' | translate }}</div>
+                                    <div>{{'Registernummer: HRB 209067' | translate }}</div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <p>
-                                    {{ 'Umsatzsteuer: Umsatzsteuer-Identifikationsnummer gemäß §27 a Umsatzsteuergesetz: DE338227682 Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: Alexander Naumann Streitschlichtung: Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.' | translate }}
-                                </p>
+                            <div class="col-lg-6 col-md-6 col-sm-12 content-text">
+                                <div>
+                                    <div>{{ 'Umsatzsteuer:' | translate }}</div>
+                                    <div>{{'Umsatzsteuer-Identifikationsnummer' | translate }}</div>
+                                    <div>{{'gemäß §27 a Umsatzsteuergesetz: DE338227682' | translate }}</div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
+                                <div>
+                                    <div>{{'Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:' | translate }}</div>
+                                    <div>{{'Alexander Naumann' | translate }}</div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
+                                <div>
+                                    <div>{{'Streitschlichtung:' | translate }}</div>
+                                    <div>{{'Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.' | translate }}</div>
+                                </div>
+                                <div class="spacer-bottom-medium"></div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="container-fluid">
+                    <app-g-button [data]="pageNav.home"></app-g-button>
+                </div>
             </div>
+
         </div>
     </div>
 </div>

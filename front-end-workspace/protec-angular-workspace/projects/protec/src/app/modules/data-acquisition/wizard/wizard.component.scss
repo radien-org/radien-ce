@@ -1,8 +1,13 @@
 .side-window-container {
-    min-height: 60em;
+    min-height: 100vh;
 }
 
 .step-one-btn-content {
     margin-top: 50px;
     width: 211px;
+}
+
+.step-one-btn-content:hover{
+    background:var(--deep-forest);
+    color: #FFFFFF;
 }

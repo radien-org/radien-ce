@@ -7,6 +7,13 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./cookie-guide-line.component.scss']
 })
 export class CookieGuideLineComponent implements OnInit {
+  pageNav = {
+    home: {
+      label: this.translationService.instant('HOME'),
+      type: 'anchor-button-home',
+      link: '/data-acquisition'
+    }
+  }
 
   constructor(private readonly translationService: TranslateService) { }
 

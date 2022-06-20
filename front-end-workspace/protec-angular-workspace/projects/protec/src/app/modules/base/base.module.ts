@@ -4,18 +4,20 @@ import { HeaderComponent } from './header/header.component';
 import { SharedModule } from '../../shared/shared.module';
 import { HeaderDesktopComponent } from './header/header-desktop/header-desktop.component';
 import { HeaderMobileComponent } from './header/header-mobile/header-mobile.component';
+import { FooterComponent } from './footer/footer.component';
 
 
 @NgModule({
   declarations: [
     HeaderComponent,
     HeaderDesktopComponent,
-    HeaderMobileComponent
+    HeaderMobileComponent,
+    FooterComponent
   ],
   imports: [
     CommonModule,
     SharedModule
   ],
-  exports: [HeaderComponent],
+  exports: [HeaderComponent, FooterComponent],
 })
 export class BaseModule { }
