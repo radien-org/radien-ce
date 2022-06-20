@@ -55,8 +55,8 @@ $protec-theme: mat.define-light-theme((
   --close-icon-color: #314545;
 
   /* Font/text values */
-  --unnamed-font-family-dosis: Dosis;
-  --unnamed-font-family-open-sans: Open Sans;
+  --unnamed-font-family-dosis: "Dosis";
+  --unnamed-font-family-open-sans: "Open sans", sans-serif;
   --unnamed-font-style-normal: normal;
   --unnamed-font-weight-600: 600px;
   --unnamed-font-weight-bold: bold;
@@ -368,6 +368,10 @@ b {
   margin-bottom: -4em !important;
 }
 
+.horzontal-space-reducer-left-sm{
+  margin-left: -5px;
+}
+
 .bold-text{
   font-weight: bold;
 }
@@ -377,5 +381,3 @@ b {
   float: left;
   margin-right: 4em;
 }
-
-
