@@ -26,4 +26,6 @@ import { AccidentTypeComponent } from './accident-type/accident-type.component';
     SharedModule
   ]
 })
+
+
 export class DataAcquisitionModule { }
