@@ -4,11 +4,11 @@ import { TranslationService } from '../../../shared/services/translation/transla
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-footer',
-  templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss']
+  selector: 'app-internal-footer',
+  templateUrl: './internal-footer.component.html',
+  styleUrls: ['./internal-footer.component.scss']
 })
-export class FooterComponent implements OnInit {
+export class InternalFooterComponent implements OnInit {
 
   footerNav = {
     dataButtonOptionOne: {

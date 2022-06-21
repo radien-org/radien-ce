@@ -133,6 +133,14 @@ body {
   height: 100px;
 }
 
+.base-footer-with-modal {
+  margin-top: 80vh;
+  height: 100px;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+}
+
 .base-content {
   margin-left: 193px;
   margin-right: 193px;

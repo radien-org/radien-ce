@@ -8,12 +8,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { StepperComponent } from './components/stepper/stepper.component';
 import { GButtonComponent } from './components/g-button/g-button.component';
 import { SidenavBackdropComponent } from './components/sidenav-backdrop/sidenav-backdrop.component';
+import { InternalFooterComponent } from './components/internal-footer/internal-footer.component';
 
 @NgModule({
   declarations: [
     StepperComponent,
     GButtonComponent,
-    SidenavBackdropComponent
+    SidenavBackdropComponent,
+    InternalFooterComponent
     //FieldFormatterPipe,
   ],
   imports: [
@@ -31,7 +33,8 @@ import { SidenavBackdropComponent } from './components/sidenav-backdrop/sidenav-
     StepperComponent,
     GButtonComponent,
     TranslateModule,
-    SidenavBackdropComponent
+    SidenavBackdropComponent,
+    InternalFooterComponent
   ],
 })
 export class SharedModule {}

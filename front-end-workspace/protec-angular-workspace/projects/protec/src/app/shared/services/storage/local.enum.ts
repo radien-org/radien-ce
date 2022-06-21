@@ -7,4 +7,5 @@ export enum LOCAL {
   REMEMBER_ME = 'PH__remember',
   TOKEN = 'PH__st',
   TRANSLATE_FILE = 'PH__tf',
+  COOKIE_DECISION = 'PH__cd',
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CookieService } from '../../../shared/services/cookie/cookie.service';
 
 @Component({
   selector: 'app-wizard',
@@ -45,15 +46,14 @@ export class WizardComponent implements OnInit {
     }
   }
 
+  showCookieWindow = this.cookieService.getInLocal();
+
   cookieGuideLink = 'cookie-guide-line';
 
-  constructor(private readonly translationService: TranslateService) { }
-
-  ngOnInit(): void {
+  constructor(private readonly translationService: TranslateService, private readonly cookieService : CookieService) {
+    console.log('debug:', this.cookieService.getInLocal())
   }
 
-  test(mode:any){
-    return typeof mode
-  }
+  ngOnInit(): void {}
 
 }
