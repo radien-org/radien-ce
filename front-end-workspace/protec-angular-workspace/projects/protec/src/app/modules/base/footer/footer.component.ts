@@ -24,7 +24,7 @@ export class FooterComponent implements OnInit {
     dataButtonOptionThree: {
       label: this.translationService.instant('DATENSCHUTZ'),
       type: 'footer-nav',
-      link: null
+      link: '/data-acquisition/legal-data-policy'
     },
     dataButtonOptionFour: {
       label: this.translationService.instant('IMPRESSUM'),

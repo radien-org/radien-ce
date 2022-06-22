@@ -1,0 +1,37 @@
+<div class="base-content">
+    <div>
+        <div>
+            <app-stepper></app-stepper>
+        </div>
+        <div>
+            <div class="generic-box-content">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <h2 class="h2-title">
+                            <div>{{ 'OH WOW' | translate }}</div>
+                        </h2>
+                        <h1 class="mt-0 mb-4 title-text">
+                            <div>{{ 'DATENSCHUTZ' | translate }}</div>
+                        </h1>
+                        <br/>
+                        <p class="mb-4 mt-4">
+                            {{ 'Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.' | translate }}
+                        </p>
+                        <br/>
+                        <p class="mt-4 mb-4">
+                            <b>
+                                {{ 'ÜBERBLICK' | translate }}
+                            </b>
+                        </p>
+                        <p [innerHtml]="'<b>I. Allgemeines</b> <br> 1. Verantwortliche Stelle für die Datenverarbeitung. <br> 2. Kontakt für Fragen zum Datenschutz. <br> 3. Personenbezogene Daten.' | translate"></p>
+                        <p class="mt-4" [innerHtml]="'<b>II. Registrierung und Nutzung als registrierter Anwender</b> <br> 1. Registrierung bei protec-solutions.de (Benutzerkonto) <br> 2. Bearbeitung von Anfragen und Überleitung zum Vertragsschluss. <br> 3. Nutzung von WhatsApp.' | translate"></p>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <app-g-button [data]="pageNav.home"></app-g-button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
