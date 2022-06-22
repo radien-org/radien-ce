@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
+import { CalendarModule } from 'primeng/calendar';
 import { TranslateModule } from '@ngx-translate/core';
 //import { FieldFormatterPipe } from './pipes/field-formatter.pipe';
 
@@ -23,6 +24,7 @@ import { InternalFooterComponent } from './components/internal-footer/internal-f
     ReactiveFormsModule,
     FormsModule,
     MaterialModule,
+    CalendarModule,
     TranslateModule.forChild(),
   ],
   exports: [
@@ -30,6 +32,7 @@ import { InternalFooterComponent } from './components/internal-footer/internal-f
     ReactiveFormsModule,
     FormsModule,
     MaterialModule,
+    CalendarModule,
     StepperComponent,
     GButtonComponent,
     TranslateModule,
