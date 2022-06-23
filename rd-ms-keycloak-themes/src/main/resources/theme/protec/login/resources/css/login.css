@@ -158,7 +158,8 @@ textarea.pf-c-form-control {
 .pf-m-primary:hover {
     /*background-color: #004080;
     background-color: var(--pf-global--primary-color--200);*/
-    background-color: #223C51 !important;
+    background-color: #DADACF !important;
+    cursor: pointer;
 }
 
 /* default - IE compatibility */
@@ -172,6 +173,14 @@ h1#kc-page-title {
     margin-top: 10px;
 }
 
+#kc-locale {
+    position: absolute;
+    margin-top: 10px;
+    color: #dadada;
+    padding-left: 10px;
+    z-index: 1;
+}
+
 #kc-locale ul {
     background-color: #FFF;
     background-color: var(--pf-global--BackgroundColor--100);
@@ -179,6 +188,7 @@ h1#kc-page-title {
     top: 20px;
     min-width: 100px;
     padding: 0;
+    box-shadow: 0 3px 9px #224745;
 }
 
 #kc-locale-dropdown{
@@ -186,7 +196,18 @@ h1#kc-page-title {
 }
 
 #kc-locale-dropdown:hover ul {
-    display:block;
+    display: block;
+    background: #dadada;
+    color: #223C58;
+    text-align: left;
+    list-style-type: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#kc-locale-dropdown:hover ul li {
+    margin: 5px;
+    cursor: pointer;
 }
 
 /* IE compatibility */
@@ -202,7 +223,10 @@ h1#kc-page-title {
 a#kc-current-locale-link::after {
     content: "\2c5";
     margin-left: 4px;
-    margin-left: var(--pf-global--spacer--xs)
+    margin-left: var(--pf-global--spacer--xs);
+    position: relative;
+    left: 5px;
+    top: 5px;
 }
 
 .login-pf .container {
@@ -304,7 +328,7 @@ div.kc-logo-text span {
 #kc-info-wrapper {
     font-size: 13px;
     padding: 15px 35px;
-    background-color: #F0F0F0;
+    color: #dadada;
 }
 
 #kc-form-options span {
@@ -735,7 +759,7 @@ input[type="tel"]:hover {
 }
 
 .login-pf-header {
-    display: none;
+    display: block;
 }
 
 a {
@@ -763,15 +787,15 @@ a {
 }
 
 p.instruction {
-    background-color: #F0F0F0;
     padding: 20px;
     text-align: center;
+    color: #dadada;
 }
 
 .alert-warning {
-    background-color: #F0F0F0;
     padding: 20px !important;
     text-align: center;
+    color: #dadada;
 }
 
 .login-registration-link {
@@ -813,9 +837,7 @@ p.instruction {
     }
 
     #kc-locale {
-        position: relative;
-        text-align: right;
-        z-index: 9999;
+        /*TODO: check if is realle necessary*/
     }
 }
 
