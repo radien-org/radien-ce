@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-die-details',
@@ -7,7 +8,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DieDetailsComponent implements OnInit {
 
-  constructor() { }
+  pageNav = {
+    navegation: {
+      type: 'navegation-buttons',
+      navegations: [
+        {
+          label: this.translationService.instant('BACK'),
+          link: '/data-acquisition/accident-date'
+        }
+      ]
+    }
+  }
+
+  constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
   }

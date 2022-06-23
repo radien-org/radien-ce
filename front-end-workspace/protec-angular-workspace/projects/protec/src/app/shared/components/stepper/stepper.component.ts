@@ -19,7 +19,7 @@ export class StepperComponent implements OnInit {
     {
       label: 'DIE DETAILS',
       type: 'arrow-right',
-      link: '/'
+      link: '/data-acquisition/die-details'
     },
     {
       label: 'ERFOLGSAUSSICHTEN',
