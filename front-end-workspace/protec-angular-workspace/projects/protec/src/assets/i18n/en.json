@@ -1,6 +1,69 @@
 ﻿{
   "hello": "Hello! {{value}}",
   "OH WOW": "Olá!",
-  "TOLLE ÜBERSCHRIFT": "TOLLE ÜBERSCHRIFT",
-  "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!"
+  "TOLLE ÜBERSCHRIFT": "GREAT HEADLINE",
+  "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Welcome to the digital pension entitlement checker!",
+  "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.": "You now have the opportunity to check your pension entitlements in 4 steps free of charge and without obligation. If you have any questions, we are always at your disposal. In this case, please select the Contact option.",
+  "accident": {
+    "SCHRITT 1": "STEP 1",
+    "DAS SCHADENSEREIGNIS": "THE DAMAGE EVENT",
+    "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage.": "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two."
+  },
+  "accident-date": {
+    "Dein Unfalldatum": "your accident date",
+    "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *"
+  },
+  "accident-type": {
+    "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Have you had an accident at work, a leisure accident or an illness?"
+  },
+  "begin": {
+    "": ""
+  },
+  "cookie-guide-line": {
+    "OH WOW": "OH WOW",
+    "COOKIE-RICHTLINIE": "COOKIE-POLICY",
+    "Achtung! Text vorerst von anderer Website als Platzhalter! Mit dieser Cookie-Richtlinie möchten wir dich über den Einsatz von Cookies oder ähnlichen Speichertechnologien, etwa Pixel, (nachfolgend „Cookies“) auf unserer Webseite www.protec-solutions.de informieren. Diese Cookie-Richtlinie ergänzt unsere Datenschutzerklärung.": "Danger! Text from another website as a placeholder for the time being! With these cookie guidelines we would like to inform you about the use of cookies or similar storage technologies, such as pixels (hereinafter “cookies”) on our website www.protec-solutions.de. This Cookie Policy supplements our Privacy Policy.",
+    "I. Was sind Cookies?": "I. What are cookies?",
+    "Cookies sind kleine Textdateien, die von deinem Browser auf deinem Endgerät zur Speicherung von bestimmten Informationen abgelegt werden. Bei deinem nächsten Aufruf unserer Webseite mit demselben Endgerät werden die in Cookies gespeicherten Informationen in weiterer Folge entweder an unsere Webseite („First Party Cookie“) oder an eine andere Webseite, zu der das Cookie gehört („Third Party Cookie“), zurückgesandt.": "Cookies are small text files that are stored by your browser on your end device to store certain information. The next time you visit our website with the same device, the information stored in the cookies will be sent back either to our website (“First Party Cookie”) or to another website to which the cookie belongs (“Third Party Cookie”).",
+    "Durch die gespeicherten und zurückgesandten Informationen erkennt die jeweilige Webseite, dass du diese mit dem Browser deines Endgeräts bereits aufgerufen und besucht hast. Diese Informationen nutzen wir, um dir die Webseite gemäß deinen Präferenzen optimal gestalten und anzeigen zu können. Dabei wird lediglich das Cookie selbst auf deinem Endgerät identifiziert.": "Through the stored and returned information, the respective website recognizes that you have already accessed and visited it with the browser of your end device. We use this information to be able to optimally design and display the website according to your preferences. Only the cookie itself is identified on your end device.",
+    "Eine Speicherung von personenbezogenen Daten erfolgt nur nach deiner ausdrücklichen Einwilligung, oder wenn dies unbedingt erforderlich ist, um den angebotenen und von dir aufgerufenen Dienst entsprechend nutzen zu können.": "Personal data will only be stored with your express consent or if this is absolutely necessary in order to be able to use the service offered and accessed by you accordingly."
+  },
+  "die-details": {
+    "SCHRITT 2": "STEP 2",
+    "DIE DETAILS": "THE DETAILS",
+    "Nachdem die Grundvorraussetzung für Rentenansprüche erfüllt sind, möchten wir im folgenden Schritt mit der Detailsprüfung starten. Hierfür erfasst Du nun ereignisspezifische Angaben bezüglich Deines Arbeitgebers sowie der Art Deiner Verletzung bzw. Erkrankung.": "After the basic requirements for pension entitlements have been met, we would like to start with the detailed check in the next step. To do this, you now enter event-specific information regarding your employer and the nature of your injury or illness."
+  },
+  "impressum": {
+    "OH WOW": "OH WOW",
+    "IMPRESSUM": "IMPRINT",
+    "Angaben gemäß § 5 TMG": "According to § 5 TMG",
+    "Pro:Tec Solutions GmbH": "Pro:Tec Solutions GmbH",
+    "Sophienstraße 40": "Sophienstraße 40",
+    "38118 Braunschweig": "38118 Braunschweig",
+    "Vertreten durch:": "Represented by:",
+    "Geschäftsführer: Alexander Naumann": "Managing Director: Alexander Naumann",
+    "Kontakt: ": "Contact: ",
+    "Telefon: ": "Phone: ",
+    "E-Mail: ": "E-Mail: ",
+    "Registereintrag:": "Register entry:",
+    "Eintragung im Handelsregister.": "Registration in the commercial register.",
+    "Registergericht: Amtsgericht Braunschweig": "Registry court: District Court of Braunschweig",
+    "Registernummer: HRB 209067": "Registration number: HRB 209067",
+    "Umsatzsteuer:": "value added tax:",
+    "Umsatzsteuer-Identifikationsnummer": "Umsatzsteuer-Identification-Number",
+    "gemäß §27 a Umsatzsteuergesetz: DE338227682": "according to §27 a Value Added Tax Act: DE338227682",
+    "Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:": "Responsible for the content according to § 55 Abs. 2 RStV:",
+    "Alexander Naumann": "Alexander Naumann",
+    "Streitschlichtung:": "Dispute resolution:",
+    "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.": "The European Commission provides a platform for online dispute resolution (OS): https://ec.europa.eu/consumers/odr. Our e-mail address can be found above in the imprint. We are not willing or obliged to participate in dispute settlement procedures before a consumer arbitration board."
+  },
+  "legal-data-policy": {
+    "OH WOW": "OH WOW",
+    "DATENSCHUTZ": "PRIVACY",
+    "Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.": "We would like to thank you for the trust placed in us and assure you that we will act sensitively and in the interests of our customers with the data made available to us. With the following information we inform you about the type, scope and purpose of the collection and use of personal data when using our website.",
+    "ÜBERBLICK": "OVERVIEW"
+  },
+  "wizard": {
+
+  }
 }

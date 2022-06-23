@@ -4,4 +4,66 @@
     "TOLLE ÜBERSCHRIFT": "TOLLE ÜBERSCHRIFT",
     "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!",
     "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.": "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option."
+    "accident": {
+        "SCHRITT 1": "SCHRITT 1",
+        "DAS SCHADENSEREIGNIS": "DAS SCHADENSEREIGNIS",
+        "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage.": "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage."
+    },
+    "accident-date": {
+        "Dein Unfalldatum": "Dein Unfalldatum",
+        "Bist bzw. warst Du krankgeschrieben? *": "Bist bzw. warst Du krankgeschrieben? *"
+    },
+    "accident-type": {
+        "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?"
+    },
+    "begin": {
+        "": ""
+    },
+    "cookie-guide-line": {
+        "OH WOW": "OH WOW",
+        "COOKIE-RICHTLINIE": "COOKIE-RICHTLINIE",
+        "Achtung! Text vorerst von anderer Website als Platzhalter! Mit dieser Cookie-Richtlinie möchten wir dich über den Einsatz von Cookies oder ähnlichen Speichertechnologien, etwa Pixel, (nachfolgend „Cookies“) auf unserer Webseite www.protec-solutions.de informieren. Diese Cookie-Richtlinie ergänzt unsere Datenschutzerklärung.": "Achtung! Text vorerst von anderer Website als Platzhalter! Mit dieser Cookie-Richtlinie möchten wir dich über den Einsatz von Cookies oder ähnlichen Speichertechnologien, etwa Pixel, (nachfolgend „Cookies“) auf unserer Webseite www.protec-solutions.de informieren. Diese Cookie-Richtlinie ergänzt unsere Datenschutzerklärung.",
+        "I. Was sind Cookies?": "I. Was sind Cookies?",
+        "Cookies sind kleine Textdateien, die von deinem Browser auf deinem Endgerät zur Speicherung von bestimmten Informationen abgelegt werden. Bei deinem nächsten Aufruf unserer Webseite mit demselben Endgerät werden die in Cookies gespeicherten Informationen in weiterer Folge entweder an unsere Webseite („First Party Cookie“) oder an eine andere Webseite, zu der das Cookie gehört („Third Party Cookie“), zurückgesandt.": "Cookies sind kleine Textdateien, die von deinem Browser auf deinem Endgerät zur Speicherung von bestimmten Informationen abgelegt werden. Bei deinem nächsten Aufruf unserer Webseite mit demselben Endgerät werden die in Cookies gespeicherten Informationen in weiterer Folge entweder an unsere Webseite („First Party Cookie“) oder an eine andere Webseite, zu der das Cookie gehört („Third Party Cookie“), zurückgesandt.",
+        "Durch die gespeicherten und zurückgesandten Informationen erkennt die jeweilige Webseite, dass du diese mit dem Browser deines Endgeräts bereits aufgerufen und besucht hast. Diese Informationen nutzen wir, um dir die Webseite gemäß deinen Präferenzen optimal gestalten und anzeigen zu können. Dabei wird lediglich das Cookie selbst auf deinem Endgerät identifiziert.": "Durch die gespeicherten und zurückgesandten Informationen erkennt die jeweilige Webseite, dass du diese mit dem Browser deines Endgeräts bereits aufgerufen und besucht hast. Diese Informationen nutzen wir, um dir die Webseite gemäß deinen Präferenzen optimal gestalten und anzeigen zu können. Dabei wird lediglich das Cookie selbst auf deinem Endgerät identifiziert.",
+        "Eine Speicherung von personenbezogenen Daten erfolgt nur nach deiner ausdrücklichen Einwilligung, oder wenn dies unbedingt erforderlich ist, um den angebotenen und von dir aufgerufenen Dienst entsprechend nutzen zu können.": "Eine Speicherung von personenbezogenen Daten erfolgt nur nach deiner ausdrücklichen Einwilligung, oder wenn dies unbedingt erforderlich ist, um den angebotenen und von dir aufgerufenen Dienst entsprechend nutzen zu können."
+    },
+    "die-details": {
+        "SCHRITT 2": "SCHRITT 2",
+        "DIE DETAILS": "DIE DETAILS",
+        "Nachdem die Grundvorraussetzung für Rentenansprüche erfüllt sind, möchten wir im folgenden Schritt mit der Detailsprüfung starten. Hierfür erfasst Du nun ereignisspezifische Angaben bezüglich Deines Arbeitgebers sowie der Art Deiner Verletzung bzw. Erkrankung.": "Nachdem die Grundvorraussetzung für Rentenansprüche erfüllt sind, möchten wir im folgenden Schritt mit der Detailsprüfung starten. Hierfür erfasst Du nun ereignisspezifische Angaben bezüglich Deines Arbeitgebers sowie der Art Deiner Verletzung bzw. Erkrankung."
+    },
+    "impressum": {
+        "OH WOW": "OH WOW",
+        "IMPRESSUM": "IMPRESSUM",
+        "Angaben gemäß § 5 TMG": "Angaben gemäß § 5 TMG",
+        "Pro:Tec Solutions GmbH": "Pro:Tec Solutions GmbH",
+        "Sophienstraße 40": "Sophienstraße 40",
+        "38118 Braunschweig": "38118 Braunschweig",
+        "Vertreten durch:": "Vertreten durch:",
+        "Geschäftsführer: Alexander Naumann": "Geschäftsführer: Alexander Naumann",
+        "Kontakt: ": "Kontakt: ",
+        "Telefon: ": "Telefon: ",
+        "E-Mail: ": "E-Mail: ",
+        "Registereintrag:": "Registereintrag:",
+        "Eintragung im Handelsregister.": "Eintragung im Handelsregister.",
+        "Registergericht: Amtsgericht Braunschweig": "Registergericht: Amtsgericht Braunschweig",
+        "Registernummer: HRB 209067": "Registernummer: HRB 209067",
+        "Umsatzsteuer:": "Umsatzsteuer:",
+        "Umsatzsteuer-Identifikationsnummer": "Umsatzsteuer-Identifikationsnummer",
+        "gemäß §27 a Umsatzsteuergesetz: DE338227682": "gemäß §27 a Umsatzsteuergesetz: DE338227682",
+        "Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:": "Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:",
+        "Alexander Naumann": "Alexander Naumann",
+        "Streitschlichtung:": "Streitschlichtung:",
+        "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.": "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen."
+    },
+    "legal-data-policy": {
+        "OH WOW": "OH WOW",
+        "DATENSCHUTZ": "DATENSCHUTZ",
+        "Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.": "Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.",
+        "ÜBERBLICK": "ÜBERBLICK"
+    },
+    "wizard": {
+
+    }
 }
