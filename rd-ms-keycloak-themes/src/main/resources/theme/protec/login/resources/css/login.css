@@ -173,6 +173,24 @@ h1#kc-page-title {
     margin-top: 10px;
 }
 
+.translate-links-content {
+    width: 40%;
+    display: flex;
+    align-items: stretch;
+}
+
+.translate-links-content a {
+    padding: 10px;
+}
+
+.translate-links-content:not(:last-child) a::after {
+    content: '|';
+    float: right;
+    position: relative;
+    bottom: 0px;
+    left: 12px;
+}
+
 #kc-locale {
     position: absolute;
     margin-top: 10px;
