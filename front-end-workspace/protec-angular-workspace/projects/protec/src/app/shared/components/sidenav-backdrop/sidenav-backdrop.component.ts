@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { CookieService } from '../../services/cookie/cookie.service';
@@ -11,6 +11,7 @@ import { CookieService } from '../../services/cookie/cookie.service';
 export class SidenavBackdropComponent implements OnInit {
 
   @Input() public dataComponent: any;
+  @Output() public closeModalFunc = new EventEmitter();
 
   checks = {
     color: 'primary'
@@ -19,15 +20,18 @@ export class SidenavBackdropComponent implements OnInit {
   cookieWindowButton = {
     dataButtonOptionOne: {
       label: this.translationService.instant('ALLE COOKIES AKZEPTIEREN'),
-      type: 'outline'
+      type: 'outline',
+      link: 'disabled'
     },
     dataButtonOptionTwo: {
       label: this.translationService.instant('OPTIONALE COOKIES ABLEHNEN'),
-      type: 'outline'
+      type: 'outline',
+      link: 'disabled'
     },
     dataButtonOptionThree: {
       label: this.translationService.instant('MEINE AUSWAHL BESTÄTIGEN'),
-      type: 'outline'
+      type: 'outline',
+      link: 'disabled'
     }
   }
 
@@ -35,17 +39,21 @@ export class SidenavBackdropComponent implements OnInit {
 
   constructor(private readonly translationService: TranslateService, private readonly router: Router, private readonly cookieService : CookieService) { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   goTo(url:string) {
     this.router.navigate([url]);
   }
 
   getAcceptedCookie(cookies: string) {
-    let x = this.cookieService.getAcceptedCookie(cookies);
-    console.log(x);
-    return x;
+    this.cookieService.getAcceptedCookie(cookies).then((x:any) => {
+      this.cookieService.saveInLocal(cookies);
+      this.closeModal();
+    });
+  }
+
+  public closeModal(): void {
+    this.closeModalFunc.emit();
   }
 
 }

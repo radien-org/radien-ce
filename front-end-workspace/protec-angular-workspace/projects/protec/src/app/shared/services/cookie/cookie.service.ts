@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { LOCAL } from '../storage/local.enum';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +9,7 @@ export class CookieService {
 
   private serviceUrl: string = "/nwprotecservice/cookie/permittedCookies";
 
-  constructor() { }
+  constructor(private readonly storageService: StorageService) { }
 
   public getAcceptedCookie(search: string = "all") : any {
 
@@ -20,8 +22,16 @@ export class CookieService {
         throw new ReferenceError(JSON.stringify(res));
       }
     }).then(body => {
-      console.log(body)
       return body;
     });
+  }
+
+  public saveInLocal(search: string) {
+    this.storageService.setItem(LOCAL.COOKIE_DECISION, search);
+  }
+
+  public getInLocal(): boolean {
+    console.log('debug:', this.storageService.getItem(LOCAL.COOKIE_DECISION))
+    return this.storageService.getItem(LOCAL.COOKIE_DECISION) !== null ? false : true;
   }
 }

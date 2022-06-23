@@ -6,6 +6,9 @@ import { ImpressumComponent } from './impressum/impressum.component';
 import { BeginComponent } from './begin/begin.component';
 import { AccidentComponent } from './accident/accident.component';
 import { AccidentTypeComponent } from './accident-type/accident-type.component';
+import { LegalDataPolicyComponent } from './legal-data-policy/legal-data-policy.component';
+import { DieDetailsComponent } from './die-details/die-details.component';
+import { AccidentDateComponent } from './accident-date/accident-date.component';
 
 const routes: Routes = [
   {
@@ -35,6 +38,18 @@ const routes: Routes = [
   {
     path: 'accident-type',
     component: AccidentTypeComponent
+  },
+  {
+    path: 'accident-date',
+    component: AccidentDateComponent
+  },
+  {
+    path: 'legal-data-policy',
+    component: LegalDataPolicyComponent
+  },
+  {
+    path: 'die-details',
+    component: DieDetailsComponent
   }
 ];
 

@@ -21,7 +21,9 @@ export class GButtonComponent implements OnInit {
   ngOnInit(): void {}
 
   goToLink(link:string) {
-    link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
+    if(link !== 'disabled'){
+      link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
+    }
   }
 
   checkCurrentRoute(link:string) {

@@ -1,12 +1,12 @@
 <div class="base-content zero-margin">
     <mat-drawer-container class="side-window-container" hasBackdrop="true">
     
-        <mat-drawer #drawer mode="over" position="end" opened>
+        <mat-drawer #drawer mode="over" position="end" [opened]="showCookieWindow">
             <div class="side-window-content">
                 <div class="side-window-close-content mb-3">
                     <span mat-raised-button (click)="drawer.toggle()" class="side-window-close-icon">X</span>
                 </div>
-                <app-sidenav-backdrop></app-sidenav-backdrop>
+                <app-sidenav-backdrop (closeModalFunc)="drawer.toggle()"></app-sidenav-backdrop>
             </div>
         </mat-drawer>
         
@@ -50,7 +50,6 @@
             </div>
     
         </mat-drawer-content>
-    
     
     </mat-drawer-container>
 </div>
