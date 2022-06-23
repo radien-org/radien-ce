@@ -27,11 +27,13 @@ export class AccidentDateComponent implements OnInit {
 
   buttons = [{
     label: this.translationService.instant('JA'),
-    type: 'outline'
+    type: 'outline',
+    link: 'disabled'
   },
   {
     label: this.translationService.instant('NEIN'),
-    type: 'outline'
+    type: 'outline',
+    link: 'disabled'
   }]
 
   dtYear: Date | undefined;
