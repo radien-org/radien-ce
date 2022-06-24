@@ -48,14 +48,11 @@
                 <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
                     <div id="kc-locale-wrapper" class="${properties.kcLocaleWrapperClass!}">
                         <div id="kc-locale-dropdown" class="${properties.kcLocaleDropDownClass!}">
-                            <a href="#" id="kc-current-locale-link">${locale.current}</a>
-                            <ul class="${properties.kcLocaleListClass!}">
+                            <div class="translate-links-content">
                                 <#list locale.supported as l>
-                                    <li class="${properties.kcLocaleListItemClass!}">
-                                        <a class="${properties.kcLocaleItemClass!}" href="${l.url}">${l.label}</a>
-                                    </li>
+                                    <a class="${properties.kcLocaleItemClass!}" href="${l.url}">${l.label} </a>
                                 </#list>
-                            </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,11 +64,11 @@
                         <span class="subtitle"><span class="required">*</span> ${msg("requiredFields")}</span>
                     </div>
                     <div class="col-md-10">
-                        <h1 id="kc-page-title"><#nested "header"></h1>
+                        <div id="kc-page-title" style="display: none;"><#nested "header"></div>
                     </div>
                 </div>
             <#else>
-                <h1 id="kc-page-title"><#nested "header"></h1>
+                <div id="kc-page-title" style="display: none;"><#nested "header"></div>
             </#if>
         <#else>
             <#if displayRequiredFields>

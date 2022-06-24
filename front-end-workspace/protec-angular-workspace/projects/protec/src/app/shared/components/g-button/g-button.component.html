@@ -7,7 +7,7 @@
 </div>
 
 <div *ngIf="data.type === 'arrow-right'">
-    <div class="bt-action btn-version btn-arrow-right">
+    <div class="bt-action btn-version btn-arrow-right" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
         <span>
             {{data.label}}
         </span>

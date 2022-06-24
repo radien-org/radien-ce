@@ -5,7 +5,7 @@ const env = {
 const proxy = [
     {
       context: "/nwprotecservice", 
-      "target": env.online + "/nwprotecservice/v1/", 
+      "target": env.online + "/protecservice/v1", 
       "secure": false, 
       "pathRewrite": {
       "^/nwprotecservice": ""

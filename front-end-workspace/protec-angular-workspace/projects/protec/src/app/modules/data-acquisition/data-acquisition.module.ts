@@ -9,6 +9,9 @@ import { ImpressumComponent } from './impressum/impressum.component';
 import { BeginComponent } from './begin/begin.component';
 import { AccidentComponent } from './accident/accident.component';
 import { AccidentTypeComponent } from './accident-type/accident-type.component';
+import { LegalDataPolicyComponent } from './legal-data-policy/legal-data-policy.component';
+import { DieDetailsComponent } from './die-details/die-details.component';
+import { AccidentDateComponent } from './accident-date/accident-date.component';
 
 
 @NgModule({
@@ -19,6 +22,9 @@ import { AccidentTypeComponent } from './accident-type/accident-type.component';
     BeginComponent,
     AccidentComponent,
     AccidentTypeComponent,
+    LegalDataPolicyComponent,
+    DieDetailsComponent,
+    AccidentDateComponent,
   ],
   imports: [
     DataAcquisitionRoutingModule,

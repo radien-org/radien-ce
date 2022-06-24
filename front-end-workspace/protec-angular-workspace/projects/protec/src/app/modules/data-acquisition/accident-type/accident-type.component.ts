@@ -10,15 +10,18 @@ export class AccidentTypeComponent implements OnInit {
 
   buttons = [{
     label: this.translationService.instant('ARBEITSUNFALL'),
-    type: 'outline'
+    type: 'outline',
+    link: '/data-acquisition/accident-date'
   },
   {
     label: this.translationService.instant('FREIZEITUNFALL'),
-    type: 'outline'
+    type: 'outline',
+    link: '/data-acquisition/accident-date'
   },
   {
     label: this.translationService.instant('KRANKHEIT'),
-    type: 'outline'
+    type: 'outline',
+    link: '/data-acquisition/accident-date'
   }]
 
   pageNav = {
