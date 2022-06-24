@@ -15,11 +15,10 @@
  */
 package io.radien.ms.permissionmanagement.service;
 
-import io.radien.api.service.permission.ActionServiceAccess;
-import io.radien.exception.ActionNotFoundException;
-import io.radien.exception.NotFoundException;
+import io.radien.api.service.permission.exception.ActionNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.entities.ActionEntity;
+import io.radien.ms.permissionmanagement.resource.ActionResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -31,7 +30,6 @@ import java.net.MalformedURLException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +43,7 @@ public class ActionResourceTest {
     ActionResource actionResource;
 
     @Mock
-    ActionServiceAccess actionServiceAccess;
+    ActionBusinessService actionService;
     
     @Before
     public void before(){
@@ -62,45 +60,14 @@ public class ActionResourceTest {
     }
 
     /**
-     * Test the Get All request Exception which will return a generic error message code 500.
-     */
-    @Test
-    public void testGetAllGenericException() throws MalformedURLException {
-        when(actionResource.getAll(null,1,10,null,true))
-                .thenThrow(new RuntimeException());
-        Response response = actionResource.getAll(null,1,10,null,true);
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
-     * Test that will test the error message 404 permission Not Found
-     */
-    @Test
-    public void testGetById404() {
-        Response response = actionResource.getById(1L);
-        assertEquals(404,response.getStatus());
-    }
-
-    /**
      * Get by ID with success should return a 200 code message
      * @throws ActionNotFoundException in case of action not found
      */
     @Test
     public void testGetById() throws ActionNotFoundException {
-        when(actionServiceAccess.get(1L)).thenReturn(new ActionEntity());
+        when(actionService.get(1L)).thenReturn(new ActionEntity());
         Response response = actionResource.getById(1L);
         assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Test Get by ID exception which will return a 500 error code message
-     * @throws ActionNotFoundException in case of action not found
-     */
-    @Test
-    public void testGetByIdGenericException() throws ActionNotFoundException {
-        when(actionServiceAccess.get(1L)).thenThrow(new RuntimeException());
-        Response response = actionResource.getById(1L);
-        assertEquals(500,response.getStatus());
     }
 
     /**
@@ -113,32 +80,12 @@ public class ActionResourceTest {
     }
 
     /**
-     * Test Get Actions by should return error with a 500 error code message
-     */
-    @Test
-    public void testGetPermissionsByException() {
-        doThrow(new RuntimeException()).when(actionServiceAccess).getActions(any());
-        Response response = actionResource.getActions("action-name",null,true,true);
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Deletion of the record with success, should return a 200 code message
      */
     @Test
     public void testDelete() {
         Response response = actionResource.delete(1l);
         assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Deletion of the record with error, should return a generic 500 error code message
-     */
-    @Test
-    public void testDeleteGenericError() {
-        doThrow(new RuntimeException()).when(actionServiceAccess).delete(1l);
-        Response response = actionResource.delete(1l);
-        assertEquals(500,response.getStatus());
     }
 
     /**
@@ -151,72 +98,11 @@ public class ActionResourceTest {
     }
 
     /**
-     * Creation with error of a record. Should return a 400 code message Invalid Requested Exception
-     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
-     * message reason
-     */
-    @Test
-    public void testCreateInvalid() throws UniquenessConstraintException {
-        doThrow(new UniquenessConstraintException()).when(actionServiceAccess).create(any());
-        Response response = actionResource.create(new io.radien.ms.permissionmanagement.client.entities.Action());
-        assertEquals(400,response.getStatus());
-    }
-
-    /**
-     * Creation of a record with error. Should return a generic error message 500
-     * @throws UniquenessConstraintException in case of request could not be performed by any specific and justified in the
-     * message reason
-     */
-    @Test
-    public void testCreateGenericError() throws UniquenessConstraintException {
-        doThrow(new RuntimeException()).when(actionServiceAccess).create(any());
-        Response response = actionResource.create(new io.radien.ms.permissionmanagement.client.entities.Action());
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Updating with success of a record. Should return a 200 code message
      */
     @Test
     public void testUpdate() {
         Response response = actionResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Action());
         assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Updating with error of a record. Should return a 400 code message Bad Requested Exception
-     * @throws UniquenessConstraintException in case of request containing repeated information
-     * @throws ActionNotFoundException in case of record not found
-     */
-    @Test
-    public void testUpdateInvalid() throws UniquenessConstraintException, ActionNotFoundException {
-        doThrow(new UniquenessConstraintException()).when(actionServiceAccess).update(any());
-        Response response = actionResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Action());
-        assertEquals(400,response.getStatus());
-    }
-
-    /**
-     * Try to update a an action that does not exists. Should return a 404 code message for Not Found Exception
-     * @throws UniquenessConstraintException in case of request containing repeated information
-     * @throws ActionNotFoundException in case of record not found
-     */
-    @Test
-    public void testUpdateNotExistent() throws UniquenessConstraintException, ActionNotFoundException {
-        doThrow(new ActionNotFoundException("not found")).when(actionServiceAccess).update(any());
-        Response response = actionResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Action());
-        assertEquals(404,response.getStatus());
-    }
-
-
-    /**
-     * Updating of a record with error. Should return a generic error message 500
-     * @throws UniquenessConstraintException in case of request containing repeated information
-     * @throws ActionNotFoundException in case of record not found
-     */
-    @Test
-    public void testUpdateGenericError() throws UniquenessConstraintException, ActionNotFoundException {
-        doThrow(new RuntimeException()).when(actionServiceAccess).update(any());
-        Response response = actionResource.update(1L, new io.radien.ms.permissionmanagement.client.entities.Action());
-        assertEquals(500,response.getStatus());
     }
 }

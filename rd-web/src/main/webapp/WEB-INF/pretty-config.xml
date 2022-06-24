@@ -100,16 +100,7 @@
 		<view-id value="/module/permission/resource.oaf" />
 	</url-mapping>
 
-	<!-- Contractsmanagement -->
-	<url-mapping id="contracts">
-		<pattern value="/module/contracts" />
-		<view-id value="/module/contracts/contracts.oaf" />
-	</url-mapping>
-	<url-mapping id="contract">
-		<pattern value="/module/contract" />
-		<view-id value="/module/contract/contract.oaf" />
-	</url-mapping>
-
+	<!-- Tenant Management -->
 	<url-mapping id="tenants">
 		<pattern value="/module/tenants" />
 		<view-id value="/module/tenants/tenants.oaf" />

@@ -38,17 +38,6 @@ public class ClientServiceUtilTest {
     }
 
     @Test
-    public void testGetContractResourceClient() {
-        boolean valid = true;
-        try {
-            clientServiceUtil.getContractResourceClient("http://url.test.pt") ;
-        } catch (MalformedURLException e) {
-            valid = false;
-        }
-        assertTrue(valid);
-    }
-
-    @Test
     public void testGetTenantResourceClient() {
         boolean valid = true;
         try {

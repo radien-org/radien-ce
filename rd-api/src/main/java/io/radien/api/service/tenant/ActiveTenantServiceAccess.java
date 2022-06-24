@@ -19,9 +19,10 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenant.SystemActiveTenantSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.ActiveTenantException;
-import io.radien.exception.ActiveTenantNotFoundException;
+import io.radien.api.service.tenant.exception.ActiveTenantException;
+import io.radien.api.service.tenant.exception.ActiveTenantNotFoundException;
 import io.radien.exception.NotFoundException;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -54,14 +55,6 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
     public SystemActiveTenant get(Long activeTenantId);
 
     /**
-     * Gets specific active tenant by the user id and tenant id
-     * @param userId to be searched for
-     * @param tenantId to be searched for
-     * @return the requested system active tenant
-     */
-    public List<? extends SystemActiveTenant> getByUserAndTenant(Long userId, Long tenantId);
-
-    /**
      * Gets a list of system active tenants requested by a search filter
      * @param filter information to search
      * @return a list of system active tenants
@@ -74,7 +67,7 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
      * @throws UniquenessConstraintException in case of duplicates
      * @throws ActiveTenantException in case of any data issues
      */
-    public void create(SystemActiveTenant activeTenant) throws UniquenessConstraintException, ActiveTenantException;
+    public void create(SystemActiveTenant activeTenant) throws UniquenessConstraintException, SystemException;
 
     /**
      * Updates a required active tenant based on the given information
@@ -82,7 +75,7 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
      * @throws UniquenessConstraintException in case of duplicates
      * @throws ActiveTenantException in case of any data issues
      */
-    public void update(SystemActiveTenant activeTenant) throws UniquenessConstraintException, ActiveTenantException, ActiveTenantNotFoundException;
+    public void update(SystemActiveTenant activeTenant) throws UniquenessConstraintException, ActiveTenantException, ActiveTenantNotFoundException, SystemException;
 
     /**
      * Deletes a requested active tenant
@@ -97,13 +90,15 @@ public interface ActiveTenantServiceAccess extends ServiceAccess {
      * @param userId user identifier
      * @return true in case of success (records founds and removed), otherwise false
      */
-    public boolean delete(Long tenantId, Long userId);
+    public boolean delete(Long tenantId, Long userId) throws SystemException;
 
     /**
      * Deletes a collection of active tenants
+     *
      * @param activeTenantIds to be deleted
+     * @return
      */
-    public void delete(Collection<Long> activeTenantIds);
+    public boolean delete(Collection<Long> activeTenantIds);
 
     /**
      * Validates if specific requested active tenant exists

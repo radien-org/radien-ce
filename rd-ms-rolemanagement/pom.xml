@@ -44,16 +44,6 @@
 				<artifactId>tomee-maven-plugin</artifactId>
 				<version>${version.tomee-maven-plugin}</version>
 			</plugin>
-
-			<!-- <plugin> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-maven-plugin</artifactId>
-				<version>3.1.2</version> <executions> <execution> <id>enhancer</id> <phase>process-classes</phase>
-				<goals> <goal>enhance</goal> </goals> </execution> </executions> <dependencies>
-				<dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId>
-				<version>3.1.2</version> </dependency> </dependencies> <configuration> <includes>**/entities/*.class</includes>
-				<excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor>
-				<enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration>
-				</plugin> -->
-
 		</plugins>
 	</build>
 	<profiles>
@@ -94,10 +84,6 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>io.radien</groupId>-->
-		<!--			<artifactId>rd-kernel</artifactId>-->
-		<!--		</dependency>-->
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-rolemanagement-client</artifactId>
@@ -170,11 +156,11 @@
 			<artifactId>arquillian-openejb-embedded</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>junit</groupId>-->
-<!--			<artifactId>junit</artifactId>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>

@@ -27,6 +27,7 @@ import io.radien.ms.ecm.client.entities.i18n.DeletePropertyFilter;
 import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.openid.entities.Public;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
@@ -71,7 +72,6 @@ public class I18NResourceClient implements I18NResource {
         } catch (SystemException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-
     }
 
     @Override
@@ -84,7 +84,6 @@ public class I18NResourceClient implements I18NResource {
         } catch (SystemException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-
     }
 
     @Override
@@ -92,6 +91,19 @@ public class I18NResourceClient implements I18NResource {
         log.info("Retrieving all properties for {}", application);
         try {
             List<SystemI18NProperty> propertyList = serviceAccess.findAllByApplication(application);
+            return Response.ok().entity(propertyList)
+                    .build();
+        } catch (SystemException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    @Public
+    public Response findAllByApplicationAndLanguage(String application, String language) {
+        log.info("Retrieving all properties for {} - {}", application, language);
+        try {
+            Map<String, String> propertyList = serviceAccess.findAllByApplicationAndLanguage(application, language);
             return Response.ok().entity(propertyList)
                     .build();
         } catch (SystemException e) {

@@ -24,6 +24,7 @@ import java.util.List;
 
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.ServiceAccess;
+import java.util.Map;
 
 public interface I18NServiceAccess extends ServiceAccess {
 
@@ -32,6 +33,8 @@ public interface I18NServiceAccess extends ServiceAccess {
     SystemI18NProperty findByKeyAndApplication(String key, String application) throws SystemException;
 
     List<SystemI18NProperty> findAllByApplication(String application) throws SystemException;
+
+    Map<String, String> findAllByApplicationAndLanguage(String application, String language) throws SystemException;
 
     void save(SystemI18NProperty property) throws SystemException;
 

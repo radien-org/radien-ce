@@ -15,28 +15,24 @@
  */
 package io.radien.exception;
 
+import io.radien.exception.generic.AbstractRestException;
+import javax.ws.rs.core.Response;
+
 /**
  * Permission specific Bad request exception
  * this exception is to be thrown when the user requests something that will have wrong requested data
  *
  * @author Newton Carvalho
  */
-public class BadRequestException extends RuntimeException {
+public class BadRequestException extends AbstractRestException {
 
     private static final long serialVersionUID = 5485575161734022041L;
 
-    /**
-     * Bad Request exception empty constructor
-     */
     public BadRequestException() {
-        super();
+        super(Response.Status.BAD_REQUEST);
     }
 
-    /**
-     * Bad Request exception message constructor
-     * @param message to be added into the bad request exception
-     */
     public BadRequestException(String message) {
-        super(message);
+        super(message, Response.Status.BAD_REQUEST);
     }
 }

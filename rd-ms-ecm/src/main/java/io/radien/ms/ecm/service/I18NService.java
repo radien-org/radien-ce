@@ -19,10 +19,13 @@
 package io.radien.ms.ecm.service;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.i18n.SystemI18NTranslation;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.config.ConfigHandler;
 import java.util.List;
 
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -30,6 +33,7 @@ import javax.inject.Inject;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.api.service.i18n.I18NServiceAccess;
 import io.radien.ms.ecm.datalayer.I18NRepository;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 @Stateless
 public class I18NService implements I18NServiceAccess {
@@ -86,6 +90,15 @@ public class I18NService implements I18NServiceAccess {
     @Override
     public List<SystemI18NProperty> findAllByApplication(String application) throws SystemException {
         return repository.findAllByApplication(application);
+    }
+
+    @Override
+    public  Map<String, String> findAllByApplicationAndLanguage(String application, String language) throws SystemException {
+        List<SystemI18NProperty> propertyList = repository.findAllByApplication(application);
+        return propertyList.stream()
+                .filter(property -> property.getTranslations().stream().anyMatch(translation -> translation.getLanguage().equals(language)))
+                .map(property -> new ImmutablePair<>(property.getKey(), property.getTranslation(language)))
+                .collect(Collectors.toMap(ImmutablePair::getLeft, ImmutablePair::getRight));
     }
     
 }

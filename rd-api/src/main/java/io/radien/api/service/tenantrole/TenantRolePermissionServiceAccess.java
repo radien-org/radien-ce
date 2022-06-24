@@ -19,7 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermissionSearchFilter;
 import io.radien.api.service.ServiceAccess;
-import io.radien.exception.TenantRolePermissionNotFoundException;
+import io.radien.exception.InvalidArgumentException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.List;
@@ -71,10 +71,9 @@ public interface TenantRolePermissionServiceAccess extends ServiceAccess {
      * UPDATE a Tenant Role Permission association
      * @param tenantRolePermission role association information to be updated
      * @throws UniquenessConstraintException in case of duplicated fields or records
-     * @throws TenantRolePermissionNotFoundException in case of not existing a TenantRolePermission for an id
      */
     void update(SystemTenantRolePermission tenantRolePermission)
-            throws UniquenessConstraintException, TenantRolePermissionNotFoundException;
+            throws UniquenessConstraintException, InvalidArgumentException;
 
     /**
      * Deletes a requested tenant role permission association
@@ -83,13 +82,15 @@ public interface TenantRolePermissionServiceAccess extends ServiceAccess {
      */
     boolean delete(Long tenantRolePermissionId);
 
+    List<Long> getPermissions(Long tenantId, Long roleId, Long userId) throws InvalidArgumentException;
+
     /**
      * Check if a permission is already assigned/associated with a tenant role
      * @param permissionId Permission identifier
      * @param tenantRoleId TenantRole Identifier
      * @return true if already exists, otherwise returns false
      */
-    boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId);
+    boolean isAssociationAlreadyExistent(Long permissionId, Long tenantRoleId) throws InvalidArgumentException;
 
     /**
      * Check if a permission is already assigned/associated with a tenant role
@@ -106,5 +107,5 @@ public interface TenantRolePermissionServiceAccess extends ServiceAccess {
      * @param permission identifier
      * @return TenantRolePermission id
      */
-    Optional<Long> getTenantRolePermissionId(Long tenantRoleId, Long permission);
+    Optional<Long> getTenantRolePermissionId(Long tenantRoleId, Long permission) throws InvalidArgumentException;
 }

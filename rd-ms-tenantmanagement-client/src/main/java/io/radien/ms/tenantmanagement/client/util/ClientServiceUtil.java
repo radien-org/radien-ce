@@ -17,10 +17,8 @@ package io.radien.ms.tenantmanagement.client.util;
 
 import io.radien.ms.tenantmanagement.client.TenantResponseExceptionMapper;
 import io.radien.ms.tenantmanagement.client.providers.ActiveTenantMessageBodyWriter;
-import io.radien.ms.tenantmanagement.client.providers.ContractMessageBodyWriter;
 import io.radien.ms.tenantmanagement.client.providers.TenantMessageBodyWriter;
 import io.radien.ms.tenantmanagement.client.services.ActiveTenantResourceClient;
-import io.radien.ms.tenantmanagement.client.services.ContractResourceClient;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
@@ -37,26 +35,10 @@ import java.net.URL;
  * @author Bruno Gama
  */
 @RequestScoped
-@Named("ContractClientServiceUtil")
+@Named("TenantClientServiceUtil")
 public class ClientServiceUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ClientServiceUtil.class);
-    /**
-     * Gets a Rest Client for Contracts
-     * @param urlStr url of rest endpoint
-     * @return a client from the contract
-     * @throws MalformedURLException in case of any url issue
-     */
-    public ContractResourceClient getContractResourceClient(String urlStr) throws MalformedURLException {
-        log.info(urlStr);
-        URL url = new URL(urlStr);
-        return RestClientBuilder.
-                newBuilder()
-                .baseUrl(url)
-                .register(TenantResponseExceptionMapper.class)
-                .register(ContractMessageBodyWriter.class)
-                .build(ContractResourceClient.class);
-    }
 
     /**
      * Gets a Rest Client for Tenants
