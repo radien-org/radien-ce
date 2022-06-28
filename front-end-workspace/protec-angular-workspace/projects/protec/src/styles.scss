@@ -259,24 +259,25 @@ b {
 
 .title-text{
   font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 35px/44px var(--unnamed-font-family-dosis);
-  color: var(--deep-forest);
   text-align: left;
   font-weight: bold !important;
-  font-family: var(--unnamed-font-family-dosis);
+  font-family: var(--unnamed-font-family-dosis) !important;
   letter-spacing: 10.5px !important;
-  color: #2B4645;
+  color: var(--deep-forest);
   text-transform: uppercase;
   opacity: 1;
+
 }
 
 .h2-title{
   font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 25px/32px var(--unnamed-font-family-dosis);
   color: var(--chalk-mint);
   text-align: left;
-  font-family: var(--unnamed-font-family-dosis);
+  font-family: var(--unnamed-font-family-dosis) !important;;
   letter-spacing: 7.5px !important;
   text-transform: uppercase;
   opacity: 1;
+  margin-bottom: -1em;
 }
 
 
@@ -286,7 +287,17 @@ b {
   text-align: left;
   font-weight: lighter;
   font-family: var(--unnamed-font-family-open-sans);
-  font-size: 1em;
+  font-size: 18px;
+  letter-spacing: 0px;
+}
+
+.para-text-bold{
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: var(--unnamed-font-weight-bold);
+  font-family: var(--unnamed-font-family-open-sans);
+  font-size: 18px;
   letter-spacing: 0px;
 }
 
@@ -397,6 +408,10 @@ b {
   font-weight: bold;
 }
 
+.text-weight-600{
+  font-weight: var(--unnamed-font-weight-600);
+}
+
 .footer-nav{
   display: inline;
   float: left;
@@ -404,9 +419,7 @@ b {
   font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 12px/15px var(--unnamed-font-family-dosis);
   color: var(--light-mint);
   text-align: center;
-  font: normal normal bold 12px/15px Dosis;
   letter-spacing: 3.6px;
-  color: #AAC0BF;
   text-transform: uppercase;
   opacity: 1;
 }
