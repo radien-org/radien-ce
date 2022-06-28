@@ -33,10 +33,9 @@
     outline: none;
     border: none;
     padding: 6px;
+    border-radius: 2px;
 }
-.dropdown-bg:hover{
-    background-color: var(--muted-forest)
-}
+
 .dropdown:hover>.dropdown-menu {
     display: block;
 }
@@ -60,7 +59,6 @@
 }
 .dropdown-item{
     margin-bottom: 0.5px !important;
-
     opacity: 1;
     font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-600) var(--unnamed-font-size-13)/var(--unnamed-line-spacing-18) var(--unnamed-font-family-open-sans);
     letter-spacing: var(--unnamed-character-spacing-0);
@@ -73,4 +71,13 @@
     font-family: "Open sans", sans-serif;
     font-weight: lighter;
     font-size: small;
+}
+
+.dropdown-item:hover{
+    background-color: var(--muted-forest)
+}
+
+.margin-horizontal{
+    margin-left: 10px;
+    margin-right: 10px;
 }
