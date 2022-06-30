@@ -17,6 +17,7 @@ package io.radien.spi.themes.providers.themes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.radien.spi.themes.exception.InvalidResponseException;
+import io.radien.spi.themes.gateway.sms.SmsServiceFactory;
 import io.radien.spi.themes.providers.properties.SPIPropertiesProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,17 +28,17 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import org.jboss.logging.Logger;
 import org.keycloak.common.util.StreamUtil;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.theme.ThemeResourceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static kong.unirest.HeaderNames.ACCEPT_LANGUAGE;
 import static kong.unirest.HeaderNames.CONTENT_TYPE;
 
 public class SPIThemesResourceProvider implements ThemeResourceProvider {
-    private static final Logger log = LoggerFactory.getLogger(SPIThemesResourceProvider.class);
+    private static final Logger log = Logger.getLogger(SPIThemesResourceProvider.class);
+
     private final String themeRoot;
     private final String resourceRoot;
 
@@ -76,9 +77,9 @@ public class SPIThemesResourceProvider implements ThemeResourceProvider {
         try {
             properties.putAll(retrievePropertiesFromRemote((HttpURLConnection) url.openConnection(), locale));
         } catch (IOException e){
-            log.error("Error in establishing HttpURLConnection:: {}", e.getMessage());
+            log.error(String.format("Error in establishing HttpURLConnection:: %s", e.getMessage()));
         } catch (InvalidResponseException e) {
-            log.error("Error retrieving properties from {}", uri, e);
+            log.error(String.format("Error retrieving properties from %s", uri), e);
         }
         return properties;
     }
