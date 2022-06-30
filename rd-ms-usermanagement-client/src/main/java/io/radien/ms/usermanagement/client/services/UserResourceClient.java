@@ -49,6 +49,11 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface UserResourceClient {
+
+    @GET()
+    @Path(value = "session")
+    Response getUserInSession();
+
     /**
      * Will request the service to retrieve all the users into a paginated response.
      *
