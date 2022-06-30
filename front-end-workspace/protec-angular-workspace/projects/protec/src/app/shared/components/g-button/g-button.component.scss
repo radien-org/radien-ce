@@ -48,13 +48,16 @@
 }
 
 .btn-outline:hover{
-    background: var(--deep-forest);
-    color: #FFFFFF;
+    background-color: var(--deep-forest);
+    border-radius: 2px !important;
+}
+
+.radius-2px{
+    border-radius: 2px;
 }
 
 .btn-arrow-right {
     clip-path: polygon(96% 0%, 100% 50%, 96% 100%, 0% 100%, 4% 50%, 0% 0%);
-    margin-left: -5px;
 }
 
 .btn-arrow-right-first {
@@ -114,4 +117,5 @@
 
 .button-arrow:hover{
     color: var(--deep-forest);
+    border-radius: 2px;
 }
