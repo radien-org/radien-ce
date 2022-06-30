@@ -4,9 +4,9 @@
             <app-stepper></app-stepper>
         </div>
         <div>
-            <div class="generic-box-content">
+            <div class="generic-box-content addScroll scrollbar-primary scroll-bar ">
                 <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="col-lg-9 col-md-9 col-sm-9 ">
                         <h2 class="h2-title">
                             <div>{{ 'OH WOW' | translate }}</div>
                         </h2>
@@ -14,14 +14,14 @@
                             <div>{{ 'DATENSCHUTZ' | translate }}</div>
                         </h1>
                         <br/>
-                        <p class="mb-4 mt-4 para-text">
+                        <p class="mb-4 mt-4 para-text scroll-bar">
                             {{ 'Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.' | translate }}
                         </p>
                         <br/>
                         <p class="mt-4 mb-4 para-text-bold">
                                 {{ 'ÜBERBLICK' | translate }}
                         </p>
-                        <p class="para-text" [innerHtml]="'<span class=>I. Allgemeines</span> ' +
+                        <p class="para-text" [innerHtml]="'<span>I. Allgemeines</span> ' +
                          '<br> 1. Verantwortliche Stelle für die Datenverarbeitung. ' +
                           '<br> 2. Kontakt für Fragen zum Datenschutz. ' +
                            '<br> 3. Personenbezogene Daten.' | translate"></p>
@@ -31,7 +31,7 @@
                            '<br> 3. Nutzung von WhatsApp.' | translate"></p>
                     </div>
                 </div>
-                <div class="container-fluid">
+                <div class="container-fluid position-sticky">
                     <app-g-button [data]="pageNav.home"></app-g-button>
                 </div>
             </div>
