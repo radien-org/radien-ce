@@ -32,12 +32,13 @@ public interface UserSessionEnabled extends Appframeable {
 	 * @param preferredUserName of the user that is making the login
 	 * @param givenname of the user that is making the login
 	 * @param familyName of the user that is making the login
+	 * @param mobileNumber of the user that is making the login
 	 * @param accessToken of the user that is making the login
 	 * @param refreshToken of the user that is making the login
 	 * @throws Exception in case of any non specific error exceptions
 	 */
-	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName,
-					  String accessToken, String refreshToken) throws Exception;
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname, String familyName,
+					  String mobileNumber, String accessToken, String refreshToken) throws Exception;
 
 	/**
 	 * Is user active getter

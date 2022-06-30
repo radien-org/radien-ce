@@ -83,6 +83,15 @@ public class UserEntity extends io.radien.ms.usermanagement.client.entities.User
 	}
 
 	/**
+	 * User entity user mobile number table field
+	 * @return user email
+	 */
+	@Override
+	public String getMobileNumber() {
+		return super.getMobileNumber();
+	}
+
+	/**
 	 * User entity firstname table field
 	 * @return user firstname
 	 */

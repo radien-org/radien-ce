@@ -136,7 +136,7 @@ public class UserSessionTest {
     }
 
     /**
-     * Test method for{@link UserSession#login(String, String, String, String, String, String, String)}
+     * Test method for{@link UserSession #login(String, String, String, String, String, String, String)}
      * for an existing user
      * @throws Exception if any error
      */
@@ -145,42 +145,42 @@ public class UserSessionTest {
         Optional<SystemUser> optionalSystemUser = Optional.of(mock(SystemUser.class));
         when(userRESTServiceAccess.getUserBySub(anyString())).thenReturn(optionalSystemUser);
         userSession.login("sub", "myemail@email.com", "myname", "name",
-                "my", "acc-token","re-token" );
+                "my", "951", "acc-token","re-token" );
 
         assertNotNull(userSession.getUser());
 
     }
 
     /**
-     * Test method for {@link UserSession#login(String, String, String, String, String, String, String)}
+     * Test method for {@link UserSession #login(String, String, String, String, String, String, String)}
      * assuming user is not exists
      * @throws Exception if any error
      */
     @Test
     public void testLoginNotExistedAnUser() throws Exception {
-        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn((User) user );
+        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn((User) user );
         userSession.login("sub", "myemail@email.com", "myname", "name",
-                "my", "acc-token","re-token" );
+                "my", "951", "acc-token","re-token" );
 
         assertNotNull(userSession.getUser());
     }
 
     /**
-     * Test method for {@link UserSession#login(String, String, String, String, String, String, String)}
+     * Test method for {@link UserSession #login(String, String, String, String, String, String, String)}
      * assuming user is null
      * @throws Exception if any error
      */
     @Test
     public void testLoginNullUser() throws Exception {
-        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn(null);
+        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn(null);
         userSession.login("sub", "myemail@email.com", "myname", "name",
-                "my", "acc-token","re-token" );
+                "my", "951", "acc-token","re-token" );
 
         assertNull(userSession.getUser());
     }
 
     /**
-     * Test method for {@link UserSession#login(String, String, String, String, String, String, String)}
+     * Test method for {@link UserSession #login(String, String, String, String, String, String, String)}
      * asserts exception
      * @throws Exception if any error
      */
@@ -188,7 +188,7 @@ public class UserSessionTest {
     public void testLoginWithException() throws Exception {
         when(userRESTServiceAccess.getUserBySub(anyString())).thenThrow(SystemException.class);
         userSession.login("sub", "myemail@email.com", "myname", "name",
-                "my", "acc-token","re-token" );
+                "my", "951", "acc-token","re-token" );
 
     }
 

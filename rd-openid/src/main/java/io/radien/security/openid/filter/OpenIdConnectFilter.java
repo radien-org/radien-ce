@@ -254,7 +254,7 @@ public class OpenIdConnectFilter implements Filter {
      */
     protected UserDetails assemblyUserDetails(Map<String, Object> mainMap) {
         List<String> expectedKeys = Arrays.asList("sub", "email", "preferred_username",
-                "given_name", "family_name");
+                "given_name", "family_name", "mobile_number");
         Map<String, String> subMap = mainMap.entrySet().stream().filter(m -> expectedKeys.contains(m.getKey())).
                 collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().toString()));
         return new OpenIdConnectUserDetails(subMap);

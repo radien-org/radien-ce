@@ -103,12 +103,14 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 * @param preferredUserName preferred user selected name
 	 * @param givenname user name
 	 * @param familyName user last name
+	 * @param mobileNumber user mobile number
 	 * @param accessToken public access token for authorization purposes
 	 * @param refreshToken private access token for refreshing the public access token
 	 * @throws Exception in case of any issue while performing the login, starting the user session or validating the
 	 * user information
 	 */
-	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName,String accessToken, String refreshToken) throws Exception {
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname, String familyName,
+					  String mobileNumber, String accessToken, String refreshToken) throws Exception {
 		log.info("User session login starting");
 		log.info("user logged in: {}", userIdSubject);
 		//TODO:		refresh access token if needed
@@ -118,7 +120,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 			SystemUser systemUser;
 			if (!existingUser.isPresent()) {
-				systemUser = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, getOAF().getSystemAdminUserId());
+				systemUser = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, mobileNumber, getOAF().getSystemAdminUserId());
 				userClientService.create(systemUser, true);
 				Optional<SystemUser> userBySub = userClientService.getUserBySub(userIdSubject);
 				if(userBySub.isPresent()) {
@@ -150,7 +152,7 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			log.error(exception.getMessage());
 		}
 		if (this.user == null){
-			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email,-1L);
+			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email, mobileNumber, -1L);
 		}
 		String msg = String.format("userId:%d",getUserId());
 		log.info(msg);
@@ -203,6 +205,8 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		return user.getUserEmail();
 	}
 
+
+	public String getMobileNumber() { return user.getMobileNumber(); }
 	/**
 	 * User session prefered user name getter
 	 * @return the preferredUserName

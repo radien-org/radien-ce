@@ -48,7 +48,7 @@ public class UserFactoryTest {
 
         json = builder.build();
 
-        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", 2L);
+        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", "951", 2L);
     }
 
     /**
@@ -57,7 +57,7 @@ public class UserFactoryTest {
     @Test
     public void create() {
         UserFactory userFactory = new UserFactory();
-        User constructedNewUser = userFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", 2L);
+        User constructedNewUser = userFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt","951", 2L);
 
         assertEquals(user.getId(), constructedNewUser.getId());
         assertEquals(user.getLogon(), constructedNewUser.getLogon());
@@ -105,7 +105,7 @@ public class UserFactoryTest {
 
         JsonObject json2 = builder.build();
 
-        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", 2L);
+        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt","951", 2L);
 
         User constructedNewUser = UserFactory.convert(json2);
 

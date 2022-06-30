@@ -36,6 +36,7 @@ public class User extends AbstractUserModel implements SystemUser {
 	private String firstname;
 	private String lastname;
 	private String sub;
+	private String mobileNumber;
 	private Date terminationDate;
 	private boolean enabled;
 	private boolean delegatedCreation;
@@ -55,6 +56,7 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.userEmail = u.getUserEmail();
 		this.firstname = u.getFirstname();
 		this.lastname = u.getLastname();
+		this.mobileNumber = u.getMobileNumber();
 		this.sub = u.getSub();
 		if (u.getTerminationDate() != null) {
 			this.terminationDate = (Date) u.getTerminationDate().clone();
@@ -134,6 +136,22 @@ public class User extends AbstractUserModel implements SystemUser {
 	 */
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
+	}
+
+	/**
+	 * User mobile number getter method
+	 * @return the user mobile number
+	 */
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	/**
+	 * User mobile number setter method
+	 * @param mobileNumber to be set
+	 */
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	/**

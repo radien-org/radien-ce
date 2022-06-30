@@ -58,16 +58,14 @@ public class OIDCAuthorizationFilter extends AuthorizationFilter {
 		boolean isAnonymous = userDetails == null || "anonymousUser".equalsIgnoreCase(userDetails.getUsername());
 		try {
 			if (!isAnonymous && !session.isActive()) {
-				String userName = userDetails.getUsername();
 				HttpServletRequest request =(HttpServletRequest) req;
 				HttpSession httpSession = request.getSession(false);
 				String accessToken = httpSession.getAttribute("accessToken").toString();
 				String refreshToken = httpSession.getAttribute("refreshToken").toString();
 				session.login(userDetails.getSub(),userDetails.getUserEmail(),userDetails.getUsername(),
-						userDetails.getGivenname(),userDetails.getFamilyname(),accessToken,refreshToken);
+						userDetails.getGivenname(),userDetails.getFamilyname(), userDetails.getMobileNumber(),accessToken,refreshToken);
 
-
-				log.info("User has logged in via OIDC. {}", userName);
+				log.info("User has logged in via OIDC. {}", userDetails.getUsername());
 			}
 			chain.doFilter(req, res);
 		} catch (Exception e) {
