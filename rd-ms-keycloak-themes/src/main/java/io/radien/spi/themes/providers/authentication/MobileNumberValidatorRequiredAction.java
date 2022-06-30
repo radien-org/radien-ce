@@ -67,7 +67,7 @@ public class MobileNumberValidatorRequiredAction implements RequiredActionProvid
             int ttl = Integer.parseInt(System.getenv(ENV_SMS_TTL_KEY));
             Map<String, String> config = new HashMap<>();
             config.put("simulation", System.getenv(ENV_SIMULATION_KEY));
-            config.put("senderId", StringUtil.isBlank(System.getenv(ENV_SENDER_ID_KEY)) ? System.getenv(ENV_SENDER_ID_KEY) : "RADIEN");
+            config.put("senderId", StringUtil.isBlank(System.getenv(ENV_SENDER_ID_KEY)) ? "RADIEN" : System.getenv(ENV_SENDER_ID_KEY));
 
             String code = SecretGenerator.getInstance().randomString(length, SecretGenerator.DIGITS);
             AuthenticationSessionModel authSession = context.getAuthenticationSession();

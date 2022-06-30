@@ -63,18 +63,12 @@ public class SmsAuthenticator implements Authenticator {
 			String smsText = String.format(smsAuthText, code, Math.floorDiv(ttl, 60));
 
 			if (mobileNumber == null) {
-				DefaultEmailSenderProvider senderProvider = new DefaultEmailSenderProvider(session);
-				senderProvider.send(
-						session.getContext().getRealm().getSmtpConfig(),
-						user,
-						theme.getMessages(locale).getProperty("emailAuthSubject"),
-						smsText,
-						smsText
-				);
+				context.getUser().addRequiredAction("mobile_otp_validator");
+				context.success();
 			} else {
 				SmsServiceFactory.get(config.getConfig()).send(mobileNumber, smsText);
+				context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 			}
-			context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 		} catch (Exception e) {
 			context.failureChallenge(AuthenticationFlowError.INTERNAL_ERROR,
 					context.form().setError("smsAuthSmsNotSent", e.getMessage())

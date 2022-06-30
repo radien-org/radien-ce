@@ -97,49 +97,7 @@
                         </div>
                     </div>
                 </#if>
-
-                <div class="${properties.kcFormGroupClass!}">
-                    <div class="${properties.kcInputWrapperClass!}">
-                        <input 
-                            type="tel" 
-                            id="field_mobile_number" 
-                            aria-invalid="<#if messagesPerField.existsError('user.attributes.mobile_number')>true</#if>" 
-                            placeholder="${msg("mobile_number")}"/>
-
-                        <input 
-                            type="hidden" 
-                            id="mobile_number" 
-                            name="user.attributes.mobile_number"
-                            value="${(register.formData['user.attributes.mobile_number']!'')}" 
-                        />
-                        <script>
-                            var input = document.querySelector("#field_mobile_number");
-                            var iti =window.intlTelInput(input, {
-                                initialCountry: "de",
-                                onlyCountries: ['BE','BG', 'CZ', 'DK', 'DE', 'EE', 'IE', 'EL', 'ES', 'FR', 'GB', 'HR', 'IT', 'CY', 'LV', 'LT',
-                                    'LU', 'HU', 'MT', 'NL', 'AT', 'PL', 'PT', 'RO', 'SI', 'SK', 'FI', 'SE']
-                            });
-                            var handleChange = function() {
-                                let dialCode = iti.getSelectedCountryData().dialCode;
-                                let number = iti._getFullNumber();
-                                number = '+' + dialCode + number;
-                                document.getElementById("mobile_number").setAttribute('value', number);
-                            }
-                            input.addEventListener('countrychange', handleChange);
-                            input.addEventListener('change', handleChange);
-                            input.addEventListener('keyup', handleChange);
-                        </script>
-
-                        <#if messagesPerField.existsError('user.attributes.mobile_number')>
-                            <span id="input-error-email" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                ${kcSanitize(messagesPerField.get('user.attributes.mobile_number'))?no_esc}
-                            </span>
-                        </#if>
-                    </div>
-                </div>
-
                 <br/>
-
                 <#if passwordRequired??>
                     <div class="${properties.kcFormGroupClass!}">
                         <div class="${properties.kcInputWrapperClass!}">
