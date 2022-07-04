@@ -259,24 +259,25 @@ b {
 
 .title-text{
   font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 35px/44px var(--unnamed-font-family-dosis);
-  color: var(--deep-forest);
   text-align: left;
   font-weight: bold !important;
-  font-family: var(--unnamed-font-family-dosis);
+  font-family: var(--unnamed-font-family-dosis) !important;
   letter-spacing: 10.5px !important;
-  color: #2B4645;
+  color: var(--deep-forest);
   text-transform: uppercase;
   opacity: 1;
+
 }
 
 .h2-title{
   font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 25px/32px var(--unnamed-font-family-dosis);
   color: var(--chalk-mint);
   text-align: left;
-  font-family: var(--unnamed-font-family-dosis);
+  font-family: var(--unnamed-font-family-dosis) !important;;
   letter-spacing: 7.5px !important;
   text-transform: uppercase;
   opacity: 1;
+  margin-bottom: -1em;
 }
 
 
@@ -285,8 +286,23 @@ b {
   color: var(--off-black);
   text-align: left;
   font-weight: lighter;
-  font-family: "Open sans", sans-serif;
-  font-size: 1em;
+  font-family: var(--unnamed-font-family-open-sans);
+  font-size: 18px;
+  letter-spacing: 0px;
+}
+
+.addScroll{
+  overflow-y:auto;
+  height: 420px;
+}
+
+.para-text-bold{
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--off-black);
+  text-align: left;
+  font-weight: var(--unnamed-font-weight-bold);
+  font-family: var(--unnamed-font-family-open-sans);
+  font-size: 18px;
   letter-spacing: 0px;
 }
 
@@ -397,12 +413,33 @@ b {
   font-weight: bold;
 }
 
+.text-weight-600{
+  font-weight: var(--unnamed-font-weight-600);
+}
+
 .footer-nav{
   display: inline;
   float: left;
   margin-right: 4em;
+  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 12px/15px var(--unnamed-font-family-dosis);
+  color: var(--light-mint);
+  text-align: center;
+  letter-spacing: 3.6px;
+  text-transform: uppercase;
+  opacity: 1;
 }
 
 .btn-generic-focus-color {
   background-color: var(--chalk-mint) !important;
+}
+
+.scrollbar-primary::-webkit-scrollbar {
+  width: 12px;
+  background-color: #F5F5F5; }
+
+.scrollbar-primary::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: var(--chalk-mint);
+  margin-left: 200px;
 }
