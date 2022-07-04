@@ -39,17 +39,20 @@
     border: 1px solid var(--muted-forest);
     border-radius: 2px;
     opacity: 1;
-    width: 100%;
+    width: 80%;
     height: 40px;
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     letter-spacing: 4.5px;
     min-width: 200px;
+    color: #4A6767;
+    font-family: Dosis;
 }
 
 .btn-outline:hover{
-    background-color: var(--deep-forest);
+    background-color: #4A6767;
     border-radius: 2px !important;
+    color: #FFFFFF;
 }
 
 .radius-2px{
