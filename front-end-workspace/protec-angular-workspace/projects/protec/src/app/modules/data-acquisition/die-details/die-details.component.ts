@@ -13,7 +13,11 @@ export class DieDetailsComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('Zurück'),
+          label: this.translationService.instant('zurück'),
+          link: '/data-acquisition/accident-date'
+        },
+        {
+          label: this.translationService.instant('Weiter'),
           link: '/data-acquisition/accident-date'
         }
       ]

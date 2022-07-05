@@ -10,11 +10,11 @@
                         <h2 class="h2-title">
                             <div>{{ 'OH WOW' | translate }}</div>
                         </h2>
-                        <h1 class="mt-0 mb-4 title-text">
+                        <h1 class="mt-0 mb-4 title-text vertical-space-reducer-top">
                             <div>{{ 'IMPRESSUM' | translate }}</div>
                         </h1>
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-12 content-text">
+                        <div class="row vertical-space-reducer-bottom-4">
+                            <div class="col-lg-5 col-md-5 col-sm-8 content-text">
                                 <div>
                                     <div class="para-text">{{ 'Angaben gemäß § 5 TMG' | translate}}</div>
                                 </div>
@@ -49,7 +49,7 @@
                                 <div class="spacer-bottom-medium"></div>
 
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 content-text">
+                            <div class="col-lg-5 col-md-5 col-sm-8 content-text vertical-space-increase-top-lg">
                                 <div>
                                     <div class="para-text">{{ 'Umsatzsteuer:' | translate }}</div>
                                     <div class="para-text">{{'Umsatzsteuer-Identifikationsnummer' | translate }}</div>
@@ -67,15 +67,18 @@
                                     <div class="para-text">{{'Streitschlichtung:' | translate }}</div>
                                     <div class="para-text">{{'Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.' | translate }}</div>
                                 </div>
-                                <div class="spacer-bottom-medium"></div>
 
+
+
+                            </div>
+                            <div class="vertical-space-increase-top-xl-20 col-lg-2 col-md-2 col-sm-4">
+                                <app-g-button [data]="pageNav.home"></app-g-button>
                             </div>
                         </div>
                     </div>
+
                 </div>
-                <div class="container-fluid">
-                    <app-g-button [data]="pageNav.home"></app-g-button>
-                </div>
+
             </div>
 
         </div>

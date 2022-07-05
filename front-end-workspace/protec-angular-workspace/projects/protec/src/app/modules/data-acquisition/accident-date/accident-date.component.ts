@@ -14,11 +14,11 @@ export class AccidentDateComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('BACK'),
+          label: this.translationService.instant('zurück'),
           link: '/data-acquisition/accident-type'
         },
         {
-          label: this.translationService.instant('NEXT'),
+          label: this.translationService.instant('weiter'),
           link: '/data-acquisition/die-details'
         }
       ]
