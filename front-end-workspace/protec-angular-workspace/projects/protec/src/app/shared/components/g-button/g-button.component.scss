@@ -39,22 +39,28 @@
     border: 1px solid var(--muted-forest);
     border-radius: 2px;
     opacity: 1;
-    width: 100%;
+    width: 80%;
     height: 40px;
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     letter-spacing: 4.5px;
     min-width: 200px;
+    color: #4A6767;
+    font-family: Dosis;
 }
 
 .btn-outline:hover{
-    background: var(--deep-forest);
+    background-color: #4A6767;
+    border-radius: 2px !important;
     color: #FFFFFF;
+}
+
+.radius-2px{
+    border-radius: 2px;
 }
 
 .btn-arrow-right {
     clip-path: polygon(96% 0%, 100% 50%, 96% 100%, 0% 100%, 4% 50%, 0% 0%);
-    margin-left: -5px;
 }
 
 .btn-arrow-right-first {
@@ -94,13 +100,12 @@
 }
 
 .footer-nav-link {
-    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 12px/15px var(--unnamed-font-family-dosis);
     color: var(--light-mint);
     text-align: center;
-    font: normal normal bold 12px/15px Dosis;
     letter-spacing: 3.6px;
     text-transform: uppercase;
     opacity: 1;
+
 }
 
 .footer-nav-link:hover{
@@ -115,4 +120,5 @@
 
 .button-arrow:hover{
     color: var(--deep-forest);
+    border-radius: 2px;
 }
