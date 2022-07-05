@@ -38,8 +38,8 @@
     </div>
 </div>
 
-<div *ngIf="data.type === 'anchor-button-home'" class="d-flex" style="align-items: flex-end;">
-    <div class="home-button-link bt-action link-button ml-auto" (click)="goToLink(data.link)">
+<div *ngIf="data.type === 'anchor-button-home'" class="d-flex text-dark bold-text" style="align-items: flex-end;">
+    <div class="btn-home bt-action link-button ml-auto" (click)="goToLink(data.link)">
         <span class="no-overflow-text button-arrow">
             {{data.label}}
         </span>
