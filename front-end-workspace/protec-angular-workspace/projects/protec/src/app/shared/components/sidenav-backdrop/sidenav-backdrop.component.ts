@@ -12,6 +12,7 @@ export class SidenavBackdropComponent implements OnInit {
 
   @Input() public dataComponent: any;
   @Output() public closeModalFunc = new EventEmitter();
+  @Output() public changeVarCookieWindow = new EventEmitter();
 
   checks = {
     color: 'primary'
@@ -54,6 +55,7 @@ export class SidenavBackdropComponent implements OnInit {
 
   public closeModal(): void {
     this.closeModalFunc.emit();
+    this.changeVarCookieWindow.emit();
   }
 
 }

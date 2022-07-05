@@ -51,9 +51,13 @@ export class WizardComponent implements OnInit {
   cookieGuideLink = 'cookie-guide-line';
 
   constructor(private readonly translationService: TranslateService, private readonly cookieService : CookieService) {
-    console.log('debug:', this.cookieService.getInLocal())
+    console.log('cookie status:', this.cookieService.getInLocal())
   }
 
   ngOnInit(): void {}
+
+  changeVarCookieWindow(flag=false) {
+    this.showCookieWindow = flag;
+  }
 
 }
