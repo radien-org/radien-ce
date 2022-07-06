@@ -184,5 +184,11 @@
 			<artifactId>johnzon-jsonb</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>cn.apiclub.tool</groupId>
+			<artifactId>simplecaptcha</artifactId>
+			<version>1.2.2</version>
+		</dependency>
 	</dependencies>
 </project>

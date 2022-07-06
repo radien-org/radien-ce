@@ -138,7 +138,26 @@
                         </div>
                     </div>
                 </#if>
+                <div class="${properties.kcFormGroupClass!}">
+                    <div class="${properties.kcInputWrapperClass!}">
+                        <img src="${properties.radCaptchaServlet}" alt="captcha"/>
+                        <input
+                                type="text"
+                                id="captcha_value"
+                                class="${properties.kcInputClass!}"
+                                name="captcha_value"
+                                value="${(register.formData['captcha_value']!'')}"
+                                aria-invalid="<#if messagesPerField.existsError('captcha_value')>true</#if>"
+                                placeholder="${msg("captcha_value")}"
+                        />
 
+                        <#if messagesPerField.existsError('captcha_value')>
+                            <span id="input-error-captcha" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                ${kcSanitize(messagesPerField.get('captcha_value'))?no_esc}
+                            </span>
+                        </#if>
+                    </div>
+                </div>
                 <#if recaptchaRequired??>
                     <div class="form-group">
                         <div class="${properties.kcInputWrapperClass!}">
