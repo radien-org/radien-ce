@@ -90,7 +90,7 @@
                             <div class="login-registration-link up-division-line" >
                                 ${msg("noAccount")}
                                 <a tabindex="6" href="${url.registrationUrl}">
-                                    ${msg("doRegister")}
+                                    ${msg("doRegister")}.
                                 </a>
                             </div>
                         </div>
