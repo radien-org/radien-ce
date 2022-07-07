@@ -31,6 +31,11 @@ export class FooterComponent implements OnInit {
       label: this.translationService.instant('IMPRESSUM'),
       type: 'footer-nav',
       link: '/data-acquisition/impressum'
+    },
+    dataButtonOptionFive: {
+      label: this.translationService.instant('AGB'),
+      type: 'footer-nav',
+      link: '/data-acquisition/agb'
     }
   }
 
