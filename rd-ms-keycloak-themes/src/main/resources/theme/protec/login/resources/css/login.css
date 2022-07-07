@@ -194,7 +194,7 @@ h1#kc-page-title {
 #kc-locale {
     position: absolute;
     margin-top: 10px;
-    color: #dadada;
+    color: #ECE9EB;
     padding-left: 10px;
     z-index: 1;
 }
@@ -215,7 +215,7 @@ h1#kc-page-title {
 
 #kc-locale-dropdown:hover ul {
     display: block;
-    background: #dadada;
+    background: #ECE9EB;
     color: #223C58;
     text-align: left;
     list-style-type: none;
@@ -252,7 +252,7 @@ a#kc-current-locale-link::after {
 }
 
 .login-pf a:hover {
-    color: #0099d3;
+    color: #AAC0BF;
 }
 
 #kc-logo {
@@ -346,7 +346,7 @@ div.kc-logo-text span {
 #kc-info-wrapper {
     font-size: 13px;
     padding: 15px 35px;
-    color: #dadada;
+    color: #ECE9EB;
 }
 
 #kc-form-options span {
@@ -355,7 +355,7 @@ div.kc-logo-text span {
 
 #kc-form-options .checkbox {
     margin-top: 0;
-    color: #dadada;
+    color: #AAC0BF;
 }
 
 #kc-terms-text {
@@ -639,9 +639,9 @@ ul#kc-totp-supported-apps {
 #loginbox {
     background-color: #224745;
     box-shadow: 0 3px 9px #224745;
-    border-radius: 10px;
+    border-radius: 0px;
     padding: 20%;
-    margin-top: 10%;
+    margin-top: 20vh;
 }
 
 .panel-title {
@@ -669,10 +669,10 @@ input[type="text"] {
     margin-top: 5px;
     background: #224745;
     width: 100%;
-    color: #dadada;
+    color: #ECE9EB;
     border-bottom-style: solid;
     border-bottom-width: 1px;
-    border-bottom-color: #dadada;
+    border-bottom-color: #ECE9EB;
     text-align: center;
     opacity: 0.7;
 }
@@ -693,7 +693,7 @@ input[type="submit"] {
     height: 35px;
     border: none;
     border-radius: 0px;
-    background-color: #dadada;
+    background-color: #ECE9EB;
     color: #223C58;
     opacity: 1;
     max-width: 180px;
@@ -709,10 +709,10 @@ input[type="password"] {
     margin-bottom: 20px;
     background: #224745;
     width: 100%;
-    color: #dadada;
+    color: #ECE9EB;
     border-bottom-style: solid;
     border-bottom-width: 1px;
-    border-bottom-color: #dadada;
+    border-bottom-color: #ECE9EB;
     text-align: center;
     opacity: 0.7;
 }
@@ -732,10 +732,10 @@ input[type="tel"] {
     width: 310px !important;
     min-width: 213px;
     height: 30px;
-    color: #dadada;
+    color: #ECE9EB;
     border-bottom-style: solid;
     border-bottom-width: 1px;
-    border-bottom-color: #dadada;
+    border-bottom-color: #ECE9EB;
     text-align: center;
     opacity: 0.7;
 }
@@ -745,18 +745,18 @@ input[type="tel"]:hover {
 }
 
 .register-terms-link-content {
-    color: #dadada;
+    color: #ECE9EB;
     margin-top: 20px;
     font-weight: 100;
 }
 
 .register-terms-link-content label {
-    color: #dadada;
+    color: #ECE9EB;
     font-weight: 100;
 }
 
 .register-terms-link-content label a {
-    color: #dadada;
+    color: #ECE9EB;
     font-weight: 100;
     text-decoration: underline;
 }
@@ -807,17 +807,17 @@ a {
 p.instruction {
     padding: 20px;
     text-align: center;
-    color: #dadada;
+    color: #ECE9EB;
 }
 
 .alert-warning {
     padding: 20px !important;
     text-align: center;
-    color: #dadada;
+    color: #ECE9EB;
 }
 
 .login-registration-link {
-    color: #dadada;
+    color: #ECE9EB;
     position: relative;
     bottom: 50px;
     text-align: center;
@@ -826,7 +826,7 @@ p.instruction {
 }
 
 .login-registration-link a {
-    color: #dadada;
+    color: #ECE9EB;
     font-weight: 100;
     text-decoration: underline;
 }
@@ -834,7 +834,7 @@ p.instruction {
 .up-division-line {
     border-top-style: solid;
     border-top-width: 1px;
-    border-top-color: #dadada;
+    border-top-color: #ECE9EB;
 }
 
 @media screen and (max-width: 540px) {

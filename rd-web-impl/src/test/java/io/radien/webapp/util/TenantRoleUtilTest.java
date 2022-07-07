@@ -18,7 +18,7 @@ package io.radien.webapp.util;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
-import io.radien.exception.TenantRoleIllegalArgumentException;
+import io.radien.api.model.tenantrole.exception.TenantRoleIllegalArgumentException;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;

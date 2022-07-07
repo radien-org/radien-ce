@@ -20,7 +20,7 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.ServiceAccess;
 import io.radien.exception.NotFoundException;
-import io.radien.exception.TenantException;
+import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -42,63 +42,63 @@ public interface TenantServiceAccess extends ServiceAccess {
      * @param isAscending ascending filter criteria.
      * @return a page of system tenants.
      */
-    public Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
      * Gets specific tenant by the id
      * @param tenantId to be searched for
      * @return the requested system tenant
      */
-    public SystemTenant get(Long tenantId) ;
+    SystemTenant get(Long tenantId) ;
 
     /**
      * Gest a list of system tenants requested by a search filter
      * @param filter information to search
      * @return a list of system tenants
      */
-    public List<? extends SystemTenant> get(SystemTenantSearchFilter filter);
+    List<? extends SystemTenant> get(SystemTenantSearchFilter filter);
 
     /**
      * Creates a system tenant based on the given informations
      * @param tenant information to be created
      * @throws UniquenessConstraintException in case of duplicates
-     * @throws TenantException in case of any data issues
+     * @throws SystemException in case of any data issues
      */
-    public void create(SystemTenant tenant) throws UniquenessConstraintException, TenantException;
+    void create(SystemTenant tenant) throws UniquenessConstraintException, SystemException;
 
     /**
      * Updates a required tenant based on the given information
      * @param tenant information to update
      * @throws UniquenessConstraintException in case of duplicates
-     * @throws TenantException in case of any data issues
+     * @throws SystemException in case of any data issues
      */
-    public void update(SystemTenant tenant) throws UniquenessConstraintException, TenantException;
+    void update(SystemTenant tenant) throws UniquenessConstraintException, SystemException;
 
     /**
      * Deletes a requested tenant
      * @param tenantId to be deleted
      * @return true in case of success false in case of any error
      */
-    public boolean delete(Long tenantId);
+    boolean delete(Long tenantId);
 
     /**
      * Deletes a requested tenant and all the tenants bellow him
      * @param tenantId to be deleted and all his children
      * @return true in case of success
      */
-    public boolean deleteTenantHierarchy(Long tenantId);
+    boolean deleteTenantHierarchy(Long tenantId);
 
     /**
      * Deletes a collection of tenants
      * @param tenantIds to be deleted
      */
-    public void delete(Collection<Long> tenantIds);
+    boolean delete(Collection<Long> tenantIds);
 
     /**
      * Validates if specific requested tenant exists
      * @param tenantId to be searched
      * @return response true if it exists
      */
-    public boolean exists(Long tenantId) throws NotFoundException;
+    boolean exists(Long tenantId) throws NotFoundException;
 
 }

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { TranslationService } from '../../../shared/services/translation/translation.service';
 import { Router } from '@angular/router';
+//import { TranslationService } from '../../../shared/services/translation/translation.service';
+import { CookieService } from '../../../shared/services/cookie/cookie.service';
 
 @Component({
   selector: 'app-footer',
@@ -14,7 +15,7 @@ export class FooterComponent implements OnInit {
     dataButtonOptionOne: {
       label: this.translationService.instant('EINSTELLUNGEN'),
       type: 'footer-nav',
-      link: null
+      link: 'function'
     },
     dataButtonOptionTwo: {
       label: this.translationService.instant('COOKIES'),
@@ -33,8 +34,13 @@ export class FooterComponent implements OnInit {
     }
   }
 
-  constructor(private readonly translationService: TranslateService, private readonly router: Router) { }
+  constructor(private readonly translationService: TranslateService, private readonly router: Router, private readonly cookieService : CookieService) { }
 
   ngOnInit(): void {}
+
+  cleanCookieStorage() {
+    this.cookieService.cleanInLocal();
+    window.location.reload();
+  }
 
 }

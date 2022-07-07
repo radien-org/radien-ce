@@ -15,6 +15,7 @@
  */
 package io.radien.exception;
 
+import io.radien.api.service.permission.exception.ResourceNotFoundException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

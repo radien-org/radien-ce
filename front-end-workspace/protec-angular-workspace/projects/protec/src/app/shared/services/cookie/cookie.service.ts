@@ -30,6 +30,10 @@ export class CookieService {
     this.storageService.setItem(LOCAL.COOKIE_DECISION, search);
   }
 
+  public cleanInLocal() {
+    this.storageService.removeItem(LOCAL.COOKIE_DECISION);
+  }
+
   public getInLocal(): boolean {
     console.log('debug:', this.storageService.getItem(LOCAL.COOKIE_DECISION))
     return this.storageService.getItem(LOCAL.COOKIE_DECISION) !== null ? false : true;

@@ -16,6 +16,7 @@
 package io.radien.ms.tenantmanagement.entities;
 
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.ms.tenantmanagement.util.TenantTypeConverter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,6 +15,7 @@ export class GButtonComponent implements OnInit {
     active: false,
     navegations: []
   };
+  @Output() public linkFunction = new EventEmitter();
 
   constructor(private readonly router: Router) { }
 
@@ -22,7 +23,11 @@ export class GButtonComponent implements OnInit {
 
   goToLink(link:string) {
     if(link !== 'disabled'){
-      link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
+      if(link === 'function'){
+        this.linkFunction.emit();
+      } else {
+        link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
+      }
     }
   }
 
