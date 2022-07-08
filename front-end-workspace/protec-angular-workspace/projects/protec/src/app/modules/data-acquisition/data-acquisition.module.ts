@@ -10,6 +10,7 @@ import { BeginComponent } from './begin/begin.component';
 import { AccidentComponent } from './accident/accident.component';
 import { AccidentTypeComponent } from './accident-type/accident-type.component';
 import { LegalDataPolicyComponent } from './legal-data-policy/legal-data-policy.component';
+import { AGBComponent } from './AGB/AGB.component';
 import { DieDetailsComponent } from './die-details/die-details.component';
 import { AccidentDateComponent } from './accident-date/accident-date.component';
 
@@ -25,6 +26,7 @@ import { AccidentDateComponent } from './accident-date/accident-date.component';
     LegalDataPolicyComponent,
     DieDetailsComponent,
     AccidentDateComponent,
+    AGBComponent
   ],
   imports: [
     DataAcquisitionRoutingModule,
