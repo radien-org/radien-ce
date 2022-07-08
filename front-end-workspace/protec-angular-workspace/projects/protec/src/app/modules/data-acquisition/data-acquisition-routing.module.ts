@@ -10,6 +10,7 @@ import { LegalDataPolicyComponent } from './legal-data-policy/legal-data-policy.
 import { DieDetailsComponent } from './die-details/die-details.component';
 import { AccidentDateComponent } from './accident-date/accident-date.component';
 import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
+import { AGBComponent} from "./AGB/AGB.component";
 
 const routes: Routes = [
   {
@@ -55,6 +56,10 @@ const routes: Routes = [
   {
     path: 'terms-of-use',
     component: TermsOfUseComponent
+  },
+  {
+    path: 'agb',
+    component: AGBComponent
   }
 ];
 
