@@ -55,7 +55,7 @@
 
 	<servlet>
 		<servlet-name>SimpleCaptcha</servlet-name>
-		<servlet-class>cn.apiclub.captcha.servlet.SimpleCaptchaServlet</servlet-class>
+		<servlet-class>io.radien.webapp.util.RadienCaptchaServlet</servlet-class>
 		<!-- The width and height params are optional;
         if unspecified they default to 200 and 50 respectively. -->
 		<init-param>
