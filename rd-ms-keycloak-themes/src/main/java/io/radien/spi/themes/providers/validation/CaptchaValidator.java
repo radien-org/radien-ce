@@ -16,11 +16,14 @@
 
 package io.radien.spi.themes.providers.validation;
 
+import java.io.IOException;
+import java.net.HttpCookie;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
@@ -132,6 +135,19 @@ public class CaptchaValidator implements FormAction, FormActionFactory {
         List<FormMessage> errors = new ArrayList<>();
         log.info("CAPTCHA VALUE " + formData.getFirst("captcha_value"));
         String targetURL = System.getenv("RAD_SESSION_SERVLET") == null ? "https://int.radien.io/web/public/session" : System.getenv("RAD_SESSION_SERVLET");
+        try {
+            URL url = new URL(targetURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            String cookiesHeader = connection.getHeaderField("Set-Cookie");
+            List<HttpCookie> cookies = HttpCookie.parse(cookiesHeader);
+            cookies.forEach(cookie -> log.info(cookie.getName() + "  " + cookie.getValue()));
+            log.info("RESPONSE FROM HTTP URL " + connection.getResponseCode());
+        } catch (IOException e) {
+            log.info("ERROR", e);
+        }
+
         int responseCode = Unirest
                 .get(targetURL)
                 .queryString("captchaAnswer", formData.getFirst("captcha_value"))
