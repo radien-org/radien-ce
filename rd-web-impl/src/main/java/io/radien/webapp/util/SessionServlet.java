@@ -38,19 +38,11 @@ public class SessionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        log.info("CAPTCHA VALIDATION");
-        if (req.getSession(false).getAttribute(Captcha.NAME) != null) {
-            log.info(req.getSession(false).getAttribute(Captcha.NAME).toString());
-        } else {
-            log.info("NULL");
-        }
         Captcha captcha = (Captcha) req.getSession(false).getAttribute(Captcha.NAME);
         if(captcha == null) {
             captcha = holder.getCaptcha(req.getParameter("uuid"));
         }
-        log.info("CAPTCHA ANSWER");
         String captchaAnswer = req.getParameter("captchaAnswer");
-        log.info(captchaAnswer);
         if(captcha == null) {
             try {
                 resp.sendError(500, "Could not get captcha attribute in order to validate input.");
@@ -59,7 +51,12 @@ public class SessionServlet extends HttpServlet {
             }
             return;
         }
-
+        if(captcha == null) {
+            log.info("CAPTCHA IS NULL");
+        } else {
+            log.info("CAPTCHA ANSWER " + captcha.getAnswer());
+            log.info("SENT CAPTCHA ANSWER " + captchaAnswer);
+        }
         boolean result = captcha.isCorrect(captchaAnswer);
 
         if(!result) {

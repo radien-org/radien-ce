@@ -16,7 +16,7 @@ public class CaptchaValidationHolder {
     }
 
     public Captcha getCaptcha(String uuid) {
-        return captchaMap.get(uuid);
+        return captchaMap.remove(uuid);
     }
 
     public void addCaptcha(String uuid, Captcha captcha) {
