@@ -46,7 +46,7 @@ public class SessionServlet extends HttpServlet {
         }
         Captcha captcha = (Captcha) req.getSession(false).getAttribute(Captcha.NAME);
         if(captcha == null) {
-            captcha = holder.getCaptcha(req.getAttribute("uuid").toString());
+            captcha = holder.getCaptcha(req.getParameter("uuid"));
         }
         log.info("CAPTCHA ANSWER");
         String captchaAnswer = req.getParameter("captchaAnswer");
