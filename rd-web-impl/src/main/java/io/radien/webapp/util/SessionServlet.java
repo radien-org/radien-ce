@@ -51,16 +51,11 @@ public class SessionServlet extends HttpServlet {
             }
             return;
         }
-        if(captcha == null) {
-            log.info("CAPTCHA IS NULL");
-        } else {
-            log.info("CAPTCHA ANSWER " + captcha.getAnswer());
-            log.info("SENT CAPTCHA ANSWER " + captchaAnswer);
-        }
         boolean result = captcha.isCorrect(captchaAnswer);
 
         if(!result) {
             resp.setStatus(Response.Status.NOT_ACCEPTABLE.getStatusCode());
+            return;
         }
         resp.setStatus(Response.Status.ACCEPTED.getStatusCode());
     }
