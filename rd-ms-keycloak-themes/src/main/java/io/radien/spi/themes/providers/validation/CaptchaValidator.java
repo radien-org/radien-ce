@@ -135,22 +135,11 @@ public class CaptchaValidator implements FormAction, FormActionFactory {
         List<FormMessage> errors = new ArrayList<>();
         log.info("CAPTCHA VALUE " + formData.getFirst("captcha_value"));
         String targetURL = System.getenv("RAD_SESSION_SERVLET") == null ? "https://int.radien.io/web/public/session" : System.getenv("RAD_SESSION_SERVLET");
-        try {
-            URL url = new URL(targetURL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            String cookiesHeader = connection.getHeaderField("Set-Cookie");
-            List<HttpCookie> cookies = HttpCookie.parse(cookiesHeader);
-            cookies.forEach(cookie -> log.info(cookie.getName() + "  " + cookie.getValue()));
-            log.info("RESPONSE FROM HTTP URL " + connection.getResponseCode());
-        } catch (IOException e) {
-            log.info("ERROR", e);
-        }
 
         int responseCode = Unirest
                 .get(targetURL)
                 .queryString("captchaAnswer", formData.getFirst("captcha_value"))
+                .queryString("uuid", formData.getFirst("captcha_uuid_value"))
                 .asString().getStatus();
         log.info(responseCode);
 

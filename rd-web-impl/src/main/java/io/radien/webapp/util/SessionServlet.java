@@ -17,6 +17,7 @@
 package io.radien.webapp.util;
 
 import java.io.IOException;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,6 +33,9 @@ import org.slf4j.LoggerFactory;
 public class SessionServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(SessionServlet.class);
 
+    @Inject
+    private CaptchaValidationHolder holder;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         log.info("CAPTCHA VALIDATION");
@@ -41,6 +45,9 @@ public class SessionServlet extends HttpServlet {
             log.info("NULL");
         }
         Captcha captcha = (Captcha) req.getSession(false).getAttribute(Captcha.NAME);
+        if(captcha == null) {
+            captcha = holder.getCaptcha(req.getAttribute("uuid").toString());
+        }
         log.info("CAPTCHA ANSWER");
         String captchaAnswer = req.getParameter("captchaAnswer");
         log.info(captchaAnswer);

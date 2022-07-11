@@ -9,6 +9,16 @@
     <#if section = "header">
         ${msg("registerTitle")}
     <#elseif section = "form">
+        <script>
+            window.onload = function() {
+                let uuid = crypto.randomUUID();
+                let captchaURL = "${properties.radCaptchaServlet}" + "?uuid=" + uuid;
+
+                document.getElementById("captcha_uuid_value").setAttribute('value', uuid);
+                document.getElementById("radCaptcha").setAttribute("src", captchaURL);
+                console.log(captchaURL);
+            }
+        </script>
         <div id="loginbox" align="center" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div align="center">
                 <img src="${url.resourcesPath}/img/bg.png" class="login-logo-form"/>
@@ -140,7 +150,7 @@
                 </#if>
                 <div class="${properties.kcFormGroupClass!}">
                     <div class="${properties.kcInputWrapperClass!}">
-                        <img src="${properties.radCaptchaServlet}" alt="captcha"/>
+                        <img src="" alt="captcha" id="radCaptcha"/>
                         <input
                                 type="text"
                                 id="captcha_value"
@@ -156,6 +166,10 @@
                                 ${kcSanitize(messagesPerField.get('captcha_value'))?no_esc}
                             </span>
                         </#if>
+                        <input type="hidden"
+                               id="captcha_uuid_value"
+                               name="captcha_uuid_value"
+                               value="${(register.formData['captcha_uuid_value']!'')}"/>
                     </div>
                 </div>
                 <#if recaptchaRequired??>
