@@ -16,7 +16,6 @@
 
                 document.getElementById("captcha_uuid_value").setAttribute('value', uuid);
                 document.getElementById("radCaptcha").setAttribute("src", captchaURL);
-                console.log(captchaURL);
             }
         </script>
         <div id="loginbox" align="center" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
