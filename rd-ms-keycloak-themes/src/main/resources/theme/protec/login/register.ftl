@@ -9,7 +9,18 @@
     <#if section = "header">
         ${msg("registerTitle")}
     <#elseif section = "form">
-        
+
+        <script>
+            window.onload = function() {
+                let uuid = crypto.randomUUID();
+                let captchaURL = "${properties.radCaptchaServlet}" + "?uuid=" + uuid;
+
+                document.getElementById("captcha_uuid_value").setAttribute('value', uuid);
+                document.getElementById("radCaptcha").setAttribute("src", captchaURL);
+                console.log(captchaURL);
+            }
+        </script>
+
         <div id="loginbox" align="center" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div align="center">
                 <img src="${url.resourcesPath}/img/ProTecSports_Logo_Wortmarke.png" class="login-logo-form"/>
@@ -139,6 +150,31 @@
                         </div>
                     </div>
                 </#if>
+
+                <div class="${properties.kcFormGroupClass!}">
+                    <div class="${properties.kcInputWrapperClass!}">
+                        <img src="" alt="captcha" id="radCaptcha"/>
+                        <input
+                                type="text"
+                                id="captcha_value"
+                                class="${properties.kcInputClass!}"
+                                name="captcha_value"
+                                value="${(register.formData['captcha_value']!'')}"
+                                aria-invalid="<#if messagesPerField.existsError('captcha_value')>true</#if>"
+                                placeholder="${msg("captcha_value")}"
+                        />
+
+                        <#if messagesPerField.existsError('captcha_value')>
+                            <span id="input-error-captcha" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                ${kcSanitize(messagesPerField.get('captcha_value'))?no_esc}
+                            </span>
+                        </#if>
+                        <input type="hidden"
+                               id="captcha_uuid_value"
+                               name="captcha_uuid_value"
+                               value="${(register.formData['captcha_uuid_value']!'')}"/>
+                    </div>
+                </div>
 
                 <#if recaptchaRequired??>
                     <div class="form-group">
