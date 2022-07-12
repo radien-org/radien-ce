@@ -13,6 +13,7 @@ import { DieDetailsComponent } from './die-details/die-details.component';
 import { AccidentDateComponent } from './accident-date/accident-date.component';
 import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
 import { AGBComponent } from './AGB/AGB.component';
+import {WeAreSorryComponent} from "./we-are-sorry/we-are-sorry.component";
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { AGBComponent } from './AGB/AGB.component';
     DieDetailsComponent,
     AccidentDateComponent,
     TermsOfUseComponent,
+    WeAreSorryComponent,
     AGBComponent
   ],
   imports: [
