@@ -10,13 +10,17 @@ import { StepperComponent } from './components/stepper/stepper.component';
 import { GButtonComponent } from './components/g-button/g-button.component';
 import { SidenavBackdropComponent } from './components/sidenav-backdrop/sidenav-backdrop.component';
 import { InternalFooterComponent } from './components/internal-footer/internal-footer.component';
+import {
+  SidenavBackdropComponentEssenziell
+} from "./components/sidenav-backdrop-essenziell/sidenav-backdrop-essenziell.component";
 
 @NgModule({
   declarations: [
     StepperComponent,
     GButtonComponent,
     SidenavBackdropComponent,
-    InternalFooterComponent
+    InternalFooterComponent,
+    SidenavBackdropComponentEssenziell
     //FieldFormatterPipe,
   ],
   imports: [
@@ -37,7 +41,8 @@ import { InternalFooterComponent } from './components/internal-footer/internal-f
     GButtonComponent,
     TranslateModule,
     SidenavBackdropComponent,
-    InternalFooterComponent
+    InternalFooterComponent,
+    SidenavBackdropComponentEssenziell
   ],
 })
 export class SharedModule {}

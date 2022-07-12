@@ -9,6 +9,8 @@ import { AccidentTypeComponent } from './accident-type/accident-type.component';
 import { LegalDataPolicyComponent } from './legal-data-policy/legal-data-policy.component';
 import { DieDetailsComponent } from './die-details/die-details.component';
 import { AccidentDateComponent } from './accident-date/accident-date.component';
+import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
+import { AGBComponent} from "./AGB/AGB.component";
 
 const routes: Routes = [
   {
@@ -50,6 +52,14 @@ const routes: Routes = [
   {
     path: 'die-details',
     component: DieDetailsComponent
+  },
+  {
+    path: 'terms-of-use',
+    component: TermsOfUseComponent
+  },
+  {
+    path: 'agb',
+    component: AGBComponent
   }
 ];
 
