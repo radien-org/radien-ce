@@ -11,6 +11,7 @@ import { DieDetailsComponent } from './die-details/die-details.component';
 import { AccidentDateComponent } from './accident-date/accident-date.component';
 import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
 import { AGBComponent} from "./AGB/AGB.component";
+import {MoreInjuriesComponent} from "./more-injuries/more-injuries.component";
 import {WeAreSorryComponent} from "./we-are-sorry/we-are-sorry.component";
 
 const routes: Routes = [
@@ -61,6 +62,10 @@ const routes: Routes = [
   {
     path: 'agb',
     component: AGBComponent
+  },
+  {
+    path: 'more-injuries',
+    component: MoreInjuriesComponent
   },
   {
     path: 'we-are-sorry',
