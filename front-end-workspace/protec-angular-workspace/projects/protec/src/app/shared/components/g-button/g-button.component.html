@@ -53,15 +53,15 @@
             *ngFor="let navegation of data.navegations;let i = index;" 
             class="col-lg-6 text-dark vertical-space-reducer-bottom-4 bold-text" 
             [ngClass]="{'ml-auto': i > 0}">
-            <div 
-                class="home-button-link bt-action link-button" 
+            <div
+                class="home-button-link bt-action link-button"
                 (click)="goToLink(navegation.link)" 
                 [ngClass]="{'text-right': i > 0}">
-                <span *ngIf="i == 0" class="arrow arrow-left"></span>
-                <span class="no-overflow-text button-arrow">
+                <span *ngIf="i == 0" class="arrow arrow-left " [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
+                <span class="no-overflow-text button-arrow"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
                     {{navegation.label}}
                 </span>
-                <span *ngIf="i > 0" class="arrow arrow-right"></span>
+                <span *ngIf="i > 0" class="arrow arrow-right" [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
             </div>
         </div>
     </div>
