@@ -375,6 +375,10 @@ b {
   margin-top: -0.5em !important;
 }
 
+.vertical-space-reducer-bottom{
+  margin-bottom: -0.5em !important;
+}
+
 .vertical-space-increase-bottom{
   margin-bottom: 1em !important;
 }
@@ -459,4 +463,10 @@ b {
 }
 .show{
   display: block;
+}
+
+.calendar-picker{
+  background-color:#FFFFFF;
+  border-color: var(--deep-forest);
+  position: relative;
 }
