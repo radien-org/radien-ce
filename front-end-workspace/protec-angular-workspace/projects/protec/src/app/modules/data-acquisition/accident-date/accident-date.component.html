@@ -41,7 +41,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="options-container scrollbar-primary" [ngClass]="day_selector_class">
+                                            <div class="options-container-day scrollbar-primary" [ngClass]="day_selector_class">
                                                 <div  class="option-button-container" *ngFor='let in of counter(getDaylist()) ;let i = index '>
                                                     <button class="option-button" [value]="i" (click)="selectDay(i+1)">
                                                         {{i+1}}

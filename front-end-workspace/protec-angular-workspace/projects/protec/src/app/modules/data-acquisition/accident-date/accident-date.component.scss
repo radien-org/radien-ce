@@ -51,6 +51,16 @@
 
   }
 
+  .options-container-day {
+    padding: 10px;
+    height: 200px;
+    border: 1px solid var(--muted-forest);
+    scrollbar-base-color: var(--chalk-mint);
+    grid-template-columns: repeat(7, 1fr);
+    margin-right: 2px;
+
+  }
+
   .option-button-container {
     display: flex;
     align-items: center;
