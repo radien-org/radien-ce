@@ -8,66 +8,67 @@
                 <div style="padding: 185px;padding-top: 0px;">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <p class="content-text para-title">
+                            <p class="content-text para-text">
                                 {{ 'Dein Unfalldatum' | translate }}
                             </p>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 mt-4 mb-4">
                             <div class="row mt-4 justify-content-center">
                                 <div class="row">
-                                    <div class="col-lg-4 col-sm-12">
-                                        <p-calendar 
-                                            [(ngModel)]="dtYear" 
-                                            view="year" 
-                                            dateFormat="yy" 
-                                            inputId="yearpicker" 
-                                            placeholder="JAHR *"
-                                        ></p-calendar>
-                                    </div>
-                                    <div class="col-lg-4 col-sm-12">
-                                        <p-calendar 
-                                            [(ngModel)]="dtMonth" 
-                                            view="month" 
-                                            dateFormat="mm" 
-                                            [readonlyInput]="true" 
-                                            inputId="monthpicker" 
-                                            placeholder="MONAT" 
-                                            [disabled]="!dtYear"
-                                        ></p-calendar>
-                                    </div>
-                                    <div class="col-lg-4 col-sm-12">
-                                        <p-calendar 
-                                            [(ngModel)]="dtDay" 
-                                            [minDate]="minDate" 
-                                            [maxDate]="maxDate"
-                                            [readonlyInput]="true" 
-                                            inputId="daypicker" 
-                                            placeholder="TAG" 
-                                            [disabled]="!dtMonth"
-                                        ></p-calendar>
+                                    <div class="calendar-container">
+                                        <div class="toggle-container">
+                                            <div class="toggle-button margin-horizontal-right" [ngClass]="year_head_class">
+                                                {{year_head_label}}
+                                            </div>
+                                            <div class="toggle-button margin-horizontal-right" [ngClass]="month_head_class">
+                                                {{month_head_label}}
+                                            </div>
+                                            <div class="toggle-button" [ngClass]="day_head_class">
+                                                {{day_head_label}}
+                                            </div>
+                                        </div>
+                                            <div class="options-container scrollbar-primary" [ngClass]="year_selector_class">
+                                                <div  class="option-button-container" *ngFor='let in of counter(50) ;let i = index '>
+                                                    <button class="option-button" [value]="currentYear-i" (click)="selectYear(currentYear-i)">
+                                                        {{currentYear-i}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="options-container scrollbar-primary" [ngClass]="month_selector_class">
+                                                <div  class="option-button-container" *ngFor='let in of counter(months+1) ;let i = index '>
+                                                    <button class="option-button"  (click)="selectMonth(i)">
+                                                        {{monthNames[i]}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="options-container scrollbar-primary" [ngClass]="day_selector_class">
+                                                <div  class="option-button-container" *ngFor='let in of counter(getDaylist()) ;let i = index '>
+                                                    <button class="option-button" [value]="i" (click)="selectDay(i+1)">
+                                                        {{i+1}}
+                                                    </button>
+                                                </div>
+                                            </div>
                                     </div>
                                 </div>
-    
                             </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
-                            <p class="content-text para-title">
+                            <p class="content-text para-text">
                                 {{ 'Bist bzw. warst Du krankgeschrieben? *' | translate }}
                             </p>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 mt-4 mb-4">
                             <div class="row mt-4 justify-content-center">
                                 <div class="row">
-                                    <div class="col-lg-6 col-md-6 col-sm-12" *ngFor="let item of buttons">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 " *ngFor="let item of buttons">
                                         <app-g-button [data]="item"></app-g-button>
                                     </div>
                                 </div>
-    
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="container-fluid">
+                <div class="container-fluid vertical-space-reducer-top-10">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
                 </div>
             </div>
