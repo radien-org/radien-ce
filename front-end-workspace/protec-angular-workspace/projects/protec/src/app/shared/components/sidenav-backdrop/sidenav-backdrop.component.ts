@@ -58,4 +58,11 @@ export class SidenavBackdropComponent implements OnInit {
     this.changeVarCookieWindow.emit();
   }
 
+  windowDefault = 'show';
+  windowEssenziell = 'hide'
+  public changeCookieWindow(){
+    this.windowDefault = 'hide'
+    this.windowEssenziell = 'show'
+  }
+
 }

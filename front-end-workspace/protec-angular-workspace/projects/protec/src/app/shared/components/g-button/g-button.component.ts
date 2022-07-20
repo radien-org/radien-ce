@@ -36,4 +36,12 @@ export class GButtonComponent implements OnInit {
     return link === currentRouter ? true : false;
   }
 
+  btn_arrow = "btn-arrow"
+  btnOnMouseEnter() {
+    this.btn_arrow = "btn-arrow-hover"
+  }
+  btnOnMouseLeave() {
+    this.btn_arrow = "btn-arrow"
+  }
+
 }

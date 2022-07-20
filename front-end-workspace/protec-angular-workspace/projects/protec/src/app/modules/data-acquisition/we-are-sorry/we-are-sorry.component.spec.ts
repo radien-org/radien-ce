@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SidenavBackdropComponent } from './sidenav-backdrop.component';
+import { WeAreSorryComponent } from './we-are-sorry.component';
 
-describe('SidenavBackdropComponent', () => {
-  let component: SidenavBackdropComponent;
-  let fixture: ComponentFixture<SidenavBackdropComponent>;
+describe('WeAreSorryComponent', () => {
+  let component: WeAreSorryComponent;
+  let fixture: ComponentFixture<WeAreSorryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SidenavBackdropComponent ]
+      declarations: [ WeAreSorryComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SidenavBackdropComponent);
+    fixture = TestBed.createComponent(WeAreSorryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -22,6 +22,4 @@ describe('SidenavBackdropComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-
 });
