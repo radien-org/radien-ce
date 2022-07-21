@@ -16,6 +16,9 @@ import { AGBComponent } from './AGB/AGB.component';
 import { MoreInjuriesComponent } from './more-injuries/more-injuries.component';
 import {WeAreSorryComponent} from "./we-are-sorry/we-are-sorry.component";
 import {YourDataComponent} from "./your-data/your-data.component";
+import {ProspectsOfSuccess} from "./prospects-of-success/prospects-of-success.component";
+import {RequestSendComponent} from "./request-send/request-send.component";
+import {CalendarModule} from "primeng/calendar";
 
 @NgModule({
   declarations: [
