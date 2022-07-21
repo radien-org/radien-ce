@@ -270,14 +270,16 @@ b {
 }
 
 .h2-title{
-  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 25px/32px var(--unnamed-font-family-dosis);
+  font-size:  25px/32p;
+  font-family: var(--unnamed-font-family-dosis) !important;
+  font-weight: 600 !important;
   color: var(--chalk-mint);
   text-align: left;
-  font-family: var(--unnamed-font-family-dosis) !important;;
   letter-spacing: 7.5px !important;
   text-transform: uppercase;
   opacity: 1;
   margin-bottom: -1em;
+
 }
 
 
@@ -509,9 +511,13 @@ b {
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle{
-  border-color: var(--muted-forest);
-  background-color: #FFFFFF;
-  background-image: url("assets/images/ProTec_Software_Icon_check-2B4645.png");
+  border-color: var(--deep-forest);
+  border-width: 0;
+  background-color: white;
+  background-image: url("assets/images/ProTec_Software_Icon_check-2B4645.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+
 }
 
 .mat-radio-button.mat-accent .mat-radio-inner-circle{
@@ -521,10 +527,11 @@ b {
 }
 
 .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-  background-color: var(--muted-forest);
+  background-color: var(--deep-forest);
   opacity: 0;
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-ripple .mat-ripple-element {
 display: none;
+  background-color: var(--deep-forest);
 }
