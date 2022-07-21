@@ -20,6 +20,8 @@ import {YourDataComponent} from "./your-data/your-data.component";
 @NgModule({
   declarations: [
     YourDataComponent,
+    ProspectsOfSuccess,
+    RequestSendComponent,
     WizardComponent,
     CookieGuideLineComponent,
     ImpressumComponent,
@@ -36,6 +38,7 @@ import {YourDataComponent} from "./your-data/your-data.component";
     AGBComponent
   ],
   imports: [
+    CalendarModule,
     DataAcquisitionRoutingModule,
     CommonModule,
     SharedModule

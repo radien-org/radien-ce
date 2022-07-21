@@ -13,9 +13,11 @@ import { InternalFooterComponent } from './components/internal-footer/internal-f
 import {
   SidenavBackdropComponentEssenziell
 } from "./components/sidenav-backdrop-essenziell/sidenav-backdrop-essenziell.component";
+import {CalendarComponent} from "./components/calendar/calendar.component";
 
 @NgModule({
   declarations: [
+    CalendarComponent,
     StepperComponent,
     GButtonComponent,
     SidenavBackdropComponent,
@@ -42,7 +44,8 @@ import {
     TranslateModule,
     SidenavBackdropComponent,
     InternalFooterComponent,
-    SidenavBackdropComponentEssenziell
+    SidenavBackdropComponentEssenziell,
+    CalendarComponent
   ],
 })
 export class SharedModule {}

@@ -1,40 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'app-accident-date',
-  templateUrl: './accident-date.component.html',
-  styleUrls: ['./accident-date.component.scss']
+  selector: 'app-calendar',
+  templateUrl: './calendar.component.html',
+  styleUrls: ['./calendar.component.scss']
 })
-export class AccidentDateComponent implements OnInit {
-
-  pageNav = {
-    navegation: {
-      type: 'navegation-buttons',
-      navegations: [
-        {
-          label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-type'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/die-details'
-        }
-      ]
-    }
-  }
-
-  buttons = [{
-    label: this.translationService.instant('JA'),
-    type: 'item',
-    link: '/data-acquisition/accident-date'
-  },
-  {
-    label: this.translationService.instant('NEIN'),
-    type: 'item',
-    link: '/data-acquisition/accident-type'
-  }]
+export class CalendarComponent implements OnInit {
 
   months = 0
   days = 0
@@ -144,8 +117,12 @@ export class AccidentDateComponent implements OnInit {
     this.day_head_label= i.toString();
   }
 
+  // Required info is stored in var:
+  // selectedYear
+  // selectedMonth
+  // selectedDay
 
-
-  ngOnInit(): void {}
+  public ngOnInit(): void {
+  }
 
 }
