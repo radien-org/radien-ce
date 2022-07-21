@@ -20,6 +20,7 @@ import { ProspectsOfSuccess } from './prospects-of-success/prospects-of-success.
 @NgModule({
   declarations: [
     ProspectsOfSuccess,
+    RequestSendComponent,
     WizardComponent,
     CookieGuideLineComponent,
     ImpressumComponent,
@@ -36,6 +37,7 @@ import { ProspectsOfSuccess } from './prospects-of-success/prospects-of-success.
     AGBComponent
   ],
   imports: [
+    CalendarModule,
     DataAcquisitionRoutingModule,
     CommonModule,
     SharedModule
