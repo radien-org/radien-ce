@@ -19,9 +19,11 @@ import {YourDataComponent} from "./your-data/your-data.component";
 import {ProspectsOfSuccess} from "./prospects-of-success/prospects-of-success.component";
 import {RequestSendComponent} from "./request-send/request-send.component";
 import {CalendarModule} from "primeng/calendar";
+import {IllnessComponent} from "./illness/illness.component";
 
 @NgModule({
   declarations: [
+    IllnessComponent,
     YourDataComponent,
     ProspectsOfSuccess,
     RequestSendComponent,
