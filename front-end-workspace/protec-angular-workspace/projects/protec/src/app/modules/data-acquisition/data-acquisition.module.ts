@@ -36,6 +36,7 @@ import {RequestSendComponent} from "./request-send/request-send.component";
     AGBComponent
   ],
   imports: [
+    CalendarModule,
     DataAcquisitionRoutingModule,
     CommonModule,
     SharedModule
