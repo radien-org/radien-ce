@@ -32,7 +32,7 @@
 }
 
 .btn-item{
-    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) var(--unnamed-font-size-14)/var(--unnamed-line-spacing-17) var(--unnamed-font-family-dosis);
+    font: var(--unnamed-font-style-normal) normal 600 var(--unnamed-font-size-14)/var(--unnamed-line-spacing-17) var(--unnamed-font-family-dosis);
     color: var(--muted-forest);
 }
 .btn-item:hover{
@@ -57,6 +57,7 @@
     min-width: 200px;
     color: #4A6767;
     font-family: Dosis;
+    font-weight: 600;
     font-size: 12px;
 }
 
