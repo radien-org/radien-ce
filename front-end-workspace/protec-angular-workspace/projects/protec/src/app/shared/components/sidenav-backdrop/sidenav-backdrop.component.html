@@ -66,11 +66,11 @@
     </a>
 
     <div class="mt-4 vertical-space-increase-top-lg-14 align-content-center justify-content-center width-100">
-        <div class="mt-2 mb-2 width-100"  style="background-color: red">
+        <div class="mt-2 mb-2 width-100">
             <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionTwo"></app-g-button>
+            <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionTwo" (click)='getAcceptedCookie("none")'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
             <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionThree" (click)="changeCookieWindow()"></app-g-button>
