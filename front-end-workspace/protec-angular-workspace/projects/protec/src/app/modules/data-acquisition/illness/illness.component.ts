@@ -18,7 +18,7 @@ export class IllnessComponent implements OnInit {
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/illness-2'
         }
       ]
     }

@@ -418,6 +418,9 @@ b {
 .vertical-space-reducer-bottom-4{
   margin-bottom: -4em !important;
 }
+.vertical-space-reducer-top-2{
+  margin-top: -2em !important;
+}
 .vertical-space-reducer-bottom-lg-8{
   margin-bottom: -8em !important;
 }
@@ -475,6 +478,7 @@ b {
 .show-flex{
   display: inline-flex;
 }
+
 
 .calendar-picker{
   background-color:#FFFFFF;
@@ -535,3 +539,47 @@ b {
 display: none;
   background-color: var(--deep-forest);
 }
+
+
+
+
+
+
+
+
+.mat-checkbox.mat-accent .mat-radio-inner-circle{
+  background-color:var(--deep-forest);
+  opacity: 0;
+
+}
+
+.mat-checkbox.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: var(--deep-forest);
+  opacity: 0;
+}
+
+.mat-checkboxma.mat-accent.mat-radio-checked .mat-radio-ripple .mat-ripple-element {
+  display: none;
+  background-color: var(--deep-forest);
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+  opacity: 0.03 !important;
+  background-color: var(--deep-forest)!important;
+}
+
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  border-color: transparent;
+  border-width: 0;
+  background-color: white;
+  background-image: url("assets/images/ProTec_Software_Icon_check-2B4645.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+
+}
+
+.mat-checkbox-ripple{
+  background-color: transparent;
+}
+
