@@ -10,9 +10,13 @@ import { LegalDataPolicyComponent } from './legal-data-policy/legal-data-policy.
 import { DieDetailsComponent } from './die-details/die-details.component';
 import { AccidentDateComponent } from './accident-date/accident-date.component';
 import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
-import { AGBComponent} from "./AGB/AGB.component";
-import {MoreInjuriesComponent} from "./more-injuries/more-injuries.component";
-import {WeAreSorryComponent} from "./we-are-sorry/we-are-sorry.component";
+import { AGBComponent } from "./AGB/AGB.component";
+import { MoreInjuriesComponent } from "./more-injuries/more-injuries.component";
+import { WeAreSorryComponent } from "./we-are-sorry/we-are-sorry.component";
+import { YourDataComponent } from "./your-data/your-data.component";
+import { ProspectsOfSuccess } from "./prospects-of-success/prospects-of-success.component"
+import { RequestSendComponent } from "./request-send/request-send.component";
+import {IllnessComponent} from "./illness/illness.component";
 
 const routes: Routes = [
   {
@@ -70,6 +74,22 @@ const routes: Routes = [
   {
     path: 'we-are-sorry',
     component: WeAreSorryComponent
+  },
+  {
+    path: 'your-data',
+    component: YourDataComponent
+  },
+  {
+    path: 'prospects-of-success',
+    component: ProspectsOfSuccess
+  },
+  {
+    path: 'request-send',
+    component: RequestSendComponent
+  },
+  {
+    path: 'illness',
+    component: IllnessComponent
   }
 ];
 

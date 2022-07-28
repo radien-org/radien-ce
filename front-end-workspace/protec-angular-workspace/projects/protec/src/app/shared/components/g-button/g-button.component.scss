@@ -31,6 +31,16 @@
     background: var(--muted-forest) 0% 0% no-repeat padding-box;
 }
 
+.btn-item{
+    font: var(--unnamed-font-style-normal) normal 600 var(--unnamed-font-size-14)/var(--unnamed-line-spacing-17) var(--unnamed-font-family-dosis);
+    color: var(--muted-forest);
+}
+.btn-item:hover{
+    background-color: var(--muted-forest);
+    color: #FFFFFF;
+}
+
+
 .btn-default span {
     color: #ffffff;
 }
@@ -47,6 +57,7 @@
     min-width: 200px;
     color: #4A6767;
     font-family: Dosis;
+    font-weight: 600;
     font-size: 12px;
 }
 
