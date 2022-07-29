@@ -21,20 +21,39 @@ export class SidenavBackdropComponent implements OnInit {
   cookieWindowButton = {
     dataButtonOptionOne: {
       label: this.translationService.instant('ALLE COOKIES AKZEPTIEREN'),
-      type: 'outline',
+      type: 'cookie-window',
       link: 'disabled'
     },
     dataButtonOptionTwo: {
       label: this.translationService.instant('OPTIONALE COOKIES ABLEHNEN'),
-      type: 'outline',
+      type: 'cookie-window',
       link: 'disabled'
     },
     dataButtonOptionThree: {
       label: this.translationService.instant('MEINE AUSWAHL BESTÄTIGEN'),
-      type: 'outline',
+      type: 'cookie-window',
       link: 'disabled'
     }
   }
+  cookieWindowButtonDefault = {
+    dataButtonOptionOne: {
+      label: this.translationService.instant('ALLE COOKIES AKZEPTIEREN'),
+      type: 'cookie-window',
+      link: 'disabled'
+    },
+    dataButtonOptionTwo: {
+      label: this.translationService.instant('OPTIONALE COOKIES ABLEHNEN'),
+      type: 'cookie-window',
+      link: 'disabled'
+    },
+    dataButtonOptionThree: {
+      label: this.translationService.instant('EINSTELLUNGEN'),
+      type: 'cookie-window',
+      link: 'disabled'
+    }
+  }
+
+
 
   cookieGuideLink = '/data-acquisition/cookie-guide-line';
 
@@ -58,11 +77,11 @@ export class SidenavBackdropComponent implements OnInit {
     this.changeVarCookieWindow.emit();
   }
 
-  windowDefault = 'show';
-  windowEssenziell = 'hide'
+  windowDefault = 'hide';
+  windowEssenziell = 'show'
   public changeCookieWindow(){
-    this.windowDefault = 'hide'
-    this.windowEssenziell = 'show'
+    this.windowDefault = 'show'
+    this.windowEssenziell = 'hide'
   }
 
 }

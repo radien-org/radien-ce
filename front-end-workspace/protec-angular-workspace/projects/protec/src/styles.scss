@@ -410,7 +410,12 @@ b {
 .vertical-space-increase-top-lg-14{
   margin-top: 14em !important;
 }
-
+.vertical-space-increase-top-lg-16{
+  margin-top: 16em !important;
+}
+.vertical-space-increase-top-lg-18{
+  margin-top: 18em !important;
+}
 .vertical-space-increase-top-xl-20{
   margin-top: 28em !important;
 }
@@ -534,4 +539,8 @@ b {
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-ripple .mat-ripple-element {
 display: none;
   background-color: var(--deep-forest);
+}
+
+.width-100{
+  width: 100%;
 }
