@@ -17,6 +17,7 @@ import { YourDataComponent } from "./your-data/your-data.component";
 import { ProspectsOfSuccess } from "./prospects-of-success/prospects-of-success.component"
 import { RequestSendComponent } from "./request-send/request-send.component";
 import {IllnessComponent} from "./illness/illness.component";
+import {Illness2Component} from "./illness-2/illness-2.component";
 import {PrivateAccidentComponent} from "./private-accident/private-accident.component";
 
 const routes: Routes = [
@@ -91,6 +92,10 @@ const routes: Routes = [
   {
     path: 'illness',
     component: IllnessComponent
+  },
+  {
+    path: 'illness-2',
+    component: Illness2Component
   },
   {
     path: 'private-accident',
