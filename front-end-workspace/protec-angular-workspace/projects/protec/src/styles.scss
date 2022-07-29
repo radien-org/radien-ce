@@ -32,6 +32,7 @@ $protec-theme: mat.define-light-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($protec-theme);
+@import '~bootstrap-icons/font/bootstrap-icons';
 
 /* You can add global styles to this file, and also import other style files */
 
@@ -410,7 +411,12 @@ b {
 .vertical-space-increase-top-lg-14{
   margin-top: 14em !important;
 }
-
+.vertical-space-increase-top-lg-16{
+  margin-top: 16em !important;
+}
+.vertical-space-increase-top-lg-18{
+  margin-top: 18em !important;
+}
 .vertical-space-increase-top-xl-20{
   margin-top: 28em !important;
 }
@@ -540,13 +546,6 @@ display: none;
   background-color: var(--deep-forest);
 }
 
-
-
-
-
-
-
-
 .mat-checkbox.mat-accent .mat-radio-inner-circle{
   background-color:var(--deep-forest);
   opacity: 0;
@@ -568,7 +567,6 @@ display: none;
   background-color: var(--deep-forest)!important;
 }
 
-
 .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
   border-color: transparent;
   border-width: 0;
@@ -583,3 +581,6 @@ display: none;
   background-color: transparent;
 }
 
+.width-100{
+  width: 100%;
+}

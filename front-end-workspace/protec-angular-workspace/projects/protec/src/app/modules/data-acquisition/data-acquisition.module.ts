@@ -21,6 +21,8 @@ import {RequestSendComponent} from "./request-send/request-send.component";
 import {CalendarModule} from "primeng/calendar";
 import {IllnessComponent} from "./illness/illness.component";
 import {Illness2Component} from "./illness-2/illness-2.component";
+import {PrivateAccidentComponent} from "./private-accident/private-accident.component";
+
 @NgModule({
   declarations: [
     IllnessComponent,
@@ -41,7 +43,8 @@ import {Illness2Component} from "./illness-2/illness-2.component";
     AGBComponent,
     MoreInjuriesComponent,
     WeAreSorryComponent,
-    AGBComponent
+    AGBComponent,
+    PrivateAccidentComponent
   ],
   imports: [
     CalendarModule,

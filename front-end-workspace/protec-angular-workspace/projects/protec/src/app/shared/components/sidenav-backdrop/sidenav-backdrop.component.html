@@ -1,4 +1,4 @@
-<div [ngClass]=windowDefault>
+<div [ngClass]=windowDefault >
     <h1 class="mt-0 mb-4 title-text">
         {{ 'DATENSCHUTZ' | translate }}
     </h1>
@@ -15,21 +15,21 @@
     <a class="side-window-link">
         {{ 'Weitere Informationen' | translate }}
     </a>
-    <div class="mt-4 side-window-checks-content">
-        <mat-radio-button  class="side-window-checkbox-label" (click)="changeCookieWindow()">
+    <div class="mt-4 vertical-space-increase-top-lg-16 side-window-checks-content">
+        <mat-radio-button  name="Essenziell" class="side-window-checkbox-label" [checked]="true" disabled>
             {{ 'Essenziell' | translate }}
         </mat-radio-button>
-        <mat-radio-button  class="side-window-checkbox-label">
+        <mat-radio-button name="Statistiken" class="side-window-checkbox-label" >
             {{ 'Statistiken' | translate }}
         </mat-radio-button>
-        <mat-radio-button class="side-window-checkbox-label">
+        <mat-radio-button name="Funktional" class="side-window-checkbox-label">
             {{ 'Funktional' | translate }}
         </mat-radio-button>
-        <mat-radio-button class="side-window-checkbox-label">
+        <mat-radio-button name="Marketing" class="side-window-checkbox-label">
             {{ 'Marketing' | translate }}
         </mat-radio-button>
     </div>
-    <div class="mt-4">
+    <div class="mt-4  align-content-center justify-content-center">
         <div class="mt-2 mb-2">
             <app-g-button [data]="cookieWindowButton.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
         </div>
@@ -45,7 +45,7 @@
 
 
 
-<div [ngClass]="windowEssenziell">
+<div [ngClass]="windowEssenziell" >
     <h1 class="mt-0 mb-4 title-text">
         {{ 'DATENSCHUTZ' | translate }}
     </h1>
@@ -65,15 +65,15 @@
         {{ 'Weitere Informationen' | translate }}
     </a>
 
-    <div class="mt-4">
-        <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButton.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
+    <div class="mt-4 vertical-space-increase-top-lg-14 align-content-center justify-content-center width-100">
+        <div class="mt-2 mb-2 width-100">
+            <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButton.dataButtonOptionTwo"></app-g-button>
+            <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionTwo" (click)='getAcceptedCookie("none")'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButton.dataButtonOptionThree"></app-g-button>
+            <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionThree" (click)="changeCookieWindow()"></app-g-button>
         </div>
     </div>
 </div>
