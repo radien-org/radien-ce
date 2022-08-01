@@ -16,7 +16,7 @@ export class AccidentTypeComponent implements OnInit {
   {
     label: this.translationService.instant('FREIZEITUNFALL'),
     type: 'outline',
-    link: '/data-acquisition/accident-date'
+    link: '/data-acquisition/private-accident'
   },
   {
     label: this.translationService.instant('KRANKHEIT'),
@@ -35,6 +35,9 @@ export class AccidentTypeComponent implements OnInit {
       ]
     }
   }
+
+  showErrorMsg = true;
+  textErrorMsg = 'Lorem ipsum dolor sit amet';
 
   constructor(private readonly translationService: TranslateService) { }
 

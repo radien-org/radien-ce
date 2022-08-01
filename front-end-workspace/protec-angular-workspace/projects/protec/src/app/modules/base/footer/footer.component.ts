@@ -15,7 +15,7 @@ export class FooterComponent implements OnInit {
     dataButtonOptionOne: {
       label: this.translationService.instant('EINSTELLUNGEN'),
       type: 'footer-nav',
-      link: 'function'
+      link: '/data-acquisition/wizard'
     },
     dataButtonOptionTwo: {
       label: this.translationService.instant('COOKIES'),
