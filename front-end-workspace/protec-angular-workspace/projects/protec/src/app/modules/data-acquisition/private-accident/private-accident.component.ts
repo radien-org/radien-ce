@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-illness',
-  templateUrl: './illness.component.html',
-  styleUrls: ['./illness.component.scss']
+  selector: 'app-private-accident',
+  templateUrl: './private-accident.component.html',
+  styleUrls: ['./private-accident.component.scss']
 })
-export class IllnessComponent implements OnInit {
+export class PrivateAccidentComponent implements OnInit {
 
   pageNav = {
     navegation: {
@@ -14,11 +14,11 @@ export class IllnessComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/accident-type'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/illness-2'
+          link: '/data-acquisition/accident-intro'
         }
       ]
     }

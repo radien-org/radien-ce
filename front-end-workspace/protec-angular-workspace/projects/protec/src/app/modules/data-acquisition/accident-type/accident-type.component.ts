@@ -16,7 +16,7 @@ export class AccidentTypeComponent implements OnInit {
   {
     label: this.translationService.instant('FREIZEITUNFALL'),
     type: 'outline',
-    link: '/data-acquisition/accident-date'
+    link: '/data-acquisition/private-accident'
   },
   {
     label: this.translationService.instant('KRANKHEIT'),
