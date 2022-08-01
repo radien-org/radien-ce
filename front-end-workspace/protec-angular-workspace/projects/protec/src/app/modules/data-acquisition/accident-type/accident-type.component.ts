@@ -36,6 +36,9 @@ export class AccidentTypeComponent implements OnInit {
     }
   }
 
+  showErrorMsg = true;
+  textErrorMsg = 'Lorem ipsum dolor sit amet';
+
   constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
