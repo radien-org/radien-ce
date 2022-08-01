@@ -10,7 +10,8 @@ import { GButtonComponent } from './components/g-button/g-button.component';
 import { SidenavBackdropComponent } from './components/sidenav-backdrop/sidenav-backdrop.component';
 import { InternalFooterComponent } from './components/internal-footer/internal-footer.component';
 import { SidenavBackdropComponentEssenziell } from "./components/sidenav-backdrop-essenziell/sidenav-backdrop-essenziell.component";
-import {CalendarComponent} from "./components/calendar/calendar.component";
+import { CalendarComponent } from "./components/calendar/calendar.component";
+import { WarningComponent } from './components/warning/warning.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import {CalendarComponent} from "./components/calendar/calendar.component";
     GButtonComponent,
     SidenavBackdropComponent,
     InternalFooterComponent,
-    SidenavBackdropComponentEssenziell
+    SidenavBackdropComponentEssenziell,
+    WarningComponent
     //FieldFormatterPipe,
   ],
   imports: [
@@ -42,7 +44,8 @@ import {CalendarComponent} from "./components/calendar/calendar.component";
     SidenavBackdropComponent,
     InternalFooterComponent,
     SidenavBackdropComponentEssenziell,
-    CalendarComponent
+    CalendarComponent,
+    WarningComponent
   ],
 })
 export class SharedModule {}
