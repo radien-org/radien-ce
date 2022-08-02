@@ -22,9 +22,11 @@ import {CalendarModule} from "primeng/calendar";
 import {IllnessComponent} from "./illness/illness.component";
 import {Illness2Component} from "./illness-2/illness-2.component";
 import {PrivateAccidentComponent} from "./private-accident/private-accident.component";
+import {RequestQuoteComponent} from "./request-quote/request-quote.component";
 
 @NgModule({
   declarations: [
+    RequestQuoteComponent,
     IllnessComponent,
     Illness2Component,
     YourDataComponent,

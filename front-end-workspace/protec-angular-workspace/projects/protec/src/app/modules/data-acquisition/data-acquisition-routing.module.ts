@@ -19,6 +19,7 @@ import { RequestSendComponent } from "./request-send/request-send.component";
 import {IllnessComponent} from "./illness/illness.component";
 import {Illness2Component} from "./illness-2/illness-2.component";
 import {PrivateAccidentComponent} from "./private-accident/private-accident.component";
+import {RequestQuoteComponent} from "./request-quote/request-quote.component";
 
 const routes: Routes = [
   {
@@ -100,6 +101,10 @@ const routes: Routes = [
   {
     path: 'private-accident',
     component: PrivateAccidentComponent
+  },
+  {
+    path: 'request-quote',
+    component: RequestQuoteComponent
   }
 ];
 
