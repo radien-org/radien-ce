@@ -20,6 +20,7 @@ import {IllnessComponent} from "./illness/illness.component";
 import {Illness2Component} from "./illness-2/illness-2.component";
 import {PrivateAccidentComponent} from "./private-accident/private-accident.component";
 import {PersonalDataInputComponent} from "./personal-data-input/personal-data-input.component";
+import {PersonalDataInputComponentTwo} from "./personal-data-input-2/personal-data-input-2.component";
 
 const routes: Routes = [
   {
@@ -105,6 +106,10 @@ const routes: Routes = [
   {
     path: 'personal-data-input',
     component: PersonalDataInputComponent
+  },
+  {
+    path: 'personal-data-input-2',
+    component: PersonalDataInputComponentTwo
   }
 ];
 

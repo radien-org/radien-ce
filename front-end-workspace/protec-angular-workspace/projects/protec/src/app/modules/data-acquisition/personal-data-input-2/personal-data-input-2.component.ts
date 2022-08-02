@@ -3,10 +3,10 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-illness',
-  templateUrl: './personal-data-input.component.html',
-  styleUrls: ['./personal-data-input.component.scss']
+  templateUrl: './personal-data-input-2.component.html',
+  styleUrls: ['./personal-data-input-2.component.scss']
 })
-export class PersonalDataInputComponent implements OnInit {
+export class PersonalDataInputComponentTwo implements OnInit {
 
   pageNav = {
     navegation: {
@@ -14,11 +14,11 @@ export class PersonalDataInputComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/personal-data-input'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/personal-data-input-2'
+          link: '/data-acquisition/illness-2'
         }
       ]
     }
@@ -27,13 +27,5 @@ export class PersonalDataInputComponent implements OnInit {
   constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
-  }
-
-  option_class = 'hide';
-  public showOptions(){
-    this.option_class = 'show-flex'
-  }
-  public hideOptions(){
-    this.option_class = 'hide'
   }
 }
