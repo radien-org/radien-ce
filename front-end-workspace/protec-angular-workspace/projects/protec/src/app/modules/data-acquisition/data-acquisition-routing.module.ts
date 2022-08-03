@@ -24,6 +24,14 @@ import { AdditionalInsuranceComponent } from './additional-insurance/additional-
 import { DetailsIntroComponent } from './details-intro/details-intro.component';
 import { PersonalDataInputComponent } from "./personal-data-input/personal-data-input.component";
 import { PersonalDataInputComponentTwo } from "./personal-data-input-2/personal-data-input-2.component";
+import { WorkAccidentComponent } from './work-accident/work-accident.component';
+import { PartBodyFigureComponent } from './part-body-figure/part-body-figure.component';
+import { SummaryComponent } from './summary/summary.component';
+import { ChanceOfSuccessComponent } from './chance-of-success/chance-of-success.component';
+import { PersonalDataInformationComponent } from './personal-data-information/personal-data-information.component';
+import { PersonalDataSummaryComponent } from './personal-data-summary/personal-data-summary.component';
+import { AppreciationComponent } from './appreciation/appreciation.component';
+import { PreSummaryComponent } from './pre-summary/pre-summary.component';
 
 const routes: Routes = [
   {
@@ -67,8 +75,12 @@ const routes: Routes = [
     component: DieDetailsComponent
   },
   {
-    path: 'figure-details',
+    path: 'full-body',
     component: DetailsFigureComponent
+  },
+  {
+    path: 'part-body',
+    component: PartBodyFigureComponent
   },
   {
     path: 'terms-of-use',
@@ -103,12 +115,16 @@ const routes: Routes = [
     component: IllnessComponent
   },
   {
-    path: 'illness-2',
+    path: 'illness-diagnostic',
     component: Illness2Component
   },
   {
     path: 'private-accident',
     component: PrivateAccidentComponent
+  },
+  {
+    path: 'work-accident',
+    component: WorkAccidentComponent
   },
   {
     path: 'additional-insurance',
@@ -119,12 +135,36 @@ const routes: Routes = [
     component: DetailsIntroComponent
   },
   {
-    path: 'personal-data-input',
+    path: 'personal-data-person',
     component: PersonalDataInputComponent
   },
   {
-    path: 'personal-data-input-2',
+    path: 'personal-data-contact',
     component: PersonalDataInputComponentTwo
+  },
+  {
+    path: 'summary',
+    component: SummaryComponent
+  },
+  {
+    path: 'chance-of-success',
+    component: ChanceOfSuccessComponent
+  },
+  {
+    path: 'personal-data-information',
+    component: PersonalDataInformationComponent
+  },
+  {
+    path: 'personal-data-summary',
+    component: PersonalDataSummaryComponent
+  },
+  {
+    path: 'appreciation',
+    component: AppreciationComponent
+  },
+  {
+    path: 'pre-summary',
+    component: PreSummaryComponent
   }
 ];
 

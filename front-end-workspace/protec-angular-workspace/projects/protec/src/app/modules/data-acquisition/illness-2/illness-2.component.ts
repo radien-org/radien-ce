@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-illness-2',
+  selector: 'app-illness-2',//TODO: change this name component probably to illness-diagnostic
   templateUrl: './illness-2.component.html',
   styleUrls: ['./illness-2.component.scss']
 })
@@ -14,11 +14,11 @@ export class Illness2Component implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/illness'
+          link: '/data-acquisition/private-accident'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/full-body'
         }
       ]
     }

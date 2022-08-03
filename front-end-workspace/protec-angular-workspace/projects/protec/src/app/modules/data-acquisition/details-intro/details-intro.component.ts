@@ -18,7 +18,7 @@ export class DetailsIntroComponent implements OnInit {
         },
         {
           label: this.translationService.instant('weiter'),
-          link: ''
+          link: '/data-acquisition/private-accident'//TODO: here we need put variation for (work-accident)
         }
       ]
     }

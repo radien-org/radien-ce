@@ -27,6 +27,14 @@ import { AdditionalInsuranceComponent } from './additional-insurance/additional-
 import { DetailsIntroComponent } from './details-intro/details-intro.component';
 import { PersonalDataInputComponent } from "./personal-data-input/personal-data-input.component";
 import { PersonalDataInputComponentTwo } from "./personal-data-input-2/personal-data-input-2.component";
+import { WorkAccidentComponent } from './work-accident/work-accident.component';
+import { PartBodyFigureComponent } from './part-body-figure/part-body-figure.component';
+import { SummaryComponent } from './summary/summary.component';
+import { ChanceOfSuccessComponent } from './chance-of-success/chance-of-success.component';
+import { PersonalDataInformationComponent } from './personal-data-information/personal-data-information.component';
+import { PersonalDataSummaryComponent } from './personal-data-summary/personal-data-summary.component';
+import { AppreciationComponent } from './appreciation/appreciation.component';
+import { PreSummaryComponent } from './pre-summary/pre-summary.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +62,15 @@ import { PersonalDataInputComponentTwo } from "./personal-data-input-2/personal-
     PrivateAccidentComponent,
     DetailsFigureComponent,
     AdditionalInsuranceComponent,
-    DetailsIntroComponent
+    DetailsIntroComponent,
+    WorkAccidentComponent,
+    PartBodyFigureComponent,
+    SummaryComponent,
+    ChanceOfSuccessComponent,
+    PersonalDataInformationComponent,
+    PersonalDataSummaryComponent,
+    AppreciationComponent,
+    PreSummaryComponent
   ],
   imports: [
     CalendarModule,

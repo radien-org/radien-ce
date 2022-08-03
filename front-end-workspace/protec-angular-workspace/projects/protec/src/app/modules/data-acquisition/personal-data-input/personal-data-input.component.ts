@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-illness',
-  templateUrl: './personal-data-input.component.html',
+  templateUrl: './personal-data-input.component.html',//TODO change component name to personal-data-person
   styleUrls: ['./personal-data-input.component.scss']
 })
 export class PersonalDataInputComponent implements OnInit {
@@ -14,11 +14,11 @@ export class PersonalDataInputComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/personal-data-contact'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/personal-data-input-2'
+          link: '/data-acquisition/personal-data-summary'
         }
       ]
     }

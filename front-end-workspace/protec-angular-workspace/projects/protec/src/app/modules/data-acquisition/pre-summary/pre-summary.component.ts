@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-private-accident',
-  templateUrl: './private-accident.component.html',
-  styleUrls: ['./private-accident.component.scss']
+  selector: 'app-pre-summary',
+  templateUrl: './pre-summary.component.html',
+  styleUrls: ['./pre-summary.component.scss']
 })
-export class PrivateAccidentComponent implements OnInit {
+export class PreSummaryComponent implements OnInit {
 
   pageNav = {
     navegation: {
@@ -14,11 +14,11 @@ export class PrivateAccidentComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/details-intro'
+          link: '/data-acquisition/appreciation'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/illness-diagnostic'
+          link: '/data-acquisition'
         }
       ]
     }
@@ -29,11 +29,5 @@ export class PrivateAccidentComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  option_class = 'hide';
-  public showOptions(){
-    this.option_class = 'show-flex'
-  }
-  public hideOptions(){
-    this.option_class = 'hide'
-  }
 }
+
