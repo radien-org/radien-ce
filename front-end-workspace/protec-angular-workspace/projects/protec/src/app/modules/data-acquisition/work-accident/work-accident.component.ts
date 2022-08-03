@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-work-accident',
@@ -7,7 +8,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WorkAccidentComponent implements OnInit {
 
-  constructor() { }
+  pageNav = {
+    navegation: {
+      type: 'navegation-buttons',
+      navegations: [
+        {
+          label: this.translationService.instant('zurück'),
+          link: '/data-acquisition/details-intro'
+        },
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/full-body'
+        }
+      ]
+    }
+  }
+
+  constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
   }

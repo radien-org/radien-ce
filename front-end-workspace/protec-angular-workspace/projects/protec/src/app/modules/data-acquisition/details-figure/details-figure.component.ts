@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { StorageService } from '../../../shared/services/storage/storage.service';
+import { LOCAL } from '../../../shared/services/storage/local.enum';
 
 @Component({
   selector: 'app-details-figure',//TODO change this component name to full-body-figure
@@ -14,7 +16,7 @@ export class DetailsFigureComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/illness-diagnostic'//TODO we need put variation for work-accident
+          link: '/data-acquisition/illness-diagnostic'
         },
         {
           label: this.translationService.instant('weiter'),
@@ -24,9 +26,28 @@ export class DetailsFigureComponent implements OnInit {
     }
   }
 
-  constructor(private readonly translationService: TranslateService) { }
+  accidentType: string = '';
+
+  constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) {}
 
   ngOnInit(): void {
+    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    this.verifyAccidentType();
+  }
+
+  verifyAccidentType() {
+    if(this.accidentType === 'work-accident') {
+      this.pageNav.navegation.navegations = [
+        {
+          label: this.translationService.instant('zurück'),
+          link: '/data-acquisition/work-accident'
+        },
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/part-body'
+        }
+      ];
+    }
   }
 
 }
