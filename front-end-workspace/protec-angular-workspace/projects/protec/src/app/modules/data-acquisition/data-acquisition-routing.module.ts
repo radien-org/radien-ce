@@ -16,9 +16,12 @@ import { WeAreSorryComponent } from "./we-are-sorry/we-are-sorry.component";
 import { YourDataComponent } from "./your-data/your-data.component";
 import { ProspectsOfSuccess } from "./prospects-of-success/prospects-of-success.component"
 import { RequestSendComponent } from "./request-send/request-send.component";
-import {IllnessComponent} from "./illness/illness.component";
-import {Illness2Component} from "./illness-2/illness-2.component";
-import {PrivateAccidentComponent} from "./private-accident/private-accident.component";
+import { IllnessComponent } from "./illness/illness.component";
+import { Illness2Component } from "./illness-2/illness-2.component";
+import { PrivateAccidentComponent } from "./private-accident/private-accident.component";
+import { DetailsFigureComponent } from './details-figure/details-figure.component';
+import { AdditionalInsuranceComponent } from './additional-insurance/additional-insurance.component';
+import { DetailsIntroComponent } from './details-intro/details-intro.component';
 
 const routes: Routes = [
   {
@@ -62,6 +65,10 @@ const routes: Routes = [
     component: DieDetailsComponent
   },
   {
+    path: 'figure-details',
+    component: DetailsFigureComponent
+  },
+  {
     path: 'terms-of-use',
     component: TermsOfUseComponent
   },
@@ -100,6 +107,14 @@ const routes: Routes = [
   {
     path: 'private-accident',
     component: PrivateAccidentComponent
+  },
+  {
+    path: 'additional-insurance',
+    component: AdditionalInsuranceComponent
+  },
+  {
+    path: 'details-intro',
+    component: DetailsIntroComponent
   }
 ];
 
