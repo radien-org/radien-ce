@@ -39,6 +39,13 @@ export class DetailsIntroComponent implements OnInit {
           link: '/data-acquisition/work-accident'
         }
       );
+    } else if(this.accidentType === 'recreational-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/illness'
+        }
+      );
     } else {
       this.pageNav.navegation.navegations.push(
         {

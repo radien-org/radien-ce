@@ -14,7 +14,7 @@ export class SummaryComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/part-body'
+          link: '/data-acquisition/more-injuries'
         },
         {
           label: this.translationService.instant('weiter'),

@@ -38,10 +38,7 @@ const routes: Routes = [
     path: '',
     component: WizardComponent
   },
-  {
-    path: 'wizard',
-    component: WizardComponent
-  },
+  //cookies and footer links START
   {
     path: 'begin',
     component: BeginComponent
@@ -55,6 +52,29 @@ const routes: Routes = [
     component: ImpressumComponent
   },
   {
+    path: 'terms-of-use',
+    component: TermsOfUseComponent
+  },
+  {
+    path: 'agb',
+    component: AGBComponent
+  },
+  {
+    path: 'legal-data-policy',
+    component: LegalDataPolicyComponent
+  },
+  //cookies and footer links END
+  //generic routes START
+  {
+    path: 'we-are-sorry',
+    component: WeAreSorryComponent
+  },
+  //generic routes END
+  {
+    path: 'wizard',
+    component: WizardComponent
+  },
+  {
     path: 'accident-intro',
     component: AccidentComponent
   },
@@ -63,16 +83,36 @@ const routes: Routes = [
     component: AccidentTypeComponent
   },
   {
+    path: 'additional-insurance',
+    component: AdditionalInsuranceComponent
+  },
+  {
     path: 'accident-date',
     component: AccidentDateComponent
   },
   {
-    path: 'legal-data-policy',
-    component: LegalDataPolicyComponent
+    path: 'details-intro',
+    component: DetailsIntroComponent
   },
   {
-    path: 'die-details',
+    path: 'die-details',//TODO: check if we really need this page
     component: DieDetailsComponent
+  },
+  {
+    path: 'work-accident',//variation one
+    component: WorkAccidentComponent
+  },
+  {
+    path: 'illness',//variation two
+    component: IllnessComponent
+  },
+  {
+    path: 'private-accident',//variation three
+    component: PrivateAccidentComponent
+  },
+  {
+    path: 'illness-diagnostic',
+    component: Illness2Component
   },
   {
     path: 'full-body',
@@ -83,64 +123,8 @@ const routes: Routes = [
     component: PartBodyFigureComponent
   },
   {
-    path: 'terms-of-use',
-    component: TermsOfUseComponent
-  },
-  {
-    path: 'agb',
-    component: AGBComponent
-  },
-  {
     path: 'more-injuries',
     component: MoreInjuriesComponent
-  },
-  {
-    path: 'we-are-sorry',
-    component: WeAreSorryComponent
-  },
-  {
-    path: 'your-data',
-    component: YourDataComponent
-  },
-  {
-    path: 'prospects-of-success',
-    component: ProspectsOfSuccess
-  },
-  {
-    path: 'request-send',
-    component: RequestSendComponent
-  },
-  {
-    path: 'illness',
-    component: IllnessComponent
-  },
-  {
-    path: 'illness-diagnostic',
-    component: Illness2Component
-  },
-  {
-    path: 'private-accident',
-    component: PrivateAccidentComponent
-  },
-  {
-    path: 'work-accident',
-    component: WorkAccidentComponent
-  },
-  {
-    path: 'additional-insurance',
-    component: AdditionalInsuranceComponent
-  },
-  {
-    path: 'details-intro',
-    component: DetailsIntroComponent
-  },
-  {
-    path: 'personal-data-person',
-    component: PersonalDataInputComponent
-  },
-  {
-    path: 'personal-data-contact',
-    component: PersonalDataInputComponentTwo
   },
   {
     path: 'summary',
@@ -155,6 +139,18 @@ const routes: Routes = [
     component: PersonalDataInformationComponent
   },
   {
+    path: 'your-data',//TODO: check if we really need this page
+    component: YourDataComponent
+  },
+  {
+    path: 'personal-data-contact',
+    component: PersonalDataInputComponentTwo
+  },
+  {
+    path: 'personal-data-person',
+    component: PersonalDataInputComponent
+  },
+  {
     path: 'personal-data-summary',
     component: PersonalDataSummaryComponent
   },
@@ -165,6 +161,15 @@ const routes: Routes = [
   {
     path: 'pre-summary',
     component: PreSummaryComponent
+  },
+  //TODO: we need check this others routes for put in right flow
+  {
+    path: 'prospects-of-success',
+    component: ProspectsOfSuccess
+  },
+  {
+    path: 'request-send',
+    component: RequestSendComponent
   }
 ];
 

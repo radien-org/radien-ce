@@ -18,7 +18,7 @@ export class PartBodyFigureComponent implements OnInit {
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/summary'
+          link: '/data-acquisition/more-injuries'
         }
       ]
     }

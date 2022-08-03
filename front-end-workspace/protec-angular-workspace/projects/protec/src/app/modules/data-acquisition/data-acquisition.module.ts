@@ -38,6 +38,7 @@ import { PreSummaryComponent } from './pre-summary/pre-summary.component';
 
 @NgModule({
   declarations: [
+    BeginComponent,
     PersonalDataInputComponent,
     PersonalDataInputComponentTwo,
     IllnessComponent,
@@ -48,7 +49,6 @@ import { PreSummaryComponent } from './pre-summary/pre-summary.component';
     WizardComponent,
     CookieGuideLineComponent,
     ImpressumComponent,
-    BeginComponent,
     AccidentComponent,
     AccidentTypeComponent,
     LegalDataPolicyComponent,
