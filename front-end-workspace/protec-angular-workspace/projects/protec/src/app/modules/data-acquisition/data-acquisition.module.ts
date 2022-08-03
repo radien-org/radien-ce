@@ -25,9 +25,13 @@ import { PrivateAccidentComponent } from "./private-accident/private-accident.co
 import { DetailsFigureComponent } from './details-figure/details-figure.component';
 import { AdditionalInsuranceComponent } from './additional-insurance/additional-insurance.component';
 import { DetailsIntroComponent } from './details-intro/details-intro.component';
+import { PersonalDataInputComponent } from "./personal-data-input/personal-data-input.component";
+import { PersonalDataInputComponentTwo } from "./personal-data-input-2/personal-data-input-2.component";
 
 @NgModule({
   declarations: [
+    PersonalDataInputComponent,
+    PersonalDataInputComponentTwo,
     IllnessComponent,
     Illness2Component,
     YourDataComponent,
