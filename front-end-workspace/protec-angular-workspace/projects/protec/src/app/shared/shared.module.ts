@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { CalendarModule } from 'primeng/calendar';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { TranslateModule } from '@ngx-translate/core';
 //import { FieldFormatterPipe } from './pipes/field-formatter.pipe';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -30,6 +31,7 @@ import { WarningComponent } from './components/warning/warning.component';
     FormsModule,
     MaterialModule,
     CalendarModule,
+    MultiSelectModule,
     TranslateModule.forChild(),
   ],
   exports: [

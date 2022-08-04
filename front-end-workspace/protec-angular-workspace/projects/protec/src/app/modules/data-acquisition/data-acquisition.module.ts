@@ -19,6 +19,7 @@ import { YourDataComponent } from "./your-data/your-data.component";
 import { ProspectsOfSuccess } from "./prospects-of-success/prospects-of-success.component";
 import { RequestSendComponent } from "./request-send/request-send.component";
 import { CalendarModule } from "primeng/calendar";
+import { MultiSelectModule } from 'primeng/multiselect';
 import { IllnessComponent } from "./illness/illness.component";
 import { Illness2Component } from "./illness-2/illness-2.component";
 import { PrivateAccidentComponent } from "./private-accident/private-accident.component";
@@ -74,6 +75,7 @@ import { PreSummaryComponent } from './pre-summary/pre-summary.component';
   ],
   imports: [
     CalendarModule,
+    MultiSelectModule,
     DataAcquisitionRoutingModule,
     CommonModule,
     SharedModule
