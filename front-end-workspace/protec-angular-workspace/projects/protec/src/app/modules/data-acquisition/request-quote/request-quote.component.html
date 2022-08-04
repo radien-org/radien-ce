@@ -19,19 +19,22 @@
                         <p class="para-text text-weight-600">
                             {{ 'Unser Klient:innenversprechen:' | translate }}
                         </p>
-                        <li class="para-text">{{ 'Höchste Erfolgswahrscheinlichkeit' | translate }}</li>
-                        <li class="para-text">{{ 'Schneller zum Bewilligungsbescheid' | translate }}</li>
-                        <li class="para-text">{{ 'Maximierung Deiner Rentenleistung' | translate }}</li>
-                        <li class="para-text">{{ 'Minimierung Deines Aufwands' | translate }}</li>
-                        <li class="para-text">{{ 'Maximale Transparenz' | translate }}</li>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Höchste Erfolgswahrscheinlichkeit' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Schneller zum Bewilligungsbescheid' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Maximierung Deiner Rentenleistung' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Minimierung Deines Aufwands' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Maximale Transparenz' | translate }}</p></div>
                     </div>
                     <div class="step-one-btn-content">
                         <app-g-button [data]="dataButton"></app-g-button>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-12">
-                    <img src="../../../../assets/images/human.png" class="generic-img"/>
+                    <img src="{{'../../../../assets/images/ProTec_Software_Graphic_envelope.svg' | translate}}" class="generic-img">
                 </div>
+            </div>
+            <div class="container-fluid vertical-space-increase-top-lg-8">
+                <app-g-button [data]="pageNav.navegation"></app-g-button>
             </div>
         </div>
     </div>

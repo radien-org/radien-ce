@@ -10,20 +10,26 @@ export class RequestQuoteComponent implements OnInit {
 
   dataButton = {
     label: this.translationService.instant('ANGEBOT ANFORDERN'),
-    type: 'outline',
+    type: 'outline-lg',
     link: '/data-acquisition/wizard'
   }
 
   pageNav = {
-    home: {
-      label: this.translationService.instant('HOME'),
-      type: 'anchor-button-home'
-    },
-    back: {
-      label: this.translationService.instant('BACK'),
-      type: 'footer-nav'
+    navegation: {
+      type: 'navegation-buttons',
+      navegations: [
+        {
+          label: this.translationService.instant('zurück'),
+          link: '/data-acquisition/accident-intro'
+        },
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/illness-2'
+        }
+      ]
     }
   }
+
   constructor(private readonly translationService: TranslateService) { }
   ngOnInit(): void {}
 }
