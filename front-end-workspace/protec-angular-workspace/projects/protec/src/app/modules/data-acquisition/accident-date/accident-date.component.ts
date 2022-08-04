@@ -28,12 +28,12 @@ export class AccidentDateComponent implements OnInit {
   buttons = [{
     label: this.translationService.instant('JA'),
     type: 'item',
-    link: '/data-acquisition/accident-date'
+    link: 'disabled'
   },
   {
     label: this.translationService.instant('NEIN'),
     type: 'item',
-    link: '/data-acquisition/accident-type'
+    link: 'disabled'
   }]
 
   months = 0
