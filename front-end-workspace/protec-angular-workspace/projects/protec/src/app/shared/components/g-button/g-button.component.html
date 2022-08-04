@@ -30,6 +30,14 @@
     </div>
 </div>
 
+<div *ngIf="data.type === 'outline-lg'">
+    <div class="bt-action btn-outline btn-outline-lg" (click)="goToLink(data.link)">
+        <span>
+            {{data.label}}
+        </span>
+    </div>
+</div>
+
 <div *ngIf="data.type === 'cookie-window'">
     <div class="bt-action btn-outline" (click)="goToLink(data.link)">
         <span>

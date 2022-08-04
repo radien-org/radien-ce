@@ -36,6 +36,7 @@ import { PersonalDataInformationComponent } from './personal-data-information/pe
 import { PersonalDataSummaryComponent } from './personal-data-summary/personal-data-summary.component';
 import { AppreciationComponent } from './appreciation/appreciation.component';
 import { PreSummaryComponent } from './pre-summary/pre-summary.component';
+import { RequestQuoteComponent } from "./request-quote/request-quote.component";
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { PreSummaryComponent } from './pre-summary/pre-summary.component';
     PersonalDataInformationComponent,
     PersonalDataSummaryComponent,
     AppreciationComponent,
-    PreSummaryComponent
+    PreSummaryComponent,
+    RequestQuoteComponent
   ],
   imports: [
     CalendarModule,
