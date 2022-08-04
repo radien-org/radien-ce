@@ -14,7 +14,7 @@ export class AppreciationComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/personal-data-summary'
+          link: '/data-acquisition/personal-data-person'
         },
         {
           label: this.translationService.instant('weiter'),

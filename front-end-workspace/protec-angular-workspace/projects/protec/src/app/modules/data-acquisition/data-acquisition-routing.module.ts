@@ -156,7 +156,7 @@ const routes: Routes = [
     component: PersonalDataInputComponent
   },
   {
-    path: 'personal-data-summary',
+    path: 'personal-data-summary',//TODO: check if we really need this page, because we remove in task https://radien.atlassian.net/browse/PROTE-527
     component: PersonalDataSummaryComponent
   },
   {

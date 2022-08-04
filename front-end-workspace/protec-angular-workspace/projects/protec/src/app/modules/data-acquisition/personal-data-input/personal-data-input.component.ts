@@ -18,7 +18,7 @@ export class PersonalDataInputComponent implements OnInit {
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/personal-data-summary'
+          link: '/data-acquisition/appreciation'
         }
       ]
     }
