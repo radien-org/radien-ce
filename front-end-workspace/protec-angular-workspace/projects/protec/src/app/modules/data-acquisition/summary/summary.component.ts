@@ -24,6 +24,41 @@ export class SummaryComponent implements OnInit {
     }
   }
 
+  leftInfo = [
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    }
+  ]
+
   constructor(private readonly translationService: TranslateService) { }
 
   ngOnInit(): void {
