@@ -14,11 +14,11 @@ export class IllnessComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/details-intro'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/illness-2'
+          link: '/data-acquisition/full-body'
         }
       ]
     }

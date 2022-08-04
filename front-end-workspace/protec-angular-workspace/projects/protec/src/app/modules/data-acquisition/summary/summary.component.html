@@ -1,0 +1,89 @@
+<div class="base-content" xmlns="http://www.w3.org/1999/html">
+    <div>
+        <div>
+            <app-stepper></app-stepper>
+        </div>
+        <div>
+            <div class="generic-box-content">
+                <div class="row base-min-height-45">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div>
+                            <h2 class="h2-title">
+                                {{ 'ERFASSTE SCHADENSFÄLLE' | translate }}
+                            </h2>
+                            <div>
+                                <select 
+                                    class="input-text input-select-dropdown summary-select-box" 
+                                    placeholder="SELECT OPTION">
+                                    <option value="">ARBEITSUNFALL 1990</option>
+                                </select>
+                                <i class="bi-pencil-fill margin-horizontal summary-action-icons"></i>
+                                <i class="bi-trash-fill margin-horizontal summary-action-icons"></i>
+                                <i class="bi-plus margin-horizontal summary-action-icons summary-custom-plus-icon"></i>
+                            </div>
+                            <div class="mt-3">
+                                <div class="summary-content-card">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div *ngFor="let item of leftInfo; let i = index">
+                                                <ng-container *ngIf="i < 4">
+                                                    <p class="summary-info-label">{{item.label}}</p>
+                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div *ngFor="let item of leftInfo; let i = index">
+                                                <ng-container *ngIf="i > 3">
+                                                    <p class="summary-info-label">{{item.label}}</p>
+                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div>
+                            <h2 class="h2-title">
+                                {{ 'ANGABEN ZUR VERLETZUNG' | translate }}
+                            </h2>
+                            <div class="mb-4">
+                                <button class="summary-btn-outline">1</button>
+                                <button class="summary-btn-outline disabled-btn">2</button>
+                                <button class="summary-btn-outline disabled-btn">3</button>
+                            </div>
+                            <div class="mt-4">
+                                <div class="summary-content-card">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div *ngFor="let item of leftInfo; let i = index">
+                                                <ng-container *ngIf="i < 4">
+                                                    <p class="summary-info-label">{{item.label}}</p>
+                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div *ngFor="let item of leftInfo; let i = index">
+                                                <ng-container *ngIf="i > 3">
+                                                    <p class="summary-info-label">{{item.label}}</p>
+                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <app-g-button [data]="pageNav.navegation"></app-g-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

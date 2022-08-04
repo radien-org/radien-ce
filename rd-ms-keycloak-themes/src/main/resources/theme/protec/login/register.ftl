@@ -210,7 +210,17 @@
                                 value=""
                                 aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
                             />
-                            <label>Please accept the following <a href='${properties.terms_URL}' target="_blank">legal data</a>.</label>
+                            <label>Ich stimme den <a href='${properties.terms_URL}' target="_blank">AGB</a> zu.</label>
+
+                            <input 
+                                type="checkbox" 
+                                id="terms_2"
+                                class="${properties.kcInputClass!}" 
+                                name="terms_2"
+                                value=""
+                                aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
+                            />
+                            <label>Ich stimmer der <a href='${properties.terms_URL}' target="_blank">Datenschutzrichtlinie</a> zu.</label>
 
                             <#if messagesPerField.existsError('terms')>
                                 <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">

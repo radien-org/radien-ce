@@ -378,6 +378,11 @@ b {
   margin-top: -0.5em !important;
 }
 
+.vertical-space-reducer-top-10{
+  margin-top: -10em !important;
+}
+
+
 .vertical-space-reducer-bottom{
   margin-bottom: -0.5em !important;
 }
@@ -430,8 +435,8 @@ b {
 .vertical-space-reducer-bottom-lg-8{
   margin-bottom: -8em !important;
 }
-.vertical-space-reducer-top-10{
-  margin-top: -10em !important;
+.vertical-space-reducer-top-1{
+  margin-top: -1em !important;
 }
 
 .horzontal-space-reducer-left-sm{
@@ -601,4 +606,17 @@ display: none;
   text-align: left;
   font-size: 18px;
   opacity: 1;
+}
+
+select {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 200px;
+  padding: 7px;
+  border-radius: 0;
+}
+
+select::-ms-expand {
+  display: none;
 }

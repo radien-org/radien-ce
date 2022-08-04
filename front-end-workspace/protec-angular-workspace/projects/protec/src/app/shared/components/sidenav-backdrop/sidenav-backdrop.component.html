@@ -34,7 +34,7 @@
             <app-g-button [data]="cookieWindowButton.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButton.dataButtonOptionTwo"></app-g-button>
+            <app-g-button [data]="cookieWindowButton.dataButtonOptionTwo" (click)='closeModal()'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
             <app-g-button [data]="cookieWindowButton.dataButtonOptionThree"></app-g-button>
@@ -70,7 +70,7 @@
             <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionTwo" (click)='getAcceptedCookie("none")'></app-g-button>
+            <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionTwo" (click)='closeModal()'></app-g-button>
         </div>
         <div class="mt-2 mb-2">
             <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionThree" (click)="changeCookieWindow()"></app-g-button>
