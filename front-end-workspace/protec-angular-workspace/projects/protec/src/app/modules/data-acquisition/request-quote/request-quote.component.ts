@@ -20,11 +20,11 @@ export class RequestQuoteComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/chance-of-success'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/illness-2'
+          link: '/data-acquisition/personal-data-information'
         }
       ]
     }

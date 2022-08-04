@@ -14,7 +14,7 @@ export class PersonalDataInformationComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/chance-of-success'
+          link: '/data-acquisition/request-quote'
         },
         {
           label: this.translationService.instant('weiter'),

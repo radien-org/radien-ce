@@ -136,6 +136,10 @@ const routes: Routes = [
     component: ChanceOfSuccessComponent
   },
   {
+    path: 'request-quote',
+    component: RequestQuoteComponent
+  },
+  {
     path: 'personal-data-information',
     component: PersonalDataInformationComponent
   },
@@ -171,10 +175,6 @@ const routes: Routes = [
   {
     path: 'request-send',
     component: RequestSendComponent
-  },
-  {
-    path: 'request-quote',
-    component: RequestQuoteComponent
   }
 ];
 

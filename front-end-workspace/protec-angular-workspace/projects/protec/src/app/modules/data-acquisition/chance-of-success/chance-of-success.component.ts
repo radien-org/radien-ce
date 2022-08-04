@@ -18,7 +18,7 @@ export class ChanceOfSuccessComponent implements OnInit {
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/personal-data-information'
+          link: '/data-acquisition/request-quote'
         }
       ]
     }
