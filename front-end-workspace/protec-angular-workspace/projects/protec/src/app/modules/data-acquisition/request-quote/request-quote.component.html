@@ -1,0 +1,41 @@
+<div class="base-content">
+    <div>
+        <app-stepper></app-stepper>
+    </div>
+    <div>
+        <div class="generic-box-content">
+            <div class="row">
+                <div class="col-lg-8 col-md-6 col-sm-12">
+                   <div class="vertical-space-increase-bottom">
+                        <h2 class="h2-title">
+                            {{ 'KOSTENLOS UND UNVERBINDLICH' | translate }}
+                        </h2>
+                        <h1 class="mt-0 mb-4 title-text vertical-space-reducer-top </div>">
+                            {{ 'JETZT ANGEBOT ANFORDERUNGEN' | translate }}
+                        </h1>
+                   </div>
+                    <br>
+                    <div>
+                        <p class="para-text text-weight-600">
+                            {{ 'Unser Klient:innenversprechen:' | translate }}
+                        </p>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Höchste Erfolgswahrscheinlichkeit' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Schneller zum Bewilligungsbescheid' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Maximierung Deiner Rentenleistung' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Minimierung Deines Aufwands' | translate }}</p></div>
+                        <div class="vertical-space-increase-top"><img src="assets/images/ProTec_Software_Icon_okay.svg" class="tick-size show-flex"><p class="para-text d-inline check-list">{{ ' Maximale Transparenz' | translate }}</p></div>
+                    </div>
+                    <div class="step-one-btn-content">
+                        <app-g-button [data]="dataButton"></app-g-button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <img src="{{'../../../../assets/images/ProTec_Software_Graphic_envelope.svg' | translate}}" class="generic-img">
+                </div>
+            </div>
+            <div class="container-fluid vertical-space-increase-top-lg-8">
+                <app-g-button [data]="pageNav.navegation"></app-g-button>
+            </div>
+        </div>
+    </div>
+</div>

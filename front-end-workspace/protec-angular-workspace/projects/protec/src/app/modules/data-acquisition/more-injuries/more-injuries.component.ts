@@ -11,12 +11,12 @@ export class MoreInjuriesComponent implements OnInit {
   buttons = [{
     label: this.translationService.instant('JA'),
     type: 'outline',
-    link: '/data-acquisition/more-injuries'
+    link: '/data-acquisition'
   },
   {
     label: this.translationService.instant('NEIN'),
     type: 'outline',
-    link: '/data-acquisition/more-injuries'
+    link: '/data-acquisition/summary'
   }]
 
   pageNav = {
@@ -25,7 +25,11 @@ export class MoreInjuriesComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/part-body'
+        },
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/summary'
         }
       ]
     }

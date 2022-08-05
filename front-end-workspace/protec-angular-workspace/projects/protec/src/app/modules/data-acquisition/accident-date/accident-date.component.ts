@@ -15,11 +15,11 @@ export class AccidentDateComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-type'
+          link: '/data-acquisition/additional-insurance'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/die-details'
+          link: '/data-acquisition/details-intro'
         }
       ]
     }
@@ -28,12 +28,12 @@ export class AccidentDateComponent implements OnInit {
   buttons = [{
     label: this.translationService.instant('JA'),
     type: 'item',
-    link: '/data-acquisition/accident-date'
+    link: 'disabled'
   },
   {
     label: this.translationService.instant('NEIN'),
     type: 'item',
-    link: '/data-acquisition/accident-type'
+    link: 'disabled'
   }]
 
   months = 0
@@ -48,15 +48,16 @@ export class AccidentDateComponent implements OnInit {
   selectedMonth=1;
   selectedDay=1;
   daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
-  year_selector_class = "show"
-  month_selector_class = "hide"
-  day_selector_class = "hide"
-  year_head_class = ""
-  month_head_class = ""
-  day_head_class = ""
-  year_head_label = "JAHR *"
-  month_head_label="MONATE"
-  day_head_label="TAG"
+  year_selector_class = "show";
+  month_selector_class = "hide";
+  day_selector_class = "hide";
+  year_head_class = "";
+  month_head_class = "";
+  day_head_class = "";
+  year_head_label = "JAHR *";
+  month_head_label="MONATE";
+  day_head_label="TAG";
+
   constructor(private readonly translationService: TranslateService) {}
 
   counter(i: number) {

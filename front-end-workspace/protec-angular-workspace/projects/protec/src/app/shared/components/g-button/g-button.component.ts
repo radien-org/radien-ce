@@ -21,10 +21,10 @@ export class GButtonComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  goToLink(link:string) {
+  goToLink(link:string, funcParams:object={}) {
     if(link !== 'disabled'){
       if(link === 'function'){
-        this.linkFunction.emit();
+        this.linkFunction.emit(funcParams);
       } else {
         link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
       }

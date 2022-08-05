@@ -16,19 +16,30 @@ import { WeAreSorryComponent } from "./we-are-sorry/we-are-sorry.component";
 import { YourDataComponent } from "./your-data/your-data.component";
 import { ProspectsOfSuccess } from "./prospects-of-success/prospects-of-success.component"
 import { RequestSendComponent } from "./request-send/request-send.component";
-import {IllnessComponent} from "./illness/illness.component";
-import {Illness2Component} from "./illness-2/illness-2.component";
-import {PrivateAccidentComponent} from "./private-accident/private-accident.component";
+import { RequestQuoteComponent } from "./request-quote/request-quote.component";
+import { IllnessComponent } from "./illness/illness.component";
+import { Illness2Component } from "./illness-2/illness-2.component";
+import { PrivateAccidentComponent } from "./private-accident/private-accident.component";
+import { DetailsFigureComponent } from './details-figure/details-figure.component';
+import { AdditionalInsuranceComponent } from './additional-insurance/additional-insurance.component';
+import { DetailsIntroComponent } from './details-intro/details-intro.component';
+import { PersonalDataInputComponent } from "./personal-data-input/personal-data-input.component";
+import { PersonalDataInputComponentTwo } from "./personal-data-input-2/personal-data-input-2.component";
+import { WorkAccidentComponent } from './work-accident/work-accident.component';
+import { PartBodyFigureComponent } from './part-body-figure/part-body-figure.component';
+import { SummaryComponent } from './summary/summary.component';
+import { ChanceOfSuccessComponent } from './chance-of-success/chance-of-success.component';
+import { PersonalDataInformationComponent } from './personal-data-information/personal-data-information.component';
+import { PersonalDataSummaryComponent } from './personal-data-summary/personal-data-summary.component';
+import { AppreciationComponent } from './appreciation/appreciation.component';
+import { PreSummaryComponent } from './pre-summary/pre-summary.component';
 
 const routes: Routes = [
   {
     path: '',
     component: WizardComponent
   },
-  {
-    path: 'wizard',
-    component: WizardComponent
-  },
+  //cookies and footer links START
   {
     path: 'begin',
     component: BeginComponent
@@ -42,26 +53,6 @@ const routes: Routes = [
     component: ImpressumComponent
   },
   {
-    path: 'accident-intro',
-    component: AccidentComponent
-  },
-  {
-    path: 'accident-type',
-    component: AccidentTypeComponent
-  },
-  {
-    path: 'accident-date',
-    component: AccidentDateComponent
-  },
-  {
-    path: 'legal-data-policy',
-    component: LegalDataPolicyComponent
-  },
-  {
-    path: 'die-details',
-    component: DieDetailsComponent
-  },
-  {
     path: 'terms-of-use',
     component: TermsOfUseComponent
   },
@@ -70,17 +61,113 @@ const routes: Routes = [
     component: AGBComponent
   },
   {
-    path: 'more-injuries',
-    component: MoreInjuriesComponent
+    path: 'legal-data-policy',
+    component: LegalDataPolicyComponent
   },
+  //cookies and footer links END
+  //generic routes START
   {
     path: 'we-are-sorry',
     component: WeAreSorryComponent
   },
+  //generic routes END
   {
-    path: 'your-data',
+    path: 'wizard',
+    component: WizardComponent
+  },
+  {
+    path: 'accident-intro',
+    component: AccidentComponent
+  },
+  {
+    path: 'accident-type',
+    component: AccidentTypeComponent
+  },
+  {
+    path: 'additional-insurance',
+    component: AdditionalInsuranceComponent
+  },
+  {
+    path: 'accident-date',
+    component: AccidentDateComponent
+  },
+  {
+    path: 'details-intro',
+    component: DetailsIntroComponent
+  },
+  {
+    path: 'die-details',//TODO: check if we really need this page
+    component: DieDetailsComponent
+  },
+  {
+    path: 'work-accident',//variation one
+    component: WorkAccidentComponent
+  },
+  {
+    path: 'illness',//variation two
+    component: IllnessComponent
+  },
+  {
+    path: 'private-accident',//variation three
+    component: PrivateAccidentComponent
+  },
+  {
+    path: 'illness-diagnostic',
+    component: Illness2Component
+  },
+  {
+    path: 'full-body',
+    component: DetailsFigureComponent
+  },
+  {
+    path: 'part-body',
+    component: PartBodyFigureComponent
+  },
+  {
+    path: 'more-injuries',
+    component: MoreInjuriesComponent
+  },
+  {
+    path: 'summary',
+    component: SummaryComponent
+  },
+  {
+    path: 'chance-of-success',
+    component: ChanceOfSuccessComponent
+  },
+  {
+    path: 'request-quote',
+    component: RequestQuoteComponent
+  },
+  {
+    path: 'personal-data-information',
+    component: PersonalDataInformationComponent
+  },
+  {
+    path: 'your-data',//TODO: check if we really need this page
     component: YourDataComponent
   },
+  {
+    path: 'personal-data-contact',
+    component: PersonalDataInputComponentTwo
+  },
+  {
+    path: 'personal-data-person',
+    component: PersonalDataInputComponent
+  },
+  {
+    path: 'personal-data-summary',//TODO: check if we really need this page, because we remove in task https://radien.atlassian.net/browse/PROTE-527
+    component: PersonalDataSummaryComponent
+  },
+  {
+    path: 'appreciation',
+    component: AppreciationComponent
+  },
+  {
+    path: 'pre-summary',
+    component: PreSummaryComponent
+  },
+  //TODO: we need check this others routes for put in right flow
   {
     path: 'prospects-of-success',
     component: ProspectsOfSuccess
@@ -88,18 +175,6 @@ const routes: Routes = [
   {
     path: 'request-send',
     component: RequestSendComponent
-  },
-  {
-    path: 'illness',
-    component: IllnessComponent
-  },
-  {
-    path: 'illness-2',
-    component: Illness2Component
-  },
-  {
-    path: 'private-accident',
-    component: PrivateAccidentComponent
   }
 ];
 

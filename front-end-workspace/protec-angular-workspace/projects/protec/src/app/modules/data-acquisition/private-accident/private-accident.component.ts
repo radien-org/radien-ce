@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { StorageService } from '../../../shared/services/storage/storage.service';
+import { LOCAL } from '../../../shared/services/storage/local.enum';
 
 @Component({
   selector: 'app-private-accident',
@@ -14,26 +16,46 @@ export class PrivateAccidentComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/accident-type'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/accident-intro'
+          link: '/data-acquisition/details-intro'
         }
       ]
     }
   }
 
-  constructor(private readonly translationService: TranslateService) { }
-
-  ngOnInit(): void {
-  }
+  accidentType: string = '';
 
   option_class = 'hide';
+
+  constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) {}
+
+  ngOnInit(): void {
+    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    this.verifyAccidentType();
+  }
+
   public showOptions(){
     this.option_class = 'show-flex'
   }
+  
   public hideOptions(){
     this.option_class = 'hide'
+  }
+
+  verifyAccidentType() {
+    if(this.accidentType === 'recreational-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/full-body'
+        }
+      );
+    } else if(this.accidentType === 'disease') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/illness-diagnostic'
+        }
+      );
+    }
   }
 }
