@@ -161,7 +161,8 @@ const routes: Routes = [
   },
   {
     path: 'appreciation',
-    component: AppreciationComponent
+    //component: AppreciationComponent,
+    component: RequestSendComponent,
   },
   {
     path: 'pre-summary',

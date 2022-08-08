@@ -15,14 +15,45 @@ export class PreSummaryComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/appreciation'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition'
         }
       ]
     }
   }
+
+  leftInfo = [
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    },
+    {
+      label: 'Label',
+      value: 'Value'
+    }
+  ]
 
   constructor(private readonly translationService: TranslateService) { }
 

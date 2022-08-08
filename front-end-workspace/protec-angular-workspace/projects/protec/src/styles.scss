@@ -121,6 +121,14 @@ body {
 
 /*GLOBAL STYLES*/
 
+.mt-50 {
+  margin-top: 50px;
+}
+
+.mb-50 {
+  margin-bottom: 50px;
+}
+
 .base-header {
   background: var(--deep-forest) 0% 0% no-repeat padding-box;
   background: var(--deep-forest) 0% 0% no-repeat padding-box;
@@ -200,6 +208,16 @@ h2 {
   font: normal normal bold 25px Dosis;
   letter-spacing: 7.5px;
   color: var(--chalk-mint);
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+h3 {
+  color: var(--chalk-mint);
+  text-align: left;
+  font-size: 20px !important;
+  letter-spacing: 7.5px;
+  color: var(--muted-forest);
   text-transform: uppercase;
   opacity: 1;
 }
@@ -507,7 +525,6 @@ b {
 
 .input-text{
   border: 1px solid var(--muted-forest);
-  border: 1px solid #4A6767;
   border-radius: 2px;
   opacity: 1;
   width: 95%;

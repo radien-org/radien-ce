@@ -25,8 +25,12 @@ export class RequestSendComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('Zurück'),
-          link: '/data-acquisition'
+          label: this.translationService.instant('zurück'),
+          link: '/data-acquisition/personal-data-person'
+        },
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/pre-summary'
         }
       ]
     }

@@ -5,16 +5,41 @@
         </div>
         <div>
             <div class="generic-box-content">
-                <div class="row base-min-height-45">
-                    <div class="col-lg-12 col-md-12 col-sm-12">
-                        <div align="center">
-                            <div class="bf-content">
-                                <p>work accident form page</p>
-                                <div clas="bf-head"></div>
+                    <div class="row horzontal-space-left-sm">
+                        <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
+                            <div class="col-lg-6 col-md-5 col-sm-12">
+                                <p class="para-text horzontal-space-left-sm"> {{'Arbeitgeber'  | translate }} </p>
+                                <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'(damaliger) Arbeitgeber'  | translate }}" required>
+                            </div>
+                            <div class="col-lg-6 col-md-5 col-sm-12">
+                                <p class="para-text horzontal-space-left-sm"> {{'PLZ Arbeitgeber'  | translate }} </p>
+                                <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'PLZ des Arbeitgebers'  | translate }}" >
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <p class="para-text horzontal-space-left-sm"> {{'Was ist Deine berufliche Tatigkeit?*'  | translate }} </p>
+                            <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'(damaliger) Beruf'  | translate }}">
+                        </div>
+                        <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
+                            <div class="col-lg-6 col-md-5 col-sm-12">
+                                <p class="para-text horzontal-space-left-sm" > {{'Zustandige BG / UV'  | translate }} </p>
+                                <select 
+                                    class="input-text vertical-space-increase-bottom-2"
+                                    class="input-text vertical-space-increase-bottom-2 input-select-dropdown">
+                                    <option value="">Option auswahlen</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-5 col-sm-12">
+                                <p class="para-text horzontal-space-left-sm" required> {{'Aktenzeichen'  | translate }} </p>
+                                <input 
+                                    type="number" 
+                                    name="Mobilfunknummer" 
+                                    id="Mobilfunknummer" 
+                                    class="input-text vertical-space-increase-bottom-2" 
+                                    placeholder="{{'Optional falls bekannt'  | translate }}">
                             </div>
                         </div>
                     </div>
-                </div>
                 <div class="container-fluid">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
                 </div>
