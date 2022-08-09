@@ -68,10 +68,14 @@ export class SidenavBackdropComponent implements OnInit {
   }
 
   getAcceptedCookie(cookies: string) {
-      this.cookieService.getAcceptedCookie(cookies).then((x:any) => {
+    this.cookieService.getAcceptedCookie(cookies).then((x:any) => {
+      console.log('save cookie request response:', cookies)
       this.cookieService.saveInLocal(cookies);
-        console.log('debug:', cookies)
-        this.closeModal();
+      this.closeModal();
+    }).catch((error:any) => {
+      console.error('erro in save cookie request:', error)
+      this.cookieService.saveInLocal(cookies);
+      this.closeModal();
     });
 
   }
