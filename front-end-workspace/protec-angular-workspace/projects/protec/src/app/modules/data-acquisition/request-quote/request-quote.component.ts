@@ -11,7 +11,7 @@ export class RequestQuoteComponent implements OnInit {
   dataButton = {
     label: this.translationService.instant('ANGEBOT ANFORDERN'),
     type: 'outline-lg',
-    link: '/data-acquisition/wizard'
+    link: '/data-acquisition/appreciation'
   }
 
   pageNav = {
@@ -21,10 +21,6 @@ export class RequestQuoteComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/chance-of-success'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/personal-data-information'
         }
       ]
     }

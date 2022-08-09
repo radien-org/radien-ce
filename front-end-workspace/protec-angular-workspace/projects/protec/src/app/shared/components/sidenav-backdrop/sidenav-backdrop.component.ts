@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { CookieService } from '../../services/cookie/cookie.service';
+import {LOCAL} from "../../services/storage/local.enum";
 
 @Component({
   selector: 'app-sidenav-backdrop',
@@ -35,6 +36,7 @@ export class SidenavBackdropComponent implements OnInit {
       link: 'disabled'
     }
   }
+
   cookieWindowButtonDefault = {
     dataButtonOptionOne: {
       label: this.translationService.instant('ALLE COOKIES AKZEPTIEREN'),
@@ -66,10 +68,12 @@ export class SidenavBackdropComponent implements OnInit {
   }
 
   getAcceptedCookie(cookies: string) {
-    this.cookieService.getAcceptedCookie(cookies).then((x:any) => {
+      this.cookieService.getAcceptedCookie(cookies).then((x:any) => {
       this.cookieService.saveInLocal(cookies);
-      this.closeModal();
+        console.log('debug:', cookies)
+        this.closeModal();
     });
+
   }
 
   public closeModal(): void {
