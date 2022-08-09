@@ -14,7 +14,7 @@ export class Illness2Component implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/private-accident'
+          link: '/data-acquisition/illness-details'
         },
         {
           label: this.translationService.instant('weiter'),

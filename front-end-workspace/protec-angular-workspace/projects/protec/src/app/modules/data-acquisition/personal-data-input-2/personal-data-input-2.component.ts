@@ -14,11 +14,11 @@ export class PersonalDataInputComponentTwo implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/personal-data-information'
+          link: '/data-acquisition/personal-data-person'
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/personal-data-person'
+          link: '/data-acquisition/appreciation'
         }
       ]
     }

@@ -28,14 +28,17 @@ export class AccidentDateComponent implements OnInit {
   buttons = [{
     label: this.translationService.instant('JA'),
     type: 'item',
-    link: 'disabled'
+    link: 'disabled',
+    class:'sickleave_yes'
   },
   {
     label: this.translationService.instant('NEIN'),
     type: 'item',
-    link: 'disabled'
+    link: 'disabled',
+    class:'sickleave_no'
   }]
 
+  /* Date Picker */
   months = 0
   days = 0
   monthdays = 0
@@ -67,11 +70,7 @@ export class AccidentDateComponent implements OnInit {
   selectYear(i: number){
     this.selectedYear = i;
     this.year_selector_class = "hide";
-    if(i==this.currentYear){
-      this.months=this.currentMonth;
-    }else{
-      this.months=11;
-    }
+    if(i==this.currentYear){this.months=this.currentMonth;}else{this.months=11;}
     this.year_head_class="toggle-button-completed"
     this.month_selector_class = "show";
     this.year_head_label= i.toString();
@@ -85,49 +84,18 @@ export class AccidentDateComponent implements OnInit {
   }
 
   getDaylist(){
-    switch (this.selectedMonth){
-      case 0:
-        this.monthdays = 31;
-        break;
-      case 1:
-        if(this.selectedYear%4==0){
-          this.monthdays = 29
-        }
-        else
-        {
-          this.monthdays = 28
-        }
-        break;
-      case 2:
-        this.monthdays = 31;
-        break;
-      case 3:
-        this.monthdays = 30;
-        break;
-      case 4:
-        this.monthdays = 31;
-        break;
-      case 5:
-        this.monthdays = 30;
-        break;
-      case 6:
-        this.monthdays = 31;
-        break;
-      case 7:
-        this.monthdays = 31;
-        break;
-      case 8:
-        this.monthdays = 30;
-        break;
-      case 9:
-        this.monthdays = 31;
-        break;
-      case 10:
-        this.monthdays = 30;
-        break;
-      case 11:
-        this.monthdays = 31;
-        break;
+    switch (this.selectedMonth){case 0:this.monthdays = 31;break;
+      case 1:if(this.selectedYear%4==0){this.monthdays = 29} else {this.monthdays = 28}break;
+      case 2:this.monthdays = 31;break;
+      case 3:this.monthdays = 30;break;
+      case 4:this.monthdays = 31;break;
+      case 5:this.monthdays = 30;break;
+      case 6:this.monthdays = 31;break;
+      case 7:this.monthdays = 31;break;
+      case 8:this.monthdays = 30;break;
+      case 9:this.monthdays = 31;break;
+      case 10:this.monthdays = 30;break;
+      case 11:this.monthdays = 31;break;
     }
     if(this.selectedYear == this.currentYear){
       if(this.selectedMonth == this.currentMonth)
@@ -145,6 +113,14 @@ export class AccidentDateComponent implements OnInit {
     this.day_head_label= i.toString();
   }
 
+
+  /* Date Picker end*/
+
+
+  /* Button component*/
+  sickleave=""
+  sickleave_yes="active"
+  sickleave_no=""
 
 
   ngOnInit(): void {}

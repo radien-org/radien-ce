@@ -96,24 +96,20 @@ const routes: Routes = [
     component: DetailsIntroComponent
   },
   {
-    path: 'die-details',//TODO: check if we really need this page
-    component: DieDetailsComponent
-  },
-  {
     path: 'work-accident',//variation one
     component: WorkAccidentComponent
   },
   {
-    path: 'illness',//variation two
+    path: 'illness-details',//variation two
     component: IllnessComponent
-  },
-  {
-    path: 'private-accident',//variation three
-    component: PrivateAccidentComponent
   },
   {
     path: 'illness-diagnostic',
     component: Illness2Component
+  },
+  {
+    path: 'private-accident',//variation three
+    component: PrivateAccidentComponent
   },
   {
     path: 'full-body',
@@ -148,12 +144,12 @@ const routes: Routes = [
     component: YourDataComponent
   },
   {
-    path: 'personal-data-contact',
-    component: PersonalDataInputComponentTwo
-  },
-  {
     path: 'personal-data-person',
     component: PersonalDataInputComponent
+  },
+  {
+    path: 'personal-data-contact',
+    component: PersonalDataInputComponentTwo
   },
   {
     path: 'personal-data-summary',//TODO: check if we really need this page, because we remove in task https://radien.atlassian.net/browse/PROTE-527
