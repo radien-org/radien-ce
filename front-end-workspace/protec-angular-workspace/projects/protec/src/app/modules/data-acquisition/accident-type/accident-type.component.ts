@@ -48,7 +48,7 @@ export class AccidentTypeComponent implements OnInit {
     }
   }
 
-  showErrorMsg = true;
+  showErrorMsg = false;
   textErrorMsg = 'Lorem ipsum dolor sit amet';
 
   constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService, private readonly router: Router) { }

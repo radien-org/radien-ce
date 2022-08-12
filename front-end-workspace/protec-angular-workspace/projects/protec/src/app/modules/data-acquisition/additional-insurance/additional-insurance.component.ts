@@ -88,7 +88,7 @@ export class AdditionalInsuranceComponent implements OnInit {
   }
 
   verifyAccidentType() {
-    this.pageNav.navegation.navegations.splice(1, 1)
+    this.pageNav.navegation.navegations.splice(1, 1);
     if(this.accidentType === 'recreational-accident') {
       this.pageNav.navegation.navegations.push(
         {

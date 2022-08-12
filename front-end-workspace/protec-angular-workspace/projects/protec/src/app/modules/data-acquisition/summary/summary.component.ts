@@ -22,7 +22,7 @@ export class SummaryComponent implements OnInit {
         },
         {
           label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/chance-of-success'
+          link: '/data-acquisition/prospects-of-success'
         }
       ]
     }

@@ -71,14 +71,6 @@ const routes: Routes = [
     component: WeAreSorryComponent
   },
   {
-    path: 'prospects-of-success',
-    component: ProspectsOfSuccess
-  },
-  {
-    path: 'request-send',
-    component: RequestSendComponent
-  },
-  {
     path: 'request-send',
     component: RequestSendComponent
   },
@@ -138,6 +130,10 @@ const routes: Routes = [
   {
     path: 'summary',
     component: SummaryComponent
+  },
+  {
+    path: 'prospects-of-success',
+    component: ProspectsOfSuccess
   },
   {
     path: 'chance-of-success',

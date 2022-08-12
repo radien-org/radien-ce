@@ -14,7 +14,7 @@ export class ChanceOfSuccessComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/summary'
+          link: '/data-acquisition/prospects-of-success'
         },
         {
           label: this.translationService.instant('weiter'),
