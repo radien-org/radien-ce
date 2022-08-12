@@ -21,11 +21,11 @@ $protec-warn: mat.define-palette(mat.$red-palette);
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
 $protec-theme: mat.define-light-theme((
-        color: (
-                primary: $protec-primary,
-                accent: $protec-accent,
-                warn: $protec-warn,
-        )
+color: (
+primary: $protec-primary,
+accent: $protec-accent,
+warn: $protec-warn,
+)
 ));
 
 // Include theme styles for core and each component used in your app.
@@ -37,7 +37,7 @@ $protec-theme: mat.define-light-theme((
 /* You can add global styles to this file, and also import other style files */
 
 :root {
-
+  
   /* Colors: */
   --light-grey: #DADADA;
   --light-mint: #AAC0BF;
@@ -50,11 +50,11 @@ $protec-theme: mat.define-light-theme((
   --45-chalk-mint: #E3EAEA;
   --chalk-mint: #C1D0D0;
   --deep-forest: #2B4645;
-
+  
   --light-taupe-rgba: RGBA(236,233,235,0.25);
-
+  
   --close-icon-color: #314545;
-
+  
   /* Font/text values */
   --unnamed-font-family-dosis: "Dosis";
   --unnamed-font-family-open-sans: "Open sans", sans-serif;
@@ -120,6 +120,29 @@ body {
 }
 
 /*GLOBAL STYLES*/
+
+.p-button {
+  border: 1px solid var(--muted-forest);
+  border-radius: 2px;
+  opacity: 1;
+  width: 80%;
+  height: 40px;
+  padding: 8px;
+  text-align: center;
+  letter-spacing: 4.5px;
+  min-width: 200px;
+  color: var(--muted-forest);
+  font-family: Dosis;
+  font-weight: 600;
+  font-size: 12px;
+  background: transparent;
+}
+
+.p-button:enabled:hover {
+  background-color: var(--muted-forest);
+  border-radius: 2px !important;
+  color: #FFFFFF;
+}
 
 .mt-50 {
   margin-top: 50px;
@@ -285,7 +308,7 @@ b {
   color: var(--deep-forest);
   text-transform: uppercase;
   opacity: 1;
-
+  
 }
 
 .h2-title{
@@ -298,7 +321,7 @@ b {
   text-transform: uppercase;
   opacity: 1;
   margin-bottom: -1em;
-
+  
 }
 
 
@@ -489,151 +512,152 @@ b {
 .scrollbar-primary::-webkit-scrollbar {
   width: 12px;
   background-color: #F5F5F5; }
-
-.scrollbar-primary::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-  background-color: var(--chalk-mint);
-  margin-left: 200px;
-}
-
-.hide{
-  display: none;
-}
-.show{
-  display: block;
-}
-
-.show-flex{
-  display: inline-flex;
-}
-
-
-.calendar-picker{
-  background-color:#FFFFFF;
-  border-color: var(--deep-forest);
-  position: relative;
-}
-
-.horzontal-space-left-sm{
-  margin-left: 0.5em !important;
-}
-
-.horzontal-space-left-md{
-  margin-left: 2em !important;
-}
-
-.input-text{
-  border: 1px solid var(--muted-forest);
-  border-radius: 2px;
-  opacity: 1;
-  width: 95%;
-  padding: 10px;
-  font-family: var(--unnamed-font-family-open-sans);
-  font-weight: var(--unnamed-font-weight-600);
-  color: var(--muted-forest);
-  font-size: 18px;
-}
-
-
-::placeholder {
-  color: var(--chalk-mint);
-  font-weight: lighter;
-  font-size: 16px;
-}
-
-.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle{
-  border-color: var(--deep-forest);
-  border-width: 0;
-  background-color: white;
-  background-image: url("assets/images/ProTec_Software_Icon_check-2B4645.svg");
-  background-repeat: no-repeat;
-  background-size: contain;
-
-}
-
-.mat-radio-button.mat-accent .mat-radio-inner-circle{
-  background-color:var(--deep-forest);
-  opacity: 0;
-
-}
-
-.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-  background-color: var(--deep-forest);
-  opacity: 0;
-}
-
-.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-ripple .mat-ripple-element {
-display: none;
-  background-color: var(--deep-forest);
-}
-
-.mat-checkbox.mat-accent .mat-radio-inner-circle{
-  background-color:var(--deep-forest);
-  opacity: 0;
-
-}
-
-.mat-checkbox.mat-accent .mat-radio-ripple .mat-ripple-element {
-  background-color: var(--deep-forest);
-  opacity: 0;
-}
-
-.mat-checkboxma.mat-accent.mat-radio-checked .mat-radio-ripple .mat-ripple-element {
-  display: none;
-  background-color: var(--deep-forest);
-}
-
-.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
-  opacity: 0.03 !important;
-  background-color: var(--deep-forest)!important;
-}
-
-.mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-  border-color: transparent;
-  border-width: 0;
-  background-color: white;
-  background-image: url("assets/images/ProTec_Software_Icon_check-2B4645.svg");
-  background-repeat: no-repeat;
-  background-size: contain;
-
-}
-
-.mat-checkbox-ripple{
-  background-color: transparent;
-}
-
-.width-100{
-  width: 100%;
-}
-
-.list-check-tic {
-  list-style-image: url("assets/images/ProTec_Software_Icon_okay.svg")
-}
-
-.tick-size{
-  height: 1.5em;
-  display: inline-block;
-}
-
-.check-list{
-  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-600) 18px/24px var(--unnamed-font-family-open-sans);
-  letter-spacing: var(--unnamed-character-spacing-0);
-  color: var(--muted-forest);
-  text-align: left;
-  font-size: 18px;
-  opacity: 1;
-}
-
-select {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  appearance: none;
-  width: 200px;
-  padding: 7px;
-  border-radius: 0;
-}
-
-select::-ms-expand {
-  display: none;
-}
+  
+  .scrollbar-primary::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--chalk-mint);
+    margin-left: 200px;
+  }
+  
+  .hide{
+    display: none;
+  }
+  .show{
+    display: block;
+  }
+  
+  .show-flex{
+    display: inline-flex;
+  }
+  
+  
+  .calendar-picker{
+    background-color:#FFFFFF;
+    border-color: var(--deep-forest);
+    position: relative;
+  }
+  
+  .horzontal-space-left-sm{
+    margin-left: 0.5em !important;
+  }
+  
+  .horzontal-space-left-md{
+    margin-left: 2em !important;
+  }
+  
+  .input-text{
+    border: 1px solid var(--muted-forest);
+    border-radius: 2px;
+    opacity: 1;
+    width: 95%;
+    padding: 10px;
+    font-family: var(--unnamed-font-family-open-sans);
+    font-weight: var(--unnamed-font-weight-600);
+    color: var(--muted-forest);
+    font-size: 18px;
+  }
+  
+  
+  ::placeholder {
+    color: var(--chalk-mint);
+    font-weight: lighter;
+    font-size: 16px;
+  }
+  
+  .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle{
+    border-color: var(--deep-forest);
+    border-width: 0;
+    background-color: white;
+    background-image: url("assets/images/ProTec_Software_Icon_check-2B4645.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    
+  }
+  
+  .mat-radio-button.mat-accent .mat-radio-inner-circle{
+    background-color:var(--deep-forest);
+    opacity: 0;
+    
+  }
+  
+  .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+    background-color: var(--deep-forest);
+    opacity: 0;
+  }
+  
+  .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-ripple .mat-ripple-element {
+    display: none;
+    background-color: var(--deep-forest);
+  }
+  
+  .mat-checkbox.mat-accent .mat-radio-inner-circle{
+    background-color:var(--deep-forest);
+    opacity: 0;
+    
+  }
+  
+  .mat-checkbox.mat-accent .mat-radio-ripple .mat-ripple-element {
+    background-color: var(--deep-forest);
+    opacity: 0;
+  }
+  
+  .mat-checkboxma.mat-accent.mat-radio-checked .mat-radio-ripple .mat-ripple-element {
+    display: none;
+    background-color: var(--deep-forest);
+  }
+  
+  .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+    opacity: 0.03 !important;
+    background-color: var(--deep-forest)!important;
+  }
+  
+  .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    border-color: transparent;
+    border-width: 0;
+    background-color: white;
+    background-image: url("assets/images/ProTec_Software_Icon_check-2B4645.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    
+  }
+  
+  .mat-checkbox-ripple{
+    background-color: transparent;
+  }
+  
+  .width-100{
+    width: 100%;
+  }
+  
+  .list-check-tic {
+    list-style-image: url("assets/images/ProTec_Software_Icon_okay.svg")
+  }
+  
+  .tick-size{
+    height: 1.5em;
+    display: inline-block;
+  }
+  
+  .check-list{
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-600) 18px/24px var(--unnamed-font-family-open-sans);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--muted-forest);
+    text-align: left;
+    font-size: 18px;
+    opacity: 1;
+  }
+  
+  select {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 200px;
+    padding: 7px;
+    border-radius: 0;
+  }
+  
+  select::-ms-expand {
+    display: none;
+  }
+  

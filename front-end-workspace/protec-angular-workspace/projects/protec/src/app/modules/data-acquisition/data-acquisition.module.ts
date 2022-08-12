@@ -20,6 +20,7 @@ import { ProspectsOfSuccess } from "./prospects-of-success/prospects-of-success.
 import { RequestSendComponent } from "./request-send/request-send.component";
 import { CalendarModule } from "primeng/calendar";
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IllnessComponent } from "./illness/illness.component";
 import { Illness2Component } from "./illness-2/illness-2.component";
 import { PrivateAccidentComponent } from "./private-accident/private-accident.component";
@@ -78,6 +79,7 @@ import { RequestQuoteComponent } from "./request-quote/request-quote.component";
   imports: [
     CalendarModule,
     MultiSelectModule,
+    ConfirmDialogModule,
     DataAcquisitionRoutingModule,
     CommonModule,
     SharedModule

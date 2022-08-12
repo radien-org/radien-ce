@@ -3,6 +3,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { PrimeNGConfig } from "primeng/api";
 import { CookieService } from '../../../shared/services/cookie/cookie.service';
 import { DataAcquisitionService } from '../../../shared/services/data-acquisition/data-acquisition.service';
+import { StorageService } from '../../../shared/services/storage/storage.service';
+import { LOCAL } from '../../../shared/services/storage/local.enum';
 
 @Component({
   selector: 'app-additional-insurance',
@@ -18,10 +20,6 @@ export class AdditionalInsuranceComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/accident-type'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/accident-date'
         }
       ]
     }
@@ -71,13 +69,48 @@ export class AdditionalInsuranceComponent implements OnInit {
     secondStatus: 'no'
   }
 
-  constructor(private readonly translationService: TranslateService, private primengConfig: PrimeNGConfig, private readonly dataService : DataAcquisitionService) {
+  accidentType: string = '';
+
+  constructor(
+    private readonly translationService: TranslateService, 
+    private primengConfig: PrimeNGConfig, 
+    private readonly dataService : DataAcquisitionService,
+    private readonly storageService: StorageService
+  ) {
     this.options = [];
   }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
     this.getAdditionalInsuranceOptions();
+    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    this.verifyAccidentType();
+  }
+
+  verifyAccidentType() {
+    this.pageNav.navegation.navegations.splice(1, 1)
+    if(this.accidentType === 'recreational-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition' + (this.buttonsStatus.firstStatus == 'no' ? '/we-are-sorry' : '/accident-date')
+        }
+      );
+    } else if(this.accidentType === 'disease') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition' + (this.buttonsStatus.firstStatus == 'no' ? '/we-are-sorry' : '/accident-date')
+        }
+      );
+    } else {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/accident-date'
+        }
+      );
+    }
   }
 
   selectNoBtn(data: any) {
@@ -92,6 +125,7 @@ export class AdditionalInsuranceComponent implements OnInit {
           item.selected = item.funcParams.value === data.value ? true : false;
         });
       }
+      this.verifyAccidentType();
     }
   }
 

@@ -19,4 +19,11 @@
 
 .body-style-full-image {
     width: 80%;
+    cursor: pointer;
+}
+
+canvas#bodyCanvas { 
+    border: 1px solid white; 
+    width: 400px;
+    height: 450px; 
 }

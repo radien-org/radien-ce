@@ -70,6 +70,18 @@ const routes: Routes = [
     path: 'we-are-sorry',
     component: WeAreSorryComponent
   },
+  {
+    path: 'prospects-of-success',
+    component: ProspectsOfSuccess
+  },
+  {
+    path: 'request-send',
+    component: RequestSendComponent
+  },
+  {
+    path: 'request-send',
+    component: RequestSendComponent
+  },
   //generic routes END
   {
     path: 'wizard',
@@ -163,15 +175,6 @@ const routes: Routes = [
   {
     path: 'pre-summary',
     component: PreSummaryComponent
-  },
-  //TODO: we need check this others routes for put in right flow
-  {
-    path: 'prospects-of-success',
-    component: ProspectsOfSuccess
-  },
-  {
-    path: 'request-send',
-    component: RequestSendComponent
   }
 ];
 

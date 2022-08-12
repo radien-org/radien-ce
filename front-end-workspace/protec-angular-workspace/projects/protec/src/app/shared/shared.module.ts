@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TranslateModule } from '@ngx-translate/core';
 //import { FieldFormatterPipe } from './pipes/field-formatter.pipe';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -32,6 +33,7 @@ import { WarningComponent } from './components/warning/warning.component';
     MaterialModule,
     CalendarModule,
     MultiSelectModule,
+    ConfirmDialogModule,
     TranslateModule.forChild(),
   ],
   exports: [
@@ -47,7 +49,9 @@ import { WarningComponent } from './components/warning/warning.component';
     InternalFooterComponent,
     SidenavBackdropComponentEssenziell,
     CalendarComponent,
-    WarningComponent
+    WarningComponent,
+    MultiSelectModule,
+    ConfirmDialogModule
   ],
 })
 export class SharedModule {}
