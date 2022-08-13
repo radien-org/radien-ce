@@ -38,10 +38,6 @@ export class DetailsFigureComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/illness-details'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/part-body'
         }
       );
     } else if(this.accidentType === 'disease') {
@@ -49,10 +45,6 @@ export class DetailsFigureComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/work-accident'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/part-body'
         }
       );
     } else {
@@ -60,10 +52,6 @@ export class DetailsFigureComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/work-accident'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/part-body'
         }
       );
     }

@@ -1,4 +1,7 @@
 import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
+import { StorageService } from '../../../shared/services/storage/storage.service';
+import { LOCAL } from '../../../shared/services/storage/local.enum';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-body-figure',
@@ -11,7 +14,7 @@ export class BodyFigureComponent implements OnInit {
   //private bodyCanvas: ElementRef = {} as ElementRef;
   //context = CanvasRenderingContext2D;
 
-  constructor() { }
+  constructor(private readonly storageService: StorageService, private readonly router: Router) { }
 
   ngAfterViewInit(): void {
     //this.context = this.bodyCanvas.nativeElement.getContext('2d');
@@ -19,6 +22,11 @@ export class BodyFigureComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  selectBodyPart(part:string) {
+    this.storageService.setItem(LOCAL.BODY_PART, part);
+    this.router.navigate(['/data-acquisition/part-body']);
   }
 
   buildCanvas() {
