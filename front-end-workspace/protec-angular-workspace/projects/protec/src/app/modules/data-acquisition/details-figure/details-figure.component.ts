@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { StorageService } from '../../../shared/services/storage/storage.service';
 import { LOCAL } from '../../../shared/services/storage/local.enum';
@@ -9,10 +9,6 @@ import { LOCAL } from '../../../shared/services/storage/local.enum';
   styleUrls: ['./details-figure.component.scss']
 })
 export class DetailsFigureComponent implements OnInit {
-
-  //@ViewChild('bodyCanvas')
-  //private bodyCanvas: ElementRef = {} as ElementRef;
-  //context = CanvasRenderingContext2D;
 
   pageNav = {
     navegation: {
@@ -30,36 +26,9 @@ export class DetailsFigureComponent implements OnInit {
 
   constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) {}
 
-  ngAfterViewInit(): void {
-    //this.context = this.bodyCanvas.nativeElement.getContext('2d');
-    this.buildCanvas();
-  }
-
   ngOnInit(): void {
     this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
     this.verifyAccidentType();
-  }
-
-  buildCanvas() {
-
-    let canvas: any = document.getElementById('bodyCanvas');
-    if (canvas!.getContext) {
-      let context = canvas.getContext('2d');
-      let base_image = new Image();
-      base_image.src = '/assets/images/body/ProTec_Software_Figure_pa-head.svg';
-      //this.context.drawImage(base_image, 100, 100);
-      //context.drawImage(base_image, 100, 100);
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      base_image.onload = function(){
-        const w = base_image.width, h = base_image.height;
-        context.drawImage(base_image, 0, 0, 30, 30);
-        //context.drawImage(base_image, 0, 0, 250, 150);
-        //context.imageSmoothingEnabled = true;
-        //context.drawImage(base_image, 0, 0, w * 2, h * 2);
-        //context.drawImage(base_image, 0, 0, 250, 150);
-      }
-    }
-
   }
 
   verifyAccidentType() {

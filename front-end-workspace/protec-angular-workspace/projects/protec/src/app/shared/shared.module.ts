@@ -14,6 +14,7 @@ import { InternalFooterComponent } from './components/internal-footer/internal-f
 import { SidenavBackdropComponentEssenziell } from "./components/sidenav-backdrop-essenziell/sidenav-backdrop-essenziell.component";
 import { CalendarComponent } from "./components/calendar/calendar.component";
 import { WarningComponent } from './components/warning/warning.component';
+import { BodyFigureComponent } from './components/body-figure/body-figure.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { WarningComponent } from './components/warning/warning.component';
     SidenavBackdropComponent,
     InternalFooterComponent,
     SidenavBackdropComponentEssenziell,
-    WarningComponent
+    WarningComponent,
+    BodyFigureComponent
     //FieldFormatterPipe,
   ],
   imports: [
@@ -51,7 +53,8 @@ import { WarningComponent } from './components/warning/warning.component';
     CalendarComponent,
     WarningComponent,
     MultiSelectModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    BodyFigureComponent
   ],
 })
 export class SharedModule {}
