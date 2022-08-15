@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { DataAcquisitionService } from '../../../shared/services/data-acquisition/data-acquisition.service';
 
 @Component({
   selector: 'app-work-accident',
@@ -24,9 +25,29 @@ export class WorkAccidentComponent implements OnInit {
     }
   }
 
-  constructor(private readonly translationService: TranslateService) { }
+  options: any[];
+
+  constructor(
+    private readonly translationService: TranslateService, 
+    private readonly dataService : DataAcquisitionService
+  ) {  
+    this.options = [];
+  }
 
   ngOnInit(): void {
+    this.getEmploymentResponsibleOptions();
+  }
+
+  getEmploymentResponsibleOptions() {
+    this.dataService.getEmploymentResponsibleOptions().then((data:any) => {
+      if(data) {
+        data.forEach((item:any) => {
+          this.options.push(
+            { name: item, code: item }
+          );
+        });
+      }
+    });
   }
 
 }
