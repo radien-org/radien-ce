@@ -11,7 +11,7 @@ export class MoreInjuriesComponent implements OnInit {
   buttons = [{
     label: this.translationService.instant('JA'),
     type: 'outline',
-    link: '/data-acquisition'
+    link: '/data-acquisition/full-body'
   },
   {
     label: this.translationService.instant('NEIN'),
@@ -26,10 +26,6 @@ export class MoreInjuriesComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/part-body'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/summary'
         }
       ]
     }

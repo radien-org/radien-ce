@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./illness-2.component.scss']
 })
 export class Illness2Component implements OnInit {
-
+  
   pageNav = {
     navegation: {
       type: 'navegation-buttons',
@@ -23,19 +23,18 @@ export class Illness2Component implements OnInit {
       ]
     }
   }
-
-
+  
   buttons = [{
     label: this.translationService.instant('JA'),
     type: 'item',
     link: '/data-acquisition/accident-date'
   },
-    {
-      label: this.translationService.instant('NEIN'),
-      type: 'item',
-      link: '/data-acquisition/accident-type'
-    }]
-
+  {
+    label: this.translationService.instant('NEIN'),
+    type: 'item',
+    link: '/data-acquisition/accident-type'
+  }]
+  
   months = 0
   days = 0
   monthdays = 0
@@ -73,8 +72,8 @@ export class Illness2Component implements OnInit {
   start_end_month=0
   start_end_day=0
   end_date="show"
-
-
+  
+  
   counter(i: number) {
     return new Array(i);
   }
@@ -126,7 +125,7 @@ export class Illness2Component implements OnInit {
       this.month_head_label_end= this.monthNames[i];
     }
   }
-
+  
   getDaylist(){
     switch (this.selectedBeginningMonth){
       case 0: this.monthdays = 31; break;
@@ -157,12 +156,12 @@ export class Illness2Component implements OnInit {
         }
       }
     }
-
+    
     return this.monthdays;
   }
-
+  
   selectDay(i:number){
-
+    
     if(this.current_selector == "Beginning"){
       this.selectedBeginningDay=i;
       this.day_selector_class_Beginning = "hide";
@@ -179,11 +178,11 @@ export class Illness2Component implements OnInit {
       this.current_selector = "End";
       this.year_selector_class_end = "hide";
     }
-
+    
   }
   ngOnInit(): void {
   }
-
+  
   public showOptions(){
     this.end_date = 'show-flex'
   }

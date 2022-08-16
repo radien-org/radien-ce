@@ -25,4 +25,19 @@ export class DataAcquisitionService {
       return body;
     });
   }
+
+  public getEmploymentResponsibleOptions() : any {
+
+    let url: string = `${this.serviceUrl}/employmentResponsible/values`;
+
+    return fetch(url).then(res => {
+      if(res.ok) {
+        return res.json();
+      } else {
+        throw new ReferenceError(JSON.stringify(res));
+      }
+    }).then(body => {
+      return body;
+    });
+  }
 }

@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TranslateModule } from '@ngx-translate/core';
 //import { FieldFormatterPipe } from './pipes/field-formatter.pipe';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -13,6 +14,7 @@ import { InternalFooterComponent } from './components/internal-footer/internal-f
 import { SidenavBackdropComponentEssenziell } from "./components/sidenav-backdrop-essenziell/sidenav-backdrop-essenziell.component";
 import { CalendarComponent } from "./components/calendar/calendar.component";
 import { WarningComponent } from './components/warning/warning.component';
+import { BodyFigureComponent } from './components/body-figure/body-figure.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,8 @@ import { WarningComponent } from './components/warning/warning.component';
     SidenavBackdropComponent,
     InternalFooterComponent,
     SidenavBackdropComponentEssenziell,
-    WarningComponent
+    WarningComponent,
+    BodyFigureComponent
     //FieldFormatterPipe,
   ],
   imports: [
@@ -32,6 +35,7 @@ import { WarningComponent } from './components/warning/warning.component';
     MaterialModule,
     CalendarModule,
     MultiSelectModule,
+    ConfirmDialogModule,
     TranslateModule.forChild(),
   ],
   exports: [
@@ -47,7 +51,10 @@ import { WarningComponent } from './components/warning/warning.component';
     InternalFooterComponent,
     SidenavBackdropComponentEssenziell,
     CalendarComponent,
-    WarningComponent
+    WarningComponent,
+    MultiSelectModule,
+    ConfirmDialogModule,
+    BodyFigureComponent
   ],
 })
 export class SharedModule {}
