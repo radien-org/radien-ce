@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
+import {global} from "@angular/compiler/src/util";
 
 @Component({
   selector: 'app-g-button',
@@ -17,7 +18,8 @@ export class GButtonComponent implements OnInit {
   };
   @Output() public linkFunction = new EventEmitter();
 
-  constructor(private readonly router: Router) { }
+
+  constructor(private readonly router: Router) { localStorage.setItem('class_yes','not-selected'); localStorage.setItem('class_no','not-selected')}
 
   ngOnInit(): void {}
 
@@ -35,9 +37,9 @@ export class GButtonComponent implements OnInit {
     const currentRouter  = this.router.url;
     return link === currentRouter ? true : false;
   }
+  public class_yes="not-selected"
+  public class_no="not-selected"
 
-  class_yes="not-selected"
-  class_no="not-selected"
   btn_arrow = "btn-arrow"
   btnOnMouseEnter() {
     this.btn_arrow = "btn-arrow-hover"
@@ -48,12 +50,13 @@ export class GButtonComponent implements OnInit {
 
 
   selectYes(){
-    this.class_yes="selected"
-    this.class_no="not-selected"
+    let class_yes = "selected"
+    let class_no="not-selected"
   }
   selectNo(){
-    this.class_yes="not-selected"
-    this.class_no="selected"
+    let class_yes="not-selected"
+    let class_no="selected"
   }
 
 }
+
