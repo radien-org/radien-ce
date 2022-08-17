@@ -58,48 +58,18 @@ export class CalendarComponent implements OnInit {
 
   getDaylist(){
     switch (this.selectedMonth){
-      case 0:
-        this.monthdays = 31;
-        break;
-      case 1:
-        if(this.selectedYear%4==0){
-          this.monthdays = 29
-        }
-        else
-        {
-          this.monthdays = 28
-        }
-        break;
-      case 2:
-        this.monthdays = 31;
-        break;
-      case 3:
-        this.monthdays = 30;
-        break;
-      case 4:
-        this.monthdays = 31;
-        break;
-      case 5:
-        this.monthdays = 30;
-        break;
-      case 6:
-        this.monthdays = 31;
-        break;
-      case 7:
-        this.monthdays = 31;
-        break;
-      case 8:
-        this.monthdays = 30;
-        break;
-      case 9:
-        this.monthdays = 31;
-        break;
-      case 10:
-        this.monthdays = 30;
-        break;
-      case 11:
-        this.monthdays = 31;
-        break;
+      case 0:this.monthdays = 31;break;
+      case 1:if(this.selectedYear%4==0){this.monthdays = 29} else {this.monthdays = 28}break;
+      case 2:this.monthdays = 31;break;
+      case 3:this.monthdays = 30;break;
+      case 4:this.monthdays = 31;break;
+      case 5:this.monthdays = 30;break;
+      case 6:this.monthdays = 31;break;
+      case 7:this.monthdays = 31;break;
+      case 8:this.monthdays = 30;break;
+      case 9:this.monthdays = 31;break;
+      case 10:this.monthdays = 30;break;
+      case 11:this.monthdays = 31;break;
     }
     if(this.selectedYear == this.currentYear){
       if(this.selectedMonth == this.currentMonth)
@@ -117,12 +87,36 @@ export class CalendarComponent implements OnInit {
     this.day_head_label= i.toString();
   }
 
+  enableSelectYear()
+  {
+    if(this.year_selector_class == 'hide') {
+      this.year_selector_class = 'show';
+      this.day_selector_class = 'hide';
+      this.month_selector_class = 'hide';
+    }
+  }
+
+  enableSelectMonth(){
+    if(this.month_selector_class == 'hide') {
+      this.year_selector_class = 'hide';
+      this.day_selector_class = 'hide';
+      this.month_selector_class = 'show';
+    }
+  }
+
+  enableSelectDay(){
+    if(this.day_selector_class == 'hide') {
+      this.year_selector_class = 'hide';
+      this.day_selector_class = 'show';
+      this.month_selector_class = 'hide';
+    }
+  }
+
   // Required info is stored in var:
   // selectedYear
   // selectedMonth
   // selectedDay
 
-  public ngOnInit(): void {
-  }
+  public ngOnInit(): void {}
 
 }

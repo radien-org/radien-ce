@@ -54,6 +54,22 @@
     </div>
 </div>
 
+<div *ngIf="data.type === 'item-selectable-yes'">
+    <div class="bt-action btn-outline btn-item align-content-center" [ngClass]="class_yes" (click)="selectYes()">
+        <span>
+            {{data.label}}
+        </span>
+    </div>
+</div>
+
+<div *ngIf="data.type === 'item-selectable-no'">
+    <div class="bt-action btn-outline btn-item align-content-center" [ngClass]="class_no" (click)="selectNo()">
+        <span>
+            {{data.label}}
+        </span>
+    </div>
+</div>
+
 <div *ngIf="data.type === 'footer-nav'">
     <div class="footer-nav-link bt-action" (click)="goToLink(data.link)">
         <span class="no-overflow-text">
