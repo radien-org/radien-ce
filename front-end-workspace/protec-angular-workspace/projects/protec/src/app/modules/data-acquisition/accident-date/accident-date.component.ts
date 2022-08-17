@@ -116,18 +116,30 @@ export class AccidentDateComponent implements OnInit {
   {
     if(this.year_selector_class == 'hide') {
       this.year_selector_class = 'show';
+      this.year_head_class = "";
+      this.month_head_class = "";
+      this.day_head_class = "";
+      this.year_head_label = "JAHR *";
+      this.month_head_label="MONATE";
+      this.day_head_label="TAG";
     }
   }
 
   enableSelectMonth(){
     if(this.month_selector_class == 'hide') {
       this.month_selector_class = 'show';
+      this.month_head_class = "";
+      this.day_head_class = "";
+      this.month_head_label="MONATE";
+      this.day_head_label="TAG";
     }
   }
 
   enableSelectDay(){
     if(this.day_selector_class == 'hide') {
       this.day_selector_class = 'show';
+      this.day_head_class = "";
+      this.day_head_label="TAG";
     }
   }
 
