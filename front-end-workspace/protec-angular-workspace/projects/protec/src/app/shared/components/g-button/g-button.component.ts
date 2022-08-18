@@ -19,7 +19,7 @@ export class GButtonComponent implements OnInit {
   @Output() public linkFunction = new EventEmitter();
 
 
-  constructor(private readonly router: Router) { localStorage.setItem('class_yes','not-selected'); localStorage.setItem('class_no','not-selected')}
+  constructor(private readonly router: Router) {}
 
   ngOnInit(): void {}
 
@@ -37,9 +37,9 @@ export class GButtonComponent implements OnInit {
     const currentRouter  = this.router.url;
     return link === currentRouter ? true : false;
   }
-  public class_yes="not-selected"
-  public class_no="not-selected"
 
+  class_yes="not-selected"
+  class_no="not-selected"
   btn_arrow = "btn-arrow"
   btnOnMouseEnter() {
     this.btn_arrow = "btn-arrow-hover"
@@ -50,12 +50,10 @@ export class GButtonComponent implements OnInit {
 
 
   selectYes(){
-    let class_yes = "selected"
-    let class_no="not-selected"
+    localStorage.setItem('krankgeschrieben','yes');
   }
   selectNo(){
-    let class_yes="not-selected"
-    let class_no="selected"
+    localStorage.setItem('krankgeschrieben','no');
   }
 
 }
