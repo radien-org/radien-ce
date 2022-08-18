@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DataAcquisitionService } from '../../../shared/services/data-acquisition/data-acquisition.service';
 import {LOCAL} from "../../../shared/services/storage/local.enum";
+import {StorageService} from "../../../shared/services/storage/storage.service";
 
 @Component({
   selector: 'app-work-accident',
@@ -35,15 +36,17 @@ export class WorkAccidentComponent implements OnInit {
 
   constructor(
       private readonly translationService: TranslateService,
-      private readonly dataService : DataAcquisitionService
+      private readonly dataService : DataAcquisitionService,
+      private readonly storageService: StorageService,
   ) {
     this.options = [];
     this.postCode = {
-      value: localStorage.getItem(LOCAL.OCCUPATION_POSTCODE) || '', error : ''
+      value: this.storageService.getItem(LOCAL.OCCUPATION_POSTCODE) || '', error : ''
     }
     this.occupation = {
-      value: localStorage.getItem(LOCAL.OCCUPATION) || '', error: ''
+      value: this.storageService.getItem(LOCAL.OCCUPATION) || '', error: ''
     }
+    this.verifyInput()
   }
 
   verifyInput(): void {
@@ -52,14 +55,15 @@ export class WorkAccidentComponent implements OnInit {
         label: this.translationService.instant('next'),
         link: '/data-acquisition/full-body'
       }]
+      this.saveInputs();
     } else {
       this.pageNav.navegation.navegations = [...this.initNavigation]
     }
   }
 
   saveInputs(): void {
-    localStorage.setItem(LOCAL.OCCUPATION_POSTCODE, `${this.postCode.value}`)
-    localStorage.setItem(LOCAL.OCCUPATION, `${this.occupation.value}`)
+    this.storageService.setItem(LOCAL.OCCUPATION_POSTCODE, `${this.postCode.value}`)
+    this.storageService.setItem(LOCAL.OCCUPATION, `${this.occupation.value}`)
   }
 
 
