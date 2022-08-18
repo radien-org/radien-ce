@@ -28,7 +28,7 @@ export class CalendarComponent implements OnInit {
   month_head_class = ""
   day_head_class = ""
   year_head_label = "JAHR *"
-  month_head_label="MONATE"
+  month_head_label="MONAT"
   day_head_label="TAG"
   constructor(private readonly translationService: TranslateService) {}
 
@@ -72,10 +72,7 @@ export class CalendarComponent implements OnInit {
       case 11:this.monthdays = 31;break;
     }
     if(this.selectedYear == this.currentYear){
-      if(this.selectedMonth == this.currentMonth)
-      {
-        this.monthdays = this.currentDay;
-      }
+      if(this.selectedMonth == this.currentMonth) {this.monthdays = this.currentDay;}
     }
     return this.monthdays;
   }
@@ -83,7 +80,7 @@ export class CalendarComponent implements OnInit {
   selectDay(i:number){
     this.selectedDay=i;
     this.day_selector_class = "hide";
-    this.day_head_class = "toggle-button-completed"
+    this.day_head_class = "toggle-button-completed";
     this.day_head_label= i.toString();
   }
 
@@ -91,27 +88,32 @@ export class CalendarComponent implements OnInit {
   {
     if(this.year_selector_class == 'hide') {
       this.year_selector_class = 'show';
-      this.day_selector_class = 'hide';
-      this.month_selector_class = 'hide';
+      this.year_head_class = "";
+      this.month_head_class = "";
+      this.day_head_class = "";
+      this.year_head_label = "JAHR *";
+      this.month_head_label="MONAT";
+      this.day_head_label="TAG";
     }
   }
 
   enableSelectMonth(){
     if(this.month_selector_class == 'hide') {
-      this.year_selector_class = 'hide';
-      this.day_selector_class = 'hide';
       this.month_selector_class = 'show';
+      this.month_head_class = "";
+      this.day_head_class = "";
+      this.month_head_label="MONAT";
+      this.day_head_label="TAG";
     }
   }
 
   enableSelectDay(){
     if(this.day_selector_class == 'hide') {
-      this.year_selector_class = 'hide';
       this.day_selector_class = 'show';
-      this.month_selector_class = 'hide';
+      this.day_head_class = "";
+      this.day_head_label="TAG";
     }
   }
-
   // Required info is stored in var:
   // selectedYear
   // selectedMonth
