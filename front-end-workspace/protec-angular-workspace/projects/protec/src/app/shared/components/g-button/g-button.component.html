@@ -1,7 +1,7 @@
 <div *ngIf="data.type === 'default'">
     <div class="bt-action btn-version btn-default">
-        <span>
-            {{data.label}}
+        <span class="no-overflow-text">
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -9,7 +9,7 @@
 <div *ngIf="data.type === 'arrow-right'">
     <div class="btn-version btn-arrow-right" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
         <span class="no-overflow-text">
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -17,7 +17,7 @@
 <div *ngIf="data.type === 'arrow-right-first'">
     <div class="btn-version btn-arrow-right-first" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
         <span class="no-overflow-text">
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -25,7 +25,7 @@
 <div *ngIf="data.type === 'outline'">
     <div class="bt-action btn-outline" [ngClass]="{'btn-outline-selected': data.selected}" (click)="goToLink(data.link, data.funcParams)">
         <span>
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -33,7 +33,7 @@
 <div *ngIf="data.type === 'outline-lg'">
     <div class="bt-action btn-outline btn-outline-lg" (click)="goToLink(data.link)">
         <span>
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -41,7 +41,7 @@
 <div *ngIf="data.type === 'cookie-window'">
     <div class="bt-action btn-outline" (click)="goToLink(data.link)">
         <span>
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -49,7 +49,7 @@
 <div *ngIf="data.type === 'item'">
     <div class="bt-action btn-outline btn-item align-content-center"  (click)="goToLink(data.link)">
         <span>
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -57,7 +57,7 @@
 <div *ngIf="data.type === 'footer-nav'">
     <div class="footer-nav-link bt-action" (click)="goToLink(data.link)">
         <span class="no-overflow-text">
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
@@ -65,7 +65,7 @@
 <div *ngIf="data.type === 'anchor-button-home'" class="d-flex text-dark bold-text" style="align-items: flex-end;">
     <div class="btn-home bt-action link-button ml-auto" (click)="goToLink(data.link)">
         <span class="no-overflow-text button-arrow">
-            {{data.label}}
+            {{data.label | translate}}
         </span>
         <span class="arrow arrow-right"></span>
     </div>
@@ -83,7 +83,7 @@
                 [ngClass]="{'text-right': i > 0}">
                 <span *ngIf="i == 0 && navegation.link != 'disabled'" class="arrow arrow-left " [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
                 <span class="no-overflow-text button-arrow"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
-                    {{navegation.label}}
+                    {{navegation.label | translate}}
                 </span>
                 <span *ngIf="i > 0 && navegation.link != 'disabled'" class="arrow arrow-right" [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
             </div>

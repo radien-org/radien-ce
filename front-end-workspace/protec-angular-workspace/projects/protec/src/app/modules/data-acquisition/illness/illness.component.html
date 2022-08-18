@@ -7,45 +7,45 @@
             <div class="generic-box-content">
                     <div class="row horzontal-space-left-sm">
                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                <p class="para-text horzontal-space-left-sm"> {{'Wie kam es zu dem Unfall? *'  | translate }} </p>
-                                <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Text eingeben'  | translate }}">
+                                <p class="para-text horzontal-space-left-sm"> {{'illness.Wie kam es zu dem Unfall? *'  | translate }} </p>
+                                <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'illness.Text eingeben'  | translate }}">
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                                 <div class="col-lg-6 col-md-5 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Berufliche Tätigkeit'  | translate }}">
+                                    <p class="para-text horzontal-space-left-sm"> {{'illness.Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *'  | translate }} </p>
+                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'illness.Berufliche Tätigkeit'  | translate }}">
                                 </div>
                                 <div class="col-lg-6 col-md-5 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'Arbeitgeber'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Arbeitgeber zum Zeitpunkt des Unfalls'  | translate }}">
+                                    <p class="para-text horzontal-space-left-sm"> {{'illness.Arbeitgeber'  | translate }} </p>
+                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'illness.Arbeitgeber zum Zeitpunkt des Unfalls'  | translate }}">
                                 </div>
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12">
                                 <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
+                                    <p class="para-text horzontal-space-left-sm"> {{'illness.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="showOptions()"> {{ 'Ja' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="hideOptions()"> {{ 'Nein' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="showOptions()"> {{ 'JA' | translate | lowercase }} </mat-radio-button>
+                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="hideOptions()"> {{ 'NEIN' | translate | lowercase}} </mat-radio-button>
                                 </div>
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12" [ngClass]="option_class">
                                 <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'Welche berufliche Tätigkeit hast Du zuvor ausgeübt?'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Berufliche Tätigkeit'  | translate }}">
+                                    <p class="para-text horzontal-space-left-sm"> {{'illness.Welche berufliche Tätigkeit hast Du zuvor ausgeübt?'  | translate }} </p>
+                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'illness.Berufliche Tätigkeit'  | translate }}">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'Vorheriger Arbeitgeber'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Vorheriger Arbeitgeber'  | translate }}">
+                                    <p class="para-text horzontal-space-left-sm"> {{'illness.Vorheriger Arbeitgeber'  | translate }} </p>
+                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'illness.Vorheriger Arbeitgeber'  | translate }}">
                                 </div>
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12" [ngClass]="option_class">
                                 <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
+                                    <p class="para-text horzontal-space-left-sm"> {{'illness.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group2" class="para-text radio-button"> {{ 'Ja' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button"> {{ 'Nein' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group2" class="para-text radio-button"> {{ 'JA' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button"> {{ 'NEIN' | translate }} </mat-radio-button>
                                 </div>
                             </div>
 
