@@ -28,9 +28,9 @@ export class WorkAccidentComponent implements OnInit {
   options: any[];
 
   constructor(
-    private readonly translationService: TranslateService, 
-    private readonly dataService : DataAcquisitionService
-  ) {  
+      private readonly translationService: TranslateService,
+      private readonly dataService : DataAcquisitionService
+  ) {
     this.options = [];
   }
 
@@ -43,7 +43,7 @@ export class WorkAccidentComponent implements OnInit {
       if(data) {
         data.forEach((item:any) => {
           this.options.push(
-            { name: item, code: item }
+              { name: item, code: item }
           );
         });
       }
