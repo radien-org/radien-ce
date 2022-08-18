@@ -121,6 +121,50 @@ body {
 
 /*GLOBAL STYLES*/
 
+.p-multiselect {
+  border: none;
+  border-radius: 0px;
+  border-bottom: 1px solid var(--muted-forest);
+  max-width: 460px;
+  min-width: 100%;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+  color: var(--off-black);
+  background: transparent;
+  border: 2px solid var(--chalk-mint);
+  border-radius: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  margin-top: 10px;
+}
+
+.p-checkbox .p-checkbox-box {
+  border-radius: 10px;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight {
+  border-color: var(--muted-forest);
+  background: var(--muted-forest);
+}
+
+.p-multiselect.p-multiselect-chip .p-multiselect-token {
+  background: transparent;
+  color: var(--muted-forest);
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+  color: var(--off-black);
+  background: transparent;
+}
+
+.p-multiselect-panel {
+  box-shadow: none;
+  background-color: white;
+}
+
 .p-button {
   border: 1px solid var(--muted-forest);
   border-radius: 2px;

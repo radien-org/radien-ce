@@ -71,6 +71,8 @@ export class AdditionalInsuranceComponent implements OnInit {
 
   accidentType: string = '';
 
+  secondButtons: boolean = false;
+
   constructor(
     private readonly translationService: TranslateService, 
     private primengConfig: PrimeNGConfig, 
@@ -113,11 +115,19 @@ export class AdditionalInsuranceComponent implements OnInit {
     }
   }
 
-  selectNoBtn(data: any) {
+  selectNoBtn(data: any, selectedItems: any = '') {
+    console.log(data);
+    console.log(selectedItems);
     if(data){
       if(data.var === 'firstStatus'){
         this.buttonsStatus.firstStatus = data.value;
-        this.noButton.selected = data.value === 'yes' ? false : true;
+        if(selectedItems.length > 0){
+          this.noButton.selected = true;
+          this.secondButtons = true;
+        } else {
+          this.noButton.selected = false;
+          this.secondButtons = false;
+        }
       }
       if(data.var === 'secondStatus'){
         this.buttonsStatus.secondStatus = data.value;

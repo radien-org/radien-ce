@@ -18,30 +18,44 @@
                                     <div class="col-lg-6 col-md-6 col-sm-12">
                                         <div style="float:left">
                                             <p-multiSelect 
+                                                [filter]="false" 
+                                                [showHeader]="false"
                                                 [options]="options" 
                                                 [(ngModel)]="selectedOptions" 
                                                 defaultLabel="Select a option" 
                                                 optionLabel="name" 
                                                 display="chip" 
-                                                (click)="selectNoBtn({var: 'firstStatus', value: 'yes'})">
+                                                (onChange)="selectNoBtn({var: 'firstStatus', value: 'yes'}, selectedOptions)">
                                             </p-multiSelect>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12">
                                         <div  style="float:right; width: 150px;">
-                                            <app-g-button [data]="noButton" (linkFunction)="selectNoBtn($event)"></app-g-button>
+                                            <app-g-button 
+                                                [data]="noButton" 
+                                                (linkFunction)="selectNoBtn($event)">
+                                            </app-g-button>
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 col-md-6 col-sm-12">
-                                        <p style="text-align: left" class="mt-4 mb-4">
-                                            {{ 'Hast Du in diesem konkreten Fall bereits Leistungen bei Deiner Versicherung beantragt?' | translate }}
-                                        </p>
-                                    </div>
-                                    <div *ngFor="let item of secondOptionButtons;let i = index" class="col-lg-6 col-md-6 col-sm-12">
-                                        <div style="width: 150px;" [style]="i == 0 ? 'float: left' : 'float: right'">
-                                            <app-g-button [data]="item" (linkFunction)="selectNoBtn($event)"></app-g-button>
+                                    <ng-container *ngIf="secondButtons">
+                                        <div class="col-lg-12 col-md-6 col-sm-12">
+                                            <p style="text-align: left" class="mt-4 mb-4">
+                                                {{ 'Hast Du in diesem konkreten Fall bereits Leistungen bei Deiner Versicherung beantragt?' | translate }}
+                                            </p>
                                         </div>
-                                    </div>
+                                        <div 
+                                            *ngFor="let item of secondOptionButtons;let i = index" 
+                                            class="col-lg-6 col-md-6 col-sm-12">
+                                            <div 
+                                                style="width: 150px;" 
+                                                [style]="i == 0 ? 'float: left' : 'float: right'">
+                                                <app-g-button 
+                                                    [data]="item" 
+                                                    (linkFunction)="selectNoBtn($event)">
+                                                </app-g-button>
+                                            </div>
+                                        </div>
+                                    </ng-container>
                                 </div>
                             </div>
                         </div>
