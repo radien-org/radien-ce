@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
+import {global} from "@angular/compiler/src/util";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
@@ -37,6 +38,8 @@ export class GButtonComponent implements OnInit {
     return link === currentRouter ? true : false;
   }
 
+  class_yes="not-selected"
+  class_no="not-selected"
   btn_arrow = "btn-arrow"
   btnOnMouseEnter() {
     this.btn_arrow = "btn-arrow-hover"
@@ -45,4 +48,13 @@ export class GButtonComponent implements OnInit {
     this.btn_arrow = "btn-arrow"
   }
 
+
+  selectYes(){
+    localStorage.setItem('krankgeschrieben','yes');
+  }
+  selectNo(){
+    localStorage.setItem('krankgeschrieben','no');
+  }
+
 }
+
