@@ -12,13 +12,15 @@
                             <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'(damaliger) Arbeitgeber'  | translate }}" required>
                         </div>
                         <div class="col-lg-6 col-md-5 col-sm-12">
-                            <p class="para-text horzontal-space-left-sm"> {{'PLZ Arbeitgeber'  | translate }} </p>
-                            <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'PLZ des Arbeitgebers'  | translate }}" >
+                            <p class="para-text horzontal-space-left-sm"> {{'PLZ Arbeitgeber *'  | translate }} </p>
+                            <p *ngIf="postCode.error">{{postCode.error}}</p>
+                            <input type="text" class="input-text vertical-space-increase-bottom-2" [(ngModel)]="postCode.value" (input)="verifyInput()" placeholder="{{'PLZ des Arbeitgebers'  | translate }}" >
                         </div>
                     </div>
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <p class="para-text horzontal-space-left-sm"> {{'Was ist Deine berufliche Tatigkeit?*'  | translate }} </p>
-                        <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'(damaliger) Beruf'  | translate }}">
+                        <p *ngIf="occupation.error">{{occupation.error}}</p>
+                        <input type="text" class="input-text vertical-space-increase-bottom-2" [(ngModel)]="occupation.value" (input)="verifyInput()" placeholder="{{'(damaliger) Beruf'  | translate }}">
                     </div>
                     <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                         <div class="col-lg-6 col-md-5 col-sm-12">
@@ -46,7 +48,7 @@
                     </div>
                 </div>
                 <div class="container-fluid">
-                    <app-g-button [data]="pageNav.navegation"></app-g-button>
+                    <app-g-button [data]="pageNav.navegation" (linkFunction)="saveInputs()"></app-g-button>
                 </div>
             </div>
         </div>
