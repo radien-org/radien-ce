@@ -15,7 +15,7 @@ export class DetailsFigureComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('back'),
           link: '/'
         }
       ]
@@ -36,21 +36,21 @@ export class DetailsFigureComponent implements OnInit {
     if(this.accidentType === 'recreational-accident') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('back'),
           link: '/data-acquisition/illness-details'
         }
       );
     } else if(this.accidentType === 'disease') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('back'),
           link: '/data-acquisition/work-accident'
         }
       );
     } else {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('back'),
           link: '/data-acquisition/work-accident'
         }
       );

@@ -13,11 +13,11 @@ export class Illness2Component implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('back'),
           link: '/data-acquisition/illness-details'
         },
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('next'),
           link: '/data-acquisition/full-body'
         }
       ]
@@ -125,7 +125,7 @@ export class Illness2Component implements OnInit {
       this.month_head_label_end= this.monthNames[i];
     }
   }
-  
+
   getDaylist(){
     switch (this.selectedBeginningMonth){
       case 0: this.monthdays = 31; break;

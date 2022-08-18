@@ -5,7 +5,7 @@ import { MaterialModule } from '../material.module';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { TranslateModule } from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 //import { FieldFormatterPipe } from './pipes/field-formatter.pipe';
 import { StepperComponent } from './components/stepper/stepper.component';
 import { GButtonComponent } from './components/g-button/g-button.component';
@@ -15,6 +15,8 @@ import { SidenavBackdropComponentEssenziell } from "./components/sidenav-backdro
 import { CalendarComponent } from "./components/calendar/calendar.component";
 import { WarningComponent } from './components/warning/warning.component';
 import { BodyFigureComponent } from './components/body-figure/body-figure.component';
+import {HttpClient} from "@angular/common/http";
+import {HttpLoaderFactory} from "../app.module";
 
 @NgModule({
   declarations: [

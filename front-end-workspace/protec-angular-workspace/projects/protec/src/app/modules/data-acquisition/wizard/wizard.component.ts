@@ -10,7 +10,7 @@ import { CookieService } from '../../../shared/services/cookie/cookie.service';
 export class WizardComponent implements OnInit {
 
   dataButton = {
-    label: this.translationService.instant('JETZT STARTEN'),
+    label: this.translationService.instant('start_button'),
     type: 'outline',
     link: '/data-acquisition/accident-intro'
   }
@@ -21,11 +21,11 @@ export class WizardComponent implements OnInit {
 
   cookieWindowButton = {
     dataButtonOptionOne: {
-      label: this.translationService.instant('ALLE COOKIES AKZEPTIEREN'),
+      label: this.translationService.instant('cookies_all'),
       type: 'outline'
     },
     dataButtonOptionTwo: {
-      label: this.translationService.instant('OPTIONALE COOKIES ABLEHNEN'),
+      label: this.translationService.instant('cookies_only_necessary'),
       type: 'outline'
     },
     dataButtonOptionThree: {
@@ -37,11 +37,11 @@ export class WizardComponent implements OnInit {
 
   pageNav = {
     home: {
-      label: this.translationService.instant('HOME'),
+      label: this.translationService.instant('home'),
       type: 'anchor-button-home'
     },
     back: {
-      label: this.translationService.instant('BACK'),
+      label: this.translationService.instant('back'),
       type: 'footer-nav'
     }
   }
