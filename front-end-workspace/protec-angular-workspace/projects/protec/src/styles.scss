@@ -50,6 +50,7 @@ warn: $protec-warn,
   --45-chalk-mint: #E3EAEA;
   --chalk-mint: #C1D0D0;
   --deep-forest: #2B4645;
+
   
   --light-taupe-rgba: RGBA(236,233,235,0.25);
   
@@ -526,6 +527,9 @@ b {
 
 .horzontal-space-reducer-left-sm{
   margin-left: -5px;
+}
+.horzontal-space-reducer-left-lg{
+  margin-left: -4em;
 }
 
 .bold-text{

@@ -9,5 +9,7 @@ export enum LOCAL {
   TRANSLATE_FILE = 'PH__tf',
   COOKIE_DECISION = 'PH__cd',
   ACCIDENT_TYPE = 'PH__at',
-  BODY_PART = 'PH__bp'
+  BODY_PART = 'PH__bp',
+  OCCUPATION_POSTCODE = 'PH__occ_plz',
+  OCCUPATION = 'PH__occ'
 }
