@@ -1,4 +1,38 @@
 ﻿{
+  "salutation": "Hello! {{value}}",
+  "hello": "Hello! {{value}}",
+  "welcome_exclamation":  "Olá!",
+  "welcome_message1": "Welcome to the digital pension entitlement checker!",
+  "welcome_message2": "You now have the opportunity to check your pension entitlements in 4 steps free of charge and without obligation. If you have any questions, we are always at your disposal. In this case, please select the Contact option.",
+  "great_headline_mock": "GREAT HEADLINE",
+  "step1": "THE DAMAGING EVENT",
+  "step2": "THE DETAILS",
+  "step3": "PROSPECTS OF SUCCESS",
+  "step4": "YOUR DATA",
+  "step_final": "REQUEST A QUOTE",
+  "start_button": "START NOW",
+  "cookies_all": "ACCEPT ALL COOKIES",
+  "cookies_only_necessary": "REJECT OPTIONAL COOKIES",
+  "confirm_cookies_selection": "CONFIRM MY SELECTION",
+  "home": "HOME",
+  "back": "back",
+  "proceed": "Next",
+  "step1_title": "step 1",
+
+  "accident_description":  "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two",
+  "UNFALLRENTEN-CHECKER": "ACCIDENT PENSION CHECKER",
+  "KONTAKT": "CONTACT",
+  "MEIN KONTO": "MY ACCOUNT",
+
+  "EINSTELLUNGEN": "SETTINGS",
+
+  "DIE DETAILS": "THE DETAILS",
+  "DAS SCHADENSEREIGNIS": "DAMAGE STORY",
+  "DEINE DATEN": "YOUR DATA",
+  "ERFOLGSAUSSICHTEN": "SUCCESS STORIES",
+  "ANGEBOT ANFORDERN": "REQUEST OFFER",
+
+
   "hello": "Hello! {{value}}",
   "OH WOW": "Olá!",
   "TOLLE ÜBERSCHRIFT": "GREAT HEADLINE",
@@ -17,8 +51,11 @@
     "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage.": "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two."
   },
   "accident-date": {
-    "Dein Unfalldatum": "your accident date",
-    "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *"
+    "Dein Unfalldatum": "Your accident date",
+    "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *",
+    "JAHR *": "YEAR *",
+    "MONATE": "MONTH",
+    "TAG": "DAY"
   },
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Have you had an accident at work, a leisure accident or an illness?"
@@ -68,11 +105,49 @@
     "OH WOW": "OH WOW",
     "DATENSCHUTZ": "PRIVACY",
     "Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.": "We would like to thank you for the trust placed in us and assure you that we will act sensitively and in the interests of our customers with the data made available to us. With the following information we inform you about the type, scope and purpose of the collection and use of personal data when using our website.",
-    "ÜBERBLICK": "OVERVIEW"
+    "ÜBERBLICK": "OVERVIEW",
+    "I. Allgemeines": "I. General",
+    "1. Verantwortliche Stelle für die Datenverarbeitung.": "1. Entity responsible for data processing.",
+    "2. Kontakt für Fragen zum Datenschutz.": "2. Contact for questions regarding data protection.",
+    "3. Personenbezogene Daten.": "3. Personal data.",
+    "II. Registrierung und Nutzung als registrierter Anwender": "II. Registration and use as a registered user",
+    "1. Registrierung bei protec - solutions.de(Benutzerkonto)": "1. Registration at protec - solutions.de(User account)",
+    "2. Bearbeitung von Anfragen und Überleitung zum Vertragsschluss.": "2. Processing of inquiries and transfer of contract conclusion.",
+    "3. Nutzung von WhatsApp.": "3. Use of WhatsApp."
   },
   "wizard": {
 
   },
+  "additional-insurance": {
+    "Bestanden zum Zeitpunkt des Unfalls eine oder mehrere Versicherungen?": "Did you have one or more insurance policies in effect at the time of the accident?",
+    "Hast Du in diesem konkreten Fall bereits Leistungen bei Deiner Versicherung beantragt?": "Have you already applied for benefits from your insurance company in this specific case?"
+  },
+  "illness": {
+    "Was wurde diagnostiziert? *" : "What was the diagnostic? *",
+    "Dauer der Krankschreibung:": "Duration of sick leave:",
+    "Ich bin derzeit noch krankgeschrieben.": "I am currently on sick leave.",
+    "Beginn": "Start",
+
+    "Berufliche Tätigkeit": "Professional activity",
+    "Arbeitgeber zum Zeitpunkt des Unfalls": "Employer at the time of the accident",
+    "Vorheriger Arbeitgeber": "Previous employer",
+    "Wie kam es zu dem Unfall? *": "How did the accident occur? *",
+    "Text eingeben": "Enter text",
+    "Arbeitgeber": "Employer",
+    "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last professional activity? *",
+    "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Was the professional activity performed for more than 12 months? *"
+  },
+  "full-body": {
+    "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Please click on the body region affected by the injury. In the next step you enter the injury(ies) and injury consequence(s) for this body region. If more than one body region is affected, you can add further injuries afterwards."
+  },
+  "JA": "YES",
+  "NEIN": "NO",
+  "JETZT STARTEN": "START NOW",
+  "Zurück": "Back",
+  "Weiter": "Next",
+  "KRANKHEIT": "DISEASE",
+  "ARBEITSUNFALL": "WORK ACCIDENT",
+  "FREIZEITUNFALL": "RECREATIONAL ACCIDENT",
   "request-quote": {
     "../../../../assets/images/ProTec_Software_Graphic_envelope.svg": "../../../../assets/images/ProTec_Software_Graphics_envelope-EN.svg"
   }

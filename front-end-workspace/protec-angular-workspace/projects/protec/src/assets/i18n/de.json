@@ -1,8 +1,44 @@
 {
+    "salutation": "Hallo! {{value}}",
+    "hello": "Hallo! {{value}}",
+    "welcome_exclamation": "OH WOW",
+    "welcome_message1": "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!",
+    "welcome_message2": "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.",
+    "great_headline_mock": "TOLLE ÜBERSCHRIFT",
+    "step1": "DAS SCHADENSEREIGNIS",
+    "step2": "DIE DETAILS",
+    "step3": "ERFOLGSAUSSICHTEN",
+    "step4": "DEINE DATEN",
+    "step_final": "ANGEBOT ANFORDERN",
+    "start_button": "JETZT STARTEN",
+    "cookies_all": "ALLE COOKIES AKZEPTIEREN",
+    "cookies_only_necessary": "OPTIONALE COOKIES ABLEHNEN",
+    "confirm_cookies_selection": "MEINE AUSWAHL BESTÄTIGEN",
+    "home": "HOME",
+    "back": "Züruck",
+    "proceed": "Weiter",
+    "step1_title": "SCHRITT 1",
+
+
+    "accident_description": "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage",
+
+    "UNFALLRENTEN-CHECKER": "UNFALLRENTEN-CHECKER",
+    "KONTAKT": "KONTAKT",
+    "MEIN KONTO": "MEIN KONTO",
+
+    "EINSTELLUNGEN": "EINSTELLUNGEN",
+
+    "DIE DETAILS": "DIE DETAILS",
+    "DAS SCHADENSEREIGNIS": "DAS SCHADENSEREIGNIS",
+    "DEINE DATEN": "DEINE DATEN",
+    "ERFOLGSAUSSICHTEN": "ERFOLGSAUSSICHTEN",
+    "ANGEBOT ANFORDERN": "ANGEBOT ANFORDERN",
+
     "hello": "Hallo! {{value}}",
     "OH WOW": "OH WOW",
     "TOLLE ÜBERSCHRIFT": "TOLLE ÜBERSCHRIFT",
     "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!",
+
     "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.": "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.",
     "AGB": "AGB",
     "Präambel": "Präambel",
@@ -18,7 +54,10 @@
     },
     "accident-date": {
         "Dein Unfalldatum": "Dein Unfalldatum",
-        "Bist bzw. warst Du krankgeschrieben? *": "Bist bzw. warst Du krankgeschrieben? *"
+        "Bist bzw. warst Du krankgeschrieben? *": "Bist bzw. warst Du krankgeschrieben? *",
+        "JAHR *": "JAHR *",
+        "MONATE": "MONATE",
+        "TAG": "TAG"
     },
     "accident-type": {
         "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?"
@@ -68,11 +107,49 @@
         "OH WOW": "OH WOW",
         "DATENSCHUTZ": "DATENSCHUTZ",
         "Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.": "Wir bedanken uns für das in uns gesetzte Vertrauen und versichern, dass wir sensibel und im Sinne unserer Kunden mit denen uns zur Verfügung gestellten Daten agieren werden. Mit den nachfolgenden Hinweisen informieren wir Dich über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten bei der Nutzung unseres Internetauftritts.",
-        "ÜBERBLICK": "ÜBERBLICK"
+        "ÜBERBLICK": "ÜBERBLICK",
+        "I. Allgemeines": "I. Allgemeines",
+        "1. Verantwortliche Stelle für die Datenverarbeitung.": "1. Verantwortliche Stelle für die Datenverarbeitung.",
+        "2. Kontakt für Fragen zum Datenschutz.": "2. Kontakt für Fragen zum Datenschutz.",
+        "3. Personenbezogene Daten.": "3. Personenbezogene Daten.",
+        "II. Registrierung und Nutzung als registrierter Anwender": "II. Registrierung und Nutzung als registrierter Anwender",
+        "1. Registrierung bei protec - solutions.de(Benutzerkonto)": "1. Registrierung bei protec - solutions.de(Benutzerkonto)",
+        "2. Bearbeitung von Anfragen und Überleitung zum Vertragsschluss.": "2. Bearbeitung von Anfragen und Überleitung zum Vertragsschluss.",
+        "3. Nutzung von WhatsApp.": "3. Nutzung von WhatsApp."
     },
     "wizard": {
 
     },
+    "additional-insurance": {
+        "Bestanden zum Zeitpunkt des Unfalls eine oder mehrere Versicherungen?": "Bestanden zum Zeitpunkt des Unfalls eine oder mehrere Versicherungen?",
+        "Hast Du in diesem konkreten Fall bereits Leistungen bei Deiner Versicherung beantragt?": "Hast Du in diesem konkreten Fall bereits Leistungen bei Deiner Versicherung beantragt?"
+    },
+    "illness": {
+        "Was wurde diagnostiziert? *" : "Was wurde diagnostiziert? *",
+        "Dauer der Krankschreibung:": "Dauer der Krankschreibung:",
+        "Ich bin derzeit noch krankgeschrieben.": "Ich bin derzeit noch krankgeschrieben.",
+        "Beginn": "Beginn",
+
+        "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber",
+        "Arbeitgeber zum Zeitpunkt des Unfalls": "Arbeitgeber zum Zeitpunkt des Unfalls",
+        "Berufliche Tätigkeit": "Berufliche Tätigkeit",
+        "Wie kam es zu dem Unfall? *": "Wie kam es zu dem Unfall? *",
+        "Text eingeben": "Text eingeben",
+        "Arbeitgeber": "Arbeitgeber",
+        "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *",
+        "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *"
+    },
+    "full-body": {
+        "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen."
+    },
+    "JA": "JA",
+    "NEIN": "NEIN",
+    "JETZT STARTEN": "JETZT STARTEN",
+    "Zurück": "Zurück",
+    "Weiter": "Weiter",
+    "KRANKHEIT": "KRANKHEIT",
+    "ARBEITSUNFALL": "ARBEITSUNFALL",
+    "FREIZEITUNFALL": "FREIZEITUNFALL",
     "request-quote": {
         "../../../../assets/images/ProTec_Software_Graphic_envelope.svg": "../../../../assets/images/ProTec_Software_Graphic_envelope.svg"
     }

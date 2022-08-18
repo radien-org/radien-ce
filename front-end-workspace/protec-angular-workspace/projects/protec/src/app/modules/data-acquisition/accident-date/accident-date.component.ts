@@ -14,11 +14,11 @@ export class AccidentDateComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('Zurück'),
           link: '/data-acquisition/additional-insurance'
         },
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('Weiter'),
           link: '/data-acquisition/details-intro'
         }
       ]
@@ -54,9 +54,9 @@ export class AccidentDateComponent implements OnInit {
   year_head_class = "";
   month_head_class = "";
   day_head_class = "";
-  year_head_label = "JAHR *";
-  month_head_label="MONATE";
-  day_head_label="TAG";
+  year_head_label = this.translationService.instant('accident-date.JAHR *');
+  month_head_label= this.translationService.instant('accident-date.MONATE');
+  day_head_label= this.translationService.instant('accident-date.TAG');
 
   constructor(private readonly translationService: TranslateService) {}
 

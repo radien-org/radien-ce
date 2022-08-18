@@ -15,7 +15,7 @@ export class DetailsIntroComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('back'),
           link: '/data-acquisition/accident-date'
         }
       ]
@@ -35,21 +35,21 @@ export class DetailsIntroComponent implements OnInit {
     if(this.accidentType === 'work-accident') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('next'),
           link: '/data-acquisition/work-accident'
         }
       );
     } else if(this.accidentType === 'recreational-accident') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('next'),
           link: '/data-acquisition/illness-details'
         }
       );
     } else {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('next'),
           link: '/data-acquisition/private-accident'
         }
       );
