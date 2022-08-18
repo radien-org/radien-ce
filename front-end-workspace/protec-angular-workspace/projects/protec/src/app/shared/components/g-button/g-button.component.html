@@ -23,8 +23,8 @@
 </div>
 
 <div *ngIf="data.type === 'outline'">
-    <div class="bt-action btn-outline" [ngClass]="{'btn-outline-selected': data.selected}" (click)="goToLink(data.link, data.funcParams)">
-        <span>
+    <div class="bt-action btn-outline justify-content-center align-content-center" [ngClass]="{'btn-outline-selected': data.selected}" (click)="goToLink(data.link, data.funcParams)">
+        <span class="align-items-center">
             {{data.label}}
         </span>
     </div>
