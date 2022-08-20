@@ -56,7 +56,7 @@
         "Dein Unfalldatum": "Dein Unfalldatum",
         "Bist bzw. warst Du krankgeschrieben? *": "Bist bzw. warst Du krankgeschrieben? *",
         "JAHR *": "JAHR *",
-        "MONATE": "MONATE",
+        "MONAT": "MONAT",
         "TAG": "TAG"
     },
     "accident-type": {
