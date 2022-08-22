@@ -18,7 +18,7 @@ export class AdditionalInsuranceComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('Zurück'),
+          label: this.translationService.instant('zurück'),
           link: '/data-acquisition/accident-type'
         }
       ]
@@ -115,19 +115,14 @@ export class AdditionalInsuranceComponent implements OnInit {
     }
   }
 
-  selectNoBtn(data: any, selectedItems: any = '') {
+  selectNoBtn(data: any = false, selectedItems: any = '') {
     console.log(data);
     console.log(selectedItems);
+
     if(data){
       if(data.var === 'firstStatus'){
         this.buttonsStatus.firstStatus = data.value;
-        if(selectedItems.length > 0){
-          this.noButton.selected = true;
-          this.secondButtons = true;
-        } else {
-          this.noButton.selected = false;
-          this.secondButtons = false;
-        }
+        this.noButton.selected = data.value === 'yes' ? false : true;
       }
       if(data.var === 'secondStatus'){
         this.buttonsStatus.secondStatus = data.value;
@@ -135,8 +130,15 @@ export class AdditionalInsuranceComponent implements OnInit {
           item.selected = item.funcParams.value === data.value ? true : false;
         });
       }
-      this.verifyAccidentType();
     }
+
+    if(selectedItems.length > 0) {
+      this.noButton.selected = false;
+    } else {
+      this.noButton.selected = true;
+    }
+
+    this.verifyAccidentType();
   }
 
   getAdditionalInsuranceOptions() {
