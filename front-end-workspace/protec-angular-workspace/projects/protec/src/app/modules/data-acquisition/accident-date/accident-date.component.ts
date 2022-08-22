@@ -55,7 +55,7 @@ export class AccidentDateComponent implements OnInit {
   month_head_class = "";
   day_head_class = "";
   year_head_label = this.translationService.instant('accident-date.JAHR *');
-  month_head_label= this.translationService.instant('accident-date.MONATE');
+  month_head_label= this.translationService.instant('accident-date.MONAT');
   day_head_label= this.translationService.instant('accident-date.TAG');
 
   constructor(private readonly translationService: TranslateService) {}
@@ -120,7 +120,7 @@ export class AccidentDateComponent implements OnInit {
       this.month_head_class = "";
       this.day_head_class = "";
       this.year_head_label = "JAHR *";
-      this.month_head_label="MONATE";
+      this.month_head_label="MONAT";
       this.day_head_label="TAG";
     }
   }
@@ -130,7 +130,7 @@ export class AccidentDateComponent implements OnInit {
       this.month_selector_class = 'show';
       this.month_head_class = "";
       this.day_head_class = "";
-      this.month_head_label="MONATE";
+      this.month_head_label="MONAT";
       this.day_head_label="TAG";
     }
   }
