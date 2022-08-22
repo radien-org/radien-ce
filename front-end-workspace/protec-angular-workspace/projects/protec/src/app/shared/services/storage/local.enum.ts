@@ -10,8 +10,6 @@ export enum LOCAL {
   COOKIE_DECISION = 'PH__cd',
   ACCIDENT_TYPE = 'PH__at',
   BODY_PART = 'PH__bp',
-  OCCUPATION_POSTCODE = 'PH__occ_plz',
-  ACCIDENT_DATE = 'PH__acc_date',
-  ACCIDENT_ON_SICK_LEAVE = 'PH__sick_leave',
-  OCCUPATION = 'PH__occ'
+  WORK_ACCIDENT_FORM = 'PH_work_acc',
+  ACCIDENT_DATE_FORM = 'PH__acc_date',
 }

@@ -41,10 +41,10 @@ export class WorkAccidentComponent implements OnInit {
   ) {
     this.options = [];
     this.postCode = {
-      value: this.storageService.getItem(LOCAL.OCCUPATION_POSTCODE) || '', error : ''
+      value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).postCode || '', error : ''
     }
     this.occupation = {
-      value: this.storageService.getItem(LOCAL.OCCUPATION) || '', error: ''
+      value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).occupation || '', error: ''
     }
     this.verifyInput()
   }
@@ -62,8 +62,7 @@ export class WorkAccidentComponent implements OnInit {
   }
 
   saveInputs(): void {
-    this.storageService.setItem(LOCAL.OCCUPATION_POSTCODE, `${this.postCode.value}`)
-    this.storageService.setItem(LOCAL.OCCUPATION, `${this.occupation.value}`)
+    this.storageService.setItem(LOCAL.WORK_ACCIDENT_FORM, {postCode: `${this.postCode.value}`, occupation: `${this.occupation.value}`})
   }
 
 
