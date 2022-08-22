@@ -26,4 +26,10 @@ export class HeaderDesktopComponent implements OnInit {
     this.translationService.setLocale(locale.locale);
   }
 
+  login() {
+    window.location.href='https://idp-test.protec.help/auth/admin';
+    //window.open('https://idp-test.protec.help/auth/admin');
+    //window.open('https://idp-test.protec.help/auth/admin', '_blank');
+  }
+
 }
