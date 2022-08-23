@@ -18,12 +18,13 @@
                                     <div class="col-lg-8 col-md-8 col-sm-12">
                                         <div style="float:left">
                                             <p-multiSelect
+
                                                 [filter]="false"
                                                 [showHeader]="false"
                                                 [options]="options" 
                                                 [(ngModel)]="selectedOptions"
-                                                defaultLabel="Ja un zwar:"
-                                                optionLabel="name" 
+                                                [placeholder]="placeholder"
+                                                optionLabel="name"
                                                 display="chip"
                                                 (onChange)="selectNoBtn({var: 'firstStatus', value: 'yes'}, selectedOptions)">
                                             </p-multiSelect>
