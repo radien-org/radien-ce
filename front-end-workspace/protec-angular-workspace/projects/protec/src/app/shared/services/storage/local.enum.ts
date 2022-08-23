@@ -11,5 +11,6 @@ export enum LOCAL {
   ACCIDENT_TYPE = 'PH__at',
   BODY_PART = 'PH__bp',
   OCCUPATION_POSTCODE = 'PH__occ_plz',
-  OCCUPATION = 'PH__occ'
+  OCCUPATION = 'PH__occ',
+  CLAIMS_LIST = 'PH_cl'
 }
