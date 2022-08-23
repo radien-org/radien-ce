@@ -45,13 +45,13 @@ export class PersonalDataInputComponent implements OnInit {
   ) {
     try {
       this.firstName = {
-        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_INPUT_FORM).firstName || '', error: ''
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_PERSON).firstName || '', error: ''
       }
       this.lastName = {
-        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_INPUT_FORM).lastName || '', error: ''
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_PERSON).lastName || '', error: ''
       }
       this.birthDate = {
-        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_INPUT_FORM).birthDate || '', error: ''
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_PERSON).birthDate || '', error: ''
       }
     } catch (err) {
       this.firstName = {value: '', error: ''}
@@ -75,7 +75,7 @@ export class PersonalDataInputComponent implements OnInit {
     }
   }
   saveInputs(): void {
-    this.storageService.setItem(LOCAL.PERSONAL_DATA_INPUT_FORM, {birthDate: `${this.birthDate.value}`, firstName:`${this.firstName.value}`, lastName: `${this.lastName.value}` })
+    this.storageService.setItem(LOCAL.PERSONAL_DATA_PERSON, {birthDate: `${this.birthDate.value}`, firstName:`${this.firstName.value}`, lastName: `${this.lastName.value}` })
   }
 
 
