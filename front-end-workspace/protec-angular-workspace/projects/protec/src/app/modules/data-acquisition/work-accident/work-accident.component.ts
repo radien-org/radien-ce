@@ -13,7 +13,7 @@ export class WorkAccidentComponent implements OnInit {
 
   initNavigation = [{
     label: this.translationService.instant('back'),
-    link: '/data-acquisition/full-body'
+    link: '/data-acquisition/details-intro'
   }]
 
   pageNav = {
@@ -59,7 +59,7 @@ export class WorkAccidentComponent implements OnInit {
     if (this.postCode.value && this.occupation.value) {
       this.pageNav.navegation.navegations = [...this.initNavigation, {
         label: this.translationService.instant('next'),
-        link: '/data-acquisition/details-intro'
+        link: '/data-acquisition/full-body'
       }]
       this.saveInputs();
     } else {
