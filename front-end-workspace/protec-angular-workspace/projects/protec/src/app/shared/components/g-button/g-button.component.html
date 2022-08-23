@@ -55,17 +55,17 @@
 </div>
 
 <div *ngIf="data.type === 'item-selectable-yes'">
-    <div class="bt-action btn-outline btn-item align-content-center btn-active" [ngClass]="class_yes" (click)="selectYes()">
+    <div class="bt-action btn-outline btn-item align-content-center btn-active" [ngClass]="data.active ? 'selected' : 'not-selected'" (click)="goToLink(data.link)">
         <span>
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>
 
 <div *ngIf="data.type === 'item-selectable-no'">
-    <div class="bt-action btn-outline btn-item align-content-center" [ngClass]="class_no" (click)="selectNo()">
+    <div class="bt-action btn-outline btn-item align-content-center" [ngClass]="data.active ? 'selected' : 'not-selected'" (click)="goToLink(data.link)">
         <span>
-            {{data.label}}
+            {{data.label | translate}}
         </span>
     </div>
 </div>

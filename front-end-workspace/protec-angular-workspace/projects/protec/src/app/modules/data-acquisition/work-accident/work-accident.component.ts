@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DataAcquisitionService } from '../../../shared/services/data-acquisition/data-acquisition.service';
 import {LOCAL} from "../../../shared/services/storage/local.enum";
+import {StorageService} from "../../../shared/services/storage/storage.service";
 
 @Component({
   selector: 'app-work-accident',
@@ -35,15 +36,23 @@ export class WorkAccidentComponent implements OnInit {
 
   constructor(
       private readonly translationService: TranslateService,
-      private readonly dataService : DataAcquisitionService
+      private readonly dataService : DataAcquisitionService,
+      private readonly storageService: StorageService,
   ) {
     this.options = [];
-    this.postCode = {
-      value: localStorage.getItem(LOCAL.OCCUPATION_POSTCODE) || '', error : ''
+    try {
+      this.postCode = {
+        value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).postCode || '', error : ''
+      }
+      this.occupation = {
+        value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).occupation || '', error: ''
+      }
+    } catch (err) {
+      this.postCode = {value: '', error: ''}
+      this.occupation = {value: '', error: ''}
     }
-    this.occupation = {
-      value: localStorage.getItem(LOCAL.OCCUPATION) || '', error: ''
-    }
+
+    this.verifyInput()
   }
 
   verifyInput(): void {
@@ -52,14 +61,14 @@ export class WorkAccidentComponent implements OnInit {
         label: this.translationService.instant('next'),
         link: '/data-acquisition/full-body'
       }]
+      this.saveInputs();
     } else {
       this.pageNav.navegation.navegations = [...this.initNavigation]
     }
   }
 
   saveInputs(): void {
-    localStorage.setItem(LOCAL.OCCUPATION_POSTCODE, `${this.postCode.value}`)
-    localStorage.setItem(LOCAL.OCCUPATION, `${this.occupation.value}`)
+    this.storageService.setItem(LOCAL.WORK_ACCIDENT_FORM, {postCode: `${this.postCode.value}`, occupation: `${this.occupation.value}`})
   }
 
 
