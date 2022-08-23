@@ -59,7 +59,7 @@ export class WorkAccidentComponent implements OnInit {
     if (this.postCode.value && this.occupation.value) {
       this.pageNav.navegation.navegations = [...this.initNavigation, {
         label: this.translationService.instant('next'),
-        link: '/data-acquisition/full-body'
+        link: '/data-acquisition/details-intro'
       }]
       this.saveInputs();
     } else {
