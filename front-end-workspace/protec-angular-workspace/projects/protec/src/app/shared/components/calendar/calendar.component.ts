@@ -121,6 +121,8 @@ export class CalendarComponent implements OnInit {
       this.year_head_label = "JAHR *";
       this.month_head_label="MONAT";
       this.day_head_label="TAG";
+      this.selectedYear = 1;
+      this.setDate()
     }
   }
 
@@ -131,6 +133,7 @@ export class CalendarComponent implements OnInit {
       this.day_head_class = "";
       this.month_head_label="MONAT";
       this.day_head_label="TAG";
+      this.setDate()
     }
   }
 
@@ -139,6 +142,7 @@ export class CalendarComponent implements OnInit {
       this.day_selector_class = 'show';
       this.day_head_class = "";
       this.day_head_label="TAG";
+      this.setDate()
     }
   }
   // Required info is stored in var:

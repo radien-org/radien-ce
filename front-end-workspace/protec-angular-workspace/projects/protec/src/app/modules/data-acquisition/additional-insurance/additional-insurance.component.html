@@ -15,21 +15,21 @@
                                             {{ 'additional-insurance.Bestanden zum Zeitpunkt des Unfalls eine oder mehrere Versicherungen?' | translate }}
                                         </p>
                                     </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="col-lg-8 col-md-8 col-sm-12">
                                         <div style="float:left">
-                                            <p-multiSelect 
-                                                [filter]="false" 
+                                            <p-multiSelect
+                                                [filter]="false"
                                                 [showHeader]="false"
                                                 [options]="options" 
-                                                [(ngModel)]="selectedOptions" 
-                                                defaultLabel="Select a option" 
+                                                [(ngModel)]="selectedOptions"
+                                                defaultLabel="Ja un zwar:"
                                                 optionLabel="name" 
-                                                display="chip" 
+                                                display="chip"
                                                 (onChange)="selectNoBtn({var: 'firstStatus', value: 'yes'}, selectedOptions)">
                                             </p-multiSelect>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="col-lg-4 col-md-4 col-sm-12">
                                         <div  style="float:right; width: 150px;">
                                             <app-g-button 
                                                 [data]="noButton" 

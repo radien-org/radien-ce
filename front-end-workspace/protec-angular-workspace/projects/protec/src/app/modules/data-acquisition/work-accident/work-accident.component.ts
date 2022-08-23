@@ -71,7 +71,6 @@ export class WorkAccidentComponent implements OnInit {
     this.storageService.setItem(LOCAL.WORK_ACCIDENT_FORM, {postCode: `${this.postCode.value}`, occupation: `${this.occupation.value}`})
   }
 
-
   ngOnInit(): void {
     this.getEmploymentResponsibleOptions();
   }

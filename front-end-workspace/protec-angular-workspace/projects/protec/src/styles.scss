@@ -708,4 +708,32 @@ b {
   select::-ms-expand {
     display: none;
   }
-  
+
+.p-multiselect-label {
+  width: 100%;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  padding-left: 0 !important;
+}
+
+.p-multiselect-label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.p-multiselect-token {
+  font-size: 1rem;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  border-radius: 30px !important;
+  border: 1px solid var(--chalk-mint);
+  margin-bottom: 4px;
+}
+
+.p-multiselect-trigger {
+  width: auto !important;
+  margin-left: 2rem;
+}

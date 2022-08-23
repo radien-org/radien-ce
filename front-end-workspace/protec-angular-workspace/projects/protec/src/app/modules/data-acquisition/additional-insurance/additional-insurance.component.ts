@@ -136,6 +136,8 @@ export class AdditionalInsuranceComponent implements OnInit {
       this.noButton.selected = false;
     } else {
       this.noButton.selected = true;
+      this.selectedOptions = [];
+      console.log('Hereeee ', this.selectedOptions)
     }
 
     this.verifyAccidentType();
