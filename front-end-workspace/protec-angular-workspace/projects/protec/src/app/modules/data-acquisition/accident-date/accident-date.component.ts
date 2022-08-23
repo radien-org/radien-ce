@@ -1,6 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import {DataAcquisitionService} from "../../../shared/services/data-acquisition/data-acquisition.service";
+import {StorageService} from "../../../shared/services/storage/storage.service";
+import {LOCAL} from "../../../shared/services/storage/local.enum";
+
+
+interface IChoice {
+  label: String,
+  type: String,
+  link: String,
+  value: String,
+  active: Boolean
+}
 
 @Component({
   selector: 'app-accident-date',
@@ -9,31 +20,31 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class AccidentDateComponent implements OnInit {
 
+  initNavigation = [{
+    label: this.translationService.instant('back'),
+    link: '/data-acquisition/additional-insurance'
+  }]
+
   pageNav = {
     navegation: {
       type: 'navegation-buttons',
-      navegations: [
-        {
-          label: this.translationService.instant('Zurück'),
-          link: '/data-acquisition/additional-insurance'
-        },
-        {
-          label: this.translationService.instant('Weiter'),
-          link: '/data-acquisition/details-intro'
-        }
-      ]
+      navegations: [...this.initNavigation]
     }
   }
 
   buttons = [{
     label: this.translationService.instant('JA'),
     type: 'item-selectable-yes',
-    link: 'disabled'
+    link: 'function',
+    value: 'yes',
+    active: false
   },
   {
     label: this.translationService.instant('NEIN'),
     type: 'item-selectable-no',
-    link: 'disabled'
+    link: 'function',
+    value: 'no',
+    active: false
   }]
 
   months = 0
@@ -58,7 +69,77 @@ export class AccidentDateComponent implements OnInit {
   month_head_label= this.translationService.instant('accident-date.MONAT');
   day_head_label= this.translationService.instant('accident-date.TAG');
 
-  constructor(private readonly translationService: TranslateService) {}
+  accidentDate: {
+    value: String,
+    error: String,
+  }
+  accidentIsOnSickLeave: {
+    value: String,
+    error: String,
+  }
+
+  setAccidentIsOnSickLeave(choice: IChoice): void {
+    this.buttons.forEach(btn => {
+      if (btn.active && btn !== choice) {
+        btn.active = false
+      }
+    })
+    choice.active = !choice.active;
+    if (choice.active) {
+      this.accidentIsOnSickLeave.value = choice.value
+    } else {
+      this.accidentIsOnSickLeave.value = ''
+    }
+    this.verifyInput()
+  }
+
+  constructor(
+      private readonly translationService: TranslateService,
+      private readonly dataService : DataAcquisitionService,
+      private readonly storageService: StorageService,
+  ) {
+    try {
+      this.accidentDate = {
+        value: this.storageService.getItem(LOCAL.ACCIDENT_DATE_FORM).date || '', error : ''
+      }
+      this.accidentIsOnSickLeave = {
+        value: this.storageService.getItem(LOCAL.ACCIDENT_DATE_FORM).isOnSickLeave || '', error: ''
+      }
+    } catch (err) {
+      this.accidentDate = {value: '', error: ''}
+      this.accidentIsOnSickLeave = {value: '', error: ''}
+    }
+
+
+    if (this.accidentDate.value){
+      let date: String[] =  this.accidentDate.value.split('.')
+      this.selectYear(+date[0]);
+      this.selectMonth(+date[1]);
+      this.selectDay(+date[2])
+    }
+    if (this.accidentIsOnSickLeave.value == "yes") {
+      this.buttons[0].active = true
+    }
+    if (this.accidentIsOnSickLeave.value == 'no')  {
+      this.buttons[1].active = true
+    }
+    this.verifyInput()
+  }
+
+  verifyInput(): void {
+    if (this.accidentDate.value && this.accidentIsOnSickLeave.value) {
+      this.pageNav.navegation.navegations = [...this.initNavigation, {
+        label: this.translationService.instant('next'),
+        link: '/data-acquisition/details-intro'
+      }]
+      this.saveInputs();
+    } else {
+      this.pageNav.navegation.navegations = [...this.initNavigation]
+    }
+  }
+  saveInputs(): void {
+    this.storageService.setItem(LOCAL.ACCIDENT_DATE_FORM, {date: `${this.accidentDate.value}`, isOnSickLeave:`${this.accidentIsOnSickLeave.value}` })
+  }
 
   counter(i: number) {
     return new Array(i);
@@ -75,6 +156,7 @@ export class AccidentDateComponent implements OnInit {
     this.year_head_class="toggle-button-completed"
     this.month_selector_class = "show";
     this.year_head_label= i.toString();
+    this.setAccidentDate()
   }
   selectMonth(i: number){
     this.selectedMonth = i;
@@ -82,6 +164,7 @@ export class AccidentDateComponent implements OnInit {
     this.day_selector_class = "show";
     this.month_head_class = "toggle-button-completed"
     this.month_head_label= this.monthNames[i];
+    this.setAccidentDate()
   }
 
   getDaylist(){
@@ -110,6 +193,16 @@ export class AccidentDateComponent implements OnInit {
     this.day_selector_class = "hide";
     this.day_head_class = "toggle-button-completed";
     this.day_head_label= i.toString();
+    this.setAccidentDate()
+  }
+
+  setAccidentDate(): void {
+    if (this.day_head_class == "toggle-button-completed" && this.month_head_class == "toggle-button-completed" && this.year_head_class == "toggle-button-completed") {
+      this.accidentDate.value = `${this.selectedYear}.${this.selectedMonth}.${this.selectedDay}`
+      this.verifyInput()
+    } else {
+      this.accidentDate.value = ''
+    }
   }
 
   enableSelectYear()

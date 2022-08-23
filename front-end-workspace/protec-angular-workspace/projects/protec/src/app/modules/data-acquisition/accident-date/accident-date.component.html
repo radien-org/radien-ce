@@ -61,7 +61,7 @@
                             <div class="row mt-4 justify-content-center">
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-12 " *ngFor="let item of buttons">
-                                        <app-g-button [data]="item"></app-g-button>
+                                        <app-g-button [data]="item" (linkFunction)="setAccidentIsOnSickLeave(item)"></app-g-button>
                                     </div>
                                 </div>
                             </div>
